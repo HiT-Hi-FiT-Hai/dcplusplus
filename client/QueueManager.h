@@ -282,7 +282,7 @@ private:
 		hFind = FindFirstFile((path + "\\*.bz2").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(data.cFileName);			
+				File::deleteFile(path + data.cFileName);			
 			} while(FindNextFile(hFind, &data));
 
 			FindClose(hFind);
@@ -291,7 +291,7 @@ private:
 		hFind = FindFirstFile((path + "\\*.DcLst").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(data.cFileName);			
+				File::deleteFile(path + data.cFileName);			
 			} while(FindNextFile(hFind, &data));
 			
 			FindClose(hFind);
@@ -347,6 +347,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.18 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.19 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -49,7 +49,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
 
-	ctrlQueue.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlQueue.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
 	}
@@ -59,8 +58,10 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlDirectories.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
-	ctrlDirectories.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
+	ctrlQueue.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
+	ctrlDirectories.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
+	
 	m_nProportionalPos = 2500;
 	SetSplitterPanes(ctrlDirectories.m_hWnd, ctrlQueue.m_hWnd);
 
@@ -120,6 +121,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)browseMenu, CSTRING(GET_FILE_LIST));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)pmMenu, CSTRING(SEND_PRIVATE_MESSAGE));
+	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeMenu, CSTRING(REMOVE_SOURCE));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
@@ -139,7 +141,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
 
 	columns[COLUMN_TARGET] = qi->getTargetFileName();
-	columns[COLUMN_SIZE] = (qi->getSize() == -1) ? STRING(UNKNOWN) : Util::toString(qi->getSize());
+	columns[COLUMN_SIZE] = (qi->getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(qi->getSize());
 	string tmp;
 	
 	int online = 0;
@@ -290,10 +292,10 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 				l.push_back(li->columns[j]);
 			}
 			dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
-			ctrlQueue.insert(l, WinUtil::IMAGE_FILE, (LPARAM)li->qi);
+			ctrlQueue.insert(l, WinUtil::getIconIndex(li->qi->getTarget()), (LPARAM)li->qi);
 		} else if(directories.count(dir) == 1) {
 			l.push_back(dir);
-			ctrlDirectories.insert(l, WinUtil::IMAGE_DIRECTORY);
+			ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
 		}
 		delete li;
 		updateStatus();
@@ -314,10 +316,10 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 					l.push_back(li->columns[j]);
 				}
 				dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
-				ctrlQueue.insert(l, WinUtil::IMAGE_FILE, (LPARAM)li->qi);
+				ctrlQueue.insert(l, WinUtil::getIconIndex(li->qi->getTarget()), (LPARAM)li->qi);
 			} else if(directories.count(dir) == 1) {
 				l.push_back(dir);
-				ctrlDirectories.insert(l, WinUtil::IMAGE_DIRECTORY);
+				ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
 			}
 			delete li;
 		}
@@ -613,7 +615,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 				sl.push_back(li.columns[k]);
 			}
 			
-			ctrlQueue.insert(sl, WinUtil::IMAGE_FILE, (LPARAM)qi);
+			ctrlQueue.insert(sl, WinUtil::getIconIndex(qi->getTarget()), (LPARAM)qi);
 		}
 	}
 	return 0;
@@ -621,7 +623,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.6 2002/04/28 08:25:50 arnetheduck Exp $
  */
 
 

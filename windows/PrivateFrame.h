@@ -62,6 +62,7 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
 	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
+	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		Lock l(cs);
@@ -155,6 +156,6 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

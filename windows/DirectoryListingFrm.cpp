@@ -46,9 +46,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 350, COLUMN_FILENAME);
 	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
 	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
+
+	ctrlList.setSort(COLUMN_FILENAME, ExListViewCtrl::SORT_FUNC_ITEM, true, sortFile);
 	
 	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
+
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
 	m_nProportionalPos = 2500;
@@ -77,26 +80,9 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
-		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->getName().c_str(), I_IMAGECALLBACK, I_IMAGECALLBACK, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
+		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->getName().c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		updateTree(*i, ht);
 	}
-}
-
-LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMTVDISPINFO* p = (NMTVDISPINFO*)pnmh;
-	TVITEM t;
-	t.hItem = p->item.hItem;
-	t.mask = TVIF_STATE;
-	ctrlTree.GetItem(&t);
-	
-	if(p->item.mask & TVIF_IMAGE) {
-		p->item.iImage = (t.state & TVIS_EXPANDED) ? 1 : 0;
-	}
-	if(p->item.mask & TVIF_SELECTEDIMAGE) {
-		p->item.iSelectedImage = (t.state & TVIS_EXPANDED) ? 1 : 0;
-	}
-
-	return 0;
 }
 
 LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -105,14 +91,15 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 	if(p->itemNew.state & TVIS_SELECTED) {
 		DirectoryListing::Directory* d = (DirectoryListing::Directory*)p->itemNew.lParam;
 		ctrlList.SetRedraw(FALSE);
-		ctrlList.DeleteAllItems();
+		clearList();
+
 		for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
 			DirectoryListing::Directory* d = *i;
 			StringList l;
 			l.push_back(d->getName());
 			l.push_back(Util::emptyString);
 			l.push_back(Util::formatBytes(d->getTotalSize()));
-			ctrlList.insert(l, WinUtil::IMAGE_DIRECTORY, (LPARAM)d);
+			ctrlList.insert(l, WinUtil::getDirIconIndex(), (LPARAM)new ItemInfo(d));
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 			string::size_type k = (*j)->getName().rfind('.');
@@ -121,7 +108,8 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 			l.push_back((*j)->getName());
 			l.push_back(suffix);
 			l.push_back(Util::formatBytes((*j)->getSize()));
-			ctrlList.insert(l, WinUtil::IMAGE_FILE, (LPARAM)*j);
+
+			ctrlList.insert(l, WinUtil::getIconIndex((*j)->getName()), (LPARAM)new ItemInfo(*j));
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
@@ -135,28 +123,19 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
-		
-		LVITEM lvi;
-		lvi.iItem = item->iItem;
-		lvi.iSubItem = COLUMN_FILENAME;
-		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
+		ItemInfo* ii = (ItemInfo*) ctrlList.GetItemData(item->iItem);
 
-		ctrlList.GetItem(&lvi);
-
-		if(lvi.iImage == WinUtil::IMAGE_FILE) {
-			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
+		if(ii->type == ItemInfo::FILE) {
 			try {
-				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->getName());
+				dl->download(ii->file, user, SETTING(DOWNLOAD_DIRECTORY) + ii->file->getName());
 			} catch(Exception e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		} else {
-			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-
 			HTREEITEM ht = ctrlTree.GetChildItem(t);
 			while(ht != NULL) {
 				ctrlTree.GetItemText(ht, buf, sizeof(buf));
-				if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == d) {
+				if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == ii->dir) {
 					ctrlTree.SelectItem(ht);
 					break;
 				}
@@ -204,24 +183,15 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 void DirectoryListingFrame::downloadList(const string& aTarget) {
 	int i=-1;
 	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		LVITEM lvi;
-		lvi.iItem = i;
-		lvi.iSubItem = COLUMN_FILENAME;
-		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
-		string target;
-		ctrlList.GetItem(&lvi);
-		if(aTarget.empty()) {
-			target = SETTING(DOWNLOAD_DIRECTORY);
-		} else {
-			target = aTarget;
-		}
+		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
+
+		string target = aTarget.empty() ? SETTING(DOWNLOAD_DIRECTORY) : aTarget;
+
 		try {
-			if(lvi.iImage == WinUtil::IMAGE_FILE) {
-				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-				dl->download(file, user, target + file->getName());
+			if(ii->type == ItemInfo::FILE) {
+				dl->download(ii->file, user, target + ii->file->getName());
 			} else {
-				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-				dl->download(d, user, target);
+				dl->download(ii->dir, user, target);
 			} 
 		} catch(Exception e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
@@ -236,27 +206,21 @@ LRESULT DirectoryListingFrame::onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlList.GetSelectedCount() == 1) {
-		LVITEM lvi;
-		lvi.iItem = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = COLUMN_FILENAME;
-		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
-		ctrlList.GetItem(&lvi);
+		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		try {
-			if(lvi.iImage == WinUtil::IMAGE_FILE) {
-				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-				string target = file->getName();
+			if(ii->type == ItemInfo::FILE) {
+				string target = ii->file->getName();
 				if(WinUtil::browseFile(target, m_hWnd))
-					dl->download(file, user, target);
+					dl->download(ii->file, user, target);
 			} else {
-				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 				string target = SETTING(DOWNLOAD_DIRECTORY);
 				if(WinUtil::browseDirectory(target, m_hWnd)) {
 					if(lastDirs.size() > 10)
 						lastDirs.erase(lastDirs.begin());
 					lastDirs.push_back(target);
 
-					dl->download(d, user, target);
+					dl->download(ii->dir, user, target);
 				}
 			} 
 		} catch(Exception e) {
@@ -287,23 +251,15 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		int n = 0;
 		ctrlList.ClientToScreen(&pt);
 
-		LVITEM lvi;
-		lvi.iItem = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = COLUMN_FILENAME;
-		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
-		ctrlList.GetItem(&lvi);
+		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
 
-		if(ctrlList.GetSelectedCount() == 1 && lvi.iImage == WinUtil::IMAGE_FILE) {
+		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 
-			int pos = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-			dcassert(pos != -1);
-			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(pos);
-			
-			targets = QueueManager::getInstance()->getTargetsBySize(f->getSize());
+			targets = QueueManager::getInstance()->getTargetsBySize(ii->file->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 			}
@@ -349,14 +305,13 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlList.GetSelectedCount() == 1) {
-		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
-		dcassert(i != -1);
-		if(ctrlList.getItemImage(i) == WinUtil::IMAGE_FILE) {
-			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
+		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+
+		if(ii->type == ItemInfo::FILE) {
 			dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
 
 			try {
-				dl->download(f, user, targets[wID-IDC_DOWNLOAD_TARGET]);
+				dl->download(ii->file, user, targets[wID-IDC_DOWNLOAD_TARGET]);
 			} catch(Exception e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			} 
@@ -386,91 +341,64 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 }
 
 int DirectoryListingFrame::sortFile(LPARAM a, LPARAM b) {
-	LVITEM* c = (LVITEM*)a;
-	LVITEM* d = (LVITEM*)b;
+	ItemInfo* c = (ItemInfo*)((LVITEM*)a)->lParam;
+	ItemInfo* d = (ItemInfo*)((LVITEM*)b)->lParam;
 	
-	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
-		if(d->iImage == WinUtil::IMAGE_FILE) {
+	if(c->type == ItemInfo::DIRECTORY) {
+		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
-		
-		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
-		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
-		
-		return stricmp(e->getName().c_str(), f->getName().c_str());
+		return stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
 	} else {
-		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_FILE);
-		
-		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
-		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
-		
-		return stricmp(e->getName().c_str(), f->getName().c_str());
+		return stricmp(c->file->getName().c_str(), d->file->getName().c_str());
 	}
 }
 
 int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
-	LVITEM* c = (LVITEM*)a;
-	LVITEM* d = (LVITEM*)b;
+	ItemInfo* c = (ItemInfo*)((LVITEM*)a)->lParam;
+	ItemInfo* d = (ItemInfo*)((LVITEM*)b)->lParam;
 	
-	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
-		if(d->iImage == WinUtil::IMAGE_FILE) {
+	if(c->type == ItemInfo::DIRECTORY) {
+		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
-		
-		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
-		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
-
-		return stricmp(e->getName().c_str(), f->getName().c_str());
-		
+		return stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
 	} else {
-		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_FILE);
-		
-		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
-		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
 
-		string::size_type k = e->getName().rfind('.');
-		string suffix1 = (k != string::npos) ? e->getName().substr(k + 1) : Util::emptyString;
-		k = f->getName().rfind('.');
-		string suffix2 = (k != string::npos) ? f->getName().substr(k + 1) : Util::emptyString;
+		string::size_type k = c->file->getName().rfind('.');
+		string suffix1 = (k != string::npos) ? c->file->getName().substr(k + 1) : Util::emptyString;
+		k = d->file->getName().rfind('.');
+		string suffix2 = (k != string::npos) ? d->file->getName().substr(k + 1) : Util::emptyString;
 		
 		return stricmp(suffix1.c_str(), suffix2.c_str());
 	}
 }
 
 int DirectoryListingFrame::sortSize(LPARAM a, LPARAM b) {
-	LVITEM* c = (LVITEM*)a;
-	LVITEM* d = (LVITEM*)b;
+	ItemInfo* c = (ItemInfo*)((LVITEM*)a)->lParam;
+	ItemInfo* d = (ItemInfo*)((LVITEM*)b)->lParam;
 	
-	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
-		if(d->iImage == WinUtil::IMAGE_FILE) {
+	if(c->type == ItemInfo::DIRECTORY) {
+		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
-		
-		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
-		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
-		LONGLONG g = e->getTotalSize();
-		LONGLONG h = f->getTotalSize();
+		LONGLONG g = c->dir->getTotalSize();
+		LONGLONG h = d->dir->getTotalSize();
 		
 		return (g < h) ? -1 : ((g == h) ? 0 : 1);
 	} else {
-		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == WinUtil::IMAGE_FILE);
 		
-		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
-		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
-		LONGLONG g = e->getSize();
-		LONGLONG h = f->getSize();
+		LONGLONG g = c->file->getSize();
+		LONGLONG h = d->file->getSize();
 		return (g < h) ? -1 : ((g == h) ? 0 : 1);
 	}
 }
@@ -501,5 +429,5 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.6 2002/04/22 15:50:51 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.7 2002/04/28 08:25:50 arnetheduck Exp $
  */

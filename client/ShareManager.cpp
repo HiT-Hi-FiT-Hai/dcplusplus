@@ -28,10 +28,6 @@
 
 ShareManager* Singleton<ShareManager>::instance = NULL;
 
-enum {
-	MAX_RESULTS = 5
-};
-
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
@@ -267,8 +263,6 @@ int ShareManager::run() {
 			File f(getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
 		} catch(FileException e) {
-			// ...
-			return 1;
 		}
 		
 		listLen = tmp2.length();
@@ -278,8 +272,6 @@ int ShareManager::run() {
 			File f(getBZListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
 		} catch(FileException e) {
-			// ...
-			return 1;
 		}
 		
 		dirty = false;
@@ -400,7 +392,7 @@ bool checkType(const string& aString, int aType) {
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient) {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
 	StringList* cur = &aStrings;
 	StringList newStr;
 
@@ -458,26 +450,26 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			sr->setHubName(aClient->getName());
 			aResults.push_back(sr);
 
-			if(aResults.size() >= MAX_RESULTS) {
+			if(aResults.size() >= maxResults) {
 				break;
 			}
 		}
 	}
 
-	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < MAX_RESULTS); ++l) {
-		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient);
+	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() <= maxResults); ++l) {
+		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 }
 
-SearchResult::List ShareManager::search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient) {
+SearchResult::List ShareManager::search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
 	
 	RLock l(cs);
 	StringTokenizer t(aString, '$');
 	StringList& sl = t.getTokens();
 	SearchResult::List results;
 
-	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
-		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient);
+	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() <= maxResults; ++i) {
+		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 	
 	return results;
@@ -485,6 +477,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.35 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.36 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -41,6 +41,7 @@ PropPage::Item AppearancePage::items[] = {
 	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
 	{ IDC_STATUS_IN_CHAT, SettingsManager::STATUS_IN_CHAT, PropPage::T_BOOL },
 	{ IDC_SHOW_JOINS, SettingsManager::SHOW_JOINS, PropPage::T_BOOL },
+	{ IDC_USE_SYSTEM_ICONS, SettingsManager::USE_SYSTEM_ICONS, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -136,5 +137,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
  */

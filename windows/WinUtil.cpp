@@ -27,9 +27,10 @@
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
-HFONT WinUtil::font;
+HFONT WinUtil::font = NULL;
 CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
+int WinUtil::dirIconIndex = 0;
 
 void WinUtil::decodeFont(const string& setting, LOGFONT &dest) {
 	StringTokenizer st(setting, ',');
@@ -90,7 +91,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 	return false;
 }
 
-bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */) {
+bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */, const string& initialDir /* = Util::emptyString */) {
 	char buf[MAX_PATH];
 	OPENFILENAME ofn;       // common dialog box structure
 	
@@ -100,6 +101,10 @@ bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* =
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = owner;
 	ofn.lpstrFile = buf;
+
+	if(!initialDir.empty()) {
+		ofn.lpstrInitialDir = initialDir.c_str();
+	}
 	ofn.nMaxFile = sizeof(buf);
 	ofn.Flags = OFN_PATHMUSTEXIST;
 	
@@ -124,6 +129,7 @@ void WinUtil::buildMenu() {
 	file.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_FILE_SEARCH));
 	file.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_FILE_NOTEPAD));
 	file.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_FILE_SEARCH_SPY));
+	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(OPEN_FILE_LIST));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FILE_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_FILE_RECONNECT));
@@ -155,6 +161,7 @@ void WinUtil::buildMenu() {
 	CMenuHandle help;
 	help.CreatePopupMenu();
 	
+	help.AppendMenu(MF_STRING, IDC_HELP_README, CSTRING(MENU_HELP_README));
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CSTRING(MENU_HELP_ABOUT));
 	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HELP_HOMEPAGE));
@@ -172,5 +179,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
  */

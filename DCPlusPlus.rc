@@ -73,18 +73,20 @@ IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 205, 178
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 205, 206
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,78,157,50,14
+    DEFPUSHBUTTON   "OK",IDOK,78,185,50,14
     CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
                     IDC_VERSION,31,38,143,36
-    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,20,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,21,20
     GROUPBOX        "",IDC_STATIC,7,7,191,69
     GROUPBOX        "",IDC_STATIC,7,81,191,71
     LTEXT           "",IDC_THANKS,13,89,178,59
+    GROUPBOX        "Latest version",IDC_STATIC,7,157,191,24,BS_CENTER
+    CTEXT           "Static",IDC_LATEST,16,168,174,8
 END
 
 IDD_LINE DIALOG DISCARDABLE  0, 0, 239, 46
@@ -148,15 +150,17 @@ BEGIN
     CONTROL         "Open the download queue window at startup",
                     IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
                     125,157,10
+    CONTROL         "Popup private messages",IDC_POPUP_PMS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,136,93,10
     CONTROL         "Ignore messages from users that are not online (effective agains bots)",
                     IDC_IGNOREOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,136,233,10
+                    15,147,233,10
     CONTROL         "Popup messages from users that are not online (if not ignoring)",
                     IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,147,211,10
+                    15,158,211,10
     CONTROL         "Remove dupes completely (instead of just subtracting their size)",
                     IDC_REMOVEDUPES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    158,215,10
+                    169,215,10
     EDITTEXT        IDC_PUBLIC_HUBS,16,198,246,14,ES_AUTOHSCROLL
     LTEXT           "Rollback",IDC_STATIC,15,22,29,8
     GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
@@ -176,12 +180,12 @@ BEGIN
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,204,19,44,14
     EDITTEXT        IDC_DOWNLOADS,14,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
-                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,37,56,11,
-                    14
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,37,56,11,14
     EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
-                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,223,74,11,
-                    14
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,223,74,11,14
     EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
     GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
     GROUPBOX        "Options",IDC_STATIC,7,45,248,93
@@ -202,19 +206,26 @@ FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,14,17,247,161
-    PUSHBUTTON      "&Add  folder",IDC_ADD,215,183,46,14
-    PUSHBUTTON      "&Remove",IDC_REMOVE,168,183,44,14,WS_DISABLED
+                    WS_TABSTOP,14,17,247,146
     CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,93,185,72,10
-    EDITTEXT        IDC_SLOTS,243,204,25,14,ES_NUMBER
+                    BS_AUTOCHECKBOX | WS_TABSTOP,93,169,72,10
+    PUSHBUTTON      "&Add  folder",IDC_ADD,215,167,46,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE,168,167,44,14,WS_DISABLED
+    EDITTEXT        IDC_SLOTS,60,204,25,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,239,204,11,14
-    GROUPBOX        "Shared directories",IDC_STATIC,7,7,261,195
-    LTEXT           "Total size:",IDC_STATIC,14,186,33,8
-    LTEXT           "0 B",IDC_TOTAL,50,186,41,8
-    LTEXT           "Upload slots",IDC_STATIC,197,207,40,8
+                    UDS_NOTHOUSANDS,81,204,11,14
+    GROUPBOX        "Shared directories",IDC_STATIC,7,7,261,179
+    LTEXT           "Total size:",IDC_STATIC,14,170,33,8
+    LTEXT           "0 B",IDC_TOTAL,50,170,41,8
+    LTEXT           "Upload slots",IDC_STATIC,14,207,40,8
+    LTEXT           "Automatically open an extra slot if speed is below",
+                    IDC_STATIC,14,191,154,8
+    EDITTEXT        IDC_MIN_UPLOAD_SPEED,171,188,26,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,192,189,11,14
+    LTEXT           "kB/s (0 = disable)",IDC_STATIC,201,191,56,8
 END
 
 IDD_APPEARANCEPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -235,19 +246,22 @@ BEGIN
                     107,170,10
     CONTROL         "Confirm application exit",IDC_CONFIRMEXIT,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,119,88,10
-    EDITTEXT        IDC_LANGUAGE,16,178,188,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BROWSE,210,178,50,14
-    GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
-    LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
-                    SS_SUNKEN | WS_BORDER | NOT WS_GROUP
-    GROUPBOX        "Options",IDC_STATIC,7,60,261,103
-    GROUPBOX        "Language file",IDC_STATIC,7,167,261,32
-    LTEXT           "Note; most of these options require that you restart DC++",
-                    IDC_STATIC,7,210,179,8
     CONTROL         "View status messages in main chat",IDC_STATUS_IN_CHAT,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,130,125,10
     CONTROL         "Show joins / parts in main chat",IDC_SHOW_JOINS,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,141,113,10
+    CONTROL         "Use system icons when browsing files (slow...)",
+                    IDC_USE_SYSTEM_ICONS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,153,160,10
+    EDITTEXT        IDC_LANGUAGE,16,183,188,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSE,210,183,50,14
+    GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
+    LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
+                    SS_SUNKEN | WS_BORDER | NOT WS_GROUP
+    GROUPBOX        "Options",IDC_STATIC,7,60,261,109
+    GROUPBOX        "Language file",IDC_STATIC,7,172,261,32
+    LTEXT           "Note; most of these options require that you restart DC++",
+                    IDC_STATIC,7,210,179,8
 END
 
 IDD_ADVANCED2PAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -265,15 +279,15 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,60,64,10
     CONTROL         "Log uploads",IDC_LOG_UPLOADS,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,124,60,55,10
-    GROUPBOX        "Logging",IDC_STATIC,7,7,261,71
-    LTEXT           "Log directory",IDC_STATIC,15,17,42,8
-    GROUPBOX        "Sounds",IDC_STATIC,7,82,261,40
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,15,92,225,10
     CONTROL         "Make an annoying sound when a private message window is opened",
                     IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,15,104,233,10
+    GROUPBOX        "Logging",IDC_STATIC,7,7,261,71
+    LTEXT           "Log directory",IDC_STATIC,15,17,42,8
+    GROUPBOX        "Sounds",IDC_STATIC,7,82,261,40
 END
 
 
@@ -290,7 +304,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 198
         TOPMARGIN, 7
-        BOTTOMMARGIN, 171
+        BOTTOMMARGIN, 199
     END
 
     IDD_LINE, DIALOG
@@ -371,8 +385,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,7,1
- PRODUCTVERSION 0,1,7,1
+ FILEVERSION 0,1,7,2
+ PRODUCTVERSION 0,1,7,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -390,7 +404,7 @@ BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "0, 1, 7, 1\0"
+            VALUE "FileVersion", "0, 1, 7, 2\0"
             VALUE "InternalName", "DC++\0"
             VALUE "LegalCopyright", "Copyright 2001-2002 Jacek Sieka\0"
             VALUE "LegalTrademarks", "\0"
@@ -398,7 +412,7 @@ BEGIN
             VALUE "OriginalFilename", "DCPlusPlus.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "0, 1, 7, 1\0"
+            VALUE "ProductVersion", "0, 1, 7, 2\0"
             VALUE "SpecialBuild", "\0"
         END
     END

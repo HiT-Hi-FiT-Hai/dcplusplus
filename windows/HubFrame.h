@@ -40,7 +40,8 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 {
 public:
 	HubFrame(const string& aServer, const string& aNick = Util::emptyString, const string& aPassword = Util::emptyString) : 
-	  waitingForPW(false), op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
+	  waitingForPW(false), op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
+	  clientContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), needSort(false) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
 		client->setPassword(aPassword);
@@ -105,6 +106,8 @@ public:
 		
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
+	void onEnter();
+	void onTab();
 	
 	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlMessage.SetFocus();
@@ -166,16 +169,23 @@ public:
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
-
-		if(c->size < d->size) {
-			return -1;
-		} else if(c->size == d->size) {
-			return 0;
-		} else {
-			return 1;
-		}
+		u_int64_t e = c->user->getBytesShared();
+		u_int64_t f = d->user->getBytesShared();
+		
+		return (e < f) ? -1 : ((e == f) ? 0 : 1);
 	}
 
+	static int sortNick(LPARAM a, LPARAM b) {
+		UserInfo* c = (UserInfo*)a;
+		UserInfo* d = (UserInfo*)b;
+		if(c->user->isSet(User::OP) && !d->user->isSet(User::OP)) {
+			return -1;
+		} else if(!c->user->isSet(User::OP) && d->user->isSet(User::OP)) {
+			return 1;
+		}
+		return stricmp(c->user->getNick().c_str(), d->user->getNick().c_str());		
+	}
+	
 	LRESULT onColumnClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
@@ -183,7 +193,9 @@ public:
 		} else {
 			if(l->iSubItem == COLUMN_SHARED) {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-			} else {
+			} else if(l->iSubItem == COLUMN_NICK) {
+				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortNick);
+			} else {				
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
 		}
@@ -201,6 +213,11 @@ public:
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		switch(wParam) {
+		case VK_TAB:
+			if(uMsg == WM_KEYDOWN) {
+				onTab();
+			}
+			break;
 		case VK_RETURN:
 			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
 				(GetKeyState(VK_CONTROL) & 0x8000) || 
@@ -218,7 +235,6 @@ public:
 		return 0;
 	}
 
-	void onEnter();
 private:
 	enum {
 		CLIENT_CONNECTING,
@@ -256,7 +272,7 @@ private:
 	
 	class UserInfo {
 	public:
-		LONGLONG size;
+		User::Ptr user;
 	};
 
 	class PMInfo {
@@ -272,12 +288,15 @@ private:
 	string lastKick;
 	string lastRedir;
 	string lastServer;
-
+	
+	bool needSort;
 	bool waitingForPW;
 	
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
+	CContainedWindow clientContainer;
+
 	CMenu userMenu;
 	CMenu opMenu;
 	bool op;
@@ -429,6 +448,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

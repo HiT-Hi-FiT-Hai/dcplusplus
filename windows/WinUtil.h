@@ -21,17 +21,13 @@
 
 class WinUtil {
 public:
-	enum {
-		IMAGE_DIRECTORY = 0,
-		IMAGE_FILE = 2
-	};
-	
 	static CImageList fileImages;
 	static HBRUSH bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static HFONT font;
 	static CMenu mainMenu;
+	static int dirIconIndex;
 	
 	static void buildMenu();
 
@@ -49,9 +45,23 @@ public:
 		return res;
 	}
 	
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true);
+	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
+	static int getIconIndex(const string& aFileName) {
+		if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+			SHFILEINFO fi;
+			::SHGetFileInfo(aFileName.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			return fi.iIcon;
+		} else {
+			return 2;
+		}
+	}
+
+	static int getDirIconIndex() {
+		return dirIconIndex;
+	}
+	
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
 	
@@ -61,5 +71,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.2 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
  */

@@ -117,10 +117,12 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
 		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
-		CHAIN_MDI_CHILD_COMMANDS()
+		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
+		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
@@ -150,9 +152,13 @@ public:
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		
+	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	static DWORD WINAPI stopper(void* p);
-
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+	
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
@@ -171,16 +177,6 @@ public:
 		::ShowWindow((HWND)wParam, SW_RESTORE);
 		MDIActivate((HWND)wParam);
 		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
-		return 0;
-	}
-	
-	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
-		if (lParam == WM_LBUTTONUP)
-		{
-			ShowWindow(SW_SHOW);
-			ShowWindow(SW_RESTORE);
-		}
 		return 0;
 	}
 	
@@ -229,54 +225,6 @@ public:
 		return 0;
 	}
 	
-	/**
-	 * This is called from CMDIFrameWindowImpl, and is a copy of what I found in CFrameWindowImplBase,
-	 * plus a few additions of my own...
-	 */
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[6];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 516 ? 416 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)*1/5;
-			w[2] = w[0] + (tmp-16)*2/5;
-			w[3] = w[0] + (tmp-16)*3/5;
-			w[4] = w[0] + (tmp-16)*4/5;
-			w[5] = w[0] + (tmp-16)*5/5;
-			
-			ctrlStatus.SetParts(6, w);
-		}
-		CRect rc = rect;
-		rc.top = rc.bottom - ctrlTab.getHeight();
-		if(ctrlTab.IsWindow())
-			ctrlTab.MoveWindow(rc);
-		
-		CRect rc2 = rect;
-		rc2.bottom = rc.top;
-		SetSplitterRect(rc2);
-	}
-	
-	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		static BOOL bVisible = TRUE;	// initially visible
-		bVisible = !bVisible;
-		CReBarCtrl rebar = m_hWndToolBar;
-		int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);	// toolbar is 2nd added band
-		rebar.ShowBand(nBandIndex, bVisible);
-		UISetCheck(ID_VIEW_TOOLBAR, bVisible);
-		UpdateLayout();
-		return 0;
-	}
-
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
@@ -350,7 +298,8 @@ private:
 	CMenu transferMenu;
 
 	bool trayIcon;
-
+	u_int32_t lastMove;
+	
 	int lastUpload;
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -436,11 +385,11 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		if(type == TimerManagerListener::SECOND) {
 			StringList* str = new StringList();
-			str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
+			str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
 			str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 			str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-			str->push_back("D: " + Util::formatBytes(Socket::getDown()) + "/s");
-			str->push_back("U: " + Util::formatBytes(Socket::getUp()) + "/s");
+			str->push_back("D: " + Util::formatBytes(Socket::getDown()) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+			str->push_back("U: " + Util::formatBytes(Socket::getUp()) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
 			PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
 			Socket::resetStats();
 		}
@@ -472,7 +421,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
  */
 
  

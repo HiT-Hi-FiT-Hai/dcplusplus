@@ -62,6 +62,7 @@ public:
 		fileTypeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
 		showUIContainer("BUTTON", this, SHOWUI_MESSAGE_MAP),
 		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
+		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), showUI(true)	
 	{	
 		SearchManager::getInstance()->addListener(this);
@@ -86,12 +87,15 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
+		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
@@ -128,12 +132,39 @@ public:
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+
+	void removeSelected() {
+		int i = -1;
+		while( (i = ctrlResults.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+			delete (SearchResult*)ctrlResults.GetItemData(i);
+			ctrlResults.DeleteItem(i);
+		}
+	}
 	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		downloadSelected(SETTING(DOWNLOAD_DIRECTORY));
 		return 0;
 	}
+
+	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		removeSelected();
+		return 0;
+	}
 	
+	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onEnter();
+		return 0;
+	}
+
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+		
+		if(kd->wVKey == VK_DELETE) {
+			removeSelected();
+		} 
+		return 0;
+	}
+
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
@@ -175,6 +206,7 @@ private:
 	CComboBox ctrlMode;
 	CComboBox ctrlSizeMode;
 	CComboBox ctrlFiletype;
+	CButton ctrlDoSearch;
 	
 	CContainedWindow searchContainer;
 	CContainedWindow searchBoxContainer;
@@ -184,6 +216,7 @@ private:
 	CContainedWindow fileTypeContainer;
 	CContainedWindow slotsContainer;
 	CContainedWindow showUIContainer;
+	CContainedWindow doSearchContainer;
 	
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel;
 	CButton ctrlSlots, ctrlShowUI;
@@ -233,6 +266,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -47,6 +47,7 @@
 		<String Name="DownloadQueue">Download queue</String>
 		<String Name="DownloadedLeft">Downloaded %s (%.01f%%), %s/s, %s left</String>
 		<String Name="DownloadedFrom"> downloaded from </String>
+		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
 		<String Name="Email">E-Mail</String>
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
@@ -109,6 +110,7 @@
 		<String Name="MenuHelpFaq">Frequently asked questions</String>
 		<String Name="MenuHelpHelpForum">Help forum</String>
 		<String Name="MenuHelpHomepage">DC++ Homepage</String>
+		<String Name="MenuHelpReadme">Readme / Newbie help</String>
 		<String Name="MenuHelpRequestFeature">Request a feature</String>
 		<String Name="MenuHelpReportBug">Report a bug</String>
 		<String Name="MenuView">&amp;View</String>
@@ -133,6 +135,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OpenFileList">Open file list</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
 		<String Name="Password">Password</String>
@@ -169,6 +172,7 @@
 		<String Name="SetPriority">Set priority</String>
 		<String Name="Shared">Shared</String>
 		<String Name="Size">Size</String>
+		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
 		<String Name="SocketShutDown">Socket has been shut down</String>

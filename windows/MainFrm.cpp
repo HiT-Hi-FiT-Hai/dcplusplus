@@ -334,7 +334,6 @@ HWND MainFrame::createToolbar() {
 	
 }
 
-
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 
 	TimerManager::getInstance()->addListener(this);
@@ -351,7 +350,16 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::textColor = SETTING(TEXT_COLOR);
 	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
 	WinUtil::font = ::CreateFontIndirect(&lf);
-	WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		WinUtil::fileImages = (HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		WinUtil::fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
+		WinUtil::dirIconIndex = fi.iIcon;	
+	} else {
+		WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+		WinUtil::dirIconIndex = 0;
+	}
 	
 	TimerManager::getInstance()->start();
 	
@@ -727,6 +735,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		nid.hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 		strncpy(nid.szTip, "DC++",64);
 		nid.szTip[63] = '\0';
+		lastMove = GET_TICK() - 1000;
 		
 		::Shell_NotifyIcon(NIM_ADD, &nid);
 		ShowWindow(SW_HIDE);
@@ -799,6 +808,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	string site;
 
 	switch(wID) {
+	case IDC_HELP_README: site = Util::getAppPath() + "README.txt"; break;
 	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
 	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
 	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1"; break;
@@ -827,9 +837,95 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
  	return 0;
 }
  
+void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+{
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+	
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[6];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 596 ? 496 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)*1/5;
+		w[2] = w[0] + (tmp-16)*2/5;
+		w[3] = w[0] + (tmp-16)*3/5;
+		w[4] = w[0] + (tmp-16)*4/5;
+		w[5] = w[0] + (tmp-16)*5/5;
+		
+		ctrlStatus.SetParts(6, w);
+	}
+	CRect rc = rect;
+	rc.top = rc.bottom - ctrlTab.getHeight();
+	if(ctrlTab.IsWindow())
+		ctrlTab.MoveWindow(rc);
+	
+	CRect rc2 = rect;
+	rc2.bottom = rc.top;
+	SetSplitterRect(rc2);
+}
+
+LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	string file;
+	if(WinUtil::browseFile(file, m_hWnd, false, Util::getAppPath() + "FileLists\\")) {
+		string username;
+		if(file.rfind('\\') != string::npos) {
+			username = file.substr(file.rfind('\\') + 1);
+			if(username.rfind('.') != string::npos) {
+				username = username.substr(0, username.rfind('.'));
+			}
+			User::Ptr& u = ClientManager::getInstance()->getUser(username);
+
+			DirectoryListingFrame* pChild = new DirectoryListingFrame(file, u);
+			pChild->setTab(&ctrlTab);
+			pChild->CreateEx(m_hWndClient);
+			pChild->setWindowTitle();
+		}
+	}
+	return 0;
+}
+
+LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if (lParam == WM_LBUTTONUP) {
+		ShowWindow(SW_SHOW);
+		ShowWindow(SW_RESTORE);
+	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
+		NOTIFYICONDATA nid;
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = m_hWnd;
+		nid.uID = 0;
+		nid.uFlags = NIF_TIP;
+		strncpy(nid.szTip, ("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" + 
+			Util::toString(DownloadManager::getInstance()->getDownloads()) + ")\r\nU: " +
+			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" + 
+			Util::toString(UploadManager::getInstance()->getUploads()) + ")").c_str(), 64);
+		
+		::Shell_NotifyIcon(NIM_MODIFY, &nid);
+		lastMove = GET_TICK();
+	}
+	return 0;
+}
+
+LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	static BOOL bVisible = TRUE;	// initially visible
+	bVisible = !bVisible;
+	CReBarCtrl rebar = m_hWndToolBar;
+	int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);	// toolbar is 2nd added band
+	rebar.ShowBand(nBandIndex, bVisible);
+	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
+	UpdateLayout();
+	return 0;
+}
+
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.4 2002/04/22 15:50:51 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -107,6 +107,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlShowUI.SetCheck(1);
 	showUIContainer.SubclassWindow(ctrlShowUI.m_hWnd);
 
+	ctrlDoSearch.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_SEARCH);
+	ctrlDoSearch.SetWindowText(CSTRING(SEARCH));
+	ctrlDoSearch.SetFont(ctrlStatus.GetFont());
+	doSearchContainer.SubclassWindow(ctrlDoSearch.m_hWnd);
+
 	ctrlSearchBox.SetFont(uiFont, FALSE);
 	ctrlSize.SetFont(uiFont, FALSE);
 	ctrlMode.SetFont(uiFont, FALSE);
@@ -184,11 +190,13 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	resultsMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	resultsMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	opMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
 	opMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	opMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
 	opMenu.AppendMenu(MF_STRING, IDC_REDIRECT, CSTRING(REDIRECT));
@@ -584,7 +592,7 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 	if(showUI)
 	{
-		int const width = 220, spacing = 60, labelH = 16, comboH = 120, lMargin = 2, rMargin = 4;
+		int const width = 220, spacing = 50, labelH = 16, comboH = 120, lMargin = 2, rMargin = 4;
 		CRect rc = rect;
 
 		rc.left += width;
@@ -637,6 +645,13 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		ctrlSlots.MoveWindow(rc);
 
 		optionLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
+
+		// "Search"
+		rc.right = width - rMargin;
+		rc.left = rc.right - 100;
+		rc.top += spacing/2;
+		rc.bottom += spacing/2;
+		ctrlDoSearch.MoveWindow(rc);
 	}
 	else
 	{
@@ -731,12 +746,14 @@ void SearchFrame::onTab() {
 	} else if(focus == ctrlFiletype.m_hWnd) {
 		ctrlSlots.SetFocus();
 	} else if(focus == ctrlSlots.m_hWnd) {
-		ctrlSearchBox.SetFocus();
+		ctrlDoSearch.SetFocus();
+	} else if(focus == ctrlDoSearch.m_hWnd) {
+		ctrlSearch.SetFocus();
 	}
 }
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

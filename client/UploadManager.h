@@ -70,6 +70,16 @@ class UploadManager : private UserConnectionListener, public Speaker<UploadManag
 public:
 	
 	int getUploads() { Lock l(cs); return uploads.size(); };
+	int getAverageSpeed() {
+		Lock l(cs);
+		int avg = 0;
+		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+			Upload* u = *i;
+			avg += (int)u->getAverageSpeed();
+		}
+		return avg;
+	}
+	
 	int getRunning() { return running; };
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
@@ -187,5 +197,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.43 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.44 2002/04/28 08:25:50 arnetheduck Exp $
  */

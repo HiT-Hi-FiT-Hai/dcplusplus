@@ -34,13 +34,15 @@ const string SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
-	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "SENTRY", 
+	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", 
+	"SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed",
 	"SENTRY"
 };
 
@@ -77,7 +79,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config;http://dcplusplus.sourceforge.net/PublicHubList.config");
+	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config.bz2;http://dcplusplus.sourceforge.net/PublicHubList.config");
 	setDefault(DOWNLOAD_SLOTS, 0);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getAppPath() + "logs\\");
@@ -90,6 +92,9 @@ SettingsManager::SettingsManager()
 	setDefault(CONNECTION, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
 	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
+	setDefault(USE_SYSTEM_ICONS, true);
+	setDefault(POPUP_PMS, true);
+	setDefault(MIN_UPLOAD_SPEED, 0);
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -197,6 +202,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.33 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.34 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

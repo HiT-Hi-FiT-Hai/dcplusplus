@@ -36,6 +36,7 @@ static char THIS_FILE[] = __FILE__;
 PropPage::Item UploadPage::items[] = {
 	{ IDC_SLOTS, SettingsManager::SLOTS, PropPage::T_INT }, 
 	{ IDC_SHAREHIDDEN, SettingsManager::SHARE_HIDDEN, PropPage::T_BOOL },
+	{ IDC_MIN_UPLOAD_SPEED, SettingsManager::MIN_UPLOAD_SPEED, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -65,7 +66,9 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	CUpDownCtrl updown;
 	updown.Attach(GetDlgItem(IDC_SLOTSPIN));
-	updown.SetRange(1, 100);	
+	updown.SetRange(1, 100);
+	updown.Attach(GetDlgItem(IDC_MIN_UPLOAD_SPIN));
+	updown.SetRange32(0, 30000);
 	return TRUE;
 }
 
@@ -125,6 +128,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

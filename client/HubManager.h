@@ -177,6 +177,11 @@ public:
 	}
 private:
 	
+	enum {
+		TYPE_NORMAL,
+		TYPE_BZIP2
+	} listType;
+
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
 	User::List users;
@@ -211,7 +216,7 @@ private:
 	}
 	
 	string downloadBuf;
-
+	
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			if((*i)->getServer() == aServer) {
@@ -276,6 +281,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.28 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.29 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

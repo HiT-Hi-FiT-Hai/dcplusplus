@@ -27,13 +27,14 @@
 #include "CriticalSection.h"
 #include "Util.h"
 #include "SearchManager.h"
+#include "TimerManager.h"
 
 STANDARD_EXCEPTION(ShareException);
 
 class SimpleXML;
 class Client;
 
-class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread
+class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener
 {
 public:
 	StringList getDirectories();
@@ -43,10 +44,10 @@ public:
 	void refresh(bool dirs = false, bool aUpdate = true) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
-	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
-		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient);
+	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
+		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
 	}
-	SearchResult::List search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient);
+	SearchResult::List search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 
 	int64_t getShareSize() {
 		RLock l(cs);
@@ -137,7 +138,7 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient);
+		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 		
 		string toString(DupeMap& dupes, int ident = 0);
 	private:
@@ -146,12 +147,14 @@ private:
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : listLen(0), dirty(false), refreshDirs(false), update(false) { 
+	ShareManager() : listLen(0), dirty(false), refreshDirs(false), update(false), lastUpdate(GET_TICK()) { 
 		SettingsManager::getInstance()->addListener(this);
+		TimerManager::getInstance()->addListener(this);
 	};
 	
 	virtual ~ShareManager() {
 		SettingsManager::getInstance()->removeListener(this);
+		TimerManager::getInstance()->addListener(this);
 		
 		join();
 
@@ -168,6 +171,7 @@ private:
 	
 	string listFile;
 	string bzListFile;
+	u_int32_t lastUpdate;
 
 	RWLock cs;
 
@@ -187,6 +191,18 @@ private:
 		}
 	}
 	
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) {
+		switch(type) {
+		case TimerManagerListener::MINUTE:
+			if(lastUpdate + 60 * 60 * 1000 < tick) {
+				try {
+					refresh(true, true);
+					lastUpdate = tick;
+				} catch(...) {
+				}
+			}
+		}
+	}
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -196,6 +212,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.25 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.26 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

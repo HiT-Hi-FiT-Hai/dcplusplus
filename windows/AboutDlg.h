@@ -19,36 +19,97 @@
 #if !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
 #define AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_
 
-class CAboutDlg : public CDialogImpl<CAboutDlg>
+#include "../client/HttpConnection.h"
+#include "../client/SimpleXML.h"
+
+class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
 public:
 	enum { IDD = IDD_ABOUTBOX };
+	enum { WM_VERSIONDATA = WM_APP + 53 };
+
+	CAboutDlg() { };
+	virtual ~CAboutDlg() { };
 
 	BEGIN_MSG_MAP(CAboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_VERSIONDATA, onVersionData)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
 
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
+	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/");
 		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the first and (so far) only mirror...more thanks go out to the people testing the application and to all those who have been discussing it on sourceforge and all over the world...you probably know who you are...also, thanks to the bzip2 team, they're the ones that made the bzip2 compression library used in DC++");
+		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
 		CenterWindow(GetParent());
+		c.addListener(this);
+		c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 		return TRUE;
 	}
 
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
+	LRESULT onVersionData(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		string* x = (string*) wParam;
+		SetDlgItemText(IDC_LATEST, x->c_str());
+		delete x;
+		return 0;
+	}
+		
+	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		EndDialog(wID);
 		return 0;
 	}
+
+private:
+	HttpConnection c;
+
+	CAboutDlg(const CAboutDlg&) { dcassert(0); };
+	
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) {
+		switch(type) {
+		case HttpConnectionListener::DATA:
+			downBuf.append((char*)buf, len); break;
+		default:
+			dcassert(0);
+		}
+	}
+
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
+		switch(type) {
+		case HttpConnectionListener::FAILED: 
+			c.removeListener(this);
+			{
+				string* x = new string(aLine);
+				PostMessage(WM_VERSIONDATA, (WPARAM) x);
+			}
+		}
+	}
+
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
+		switch(type) {
+		case HttpConnectionListener::COMPLETE:
+			c.removeListener(this);
+			if(!downBuf.empty()) {
+				SimpleXML xml;
+				xml.fromXML(downBuf);
+				if(xml.findChild("DCUpdate")) {
+					xml.stepIn();
+					if(xml.findChild("Version")) {
+						string* x = new string(xml.getChildData());
+						PostMessage(WM_VERSIONDATA, (WPARAM) x);
+					}
+				}
+			}
+		}
+	}
+
+	string downBuf;
 };
 
 #endif // !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

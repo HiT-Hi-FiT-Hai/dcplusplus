@@ -47,7 +47,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		return;
 	}
 	
-	if( stricmp(aFile.c_str(), "MyList.DcLst") == 0 ) {
+	if( (stricmp(aFile.c_str(), "MyList.bz2") == 0) ) {
 		userlist = true;
 	}
 
@@ -63,6 +63,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		(ui == reservedSlots.end()) ) {
 
 		if( !(	(smallfile || userlist) && 
+				( (SETTING(MIN_UPLOAD_SPEED) > 0) && getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)) ) && 
 				( (aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) || (getFreeExtraSlots() > 0) ) && 
 				(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
 			) ) {
@@ -210,5 +211,5 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.25 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.26 2002/04/28 08:25:50 arnetheduck Exp $
  */

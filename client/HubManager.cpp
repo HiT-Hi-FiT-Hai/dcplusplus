@@ -25,18 +25,28 @@
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
 #include "ClientManager.h"
+#include "CryptoManager.h"
 
 HubManager* Singleton<HubManager>::instance = NULL;
 
 void HubManager::onHttpFinished() throw() {
 	string::size_type i, j;
-	
+	string* x;
+	string bzlist;
+
+	if(listType == TYPE_BZIP2) {
+		CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
+		x = &bzlist;
+	} else {
+		x = &downloadBuf;
+	}
+
 	{
 		Lock l(cs);
 		i = 0;
 		
-		while( (i < downloadBuf.size()) && ((j=downloadBuf.find("\r\n", i)) != string::npos)) {
-			StringTokenizer tok(downloadBuf.substr(i, j-i), '|');
+		while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
+			StringTokenizer tok(x->substr(i, j-i), '|');
 			i = j + 2;
 			if(tok.getTokens().size() < 4)
 				continue;
@@ -126,6 +136,11 @@ void HubManager::refresh() {
 		}
 		c->addListener(this);
 		c->downloadFile(server);
+		if(server.substr(server.size() - 4) == ".bz2") {
+			listType = TYPE_BZIP2;
+		} else {
+			listType = TYPE_NORMAL;
+		}
 		running = true;
 
 	}
@@ -133,6 +148,6 @@ void HubManager::refresh() {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.22 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.23 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -60,6 +60,8 @@ const string& User::getClientName() {
 	RLock l(cs);
 	if(client) {
 		return client->getName();
+	} else if(!getLastHubName().empty()) {
+		return getLastHubName();
 	} else {
 		return STRING(OFFLINE);
 	}
@@ -115,6 +117,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.14 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: User.cpp,v 1.15 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

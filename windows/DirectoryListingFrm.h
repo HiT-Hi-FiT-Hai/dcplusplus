@@ -95,9 +95,9 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_GETDISPINFO, onGetDispInfoDirectories)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
@@ -118,7 +118,6 @@ public:
 	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	LRESULT onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	
 	void downloadList(const string& aTarget);
@@ -129,6 +128,12 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 0;
+	}
+
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		clearList();
+		bHandled = FALSE;
 		return 0;
 	}
 	
@@ -157,7 +162,32 @@ public:
 		return 0;
 	}
 	
+	void clearList() {
+		int j = ctrlList.GetItemCount();
+		for(int i = 0; i < j; i++) {
+			delete (ItemInfo*)ctrlList.GetItemData(i);
+		}
+		ctrlList.DeleteAllItems();
+	}
+	
 private:
+	
+	class ItemInfo {
+	public:
+		enum ItemType {
+			FILE,
+			DIRECTORY
+		} type;
+		
+		union {
+			DirectoryListing::File* file;
+			DirectoryListing::Directory* dir;
+		};
+
+		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) { };
+		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { };
+	};
+	
 	CMenu targetMenu;
 	CMenu targetDirMenu;
 	CMenu fileMenu;
@@ -181,5 +211,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.6 2002/04/28 08:25:50 arnetheduck Exp $
  */

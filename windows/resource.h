@@ -132,11 +132,19 @@
 #define IDC_HELP_FAQ                    1069
 #define IDC_SEARCH_SPY                  1070
 #define IDC_IMPORT_QUEUE                1071
+#define IDC_LATEST                      1071
 #define IDC_PRIVATE_MESSAGE_BEEP        1072
+#define IDC_USE_SYSTEM_ICONS            1072
 #define IDC_PRIVATE_MESSAGE_BEEP_OPEN   1073
-#define IDC_STATUS_IN_CHAT				1074
-#define IDC_SHOW_JOINS					1075
-#define IDC_CHEVRON						1076
+#define IDC_POPUP_PMS                   1073
+#define IDC_STATUS_IN_CHAT              1074
+#define IDC_MIN_UPLOAD_SPEED            1074
+#define IDC_SHOW_JOINS                  1075
+#define IDC_MIN_UPLOAD_SPIN             1075
+#define IDC_CHEVRON                     1076
+#define IDC_OPEN_FILE_LIST              1077
+#define IDC_SEARCH                      1078
+#define IDC_HELP_README					1079
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -146,7 +154,6 @@
 #define IDC_FAVORITES                   32783
 #define IDC_FOLLOW                      32784
 
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
@@ -154,7 +161,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1071
+#define _APS_NEXT_CONTROL_VALUE         1077
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

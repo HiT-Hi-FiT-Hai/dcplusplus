@@ -382,7 +382,7 @@ public:
 		dcassert(getTab());
 		getTab()->setDirty(m_hWnd);
 	}
-
+	
  	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
@@ -393,6 +393,35 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 		
+	// Fix window maximization state issues...code taken from www.codeproject.com, article by david bowen
+	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+	DWORD dwStyle = 0, DWORD dwExStyle = 0,
+	UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
+	{
+		// NOTE: hWndParent is going to become m_hWndMDIClient
+		//  in CMDIChildWindowImpl::Create
+		ATLASSERT(::IsWindow(hWndParent));
+		
+		BOOL bMaximized = FALSE;
+		::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized);
+		
+		if(bMaximized == TRUE) {
+			::SendMessage(hWndParent, WM_SETREDRAW, FALSE, 0);
+		}
+		
+		HWND hWnd = baseClass::Create(hWndParent, rect, szWindowName, dwStyle, dwExStyle, nMenuID, lpCreateParam);
+		
+		if(bMaximized == TRUE) {
+			::ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+			
+			::SendMessage(hWndParent, WM_SETREDRAW, TRUE, 0);
+			::RedrawWindow(hWndParent, NULL, NULL,
+				RDW_INVALIDATE | RDW_ALLCHILDREN);
+		}
+		
+		return hWnd;
+	}
+
 	LRESULT onCreate(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		if(tab)
@@ -430,5 +459,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
  */

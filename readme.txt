@@ -1,4 +1,4 @@
-DC++ 0.163 Readme Version 0.163.1
+DC++ 0.17 Readme Version 0.17.1
 
 --------------------------------------------------
 DC++
@@ -39,6 +39,7 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
    Backup your old DCPlusPlus folder, extract the new version to it
    (overwriting old files) and run it.
    Your old settings will still be there as is your queue.
+  BEWARE: Old (ver <= 0.163) Notepad notes will get lost, format change in 0.17
 
 3 Uninstall
 ----------
@@ -56,6 +57,7 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
   /slots <#>             Changes number of slots to <#>
   /clear                 Clears the main chat windows
   /ts                    Switches timestamps in chat windows on and off
+  /showjoins			Toggles joins/parts messages for the current hub
   /search <string>       Searches for <string>
   /join <hub>            Joins <hub>
   /dc++                  Gives a comment about DC++ and shows the URL where

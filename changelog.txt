@@ -1,4 +1,31 @@
- -- 0.171 2002-04-05 --
+ -- 0.172 2002-04-28 --
+* Changed so that only bz-lists can be downloaded using the extra slot (since they're smaller...)
+* Fixed size column in download queue
+* Added last known hub viewing for users that are offline (not saved between dc++ sessions, this would take too many resources...)
+* Added /-commands to pm windows as well (most of them anyway...)
+* Added /grant to pm window
+* Added /close to close a window
+* Added a very short /help message
+* Added latest version to about dialog box
+* Fixed windows maximization state change
+* Added an option to use system icons when browsing files
+* Added support for bzip2-compressed hub list downloading (also, the full hub list will only be available in bzip2 format to
+  ease the load on the dc++ list server)
+* Added some info to the tooltip when dc++ is minimized to the tray (stats are for transfers only, hub traffic is not counted in...)
+* Changed the slots info at the bottom to show free slots instead of taken (to avoid confusion when viewing the search results...)
+* Added deleting from search results window (use the delete button on the keyboard...)
+* Added option not to popup a new window for pm:s (message is shown in main chat instead unless there's already a pm window open)
+* Added opening of previously downloaded user file lists menu option
+* Fixed some minor UI issues
+* Set default sorting to nick in the users list
+* Fixed a bug that caused some temporary files not to be deleted
+* Increased number of search results returned when searching in active mode to 10 (instead of 5...10 is much better as you can search
+  for 10 disks at a time in a rar/ace-set), passive mode is still 5
+* Added option to automatically open an extra slot if current upload speed is less than a certain kb/sec
+* When sorting users by nick, op's are now put on top/bottom (ascending/descending)
+* Added automatic reindexing of file list every now and then...
+
+ -- 0.171 2002-04-21 --
 * Fixed version number in changelog and exe-file =)
 * Fixed downloading bug
 * Fixed queue frame size column
@@ -6,7 +33,7 @@
 * Fixed sort by file type in file list
 * Fixed missing font settings
 
- -- 0.17 2002-04-04 --
+ -- 0.17 2002-04-20 --
 * Fixed the disk full crash
 * Fixed some minor memory handling issues
 * Fixed sorting in the search frame

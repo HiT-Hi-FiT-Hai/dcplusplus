@@ -29,14 +29,16 @@
 #include "ClientManager.h"
 #include "LogManager.h"
 #include "HubManager.h"
+#include "SettingsManager.h"
+#include "StringTokenizer.h"
 
 void startup() {
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 
 	LogManager::newInstance();
-	ShareManager::newInstance();
 	TimerManager::newInstance();
+	ShareManager::newInstance();
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
 	ClientManager::newInstance();
@@ -56,6 +58,25 @@ void startup() {
 	if(i == SettingsManager::SPEED_LAST) {
 		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
 	}
+
+	// Update server list to use bz2 lists instead...
+	StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
+	string tmp;
+	for(StringIter j = st.getTokens().begin(); j != st.getTokens().end(); ++j) {
+		if(*j == "http://dcpp.lichlord.org/PublicHubList.config") {
+			tmp += string("http://dcpp.lichlord.org/PublicHubList.config.bz2") + ";";
+		} else if(*j == "http://dcpp.lichlord.org/FullList.config") {
+			tmp += string("http://dcpp.lichlord.org/FullList.config.bz2") + ";";
+		} else {
+			tmp += *j + ';';
+		}
+	}
+	
+	if(!tmp.empty()) {
+		tmp.erase(tmp.size()-1);
+	}
+
+	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
 
 	ShareManager::getInstance()->refresh(false, false);
 	HubManager::getInstance()->refresh();
@@ -83,6 +104,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.11 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.12 2002/04/28 08:25:50 arnetheduck Exp $
  */
 

@@ -21,18 +21,19 @@
 #include "Resource.h"
 
 #include "PrivateFrame.h"
+#include "SearchFrm.h"
 
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
+#include "../client/UploadManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
@@ -136,19 +137,82 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 
 void PrivateFrame::onEnter()
 {
-	if(user->isOnline()) {
-		char* message;
-		
-		if(ctrlMessage.GetWindowTextLength() > 0) {
-			message = new char[ctrlMessage.GetWindowTextLength()+1];
-			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-			sendMessage(string(message, ctrlMessage.GetWindowTextLength()));
-			delete message;
-			ctrlMessage.SetWindowText("");
-		} 
-	} else {
-		ctrlStatus.SetText(0, CSTRING(USER_WENT_OFFLINE));
-	}
+	char* message;
+	
+	if(ctrlMessage.GetWindowTextLength() > 0) {
+		message = new char[ctrlMessage.GetWindowTextLength()+1];
+		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
+		string s(message, ctrlMessage.GetWindowTextLength());
+		delete message;
+
+		// Process special commands
+		if(s[0] == '/') {
+			string param;
+			int i = s.find(' ');
+			if(i != string::npos) {
+				param = s.substr(i+1);
+				s = s.substr(1, i - 1);
+			} else {
+				s = s.substr(1);
+			}
+
+			if(stricmp(s.c_str(), "refresh")==0) {
+				try {
+					ShareManager::getInstance()->setDirty();
+					ShareManager::getInstance()->refresh(true);
+					addClientLine(STRING(FILE_LIST_REFRESHED));
+				} catch(ShareException e) {
+					addClientLine(e.getError());
+				}
+			} else if(stricmp(s.c_str(), "slots")==0) {
+				int j = Util::toInt(param);
+				if(j > 0) {
+					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
+					addClientLine(STRING(SLOTS_SET));
+					ClientManager::getInstance()->infoUpdated();
+				} else {
+					addClientLine(STRING(INVALID_NUMBER_OF_SLOTS));
+				}
+			} else if(stricmp(s.c_str(), "search") == 0) {
+				if(!param.empty()) {
+					SearchFrame* pChild = new SearchFrame();
+					pChild->setTab(getTab());
+					pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST);
+					pChild->CreateEx(m_hWndMDIClient);
+				} else {
+					addClientLine(STRING(SPECIFY_SEARCH_STRING));
+				}
+			} else if(stricmp(s.c_str(), "clear") == 0) {
+				ctrlClient.SetWindowText("");
+			} else if(stricmp(s.c_str(), "away") == 0) {
+				if(Util::getAway()) {
+					Util::setAway(false);
+					addClientLine(STRING(AWAY_MODE_OFF));
+				} else {
+					Util::setAway(true);
+					Util::setAwayMessage(param);
+					addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
+				}
+			} else if(stricmp(s.c_str(), "back") == 0) {
+				Util::setAway(false);
+				addClientLine(STRING(AWAY_MODE_OFF));
+			} else if(stricmp(s.c_str(), "grant") == 0) {
+				UploadManager::getInstance()->reserveSlot(getUser());
+				addClientLine(STRING(SLOT_GRANTED));
+			} else if(stricmp(s.c_str(), "close") == 0) {
+				SendMessage(WM_CLOSE);
+			} else if(stricmp(s.c_str(), "help") == 0) {
+				addLine("/refresh, /slots #, /search <string>, /clear, /away <msg>, /back, /grant, /close, /help");
+			}
+		} else {
+			if(user->isOnline()) {
+				sendMessage(s);
+			} else {
+				ctrlStatus.SetText(0, CSTRING(USER_WENT_OFFLINE));
+			}
+		}
+		ctrlMessage.SetWindowText("");
+	} 
 }
 
 void PrivateFrame::addLine(const string& aLine) {
@@ -203,10 +267,9 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
-
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
  */
 
 
