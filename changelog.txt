@@ -63,6 +63,9 @@
 * Some UPnP fixes (thanks nils maier)
 * ADL Search byte prefix fixes, might screw up your adl search settings on first load (thanks ullner)
 * Linux download path fix (thanks jens oknelid)
+* Added purge button for search history (thanks sulan)
+* Added column reorder to file listing (thanks ullner)
+* Fixed alt source download starts (thanks paka)
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

@@ -158,6 +158,7 @@
 		<String Name="HubName">Name</String>
 		<String Name="HubPassword">Hub password</String>
 		<String Name="HubUsers">Users</String>
+		<String Name="IgnoreTthSearches">Ignore TTH searches</String>
 		<String Name="IgnoredMessage">Ignored message: </String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
@@ -297,6 +298,7 @@
 		<String Name="PrivateMessageFrom">Private message from </String>
 		<String Name="Properties">&amp;Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
+		<String Name="Purge">Purge</String>
 		<String Name="QuickConnect">Quick Connect</String>
 		<String Name="Rating">Rating</String>
 		<String Name="Ratio">Ratio</String>
@@ -425,6 +427,7 @@
 		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
+		<String Name="SettingsSearchHistory">Search history</String>
 		<String Name="SettingsSelectTextFace">Select &amp;text style</String>
 		<String Name="SettingsSelectWindowColor">Select &amp;window color</String>
 		<String Name="SettingsSendUnknownCommands">Send unknown /commands to the hub</String>

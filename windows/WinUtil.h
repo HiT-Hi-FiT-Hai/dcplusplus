@@ -121,7 +121,7 @@ public:
 			HWND hWnd = frame->m_hWnd;
 			if(frame->MDIGetActive() != hWnd) {
 				frame->MDIActivate(hWnd);
-			} else {
+			} else if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
 				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
 				frame->MDINext(hWnd);
 				hWnd = frame->MDIGetActive();
@@ -310,5 +310,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.41 2005/01/06 18:20:05 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.42 2005/02/04 14:40:50 arnetheduck Exp $
  */

@@ -31,6 +31,11 @@
 #include "LineDlg.h"
 #include "../client/MerkleTree.h"
 
+int DirectoryListingFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_TYPE, COLUMN_EXACTSIZE, COLUMN_SIZE, COLUMN_TTH };
+int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
+
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
+
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
 	if(BOOLSETTING(POPUNDER_FILELIST))
@@ -67,7 +72,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
@@ -76,11 +81,14 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetBkColor(WinUtil::bgColor);
 	ctrlTree.SetTextColor(WinUtil::textColor);
 	
-	ctrlList.InsertColumn(COLUMN_FILENAME, CTSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
-	ctrlList.InsertColumn(COLUMN_TYPE, CTSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
-	ctrlList.InsertColumn(COLUMN_EXACTSIZE, CTSTRING(EXACT_SIZE), LVCFMT_RIGHT, 100, COLUMN_EXACTSIZE);
-	ctrlList.InsertColumn(COLUMN_SIZE, CTSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
-	ctrlList.InsertColumn(COLUMN_TTH, CTSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
+	WinUtil::splitTokens(columnIndexes, SETTING(DIRECTORLISTINGFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(DIRECTORLISTINGFRAME_WIDTHS), COLUMN_LAST);
+	for(int j = 0; j < COLUMN_LAST; j++) 
+	{
+		int fmt = (j == COLUMN_SIZE) || (j == COLUMN_EXACTSIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlList.InsertColumn(j, CTSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+	}
+	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
 	ctrlList.setSortColumn(COLUMN_FILENAME);
 	
@@ -947,5 +955,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.52 2005/02/01 16:41:45 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.53 2005/02/04 14:40:51 arnetheduck Exp $
  */

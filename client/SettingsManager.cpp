@@ -41,7 +41,7 @@ const string SettingsManager::settingTags[] =
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
-	"LogFormatSystem", "LogFormatStatus",
+	"LogFormatSystem", "LogFormatStatus", "DirectoryListingFrameOrder", "DirectoryListingFrameWidths",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -61,7 +61,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", 
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -193,7 +193,8 @@ SettingsManager::SettingsManager()
 	setDefault(ADVANCED_RESUME, true);
 	setDefault(ADC_DEBUG, false);
 	setDefault(TOGGLE_ACTIVE_WINDOW, true);
-
+	setDefault(SEARCH_HISTORY, 10);
+	
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
@@ -338,6 +339,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.113 2005/02/01 16:41:36 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.114 2005/02/04 14:40:58 arnetheduck Exp $
  */
 

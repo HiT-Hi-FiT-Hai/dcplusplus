@@ -56,6 +56,12 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	searchBoxContainer.SubclassWindow(ctrlSearchBox.m_hWnd);
 	ctrlSearchBox.SetExtendedUI();
 	
+	ctrlPurge.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_PURGE);
+	ctrlPurge.SetWindowText(CTSTRING(PURGE));
+	ctrlPurge.SetFont(WinUtil::systemFont);
+	purgeContainer.SubclassWindow(ctrlPurge.m_hWnd);
+	
 	ctrlMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
 	modeContainer.SubclassWindow(ctrlMode.m_hWnd);
@@ -281,11 +287,12 @@ void SearchFrame::onEnter() {
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
 	{
-		if(ctrlSearchBox.GetCount() > 9)
-			ctrlSearchBox.DeleteString(9);
+		int i = SETTING(SEARCH_HISTORY)-1;
+		if(ctrlSearchBox.GetCount() > i) 
+			ctrlSearchBox.DeleteString(i);
 		ctrlSearchBox.InsertString(0, s.c_str());
 
-		while(lastSearches.size() > 9) {
+		while(lastSearches.size() > (int64_t)i) {
 			lastSearches.erase(lastSearches.begin());
 		}
 		lastSearches.push_back(s);
@@ -642,6 +649,13 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		searchLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
 
+		// "Purge"
+		rc.right = rc.left + spacing;
+		rc.left = lMargin;
+		rc.top += 25;
+		rc.bottom = rc.top + 21;
+		ctrlPurge.MoveWindow(rc);
+
 		// "Size"
 		int w2 = width - rMargin - lMargin;
 		rc.top += spacing;
@@ -653,14 +667,11 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		rc.left = rc.right + lMargin;
 		rc.right += w2/3;
-		rc.bottom -= comboH;
 		ctrlSize.MoveWindow(rc);
 
 		rc.left = rc.right + lMargin;
 		rc.right = width - rMargin;
-		rc.bottom += comboH;
 		ctrlSizeMode.MoveWindow(rc);
-		rc.bottom -= comboH;
 
 		// "File type"
 		rc.left = lMargin;
@@ -804,7 +815,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 
 void SearchFrame::onTab(bool shift) {
 	HWND wnds[] = {
-		ctrlSearch.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
+		ctrlSearch.m_hWnd, ctrlPurge.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
 		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlTTH.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
 		ctrlResults.m_hWnd
 	};
@@ -1081,8 +1092,15 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 	return 0;
 }
 
+LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
+	while(ctrlSearchBox.GetCount() > 0){
+			ctrlSearchBox.DeleteString(0);
+	}
+	return 0;
+}
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.82 2005/02/01 16:41:44 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.83 2005/02/04 14:40:50 arnetheduck Exp $
  */

@@ -80,6 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
 		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
+		COMMAND_ID_HANDLER(IDC_PURGE, onPurge)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
@@ -98,6 +99,7 @@ public:
 	SearchFrame() : 
 	searchBoxContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		searchContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
+		purgeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		sizeContainer(WC_EDIT, this, SEARCH_MESSAGE_MAP), 
 		modeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		sizeModeContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
@@ -135,6 +137,7 @@ public:
 	LRESULT onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
@@ -394,6 +397,7 @@ private:
 	CComboBox ctrlSizeMode;
 	CComboBox ctrlFiletype;
 	CButton ctrlDoSearch;
+	CButton ctrlPurge;
 	
 	CContainedWindow searchContainer;
 	CContainedWindow searchBoxContainer;
@@ -407,6 +411,7 @@ private:
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
 	CContainedWindow tthContainer;
+	CContainedWindow purgeContainer;
 	
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel;
 	CButton ctrlSlots, ctrlShowUI, ctrlTTH;
@@ -479,6 +484,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.51 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.52 2005/02/04 14:40:51 arnetheduck Exp $
  */
 

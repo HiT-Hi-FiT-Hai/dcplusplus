@@ -139,6 +139,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
+		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::DIRECTORLISTINGFRAME_ORDER, SettingsManager::DIRECTORLISTINGFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 		bHandled = FALSE;
 		return 0;
 	}
@@ -311,11 +312,14 @@ private:
 	int statusSizes[8];
 	
 	DirectoryListing* dl;
+
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
 };
 
 #endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.47 2005/02/01 16:41:44 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.48 2005/02/04 14:40:50 arnetheduck Exp $
  */

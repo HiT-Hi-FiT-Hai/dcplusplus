@@ -1249,6 +1249,7 @@ void QueueLoader::endTag(const string& name, const string&) {
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 	bool added = false;
+	bool wantConnection = false;
 
 	if(BOOLSETTING(AUTO_SEARCH) && sr->getTTH() != NULL) {
 		Lock l(cs);
@@ -1265,7 +1266,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 
 			if(found) {
 				try {
-					addSource(qi, sr->getFile(), sr->getUser(), 0, false);
+					wantConnection = addSource(qi, sr->getFile(), sr->getUser(), 0, false);
 					added = true;
 				} catch(const Exception&) {
 					// ...
@@ -1281,6 +1282,9 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 		} catch(const Exception&) {
 			// ...
 		}
+	if(added && sr->getUser()->isOnline() && wantConnection)
+		ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
+
 }
 
 // ClientManagerListener
@@ -1311,5 +1315,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.119 2005/02/01 16:41:35 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.120 2005/02/04 14:40:57 arnetheduck Exp $
  */

@@ -37,6 +37,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
 	{ IDC_SETTINGS_MBS, ResourceManager::MiBPS },
 	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY }, 
+	{ IDC_SETTINGS_SEARCH_HISTORY, ResourceManager::SETTINGS_SEARCH_HISTORY }, 
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -46,6 +47,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
 	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },
+	{ IDC_SEARCH_HISTORY, SettingsManager::SEARCH_HISTORY, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -53,6 +55,11 @@ LRESULT Advanced3Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 {
 	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items, 0, 0);
+
+	CUpDownCtrl spin;
+	spin.Attach(GetDlgItem(IDC_SEARCH_HISTORY_SPIN));
+	spin.SetRange32(0, 100);
+	SetDlgItemText(IDC_SEARCH_HISTORY,Text::toT(Util::toString( SETTING(SEARCH_HISTORY))).c_str());
 
 	// Do specialized reading here
 	return TRUE;

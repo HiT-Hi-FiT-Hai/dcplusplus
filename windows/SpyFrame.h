@@ -35,7 +35,7 @@ class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyF
 	private ClientManagerListener, private TimerManagerListener
 {
 public:
-	SpyFrame() : total(0), cur(0), closed(false), ignoretth(false), ignoretthContainer(WC_BUTTON, this, IGNORETTH_MESSAGE_MAP) {
+	SpyFrame() : total(0), cur(0), closed(false), ignoreTth(false), ignoreTthContainer(WC_BUTTON, this, IGNORETTH_MESSAGE_MAP) {
 		ZeroMemory(perSecond, sizeof(perSecond));
 		ClientManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this);
@@ -69,7 +69,7 @@ public:
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(IGNORETTH_MESSAGE_MAP)
-		MESSAGE_HANDLER(BM_SETCHECK, onIgnoretth)
+		MESSAGE_HANDLER(BM_SETCHECK, onIgnoreTth)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -81,9 +81,9 @@ public:
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 
-	LRESULT onIgnoretth(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onIgnoreTth(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
-		ignoretth = (wParam == BST_CHECKED);
+		ignoreTth = (wParam == BST_CHECKED);
 		return 0;
 	}
 	
@@ -97,15 +97,15 @@ private:
 
 	ExListViewCtrl ctrlSearches;
 	CStatusBarCtrl ctrlStatus;
-	CContainedWindow ignoretthContainer;
-	CButton ctrlIgnoretth;
+	CContainedWindow ignoreTthContainer;
+	CButton ctrlIgnoreTth;
 	int total;
 	int perSecond[AVG_TIME];
 	int cur;
 	tstring searchString;
 
 	bool closed;
-	bool ignoretth;
+	bool ignoreTth;
 	
 	// ClientManagerListener
 	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
@@ -118,6 +118,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.22 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.23 2005/02/04 14:40:51 arnetheduck Exp $
  */
 

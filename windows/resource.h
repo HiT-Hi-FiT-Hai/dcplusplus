@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\Programmering\C++\test\DCPlusPlus.rc
+// Used by g:\Projekt\Nymapp\Kopia av dcplusplus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -169,6 +169,7 @@
 #define IDC_DEFAULT_AWAY_MESSAGE        1116
 #define IDC_MAX_TAB_ROWS                1117
 #define IDC_CLOSE_DISCONNECTED          1118
+#define IDC_SEARCH_HISTORY              1118
 #define IDC_OPEN_FOLDER                 1119
 #define IDC_OPEN_FILE                   1120
 #define IDC_FILE_ADL_SEARCH             1121
@@ -229,6 +230,7 @@
 #define IDC_SETTINGS_WRITE_BUFFER       1176
 #define IDC_SETTINGS_MAX_TAB_ROWS       1177
 #define IDC_SETTINGS_USER_MENU          1178
+#define IDC_SETTINGS_SEARCH_HISTORY     1178
 #define IDC_SETTINGS_KB                 1179
 #define IDC_SETTINGS_B                  1180
 #define IDC_SETTINGS_KBPS               1181
@@ -327,6 +329,8 @@
 #define IDC_SETTINGS_FILELIST_MENU      1278
 #define IDC_SHOW_LAST_LINES_LOG         1279
 #define IDC_SETTINGS_PM_HISTORY         1280
+#define IDC_SEARCH_HISTORY_SPIN         1281
+#define IDC_PURGE                       1282
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -366,7 +370,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1281
+#define _APS_NEXT_CONTROL_VALUE         1282
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

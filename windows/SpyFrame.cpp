@@ -43,10 +43,11 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextColor(WinUtil::textColor);
 
-	ctrlIgnoretth.Create(ctrlStatus.m_hWnd, rcDefault, _T("Ignore TTH searches"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlIgnoretth.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlIgnoretth.SetCheck(0);
-	ignoretthContainer.SubclassWindow(ctrlIgnoretth.m_hWnd);
+	ctrlIgnoreTth.Create(ctrlStatus.m_hWnd, rcDefault, CTSTRING(IGNORE_TTH_SEARCHES), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	ctrlIgnoreTth.SetButtonStyle(BS_AUTOCHECKBOX, false);
+	ctrlIgnoreTth.SetFont(WinUtil::systemFont);
+	ctrlIgnoreTth.SetCheck(false);
+	ignoreTthContainer.SubclassWindow(ctrlIgnoreTth.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(SPYFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(SPYFRAME_WIDTHS), COLUMN_LAST);
@@ -119,7 +120,7 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		ctrlStatus.SetParts(5, w);
 
 		ctrlStatus.GetRect(0, sr);
-		ctrlIgnoretth.MoveWindow(sr);
+		ctrlIgnoreTth.MoveWindow(sr);
 	}
 
 	ctrlSearches.MoveWindow(&rect);
@@ -206,7 +207,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 };
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
-	if(ignoretth && s.compare(0, 4, "TTH:") == 0)
+	if(ignoreTth && s.compare(0, 4, "TTH:") == 0)
 		return;
 	tstring* x = new tstring(Text::toT(s));
 	tstring::size_type i = 0;
@@ -230,5 +231,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.31 2005/01/12 01:16:48 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.32 2005/02/04 14:40:50 arnetheduck Exp $
  */
