@@ -27,7 +27,7 @@
 
 template<class Hasher>
 struct HashValue : FastAlloc<HashValue<Hasher> >{
-	enum { SIZE = Hasher::HASH_SIZE };
+	static const size_t SIZE = Hasher::HASH_SIZE;
 
 	HashValue() { };
 	HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
@@ -47,5 +47,5 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 
 /**
 * @file
-* $Id: HashValue.h,v 1.4 2004/03/09 12:20:19 arnetheduck Exp $
+* $Id: HashValue.h,v 1.5 2004/03/27 16:32:57 arnetheduck Exp $
 */

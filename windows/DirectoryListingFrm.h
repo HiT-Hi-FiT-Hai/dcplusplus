@@ -204,6 +204,9 @@ private:
 			if(utf8)
 				Util::toAcp(columns[COLUMN_FILENAME]);
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
+			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
+				columns[COLUMN_TYPE].erase(0, 1);
+
 			columns[COLUMN_SIZE] = Util::formatBytes(f->getSize());
 			if(f->getTTH() != NULL)
                 columns[COLUMN_TTH] = f->getTTH()->toBase32();
@@ -280,5 +283,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.29 2004/03/19 09:29:06 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.30 2004/03/27 16:32:57 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
- -- 0.30x --
+ -- 0.400 2004-03-27 --
 * Fixed escape in user commands (thanks garg)
 * Probably fixed search frame hang
 * Exact size in queue frame (thanks cologic)
@@ -20,6 +20,7 @@
 * Bolds for defaults in some menus (thanks garg)
 * Fixed random filelist crash
 * Performance improvement in background match queue
+* Dupe file check done by TTH value
 
 
  -- 0.307 2004-03-10 --

@@ -392,7 +392,6 @@ int ShareManager::run() {
 		listN++;
 
 		try {
-			Directory::DupeMap dupes;
 			string indent;
 
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
@@ -402,7 +401,7 @@ int ShareManager::run() {
 				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
 
 				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-					i->second->toString(tmp, &newXmlFile, dupes, indent);
+					i->second->toString(tmp, &newXmlFile, indent);
 				}
 				newXmlFile.write("</FileListing>");
 				newXmlFile.flush();
@@ -469,7 +468,7 @@ static const string& escaper(const string& n, string& tmp) {
 }
 
 #define LITERAL(n) n, sizeof(n)-1
-void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeMap& dupes, string& indent) {
+void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, string& indent) {
 	string tmp2;
 
 	tmp.append(indent);
@@ -483,27 +482,21 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeM
 	
 	indent += '\t';
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toString(tmp, xmlFile, dupes, indent);
+		i->second->toString(tmp, xmlFile, indent);
 	}
 	
 	Directory::File::Iter j = files.begin();
 	while(j != files.end()) {
-		pair<DupeIter, DupeIter> p = dupes.equal_range(j->getName());
-		DupeIter k = p.first;
+		const Directory::File* f = &(*j);
 		bool dupe = false;
-		for(; k != p.second; ++k) {
-			if(k->second == j->getSize()) {
-				dcdebug("SM::D::toString Dupe found: %s (" I64_FMT " bytes)\n", k->first.c_str(), j->getSize());
-				LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + j->getName() + " (" + STRING(SIZE) + ": " + Util::toString(j->getSize()) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + j->getParent()->getName() + "\")");
-				dupe = true;
-				break;
-			}
+		if(f->getTTH() != NULL) {
+			dcassert(ShareManager::getInstance()->tthIndex.find(f->getTTH()) != ShareManager::getInstance()->tthIndex.end());
+			dupe = (&(*ShareManager::getInstance()->tthIndex[f->getTTH()]) != f);
 		}
 
 		if(dupe) {
-			size-=j->getSize();
-		} else {
-			dupes.insert(make_pair(j->getName(), j->getSize()));
+			size-=f->getSize();
+			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + f->getName() + " (" + STRING(SIZE) + ": " + Util::toString(f->getSize()) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + f->getParent()->getName() + "\")");
 		}
 
 		if(dupe && BOOLSETTING(REMOVE_DUPES)) {
@@ -511,20 +504,20 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeM
 				files.erase(j++);
 		} else {
 			tmp.append(indent);
-			tmp.append(j->getName());
+			tmp.append(f->getName());
 			tmp.append(LITERAL("|"));
-			tmp.append(Util::toString(j->getSize()));
+			tmp.append(Util::toString(f->getSize()));
 			tmp.append(LITERAL("\r\n"));
 
 			xmlFile->write(indent);
 			xmlFile->write(LITERAL("<File Name=\""));
-			xmlFile->write(escaper(j->getName(), tmp2));
+			xmlFile->write(escaper(f->getName(), tmp2));
 			xmlFile->write(LITERAL("\" Size=\""));
-			xmlFile->write(Util::toString(j->getSize()));
-			if(j->getTTH()) {
+			xmlFile->write(Util::toString(f->getSize()));
+			if(f->getTTH()) {
 				tmp2.clear();
 				xmlFile->write(LITERAL("\" TTH=\""));
-				xmlFile->write(j->getTTH()->toBase32(tmp2));
+				xmlFile->write(f->getTTH()->toBase32(tmp2));
 			}
 			xmlFile->write(LITERAL("\"/>\r\n"));
 
@@ -875,6 +868,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.80 2004/03/24 20:22:13 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.81 2004/03/27 16:32:57 arnetheduck Exp $
  */
 

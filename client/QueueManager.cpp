@@ -596,15 +596,20 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 				equal = (*qi->getTTH() == *df->getTTH());
 			} else {
 				if(Util::stricmp(utfEscaper(df->getName()), qi->getTargetFileName()) == 0) {
-					dcassert(df->getSize() == qi->getSize());			
-					try {
-						addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
-						matches++;
-					} catch(const Exception&) {
-					}
+					dcassert(df->getSize() == qi->getSize());	
+					equal = true;
+
 					if(df->getTTH() != NULL) {
+						dcassert(qi->getTTH() == NULL);
 						qi->setTTH(new TTHValue(*df->getTTH()));
 					}
+				}
+			}
+			if(equal) {
+				try {
+					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
+					matches++;
+				} catch(const Exception&) {
 				}
 			}
 		}
@@ -1322,5 +1327,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.80 2004/03/27 11:51:33 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.81 2004/03/27 16:32:57 arnetheduck Exp $
  */
