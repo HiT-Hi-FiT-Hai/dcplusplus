@@ -123,8 +123,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
-		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onMenuHelp)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
+		COMMAND_ID_HANDLER(IDC_OPEN_OWN_LIST, onOpenOwnList)
 		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
@@ -168,6 +169,7 @@ public:
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onOpenOwnList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -367,7 +369,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.48 2004/10/26 13:53:59 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.49 2004/11/15 13:53:43 arnetheduck Exp $
  */
 
  

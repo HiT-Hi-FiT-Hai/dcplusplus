@@ -30,13 +30,13 @@ class PointerBase
 public:
 	void inc() throw() {
 		dcassert(ref>=0);
-		Thread::safeInc(&ref);
+		Thread::safeInc(ref);
 	}
 
 	void dec() throw() {
 		dcassert(ref>0);
 		
-		if ( (Thread::safeDec(&ref)) == 0 ) {
+		if ( (Thread::safeDec(ref)) == 0 ) {
 			//dcdebug("Smart Object at 0x%08x deleted\n", this);
 			delete this;
 		}
@@ -53,7 +53,7 @@ protected:
 	}
 
 private:
-	long ref;
+	volatile long ref;
 };
 
 /**
@@ -166,6 +166,6 @@ struct DeleteFunction {
 
 /**
  * @file
- * $Id: Pointer.h,v 1.15 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.16 2004/11/15 13:53:45 arnetheduck Exp $
  */
 

@@ -69,31 +69,8 @@ public:
 		return false;
 	}
 	
-	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
-		Lock l(cs);
-
-		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if((*i)->isConnected()) {
-				(*i)->search(aSizeMode, aSize, aFileType, aString);
-			}
-		}
-	}
-
-	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
-		Lock l(cs);
-
-		for(StringIter it = who.begin(); it != who.end(); ++it) {
-			string& client = *it;
-			for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-				Client* c = *j;
-				if(c->isConnected() && c->getIpPort() == client) {
-					c->search(aSizeMode, aSize, aFileType, aString);
-
-				}
-			}
-		}
-	}
-
+	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
+	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	void infoUpdated();
 
 	User::Ptr getUser(const CID& cid, bool createUser);
@@ -174,6 +151,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.51 2004/11/02 09:18:55 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.52 2004/11/15 13:53:45 arnetheduck Exp $
  */
 

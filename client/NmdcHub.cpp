@@ -656,7 +656,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	AutoArray<char> buf((char*)NULL);
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-	string tmp = toNmdc(aString);
+	string tmp = toNmdc((aFileType == SearchManager::TYPE_TTH) ? "TTH:" + aString : aString);
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.22 2004/11/13 11:54:09 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.23 2004/11/15 13:53:45 arnetheduck Exp $
  */
 

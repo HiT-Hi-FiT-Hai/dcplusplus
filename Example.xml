@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.666" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.6665" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -95,6 +95,7 @@
 		<String Name="DuplicateMatch">Dupe matched against: </String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
+		<String Name="EditAccel">&amp;Edit</String>
 		<String Name="Email">E-Mail</String>
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
 		<String Name="EnterPassword">Please enter a password</String>
@@ -223,6 +224,7 @@
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenDownloadsDir">Open downloads directory</String>
 		<String Name="MenuOpenFileList">Open file list...	Ctrl+L</String>
+		<String Name="MenuOpenOwnList">Open own list</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReadme">Readme / Newbie help</String>
@@ -439,6 +441,7 @@
 		<String Name="SettingsUploadsSlots">Upload slots</String>
 		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
 		<String Name="SettingsUrlMagnet">Register with Windows to handle magnet: URI links</String>
+		<String Name="SettingsUseCtrlForLineHistory">Use CTRL for line history</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUseUpnp">Use UPnP Control</String>
@@ -450,6 +453,7 @@
 		<String Name="Size">Size</String>
 		<String Name="SizeMax">Max Size</String>
 		<String Name="SizeMin">Min Size</String>
+		<String Name="SkipRename">New virtual name matches old name, skipping...</String>
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>

@@ -17,6 +17,10 @@
 		<param name="Local" value="changelog.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Chat Commands">
+		<param name="Local" value="chat_commands.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Windows">
 		</OBJECT>
 	<UL>

@@ -293,12 +293,9 @@ void SearchFrame::onEnter() {
 	ctrlStatus.SetText(2, _T(""));
 	ctrlStatus.SetText(3, _T(""));
 	droppedResults = 0;
-	isHash = (ftype == SearchManager::TYPE_HASH);
+	isHash = (ftype == SearchManager::TYPE_TTH);
 
 	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
-
-	if(ftype == SearchManager::TYPE_HASH)
-		s = _T("TTH:") + s;
 
 	SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
 		(SearchManager::TypeModes)ftype, mode);
@@ -1028,5 +1025,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.73 2004/11/11 12:49:47 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.74 2004/11/15 13:53:43 arnetheduck Exp $
  */

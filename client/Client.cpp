@@ -61,23 +61,23 @@ void Client::connect() {
 void Client::updateCounts(bool aRemove) {
 	// We always remove the count and then add the correct one if requested...
 	if(countType == COUNT_NORMAL) {
-		Thread::safeDec(&counts.normal);
+		Thread::safeDec(counts.normal);
 	} else if(countType == COUNT_REGISTERED) {
-		Thread::safeDec(&counts.registered);
+		Thread::safeDec(counts.registered);
 	} else if(countType == COUNT_OP) {
-		Thread::safeDec(&counts.op);
+		Thread::safeDec(counts.op);
 	}
 	countType = COUNT_UNCOUNTED;
 
 	if(!aRemove) {
 		if(getOp()) {
-			Thread::safeInc(&counts.op);
+			Thread::safeInc(counts.op);
 			countType = COUNT_OP;
 		} else if(registered) {
-			Thread::safeInc(&counts.registered);
+			Thread::safeInc(counts.registered);
 			countType = COUNT_REGISTERED;
 		} else {
-			Thread::safeInc(&counts.normal);
+			Thread::safeInc(counts.normal);
 			countType = COUNT_NORMAL;
 		}
 	}
@@ -100,5 +100,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.78 2004/11/11 12:49:44 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.79 2004/11/15 13:53:45 arnetheduck Exp $
  */

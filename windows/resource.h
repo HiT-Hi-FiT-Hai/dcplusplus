@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by f:\Programmering\C++\dcplusplusdiff\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -312,6 +312,7 @@
 #define IDC_LIST_LIST                   1262
 #define IDC_RENAME                      1263
 #define IDC_LIST_EDIT                   1264
+#define IDC_OPEN_OWN_LIST				1265
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -350,7 +351,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1265
+#define _APS_NEXT_CONTROL_VALUE         1266
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

@@ -29,7 +29,7 @@
 
 #include "UserConnection.h"
 
-ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
+ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
@@ -574,5 +574,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.80 2004/11/09 20:29:26 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.81 2004/11/15 13:53:45 arnetheduck Exp $
  */

@@ -139,9 +139,9 @@ public:
 protected:
 	struct Counts {
 		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
-		long normal;
-		long registered;
-		long op;
+		volatile long normal;
+		volatile long registered;
+		volatile long op;
 		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; };
 	};
 
@@ -195,5 +195,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.93 2004/11/11 12:49:44 arnetheduck Exp $
+ * $Id: Client.h,v 1.94 2004/11/15 13:53:45 arnetheduck Exp $
  */

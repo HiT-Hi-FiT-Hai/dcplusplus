@@ -163,6 +163,8 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	item.cchTextMax = sizeof(buf);
 	item.pszText = buf;
 
+	bool setDirty = false;
+
 	int i = -1;
 	while((i = ctrlDirectories.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
@@ -177,16 +179,21 @@ LRESULT UploadPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 			if(virt.DoModal(m_hWnd) == IDOK) {
 				if (Util::stricmp(buf, virt.line) != 0) {
 					ShareManager::getInstance()->renameDirectory(Text::fromT(buf), Text::fromT(virt.line));
-					// Refresh the share. This is a blocking refresh. Might cause problems?
-					ShareManager::getInstance()->refresh(true, false, true);
-					ShareManager::getInstance()->setDirty();
 					ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
+
+					setDirty = true;
+				} else {
+					MessageBox(CTSTRING(SKIP_RENAME), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONINFORMATION | MB_OK);
 				}
 			}
 		} catch(const ShareException& e) {
 			MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 		}
 	}
+
+	if( setDirty )
+		ShareManager::getInstance()->setDirty();
+
 	return 0;
 }
 
@@ -254,6 +261,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.29 2004/11/13 11:54:11 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.30 2004/11/15 13:53:43 arnetheduck Exp $
  */
 

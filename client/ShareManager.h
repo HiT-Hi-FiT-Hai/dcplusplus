@@ -79,6 +79,11 @@ public:
 		hits += aHits;
 	}
 
+	string getOwnListFile() {
+		generateXmlList();
+		return getBZXmlFile();
+	}
+
 	bool isTTHShared(TTHValue* tth){
 		HashFileIter i = tthIndex.find(tth);
 		return (i != tthIndex.end());
@@ -295,6 +300,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.65 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.66 2004/11/15 13:53:45 arnetheduck Exp $
  */
 

@@ -1,13 +1,64 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-  <meta content="en-us" http-equiv="Content-Language">  <meta http-equiv="content-type" content="text/html;charset=utf-8">
+  <meta content="en-us" http-equiv="Content-Language">
+  <meta http-equiv="content-type" content="text/html;charset=utf-8">
   <link href="office11.css" rel="stylesheet" type="text/css">
-  <title>Changelog</title>  <style type="text/css">
+  <title>Changelog</title>
+  <style type="text/css">
     li { margin-left: auto; margin: 0em 0em 0em 0em; }
   </style>
-</head><body><h1>DC++ Changelog</h1>
+</head>
+<body>
+<h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.666 <span style="color: gray;">(2004-11-03)</span></h2>
+<ul>
+  <li>[bug 173] Fixed copy nick to clipboard (thanks trem)</li>
+  <li>Removed some old code (thanks garg)</li>
+  <li>Added tth to log codes (thanks garg)</li>
+  <li>Added # of locally filtered results to search frame (thanks garg)</li>
+  <li>Fixed a crash in the upnp code</li>
+  <li>Fixed wide formatting of time (thanks garg)</li>
+  <li>[bug 166] Added local filtering of searches with "-" in front of the search term (thanks cologic)</li>
+  <li>Fixed a missing hubframe stats bug (thanks trem)</li>
+  <li>[bug 87] TTH's are now correctly searched for in search spy (thanks trem)</li>
+  <li>[bug 256] Fixed an issue with utf8 user commands (thanks trem)</li>
+  <li>Moved to a less intrusive build procedure where stlport and wtl are local to the DC++ build (see compile.txt)</li>
+  <li>Added /log to show log for current hub / user (thanks garg)</li>
+  <li>More internationalization (thanks garg)</li>
+  <li>Updated some template code (thanks farcry)</li>
+  <li>Extended log command (thanks ullner)</li>
+  <li>[bug 212] Fixed issue with utf-8 nicks during login to some hubs (thanks garg)</li>
+  <li>Fixed issue with utf-8 time formatting for certain languages in certain locales</li>
+  <li>Removed search optimisation obsoleted by tth's and bloom filters (those of you with a large number of files in your share, post on the forum if you notice any big increase in CPU usage)</li>
+  <li>[bug 69] Added option not to download files already in share (by TTH) (thanks TPO)</li>
+  <li>Help file work (garg, ullner)</li>
+  <li>Added petabytes (PiB) (thanks garg)</li>
+  <li>Clicking on active tab will deactivate it (thanks garg)</li>
+  <li>[bug 227] Fixed an issue with loading invalid virtual names when upgrading (thanks garg)</li>
+  <li>[bug 256] Fixed another issue with user commands (thanks garg)</li>
+  <li>Updated to WTL 7.5.4291</li>
+  <li>[bug 183] Hopefully fixed a few issues with w9x and Unicode</li>
+  <li>Fixed common control initialization</li>
+  <li>Unix makefile now generates a shared lib (thanks jeremy huddleston)</li>
+  <li>Slight memory save for hash database</li>
+  <li>[bug 130] Added favorite hub removal confirmation option (thanks ullner)</li>
+  <li>[bug 5] Fixed broken redirect (thanks garg)</li>
+  <li>Added spy frame column saving (thanks garg)</li>
+  <li>ADL Search autoqueue saved now (thanks garg)</li>
+  <li>Window minimization issue fix (thanks garg)</li>
+  <li>[bug 129] Fixed some issues with downloading &gt;4GiB files</li>
+  <li>[bug 15] ADL Search goto directory fixed (thanks garg)</li>
+  <li>Some fixes for compiling on osx (thanks jonathan jansson)</li>
+  <li>Removed Makedefs in favour of a python script</li>
+  <li>FastAlloc disabled in debug builds</li>
+  <li>[bug 266] Fixed a crash with offline users and user commands (thanks naga)</li>
+  <li>[bug 165] Fixed a case insensitivity issue (thanks farcry)</li>
+  <li>[bug 18] Added favorite download directories (thanks naga)</li>
+  <li>Fixed MyINFO spam when hashing</li>
+</ul>
+
 <h2>0.4034 <span style="color: gray;">(2004-10-03)</span></h2>
 <ul>
   <li>Help file additions (thanks naga &amp; ullner)</li>
@@ -328,7 +379,7 @@ See the version history of DC++ below.
   <li>Fixed missing string (thanks gargoyle)</li>
   <li>Fixed invalid date added formatting</li>
   <li>Fixed trimming of spaces for http downloads (hub list...)</li>
-  <li>Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)</li>
+  <li>Fixed a bug in autosearch when using auto search strings (thanks ilkka seppÃ¤lÃ¤)</li>
   <li>Fixed typo in user commands help</li>
   <li>Fixed missing sort arrows</li>
   <li>Added time last seen online to fav users (thanks gargoyle)</li>
@@ -523,7 +574,7 @@ See the version history of DC++ below.
   <li>Large speedup in file listing search (QuickSearch + unnecessary processing added earlier removed)</li>
   <li>Added selection size info to queue frame (same as file listing)</li>
   <li>Fixed some crashes when closing windows (and perhaps added some new ones...)</li>
-  <li><span style="color: red;">ADLSearch: (by Henrik Engström)</span></li>
+  <li><span style="color: red;">ADLSearch: (by Henrik EngstrÃ¶m)</span></li>
   <li>Keyboard shortcuts.</li>
   <li>Context menu (back again).</li>
   <li>Removed 'Active' column and made it a check box.</li>
@@ -563,7 +614,7 @@ See the version history of DC++ below.
   <li>Added option not to send away message to bots (users that have not sent a myinfo that is...) (thanks sedulus)</li>
   <li>Fixed 302-moved code a bit (thanks sedulus)</li>
   <li>Added match queue feature to the file listing window. This will take every file in the file listing and see if there is any matching file in the queue (exact filename &amp; size match). Every match will then be added to the queue as an extra source. Depending on your queue size and the number of files in the listing this might take some time to do...</li>
-  <li>UI updates to ADLSearch (by Henrik Engström)</li>
+  <li>UI updates to ADLSearch (by Henrik EngstrÃ¶m)</li>
 </ul>
 
 <h2>0.241 <span style="color: gray;">(2003-04-01)</span></h2>
@@ -593,7 +644,7 @@ See the version history of DC++ below.
 <h2>0.24 <span style="color: gray;">(2003-03-11)</span></h2>
 <ul>
   <li>The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)</li>
-  <li>Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engström.</li>
+  <li>Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik EngstrÃ¶m.</li>
   <li>Local ip handling improved, so that a per-hub ip is used if nothing is entered in the active field (good for people who connect to local hubs or through different network cards)</li>
   <li>You can now use $ and | in the chat. DC++ uses the HTML standard &amp;#36; and &amp;#124; to replace them...some people might not like this because it's different than the escape sequence used in the lock, but I prefer a standard way of escaping that's not limited to numbers below 999...later on, perhaps I'll add full &amp;-escaping support so that people will be able to send all kinds of strange characters. The same escpace sequences are used in the description and email.</li>
   <li>Incoming connections are now handled in a completely different, more effective way (one thread less...). This could perhaps help with the multicpu/hyperthreading issue, but I doubt it...</li>
@@ -666,7 +717,7 @@ See the version history of DC++ below.
   <li>The number of uploads slots is now shown as negative if it exceeds the specified number of slots (because of auto- open or granting). We'll see how long it takes until someone reports this as a bug...</li>
   <li>Added ability to set default away message (hm...perhaps this should use the last message set?)</li>
   <li>Redesigned the appearance dialog a bit (like the advanced options now)</li>
-  <li>If DC++ receives "banned" during the login phase, it'll stop automatically reconnecting (n?jd nu, nev? =)</li>
+  <li>If DC++ receives "banned" during the login phase, it'll stop automatically reconnecting (nï¿½jd nu, nev? =)</li>
   <li>The splash screen no longer shows on the task bar (avoids flicker when loading is fast) and is not topmost (use alt-esc instead of alt-tab to switch to it if you lose it...and it can't be an option because it's shown prior to any settings being loaded).</li>
   <li>Hublist is no longer loaded in the background by default when starting the application.</li>
   <li>Fixed some proxy connection problems for the hublist (thanks Ondrea (or is it Ondra or Ondrej? =))</li>
@@ -749,7 +800,7 @@ See the version history of DC++ below.
 
 <h2>0.20 <span style="color: gray;">(2002-12-06)</span></h2>
 <ul>
-  <li>Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in ? (euros) now, which is, of course, my preferred currency =)</li>
+  <li>Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in ï¿½ (euros) now, which is, of course, my preferred currency =)</li>
   <li>The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. I would open an alternative forum if I could get the old posts, but because all network connections to the server are broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat limited). For the most desperate ones, I opened a new conference on sourceforge (where the old forums were) that you can use, or if you feel like it, try one of the forums that people have put up on their own (I won't read them though, don't have time). Anyway, lichlord should be up soon I hope...</li>
   <li>This release is completely untested (more or less, i'm in the third world (italy...amazing that this country made it to the G7, and is still actually there...)), and is most problably not very stable. If it crashes, I don't want to know about it unless you're using the debug version (that most probably doesn't work with w98), that generates an exceptioninfo.txt file. If you report a crash bug ("unhandled exception"), make sure you include this file in the report, otherwise it's a waste of your time writing and my time deleting. I do not recommend this version for those who are comfortable with 0.181...</li>
   <li>I've decided to clear the bug and feature request forum of all posts, regardless of whether they have been fixed/implemented or not, because of the ridiculous amount of duplicates. I apologize to those that made valid, new fresh and interesting requests, but because of all double-posting idiots, I can't keep up with things. I've tagged all the closed requests as "out of date", and I kindly ask the original authors to reopen their posts if they still consider them valid and non-duplicate. You can find them by browsing for closed posts. Also, before posting a feature request, check that the feature is not already implemented (by looking in the settings for instance). It is not exactly a sign of intelligence to suggest features that already exist...and there seems to be an alarming number of stupid people out there...</li>

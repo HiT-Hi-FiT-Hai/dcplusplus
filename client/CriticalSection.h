@@ -83,15 +83,15 @@ public:
 	FastCriticalSection() : state(0) { };
 
 	void enter() {
-		while(Thread::safeExchange(&state, 1) == 1) {
+		while(Thread::safeExchange(state, 1) == 1) {
 			Thread::yield();
 		}
 	}
 	void leave() {
-		Thread::safeDec(&state);
+		Thread::safeDec(state);
 	}
 private:
-	long state;
+	volatile long state;
 
 #else
 	// We have to use a pthread (nonrecursive) mutex, didn't find any test_and_set on linux...
@@ -132,7 +132,7 @@ public:
 	}
 
 	void leaveRead() throw() {
-		Thread::safeDec(&readers);
+		Thread::safeDec(readers);
 		dcassert(readers >= 0);
 	}
 	void enterWrite() throw() {
@@ -149,7 +149,7 @@ public:
 	}
 private:
 	CriticalSection cs;
-	long readers;
+	volatile long readers;
 };
 
 class RLock {
@@ -172,5 +172,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.24 2004/11/03 08:51:14 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.25 2004/11/15 13:53:45 arnetheduck Exp $
  */

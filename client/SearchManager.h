@@ -83,9 +83,9 @@ public:
 	TTHValue* getTTH() const { return tth; }
 	bool getUtf8() const { return utf8; }
 
-	void incRef() { Thread::safeInc(&ref); }
+	void incRef() { Thread::safeInc(ref); }
 	void decRef() { 
-		if(Thread::safeDec(&ref) == 0) 
+		if(Thread::safeDec(ref) == 0) 
 			delete this; 
 	};
 
@@ -109,7 +109,7 @@ private:
 	TTHValue* tth;
 	
 	bool utf8;
-	long ref;
+	volatile long ref;
 
 	bool isTTH(const string& str) const {
 		return str.compare(0, 4, "TTH:") == 0;
@@ -134,7 +134,7 @@ public:
 		TYPE_PICTURE,
 		TYPE_VIDEO,
 		TYPE_DIRECTORY,
-		TYPE_HASH
+		TYPE_TTH
 	};
 	
 	void search(const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
@@ -188,5 +188,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.46 2004/11/07 17:23:59 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.47 2004/11/15 13:53:45 arnetheduck Exp $
  */
