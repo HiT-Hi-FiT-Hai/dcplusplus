@@ -20,6 +20,8 @@ typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
+typedef set<string> StringSet;
+typedef StringSet::iterator StringSetIter;
 
 #include "resource.h"
 #include "Settings.h"
@@ -35,9 +37,13 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.3  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

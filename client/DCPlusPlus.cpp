@@ -46,11 +46,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-//	HRESULT hRes = ::CoInitialize(NULL);
+	HRESULT hRes = ::CoInitialize(NULL);
 // If you are running on NT 4.0 or higher you can use the following call instead to 
 // make the EXE free threaded. This means that calls come in on a random RPC thread.
 //	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	HRESULT hRes;
 //	ATLASSERT(SUCCEEDED(hRes));
 
 	WSADATA wsaData;
@@ -74,16 +73,20 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
-//	::CoUninitialize();
+	::CoUninitialize();
 
 	return nRet;
 }
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.cpp,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -114,7 +114,7 @@ private:
 		}
 	};
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.01ABCABCABC") { };
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.04ABCABCABC") { };
 
 	string lock;
 	string pk;
@@ -136,9 +136,13 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

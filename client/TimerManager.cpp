@@ -28,16 +28,20 @@ DWORD WINAPI TimerManager::ticker(void* p) {
 	t->nextTick = GetTickCount() + 1000;
 	while(WaitForSingleObject(t->stopEvent, t->nextTick - GetTickCount()) == WAIT_TIMEOUT) {
 		t->nextTick = GetTickCount() + 1000;
-		t->fireSecond();
+		t->fireSecond(GetTickCount());
 	}
 
 	return 0;
 }
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.1 2001/12/02 11:18:10 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.2 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.2  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.1  2001/12/02 11:18:10  arnetheduck
  * Added transfer totals and speed...
  *

@@ -23,6 +23,9 @@
 #define IDC_PORT                        1008
 #define IDC_DIRECTORIES                 1009
 #define IDC_FILES                       1010
+#define IDC_ADD                         1011
+#define IDC_REMOVE                      1012
+#define IDC_TOTAL                       1014
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTING                 32773
 #define ID_FILE_SETTINGS                32774
@@ -36,7 +39,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        208
 #define _APS_NEXT_COMMAND_VALUE         32781
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

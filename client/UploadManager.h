@@ -25,6 +25,7 @@
 
 #include "UserConnection.h"
 #include "ConnectionManager.h"
+#include "ShareManager.h"
 
 class UploadManager : public UserConnectionListener
 {
@@ -34,11 +35,60 @@ public:
 	}
 
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
-		aSource->maxedOut();
+		Upload* u;
+		try {
+			string file = ShareManager::getInstance()->translateFileName(aFile);
+			Upload::MapIter i = uploads.find(aSource);
+			if(i != uploads.end()) {
+				delete i->second;
+				uploads.erase(i);
+			} else {
+				u = new Upload();
+			}
+
+			u->file = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+			if(u->file == INVALID_HANDLE_VALUE) {
+				delete u;
+				aSource->error("File Not Available");
+				return;
+			}
+			char buf[24];
+			DWORD high = 0;
+			long h = (int) (aResume >> 32);
+			DWORD l = (DWORD) (aResume & 0xffffffff);
+			SetFilePointer(u->file, l, &h, FILE_BEGIN);
+			aSource->fileLength(_i64toa((LONGLONG)GetFileSize(u->file, &high) | ((LONGLONG)high) << 32, buf, 10));
+
+			uploads[aSource] = u;
+
+		} catch (ShareException e) {
+			aSource->error("File Not Available");
+		}
+	}
+	
+	virtual void onSend(UserConnection* aSource) {
+		Upload * u;
+		Upload::MapIter i = uploads.find(aSource);
+		if(i == uploads.end()) {
+			// Something strange happened?
+			aSource->disconnect();
+			aSource->removeListener(this);
+			ConnectionManager::getInstance()->putUploadConnection(aSource);
+		}
+		u = i->second;
+		try {
+			aSource->transmitFile(u->file);
+		} catch(Exception e) {
+			delete u;
+			uploads.erase(i);
+			aSource->disconnect();
+			aSource->removeListener(this);
+			ConnectionManager::getInstance()->putUploadConnection(aSource);
+		}
 	}
 	
 	virtual void onGetListLen(UserConnection* aSource) {
-		aSource->listLen("0");
+		aSource->listLen(ShareManager::getInstance()->getListLenString());
 	}
 
 	void addConnection(UserConnection::Ptr conn) {
@@ -78,15 +128,38 @@ public:
 		instance = NULL;
 	}
 private:
+	class Upload {
+	public:
+		typedef Upload* Ptr;
+		typedef map<UserConnection::Ptr, Ptr> Map;
+		typedef Map::iterator MapIter;
+		
+		UserConnection* user;
+		HANDLE file;
+		
+		Upload() : file(NULL), user(NULL) { };
+		~Upload() {
+			if(file)
+				CloseHandle(file);
+		}
+	};
+
 	static UploadManager* instance;
 	UserConnection::List connections;
-	
+	Upload::Map uploads;
+
 	UploadManager() { };
 	~UploadManager() {
 		UserConnection::List tmp = connections;
 		
+		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
+			delete j->second;
+		}
+
 		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->removeListener(this);
 			(*i)->disconnect();
+			ConnectionManager::getInstance()->putUploadConnection(*i);
 		}
 	}
 };
@@ -95,9 +168,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

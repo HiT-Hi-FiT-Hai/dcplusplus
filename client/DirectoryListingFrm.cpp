@@ -64,7 +64,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			StringList l;
 			l.push_back((*j)->name);
 			l.push_back(Util::shortenBytes((*j)->size));
-			ctrlList.insert(l, 2);
+			ctrlList.insert(l, 2, (LPARAM)*j);
 		}
 	}
 	return 0;
@@ -77,9 +77,18 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		ctrlList.GetItemText(item->iItem, 0, buf, MAX_PATH);
+		
+		LVITEM lvi;
+		lvi.iItem = item->iItem;
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_PARAM | LVIF_IMAGE | LVIF_TEXT;
+		lvi.pszText = buf;
+		lvi.cchTextMax = sizeof(buf);
 
-		if(ctrlList.GetItemData(item->iItem) == NULL) {
+		ctrlList.GetItem(&lvi);
+
+		if(lvi.iImage == 2) {
+			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 
 			OPENFILENAME ofn;       // common dialog box structure
 
@@ -97,7 +106,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 			if (GetSaveFileName(&ofn)==TRUE) {
 				char size[24];
 				ctrlList.GetItemText(item->iItem, 1, size, 24);
-				DownloadManager::getInstance()->download(dl->getPath(dir) + buf, size, user, ofn.lpstrFile);
+				DownloadManager::getInstance()->download(dl->getPath(dir) + buf, file->size, user, ofn.lpstrFile);
 			}
 		} else {
 			DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlList.GetItemData(item->iItem);
@@ -138,9 +147,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

@@ -250,6 +250,13 @@ void CryptoManager::buildLookup(vector<bool>* table, Node* aRoot) {
 
 void CryptoManager::encodeHuffman(const string& is, string& os) {
 
+	if(is.length() == 0) {
+		os.append("HE3\x0d");
+		
+		// Nada...
+		os.append(7, 0);
+		return;
+	}
 	// First, we count all characters
 	BYTE csum = 0;
 	int count[256];
@@ -316,9 +323,13 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

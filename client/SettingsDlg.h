@@ -25,9 +25,15 @@
 
 #define SETTINGS_BUF_LEN 1024
 
+#include "ShareManager.h"
+#include "ExListViewCtrl.h"
+#include "Util.h"
+
 class SettingsDlg : public CDialogImpl<SettingsDlg>  
 {
 	CComboBox ctrlConnection;
+	ExListViewCtrl ctrlDirectories;
+	CStatic ctrlTotal;
 	
 public:
 	string nick;
@@ -46,11 +52,73 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, OnClickedActive)
 		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, OnClickedActive)
-		END_MSG_MAP()
+		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
+		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, OnClickedAdd)
+		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, OnClickedRemove)
+	END_MSG_MAP()
 		
+	LRESULT onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
+		
+		if(lv->uNewState & LVIS_FOCUSED) {
+			::EnableWindow(GetDlgItem(IDC_REMOVE), TRUE);
+		}
+		return 0;		
+	}
+	
+	LRESULT OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+		char buf[MAX_PATH];
+		BROWSEINFO bi;
+		ZeroMemory(&bi, sizeof(bi));
+
+		bi.hwndOwner = m_hWnd;
+		bi.pszDisplayName = buf;
+		bi.lpszTitle = "Choose folder to add";
+		bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		if(pidl != NULL) {
+			SHGetPathFromIDList(pidl, buf);
+			try {
+				string name = buf;
+				ShareManager::getInstance()->addDirectory(name);
+				int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), name);
+				ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(name)).c_str());
+				ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
+			} catch(ShareException e) {
+				MessageBox(e.getError().c_str());
+			}
+
+			LPMALLOC ma;
+			if(SHGetMalloc(&ma) != E_FAIL) {
+				ma->Free(pidl);
+				ma->Release();
+			}
+		}
+		return 0;
+	}
+
+	LRESULT OnClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+		char buf[MAX_PATH];
+		LVITEM item;
+		ZeroMemory(&item, sizeof(item));
+		item.mask = LVIF_TEXT;
+		item.cchTextMax = sizeof(buf);
+		item.pszText = buf;
+		if(ctrlDirectories.GetSelectedItem(&item)) {
+			ShareManager::getInstance()->removeDirectory(buf);
+			ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
+			ctrlDirectories.DeleteItem(item.iItem);
+		}
+
+		return 0;
+	}
+		
+	
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
+		ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
+		ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
 		for(int i = 0; i < Settings::SPEED_LAST; i++) {
 			ctrlConnection.AddString(Settings::connectionSpeeds[i]);
@@ -76,6 +144,16 @@ public:
 		}
 		
 		ctrlConnection.SetCurSel(ctrlConnection.FindString(0, connection.c_str()));
+		
+		ctrlDirectories.InsertColumn(0, "Directory", LVCFMT_LEFT, 400, 0);
+		ctrlDirectories.InsertColumn(1, "Size", LVCFMT_RIGHT, 100, 1);
+		StringList directories = ShareManager::getInstance()->getDirectories();
+		for(StringIter j = directories.begin(); j != directories.end(); j++) {
+			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), *j);
+			ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
+		}
+
+		ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
 
 		CenterWindow(GetParent());
 		return TRUE;
@@ -127,9 +205,13 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

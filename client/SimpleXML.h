@@ -94,6 +94,8 @@ class SimpleXML
 			}
 		}
 	}
+
+	bool found;
 public:
 
 	void addTag(const string& aName, const string& aData = "");
@@ -126,12 +128,14 @@ public:
 		checkChildSelected();
 		current = *currentChild;
 		currentChild = current->children.begin();
+		found = false;
 	}
 
 	void stepOut() throw(SimpleXMLException) {
 		if(current == NULL)
 			throw SimpleXMLException("Already at lowest level");
 		current = current->parent;
+		found = false;
 		if(current != NULL)
 			currentChild = current->children.begin();
 		else
@@ -139,6 +143,7 @@ public:
 	}
 
 	void resetCurrentChild() {
+		found = false;
 		if(current)
 			currentChild=current->children.begin();
 		else
@@ -148,17 +153,21 @@ public:
 	bool findChild(const string& aName) {
 		if(current == NULL) {
 			while(currentChild!=root.end()) {
-				if((*currentChild)->name == aName)
+				if((*currentChild)->name == aName) {
+					found = true;
 					return true;
-				else
+				} else
 					currentChild++;
 			}
 			return false;
 		} else {
+			if(found)
+				currentChild++;
 			while(currentChild!=current->children.end()) {
-				if((*currentChild)->name == aName)
+				if((*currentChild)->name == aName) {
+					found = true;
 					return true;
-				else
+				} else
 					currentChild++;
 			}
 			return false;
@@ -183,7 +192,7 @@ public:
 	void fromXML(const string& aXML);
 	string toXML() { return (!root.empty()) ? root[0]->toXML() : emptyString; };
 	
-	SimpleXML() : root(NULL), current(NULL) {  };
+	SimpleXML() : root(NULL), current(NULL), found(false) {  };
 	~SimpleXML() { if(!root.empty()) delete root[0]; }
 
 };
@@ -192,9 +201,13 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.3 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -71,6 +71,11 @@ public:
 	virtual ~BufferedSocket() {
 		stopReader();
 	}
+
+	void transmitFile(HANDLE f) throw(SocketException){
+		file = f;
+		startWriter();
+	}
 private:
 	BufferedSocket(const BufferedSocket& aSocket) {
 		// Copy not allowed
@@ -83,9 +88,12 @@ private:
 
 	char separator;
 
+	HANDLE file;
+
 	HANDLE stopEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
+	static DWORD WINAPI writer(void* p);
 	
 	void startReader() {
 		DWORD threadId;
@@ -93,6 +101,12 @@ private:
 		
 		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
+	}
+
+	void startWriter() {
+		DWORD threadId;
+		
+		CreateThread(NULL, 0, &writer, this, 0, &threadId);
 	}
 	
 	void stopReader() {
@@ -112,47 +126,47 @@ private:
 	void fireLine(const string& aLine) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onLine(aLine);
 		}
-		listenerCS.leave();
 	}
 	void fireData(BYTE* aBuf, int aLen) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onData(aBuf, aLen);
 		}
-		listenerCS.leave();
 	}
 	void fireError(const string& aLine) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onError(aLine);
 		}
-		listenerCS.leave();
 	}
 	void fireConnected() {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onConnected();
 		}
-		listenerCS.leave();
 	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onModeChange(aNewMode);
 		}
-		listenerCS.leave();
 	}
 };
 
@@ -160,9 +174,13 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

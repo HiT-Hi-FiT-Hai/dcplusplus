@@ -31,6 +31,17 @@ void BufferedSocket::accept(const ServerSocket& aSocket) {
 }
 
 
+DWORD WINAPI BufferedSocket::writer(void* p) {
+	BufferedSocket* bs = (BufferedSocket*)p;
+	BYTE buf[4096];
+	DWORD len;
+
+	while(ReadFile(bs->file, buf, sizeof(buf), &len, NULL) && len != 0) {
+		bs->write((char*)buf, len);
+	}
+	return 0;
+}
+
 DWORD WINAPI BufferedSocket::reader(void* p) {
 	ATLASSERT(p);
 	
@@ -56,7 +67,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
 		try {
-			dcdebug("Available bytes: %d\n", bs->getAvailable());
+			//dcdebug("Available bytes: %d\n", bs->getAvailable());
 			int i = bs->read(buf, BUFSIZE);
 			string l;
 			switch(bs->mode) {
@@ -117,9 +128,13 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.5 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.6  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.5  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

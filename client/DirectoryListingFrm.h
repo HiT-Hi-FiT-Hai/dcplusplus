@@ -38,7 +38,7 @@ public:
 
 	DirectoryListingFrame(DirectoryListing* aList, User* aUser) : dl(aList), user(aUser) { };
 
-	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDIDIRECTORY)
+	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_MDIDIRECTORY)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -107,9 +107,13 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.3  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

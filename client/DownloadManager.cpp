@@ -25,7 +25,23 @@
 
 DownloadManager* DownloadManager::instance = NULL;
 
-void DownloadManager::download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume /* = true /*/) {
+void DownloadManager::onTimerSecond(DWORD aTick) {
+	Download::List tmp = queue;
+
+	for(Download::Iter i = tmp.begin(); i != tmp.end(); ++i) {
+		Download* d = *i;
+		if(aTick > d->lastTry + 60 * 1000) {
+			// Time to go hot...
+			User* u = Client::findUser(d->lastNick);
+			if(u != NULL) {
+				d->user = u;
+				ConnectionManager::getInstance()->getDownloadConnection(u);
+			}
+		}
+	}
+}
+
+void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume /* = true /*/) {
 	
 	Download* d = new Download();
 	
@@ -39,7 +55,7 @@ void DownloadManager::download(const string& aFile, const string& aSize, User* a
 	d->targetFileName = aDestination;
 	d->lastNick = aUser->getNick();
 	d->user = aUser;
-	d->size = _atoi64(aSize.c_str());
+	d->size = aSize;
 	queue.push_back(d);
 	fireAdded(d);
 
@@ -153,9 +169,13 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

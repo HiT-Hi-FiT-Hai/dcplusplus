@@ -99,7 +99,10 @@ private:
 
 	void fireIncomingConnection() {
 		dcdebug("ServerSocket::fireIncomingConnection\n");
-		for(ServerSocketListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+		listenerCS.enter();
+		ServerSocketListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ServerSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onIncomingConnection();
 		}
 	}
@@ -109,9 +112,13 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.3 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

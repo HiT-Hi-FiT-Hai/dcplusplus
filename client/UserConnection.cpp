@@ -51,11 +51,13 @@ void UserConnection::onLine(const string& aLine) {
 		fireError(aLine.substr(6));
 	} else if(aLine.find("$FileLength") != string::npos) {
 		fireFileLength(aLine.substr(12));
+	} else if(aLine.find("$GetListLen") != string::npos) {
+		fireGetListLen();
 	} else if(aLine.find("$Get") != string::npos) {
 		string tmp = aLine.substr(5);
 		string file = tmp.substr(0, tmp.find('$'));
 
-		fireGet(file, _atoi64(tmp.substr(tmp.find('$')+1).c_str()));
+		fireGet(file, _atoi64(tmp.substr(tmp.find('$')+1).c_str())-1);
 	} else if(aLine.find("$Key") != string::npos) {
 		fireKey(aLine.substr(5));
 	} else if(aLine.find("$Lock") != string::npos) {
@@ -65,9 +67,9 @@ void UserConnection::onLine(const string& aLine) {
 		fireLock(lock, tmp);
 	} else if(aLine.find("$MyNick") != string::npos) {
 		fireMyNick(aLine.substr(8));
-	} else if(aLine.find("$Send")) {
+	} else if(aLine.find("$Send") != string::npos) {
 		fireSend();
-	} else if(aLine.find("$MaxedOut")){
+	} else if(aLine.find("$MaxedOut") != string::npos){
 		fireMaxedOut();
 	} else {
 		//dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
@@ -79,9 +81,13 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

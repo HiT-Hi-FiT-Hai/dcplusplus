@@ -151,30 +151,38 @@ private:
 	
 
 	void fireMessage(const string& aMessage) {
+		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
-//		dcdebug("fireMessage\n");
+		listenerCS.leave();
+		//		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onHubMessage(aMessage);
 		}
 	}
 
 	void fireHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) {
+		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
-//		dcdebug("fireHub\n");
+		listenerCS.leave();
+		//		dcdebug("fireHub\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onHub(aName, aServer, aDescription, aUsers);
 		}
 	}
 
 	void fireFinished() {
+		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onHubFinished();
 		}
 	}
 	void fireStarting() {
+		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onHubStarting();
@@ -186,9 +194,13 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

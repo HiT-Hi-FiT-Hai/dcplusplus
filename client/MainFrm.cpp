@@ -32,14 +32,16 @@
 #include "ProtocolHandler.h"
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
+#include "ShareManager.h"
 
 MainFrame::~MainFrame() {
+	ShareManager::deleteInstance();
 	TimerManager::deleteInstance();
 	ProtocolHandler::deleteInstance();
 	CryptoManager::deleteInstance();
-	ConnectionManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
+	ConnectionManager::deleteInstance();
 	HubManager::deleteInstance();
 }
 
@@ -149,6 +151,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
+	ShareManager::newInstance();
 	Settings::load();	
 	
 	TimerManager::newInstance();
@@ -161,6 +164,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	HubManager::newInstance();
 	ProtocolHandler::newInstance();
 	DownloadManager::getInstance()->addListener(this);
+
+	ShareManager::getInstance()->refresh();
 
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
@@ -206,7 +211,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setPort(dlg.port);
 		Settings::setConnectionType(dlg.connectionType);
 		Settings::save();
-
+		ShareManager::getInstance()->refresh();
 		ConnectionManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
 	}
 	return 0;
@@ -214,9 +219,13 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.9 2001/12/02 14:05:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.10 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.10  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.9  2001/12/02 14:05:36  arnetheduck
  * More sorting work, the hub list is now fully usable...
  *

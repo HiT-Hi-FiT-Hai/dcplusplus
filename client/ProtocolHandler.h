@@ -28,6 +28,7 @@
 #include "CryptoManager.h"
 #include "UserConnection.h"
 #include "ConnectionManager.h"
+#include "ShareManager.h"
 
 /**
  * This is it, this is the class that controls what is sent when.
@@ -45,7 +46,7 @@ public:
 		if(aUser->getNick() == Settings::getNick()) {
 			aClient->version("1,0091");
 			aClient->getNickList();
-			aClient->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "100000000");
+			aClient->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), ShareManager::getInstance()->getShareSizeString());
 		} else {
 			aClient->getInfo(aUser);
 		}
@@ -97,9 +98,13 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.7 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.7  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.6  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -31,7 +31,7 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	virtual void onTimerSecond() { };
+	virtual void onTimerSecond(DWORD aTick) { };
 	
 };
 
@@ -94,14 +94,14 @@ private:
 	static TimerManager* instance;
 	DWORD nextTick;
 	
-	void fireSecond() {
+	void fireSecond(DWORD aTick) {
 		listenerCS.enter();
 		TimerManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(TimerManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onTimerSecond();
+			(*i)->onTimerSecond(aTick);
 		}
-		listenerCS.leave();
 	}
 	
 };
@@ -110,9 +110,13 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.1 2001/12/02 11:18:10 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.2 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.2  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.1  2001/12/02 11:18:10  arnetheduck
  * Added transfer totals and speed...
  *

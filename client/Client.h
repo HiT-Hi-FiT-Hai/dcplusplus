@@ -153,12 +153,22 @@ public:
 	const string& getServer() { return server; };
 
 	User* getUser(const string& aNick) {
-		User::NickIter i = users.find(aNick);
-		if(i == users.end()) {
-			return NULL;
+		User::NickIter j = users.find(aNick);
+		if(j != users.end()) {
+			return j->second;
 		} else {
-			return i->second;
+			return NULL;
 		}
+		dcassert(0);
+	}
+	static User* findUser(const string& aNick) {
+		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
+			User::NickIter j = (*i)->users.find(aNick);
+			if(j != (*i)->users.end()) {
+				return j->second;
+			}
+		}
+		return NULL;
 	}
 	static List& getList() { return clientList; }
 protected:
@@ -190,41 +200,68 @@ protected:
 		socket.write(a);
 	}
 	
-	void fireConnecting() {
-		dcdebug("fireConnecting\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientConnecting(this);
-		}
-		listenerCS.leave();
-	}
 	void fireConnected() {
 		dcdebug("fireConnected\n");
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
+		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onClientConnected(this);
 		}
+	}
+	void fireConnecting() {
+		dcdebug("fireConnecting\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
 		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientConnecting(this);
+		}
 	}
 	void fireConnectToMe(const string& aServer, const string& aPort) {
 		dcdebug("fireConnectToMe %s:%s\n", aServer.c_str(), aPort.c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
+		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onClientConnectToMe(this, aServer, aPort);
 		}
-		listenerCS.leave();
 	}
-	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
-		dcdebug("fireSearch\n");
+	void fireError(const string& aMessage) {
+		dcdebug("fireError %s\n", aMessage.c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientSearch(this, aSeeker, aSearchType, aSize, aFileType, aString);
-		}
 		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientError(this, aMessage);
+		}
+	}
+	void fireForceMove(const string& aServer) {
+		dcdebug("fireForceMove %s\n", aServer.c_str());
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientForceMove(this, aServer);
+		}
+	}
+	void fireHello(User* aUser) {
+		//dcdebug("fireHello\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientHello(this, aUser);
+		}
+	}
+	void fireHubFull() {
+		dcdebug("fireHubFull\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientHubFull(this);
+		}
 	}
 	void fireHubName() {
 		dcdebug("fireHubName\n");
@@ -239,127 +276,100 @@ protected:
 		dcdebug("fireLock %s\n", aLock.c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
+		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onClientLock(this, aLock, aPk);
 		}
-		listenerCS.leave();
-	}
-	void firePrivateMessage(const string& aFrom, const string& aMessage) {
-		dcdebug("firePM %s ...\n", aFrom.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientPrivateMessage(this, aFrom, aMessage);
-		}
-		listenerCS.leave();
-	}
-	void fireHello(User* aUser) {
-		//dcdebug("fireHello\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientHello(this, aUser);
-		}
-		listenerCS.leave();
-	}
-	void fireForceMove(const string& aServer) {
-		dcdebug("fireForceMove %s\n", aServer.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientForceMove(this, aServer);
-		}
-		listenerCS.leave();
-	}
-	void fireHubFull() {
-		dcdebug("fireHubFull\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientHubFull(this);
-		}
-		listenerCS.leave();
-	}
-	void fireMyInfo(User* aUser) {
-		//dcdebug("fireMyInfo\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientMyInfo(this, aUser);
-		}
-		listenerCS.leave();
-	}
-	void fireValidateDenied() {
-		dcdebug("fireValidateDenied\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientValidateDenied(this);
-		}
-		listenerCS.leave();
-	}
-	void fireQuit(User* aUser) {
-		//dcdebug("fireQuit\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientQuit(this, aUser);
-		}
-		listenerCS.leave();
-	}
-	void fireRevConnectToMe(const string& aNick) {
-		dcdebug("fireRevConnectToMe %s\n", aNick.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientRevConnectToMe(this, aNick);
-		}
-		listenerCS.leave();
-	}
-	void fireNickList(StringList& aList) {
-		dcdebug("fireNickList ... \n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientNickList(this, aList);
-		}
-		listenerCS.leave();
-	}
-	void fireOpList(StringList& aList) {
-		dcdebug("fireOpList ... \n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientOpList(this, aList);
-		}
-		listenerCS.leave();
-	}
-	void fireUnknown(const string& aString) {
-		dcdebug("fireUnknown %s\n", aString.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientUnknown(this, aString);
-		}
-		listenerCS.leave();
 	}
 	void fireMessage(const string& aMessage) {
 		// dcdebug("fireMessage %s\n", aMessage.c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
+		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onClientMessage(this, aMessage);
 		}
-		listenerCS.leave();
 	}
-	void fireError(const string& aMessage) {
-		dcdebug("fireError %s\n", aMessage.c_str());
+	void fireMyInfo(User* aUser) {
+		//dcdebug("fireMyInfo\n");
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientError(this, aMessage);
-		}
 		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientMyInfo(this, aUser);
+		}
+	}
+	void fireNickList(StringList& aList) {
+		dcdebug("fireNickList ... \n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientNickList(this, aList);
+		}
+	}
+	void fireOpList(StringList& aList) {
+		dcdebug("fireOpList ... \n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientOpList(this, aList);
+		}
+	}
+	void firePrivateMessage(const string& aFrom, const string& aMessage) {
+		dcdebug("firePM %s ...\n", aFrom.c_str());
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientPrivateMessage(this, aFrom, aMessage);
+		}
+	}
+	void fireQuit(User* aUser) {
+		//dcdebug("fireQuit\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientQuit(this, aUser);
+		}
+	}
+	void fireRevConnectToMe(const string& aNick) {
+		dcdebug("fireRevConnectToMe %s\n", aNick.c_str());
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientRevConnectToMe(this, aNick);
+		}
+	}
+	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
+		//dcdebug("fireSearch\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientSearch(this, aSeeker, aSearchType, aSize, aFileType, aString);
+		}
+	}
+	void fireUnknown(const string& aString) {
+		dcdebug("fireUnknown %s\n", aString.c_str());
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientUnknown(this, aString);
+		}
+	}
+	void fireValidateDenied() {
+		dcdebug("fireValidateDenied\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientValidateDenied(this);
+		}
 	}
 };
 
@@ -368,9 +378,13 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: Client.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.4  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.3  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

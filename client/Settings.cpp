@@ -21,6 +21,7 @@
 #include "SimpleXML.h"
 
 #include "Settings.h"
+#include "ShareManager.h"
 
 string Settings::nick;
 string Settings::email;
@@ -66,6 +67,10 @@ void Settings::load(const string& aFileName) {
 		port = xml.getChildAttrib("Port");
 		connectionType = xml.getIntChildAttrib("ConnectionType");
 	}
+	
+	xml.resetCurrentChild();
+	ShareManager::getInstance()->load(&xml);
+	
 }
 
 void Settings::save(const string& aFileName) {
@@ -83,6 +88,7 @@ void Settings::save(const string& aFileName) {
 	xml.addChildAttrib("Port", port);
 	xml.addChildAttrib("ConnectionType", connectionType);
 
+	ShareManager::getInstance()->save(&xml);
 
 	string xmltext = xml.toXML();
 
@@ -97,9 +103,13 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

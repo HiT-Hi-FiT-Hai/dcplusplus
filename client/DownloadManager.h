@@ -38,7 +38,7 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
-	Download() : size(-1), pos(-1), hFile(NULL) { }
+	Download() : size(-1), pos(-1), hFile(NULL), lastTry(0) { }
 	
 	string fileName;
 	LONGLONG size;
@@ -46,6 +46,7 @@ public:
 	string targetFileName;
 	User* user;
 	bool resume;
+	DWORD lastTry;
 	
 	HANDLE hFile;
 	
@@ -84,7 +85,13 @@ public:
 		dcassert(aDirection == "Upload");
 	}
 	
-	void download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume = true);
+	virtual void onTimerSecond(DWORD aTick);
+
+	void download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume = true) {
+		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
+	}
+	void download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume = true);
+	
 	void checkDownloads(UserConnection* aConn);
 
 	static DownloadManager* getInstance() {
@@ -141,56 +148,56 @@ private:
 	void fireAdded(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadAdded(aPtr);
 		}
-		listenerCS.leave();
 	}
 	void fireComplete(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadComplete(aPtr);
 		}
-		listenerCS.leave();
 	}
 	void fireConnecting(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadConnecting(aPtr);
 		}
-		listenerCS.leave();
 	}
 	void fireFailed(Download::Ptr aPtr, const string& aReason) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadFailed(aPtr, aReason);
 		}
-		listenerCS.leave();
 	}
 	void fireStarting(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadStarting(aPtr);
 		}
-		listenerCS.leave();
 	}
 	void fireTick(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadTick(aPtr);
 		}
-		listenerCS.leave();
 	}
 	
 
@@ -203,9 +210,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.5  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.4  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

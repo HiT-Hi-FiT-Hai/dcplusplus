@@ -75,8 +75,9 @@ string SimpleXML::Tag::toXML() {
 			return "<" + name + " " + getAttribString() + "/>";
 		} else {
 			string tmp = escape(data, false);
-			char* buf = new char[name.length() + tmp.length() + 6];
-			sprintf(buf, "<%s %s>%s</%s>", name.c_str(), getAttribString().c_str(), tmp.c_str(), name.c_str());
+			string attrib = getAttribString();
+			char* buf = new char[name.length()*2 + tmp.length() + attrib.length() + 8];
+			sprintf(buf, "<%s %s>%s</%s>", name.c_str(), attrib.c_str(), tmp.c_str(), name.c_str());
 			tmp = buf;
 			delete buf;
 			return tmp;
@@ -252,9 +253,13 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.3  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

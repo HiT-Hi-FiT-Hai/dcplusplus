@@ -116,7 +116,10 @@ public:
 		socket.disconnect();
 		fireDisconnected();
 	}
-
+	
+	void transmitFile(HANDLE f) {
+		socket.transmitFile(f);
+	}
 private:
 	string server;
 	short port;
@@ -139,145 +142,145 @@ private:
 		listenerCS.enter();
 		dcdebug("UserConnection::fireConnected\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onConnected(this);
 		}
-		listenerCS.leave();
 	}
 	void fireConnecting(const string& aServer) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireConnecting %s\n", aServer.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onConnecting(this, aServer);
 		}
-		listenerCS.leave();
 	}
 	void fireConnectionError(const string& aError) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireConnectionError %s\n", aError.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onConnectionError(this, aError);
 		}
-		listenerCS.leave();
 	}
 	void fireData(BYTE* aData, int aLen) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireData %d\n", aLen);
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onData(this, aData, aLen);
 		}
-		listenerCS.leave();
 	}
 	void fireDirection(const string& aDirection, const string& aNumber) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireDirection %s\n", aDirection.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDirection(this, aDirection, aNumber);
 		}
-		listenerCS.leave();
 	}
 	void fireDisconnected() {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireDisconnected\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDisconnected(this);
 		}
-		listenerCS.leave();
 	}
 	void fireError(const string& aError) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireError %s\n", aError.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onError(this, aError);
 		}
-		listenerCS.leave();
 	}
 	void fireFileLength(const string& aLength) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireFileLength %s\n", aLength.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onFileLength(this, aLength);
 		}
-		listenerCS.leave();
 	}
 	void fireGet(const string& aFile, LONGLONG aResume) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireGet %s\n", aFile.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onGet(this, aFile, aResume);
 		}
-		listenerCS.leave();
 	}
 	void fireKey(const string& aKey) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireKey\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onKey(this, aKey);
 		}
-		listenerCS.leave();
 	}
 	void fireGetListLen() {
 		listenerCS.enter();
 		dcdebug("fireGetListLen\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onGetListLen(this);
 		}
-		listenerCS.leave();
 	}
 	void fireLock(const string& aLock, const string& aPk) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireLock\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onLock(this, aLock, aPk);
 		}
-		listenerCS.leave();
 	}
 	void fireMaxedOut() {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireMaxedOut\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onMaxedOut(this);
 		}
-		listenerCS.leave();
 	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireModeChange\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onModeChange(this, aNewMode);
 		}
-		listenerCS.leave();
 	}
 	void fireMyNick(const string& aNick) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireMyNick %s\n", aNick.c_str());
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onMyNick(this, aNick);
 		}
-		listenerCS.leave();
 	}
 	void fireSend() {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireSend\n");
 		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onSend(this);
 		}
-		listenerCS.leave();
 	}
 };
 
@@ -285,9 +288,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.6  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.5  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

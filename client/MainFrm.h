@@ -48,7 +48,7 @@ public:
 	virtual void onDownloadStarting(Download* aDownload);
 	virtual void onDownloadTick(Download* aDownload);
 	
-	virtual void onTimerSecond() {
+	virtual void onTimerSecond(DWORD aTick) {
 		if(ctrlStatus.IsWindow()) {
 			ctrlStatus.SetText(1, ("D: " + Util::shortenBytes(Socket::getTotalDown())).c_str());
 			ctrlStatus.SetText(2, ("U: " + Util::shortenBytes(Socket::getTotalUp())).c_str());
@@ -202,9 +202,13 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.6 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.7 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.7  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.6  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

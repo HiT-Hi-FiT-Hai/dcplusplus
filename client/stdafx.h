@@ -31,6 +31,7 @@
 #define _ATL_NO_COM
 
 #include <Winsock2.h>
+#include <Mswsock.h>
 
 #include <atlbase.h>
 #include <atlapp.h>
@@ -49,6 +50,7 @@ extern CAppModule _Module;
 #include <vector>
 #include <map>
 #include <list>
+#include <set>
 
 #include <iosfwd>
 using namespace std;
@@ -61,9 +63,13 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.5 2001/11/26 23:40:37 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.6  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.5  2001/11/26 23:40:37  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -81,6 +81,7 @@ protected:
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
+	StringList userLists;
 
 public:
 
@@ -90,11 +91,14 @@ public:
 	}
 
 	~HubFrame() {
+		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
+			DeleteFile(i->c_str());
+		}
 		client->removeListeners();
 		delete client;
 	}
 
-	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
+	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD)
 
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
@@ -112,6 +116,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
@@ -119,6 +124,8 @@ public:
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		return 0;
@@ -135,7 +142,9 @@ public:
 		if(item->iItem != -1) {
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
 			user = buf;
-			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), Settings::getAppPath() + user + ".DcLst");
+			string file = Settings::getAppPath() + user + ".DcLst";
+			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), file);
+			userLists.push_back(file);
 		}
 		return 0;
 	}
@@ -201,9 +210,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.7 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.8 2001/12/02 23:47:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.8  2001/12/02 23:47:35  arnetheduck
+ * Added the framework for uploading and file sharing...although there's something strange about
+ * the file lists...my client takes them, but not the original...
+ *
  * Revision 1.7  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing
