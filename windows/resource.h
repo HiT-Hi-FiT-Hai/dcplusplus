@@ -283,6 +283,8 @@
 #define IDC_ONCE_PER_NICK               1211
 #define IDC_SETTINGS_ONCE               1212
 #define IDC_OPEN_DOWNLOADS				1213
+#define IDC_SETTINGS_UPLOAD_BAR_COLOR	1214
+#define IDC_SETTINGS_DOWNLOAD_BAR_COLOR	1215
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

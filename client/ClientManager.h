@@ -161,6 +161,7 @@ private:
 
 		features.push_back("UserCommand");
 		features.push_back("NoGetINFO");
+		features.push_back("NoHello");
 		features.push_back("UserIP2");
 	};
 
@@ -191,6 +192,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.40 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.41 2003/12/03 22:48:02 arnetheduck Exp $
  */
 

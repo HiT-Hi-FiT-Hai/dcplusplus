@@ -52,7 +52,7 @@ const string SettingsManager::settingTags[] =
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
-	"HubUserCommands", "AutoSearchAutoMatch",
+	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -287,6 +287,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.60 2003/12/03 22:09:21 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.61 2003/12/03 22:48:02 arnetheduck Exp $
  */
 

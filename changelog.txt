@@ -10,7 +10,7 @@
 * Shift-clicking tab will close window (thanks twink)
 * Added support for $UserIP, %[ip] as user command parameter and server side ip detection (automatically used
   if the ip field in settings is blank)
-* Transfer bar colors updated (they'll be made user-configurable one fine day)
+* Transfer bar colors updated and user-configurable (thanks gargoyle)
 * Fixed possibility to share same folder twice (thanks theparaniodone)
 * Fixed translations of kick & redirect user
 * Fixed missing subdirs when moving directories in the queue
@@ -26,6 +26,11 @@
 * Fixed some translations (thanks ciber)
 * Added "downloaded bytes" to queue (thanks ciber)
 * Fixed refresh file list from main menu
+* Switched user and filename column in search frame so that the image will be attached to the correct column (thanks
+  gargoyle)
+* A few message boxes updated (thanks gargoyle)
+* Added supports NoHello, a hub bandwidth easing feature for the hubs that support it
+
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)
