@@ -169,6 +169,7 @@ private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_DONE = COLUMN_FIRST,
+		COLUMN_FILE,
 		COLUMN_PATH,
 		COLUMN_NICK,
 		COLUMN_SIZE,
@@ -213,5 +214,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.10 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.11 2003/11/14 15:37:36 arnetheduck Exp $
  */

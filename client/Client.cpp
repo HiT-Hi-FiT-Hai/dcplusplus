@@ -84,6 +84,7 @@ void Client::connect() {
 	registered = false;
 	reconnect = true;
 	firstHello = true;
+	supportFlags = 0;
 
 	if(socket->isConnected()) {
 		disconnect();
@@ -370,13 +371,12 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Supports") {
 		StringTokenizer st(param, ' ');
-		int s = 0;
 		StringList& sl = st.getTokens();
 		for(StringIter i = sl.begin(); i != sl.end(); ++i) {
 			if(*i == "UserCommand") {
-				s |= SUPPORTS_USERCOMMAND;
+				supportFlags |= SUPPORTS_USERCOMMAND;
 			} else if(*i == "NoGetINFO") {
-				s |= SUPPORTS_NOGETINFO;
+				supportFlags |= SUPPORTS_NOGETINFO;
 			}
 		}
 		fire(ClientListener::SUPPORTS, this, sl);
@@ -704,6 +704,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.62 2003/11/13 15:32:16 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.63 2003/11/14 15:37:36 arnetheduck Exp $
  */
 

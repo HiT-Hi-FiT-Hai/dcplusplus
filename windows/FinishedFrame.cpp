@@ -27,9 +27,9 @@
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 
-int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
-int FinishedFrame::columnSizes[] = { 110, 390, 125, 80, 80, 80 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::PATH, 
+int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
+int FinishedFrame::columnSizes[] = { 110, 100, 290, 125, 80, 80, 80 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::FILENAME, ResourceManager::PATH, 
 ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
@@ -193,7 +193,8 @@ void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* 
 void FinishedFrame::addEntry(FinishedItem* entry) {
 	StringList l;
 	l.push_back(entry->getTime());
-	l.push_back(entry->getTarget());
+	l.push_back(Util::getFileName(entry->getTarget()));
+	l.push_back(Util::getFilePath(entry->getTarget()));	
 	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
 	l.push_back(Util::formatBytes(entry->getSize()));
 	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
@@ -208,5 +209,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.14 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.15 2003/11/14 15:37:36 arnetheduck Exp $
  */
