@@ -163,6 +163,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
+			if (d->bytesLeft <= 0) {
+				d->bytesLeft = d->getSize();
+				d->setPos(0);
+			}
 			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft, d->isSet(Download::FLAG_UTF8));
 		} else if(d->isSet(Download::FLAG_UTF8)) {
 			aConn->getBlock(d->getSource(), d->getPos(), d->bytesLeft, true);
@@ -524,18 +528,17 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 	if(d->getFile()) {
 		try {
 			d->getFile()->flush();
-			delete d->getFile();
-			d->setFile(NULL);
-			d->setCrcCalc(NULL);
-
-			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
-				// Ok, set the pos to whereever it was last writing and hope for the best...
-				d->unsetFlag(Download::FLAG_ANTI_FRAG);
-			} 
 		} catch(const Exception&) {
 			finished = false;
 		}
+		delete d->getFile();
+		d->setFile(NULL);
+		d->setCrcCalc(NULL);
 
+		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
+			// Ok, set the pos to whereever it was last writing and hope for the best...
+			d->unsetFlag(Download::FLAG_ANTI_FRAG);
+		} 
 	}
 
 	{
@@ -643,5 +646,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.94 2004/03/08 10:13:52 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.95 2004/03/09 12:20:19 arnetheduck Exp $
  */

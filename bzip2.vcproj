@@ -94,7 +94,8 @@
 				WarningLevel="3"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"/>
+				CompileAs="0"
+				DisableSpecificWarnings="4711;4127"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool

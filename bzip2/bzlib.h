@@ -62,9 +62,6 @@
 #ifndef _BZLIB_H
 #define _BZLIB_H
 
-#ifdef WIN32
-#pragma warning (disable:4711 4127)
-#endif
 
 #ifdef __cplusplus
 extern "C" {

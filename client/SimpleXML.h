@@ -45,13 +45,16 @@ public:
 		virtual void endTag(const string& name, const string& data) = 0;
 
 		const string& getAttrib(StringPairList& attribs, const string& name, size_t hint) {
-			if(hint < attribs.size() && attribs[hint].first == name)
-				return attribs[hint].second;
+			hint = min(hint, attribs.size());
 
-			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string, string>(name));
-			return ((i == attribs.end()) ? Util::emptyString : i->second);
+			StringPairIter i = find_if(attribs.begin() + hint, attribs.end(), CompareFirst<string, string>(name));
+			if(i == attribs.end()) {
+				i = find_if(attribs.begin(), attribs.begin() + hint, CompareFirst<string, string>(name));
+				return ((i == attribs.end()) ? Util::emptyString : i->second);
+			} else {
+				return i->second;
+			}
 		}
-
 	};
 	SimpleXMLReader(CallBack* callback) : cb(callback) { }
 	virtual ~SimpleXMLReader() { }
@@ -167,6 +170,13 @@ public:
 	string toXML() { StringOutputStream os; toXML(&os); return os.getString(); };
 	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
+	static const string& escape(const string& str, string& tmp, bool aAttrib, bool aLoading = false) {
+		if(needsEscape(str, aAttrib, aLoading)) {
+			tmp = str;
+			return escape(tmp, aAttrib, aLoading);
+		}
+		return str;
+	}
 	static string& escape(string& aString, bool aAttrib, bool aLoading = false);
 	/** 
 	 * This is a heurestic for whether escape needs to be called or not. The results are
@@ -273,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.31 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.32 2004/03/09 12:20:20 arnetheduck Exp $
  */
 

@@ -245,12 +245,11 @@ void WinUtil::init(HWND hWnd) {
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		fileImages.Create(16, 16, ILC_COLOR8, 16, 16);
-		fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
+		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
 		::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
-		dirIconIndex = fileImageCount++;	
+		dirIconIndex = fileImageCount++;
 	} else {
 		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 		dirIconIndex = 0;
@@ -630,5 +629,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.36 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.37 2004/03/09 12:20:20 arnetheduck Exp $
  */

@@ -27,6 +27,8 @@
 * /rebuilddb rebuilds the hash database and potentially reduces the size of the raw hash data file (also checks
   its integrity)
 * Ip column in transfer list (thanks cologic)
+* Scrollbar for multiline messages (thanks garg)
+* Fixed an issue with icon transparencies (thanks garg)
 
 
  -- 0.306 2004-01-09 --

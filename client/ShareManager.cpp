@@ -518,8 +518,9 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeM
 			xmlFile->write(LITERAL("\" Size=\""));
 			xmlFile->write(Util::toString(j->getSize()));
 			if(j->getTTH()) {
+				tmp2.clear();
 				xmlFile->write(LITERAL("\" TTH=\""));
-				xmlFile->write(j->getTTH()->toBase32());
+				xmlFile->write(j->getTTH()->toBase32(tmp2));
 			}
 			xmlFile->write(LITERAL("\"/>\r\n"));
 
@@ -871,6 +872,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.77 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.78 2004/03/09 12:20:20 arnetheduck Exp $
  */
 

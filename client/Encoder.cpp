@@ -24,11 +24,10 @@ const int8_t Encoder::base32Table[] = {
 
 const char Encoder::base32Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
-string Encoder::toBase32(const u_int8_t* src, size_t len) {
+string& Encoder::toBase32(const u_int8_t* src, size_t len, string& dst) {
 	// Code snagged from the bitzi bitcollider
 	size_t i, index;
 	u_int8_t word;
-	string dst;
 	dst.reserve(((len * 8) / 5) + 1);
 
 	for(i = 0, index = 0; i < len;) {
@@ -88,5 +87,5 @@ void Encoder::fromBase32(const char* src, u_int8_t* dst, size_t len) {
 
 /**
  * @file
- * $Id: Encoder.cpp,v 1.1 2004/01/28 20:19:20 arnetheduck Exp $
+ * $Id: Encoder.cpp,v 1.2 2004/03/09 12:20:19 arnetheduck Exp $
  */

@@ -217,6 +217,7 @@ void ListLoader::endTag(const string& name, const string&) {
 		} else if(name == sFileListing) {
 			// cur should be root now...
 			ADLSearchManager::getInstance()->FinalizeDestinationDirectories(destDirs, cur);
+			inListing = false;
 		}
 	}
 }
@@ -235,12 +236,8 @@ string DirectoryListing::getPath(Directory* d) {
 	return dir;
 }
 
-static const string& escaper(const string& s, string& tmp, bool utf8) {
-	if(utf8 && Util::needsAcp(s)) {
-		tmp = s;
-		return Util::toAcp(tmp);
-	}
-	return s;
+static inline const string& escaper(const string& n, string& tmp, bool utf8) {
+	return utf8 ? Util::toAcp(n, tmp) : n;
 }
 
 void DirectoryListing::download(Directory* aDir, const string& aTarget) {
@@ -317,5 +314,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.27 2004/03/08 10:13:52 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.28 2004/03/09 12:20:19 arnetheduck Exp $
  */

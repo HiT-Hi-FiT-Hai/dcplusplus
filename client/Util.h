@@ -345,7 +345,22 @@ public:
 	static bool needsAcp(const string& str) {
 		return needsUtf8(str);
 	}
+	static const string& toUtf8(const string& str, string& tmp) {
+		if(needsUtf8(str)) {
+			tmp = str;
+			return toUtf8(tmp);
+		}
+		return str;
+	}
 	static string& toUtf8(string& str);
+
+	static const string& toAcp(const string& str, string& tmp) {
+		if(needsAcp(str)) {
+			tmp = str;
+			return toAcp(tmp);
+		}
+		return str;
+	}
 	static string& toAcp(string& str);
 
 	static string toString(u_int32_t val) {
@@ -533,5 +548,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.81 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: Util.h,v 1.82 2004/03/09 12:20:20 arnetheduck Exp $
  */

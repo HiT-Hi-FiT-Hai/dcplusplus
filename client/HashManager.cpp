@@ -136,13 +136,8 @@ void HashManager::HashStore::rebuild() {
 	dirty = true;
 }
 
-static const string& escaper(const string& n, string& tmp) {
-	tmp = n;
-	return SimpleXML::escape(tmp, true);
-}
-
 #define LITERAL(x) x, sizeof(x)-1
-#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
+#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
 
 void HashManager::HashStore::save() {
 	if(dirty) {
@@ -151,6 +146,7 @@ void HashManager::HashStore::save() {
 			BufferedOutputStream<false> f(&ff);
 
 			string tmp;
+			string b32tmp;
 
 			f.write(SimpleXML::w1252Header);
 			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">"));
@@ -169,7 +165,8 @@ void HashManager::HashStore::save() {
 				f.write(LITERAL("\" LeafSize=\""));
 				f.write(Util::toString((u_int32_t)i->second->getBlockSize()));
 				f.write(LITERAL("\" Root=\""));
-				f.write(i->second->getRoot().toBase32());
+				b32tmp.clear();
+				f.write(i->second->getRoot().toBase32(b32tmp));
 				f.write(LITERAL("\"/></File>\r\n"));
 			}
 			f.write(LITERAL("</HashStore>"));
@@ -367,5 +364,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.9 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.10 2004/03/09 12:20:19 arnetheduck Exp $
  */

@@ -26,7 +26,11 @@
 class Encoder
 {
 public:
-	static string toBase32(const u_int8_t* src, size_t len);
+	static string& toBase32(const u_int8_t* src, size_t len, string& tgt);
+	static string toBase32(const u_int8_t* src, size_t len) {
+		string tmp;
+		return toBase32(src, len, tmp);
+	}
 	static void fromBase32(const char* src, u_int8_t* dst, size_t len);
 private:
 	static const int8_t base32Table[];
@@ -37,5 +41,5 @@ private:
 
 /**
  * @file
- * $Id: Encoder.h,v 1.2 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: Encoder.h,v 1.3 2004/03/09 12:20:19 arnetheduck Exp $
  */

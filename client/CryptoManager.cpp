@@ -340,9 +340,9 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	}
 
 	nodes.sort(greaterNode());
-	dcdebug("\n");
 #ifdef _DEBUG
 	for(list<Node*>::iterator it = nodes.begin(); it != nodes.end(); ++it) dcdebug("%.02x:%d, ", (*it)->chr, (*it)->weight);
+	dcdebug("\n");
 #endif
 	
 	walkTree(nodes);
@@ -384,7 +384,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		}
 	}
 	
-	dcdebug("\nu_int8_ts: %d", os.size());
+	dcdebug("u_int8_ts: %d\n", os.size());
 	bos.skipToByte();
 
 	for(string::size_type j=0; j<is.size(); j++) {
@@ -396,5 +396,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.43 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.44 2004/03/09 12:20:19 arnetheduck Exp $
  */

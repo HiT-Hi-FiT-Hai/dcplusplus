@@ -575,11 +575,7 @@ static SizeMap sizeMap;
 static string utfTmp;
 
 static const string& utfEscaper(const string& x) {
-	if(curDl->getUtf8() && Util::needsAcp(x)) {
-		utfTmp = x;
-		return Util::toAcp(utfTmp);
-	}
-	return x;
+	return curDl->getUtf8() ? Util::toAcp(x, utfTmp) : x;
 }
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
@@ -960,11 +956,6 @@ void QueueManager::setSearchString(const string& aTarget, const string& searchSt
 	}
 }
 
-static const string& escaper(const string& n, string& tmp) {
-	tmp = n;
-	return SimpleXML::escape(tmp, true);
-}
-
 void QueueManager::saveQueue() throw() {
 	if(!dirty)
 		return;
@@ -974,13 +965,15 @@ void QueueManager::saveQueue() throw() {
 	try {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
-#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
+#define CHECKESCAPE(n) SimpleXML::escape(n, tmp, true)
+
 		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
 
 		f.write(SimpleXML::w1252Header);
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
+		string b32tmp;
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 			QueueItem* d = i->second;
 			if(!d->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -995,8 +988,9 @@ void QueueManager::saveQueue() throw() {
 				f.write(STRINGLEN("\" Added=\""));
 				f.write(Util::toString(d->getAdded()));
 				if(d->getTTH() != NULL) {
+					b32tmp.clear();
 					f.write(STRINGLEN("\" TTH=\""));
-					f.write(d->getTTH()->toBase32());
+					f.write(d->getTTH()->toBase32(b32tmp));
 				}
 				if(!d->getSearchString().empty()) {
 					f.write(STRINGLEN("\" SearchString=\""));
@@ -1109,8 +1103,8 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			const string& tempTarget = getAttrib(attribs, sTempTarget, 4);
 			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 5));
 			const string& tthRoot = getAttrib(attribs, sTTH, 6);
-			const string& searchString = getAttrib(attribs, sSearchString, 7);
-			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 8));
+			const string& searchString = getAttrib(attribs, sSearchString, 6);
+			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 6));
 
 			if(added == 0)
 				added = GET_TIME();
@@ -1321,5 +1315,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.76 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.77 2004/03/09 12:20:19 arnetheduck Exp $
  */
