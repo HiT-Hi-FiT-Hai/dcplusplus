@@ -88,12 +88,10 @@ void shutdown();
  */
 #define WM_SPEAKER (WM_APP + 100)		
 
-#define IDC_DOWNLOAD_TARGET 5000
-
 #endif // _DCPLUSPLUS_H
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.22 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.23 2002/04/18 19:18:29 arnetheduck Exp $
  */
 
