@@ -72,10 +72,10 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	}
 	if(!cur.empty()) {
 		if(!fromSet) {
-			from = CID(cur);
+			to = CID(cur);
 			fromSet = true;
 		} else if(type == TYPE_DIRECT && !toSet) {
-			to = CID(cur);
+			from = CID(cur);
 			toSet = true;
 		} else {
 			parameters.push_back(cur);
@@ -92,6 +92,7 @@ string Command::toString(bool nmdc /* = false */) const {
 	}
 
 	tmp += cmdChar;
+
 	tmp += ' ';
 	tmp += from.toBase32();
 
@@ -107,7 +108,7 @@ string Command::toString(bool nmdc /* = false */) const {
 	if(nmdc) {
 		tmp += '|';
 	} else {
-		tmp += '$';
+		tmp += '\n';
 	}
 	return tmp;
 }
@@ -136,5 +137,5 @@ bool Command::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.3 2004/11/22 13:38:33 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.4 2004/11/22 14:15:44 arnetheduck Exp $
  */

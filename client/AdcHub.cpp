@@ -192,7 +192,7 @@ void AdcHub::handle(Command::RCM, Command& c) throw() {
 
 void AdcHub::connect(const User* user) {
 	u_int32_t r = Util::rand();
-	connect(user, Encoder::toBase32((u_int8_t*)&r, sizeof(u_int32_t)));
+	connect(user, Util::toString(r));
 }
 
 void AdcHub::connect(const User* user, string const& token) {
@@ -341,5 +341,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.25 2004/11/22 13:38:33 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.26 2004/11/22 14:15:43 arnetheduck Exp $
  */
