@@ -1,4 +1,8 @@
- -- 0.26 2003-07-15 
+ -- 0.261 2003-07-15 --
+* Fixed user list problems (dc++ was too fast for nmdch)
+* Fixed a queue frame crash
+
+ -- 0.26 2003-07-15 --
 * Search for alternates now sets file type as well (and should work correctly with sizes...)
 * Search now returns results for exact size matches on at least/most searches
 * Some minor fixes

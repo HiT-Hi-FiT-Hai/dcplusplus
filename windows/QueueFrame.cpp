@@ -399,10 +399,10 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 
 
 	while( i < dir.length() ) {
+		if(next == fileLists) {
+			next = ctrlDirs.GetNextSiblingItem(next);
+		}
 		while(next != NULL) {
-			if(next == fileLists) {
-				next = ctrlDirs.GetNextSiblingItem(next);
-			}
 			const string& n = getDir(next);
 			if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
 				// Found a part, we assume it's the best one we can find...
@@ -1139,7 +1139,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.24 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.25 2003/07/15 16:08:30 arnetheduck Exp $
  */
 
 

@@ -304,11 +304,12 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 			// Let's assume 16 bytes / getinfo...
 			tmp.reserve(aList.size() * 16); 
 			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				tmp += "$GetINFO " + (*i)->getNick() + '|';
+				//tmp += "$GetINFO " + (*i)->getNick() + '|';
+				client->getInfo(*i);
 			}
-			if(!tmp.empty()) {
-				client->send(tmp);
-			}
+			//if(!tmp.empty()) {
+			//	client->send(tmp);
+			//}
 		} break;
 	case ClientListener::OP_LIST:
 		{
@@ -344,5 +345,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.35 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.36 2003/07/15 16:08:29 arnetheduck Exp $
  */
