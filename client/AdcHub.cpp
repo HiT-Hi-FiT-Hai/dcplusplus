@@ -151,7 +151,7 @@ void AdcHub::handle(Command::GPA, Command& c) throw() {
 }
 
 void AdcHub::handle(Command::QUI, Command& c) throw() {
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getParam(0), false);
+	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParam(0)), false);
 	if(!p)
 		return;
 	ClientManager::getInstance()->putUserOffline(p);
@@ -344,5 +344,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.32 2005/01/04 14:16:06 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.33 2005/01/04 14:17:47 arnetheduck Exp $
  */

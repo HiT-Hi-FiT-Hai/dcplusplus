@@ -270,7 +270,7 @@ void SettingsManager::load(string const& aFileName)
 			set(UDP_PORT, SETTING(IN_PORT));
 		}
 
-		if(SETTING(CLIENT_ID).empty())
+		if(CID(SETTING(CLIENT_ID)).isZero())
 			set(CLIENT_ID, CID::generate().toBase32());
 
 #ifdef _DEBUG
@@ -278,8 +278,6 @@ void SettingsManager::load(string const& aFileName)
 #endif
 		setDefault(UDP_PORT, SETTING(IN_PORT));
 		
-		// Make sure it's at least correctly formatted...
-		set(CLIENT_ID, CID(SETTING(CLIENT_ID)).toBase32());
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
@@ -348,6 +346,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.108 2005/01/04 14:16:06 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.109 2005/01/04 14:17:47 arnetheduck Exp $
  */
 
