@@ -400,6 +400,7 @@ enum Strings { // @DontAdd
 	TIMESTAMPS_DISABLED, // "Timestamps disabled"
 	TIMESTAMPS_ENABLED, // "Timestamps enabled"
 	TOTAL, // "Total: "
+	TTH_INCONSISTENCY, // "TTH inconsistency"
 	TTH_ROOT, // "TTH Root"
 	TYPE, // "Type"
 	UNABLE_TO_CREATE_THREAD, // "Unable to create thread"

@@ -396,6 +396,7 @@
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
 		<String Name="Total">Total: </String>
+		<String Name="TthInconsistency">TTH inconsistency</String>
 		<String Name="TthRoot">TTH Root</String>
 		<String Name="Type">Type</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>

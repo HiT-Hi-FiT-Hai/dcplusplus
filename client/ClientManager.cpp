@@ -227,26 +227,60 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 	return i->second;
 }
 
+void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
+	{
+		Lock l(cs);
+		aUser->setIp(Util::emptyString);
+		aUser->unsetFlag(User::PASSIVE);
+		aUser->unsetFlag(User::OP);
+		aUser->unsetFlag(User::DCPLUSPLUS);
+		if(quitHub)
+			aUser->setFlag(User::QUIT_HUB);
+		aUser->setClient(NULL);
+	}
+	fire(ClientManagerListener::USER_UPDATED, aUser);
+}
+
+
+User::Ptr ClientManager::getUser(const CID& cid) {
+	Lock l(cs);
+	dcassert(!cid.isZero());
+	AdcIter i = adcUsers.find(cid);
+	if(i != adcUsers.end())
+		return i->second;
+
+	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
+}
+
 User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline /* = true */) {
 	Lock l(cs);
 	dcassert(!cid.isZero());
-	dcassert(aClient == NULL || find(clients.begin(), clients.end(), aClient) != clients.end());
+	dcassert(aClient != NULL && find(clients.begin(), clients.end(), aClient) != clients.end());
 
-	AdcIter i = adcUsers.find(cid);
-	if(i != adcUsers.end()) {
-		if(putOnline && aClient != NULL && !i->second->isOnline()) {
-			i->second->setClient(aClient);
-			fire(ClientManagerListener::USER_UPDATED, i->second);
+	AdcPair p = adcUsers.equal_range(cid);
+	for(AdcIter i = p.first; i != p.second; ++i) {
+		User::Ptr& p = i->second;
+		if(p->isClient(aClient))
+			return p;
+	}
+
+	if(putOnline) {
+		User::Ptr up;
+		for(AdcIter i = p.first; i != p.second; ++i) {
+			if(!i->second->isOnline()) {
+				up = i->second;
+			}
 		}
-		return i->second;
+		if(!up)
+			up = adcUsers.insert(make_pair(cid, new User(cid)))->second;
+
+		up->setClient(aClient);
+		fire(ClientManagerListener::USER_UPDATED, up);
+		return up;
 	}
 
 	// Create a new user
-	i = adcUsers.insert(make_pair(cid, new User(cid))).first;
-	if(putOnline && aClient != NULL) {
-		fire(ClientManagerListener::USER_UPDATED, i->second);
-	}
-	return i->second;
+	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
 }
 
 void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
@@ -259,6 +293,14 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 			users.erase(i++);
 		} else {
 			++i;
+		}
+	}
+	AdcIter k = adcUsers.begin();
+	while(k != adcUsers.end()) {
+		if(k->second->unique()) {
+			adcUsers.erase(k++);
+		} else {
+			++k;
 		}
 	}
 
@@ -322,5 +364,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.53 2004/04/08 18:18:00 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.54 2004/04/10 20:54:25 arnetheduck Exp $
  */

@@ -37,7 +37,7 @@ const string SettingsManager::settingTags[] =
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
-	"FinishedULWidths", "FinishedULOrder",
+	"FinishedULWidths", "FinishedULOrder", "CID",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
@@ -293,6 +293,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.70 2004/03/28 00:22:07 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.71 2004/04/10 20:54:25 arnetheduck Exp $
  */
 

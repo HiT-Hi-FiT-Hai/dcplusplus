@@ -76,7 +76,6 @@ public:
 	GETSETREF(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-
 	int64_t bytesLeft;
 private:
 	Download();
@@ -206,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.56 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.57 2004/04/10 20:54:25 arnetheduck Exp $
  */

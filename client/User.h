@@ -64,6 +64,8 @@ public:
 	typedef List::iterator Iter;
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
+	typedef HASH_MAP_X(CID, Ptr, CID::Hash, equal_to<CID>, less<CID>) CIDMap;
+	typedef CIDMap::iterator CIDIter;
 
 	struct HashFunction {
 		static const size_t bucket_size = 4;
@@ -141,5 +143,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.39 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: User.h,v 1.40 2004/04/10 20:54:26 arnetheduck Exp $
  */

@@ -37,6 +37,11 @@ TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t 
 	return root;
 }
 
+bool HashManager::getTree(const string& aFileName, TigerTree& tmp) {
+	Lock l(cs);
+	return store.getTree(aFileName, tmp);
+}
+
 void HashManager::hashDone(const string& aFileName, TigerTree& tth) {
 	TTHValue* root = NULL;
 	{
@@ -97,6 +102,26 @@ int64_t HashManager::HashStore::addLeaves(TigerTree::MerkleList& leaves) {
 	f.setPos(0);
 	f.write(&p2, sizeof(p2));
 	return pos;
+}
+
+bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
+	TTHIter i = indexTTH.find(aFileName);
+	if(i == indexTTH.end())
+		return false;
+	FileInfo* fi = i->second;
+
+	try {
+		File f(dataFile, File::READ, File::OPEN);
+
+		f.setPos(fi->getIndex());
+		size_t datalen = TigerTree::calcBlocks(fi->getSize(), fi->getBlockSize()) * TTHValue::SIZE;
+		AutoArray<u_int8_t> buf(datalen);
+		f.read((u_int8_t*)buf, datalen);
+		tth = TigerTree(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf);
+	} catch(const FileException& ) {
+		return false;
+	}
+	return true;
 }
 
 void HashManager::HashStore::rebuild() {
@@ -450,5 +475,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.13 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.14 2004/04/10 20:54:25 arnetheduck Exp $
  */

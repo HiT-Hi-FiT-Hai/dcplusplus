@@ -70,16 +70,11 @@ public:
 		Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
 	}
 
-	void handle(Command& c, Command::SUP) {
-		if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
-			disconnect();
-			return;
-		}
-		info();
-		Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
-	}
-
+	void handle(Command& c, Command::SUP);
+	void handle(Command& c, Command::MSG);
 	void handle(Command& c, Command::INF);
+	void handle(Command& c, Command::GPA);
+
 	void handle(Command& c, Command::QUI);
 
 private:
@@ -123,5 +118,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.2 2004/04/08 18:17:59 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.3 2004/04/10 20:54:25 arnetheduck Exp $
  */

@@ -65,6 +65,8 @@ public:
 	 */
 	TTHValue* getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
+	bool getTree(const string& aFileName, TigerTree& tmp);
+
 	/**
 	 * Rebuild hash data file
 	 */
@@ -142,7 +144,7 @@ private:
 			return NULL;
 		}
 
-		//bool getTTH(const string& aFileName, TigerTree& tth);
+		bool getTree(const string& aFileName, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
@@ -198,5 +200,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.8 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.9 2004/04/10 20:54:25 arnetheduck Exp $
  */

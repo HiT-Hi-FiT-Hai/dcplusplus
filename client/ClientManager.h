@@ -96,7 +96,8 @@ public:
 
 	void infoUpdated();
 
-	User::Ptr getUser(const CID& cid, Client* aClient = NULL, bool putOnline = true);
+	User::Ptr getUser(const CID& cid);
+	User::Ptr getUser(const CID& cid, Client* aClient, bool putOnline = true);
 	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
 	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
 	
@@ -114,19 +115,7 @@ public:
 	 * A user went offline. Must be called whenever a user quits a hub.
 	 * @param quitHub The user went offline because (s)he disconnected from the hub.
 	 */
-	void putUserOffline(User::Ptr& aUser, bool quitHub = false) {
-		{
-			Lock l(cs);
-			aUser->setIp(Util::emptyString);
-			aUser->unsetFlag(User::PASSIVE);
-			aUser->unsetFlag(User::OP);
-			aUser->unsetFlag(User::DCPLUSPLUS);
-			if(quitHub)
-				aUser->setFlag(User::QUIT_HUB);
-			aUser->setClient(NULL);
-		}
-		fire(ClientManagerListener::USER_UPDATED, aUser);
-	}
+	void putUserOffline(User::Ptr& aUser, bool quitHub = false);
 	
 	void lock() throw() { cs.enter(); }
 	void unlock() throw() { cs.leave(); }
@@ -142,14 +131,12 @@ public:
  		}
  	}
 
-	User::Ptr getAdcMe() { return adcMe; }
-
 private:
 	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	typedef pair<UserIter, UserIter> UserPair;
 
-	typedef HASH_MAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) AdcMap;
+	typedef HASH_MULTIMAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) AdcMap;
 	typedef AdcMap::iterator AdcIter;
 	typedef pair<AdcIter, AdcIter> AdcPair;
 
@@ -159,13 +146,13 @@ private:
 	UserMap users;
 	AdcMap adcUsers;
 
-	User::Ptr adcMe;
-
 	Socket s;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() : adcMe(new User(CID::generate())) { 
+	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
+		if(SETTING(CLIENT_ID).empty())
+			SettingsManager::getInstance()->set(SettingsManager::CLIENT_ID, CID::generate().toBase32());
 	};
 
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
@@ -189,6 +176,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.45 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.46 2004/04/10 20:54:25 arnetheduck Exp $
  */
 

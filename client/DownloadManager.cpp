@@ -24,6 +24,7 @@
 #include "ConnectionManager.h"
 #include "QueueManager.h"
 #include "CryptoManager.h"
+#include "HashManager.h"
 
 #include "LogManager.h"
 #include "SFVReader.h"
@@ -244,6 +245,46 @@ private:
 	u_int8_t* buf;
 };
 
+template<bool managed>
+class TigerTreeOutputStream : public OutputStream {
+public:
+	TigerTreeOutputStream(const TigerTree& aTree, OutputStream* aStream) : s(aStream), real(aTree), cur(aTree.getBlockSize()), verified(0) {
+	}
+	virtual ~TigerTreeOutputStream() { if(managed) delete s; };
+
+	virtual size_t flush() throw(FileException) {
+		cur.finalize();
+		checkTrees();
+		return s->flush();
+	}
+
+	virtual size_t write(const void* b, size_t len) throw(FileException) {
+		cur.update(b, len);
+		checkTrees();
+		return s->write(b, len);
+	}
+	
+	virtual int64_t verifiedBytes() {
+		return cur.getFileSize();
+	}
+private:
+	OutputStream* s;
+	TigerTree real;
+	TigerTree cur;
+	size_t verified;
+
+	void checkTrees() throw(FileException) {
+		while(cur.getLeaves().size() > verified) {
+			if(cur.getLeaves().size() > real.getLeaves().size() ||
+				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
+			{
+				throw FileException(STRING(TTH_INCONSISTENCY));
+			}
+			verified++;
+		}
+	}
+};
+
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = -1 */) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
@@ -311,6 +352,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		Download::CrcOS* crc = new Download::CrcOS(d->getFile());
 		d->setCrcCalc(crc);
 		d->setFile(crc);
+	}
+
+	TigerTree tree;
+	if(HashManager::getInstance()->getTree(d->getDownloadTarget(), tree)) {
+		d->setFile(new TigerTreeOutputStream<true>(tree, d->getFile()));
 	}
 
 	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
@@ -648,5 +694,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.97 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.98 2004/04/10 20:54:25 arnetheduck Exp $
  */

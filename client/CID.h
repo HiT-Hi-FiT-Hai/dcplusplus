@@ -28,8 +28,8 @@ public:
 		size_t operator()(const CID& c) const { return c.toHash(); }
 	};
 	CID() : cid(0) { }
-	CID(u_int64_t c) : cid(c) { }
-	CID(const string& base32) { Encoder::fromBase32(base32.c_str(),(u_int8_t*)&cid, sizeof(cid)); }
+	explicit CID(u_int64_t c) : cid(c) { }
+	explicit CID(const string& base32) { Encoder::fromBase32(base32.c_str(),(u_int8_t*)&cid, sizeof(cid)); }
 	CID(const CID& rhs) : cid(rhs.cid) { }
 
 	operator u_int64_t() { return cid; }
@@ -62,5 +62,5 @@ private:
 
 /**
 * @file
-* $Id: CID.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+* $Id: CID.h,v 1.2 2004/04/10 20:54:25 arnetheduck Exp $
 */

@@ -29,7 +29,7 @@
 #error WTL not correctly installed, read compile.txt
 #endif
 
-#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x460)
+#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x461)
 #error STLPort not correctly installed, read compile.txt
 #endif
 
@@ -39,6 +39,6 @@
 
 /**
  * @file
- * $Id: stdafx.cpp,v 1.9 2003/12/14 20:41:39 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.10 2004/04/10 20:54:26 arnetheduck Exp $
  */
 
