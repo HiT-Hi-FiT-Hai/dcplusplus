@@ -496,7 +496,7 @@ int QueueManager::matchListing(DirectoryListing* dl, const User::Ptr& aUser) thr
 	for(MatchIter i = f.begin(); i != f.end(); ++i) {
 		DirectoryListing::File* df = i->first;
 		try {
-			add(df->getName(), df->getSize(), aUser, i->second);
+			add(dl->getPath(df) + df->getName(), df->getSize(), aUser, i->second);
 		} catch(const Exception&) {
 			totalItems--;
 		}
@@ -1065,5 +1065,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.39 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.40 2003/04/17 16:59:30 arnetheduck Exp $
  */

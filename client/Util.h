@@ -311,7 +311,7 @@ public:
 			const char* b = aSubString.c_str();
 			char c = lower[(u_int8_t)*b];
 			for(string::size_type pos = start; pos < (alen - blen + 1); pos++) {
-				if((c == lower[(u_int8_t)*a]) && strnicmp(a+pos+1, b+1, blen-1) == 0)
+				if((c == lower[(u_int8_t)*(a+pos)]) && strnicmp(a+pos+1, b+1, blen-1) == 0)
 					return pos;
 			}
 		}
@@ -400,5 +400,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.53 2003/04/15 10:13:59 arnetheduck Exp $
+ * $Id: Util.h,v 1.54 2003/04/17 16:59:31 arnetheduck Exp $
  */
