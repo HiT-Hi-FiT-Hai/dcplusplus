@@ -30,6 +30,7 @@ class ExListViewCtrl : public CListViewCtrl
 	bool ascending;
 public:
 	enum {	SORT_STRING,
+			SORT_STRING_NOCASE,
 			SORT_INT
 	};
 	void setSort(int aColumn, int aType, bool aAscending = true) {
@@ -152,6 +153,8 @@ public:
 		switch(p->sortType) {
 		case SORT_STRING:
 			return compare(a, b, p->ascending);
+		case SORT_STRING_NOCASE:
+			return p->ascending ? strnicmp(a.c_str(), b.c_str(), max(a.length(), b.length())) : -strnicmp(a.c_str(), b.c_str(), max(a.length(), b.length()));
 		case SORT_INT:
 			return compare(atoi(a.c_str()), atoi(b.c_str()), p->ascending);
 		default:
@@ -188,9 +191,13 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.8 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.8  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.7  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

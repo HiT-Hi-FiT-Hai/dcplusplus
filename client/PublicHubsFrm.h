@@ -27,10 +27,12 @@
 #include "HubManager.h"
 #include "ExListViewCtrl.h"
 
+#define SERVER_MESSAGE_MAP 7
+
 class PublicHubsFrame : public CMDIChildWindowImpl2<PublicHubsFrame>, private HubManagerListener
 {
 public:
-	PublicHubsFrame() : close(false), listing(false) {
+	PublicHubsFrame() : close(false), listing(false), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
 		
 	};
 
@@ -55,8 +57,12 @@ public:
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<PublicHubsFrame>)
+	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 		
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		PAINTSTRUCT ps;
@@ -88,7 +94,7 @@ public:
 			if(l->iSubItem == 2) {
 				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
 			} else {
-				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING);
+				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
 		}
 		return 0;
@@ -160,6 +166,8 @@ private:
 	CButton ctrlConnect;
 	CButton ctrlRefresh;
 	CStatic ctrlAddress;
+
+	CContainedWindow ctrlHubContainer;
 	
 	CEdit ctrlHub;
 	ExListViewCtrl ctrlHubs;
@@ -197,9 +205,13 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.2 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.3  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.2  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

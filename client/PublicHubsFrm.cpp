@@ -63,6 +63,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	ctrlHub.SetFont(ctrlHubs.GetFont());
 	
+	ctrlHubContainer.SubclassWindow(ctrlHub.m_hWnd);
+	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
 	ctrlConnect.SetWindowText("Connect");
@@ -85,7 +87,17 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 }
 
 LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-	// Do nothing for now...
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+
+	char buf[1024];
+	
+	ctrlHubs.GetItemText(item->iItem, 3, buf, 1024);
+	string tmp = buf;
+	if(!Client::isConnected(tmp)) {
+		HubFrame* frm = new HubFrame(buf);
+		frm->CreateEx(GetParent());
+	}
+
 	return 0;
 }
 
@@ -103,6 +115,7 @@ LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 	listing = true;
+	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getPublicHubs(true);
 
 	return 0;
@@ -134,11 +147,34 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 	return 0;
 }
 
+LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	char* hub;
+	
+	if(wParam == VK_RETURN && ctrlHub.GetWindowTextLength() > 0) {
+		hub = new char[ctrlHub.GetWindowTextLength()+1];
+		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
+		string s(hub, ctrlHub.GetWindowTextLength());
+		delete hub;
+		if(!Client::isConnected(s)) {
+			HubFrame* frm = new HubFrame(s);
+			frm->CreateEx(GetParent());
+		}
+		ctrlHub.SetWindowText("");
+	} else {
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.2 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.3  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.2  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

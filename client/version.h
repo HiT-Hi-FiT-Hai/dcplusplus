@@ -17,14 +17,18 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.05"
-#define VERSIONINT 5
+#define VERSIONSTRING "0.06"
+#define VERSIONINT 6
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.4 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: version.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.5  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.4  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

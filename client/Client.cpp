@@ -46,6 +46,8 @@ void Client::connect(const string& aServer, short aPort) {
  */
 
 void Client::onLine(const string& aLine) {
+	lastActivity = TimerManager::getTick();
+
 	string cmd;
 	string param;
 	int x;
@@ -194,9 +196,13 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.7 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.8 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.8  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.7  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

@@ -78,16 +78,10 @@ public:
 
 	/**
 	 * Set this ConnectionManager to listen at a different port.
-	 * @todo Multiple ports and something clever when the port is taken.
 	 */
-	void setPort(short aPort) {
-		try {
-			socket.disconnect();
-			socket.waitForConnections(aPort);
-		} catch(SocketException e) {
-			dcdebug("ConnectionManager::setPort caught: %s\n", e.getError().c_str());
-			// Doh!...
-		}
+	void setPort(short aPort) throw(SocketException) {
+		socket.disconnect();
+		socket.waitForConnections(aPort);
 	}
 
 private:
@@ -145,20 +139,9 @@ private:
 		cs.leave();
 	}
 	static ConnectionManager* instance;
-	/**
-	 * @todo Something clever when the port is busy.
-	 */
+
 	ConnectionManager() {
-		try {
-			socket.addListener(this);
-			
-			if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-				// We only want to listen if we're in active mode...
-				socket.waitForConnections(Settings::getPort());
-			}
-		} catch(SocketException e) {
-			dcdebug("ConnectionManager::ConnectionManager caught: %s\n", e.getError().c_str());
-		}
+		socket.addListener(this);
 	};
 
 	~ConnectionManager() {
@@ -177,9 +160,13 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.12  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.11  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

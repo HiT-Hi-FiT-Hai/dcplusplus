@@ -33,11 +33,13 @@ DWORD WINAPI HubManager::lister(void* p) {
 	hEvent[0] = hm->listerEvent;
 
 	hm->fireMessage("Downloading public server list...");
+	hm->fireStarting();
 	
 	// Wait for downloaders to finish
 	hEvent[1] = hm->downloadEvent;
 	if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
 		ATLTRACE("Hub Lister Thread ended");
+		hm->fireFinished();
 		return 0;
 	}
 	
@@ -48,7 +50,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 		hm->fireMessage("Download complete");
 	}
 	
-	hm->fireStarting();
 	for(HubManager::HubEntry::Iter i = hm->publicHubs.begin(); i != hm->publicHubs.end(); ++i) {
 		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
 			ATLTRACE("Hub Lister Thread ended");
@@ -98,9 +99,13 @@ void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.5 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.6  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.5  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

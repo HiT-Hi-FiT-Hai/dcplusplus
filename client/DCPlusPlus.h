@@ -16,6 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef _DEBUG
+#define dcdebug ATLTRACE
+#define dcassert(exp) ATLASSERT(exp)
+#else //_DEBUG
+#define dcdebug ATLTRACE
+#define dcassert(exp) __assume(exp)
+#endif //_DEBUG
+
 typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef map<string, string> StringMap;
@@ -27,19 +35,15 @@ typedef StringSet::iterator StringSetIter;
 #include "Settings.h"
 #include "Version.h"
 
-#ifdef _DEBUG
-#define dcdebug ATLTRACE
-#define dcassert(exp) ATLASSERT(exp)
-#else //_DEBUG
-#define dcdebug ATLTRACE
-#define dcassert(exp) __assume(exp)
-#endif //_DEBUG
-
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

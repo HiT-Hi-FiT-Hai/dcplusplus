@@ -29,17 +29,23 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 	cs.enter();
 	Download::List tmp = queue;
 	cs.leave();
-
+	
 	for(Download::Iter i = tmp.begin(); i != tmp.end(); ++i) {
 		Download* d = *i;
 		if(aTick > d->getLastTry() + 60 * 1000) {
 			// Time to go hot...
 			User* u = Client::findUser(d->getLastNick());
 			if(u != NULL) {
-				d->setUser(u);
-				d->setLastTry(aTick);
-				if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY, true) {
-					fireConnecting(d);
+				map<User*, DWORD>::iterator j = lastConnection.find(u);
+
+				if(j != lastConnection.end()) {
+					if(aTick > j->second + 60*1000) {
+						lastConnection[u] = aTick;
+						d->setLastTry(aTick);
+						if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY, true) {
+							fireConnecting(d);
+						}
+					}
 				}
 			}
 		}
@@ -66,7 +72,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		// First, search the queue for the same download...
 		Download* dd = *i;
-		if(dd->getUser() == aUser && (dd->getLastPath() + dd->getFileName()) == aFile && dd->getTarget() == aTarget) {
+		if(dd->getTarget() == aTarget) {
 			// Same download it seems
 			d = dd;
 		}
@@ -84,7 +90,6 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 		}
 
 		d->setTarget(aTarget);
-		d->setUser(aUser);
 		d->setSize(aSize);
 		d->setLastTry(TimerManager::getInstance()->getTick());
 		d->setResume(aResume);
@@ -99,6 +104,60 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 		fireConnecting(d);
 	}
 }
+
+/**
+ * Add a file to the download queue. Useful if it is not certain that the user is connected.
+ * If he/she is, it will be added as usual, otherwise it will be put on the queue and the 
+ * DownloadManager will hopefully continue downloading it later on...
+ * @param aFile Filename and path at server.
+ * @param aSize Size of file, set to -1 if unknown.
+ * @param aUser Pointer to a _connected_ user.
+ * @param aTarget Target location of a file.
+ * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
+ */
+void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) {
+	Download* d = NULL;
+
+	User* user = Client::findUser(aUser);
+	if(user != NULL) {
+		download(aFile, aSize, user, aTarget, aResume);
+		return;
+	}
+
+	// We don't know who this user is, so we just add it to the list...
+	cs.enter();
+	
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		// First, search the queue for the same download...
+		Download* dd = *i;
+		if(dd->getTarget() == aTarget) {
+			// Same download it seems
+			d = dd;
+		}
+	}
+
+	if(d == NULL) {
+		d = new Download();
+	
+		if(aFile.find('\\')) {
+			d->setFileName(aFile.substr(aFile.rfind('\\')+1));
+			d->setLast(aUser, aFile.substr(0, aFile.rfind('\\')+1));
+		} else {
+			d->setFileName(aFile);
+			d->setLast(aUser, "");
+		}
+
+		d->setTarget(aTarget);
+		d->setSize(aSize);
+		d->setLastTry(TimerManager::getInstance()->getTick());
+		d->setResume(aResume);
+
+		queue.push_back(d);
+		fireAdded(d);
+	}
+	cs.leave();
+}
+
 
 void DownloadManager::removeDownload(Download* aDownload) {
 	cs.enter();
@@ -160,7 +219,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.enter();
 	dcdebug("Checking downloads...");
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(aConn->getUser() == (*i)->getUser()) {
+		if(aConn->getUser()->getNick() == (*i)->getLastNick()) {
 			Download* d = *i;
 			queue.erase(i);
 
@@ -212,6 +271,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	Download* d = i->second;
 
 	HANDLE file;
+	Util::ensureDirectory(d->getTarget());
 	if(d->getResume())
 		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	else
@@ -304,9 +364,13 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.10 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.11 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.11  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.10  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

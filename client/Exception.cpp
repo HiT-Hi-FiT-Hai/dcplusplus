@@ -20,28 +20,17 @@
 
 #include "Exception.h"
 
-Exception::Exception()
-{
-	error = "";
-}
-
-Exception::~Exception()
-{
-
-}
-
-Exception::Exception(const string& aError, const string& aStack) {
-	error = aError;
-	stack = aStack;
-}
-
 /**
  * @file Exception.cpp
- * $Id: Exception.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: Exception.cpp,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Exception.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

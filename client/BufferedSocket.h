@@ -87,7 +87,7 @@ public:
 		cs.leave();
 	}
 	
-	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), readerEvent(NULL), mode(MODE_LINE),
+	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
 		dataBytes(0) {
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -145,6 +145,8 @@ private:
 			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
 				dcassert(0);
 			}
+			// Make sure the event is reset in case the thread had already stopped...
+			ResetEvent(readerEvent);
 			CloseHandle(readerThread);			
 			readerThread = NULL;
 		}
@@ -220,9 +222,13 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.12 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.13 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.13  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.12  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

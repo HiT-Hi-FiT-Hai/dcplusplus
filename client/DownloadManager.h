@@ -43,7 +43,14 @@ public:
 	bool getResume() { return resume; };
 	void setResume(bool aResume) { resume = aResume; };
 
-	const string& getTarget() { return target; };
+	string getTarget() { 
+		if(target.length() == 0) {
+			return Settings::getDownloadDirectory() + getFileName();
+		} else {
+			return target;
+		}
+	};
+
 	void setTarget(const string& aTarget) { target = aTarget; };
 
 	const string& getLastNick() { return lastNick; };
@@ -83,6 +90,12 @@ public:
 		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume = true);
+
+	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) {
+		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
+	}
+	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true);
+
 	
 	void removeDownload(Download* aDownload);
 
@@ -124,6 +137,8 @@ private:
 
 	Download::List queue;
 	Download::Map running;
+	
+	map<User*, DWORD> lastConnection;
 	
 	static DownloadManager* instance;
 	
@@ -207,9 +222,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.10 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.11 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.11  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.10  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

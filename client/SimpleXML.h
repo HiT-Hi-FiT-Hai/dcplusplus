@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Exception.h"
+#include "Util.h"
 
 STANDARD_EXCEPTION(SimpleXMLException);
 
@@ -192,7 +193,7 @@ public:
 	void fromXML(const string& aXML);
 	string toXML() { return (!root.empty()) ? root[0]->toXML() : emptyString; };
 	
-	SimpleXML() : root(NULL), current(NULL), found(false) {  };
+	SimpleXML() : current(NULL), found(false) {  };
 	~SimpleXML() { if(!root.empty()) delete root[0]; }
 
 };
@@ -201,9 +202,13 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.5  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

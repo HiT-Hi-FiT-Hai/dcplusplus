@@ -42,6 +42,7 @@ public:
 	string connection;
 	string server;
 	string port;
+	string directory;
 	int connectionType;
 	int slots;
 	
@@ -53,6 +54,7 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, OnClickedActive)
 		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, OnClickedActive)
+		COMMAND_HANDLER(IDC_BROWSEDIR, BN_CLICKED, onClickedBrowseDir)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
 		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, OnClickedAdd)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, OnClickedRemove)
@@ -66,35 +68,28 @@ public:
 		}
 		return 0;		
 	}
+
+	LRESULT onClickedBrowseDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+		string dir;
+		if(Util::browseDirectory(dir)) {
+			SetDlgItemText(IDC_DOWNLOADDIR, dir.c_str());
+		}
+		return 0;
+	}
 	
 	LRESULT OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-		char buf[MAX_PATH];
-		BROWSEINFO bi;
-		ZeroMemory(&bi, sizeof(bi));
-
-		bi.hwndOwner = m_hWnd;
-		bi.pszDisplayName = buf;
-		bi.lpszTitle = "Choose folder to add";
-		bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-		if(pidl != NULL) {
-			SHGetPathFromIDList(pidl, buf);
+		string target;
+		if(Util::browseDirectory(target)) {
 			try {
-				string name = buf;
-				ShareManager::getInstance()->addDirectory(name);
-				int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), name);
-				ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(name)).c_str());
+				ShareManager::getInstance()->addDirectory(target);
+				int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), target);
+				ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
 				ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
 			} catch(ShareException e) {
 				MessageBox(e.getError().c_str());
 			}
-
-			LPMALLOC ma;
-			if(SHGetMalloc(&ma) != E_FAIL) {
-				ma->Free(pidl);
-				ma->Release();
-			}
 		}
+
 		return 0;
 	}
 
@@ -132,7 +127,8 @@ public:
 		SetDlgItemText(IDC_SERVER, server.c_str());
 		SetDlgItemText(IDC_PORT, port.c_str());
 		SetDlgItemText(IDC_SLOTS, itoa(slots, buf, 10));
-
+		SetDlgItemText(IDC_DOWNLOADDIR, directory.c_str());
+		
 		CUpDownCtrl updown(GetDlgItem(IDC_SLOTS));
 		updown.SetRange(0, 100);
 		if(connectionType == Settings::CONNECTION_ACTIVE) {
@@ -177,6 +173,8 @@ public:
 			description = buf;
 			GetDlgItemText(IDC_CONNECTION, buf, SETTINGS_BUF_LEN);
 			connection = buf;
+			GetDlgItemText(IDC_DOWNLOADDIR, buf, SETTINGS_BUF_LEN);
+			directory = buf;
 			GetDlgItemText(IDC_SERVER, buf, SETTINGS_BUF_LEN);
 			server = buf;
 			GetDlgItemText(IDC_PORT, buf, SETTINGS_BUF_LEN);
@@ -213,9 +211,13 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.5 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.6  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.5  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

@@ -59,8 +59,62 @@ protected:
 class Util  
 {
 public:
+	static bool browseSaveFile(string& target, HWND owner = NULL) {
+		char buf[MAX_PATH];
+		OPENFILENAME ofn;       // common dialog box structure
+		
+		memcpy(buf, target.c_str(), target.length() + 1);
+		// Initialize OPENFILENAME
+		ZeroMemory(&ofn, sizeof(OPENFILENAME));
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		ofn.hwndOwner = owner;
+		ofn.lpstrFile = buf;
+		ofn.nMaxFile = sizeof(buf);
+		ofn.Flags = OFN_PATHMUSTEXIST;
+		
+		// Display the Open dialog box. 
+		if (GetSaveFileName(&ofn)==TRUE) {
+			target = ofn.lpstrFile;
+			return true;
+		}
+		return false;
+	}
+
+	static bool browseDirectory(string& target, HWND owner = NULL) {
+		char buf[MAX_PATH];
+		BROWSEINFO bi;
+		LPMALLOC ma;
+		
+		ZeroMemory(&bi, sizeof(bi));
+		
+		bi.hwndOwner = owner;
+		bi.pszDisplayName = buf;
+		bi.lpszTitle = "Choose folder";
+		bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+		if(pidl != NULL) {
+			SHGetPathFromIDList(pidl, buf);
+			target = buf;
+			if(SHGetMalloc(&ma) != E_FAIL) {
+				ma->Free(pidl);
+				ma->Release();
+			}
+			return true;
+		}
+		return false;
+	}
+			
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
-	
+	static void ensureDirectory(const string& aFile)
+	{
+		string::size_type start = 0;
+		
+		while( (start = aFile.find('\\', start)) != string::npos) {
+			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
+			start++;
+		}
+	}
+		
 	static string shortenBytes(const string& aString) {
 		return shortenBytes(_atoi64(aString.c_str()));
 	}
@@ -88,9 +142,13 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.2 2001/12/07 20:03:33 arnetheduck Exp $
+ * $Id: Util.h,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.3  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.2  2001/12/07 20:03:33  arnetheduck
  * More work done towards application stability
  *

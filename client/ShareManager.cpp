@@ -27,7 +27,7 @@ ShareManager* ShareManager::instance = NULL;
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	if(aFile == "MyList.DcLst") {
-		return Settings::getAppPath() + "\\MyList.DcLst";
+		return getListFile();
 	} else {
 		string::size_type i = aFile.find('\\');
 		if(i == string::npos)
@@ -46,6 +46,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 }
 
 void ShareManager::load(SimpleXML* aXml) {
+	cs.enter();
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {
@@ -56,6 +57,8 @@ void ShareManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+	cs.leave();
+	dirty = true;
 }
 
 void ShareManager::save(SimpleXML* aXml) {
@@ -68,10 +71,13 @@ void ShareManager::save(SimpleXML* aXml) {
 }
 
 void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) {
+	cs.enter();
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 		if(aDirectory.find(i->first) != string::npos) {
+			cs.leave();
 			throw ShareException("Directory already shared.");
 		} else if(i->first.find(aDirectory) != string::npos) {
+			cs.leave();
 			throw ShareException("Remove all subdirectories before adding this one.");
 		}
 	}
@@ -79,14 +85,21 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	directories[aDirectory] = buildTree(aDirectory, NULL);
 	string dir = aDirectory.substr(aDirectory.rfind('\\') + 1);
 	dirs[dir] = aDirectory;
+
+	dirty = true;
+	cs.leave();
 }
 
 void ShareManager::removeDirectory(const string& aDirectory) {
+	cs.enter();
 	Directory::MapIter i = directories.find(aDirectory);
 	if(i != directories.end()) {
 		delete i->second;
 		directories.erase(i);
 	}
+	
+	dirty = true;
+	cs.leave();
 }
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
@@ -127,22 +140,48 @@ StringList ShareManager::getDirectories() {
 
 
 void ShareManager::refresh() throw(ShareException) {
+
+	if(dirty) {
+		if(refreshThread) {
+			WaitForSingleObject(refreshThread, INFINITE);
+			CloseHandle(refreshThread);
+		}
+		
+		DWORD id;
+		refreshThread = CreateThread(NULL, 0, refresher, this, NULL, &id);
+		
+		// We don't want the compression to take up useful CPU time...
+		SetThreadPriority(refreshThread, THREAD_PRIORITY_LOWEST);
+	}
+}
+
+DWORD WINAPI ShareManager::refresher(void* p) {
+	ShareManager* sm = (ShareManager*)p;
+
 	string tmp, tmp2;
 	DWORD d;
-	
-	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+	sm->cs.enter();
+
+	for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
 		tmp = tmp + i->second->toString();
 	}
-
+	
 	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
-
-	HANDLE hf = CreateFile((Settings::getAppPath() + "\\MyList.DcLst").c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	
+	HANDLE hf = CreateFile(sm->listFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	
 	if(hf == INVALID_HANDLE_VALUE) {
-		throw ShareException("Could not write MyList.DcLst");
+		sm->cs.leave();
+		return 1;
 	}
+
 	WriteFile(hf, tmp2.c_str(), tmp2.length(), &d, NULL);
 	CloseHandle(hf);
-	listLen = tmp2.length();
+	sm->listLen = tmp2.length();
+	sm->dirty = false;
+
+	sm->cs.leave();
+	return 0;
 }
 
 string ShareManager::Directory::toString(int ident /* = 0 */) {
@@ -162,9 +201,13 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

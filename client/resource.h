@@ -29,13 +29,16 @@
 #define IDC_TOTAL                       1014
 #define IDC_SLOTS                       1015
 #define IDC_SLOTSPIN                    1016
-#define IDC_TRANSFERS					1017
-#define IDC_CONNECT						1018
+#define IDC_TRANSFERS                   1017
+#define IDC_DOWNLOADDIR                 1017
+#define IDC_CONNECT                     1018
+#define IDC_BROWSEDIR                   1018
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
 #define ID_FILE_SEARCH                  32776
 #define IDC_DOWNLOAD                    32780
+#define IDC_DOWNLOADTO                  32781
 
 // Next default values for new objects
 // 
@@ -43,7 +46,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        209
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1017
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

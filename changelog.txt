@@ -1,3 +1,15 @@
+ -- 0.06 2001-12-13 --
+* A lot of UI work, the app should be at least a tiny bit more comfortable to work with
+* Automatic reconnections (to hubs and users)
+* Yet another slew of bugs killed (hm, where are all those bugs coming from? =)
+* Downloading of directories and multiple files at a time
+* Default download directory
+* Some work on the search window, although searching is far from finished...
+* Quicker startup (huffman encoding of the file list is now done in a separate thread)
+* Automatic ip detection (if nothing's entered in the settings dialog...)
+* Changed to case insensitive sorting...
+* Download deleting
+
  -- 0.05 2001-12-08 --
 * Searching (A very basic first version, only in active mode)
 * More information about things (Hub statistics)
@@ -35,4 +47,3 @@
 
 * Initial release.
 * List hubs, connect to them and chat.
- 

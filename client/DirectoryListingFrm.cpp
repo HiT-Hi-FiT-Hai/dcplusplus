@@ -58,6 +58,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			DirectoryListing::Directory* d = *i;
 			StringList l;
 			l.push_back(d->name);
+			l.push_back(Util::shortenBytes(d->getTotalSize()));
 			ctrlList.insert(l, 0, (LPARAM)d);
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
@@ -74,7 +75,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 	char buf[MAX_PATH];
-	char buf2[MAX_PATH];
+
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
@@ -82,35 +83,15 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 		LVITEM lvi;
 		lvi.iItem = item->iItem;
 		lvi.iSubItem = 0;
-		lvi.mask = LVIF_PARAM | LVIF_IMAGE | LVIF_TEXT;
-		lvi.pszText = buf;
-		lvi.cchTextMax = sizeof(buf);
+		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
 
 		ctrlList.GetItem(&lvi);
 
 		if(lvi.iImage == 2) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-
-			OPENFILENAME ofn;       // common dialog box structure
-
-			strcpy(buf2, buf);
-			// Initialize OPENFILENAME
-			ZeroMemory(&ofn, sizeof(OPENFILENAME));
-			ofn.lStructSize = sizeof(OPENFILENAME);
-			ofn.hwndOwner = m_hWnd;
-			ofn.lpstrFile = buf2;
-			ofn.nMaxFile = sizeof(buf2);
-			ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
-			
-			// Display the Open dialog box. 
-			
-			if (GetSaveFileName(&ofn)==TRUE) {
-				char size[24];
-				ctrlList.GetItemText(item->iItem, 1, size, 24);
-				DownloadManager::getInstance()->download(dl->getPath(dir) + buf, file->size, user, ofn.lpstrFile);
-			}
+			dl->download(file, user, Settings::getDownloadDirectory() + file->name);
 		} else {
-			DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlList.GetItemData(item->iItem);
+			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 
 			HTREEITEM ht = ctrlTree.GetChildItem(t);
 			while(ht != NULL) {
@@ -126,6 +107,61 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 	return 0;
 }
 
+void DirectoryListingFrame::downloadList(const string& aTarget) {
+	int i=-1;
+	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		LVITEM lvi;
+		lvi.iItem = i;
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
+		
+		ctrlList.GetItem(&lvi);
+
+		if(lvi.iImage == 2) {
+			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
+			dl->download(file, user, Settings::getDownloadDirectory() + file->name);
+		} else {
+			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
+			dl->download(d, user, Settings::getDownloadDirectory());
+		} 
+	}
+}
+
+LRESULT DirectoryListingFrame::onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	downloadList(Settings::getDownloadDirectory());
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlList.GetSelectedCount() == 1) {
+		LVITEM lvi;
+		lvi.iItem = ctrlList.GetNextItem(-1, LVNI_SELECTED);
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
+		ctrlList.GetItem(&lvi);
+		
+		if(lvi.iImage == 2) {
+			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
+			string target = file->name;
+			if(Util::browseSaveFile(target))
+				dl->download(file, user, target);
+		} else {
+			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
+			string target;
+			if(Util::browseDirectory(target)) {
+				dl->download(d, user, target + '\\');
+			}
+		} 
+	} else {
+		string target;
+		if(Util::browseDirectory(target)) {
+			downloadList(target);
+		}
+		
+	}
+	return 0;
+}
+
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	char buf[1024];
 
@@ -133,7 +169,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.Attach(m_hWndStatusBar);
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
-	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
+	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
 	
 	ctrlList.InsertColumn(0, _T("Filename"), LVCFMT_LEFT, 400, 0);
 	ctrlList.InsertColumn(1, _T("Size"), LVCFMT_RIGHT, 100, 1);
@@ -146,21 +182,39 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_nProportionalPos = 2500;
 	
 	updateTree(dl->getRoot(), NULL);
+	files = dl->getTotalFileCount();
+	size = Util::shortenBytes(dl->getTotalSize());
 	
 	sprintf(buf, "Files: %d\n", dl->getTotalFileCount());
 	ctrlStatus.SetText(1, buf);
 	sprintf(buf, "Size: %s\n", Util::shortenBytes(dl->getTotalSize()).c_str());
 	ctrlStatus.SetText(2, buf);
 
+	fileMenu.CreatePopupMenu();
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download";
+	mi.wID = IDC_DOWNLOAD;
+	fileMenu.InsertMenuItem(0, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download to...";
+	mi.wID = IDC_DOWNLOADTO;
+	fileMenu.InsertMenuItem(1, TRUE, &mi);
+	
 	bHandled = FALSE;
 	return 1;
 }
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.6 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.7 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.7  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.6  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

@@ -166,6 +166,10 @@ void CryptoManager::decodeHuffman(BYTE* is, string& os) {
 	os.assign(buf, size);
 	delete buf;
 
+	for(i=0; i<treeSize; i++) {
+		delete leaves[i];
+	}
+	
 	delete[] leaves;
 	delete root;
 }
@@ -329,9 +333,13 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.8 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.9  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.8  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

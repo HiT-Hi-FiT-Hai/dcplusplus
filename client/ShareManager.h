@@ -25,6 +25,7 @@
 
 #include "Exception.h"
 #include "DirectoryListing.h"
+#include "CriticalSection.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -70,6 +71,9 @@ public:
 		return _i64toa(getListLen(), buf, 10);
 	}
 	
+	const string& getListFile() {
+		return listFile;
+	}
 	static ShareManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -126,9 +130,25 @@ private:
 	Directory* buildTree(const string& aName, Directory* aParent);
 	
 	LONGLONG listLen;
+	bool dirty;
 
-	ShareManager() : listLen(0) { };
-	virtual ~ShareManager() { 
+	string listFile;
+
+	CriticalSection cs;
+	HANDLE refreshThread;
+
+	static DWORD WINAPI refresher(void* p);
+
+	ShareManager() : listLen(0), dirty(false), refreshThread(NULL) { 
+		listFile = Settings::getAppPath() + "\\MyList.DcLst";
+	};
+	
+	virtual ~ShareManager() {
+		if(refreshThread) {
+			WaitForSingleObject(refreshThread, INFINITE);
+			CloseHandle(refreshThread);
+		}
+
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			delete i->second;
 		}
@@ -145,9 +165,13 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.3 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

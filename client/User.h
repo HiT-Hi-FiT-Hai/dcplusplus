@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
+
 class Client;
 
 /**
@@ -83,9 +85,13 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.1 2001/12/01 17:17:22 arnetheduck Exp $
+ * $Id: User.h,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.2  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.1  2001/12/01 17:17:22  arnetheduck
  * New additions to the reworked connection manager and huffman encoder
  *

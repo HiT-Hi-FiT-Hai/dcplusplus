@@ -28,8 +28,9 @@
 #include "User.h"
 #include "Util.h"
 #include "SearchManager.h"
+#include "TimerManager.h"
 
-class Client : public Speaker<ClientListener>, public BufferedSocketListener
+class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener
 {
 public:
 	enum {
@@ -41,7 +42,8 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client() : socket('|') {
+	Client() : socket('|'), lastActivity(TimerManager::getTick()) {
+		TimerManager::getInstance()->addListener(this);
 		clientList.push_back(this);
 		listeners.insert(listeners.end(), staticListeners.begin(), staticListeners.end());
 	};
@@ -55,12 +57,18 @@ public:
 		}
 		return false;
 	}
+	
 	virtual ~Client() {
+		TimerManager::getInstance()->removeListener(this);
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
 			if(*i == this) {
 				clientList.erase(i);
 				break;
 			}				
+		}
+		// Remove all users
+		for(User::NickIter j = users.begin(); j != users.end(); ++j) {
+			delete j->second;
 		}
 		socket.removeListener(this);
 	};
@@ -135,7 +143,17 @@ public:
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 
-		sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", Settings::getServer().c_str(), Settings::getPort(), c1, c2, aSize, aFileType+1, aString.c_str());
+		string server = Settings::getServer();
+		int port = Settings::getPort();
+		if(server.empty()) {
+			server = socket.getLocalIp();
+		}
+		
+		if(port==-1) {
+			port = 412;
+		}
+		
+		sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, aString.c_str());
 		send(buf);
 	}
 
@@ -164,7 +182,17 @@ public:
 
 	void connectToMe(User* aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Settings::getServer() + ":" + Settings::getPortString() + "|");
+		string server = Settings::getServer();
+		string port = Settings::getPortString();
+		if(server.empty()) {
+			server = socket.getLocalIp();
+		}
+		
+		if(port.empty()) {
+			port = "412";
+		}
+
+		send("$ConnectToMe " + aUser->getNick() + " " + server + ":" + port + "|");
 	}
 	void revConnectToMe(User* aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
@@ -219,7 +247,7 @@ public:
 	}
 
 	static List& getList() { return clientList; }
-protected:
+private:
 	
 	/** A list of listeners that receive all client messages (from all clients) */
 	static ClientListener::List staticListeners;
@@ -229,11 +257,31 @@ protected:
 	short port;
 	BufferedSocket socket;
 	string name;
+	DWORD lastActivity;
 
 	User::NickMap users;
 
 	static List clientList;
 
+	virtual void onTimerSecond(DWORD aTick) {
+		if((lastActivity + 120 * 1000) < aTick) {
+			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
+			lastActivity = aTick;
+			// Try to send something for the fun of it...
+			if(isConnected()) {
+				try {
+					socket.write("", 0);
+				} catch(Exception e) {
+					dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
+					fireError(e.getError());
+					disconnect();
+				}
+			} else {
+				// Try to reconnect...
+				connect(server, port);
+			}
+		}
+	}
 	virtual void onLine(const string& aLine);
 	
 	virtual void onError(const string& aReason) {
@@ -340,7 +388,7 @@ protected:
 		}
 	}
 	void fireMyInfo(User* aUser) {
-		//dcdebug("fireMyInfo\n");
+		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
@@ -376,7 +424,7 @@ protected:
 		}
 	}
 	void fireQuit(User* aUser) {
-		//dcdebug("fireQuit\n");
+		dcdebug("fireQuit %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
@@ -427,9 +475,13 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.8 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: Client.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.9  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.8  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

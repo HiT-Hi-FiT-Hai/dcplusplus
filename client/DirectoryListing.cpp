@@ -42,7 +42,7 @@ void DirectoryListing::load(string& in) {
 			// this must be a file...
 			tok = tok.substr(j);
 			j = tok.find('|');
-			cur->files.push_back(new File(tok.substr(0, j), _atoi64(tok.substr(j+1).c_str())));
+			cur->files.push_back(new File(cur, tok.substr(0, j), _atoi64(tok.substr(j+1).c_str())));
 		} else {
 			// A directory
 			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
@@ -52,6 +52,7 @@ void DirectoryListing::load(string& in) {
 		}
 	}
 }
+
 
 string DirectoryListing::getPath(Directory* d) {
 	string dir = d->name+"\\";
@@ -65,9 +66,13 @@ string DirectoryListing::getPath(Directory* d) {
 
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.3  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

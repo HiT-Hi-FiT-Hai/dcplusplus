@@ -88,11 +88,34 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			h[2] = bs->getEvent();
 
 			bs->Socket::connect(bs->server, bs->port);
-			if(WaitForMultipleObjects(3, h, FALSE, 10000) != WAIT_OBJECT_0 + 2) {
-				// Either timeout or window stopped...don't care which really...
+			switch(WaitForMultipleObjects(3, h, FALSE, 10000)) {
+			case WAIT_TIMEOUT:
 				bs->disconnect();
-				bs->fireError("Connection Timeout.");
+				bs->fireError("Connection Timeout");
 				return 0x01;
+			case WAIT_OBJECT_0:
+				bs->disconnect();
+				dcdebug("BufferedSocket::reader stopped while connecting\n");
+				return 0x00;
+			case WAIT_OBJECT_0 + 1:
+				// Ignore it?
+				dcdebug("BufferedSocket::reader Writer event while connecting!\n");
+				bs->disconnect();
+				bs->fireError("Not connected");
+				return 0x02;
+			case WAIT_OBJECT_0 + 2:
+				// We're connected!
+				break;
+			case WAIT_FAILED:
+				bs->disconnect();
+				bs->fireError("Connection failed");
+				dcdebug("BufferedSocket::reader Wait failed (0x%x)\n", GetLastError());
+				return 0x03;
+			default:
+				bs->disconnect();
+				bs->fireError("Connection failed");
+				dcdebug("BufferedSocket::reader Unknown Wait response (0x%x)\n", GetLastError());
+				return 0x04;
 			}
 				
 			bs->fireConnected();
@@ -112,8 +135,10 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	while(true) {
 		switch( WaitForMultipleObjects(3, h, FALSE, INFINITE) ) {
 		case WAIT_OBJECT_0:				// readerEvent, time to stop
+			dcdebug("BufferedSocket::reader stopped\n");
 			return 0;
 		case WAIT_OBJECT_0 + 1:			// writerEvent, send the file
+			dcdebug("BufferedSocket::reader Writer event\n");
 			if(!writer(bs))
 				return 0x03;
 			break;
@@ -128,7 +153,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				} else if(i == 0) {
 					// This socket has been closed...
 					bs->disconnect();
-					bs->fireError("Disconnected.");
+					bs->fireError("Disconnected");
 					return 0x03;
 				}
 				int bufpos = 0;
@@ -198,9 +223,13 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.15 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.16 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.16  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.15  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

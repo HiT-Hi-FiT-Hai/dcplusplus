@@ -77,6 +77,10 @@ void ConnectionManager::onIncomingConnection() {
 		uc->accept(socket);
 		uc->flags |= UserConnection::FLAG_INCOMING;
 		uc->state = UserConnection::LOGIN;
+
+		uc->myNick(Settings::getNick());
+		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+		
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -117,11 +121,11 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
 	try {
-		if(aSource->flags & UserConnection::FLAG_INCOMING) {
-				aSource->myNick(Settings::getNick());
-				aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+/*		if(aSource->flags & UserConnection::FLAG_INCOMING) {
+			aSource->myNick(Settings::getNick());
+			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		}
-
+*/
 		aSource->direction(aSource->getDirectionString(), "666");
 		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 	} catch(SocketException e) {
@@ -179,9 +183,13 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.9 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.10 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.10  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.9  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

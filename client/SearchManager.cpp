@@ -51,8 +51,8 @@ void SearchManager::onData(BYTE* buf, int aLen) {
 		x = x.substr(x.find('/') + 1);
 		sr->setSlots(x.substr(0, x.find((char)5)));
 		x = x.substr(x.find((char)5)+1);
-		sr->setHubName(x.substr(0, x.find(' ')));
-		x = x.substr(x.find(' ')+2);
+		sr->setHubName(x.substr(0, x.rfind(" (")));
+		x = x.substr(x.rfind(" (")+2);
 		sr->setHubAddress(x.substr(0, x.find(')')));
 
 		fireResult(sr);
@@ -63,9 +63,13 @@ void SearchManager::onData(BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.3 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

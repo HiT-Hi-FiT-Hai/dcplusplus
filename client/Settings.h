@@ -32,6 +32,7 @@ private:
 	static string connection;
 	static string server;
 	static string port;
+	static string downloadDirectory;
 	static int slots;
 	static int connectionType;
 	
@@ -62,12 +63,20 @@ public:
 		CONNECTION_ACTIVE,
 		CONNECTION_PASSIVE
 	};	
+	
 	static const string& getNick() { return nick; }
 	static const string& getEmail() { return email; }
 	static const string& getDescription() { return description; }
 	static const string& getConnection() { return connection; }
 	static const string& getServer() { return server; }
-	static short getPort() { return atoi(port.c_str()); }
+	static const string& getDownloadDirectory() { 
+		if(downloadDirectory.empty()) {
+			downloadDirectory = getAppPath();
+		}
+		return downloadDirectory; 
+	};
+
+	static short getPort() { return port.empty() ? -1 : atoi(port.c_str()); }
 	static const string& getPortString() { return port; };
 	static int getConnectionType() { return connectionType; };
 	static int getSlots() { return slots; };
@@ -77,6 +86,13 @@ public:
 	static void setDescription(const string& aDescription) { description = aDescription; };
 	static void setConnection(const string& aConnection) { connection = aConnection; };
 	static void setServer(const string& aServer) { server = aServer; };
+	static void setDownloadDirectory(const string& aDirectory) { 
+		if(aDirectory.length() > 0 && aDirectory[aDirectory.length()-1] != '\\')
+			downloadDirectory = aDirectory + '\\';
+		else
+			downloadDirectory = aDirectory;
+	};
+	
 	static void setPort(const string& aPort) { port = aPort; };
 	static void setConnectionType(int aType) { connectionType = aType; };
 	static void setSlots(int aSlots) { slots = aSlots; };
@@ -92,9 +108,13 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: Settings.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.9  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.8  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

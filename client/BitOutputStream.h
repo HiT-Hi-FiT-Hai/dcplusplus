@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
+
 class BitOutputStream  
 {
 public:
@@ -60,9 +62,13 @@ private:
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.3 2001/12/07 20:02:59 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.h,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/07 20:02:59  arnetheduck
  * More work done towards application stability
  *

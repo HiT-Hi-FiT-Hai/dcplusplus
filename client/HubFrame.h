@@ -32,6 +32,10 @@
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
+#ifndef WM_REALLYCLOSE
+#define WM_REALLYCLOSE (WM_USER+1001)
+#endif
+
 class HubFrame : public CMDIChildWindowImpl2<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
@@ -97,7 +101,7 @@ protected:
 
 public:
 
-	HubFrame(const string& aServer) : ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
+	HubFrame(const string& aServer) : ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
 		client = new Client();
 		client->addListener(this);
 	}
@@ -106,8 +110,10 @@ public:
 		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
 			DeleteFile(i->c_str());
 		}
-		client->removeListeners();
-		delete client;
+		if(client) {
+			client->removeListeners();
+			delete client;
+		}
 	}
 
 	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD);
@@ -117,6 +123,8 @@ public:
 	ExListViewCtrl ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
+	HANDLE stopperThread;
+	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
 	}
@@ -124,6 +132,8 @@ public:
 	typedef CSplitterImpl<HubFrame> splitBase;
 
 	BEGIN_MSG_MAP(HubFrame)
+		MESSAGE_HANDLER(WM_REALLYCLOSE, onReallyClose)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
@@ -137,6 +147,30 @@ public:
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		DWORD id;
+
+		stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+		return 0;
+	}
+
+	static DWORD WINAPI stopper(void* p) {
+		HubFrame* f = (HubFrame*)p;
+
+		f->client->removeListener(f);
+		delete f->client;
+		f->client = NULL;
+		f->PostMessage(WM_REALLYCLOSE);
+		return 0;
+	}
+
+	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		if(stopperThread)
+			CloseHandle(stopperThread);
+		DestroyWindow();
+		return 0;
+	}
 
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
@@ -212,7 +246,7 @@ public:
 			if(l->iSubItem == 2) {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
 			} else {
-				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING);
+				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
 		}
 		return 0;
@@ -266,9 +300,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.13 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.14 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.14  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.13  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

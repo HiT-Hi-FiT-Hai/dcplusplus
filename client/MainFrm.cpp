@@ -41,7 +41,15 @@ MainFrame::~MainFrame() {
 
 DWORD WINAPI MainFrame::stopper(void* p) {
 	MainFrame* mf = (MainFrame*)p;
-
+	HWND wnd, wnd2 = NULL;
+	while( (wnd=::GetWindow(mf->m_hWndClient, GW_CHILD)) != NULL) {
+		if(wnd == wnd2) 
+			Sleep(1);
+		else { 
+			::SendMessage(wnd, WM_CLOSE, 0, 0);
+			wnd2 = wnd;
+		}
+	}
 	ShareManager::deleteInstance();
 	TimerManager::deleteInstance();
 	ProtocolHandler::deleteInstance();
@@ -90,7 +98,7 @@ void MainFrame::onDownloadAdded(Download* p) {
 }
 
 void MainFrame::onDownloadConnecting(Download* aDownload) {
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->getUser()->getNick()).c_str());
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->getLastNick()).c_str());
 }
 
 void MainFrame::onDownloadComplete(Download* p) {
@@ -111,7 +119,7 @@ void MainFrame::onDownloadComplete(Download* p) {
 		delete buf;
 		dl->load(tmp);
 
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getUser());
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getLastNick());
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
 	}
@@ -127,7 +135,7 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	int i = ctrlTransfers.find((LPARAM)aDownload);
 	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aDownload->getSize()).c_str());
-	ctrlTransfers.SetItemText(i, 3, aDownload->getUser()->getNick().c_str());
+	ctrlTransfers.SetItemText(i, 3, aDownload->getLastNick().c_str());
 }
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[1024];
@@ -209,6 +217,21 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ShareManager::getInstance()->refresh();
 
+	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		try {
+			int port;
+			if(Settings::getPort() == -1) {
+				port = 412;
+			} else {
+				port = Settings::getPort();
+			}
+			ConnectionManager::getInstance()->setPort(port);
+			SearchManager::getInstance()->setPort(port);
+		} catch(Exception e) {
+			dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+			MessageBox("Port 412 is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++");
+		}
+	}
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
@@ -256,6 +279,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.description = Settings::getDescription();
 	dlg.connection = Settings::getConnection();
 	dlg.server = Settings::getServer();
+	dlg.directory = Settings::getDownloadDirectory();
 	dlg.port = Settings::getPortString();
 	dlg.connectionType = Settings::getConnectionType();
 	dlg.slots = Settings::getSlots();
@@ -268,19 +292,40 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setServer(dlg.server);
 		Settings::setPort(dlg.port);
 		Settings::setConnectionType(dlg.connectionType);
+		Settings::setDownloadDirectory(dlg.directory);
 		Settings::setSlots(dlg.slots);
 		Settings::save();
+
 		ShareManager::getInstance()->refresh();
-		ConnectionManager::getInstance()->setPort(Settings::getPort());
+
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			try {
+				int port;
+				if(Settings::getPort() == -1) {
+					port = 412;
+				} else {
+					port = Settings::getPort();
+				}
+				ConnectionManager::getInstance()->setPort(port);
+				SearchManager::getInstance()->setPort(port);
+			} catch(Exception e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				MessageBox("Port 412 is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++");
+			}
+		}
 	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.17 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.18 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.18  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.17  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

@@ -23,25 +23,29 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "DownloadManager.h"
+
 class DirectoryListing  
 {
 public:
+	class Directory;
+
 	class File {
 	public:
 		typedef File* Ptr;
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
-
+		
 		string name;
 		LONGLONG size;
-
-		File(const string& aName = "", LONGLONG aSize = -1) : name(aName), size(aSize) { };
+		Directory* parent;
+		File(Directory* aDir = NULL, const string& aName = "", LONGLONG aSize = -1) : parent(aDir), name(aName), size(aSize) { };
 	};
 
 	class Directory {
 	public:
 		typedef Directory* Ptr;
-		typedef list<Ptr> List;
+		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
 		LONGLONG getSize() {
@@ -95,8 +99,27 @@ public:
 		return root->getTotalFileCount();
 	}
 
+	void download(Directory* aDir, const string& aUser, const string& aTarget) {
+		string target = aTarget + aDir->name + '\\';
+		// First, recurse over the directories
+		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
+			download(*j, aUser, target);
+		}
+		// Then add the files
+		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
+			File* file = *i;
+			download(file, aUser, target + file->name);
+		}
+	}
+
+	void download(File* aFile, const string& aUser, const string& aTarget) {
+		DownloadManager::getInstance()->download(getPath(aFile) + aFile->name, aFile->size, aUser, aTarget);
+	}
+	
 	void load(string& i);
 	string getPath(Directory* d);
+	string getPath(File* f) { return getPath(f->parent); };
+
 	Directory* getRoot() { return root; };
 	DirectoryListing() {
 		root = new Directory();
@@ -115,9 +138,13 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.3 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

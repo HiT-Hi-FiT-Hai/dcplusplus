@@ -81,13 +81,10 @@ public:
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
-	User* getUser() { return user; };
-	void setUser(User* aUser) { user = aUser; };
 
 	Transfer() : pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) CloseHandle(file); };
 private:
-	User* user;
 	string fileName;
 	HANDLE file;
 	LONGLONG pos;
@@ -355,9 +352,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.13 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.14 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.14  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.13  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

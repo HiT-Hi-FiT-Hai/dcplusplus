@@ -29,6 +29,8 @@ string Settings::description;
 string Settings::connection;
 string Settings::server;
 string Settings::port;
+string Settings::downloadDirectory;
+
 int Settings::connectionType;
 int Settings::slots;
 
@@ -65,6 +67,7 @@ void Settings::load(const string& aFileName) {
 		description = xml.getChildAttrib("Description");
 		connection = xml.getChildAttrib("Connection");
 		server = xml.getChildAttrib("Server");
+		downloadDirectory = xml.getChildAttrib("DownloadDirectory");
 		port = xml.getChildAttrib("Port");
 		connectionType = xml.getIntChildAttrib("ConnectionType");
 		slots = xml.getIntChildAttrib("Slots");
@@ -87,6 +90,7 @@ void Settings::save(const string& aFileName) {
 	xml.addChildAttrib("Description", description);
 	xml.addChildAttrib("Connection", connection);
 	xml.addChildAttrib("Server", server);
+	xml.addChildAttrib("DownloadDirectory", downloadDirectory);
 	xml.addChildAttrib("Port", port);
 	xml.addChildAttrib("ConnectionType", connectionType);
 	xml.addChildAttrib("Slots", slots);
@@ -106,9 +110,13 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.7 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.7  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

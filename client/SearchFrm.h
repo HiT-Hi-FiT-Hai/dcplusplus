@@ -43,12 +43,33 @@ public:
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+		MESSAGE_HANDLER(WM_PAINT, onPaint)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		ctrlSearch.SetFocus();
+		return 0;
+	}
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
+	LRESULT onEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		return 0;
+	}
+		
+	LRESULT onPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(&ps);
+		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
+		EndPaint(&ps);
+		return 0;
+	}
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
@@ -78,11 +99,11 @@ public:
 		}
 		
 		CRect rc = rect;
-		rc.top +=22;
+		rc.top +=24;
 		ctrlResults.MoveWindow(rc);
 
 		rc.bottom = rc.top - 2;
-		rc.top -= 20;
+		rc.top -= 22;
 		ctrlSearch.MoveWindow(rc);
 		
 	}
@@ -99,6 +120,12 @@ public:
 			SearchManager::getInstance()->search(s);
 			//client->sendMessage(s);
 			ctrlSearch.SetWindowText("");
+			
+			if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE)
+				ctrlStatus.SetText(0, "Passive mode searching not finished yet...");
+			else
+				ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+
 		} else {
 			bHandled = FALSE;
 		}
@@ -120,7 +147,6 @@ private:
 	CContainedWindow ctrlSearchContainer;
 	ExListViewCtrl ctrlResults;
 
-
 	virtual void onSearchResult(SearchResult* aResult) {
 		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick());
 		ctrlResults.SetItemText(i, 1, aResult->getFile().c_str());
@@ -139,9 +165,13 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.1 2001/12/10 10:50:10 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.2  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.1  2001/12/10 10:50:10  arnetheduck
  * Oops, forgot the search frame...
  *

@@ -87,7 +87,7 @@
 
 class SocketException : public Exception {
 public:
-	SocketException(const string& aError) : Exception(aError, "SocketException: ") { };
+	SocketException(const string& aError) : Exception(aError) { };
 	SocketException(int aError);
 	virtual ~SocketException() { };
 private:
@@ -177,7 +177,15 @@ public:
 	}
 		
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
-
+	
+	string getLocalIp() {
+		SOCKADDR_IN sock_addr;
+		int len = sizeof(sock_addr);
+		if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
+			return inet_ntoa(sock_addr.sin_addr);
+		}
+		return "";
+	}
 	static void resetStats() { stats.up = stats.down = 0; };
 	static DWORD getDown() { return stats.down; };
 	static DWORD getUp() { return stats.up; };
@@ -206,9 +214,13 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.11 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: Socket.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.12  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.11  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

@@ -36,7 +36,12 @@ class DirectoryListingFrame : public CMDIChildWindowImpl2<DirectoryListingFrame>
 {
 public:
 
-	DirectoryListingFrame(DirectoryListing* aList, User* aUser) : dl(aList), user(aUser) { };
+	DirectoryListingFrame(DirectoryListing* aList, const string& aNick) : dl(aList), user(aNick) { 
+	};
+
+	~DirectoryListingFrame() {
+		ctrlImages.Destroy();
+	}
 
 	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_MDIDIRECTORY)
 
@@ -50,19 +55,47 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_GETDISPINFO, onGetDispInfoDirectories)
+		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	END_MSG_MAP()
 
+
+	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
+	void downloadList(const string& aTarget);
+	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		
+		// Get the bounding rectangle of the client area. 
+		ctrlList.GetClientRect(&rc);
+		ctrlList.ScreenToClient(&pt); 
+		
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlList.ClientToScreen(&pt);
+			fileMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			
+			return TRUE; 
+		} 
+		
+		return FALSE; 
+	}
+		
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		return 0;
 	}
 	
 	void setWindowTitle() {
-		SetWindowText(user->getNick().c_str());
+		SetWindowText(user.c_str());
 	}
 
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
@@ -97,6 +130,12 @@ public:
 			w[2] = w[0] + (tmp-16);
 			
 			ctrlStatus.SetParts(3, w);
+			
+			char buf[512];
+			sprintf(buf, "Files: %d", files);
+			ctrlStatus.SetText(1, buf);
+			sprintf(buf, "Size: %s", size.c_str());
+			ctrlStatus.SetText(2, buf);
 		}
 		
 		SetSplitterRect(&rect);
@@ -104,10 +143,15 @@ public:
 	
 private:
 	CImageList ctrlImages;
-	User* user;
+	
+	CMenu fileMenu;
+	string user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
 	CStatusBarCtrl ctrlStatus;
+	
+	int files;
+	string size;
 	
 	DirectoryListing* dl;
 };
@@ -121,9 +165,13 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.4 2001/12/12 00:06:04 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.5  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.4  2001/12/12 00:06:04  arnetheduck
  * Updated the public hub listings, fixed some minor transfer bugs, reworked the
  * sockets to use only one thread (instead of an extra thread for sending files),

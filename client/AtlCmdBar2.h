@@ -71,24 +71,33 @@ class ATL_NO_VTABLE CMDIChildWindowImpl2 : public CMDIChildWindowImpl< T, TBase,
 {
 public:
 
+	// Flag to prevent thrashing of maximized state and sys menu
+	bool m_fNotifyCmdBar;
+
 	// Overriden to prevent flickering during creation
 	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
 			UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
 	{
+		m_fNotifyCmdBar = false;
 		HWND hWndFrame = ::GetParent(hWndParent);
 		::SendMessage(hWndFrame, WM_SETREDRAW, (WPARAM)FALSE, 0);
 		HWND hWnd = CMDIChildWindowImpl< T, TBase, TWinTraits >::Create(hWndParent, rect, szWindowName,
 			dwStyle, dwExStyle, nMenuID, lpCreateParam);
+		m_fNotifyCmdBar = true;
+		UpdateClientEdge();
 		::SendMessage(hWndFrame, WM_SETREDRAW, (WPARAM)TRUE, 0);
 		::RedrawWindow(hWndFrame, NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 		return hWnd;
 	}
 	HWND CreateEx(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL, DWORD dwStyle = 0, DWORD dwExStyle = 0, LPVOID lpCreateParam = NULL)
 	{
+		m_fNotifyCmdBar = false;
 		HWND hWndFrame = ::GetParent(hWndParent);
 		::SendMessage(hWndFrame, WM_SETREDRAW, (WPARAM)FALSE, 0);
 		HWND hWnd = CMDIChildWindowImpl< T, TBase, TWinTraits >::CreateEx(hWndParent, rect, szWindowName, dwStyle, dwExStyle, lpCreateParam);
+		m_fNotifyCmdBar = true;
+		UpdateClientEdge();
 		::SendMessage(hWndFrame, WM_SETREDRAW, (WPARAM)TRUE, 0);
 		::RedrawWindow(hWndFrame, NULL, NULL, RDW_FRAME | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
 		return hWnd;
@@ -98,34 +107,15 @@ public:
 	typedef CMDIChildWindowImpl2< T, TBase, TWinTraits >	thisClass;
 	typedef CMDIChildWindowImpl< T, TBase, TWinTraits >		baseClass;
 	BEGIN_MSG_MAP(thisClass)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_GETICON, OnGetIcon)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, OnWindowPosChanging)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
-		if((lpcs->style & WS_MAXIMIZE) != 0)
-		{
-			// need to adjust the client edge style for max
-			// (taken from CMDIChildWindowImpl::UpdateClientEdge())
-			DWORD dwStyle = ::GetWindowLong(m_hWndMDIClient, GWL_EXSTYLE);
-			if((lpcs->dwExStyle & WS_EX_CLIENTEDGE) == 0)
-			{
-				dwStyle &= ~(WS_EX_CLIENTEDGE);
-
-				// SetWindowPos will not move invalid bits
-				::RedrawWindow(m_hWndMDIClient, NULL, NULL,
-					RDW_INVALIDATE | RDW_ALLCHILDREN);
-				// remove/add WS_EX_CLIENTEDGE to MDI client area
-				::SetWindowLong(m_hWndMDIClient, GWL_EXSTYLE, dwStyle);
-				::SetWindowPos(m_hWndMDIClient, NULL, 0, 0, 0, 0,
-					SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE |
-					SWP_NOZORDER | SWP_NOCOPYBITS);
-			}
-		}
+		m_fNotifyCmdBar = false;
 		bHandled = FALSE;
 		return TRUE;
 	}
@@ -151,7 +141,7 @@ public:
 	{
 		LPWINDOWPOS lpWndPos = (LPWINDOWPOS)lParam;
 
-		if((lpWndPos->flags & SWP_NOSIZE) == 0)
+		if(m_fNotifyCmdBar == true && (lpWndPos->flags & SWP_NOSIZE) == 0)
 		{
 			// Inform the command bar about the size change
 			TWinTraits::m_bMaximized = (::SendMessage(m_hWndMDIClient, WM_MDICHILDSIZED, 0, (LPARAM)m_hWnd) != 0);
@@ -182,6 +172,7 @@ public:
 	bool m_bShowMDIButtons;
 	SIZE m_szCaptionIcon;
 	SIZE m_szCaptionButton;
+	CMenu m_menuDummy;
 
 	CCommandBarCtrlImpl2()
 		: CCommandBarCtrlImpl< T, TBase, TWinTraits >()
@@ -206,6 +197,8 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_INITMENUPOPUP, OnInitMenuPopup)
+		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(1)		// Parent window messages
 		NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
@@ -231,7 +224,20 @@ public:
 
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		UpdateGapWidth();
+		::SendMessage(m_hWnd, WM_SETREDRAW, (WPARAM)FALSE, 0);
+		int xGapPos = UpdateGapWidth();
+		::SendMessage(m_hWnd, WM_SETREDRAW, (WPARAM)TRUE, 0);
+		if(xGapPos > 0)
+		{
+			// Prevent flicker
+			// Without this line the menu items flicker slightly
+			::RedrawWindow(m_hWnd, NULL, NULL, RDW_VALIDATE);
+
+			RECT rc;
+			GetClientRect(&rc);
+			rc.left = xGapPos;
+			::RedrawWindow(m_hWnd, &rc, NULL, RDW_NOFRAME | RDW_ERASE | RDW_NOINTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN);
+		}
 		bHandled = FALSE;
 		return 0;
 	}
@@ -241,6 +247,82 @@ public:
 		GetSystemSettings2();
 		bHandled = FALSE;
 		return 0;
+	}
+
+	LRESULT OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if((BOOL)HIWORD(lParam))	// System menu, do nothing
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
+		if((HMENU)wParam != m_menuDummy.m_hMenu)		// Not ours, do nothing
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
+		ATLTRACE2(atlTraceUI, 0, "CmdBar2 - OnInitMenuPopup %d\n", m_menuDummy.GetMenuItemCount());
+
+		// forward to the parent or subclassed window, so it can handle update UI
+		LRESULT lRet = 0;
+		if(m_bAttachedMenu)
+			lRet = DefWindowProc(uMsg, wParam, (lParam || m_bContextMenu) ? lParam : GetHotItem());
+		else
+			lRet = m_wndParent.DefWindowProc(uMsg, wParam, (lParam || m_bContextMenu) ? lParam : GetHotItem());
+
+		// Copy the system menu to our dummy menu
+		HWND hWndActiveMDI = (HWND)m_wndMDIClient.SendMessage(WM_MDIGETACTIVE);
+		CMenuHandle sysMenu = ::GetSystemMenu(hWndActiveMDI, FALSE);
+		ATLASSERT(sysMenu.m_hMenu != NULL);
+
+		T* pT = static_cast<T*>(this);
+		pT;	// avoid level 4 warning
+		TCHAR szString[pT->_nMaxMenuItemTextLength];
+		BOOL bRet;
+		for(int i = 0; i < sysMenu.GetMenuItemCount(); i++)
+		{
+			CMenuItemInfo mii;
+			mii.cch = pT->_nMaxMenuItemTextLength;
+			mii.fMask = MIIM_CHECKMARKS | MIIM_DATA | MIIM_ID | MIIM_STATE | MIIM_SUBMENU | MIIM_TYPE;
+			mii.dwTypeData = szString;
+			bRet = sysMenu.GetMenuItemInfo(i, TRUE, &mii);
+			ATLASSERT(bRet);
+
+			bRet = m_menuDummy.InsertMenuItem(i, TRUE, &mii);
+			ATLASSERT(bRet);
+		}
+
+//		::GetSystemMenu(hWndActiveMDI, TRUE);
+
+		return lRet;
+	}
+
+	LRESULT OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if((HMENU)wParam == m_menuDummy.m_hMenu)  // Dummy menu selected, do nothing.
+		{
+			bHandled = FALSE;
+			return 1;
+		}
+
+		// Check if a menu is closing, clear the dummy menu
+		if(HIWORD(wParam) == 0xFFFF && lParam == NULL &&	// Menu closing
+			m_menuDummy.m_hMenu != NULL && m_menuDummy.GetMenuItemCount() > 0)
+		{
+#ifdef _CMDBAR_EXTRA_TRACE
+			ATLTRACE2(atlTraceUI, 0, "CmdBar2 - OnMenuSelect - CLOSING!!!!\n");
+#endif
+			while(m_menuDummy.GetMenuItemCount() > 0)
+			{
+				BOOL bRet = m_menuDummy.RemoveMenu(0, MF_BYPOSITION);
+				ATLASSERT(bRet);
+			}
+		}
+
+		bHandled = FALSE;
+		return 1;
 	}
 
 	LRESULT OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
@@ -335,12 +417,34 @@ public:
 // MDI client window message handlers
 	LRESULT OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		bool fShow = false;
-		HWND hWndActiveMDI = (HWND)m_wndMDIClient.SendMessage(WM_MDIGETACTIVE, 0, (LPARAM)&fShow);
+		BOOL fShow = false;
+		m_wndMDIClient.SendMessage(WM_MDIGETACTIVE, 0, (LPARAM)&fShow);
 
-		UpdateMenu(fShow, (HMENU)wParam);
+		int xGapPos = UpdateMenu(fShow == TRUE, (HMENU)wParam);
 		LRESULT lRes = CCommandBarCtrlImpl< T, TBase, TWinTraits >::OnMDISetMenu(uMsg, wParam, lParam, bHandled);
-		UpdateMDIButtons(fShow);
+		UpdateMDIButtons(fShow == TRUE);
+
+#if (_WIN32_IE >= 0x0400)
+		// Update rebar band width
+		if(xGapPos == 0)
+		{
+			int nIndex = GetButtonCount();
+			RECT rc;
+			GetItemRect(nIndex - 1, &rc);
+			xGapPos = rc.right;
+		}
+		REBARBANDINFO rbBand;
+		rbBand.cbSize = sizeof(REBARBANDINFO);
+		rbBand.fMask = RBBIM_SIZE | RBBIM_IDEALSIZE;
+		rbBand.cx = xGapPos;
+		rbBand.cxIdeal = rbBand.cx;
+		lRes = ::SendMessage(GetParent(), RB_SETBANDINFO, (WPARAM)0, (LPARAM)&rbBand);
+		if(lRes == 0)
+		{
+			ATLTRACE2(atlTraceUI, 0, _T("Failed to modify the menu band size.\n"));
+			return FALSE;
+		}
+#endif //(_WIN32_IE >= 0x0400)
 		return lRes;
 	}
 
@@ -411,10 +515,11 @@ public:
 		return width;
 	}
 
-	void UpdateGapWidth()
+	// Returns the x position of the gap
+	int UpdateGapWidth()
 	{
 		if(m_bShowMDIButtons == false)
-			return;
+			return 0;
 
 		TBBUTTON btn;
 		memset(&btn, 0, sizeof(btn));
@@ -422,16 +527,53 @@ public:
 		int nItems = GetButtonCount();
 		BOOL bRet = GetButton(nItems - 4, &btn);
 		ATLASSERT(bRet);
+
+		int nGapWidth = GetGapWidth();
 		if(btn.idCommand == IDM_MDI_GAP)
 		{
-			TBBUTTONINFO bi;
-			memset(&bi, 0, sizeof(bi));
-			bi.cbSize = sizeof(TBBUTTONINFO);
-			bi.dwMask = TBIF_SIZE;
-			bi.cx = GetGapWidth();
-			bRet = SetButtonInfo(IDM_MDI_GAP, &bi);
-			ATLASSERT(bRet);
+			if(nGapWidth < 0)
+			{
+				// Toolbar buttons are outside the visible area, remove them
+				// to prevent chevron problems
+				UpdateMDIButtons(false, false);
+				nGapWidth = 0;
+			}
+			else
+			{
+				// Update the gap width
+				TBBUTTONINFO bi;
+				memset(&bi, 0, sizeof(bi));
+				bi.cbSize = sizeof(TBBUTTONINFO);
+				bi.dwMask = TBIF_SIZE;
+				bi.cx = (WORD)nGapWidth;
+				bRet = SetButtonInfo(IDM_MDI_GAP, &bi);
+				ATLASSERT(bRet);
+
+				RECT rc;
+				bRet = GetItemRect(nItems - 4, &rc);
+				nGapWidth = rc.left;
+				ATLASSERT(bRet);
+			}
 		}
+		else
+		{
+			if(nGapWidth > 0)
+			{
+				// Toolbar buttons are visible, insert them
+				UpdateMDIButtons(true, false);
+
+				RECT rc;
+				bRet = GetItemRect(nItems - 4, &rc);
+				nGapWidth = rc.left;
+				ATLASSERT(bRet);
+			}
+			else
+			{
+				nGapWidth = 0;
+			}
+		}
+
+		return nGapWidth;
 	}
 
 	bool UpdateMenu(bool fShow, HMENU hMenu)
@@ -454,14 +596,16 @@ public:
 			if(mii.dwTypeData != NULL && lstrcmp(_T("*"), mii.dwTypeData) == 0)
 				return false;
 
-			//
-			HWND hWndActiveMDI = (HWND)m_wndMDIClient.SendMessage(WM_MDIGETACTIVE);
+			// Set the dummy menu as placeholder for the system menu
+			if(m_menuDummy.m_hMenu == NULL)
+				m_menuDummy.CreatePopupMenu();
+
 			memset(&mii, 0, sizeof(mii));
 			mii.cbSize = sizeof(mii);
 			mii.fMask = MIIM_STATE | MIIM_SUBMENU | MIIM_TYPE;
 			mii.fType = MF_STRING;
 			mii.fState = MFS_ENABLED;
-			mii.hSubMenu = ::GetSystemMenu(hWndActiveMDI, FALSE);
+			mii.hSubMenu = m_menuDummy;
 			mii.dwTypeData = _T("*");
 			mii.cch = 1;
 			bRet = ::InsertMenuItem(hMenu, 0, MF_BYPOSITION, &mii);
@@ -485,38 +629,46 @@ public:
 
 			bRet = ::RemoveMenu(hMenu, 0, MF_BYPOSITION);
 			ATLASSERT(bRet);
+
+			if(m_menuDummy.m_hMenu != NULL)
+				m_menuDummy.DestroyMenu();
 		}
 		return true;
 	}
 
-	void UpdateMDIButtons(bool fShow)
+	void UpdateMDIButtons(bool fShow, bool fAll = true)
 	{
 		if(fShow == true)
 		{
-			m_bShowMDIButtons = true;
-
 			TBBUTTON btn;
-			memset(&btn, 0, sizeof(btn));
-
-			int nItems = GetButtonCount();
-			BOOL bRet = GetButton(nItems - 1, &btn);
-			ATLASSERT(bRet);
-			if(btn.idCommand == IDM_MDI_CLOSE)
-				return;
-
-			bRet = GetButton(0, &btn);
-			ATLASSERT(bRet);
-
 			TBBUTTONINFO bi;
-			memset(&bi, 0, sizeof(bi));
-			bi.cbSize = sizeof(TBBUTTONINFO);
-			bi.dwMask = TBIF_COMMAND | TBIF_SIZE | TBIF_STYLE;
-			bi.fsStyle = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
-			bi.idCommand = IDM_MDI_ICON;
-			bi.cx = (WORD)m_szCaptionIcon.cx;
+			BOOL bRet;
 
-			bRet = SetButtonInfo(btn.idCommand, &bi);
-			ATLASSERT(bRet);
+			if(fAll == true)
+			{
+				m_bShowMDIButtons = true;
+
+				memset(&btn, 0, sizeof(btn));
+
+				int nItems = GetButtonCount();
+				bRet = GetButton(nItems - 1, &btn);
+				ATLASSERT(bRet);
+				if(btn.idCommand == IDM_MDI_CLOSE)
+					return;
+
+				bRet = GetButton(0, &btn);
+				ATLASSERT(bRet);
+
+				memset(&bi, 0, sizeof(bi));
+				bi.cbSize = sizeof(TBBUTTONINFO);
+				bi.dwMask = TBIF_COMMAND | TBIF_SIZE | TBIF_STYLE;
+				bi.fsStyle = TBSTYLE_BUTTON | TBSTYLE_DROPDOWN;
+				bi.idCommand = IDM_MDI_ICON;
+				bi.cx = (WORD)m_szCaptionIcon.cx;
+
+				bRet = SetButtonInfo(btn.idCommand, &bi);
+				ATLASSERT(bRet);
+			}
 
 			//
 			memset(&btn, 0, sizeof(btn));
@@ -529,7 +681,7 @@ public:
 			memset(&bi, 0, sizeof(bi));
 			bi.cbSize = sizeof(TBBUTTONINFO);
 			bi.dwMask = TBIF_SIZE;
-			bi.cx = GetGapWidth();
+			bi.cx = (WORD)GetGapWidth();
 
 			bRet = SetButtonInfo(IDM_MDI_GAP, &bi);
 			ATLASSERT(bRet);
@@ -549,7 +701,7 @@ public:
 				bi.dwMask = TBIF_SIZE;
 				bi.cx = (WORD)m_szCaptionButton.cx;
 				if(i == 1)
-					bi.cx += ::GetSystemMetrics(SM_CXEDGE);
+					bi.cx = (WORD)(bi.cx + ::GetSystemMetrics(SM_CXEDGE));
 
 				bRet = SetButtonInfo(IDM_MDI_MINIMIZE + i, &bi);
 				ATLASSERT(bRet);
@@ -557,7 +709,8 @@ public:
 		}
 		else
 		{
-			m_bShowMDIButtons = false;
+			if(fAll == true)
+				m_bShowMDIButtons = false;
 
 			TBBUTTON btn;
 			memset(&btn, 0, sizeof(btn));

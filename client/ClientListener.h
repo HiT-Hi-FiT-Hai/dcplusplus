@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
+
 class User;
 class Client;
 
@@ -93,9 +95,13 @@ public:
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.5 2001/12/07 20:03:04 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.6  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.5  2001/12/07 20:03:04  arnetheduck
  * More work done towards application stability
  *

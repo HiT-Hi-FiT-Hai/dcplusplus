@@ -31,7 +31,10 @@
 #include "TimerManager.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
+
+#ifndef WM_REALLYCLOSE
 #define WM_REALLYCLOSE (WM_USER+1001)
+#endif
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
@@ -59,10 +62,15 @@ public:
 	
 	virtual void onTimerSecond(DWORD aTick) {
 		if(ctrlStatus.IsWindow()) {
-			ctrlStatus.SetText(1, ("D: " + Util::shortenBytes(Socket::getTotalDown())).c_str());
-			ctrlStatus.SetText(2, ("U: " + Util::shortenBytes(Socket::getTotalUp())).c_str());
-			ctrlStatus.SetText(3, ("D: " + Util::shortenBytes(Socket::getDown()) + "/s").c_str());
-			ctrlStatus.SetText(4, ("U: " + Util::shortenBytes(Socket::getUp()) + "/s").c_str());
+			char buf[128];
+			sprintf(buf, "D: %s", Util::shortenBytes(Socket::getTotalDown()).c_str());
+			ctrlStatus.SetText(1, buf);
+			sprintf(buf, "D: %s", Util::shortenBytes(Socket::getTotalUp()).c_str());
+			ctrlStatus.SetText(2, buf);
+			sprintf(buf, "D: %s/s", Util::shortenBytes(Socket::getDown()).c_str());
+			ctrlStatus.SetText(3, buf);
+			sprintf(buf, "D: %s/s", Util::shortenBytes(Socket::getUp()).c_str());
+			ctrlStatus.SetText(4, buf);
 		}
 		Socket::resetStats();
 	}
@@ -239,9 +247,13 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.12  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.11  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

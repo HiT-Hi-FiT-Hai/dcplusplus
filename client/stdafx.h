@@ -32,7 +32,6 @@
 #define _ATL_NO_HOSTING
 
 #include <Winsock2.h>
-#include <Mswsock.h>
 
 #include <atlbase.h>
 #include <atlapp.h>
@@ -47,8 +46,8 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 
-#include <string>
 #include <vector>
+#include <string>
 #include <map>
 #include <list>
 #include <set>
@@ -64,9 +63,13 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.8 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.9  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.8  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

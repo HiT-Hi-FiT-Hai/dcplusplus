@@ -112,15 +112,24 @@ public:
 		instance = NULL;
 	}
 	
+	void setPort(short aPort) throw(SocketException) {
+		socket.disconnect();
+		socket.create(Socket::TYPE_UDP);
+		socket.bind(aPort);
+	}
 private:
 	static SearchManager* instance;
 	
 	BufferedSocket socket;
+	short port;
 
 	SearchManager() : socket('|') { 
-		socket.addListener(this);
-		socket.create(Socket::TYPE_UDP);
-		socket.bind(Settings::getPort());
+		try {
+			socket.addListener(this);
+		} catch(Exception e) {
+			// Not good...
+			dcdebug("SearchManager::SearchManager caught %s\n", e.getError().c_str());
+		}
 	};
 	virtual ~SearchManager() { 
 		socket.removeListener(this);
@@ -144,9 +153,13 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.3 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.4  2001/12/13 19:21:57  arnetheduck
+ * A lot of work done almost everywhere, mainly towards a friendlier UI
+ * and less bugs...time to release 0.06...
+ *
  * Revision 1.3  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *
