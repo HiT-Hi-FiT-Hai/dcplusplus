@@ -43,7 +43,11 @@ string SearchResult::toSR() const {
 	tmp.append(1, '/');
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
-	tmp.append(hubName);
+	if(getTTH() == NULL) {
+		tmp.append(hubName);
+	} else {
+		tmp.append("TTH:" + getTTH()->toBase32());
+	}
 	tmp.append(" (", 2);
 	tmp.append(hubIpPort);
 	tmp.append(")|", 2);
@@ -223,6 +227,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.36 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.37 2004/03/24 20:22:13 arnetheduck Exp $
  */
 

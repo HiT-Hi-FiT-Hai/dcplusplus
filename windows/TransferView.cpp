@@ -128,7 +128,6 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 		if ( bCustomMenu ) {
 			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 			cleanMenu(transferMenu);
 		}
 		return TRUE; 
@@ -617,5 +616,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.25 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.26 2004/03/24 20:22:15 arnetheduck Exp $
  */
