@@ -96,7 +96,6 @@ void ADLSearchManager::Load()
 					// Add search to collection
 					if(search.searchString.size() > 0)
 					{
-						search.Prepare();
 						collection.push_back(search);
 					}
 
@@ -188,6 +187,6 @@ void ADLSearchManager::Save()
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.3 2003/04/15 10:13:50 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.4 2003/05/28 11:53:04 arnetheduck Exp $
  */
 

@@ -34,6 +34,7 @@ string Util::emptyString;
 
 bool Util::away = false;
 string Util::awayMsg;
+time_t Util::awayTime;
 char Util::upper[256];
 char Util::lower[256];
 int8_t Util::cmp[256][256];
@@ -250,7 +251,7 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 }
 
 string Util::getAwayMessage() { 
-	return (awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg) + " <DC++ v" VERSIONSTRING ">";
+	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 };
 
 
@@ -290,7 +291,7 @@ string Util::getLocalIp() {
 }
 
 /**
-* This function takes a sting and a set of parameters and transforms them accoring to
+* This function takes a string and a set of parameters and transforms them according to
 * a simple formatting rule, similar to strftime. In the message, every parameter should be
 * represented by %[name]. It will then be replaced by the corresponding item in 
 * the params stringmap. After that, the string is passed through strftime with the current
@@ -312,22 +313,38 @@ string Util::formatParams(const string& msg, StringMap& params) {
 			result.erase(j, k-j + 1);
 			i = j;
 		} else {
-			result.replace(j, k-j + 1, smi->second);
-			i = j + smi->second.size();
+			if(smi->second.find('%') != string::npos) {
+				string tmp = smi->second;	// replace all % in params with %% for strftime
+				string::size_type m = 0;
+				while(( m = tmp.find('%', m)) != string::npos) {
+					tmp.replace(m, 1, "%%");
+					m+=2;
+				}
+				result.replace(j, k-j + 1, tmp);
+				i = j + tmp.size();
+			} else {
+				result.replace(j, k-j + 1, smi->second);
+				i = j + smi->second.size();
+			}
 		}
 	}
 
-	int bufsize = result.size() + 64;
-	char* buf = new char[bufsize];
-	time_t now = time(NULL);
+	result = formatTime(result, time(NULL));
+	
+	return result;
+}
 
-	while(!strftime(buf, bufsize-1, result.c_str(), localtime(&now))) {
+string Util::formatTime(const string &msg, const time_t tm) {
+	int bufsize = msg.size() + 64;
+	char* buf = new char[bufsize];
+
+	while(!strftime(buf, bufsize-1, msg.c_str(), localtime(&tm))) {
 		delete buf;
 		bufsize+=64;
 		buf = new char[bufsize];
 	}
 
-	result = buf;
+	string result = buf;
 	delete buf;
 	return result;
 }
@@ -460,6 +477,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.24 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.25 2003/05/28 11:53:04 arnetheduck Exp $
  */
 

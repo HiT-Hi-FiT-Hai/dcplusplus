@@ -658,6 +658,7 @@ LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(sel);
 		ucParams["nick"] = sr->getUser()->getNick();
 		ucParams["mynick"] = sr->getUser()->getClientNick();
+		ucParams["file"] = sr->getFile();
 		if(uc.getNick().empty()) {
 			sr->getUser()->clientMessage(Util::formatParams(uc.getCommand(), ucParams));
 		} else {
@@ -1025,5 +1026,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.18 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.19 2003/05/28 11:53:05 arnetheduck Exp $
  */

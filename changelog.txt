@@ -1,3 +1,12 @@
+ -- 0.251 2003-05-28 --
+* Fixed 100% cpu bug in new search (thanks opera)
+* Fixed a bug with queue selection counts (thanks sed)
+* Fixed a problem with percents not being escaped correctly in user commands (thanks sed)
+* Added so that you can use time formatting in the away message (%Y, %m ...) (thanks vladimir marko)
+* Added %[file] to search frame user commands (that becomes the current filename) (thanks sarf)
+* Fixed some of the vc6 compile errors/warnings
+* ADLSearch: now accepts %[nick] (see help)
+
  -- 0.25 2003-05-20 --
 Major:
 * Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 

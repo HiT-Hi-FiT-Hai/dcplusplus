@@ -264,7 +264,7 @@ LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	{
 		// Add new search to the end or if selected, just before
 		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-		search.Prepare();
+		
 
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		if(i < 0)
@@ -311,7 +311,6 @@ LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if(dlg.DoModal((HWND)*this) == IDOK)
 	{
 		// Update search collection
-		search.Prepare();
 		collection[i] = search;
 
 		// Update list control
@@ -361,6 +360,11 @@ LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		"\n"
 		"There is a new option in the context menu (right-click) for directory listings. It is called \n"
 		"'Go to directory' and can be used to jump to the original location of the file or directory. \n"
+		"\n"
+		"Extra feature: If you use %y.%m.%d in a search string it will be replaced by todays \n"
+		"date. Switch place on y/m/d, or leave any of them out to alter the substitution. \n"
+		"If you use %[nick] it will be replaced by the nick of the user you download the directory \n"
+		"listing from. \n"
 		;
 
 	MessageBox(message, title, MB_OK);
@@ -588,5 +592,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.4 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.5 2003/05/28 11:53:05 arnetheduck Exp $
  */

@@ -30,103 +30,9 @@
 
 #include "Util.h"
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//	QuickSearch substring search (must be prepared before searching)
-//
-///////////////////////////////////////////////////////////////////////////////
-typedef int _QsTable[256];
-typedef struct _Qs { _QsTable table; string pattern; } Qs;
-typedef vector<Qs> QsVector;
 
-inline
-void PrepareQuickSearch(Qs& qs)
-{
-	// Prepare QuickSearch lookup table
-	int i, m = qs.pattern.size();
-	for(i = 0; i < 256; ++i)
-	{
-		qs.table[i] = m + 1;
-	}	
-	for(i = 0; i < m; ++i)
-	{
-		qs.table[(unsigned char)qs.pattern[i]] = m - i;
-	}
-}
-
-inline
-void PrepareQuickSearchVector(const string& multistring, QsVector& qsv)
-{
-	// Split multiple substrings into single substrings
-	Qs substring;
-	qsv.clear();
-	bool inSubstring = false;
-	for(unsigned long p = 0; p < multistring.size(); ++p)
-	{
-		if(isgraph(multistring[p]))
-		{
-			if(inSubstring)
-			{
-				// Continue substring
-				substring.pattern.push_back(multistring[p]);
-			}
-			else
-			{
-				// Start of new substring
-				inSubstring = true;
-				substring.pattern.clear();
-				substring.pattern.push_back(multistring[p]);
-			}
-		}
-		else
-		{
-			if(inSubstring)
-			{
-				// End of substring
-				inSubstring = false;
-				PrepareQuickSearch(substring);
-				qsv.push_back(substring);
-			}
-		}
-	}
-	if(inSubstring)
-	{
-		// End of last substring
-		PrepareQuickSearch(substring);
-		qsv.push_back(substring);
-	}
-}
-
-inline
-bool QuickSearch(const Qs& qs, const string& s)
-{
-	// Do QuickSearch
-	int j = 0, m = qs.pattern.size(), n = s.size();
-	while(j <= n - m) 
-	{
-		if(memcmp(qs.pattern.begin(), s.begin() + j, m) == 0)
-		{
-			return true;
-		}
-		j += qs.table[(unsigned char)s[j + m]];
-	}
-	return false;
-}
-
-inline 
-bool QuickSearchAll(QsVector& qsv, const string& s)
-{
-	// Match all substrings
-	for(QsVector::iterator q = qsv.begin(); q != qsv.end(); ++q)
-	{
-		if(!QuickSearch(*q, s))
-		{
-			return false;
-		}
-	}
-	return (qsv.size() != 0);
-}
-
+#include "StringSearch.h"
+#include "StringTokenizer.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -142,11 +48,25 @@ public:
 		minFileSize(-1), maxFileSize(-1), destDir("ADLSearch"), ddIndex(0), typeFileSize(SizeBytes) {}
 
 	// Prepare search
-	void Prepare()
-	{
-		// Prepare quick search of substrings
-		PrepareQuickSearchVector(Util::toLower(searchString), qsv);
-	}
+		void Prepare(StringMap& params)
+		{
+			// Prepare quick search of substrings
+			stringSearchList.clear();
+
+			// Replace parameters such as %[nick]
+			string stringParams = Util::formatParams(searchString, params);
+
+			// Split into substrings
+			StringTokenizer st(stringParams, ' ');
+			for(StringList::iterator i = st.getTokens().begin(); i != st.getTokens().end(); ++i)
+			{
+				if(i->size() > 0)
+				{
+					// Add substring search
+					stringSearchList.push_back(StringSearch(*i));
+				}
+			}
+		}
 
 	// The search string
 	string searchString;									 
@@ -298,8 +218,8 @@ public:
 		{
 		default:
 		case OnlyDirectory:	return false;
-		case OnlyFile:		return QuickSearchAll(qsv, f);
-		case FullPath:		return QuickSearchAll(qsv, fp);
+		case OnlyFile:		return SearchAll(f);
+		case FullPath:		return SearchAll(fp);
 		}
 	}
 
@@ -317,13 +237,25 @@ public:
 		}
 
 		// Do search
-		return QuickSearchAll(qsv, d);
+		return SearchAll(d);
 	}
 
 private:
 
 	// Substring searches
-	QsVector qsv;
+	StringSearch::List stringSearchList;
+	bool SearchAll(const string& s)
+	{
+		// Match all substrings
+		for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i)
+		{
+			if(!i->match(s))
+			{
+				return false;
+			}
+		}
+		return (stringSearchList.size() != 0);
+	}
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -368,11 +300,8 @@ public:
 		{
 			return;
 		}
-		string fileName = Util::toLower(currentFile->getName());
-		string filePath = Util::toLower(fullPath);
-		filePath += "\\";
-		filePath += fileName;
 
+		string filePath = fullPath + "\\" + currentFile->getName();
 		// Match searches
 		for(SearchCollection::iterator is = collection.begin(); is != collection.end(); ++is)
 		{
@@ -380,7 +309,7 @@ public:
 			{
 				continue;
 			}
-			if(is->MatchesFile(fileName, filePath, currentFile->getSize()))
+			if(is->MatchesFile(currentFile->getName(), filePath, currentFile->getSize()))
 			{
 				DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
 				copyFile->setAdls(true);
@@ -410,7 +339,6 @@ public:
 		{
 			return;
 		}
-		string dirName = Util::toLower(currentDir->getName());
 
 		// Match searches
 		for(SearchCollection::iterator is = collection.begin(); is != collection.end(); ++is)
@@ -419,7 +347,7 @@ public:
 			{
 				continue;
 			}
-			if(is->MatchesDirectory(dirName))
+			if(is->MatchesDirectory(currentDir->getName()))
 			{
 				destDirVector[is->ddIndex].subdir = 
 					new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
@@ -445,7 +373,7 @@ public:
 	}
 
 	// Prepare destination directory indexing
-	void PrepareDestinationDirectories(DirectoryListing::Directory* root)
+	void PrepareDestinationDirectories(DirectoryListing::Directory* root, StringMap& params)
 	{
 		// Load default destination directory (index = 0)
 		destDirVector.clear();
@@ -486,6 +414,11 @@ public:
 				is->ddIndex = ddIndex;
 			}
 		}
+		// Prepare all searches
+		for(SearchCollection::iterator ip = collection.begin(); ip != collection.end(); ++ip)
+		{
+			ip->Prepare(params);
+		}
 	}
 
 	// Finalize destination directories
@@ -524,5 +457,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.4 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.5 2003/05/28 11:53:04 arnetheduck Exp $
  */

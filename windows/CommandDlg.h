@@ -68,6 +68,7 @@ public:
 You can add parameters to your commands using the same format as for the logs, %[parameter], choosing from these:\n\
 nick\t\tNick of the user\n\
 mynick\t\tYour nick on that hub\n\
+file\t\tFilename (search only)\n\
 line:desc\tFor each of these, a one line dialog will ask what to put there (try and you'll understand).\n\
 Date and time specifiers work as well (%Y, %m, ...)\n\
 \n\
@@ -111,5 +112,5 @@ Example: +ban %[nick] %[line:Time] %[line:Reason]");
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.2 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.3 2003/05/28 11:53:05 arnetheduck Exp $
  */

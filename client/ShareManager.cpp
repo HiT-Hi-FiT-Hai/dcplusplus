@@ -667,8 +667,8 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 	u_int32_t mask = getMask(sl);
 	SearchResult::List results;
 
-	for(Directory::MapIter i = directories.begin(); (i != directories.end()) && (results.size() < maxResults); ++i) {
-		i->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
+	for(Directory::MapIter j = directories.begin(); (j != directories.end()) && (results.size() < maxResults); ++j) {
+		j->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
 	}
 	
 	return results;
@@ -697,6 +697,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.51 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.52 2003/05/28 11:53:04 arnetheduck Exp $
  */
 

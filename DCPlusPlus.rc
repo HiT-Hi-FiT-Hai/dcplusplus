@@ -297,14 +297,14 @@ BEGIN
     GROUPBOX        "Sounds",IDC_STATIC,7,178,261,40
 END
 
-IDD_USER_COMMAND DIALOGEX 0, 0, 419, 122
+IDD_USER_COMMAND DIALOGEX 0, 0, 411, 122
 STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
     WS_CAPTION | WS_SYSMENU
 CAPTION "Create / Modify User Command"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,362,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,362,24,50,14
+    DEFPUSHBUTTON   "OK",IDOK,354,101,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,299,101,50,14
     LTEXT           "Name",IDC_STATIC,7,7,19,8
     LTEXT           "Command",IDC_STATIC,7,35,32,8
     LTEXT           "Hub IP / DNS (empty = all hubs, ""op"" = only when op)",
@@ -315,7 +315,7 @@ BEGIN
     EDITTEXT        IDC_NICK,7,101,181,14,ES_AUTOHSCROLL
     LTEXT           "PM To (empty to send in main chat)",IDC_STATIC,7,91,114,
                     8
-    LTEXT           "blablabla",IDC_COMMAND_DESCRIPTION,195,42,217,73
+    LTEXT           "blablabla",IDC_COMMAND_DESCRIPTION,195,7,209,91
 END
 
 IDD_ADLS_PROPERTIES DIALOGEX 0, 0, 173, 125
@@ -451,8 +451,9 @@ BEGIN
     IDD_USER_COMMAND, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 412
+        RIGHTMARGIN, 404
         VERTGUIDE, 188
+        VERTGUIDE, 195
         TOPMARGIN, 7
         BOTTOMMARGIN, 115
     END
@@ -474,8 +475,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,5,0
- PRODUCTVERSION 0,2,5,0
+ FILEVERSION 0,2,5,1
+ PRODUCTVERSION 0,2,5,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -492,12 +493,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 2, 5, 0"
+            VALUE "FileVersion", "0, 2, 5, 1"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 2, 5, 0"
+            VALUE "ProductVersion", "0, 2, 5, 1"
         END
     END
     BLOCK "VarFileInfo"

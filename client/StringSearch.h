@@ -89,7 +89,7 @@ private:
 	string pattern;
 
 	void initDelta1() {
-		u_int16_t x = (u_int16_t)pattern.length() + 1;
+		u_int16_t x = (u_int16_t)(pattern.length() + 1);
 		u_int16_t i;
 		for(i = 0; i < ASIZE; ++i) {
 			delta1[i] = x;
@@ -98,7 +98,7 @@ private:
 		x--;
 		u_int8_t* p = (u_int8_t*)pattern.data();
 		for(i = 0; i < x; ++i) {
-			delta1[p[i]] = x - i;
+			delta1[p[i]] = (u_int16_t)(x - i);
 		}
 	}
 };
@@ -106,5 +106,5 @@ private:
 #endif STRINGSEARCH_H
 /**
  * @file
- * $Id: StringSearch.h,v 1.3 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: StringSearch.h,v 1.4 2003/05/28 11:53:04 arnetheduck Exp $
  */

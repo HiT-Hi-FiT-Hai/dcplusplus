@@ -852,7 +852,8 @@ void QueueFrame::updateStatus() {
 				total = queueSize;
 			}
 		} else {
-			for(int i = 0; i < cnt; ++i) {
+			int i = -1;
+			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
 				total += (qi->getSize() > 0) ? qi->getSize() : 0;
 			}
@@ -1018,7 +1019,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.21 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.22 2003/05/28 11:53:05 arnetheduck Exp $
  */
 
 

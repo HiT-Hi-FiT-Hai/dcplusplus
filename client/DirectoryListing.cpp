@@ -33,7 +33,9 @@ void DirectoryListing::load(const string& in)
 
 	// Prepare ADLSearch manager
 	ADLSearchManager* pADLSearch = ADLSearchManager::getInstance();
-	pADLSearch->PrepareDestinationDirectories(root);
+	StringMap params;
+	params["nick"] = getUser()->getNick();
+	pADLSearch->PrepareDestinationDirectories(root, params);
 
 	Directory* cur = root;
 	string fullPath;
@@ -169,5 +171,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.15 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.16 2003/05/28 11:53:04 arnetheduck Exp $
  */

@@ -230,6 +230,7 @@ public:
 	}
 
 	static string formatParams(const string& msg, StringMap& params);
+	static string formatTime(const string &msg, const time_t tm);
 
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
 	static string toLower(const char* aString, int len = -1) {
@@ -320,6 +321,8 @@ public:
 
 		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
 
+		tx += start;
+
 		while(tx < end) {
 			if(p == Util::toLower(tx[0])) {
 				int i = 1;
@@ -367,7 +370,11 @@ public:
 	static string getOsVersion();
 
 	static bool getAway() { return away; };
-	static void setAway(bool aAway) { away = aAway; };
+	static void setAway(bool aAway) {
+		away = aAway;
+		if (away)
+			awayTime = time(NULL);
+	};
 	static string getAwayMessage();
 
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
@@ -380,6 +387,7 @@ public:
 private:
 	static bool away;
 	static string awayMsg;
+	static time_t awayTime;
 	static char upper[];
 	static char lower[];
 	static int8_t cmp[256][256];
@@ -418,5 +426,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.56 2003/05/09 09:57:47 arnetheduck Exp $
+ * $Id: Util.h,v 1.57 2003/05/28 11:53:05 arnetheduck Exp $
  */
