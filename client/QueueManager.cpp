@@ -776,16 +776,13 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	}
 
 	if(!fname.empty()) {
-		string userList;
 		DirectoryListing dirList(up);
 		try {
-			dirList.loadFile(fname);
+			dirList.loadFile(fname, false);
 		} catch(const Exception&) {
 			addList(up, flag);
 			return;
 		}
-
-		dirList.load(userList);
 
 		if(flag & QueueItem::FLAG_DIRECTORY_DOWNLOAD) {
 			DirectoryItem::List dl;
@@ -1325,5 +1322,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.79 2004/03/19 09:01:14 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.80 2004/03/27 11:51:33 arnetheduck Exp $
  */

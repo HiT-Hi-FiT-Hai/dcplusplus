@@ -130,10 +130,10 @@ public:
 		delete root;
 	};
 
-	void loadFile(const string& name);
+	void loadFile(const string& name, bool doAdl);
 
-	void load(const string& i);
-	void loadXML(const string& xml);
+	void load(const string& i, bool doAdl);
+	void loadXML(const string& xml, bool doAdl);
 
 	void download(const string& aDir, const string& aTarget);
 	void download(Directory* aDir, const string& aTarget);
@@ -169,5 +169,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.25 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.26 2004/03/27 11:51:33 arnetheduck Exp $
  */

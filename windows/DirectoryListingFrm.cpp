@@ -46,7 +46,7 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 
 	dl = new DirectoryListing(aUser);
 	try {
-		dl->loadFile(aFile);
+		dl->loadFile(aFile, true);
 	} catch(const Exception& e) {
 		error = aUser->getFullNick() + ": " + e.getError();
 	}
@@ -756,5 +756,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.30 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.31 2004/03/27 11:51:34 arnetheduck Exp $
  */

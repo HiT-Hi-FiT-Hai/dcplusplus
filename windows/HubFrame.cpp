@@ -264,7 +264,7 @@ int HubFrame::findUser(const User::Ptr& aUser) {
 		}
 		if(aUser->isSet(User::OP)) {
 			// Might still be sorted as a non-op...search again...
-			ui->setOp(false);
+			ui.setOp(false);
 			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
 				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
 			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
@@ -1113,5 +1113,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.55 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.56 2004/03/27 11:51:34 arnetheduck Exp $
  */
