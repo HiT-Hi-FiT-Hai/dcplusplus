@@ -133,7 +133,7 @@ public:
 	struct CompFirst {
 		CompFirst() { } 
 		bool operator()(T& a, const tstring& b) {
-			return Util::stricmp(a.getText(0), b) == -1;
+			return Util::stricmp(a.getText(0), b) < 0;
 		}
 	};
 	int findItem(const tstring& b, int start = -1, bool aPartial = false) {
@@ -195,9 +195,9 @@ public:
 
 			if(comp == 0) {
 				return mid;
-			} else if(comp == -1) {
+			} else if(comp < 0) {
 				high = mid - 1;
-			} else if(comp == 1) {
+			} else if(comp > 0) {
 				low = mid + 1;
 			}
 		}
@@ -205,7 +205,7 @@ public:
 		comp = T::compareItems(a, b, sortColumn);
 		if(!sortAscending)
 			comp = -comp;
-		if(comp == 1)
+		if(comp > 0)
 			mid++;
 
 		return mid;
@@ -237,5 +237,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.13 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.14 2004/09/08 11:00:52 arnetheduck Exp $
 */

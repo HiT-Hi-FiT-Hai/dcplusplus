@@ -6,6 +6,7 @@
 		<String Name="Add">&amp;Add</String>
 		<String Name="Added">Added</String>
 		<String Name="AddFinishedInstantly">Add finished files to share instantly (if shared)</String>
+		<String Name="SettingsUseUpnp">Use UPnP Control</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
 		<String Name="AddressNotAvailable">Address not available</String>
@@ -26,6 +27,7 @@
 		<String Name="AwayModeOff">Away mode off</String>
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
+		<String Name="BanUser">Ban user(s)</String>
 		<String Name="BothUsersOffline">Both users offline</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
@@ -58,6 +60,7 @@
 		<String Name="DirectoryAlreadyShared">Directory already shared</String>
 		<String Name="Disconnected">Disconnected</String>
 		<String Name="DisconnectedUser">Disconnected user leaving the hub: </String>
+		<String Name="DisconnectUser">Disconnect user(s)</String>
 		<String Name="DiscFull">Disk full(?)</String>
 		<String Name="Document">Document</String>
 		<String Name="Done">Done</String>
@@ -245,6 +248,7 @@
 		<String Name="Open">Open</String>
 		<String Name="OpenDownloadPage">Open download page?</String>
 		<String Name="OpenFolder">Open folder</String>
+		<String Name="OperatingSystemNotCompatible">Operating system does not match minimum requirements for feature</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
 		<String Name="PassiveUser">Passive user</String>
@@ -446,6 +450,8 @@
 		<String Name="UploadedBytes">Uploaded %s (%.01f%%) in %s</String>
 		<String Name="UploadedTo"> uploaded to </String>
 		<String Name="Uploads">Uploads</String>
+		<String Name="UpnpFailedToCreateMappings">Failed to create port mappings</String>
+		<String Name="UpnpFailedToRemoveMappings">Failed to remove port mappings</String>
 		<String Name="User">User</String>
 		<String Name="UserDescription">User Description</String>
 		<String Name="UserOffline">User offline</String>

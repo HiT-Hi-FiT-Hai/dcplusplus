@@ -258,7 +258,7 @@ void HubFrame::onEnter() {
 struct CompareItems {
 	CompareItems(int aCol) : col(aCol) { }
 	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) const {
-		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
+		return HubFrame::UserInfo::compareItems(&a, &b, col) < 0;
 	}
 	const int col;
 };
@@ -1144,5 +1144,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.72 2004/09/07 01:36:53 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.73 2004/09/08 11:00:52 arnetheduck Exp $
  */

@@ -119,9 +119,9 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 			if(!ascending)
 				comp = -comp;
 
-			if(comp == -1) {
+			if(comp < 0) {
 				high = loc - 1;
-			} else if(comp == 1) {
+			} else if(comp > 0) {
 				low = loc + 1;
 			} else {
 				break;
@@ -145,7 +145,7 @@ int ExListViewCtrl::insert(TStringList& aList, int iImage, LPARAM lParam) {
 		if(!ascending)
 			comp = -comp;
 		
-		if(comp == 1)
+		if(comp > 0)
 			loc++;
 	}
 	dcassert(loc >= 0 && loc <= GetItemCount());
@@ -175,6 +175,6 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.11 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.12 2004/09/08 11:00:52 arnetheduck Exp $
  */
 
