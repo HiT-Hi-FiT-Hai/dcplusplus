@@ -15,6 +15,7 @@
   unicode names and translate them correctly into utf-8 regardless of codepage
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
+* File listings are now generated on the fly when someone needs them
 
 
  -- 0.4032 2004-08-08 --

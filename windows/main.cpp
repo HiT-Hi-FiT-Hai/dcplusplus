@@ -42,7 +42,7 @@ static char buf[DEBUG_BUFSIZE];
 #ifndef _DEBUG
 
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
-	MessageBox(WinUtil::mainWnd, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, _T("DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old)."), _T("DC++ Has Crashed"), MB_OK | MB_ICONERROR);
 	exit(-1);
 }
 
@@ -350,5 +350,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.28 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: main.cpp,v 1.29 2004/09/06 18:57:26 arnetheduck Exp $
  */
