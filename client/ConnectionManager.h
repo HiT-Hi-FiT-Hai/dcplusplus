@@ -130,7 +130,7 @@ private:
 
 	ConnectionQueueItem::TimeMap pendingDown;
 	UserConnection::List pendingDelete;
-	ConnectionQueueItem::QueueMap downPool;
+	ConnectionQueueItem::List downPool;
 	ConnectionQueueItem::QueueMap connections;
 	ConnectionQueueItem::List pendingAdd;
 	UserConnection::List userConnections;
@@ -218,7 +218,7 @@ private:
 	void onTimerMinute(DWORD aTick);
 
 	/**
-	 * Returns an connection, either from the pool or a brand new fresh one.
+	 * Returns a connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
 		UserConnection* uc = new UserConnection();
@@ -236,9 +236,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.31 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.32 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.32  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.31  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

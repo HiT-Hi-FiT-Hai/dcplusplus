@@ -1,4 +1,16 @@
- -- 0.163 --
+ -- 0.164 --
+* Fixed the disk full crash
+* Fixed some minor memory handling issues
+* Fixed sorting in the search frame
+* Fixed window looks in winxp ugly mode (added manifest file)
+* Added right-click menu to the tab control
+* Replaced the password dialog by a /-command in the main chat (to avoid problems with lost password dialog boxes)
+* Changed so that a second "/away" disables away mode (/back is still working)
+* File lists are now saved in a separate directory to avoid clutter in the main dc++ one...
+* Added option to send status messages to main chat
+* Added option to show joins/parts in main chat, and /showjoins command to toggle for the current hub
+
+ -- 0.163 2002-04-04 --
 * More internationalization
 * Added public hublist filter
 * Minor UI fixes

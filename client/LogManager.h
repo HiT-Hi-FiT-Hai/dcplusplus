@@ -24,17 +24,23 @@
 #endif // _MSC_VER > 1000
 
 #include "File.h"
+#include "CriticalSection.h"
 
 class LogManager : public Singleton<LogManager>
 {
 public:
-	void log(const string& area, const string& msg) {
-		File f(SETTING(LOG_DIRECTORY) + area + ".log", File::WRITE, File::OPEN | File::CREATE);
-		f.setEndPos(0);
-		f.write(msg + "\r\n");
+	void log(const string& area, const string& msg) throw() {
+		Lock l(cs);
+		try {
+			File f(SETTING(LOG_DIRECTORY) + area + ".log", File::WRITE, File::OPEN | File::CREATE);
+			f.setEndPos(0);
+			f.write(msg + "\r\n");
+		} catch (FileException e) {
+			// ...
+		}
 	};
 
-	void logDateTime(const string& area, const string& msg) {
+	void logDateTime(const string& area, const string& msg) throw() {
 		char buf[20];
 		time_t now = time(NULL);
 		strftime(buf, 20, "%Y-%m-%d %H:%M: ", localtime(&now));
@@ -43,6 +49,8 @@ public:
 
 private:
 	friend class Singleton<LogManager>;
+	CriticalSection cs;
+	
 	LogManager() { };
 	virtual ~LogManager() { };
 	
@@ -55,5 +63,5 @@ private:
 
 /**
  * @file LogManager.h
- * $Id: LogManager.h,v 1.1 2002/04/03 23:21:08 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.2 2002/04/07 16:08:14 arnetheduck Exp $
  */

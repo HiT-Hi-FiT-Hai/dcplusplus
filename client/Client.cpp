@@ -359,7 +359,7 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 	string tmp = aString;
 	string::size_type i;
 	while((i = tmp.find(' ')) != string::npos) {
-		tmp.replace(i, 1, 1, '$');
+		tmp[i] = '$';
 	}
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		buf = new char[SETTING(SERVER).length() + aString.length() + 64];
@@ -369,14 +369,17 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 		sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
 	}
 	send(buf);
-	delete buf;
+	delete[] buf;
 }
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.36 2002/03/26 09:17:59 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.37 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.37  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.36  2002/03/26 09:17:59  arnetheduck
  * New UsersFrame
  *

@@ -146,7 +146,7 @@ public:
 		const char* m = msg2.c_str();
 		sprintf(tmp, str, u, n, n, m, n, n, u, m);
 		send(tmp);
-		delete tmp;
+		delete[] tmp;
 
 /*		send("$To: " + aUser->getNick() + " $From: " + getNick() + " <" + getNick() + 
 			"> You are being kicked because: " + Util::removeInvalid(aMsg) + 
@@ -172,7 +172,7 @@ public:
 		const char* m = msg2.c_str();
 		sprintf(tmp, str, u, n, n, m, n, n, u, m);
 		send(tmp);
-		delete tmp;
+		delete[] tmp;
 
 /*		send("$To: " + aUser->getNick() + " $From: " + getNick() + " <" + getNick() + 
 			"> You are being kicked because: " + Util::removeInvalid(aMsg) + 
@@ -328,9 +328,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.46 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: Client.h,v 1.47 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.47  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.46  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

@@ -115,11 +115,11 @@ public:
 		try {
 			x = read(buf, len);
 		} catch(...) {
-			delete buf;
+			delete[] buf;
 			throw;
 		}
 		string tmp(buf, x);
-		delete buf;
+		delete[] buf;
 		return tmp;
 	}
 
@@ -131,10 +131,10 @@ public:
 	virtual DWORD write(const void* buf, DWORD len) throw(FileException) {
 		DWORD x;
 		if(!::WriteFile(h, buf, len, &x, NULL)) {
-			throw(FileException(Util::translateError(GetLastError())));
+			throw FileException(Util::translateError(GetLastError()));
 		}
 		if(x < len) {
-			throw(FileException("Disk full?"));
+			throw FileException("Disk full?");
 		}
 		return x;
 	}
@@ -175,13 +175,19 @@ public:
 	}
 	
 	virtual ~BufferedFile() {
+
 		flush();
-		delete buf;
+		delete[] buf;
 	}
 
-	virtual void flush() throw(FileException) {
+	void flush() throw(FileException) {
 		if(pos > 0) {
-			File::write(buf, pos);
+			try {
+				File::write(buf, pos);
+			} catch(FileException) {
+				pos = 0;
+				throw;
+			}
 		}
 		pos = 0;
 	}
@@ -190,8 +196,8 @@ public:
 		int pos2 = 0;
 		while(len) {
 			if(pos == 0 && len > size) {
-				File::write(aBuf, len);
 				len = 0;
+				File::write(aBuf, len);
 			} else {
 				int i = min(size-pos, len);
 				memcpy(buf+pos, ((char*)aBuf)+pos2, i);
@@ -231,9 +237,12 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.8 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: File.h,v 1.9 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.9  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.8  2002/04/03 23:20:35  arnetheduck
  * ...
  *

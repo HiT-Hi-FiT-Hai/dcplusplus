@@ -175,19 +175,19 @@ BEGIN
     EDITTEXT        IDC_DOWNLOADDIR,14,19,186,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,204,19,44,14
     EDITTEXT        IDC_DOWNLOADS,14,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
-    GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
-    GROUPBOX        "Options",IDC_STATIC,7,45,248,93
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,37,56,11,
                     14
-    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,49,59,87,8
-    LTEXT           "Don't start new downloads if download speed is more than",
-                    IDC_STATIC,14,77,184,8
+    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,223,74,11,
                     14
+    EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
+    GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
+    GROUPBOX        "Options",IDC_STATIC,7,45,248,93
+    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,49,59,87,8
+    LTEXT           "Don't start new downloads if download speed is more than",
+                    IDC_STATIC,14,77,184,8
     LTEXT           "kB/s",IDC_STATIC,231,77,16,8
     LTEXT           "HTTP proxy address for downloading the hub list (i e www.proxy.com:8080)",
                     IDC_STATIC,14,105,237,8
@@ -244,6 +244,10 @@ BEGIN
     GROUPBOX        "Language file",IDC_STATIC,7,167,261,32
     LTEXT           "Note; most of these options require that you restart DC++",
                     IDC_STATIC,7,210,179,8
+    CONTROL         "View status messages in main chat",IDC_STATUS_IN_CHAT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,130,125,10
+    CONTROL         "Show joins / parts in main chat",IDC_SHOW_JOINS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,141,113,10
 END
 
 IDD_ADVANCED2PAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -417,6 +421,13 @@ BEGIN
     "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// 24
+//
+
+1                       24      MOVEABLE PURE   "res\\DCPlusPlus.Manifest"
 
 /////////////////////////////////////////////////////////////////////////////
 //

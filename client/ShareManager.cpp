@@ -273,7 +273,7 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 		try {
 			File f(sm->getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
-		} catch(Exception e) {
+		} catch(FileException e) {
 			// ...
 			return 1;
 		}
@@ -482,9 +482,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.30 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.31 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.31  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.30  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

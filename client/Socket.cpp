@@ -207,7 +207,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 				// 0.2 seconds...
 				t.tv_sec = 0;
-				t.tv_usec = 200*1000;
+				t.tv_usec = 500*1000;
 				fd_set wfd;
 				FD_ZERO(&wfd);
 				FD_SET(sock, &wfd);
@@ -237,9 +237,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.28 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.29 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.29  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.28  2002/04/03 23:20:35  arnetheduck
  * ...
  *

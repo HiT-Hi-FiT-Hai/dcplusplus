@@ -189,11 +189,13 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
+	mi.fMask = MIIM_SUBMENU | MIIM_TYPE;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD_TO));
 	mi.hSubMenu = targetMenu;
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
+	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.wID = IDC_GETLIST;
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
@@ -293,12 +295,12 @@ void SearchFrame::onEnter() {
 		message = new char[ctrlSearch.GetWindowTextLength()+1];
 		ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 		string s(message, ctrlSearch.GetWindowTextLength());
-		delete message;
+		delete[] message;
 		
 		message = new char[ctrlSize.GetWindowTextLength()+1];
 		ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
 		string size(message, ctrlSize.GetWindowTextLength());
-		delete message;
+		delete[] message;
 		
 		double lsize = Util::toDouble(size);
 		switch(ctrlSizeMode.GetCurSel()) {
@@ -722,6 +724,8 @@ LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 	} else {
 		if(l->iSubItem == COLUMN_SIZE) {
 			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
+		} else if(l->iSubItem == COLUMN_SLOTS) {
+			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
 		} else {
 			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}
@@ -790,9 +794,12 @@ LRESULT SearchFrame::onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.33 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.34 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.34  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.33  2002/04/03 23:20:35  arnetheduck
  * ...
  *

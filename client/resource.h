@@ -128,7 +128,9 @@
 #define IDC_HELP_REQUEST_FEATURE        1066
 #define IDC_BROWSE_LOG                  1066
 #define IDC_HELP_DISCUSS                1067
+#define IDC_STATUS_IN_CHAT              1067
 #define IDC_HELP_HELP_FORUM             1068
+#define IDC_SHOW_JOINS                  1068
 #define IDC_HELP_FAQ                    1069
 #define IDC_SEARCH_SPY                  1070
 #define IDC_IMPORT_QUEUE                1071
@@ -148,7 +150,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1067
+#define _APS_NEXT_CONTROL_VALUE         1069
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

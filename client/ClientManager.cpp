@@ -105,7 +105,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					str += buf;
 					delete sr;
 				}
-				delete buf;
+				delete[] buf;
 				
 				if(str.size() > 0)
 					aClient->searchResults(str);
@@ -129,7 +129,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				} catch(SocketException /* e */) {
 					dcdebug("Search caught error\n");
 				}
-				delete buf;
+				delete[] buf;
 
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					delete *i;
@@ -227,9 +227,12 @@ void ClientManager::onTimerMinute(DWORD aTick) {
 }
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.15 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.16 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.16  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.15  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

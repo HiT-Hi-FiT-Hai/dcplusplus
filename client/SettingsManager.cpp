@@ -41,7 +41,7 @@ const string SettingsManager::settingTags[] =
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
-	"LogDownloads", "LogUploads",
+	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", 
 	"SENTRY"
 };
 
@@ -88,6 +88,8 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
 	setDefault(LOG_MAIN_CHAT, false);
+	setDefault(STATUS_IN_CHAT, false);
+	setDefault(SHOW_JOINS, false);
 	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -210,9 +212,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.28 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.29 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.29  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.28  2002/04/03 23:20:35  arnetheduck
  * ...
  *

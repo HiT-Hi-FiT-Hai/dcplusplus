@@ -221,7 +221,7 @@ public:
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
-		string file = Util::getAppPath() + aUser->getNick() + ".DcLst";
+		string file = Util::getAppPath() + "FileLists\" + aUser->getNick() + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false);
 		userLists.push_back(file);
 	}
@@ -277,7 +277,8 @@ private:
 	
 	QueueManager() : dirty(false) { 
 		TimerManager::getInstance()->addListener(this); 
-		SearchManager::getInstance()->addListener(this); 
+		SearchManager::getInstance()->addListener(this);
+		Util::ensureDirectory(Util::getAppPath() + "FileLists\")
 	};
 	
 	virtual ~QueueManager() { 
@@ -326,9 +327,12 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.13 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.14 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.14  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.13  2002/04/03 23:20:35  arnetheduck
  * ...
  *

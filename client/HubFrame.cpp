@@ -147,69 +147,35 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.SetTextBkColor(Util::bgColor);
 	ctrlUsers.SetTextColor(Util::textColor);
 	
-	userMenu.CreatePopupMenu();
-	opMenu.CreatePopupMenu();
-	
 	if(!images) {
 		images = new CImageList();
 		images->CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	}
 	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
 
-	CMenuItemInfo mi;
-	int n = 0;
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
+	userMenu.CreatePopupMenu();
+	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	userMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 
-	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
-	mi.wID = IDC_GETLIST;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
-	mi.wID = IDC_PRIVATEMESSAGE;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.dwTypeData = const_cast<char*>(CSTRING(GRANT_EXTRA_SLOT));
-	mi.wID = IDC_GRANTSLOT;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.dwTypeData = const_cast<char*>(CSTRING(ADD_TO_FAVORITES));
-	mi.wID = IDC_ADD_TO_FAVORITES;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fType = MFT_SEPARATOR;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(REFRESH_USER_LIST));
-	mi.wID = IDC_REFRESH;
-	userMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_TYPE;
-	mi.fType = MFT_SEPARATOR;
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(KICK_USER));
-	mi.wID = IDC_KICK;
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(REDIRECT));
-	mi.wID = IDC_REDIRECT;
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	opMenu.CreatePopupMenu();
+	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	opMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	opMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	opMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
+	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
+	opMenu.AppendMenu(MF_STRING, IDC_REDIRECT, CSTRING(REDIRECT));
 	
 	m_hMenu = Util::mainMenu;
 	
+	showJoins = BOOLSETTING(SHOW_JOINS);
+
 	bHandled = FALSE;
 	client->connect(server);
 	return 1;
@@ -223,7 +189,7 @@ void HubFrame::onEnter() {
 		message = new char[ctrlMessage.GetWindowTextLength()+1];
 		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 		string s(message, ctrlMessage.GetWindowTextLength());
-		delete message;
+		delete[] message;
 
 		// Special command
 		if(s[0] == '/') {
@@ -275,9 +241,14 @@ void HubFrame::onEnter() {
 			} else if(stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
 			} else if(stricmp(s.c_str(), "away") == 0) {
-				Util::setAway(true);
-				Util::setAwayMessage(param);
-				addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
+				if(Util::getAway()) {
+					Util::setAway(false);
+					addClientLine(STRING(AWAY_MODE_OFF));
+				} else {
+					Util::setAway(true);
+					Util::setAwayMessage(param);
+					addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
+				}
 			} else if(stricmp(s.c_str(), "back") == 0) {
 				Util::setAway(false);
 				addClientLine(STRING(AWAY_MODE_OFF));
@@ -287,6 +258,17 @@ void HubFrame::onEnter() {
 					addClientLine(STRING(TIMESTAMPS_ENABLED));
 				} else {
 					addClientLine(STRING(TIMESTAMPS_DISABLED));
+				}
+			} else if( (stricmp(s.c_str(), "password" == 0) && waitingForPW) ) {
+				client->setPassword(param);
+				client->password(param);
+				waitingForPW = false;
+			} else if( stricmp(s.c_str(), "showjoins") == 0) ) {
+				showJoins = !showJoins;
+				if(showJoins) {
+					addClientLine(STRING("JOIN_SHOWING_ON"));
+				} else {
+					addClientLine(STRING("JOIN_SHOWING_OFF"));
 				}
 			}
 		} else {
@@ -434,7 +416,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if (wParam == CLIENT_STATUS) {
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
-	} else if(wParam == CLIENT_MYINFO) {
+	} else if(wParam == CLIENT_MYINFO || wParam == CLIENT_HELLO) {
 		User::Ptr u = *(User::Ptr*)lParam;
 		delete (User::Ptr*)lParam;
 		
@@ -468,6 +450,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 			((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 		}
+
+		if(showJoins && (wParam == CLIENT_HELLO)) {
+			addLine("*** " + STRING(JOINS) + u->getNick());
+		}
+		
 	} else if(wParam==STATS) {
 		if(client) {
 			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(USERS)).c_str());
@@ -483,22 +470,17 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			delete (UserInfo*)ctrlUsers.GetItemData(item);
 			ctrlUsers.DeleteItem(item);
 		}
+		if(showJoins) {
+			addLine("*** " + STRING(PARTS) + u->getNick());
+		}
 	} else if(wParam == CLIENT_GETPASSWORD) {
 		if(client) {
 			if(client->getPassword().size() > 0) {
 				client->password(client->getPassword());
 			} else {
-				LineDlg dlg;
-				dlg.title = STRING(HUB_PASSWORD) + " - " + client->getName();
-				dlg.description = STRING(ENTER_PASSWORD);
-				dlg.password = true;
-				
-				if(dlg.DoModal() == IDOK) {
-					client->setPassword(dlg.line);
-					client->password(dlg.line);
-				} else {
-					client->disconnect();
-				}
+				ctrlMessage.SetWindowText("/password ");
+				ctrlMessage.SetFocus();
+				waitingForPW = true;
 			}
 		}
 	} else if(wParam == CLIENT_CONNECTING) {
@@ -526,7 +508,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
-				addClientLine(STRING(IGNORED_MESSAGE) + i->msg);
+				addClientLine(STRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 			} else {
@@ -616,8 +598,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 }
 
 void HubFrame::addLine(const string& aLine) {
-	if(ctrlClient.GetWindowTextLength() > 20000) {
-		// We want to limit the buffer to the last 20000 characters...after that, w95 becomes sad...
+	if(ctrlClient.GetWindowTextLength() > 30000) {
+		// We want to limit the buffer to 30000 characters...after that, w95 becomes sad...
 		ctrlClient.SetRedraw(FALSE);
 		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
 		ctrlClient.ReplaceSel("");
@@ -675,167 +657,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.49 2002/04/03 23:20:35 arnetheduck Exp $
- * @if LOG
- * $Log: HubFrame.cpp,v $
- * Revision 1.49  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.48  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.47  2002/03/15 15:12:35  arnetheduck
- * 0.16
- *
- * Revision 1.46  2002/03/15 11:59:35  arnetheduck
- * Final changes (I hope...) for 0.155
- *
- * Revision 1.45  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.44  2002/03/11 22:58:54  arnetheduck
- * A step towards internationalization
- *
- * Revision 1.43  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.42  2002/03/05 11:19:35  arnetheduck
- * Fixed a window closing bug
- *
- * Revision 1.41  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.40  2002/02/28 00:10:47  arnetheduck
- * Some fixes to the new user model
- *
- * Revision 1.39  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.38  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.37  2002/02/25 15:39:28  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.36  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.35  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.34  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.33  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.32  2002/02/04 01:10:29  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.31  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.30  2002/02/01 02:00:29  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.29  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.28  2002/01/26 14:59:22  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.27  2002/01/26 12:38:50  arnetheduck
- * Added some user options
- *
- * Revision 1.26  2002/01/26 12:06:39  arnetheduck
- * Småsaker
- *
- * Revision 1.25  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.24  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.23  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.22  2002/01/15 21:57:53  arnetheduck
- * Hopefully fixed the two annoying bugs...
- *
- * Revision 1.21  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.20  2002/01/11 16:13:33  arnetheduck
- * Fixed some locks and bugs, added type field to the search frame
- *
- * Revision 1.19  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.18  2002/01/08 00:24:10  arnetheduck
- * Last bugs fixed before 0.11
- *
- * Revision 1.17  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.16  2002/01/06 21:55:20  arnetheduck
- * Some minor bugs fixed, but there remains one strange thing, the reconnect
- * button doesn't work...
- *
- * Revision 1.15  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.13  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.12  2001/12/21 23:52:30  arnetheduck
- * Last commit for five days
- *
- * Revision 1.11  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.10  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.9  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.8  2001/12/08 20:59:26  arnetheduck
- * Fixing bugs...
- *
- * Revision 1.7  2001/12/08 14:25:49  arnetheduck
- * More bugs removed...did my first search as well...
- *
- * Revision 1.6  2001/12/07 20:03:07  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.5  2001/12/05 19:40:13  arnetheduck
- * More bugfixes.
- *
- * Revision 1.4  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.3  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.2  2001/11/24 10:37:09  arnetheduck
- * onQuit is now handled
- * User list sorting
- * File sizes correcly cut down to B, kB, MB, GB and TB
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: HubFrame.cpp,v 1.50 2002/04/07 16:08:14 arnetheduck Exp $
  */
 

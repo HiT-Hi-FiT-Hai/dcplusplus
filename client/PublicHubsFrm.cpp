@@ -394,7 +394,7 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 		str = new char[ctrlFilter.GetWindowTextLength()+1];
 		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
 		filter = string(str, ctrlFilter.GetWindowTextLength());
-		delete str;
+		delete[] str;
 		updateList();
 	} else {
 		bHandled = FALSE;
@@ -404,9 +404,12 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.21 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.21  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.20  2002/04/03 23:20:35  arnetheduck
  * ...
  *

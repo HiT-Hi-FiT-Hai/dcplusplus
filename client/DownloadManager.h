@@ -44,7 +44,7 @@ public:
 	};
 	~Download() {
 		if(rollbackBuffer)
-			delete rollbackBuffer;
+			delete[] rollbackBuffer;
 
 		
 	}
@@ -58,7 +58,7 @@ public:
 	BYTE* getRollbackBuffer() { return rollbackBuffer; };
 	void setRollbackBuffer(int aSize) { 
 		if(rollbackBuffer) 
-			delete rollbackBuffer;
+			delete[] rollbackBuffer;
 
 		if(aSize > 0) {
 			rollbackBuffer = new BYTE[aSize];
@@ -215,9 +215,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.38 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.39 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.39  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.38  2002/04/03 23:20:35  arnetheduck
  * ...
  *

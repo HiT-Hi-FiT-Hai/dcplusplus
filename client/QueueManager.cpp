@@ -398,7 +398,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 		BYTE* buf = new BYTE[size];
 		f.read(buf, size);
 		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-		delete buf;
+		delete[] buf;
 	} else {
 		tmp = "";
 	}
@@ -445,9 +445,12 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.15 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.16 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.16  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.15  2002/04/03 23:20:35  arnetheduck
  * ...
  *

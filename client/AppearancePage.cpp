@@ -35,6 +35,8 @@ PropPage::Item AppearancePage::items[] = {
 	{ IDC_TIMESTAMPS, SettingsManager::TIME_STAMPS, PropPage::T_BOOL },
 	{ IDC_CONFIRMEXIT, SettingsManager::CONFIRM_EXIT, PropPage::T_BOOL },
 	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
+	{ IDC_STATUS_IN_CHAT, SettingsManager::STATUS_IN_CHAT, PropPage::T_BOOL },
+	{ IDC_SHOW_JOINS, SettingsManager::SHOW_JOINS, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -130,9 +132,12 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.6 2002/03/15 15:12:35 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.7 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.7  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.6  2002/03/15 15:12:35  arnetheduck
  * 0.16
  *

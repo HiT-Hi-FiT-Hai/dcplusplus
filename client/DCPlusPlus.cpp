@@ -30,12 +30,15 @@
 #include "QueueManager.h"
 #include "ResourceManager.h"
 #include "ClientManager.h"
+#include "LogManager.h"
 
 CAppModule _Module;
 
 void startup() {
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
+
+	LogManager::newInstance();
 	ShareManager::newInstance();
 	TimerManager::newInstance();
 	CryptoManager::newInstance();
@@ -68,6 +71,7 @@ void shutdown() {
 	SearchManager::deleteInstance();
 	ClientManager::deleteInstance();
 	HubManager::deleteInstance();
+	LogManager::deleteInstance();
 	TimerManager::deleteInstance();
 	ResourceManager::deleteInstance();
 }
@@ -131,9 +135,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.7 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.8 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.cpp,v $
+ * Revision 1.8  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.7  2002/04/03 23:20:35  arnetheduck
  * ...
  *

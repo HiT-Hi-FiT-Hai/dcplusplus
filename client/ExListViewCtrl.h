@@ -80,11 +80,7 @@ public:
 
 	int find(const string& aText, int aStart = -1, bool aPartial = false) {
 		LV_FINDINFO fi;
-		if(aPartial) {
-			fi.flags = LVFI_PARTIAL;
-		} else {
-			fi.flags = LVFI_STRING;
-		}
+		fi.flags = aPartial ? LVFI_PARTIAL : LVFI_STRING;
 		fi.psz = aText.c_str();
 		return FindItem(&fi, aStart);
 	}
@@ -169,9 +165,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.18 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.19 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.19  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.18  2002/04/03 23:20:35  arnetheduck
  * ...
  *

@@ -89,9 +89,9 @@ public:
 	virtual ~BufferedSocket() {
 		stopWorker();
 		
-		delete inbuf;
+		delete[] inbuf;
 		for(int i = 0; i < BUFFERS; i++) {
-			delete outbuf[i];
+			delete[] outbuf[i];
 		}
 	}
 	
@@ -225,9 +225,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.32 2002/03/15 15:12:35 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.33 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.33  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.32  2002/03/15 15:12:35  arnetheduck
  * 0.16
  *

@@ -109,7 +109,7 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) th
 		
 		int cmp = memcmp(d->getRollbackBuffer(), buf, d->getRollbackSize());
 
-		delete buf;
+		delete[] buf;
 		d->unsetFlag(Download::ROLLBACK);
 		d->setRollbackBuffer(0);
 
@@ -292,9 +292,12 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.53 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.54 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.54  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.53  2002/04/03 23:20:35  arnetheduck
  * ...
  *

@@ -160,7 +160,7 @@ void BufferedSocket::threadRead() {
 		//dcdebug("Available bytes: %d\n", bs->getAvailable());
 		while(getAvailable() > inbufSize) {
 			// We grow the buffer according to how much is actually available...
-			delete inbuf;
+			delete[] inbuf;
 			inbufSize *= 2;
 			inbuf = new BYTE[inbufSize];
 			dcdebug("BufferedSocket::reader: Grown %p's buffer to %d\n", this, inbufSize);
@@ -264,7 +264,7 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 			dcdebug("Growing outbuf[%d] to %d bytes\n", mybuf, outbufSize[mybuf]);
 			BYTE* tmp = new BYTE[outbufSize[mybuf]];
 			memcpy(tmp, outbuf[mybuf], outbufPos[mybuf]);
-			delete outbuf[mybuf];
+			delete[] outbuf[mybuf];
 			outbuf[mybuf] = tmp;
 		}
 
@@ -333,9 +333,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.31 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.32 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.32  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.31  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

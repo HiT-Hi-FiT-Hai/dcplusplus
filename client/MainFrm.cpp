@@ -141,7 +141,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 				BYTE* buf = new BYTE[size];
 				f.read(buf, size);
 				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-				delete buf;
+				delete[] buf;
 			} else {
 				tmp = "";
 			}
@@ -234,7 +234,7 @@ void MainFrame::onUploadTick(const Upload::List ul) {
 		StringListInfo* i = new StringListInfo((LPARAM)u->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
 
-		delete buf;
+		delete[] buf;
 		v->push_back(i);
 	}
 	
@@ -299,7 +299,7 @@ void MainFrame::onDownloadTick(const Download::List dl) {
 		
 		StringListInfo* i = new StringListInfo((LPARAM)d->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
-		delete buf;
+		delete[] buf;
 
 		v->push_back(i);
 	}
@@ -524,7 +524,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
 			sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
 			MessageBox(buf);
-			delete buf;
+			delete[] buf;
 		}
 	}
 
@@ -690,7 +690,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 				char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
 				sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
 				MessageBox(buf);
-				delete buf;
+				delete[] buf;
 			}
 		}
 		ClientManager::getInstance()->infoUpdated();
@@ -882,9 +882,12 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.72 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.73 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.73  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.72  2002/04/03 23:20:35  arnetheduck
  * ...
  *

@@ -38,7 +38,8 @@
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
-	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
+	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : 
+	  waitingForPW(false), op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
 		client->setPassword(aPassword);
@@ -193,9 +194,13 @@ public:
 		return 0;
 	}
 
-	void addClientLine(const string& aLine) {
+	void addClientLine(const string& aLine, bool inChat = true) {
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
+
+		if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
+			addLine("*** " + aLine)
+		}
 	}
 
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -236,6 +241,7 @@ private:
 		CLIENT_HUBNAME,
 		CLIENT_MESSAGE,
 		CLIENT_MYINFO,
+		CLIENT_HELLO,
 		CLIENT_PRIVATEMESSAGE,
 		CLIENT_QUIT,
 		CLIENT_UNKNOWN,
@@ -274,11 +280,14 @@ private:
 
 	string redirect;
 	bool timeStamps;
+	bool showJoins;
 	
 	string lastKick;
 	string lastRedir;
 	string lastServer;
 
+	bool waitingForPW;
+	
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
@@ -388,7 +397,7 @@ private:
 			PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x); break;
 		case ClientListener::HELLO:
 			x = new User::Ptr(user);
-			PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x); break;
+			PostMessage(WM_SPEAKER, CLIENT_HELLO, (LPARAM)x); break;
 		}
 	}
 	
@@ -433,9 +442,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.60 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.61 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.61  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.60  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

@@ -17,14 +17,17 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.162"
-#define VERSIONFLOAT 0.162
+#define VERSIONSTRING "0.163"
+#define VERSIONFLOAT 0.163
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.24 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: version.h,v 1.25 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.25  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.24  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

@@ -33,7 +33,7 @@
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
 public:
-	FlatTabCtrlImpl() : active(NULL), boldFont(NULL) { };
+	FlatTabCtrlImpl() : active(NULL), boldFont(NULL), closing(NULL) { };
 
 	static LPCTSTR GetWndClassName()
 	{
@@ -86,6 +86,8 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, onWindowPosChanging)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		COMMAND_ID_HANDLER(IDCLOSE, onClose)
 	END_MSG_MAP()
 
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -160,6 +162,32 @@ public:
 		return 0;
 	}
 
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		int i = 0;
+
+		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
+			TabInfo* t = *i;
+			if( (pt.x > i) && (pt.x < i + t->getWidth())) {
+				closing = t->hWnd;
+
+				CMenu mnu;
+				mnu.CreatePopupMenu();
+				mnu.AppendMenu(MF_STRING, IDCLOSE, CSTRING(CLOSE));
+				transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			} else {
+				i+=t->getWidth();
+			}
+		}
+		return FALSE; 
+	}
+
+	LRESULT onClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		::SendMessage(closing, WM_CLOSE, 0, 0);
+	}
+		
+	
 private:
 	class TabInfo {
 	public:
@@ -204,6 +232,7 @@ private:
 	};
 
 	HFONT boldFont;
+	HWND closing;
 	
 	TabInfo* active;
 	vector<TabInfo*> tabs;
@@ -339,9 +368,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.9 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.10 2002/04/07 16:08:14 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.10  2002/04/07 16:08:14  arnetheduck
+ * Fixes and additions
+ *
  * Revision 1.9  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *
