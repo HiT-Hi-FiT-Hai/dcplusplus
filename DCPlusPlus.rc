@@ -102,7 +102,7 @@ BEGIN
     GROUPBOX        "Latest version",IDC_STATIC,7,224,191,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,235,179,8
     GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
-    CTEXT           "Upload: xx.xx MB, Download: xx.xx MB",IDC_TOTALS,13,193,
+    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,193,
                     179,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
     EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
@@ -170,23 +170,22 @@ FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_ROLLBACK,69,7,45,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_BUFFERSIZE,208,7,41,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CLVERSION,69,24,45,14
+    EDITTEXT        IDC_MAX_HASH_SPEED,69,24,45,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_MAX_TAB_ROWS,208,24,41,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MAX_HASH_SPEED,69,41,45,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,7,60,261,158
+                    WS_TABSTOP,7,44,261,174
     RTEXT           "Rollback",IDC_SETTINGS_ROLLBACK,7,10,57,8
     LTEXT           "B",IDC_SETTINGS_B,117,10,8,8
     RTEXT           "Client version",IDC_SETTINGS_CLIENT_VER,7,27,57,8
     RTEXT           "Write buffer size",IDC_SETTINGS_WRITE_BUFFER,129,10,75,
                     8
-    LTEXT           "kB",IDC_SETTINGS_KB,252,10,10,8
+    LTEXT           "kiB",IDC_SETTINGS_KB,252,10,10,8
     RTEXT           "Max tab rows",IDC_SETTINGS_MAX_TAB_ROWS,126,27,78,8
-    LTEXT           "Max Hash Speed",IDC_SETTINGS_MAX_HASH_SPEED,7,44,57,8,0,
+    LTEXT           "Max Hash Speed",IDC_SETTINGS_MAX_HASH_SPEED,7,27,57,8,0,
                     WS_EX_RIGHT
-    LTEXT           "MB/s",IDC_SETTINGS_MBS,117,44,18,8
+    LTEXT           "MiB/s",IDC_SETTINGS_MBS,117,27,18,8
 END
 
 IDD_DOWNLOADPAGE DIALOGEX 0, 0, 275, 225
@@ -215,7 +214,7 @@ BEGIN
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
                     UDS_NOTHOUSANDS,37,113,9,14
-    LTEXT           "No new downloads if speed exceeds (kB/s, 0 = disable)",
+    LTEXT           "No new downloads if speed exceeds (kiB/s, 0 = disable)",
                     IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE,46,112,218,8
     LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",
                     IDC_SETTINGS_SPEEDS_NOT_ACCURATE,14,127,247,8
@@ -252,7 +251,7 @@ BEGIN
     CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
                     UDS_ARROWKEYS | UDS_NOTHOUSANDS,250,188,11,14
-    LTEXT           "kB/s",IDC_SETTINGS_KBPS,252,192,16,8
+    LTEXT           "kiB/s",IDC_SETTINGS_KBPS,252,192,16,8
     RTEXT           "Upload slots",IDC_SETTINGS_UPLOADS_SLOTS,7,207,211,8
     EDITTEXT        IDC_SLOTS,222,204,28,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 

@@ -94,6 +94,7 @@ typedef SOCKET socket_t;
 #include <arpa/inet.h>
 #include <errno.h>
 #include <netdb.h>
+#include <fcntl.h>
 
 typedef int socket_t;
 typedef socket_t SOCKET;
@@ -203,6 +204,12 @@ public:
 	}
 #else
 	void setBlocking(bool block) throw(SocketException) {
+		int flags = fcntl(sock, F_GETFL, 0); 
+		if(block) {
+			fcntl(sock, F_SETFL, flags | O_NONBLOCK); 
+		} else {
+			fcntl(sock, F_SETFL, flags & (~O_NONBLOCK));
+		}
 	}
 #endif
 	
@@ -251,6 +258,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.52 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: Socket.h,v 1.53 2004/05/23 18:22:54 arnetheduck Exp $
  */
 

@@ -36,7 +36,6 @@ PropPage::TextItem AdvancedPage::texts[] = {
 	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
 	{ IDC_SETTINGS_ROLLBACK, ResourceManager::SETTINGS_ROLLBACK },
 	{ IDC_SETTINGS_B, ResourceManager::B },
-	{ IDC_SETTINGS_CLIENT_VER, ResourceManager::SETTINGS_CLIENT_VER },
 	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
 	{ IDC_SETTINGS_KB, ResourceManager::KB },
 	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
@@ -46,7 +45,6 @@ PropPage::TextItem AdvancedPage::texts[] = {
 
 PropPage::Item AdvancedPage::items[] = {
 	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
-	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
@@ -102,6 +100,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.29 2004/05/22 15:28:07 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.30 2004/05/23 18:22:54 arnetheduck Exp $
  */
 

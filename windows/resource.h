@@ -67,7 +67,6 @@
 #define IDC_VERSION                     1021
 #define IDC_GETLIST                     1022
 #define IDC_ROLLBACK                    1022
-#define IDC_CLVERSION                   1023
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
 #define IDC_SEARCH_ALTERNATES           1029

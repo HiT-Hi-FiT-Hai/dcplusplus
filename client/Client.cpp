@@ -75,13 +75,13 @@ string Client::getLocalIp() const {
 
 	if(socket == NULL)
 		return Util::getLocalIp();
-	string tmp = socket->getLocalIp();
-	if(tmp.empty())
+	string lip = socket->getLocalIp();
+	if(lip.empty())
 		return Util::getLocalIp();
-	return tmp;
+	return lip;
 }
 
 /**
  * @file
- * $Id: Client.cpp,v 1.71 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.72 2004/05/23 18:22:53 arnetheduck Exp $
  */

@@ -285,7 +285,6 @@ enum Strings { // @DontAdd
 	SETTINGS_AUTO_UPDATE_LIST, // "Automatically refresh share list every hour"
 	SETTINGS_CHANGE, // "&Change"
 	SETTINGS_CLEAR_SEARCH, // "Clear search box after each search"
-	SETTINGS_CLIENT_VER, // "Client version"
 	SETTINGS_COLORS, // "Colors"
 	SETTINGS_COMPRESS_TRANSFERS, // "Enable safe and compressed transfers"
 	SETTINGS_COMMAND, // "Command"

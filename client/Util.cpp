@@ -77,7 +77,9 @@ void Util::initialize() {
 	sgenrand(time(NULL));
 
 	try {
-		StringTokenizer st(File(Util::getAppPath() + "GeoIpCountryWhois.csv", File::READ, File::OPEN).read());
+		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
+
+		StringTokenizer st(File(file , File::READ, File::OPEN).read());
 		CountryIter last = countries.end();
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
 			string::size_type j = i->find(',');
@@ -312,7 +314,7 @@ bool Util::isPrivateIp(string const& ip) {
 	}
 	return false;
 #else
-# error fixme
+#warning fixme
 #endif
 }
 
@@ -661,6 +663,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.50 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.51 2004/05/23 18:22:54 arnetheduck Exp $
  */
 

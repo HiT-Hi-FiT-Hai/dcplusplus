@@ -350,6 +350,10 @@ public:
 	virtual ~TigerCheckOutputStream() { if(managed) delete s; };
 
 	virtual size_t flush() throw(FileException) {
+		if (bufPos != 0)
+			cur.update(buf, bufPos);
+		bufPos = 0;
+
 		cur.finalize();
 		checkTrees();
 		return s->flush();
@@ -375,7 +379,7 @@ public:
 			dcassert(bufPos == 0);
 			size_t left = len - pos;
 			size_t part = left - (left %  TigerTree::BASE_BLOCK_SIZE);
-			if(part >= 0) {
+			if(part > 0) {
 				cur.update(xb + pos, part);
 				pos += part;
 			}
@@ -848,5 +852,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.103 2004/05/22 18:17:35 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.104 2004/05/23 18:22:53 arnetheduck Exp $
  */

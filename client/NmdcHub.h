@@ -121,7 +121,7 @@ public:
 
 	void validateNick(const string& aNick) { send("$ValidateNick " + aNick + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
-	void version(const string& aVersion) { send("$Version " + aVersion + "|"); };
+	void version() { send("$Version 1,0091|"); };
 	void getNickList() { checkstate(); send("$GetNickList|"); };
 	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
 	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
@@ -292,6 +292,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.4 2004/04/30 07:14:49 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.5 2004/05/23 18:22:53 arnetheduck Exp $
  */
 

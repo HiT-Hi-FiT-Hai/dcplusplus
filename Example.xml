@@ -281,7 +281,6 @@
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
-		<String Name="SettingsClientVer">Client version</String>
 		<String Name="SettingsColors">Colors</String>
 		<String Name="SettingsCompressTransfers">Enable safe and compressed transfers</String>
 		<String Name="SettingsCommand">Command</String>

@@ -46,6 +46,7 @@ NmdcHub::~NmdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	Speaker<NmdcHubListener>::removeListeners();
 
+	Lock l(cs);
 	clearUsers();
 };
 
@@ -448,7 +449,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				state = STATE_CONNECTED;
 				updateCounts(false);
 
-				version(SETTING(CLIENTVERSION));
+				version();
 				getNickList();
 				myInfo();
 			}
@@ -715,6 +716,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.4 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.5 2004/05/23 18:22:53 arnetheduck Exp $
  */
 

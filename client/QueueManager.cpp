@@ -1080,7 +1080,7 @@ void QueueManager::saveQueue() throw() {
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
 	QueueLoader() : cur(NULL), inDownloads(false) { };
-
+	virtual ~QueueLoader() { }
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
 private:
@@ -1319,5 +1319,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.86 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.87 2004/05/23 18:22:53 arnetheduck Exp $
  */

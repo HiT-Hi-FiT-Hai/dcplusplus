@@ -82,7 +82,8 @@ void ClientManager::infoUpdated() {
 void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 									int aFileType, const string& aString) throw() 
 {
-	
+	Speaker<ClientManagerListener>::fire(ClientManagerListener::IncomingSearch(), aString);
+
 	bool isPassive = (aSeeker.compare(0, 4, "Hub:") == 0);
 
 	// We don't wan't to answer passive searches if we're in passive mode...
@@ -324,21 +325,8 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
  		}
 	}
 }
-/*
-void ClientManager::onAction(ClientListener::Types type, Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
-					  int aFileType, const string& aString) throw() {
-	switch(type) {
-	case ClientListener::SEARCH:
-		fire(ClientManagerListener::INCOMING_SEARCH, aString);
-		onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
-		break;
-	default:
-		break;
-	}
-}
-*/
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.59 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.60 2004/05/23 18:22:53 arnetheduck Exp $
  */

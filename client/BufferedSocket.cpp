@@ -31,7 +31,8 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
+BufferedSocket::BufferedSocket(char aSeparator) throw(SocketException) : 
+separator(aSeparator), port(0), mode(MODE_LINE), 
 dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
 
 	inbuf = new u_int8_t[inbufSize];
@@ -346,10 +347,10 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 		if(newSize > outbufSize[curBuf]) {
 			// Need to grow...
 			dcdebug("Growing outbuf[%d] to %d bytes\n", curBuf, newSize);
-			u_int8_t* tmp = new u_int8_t[newSize];
-			memcpy(tmp, outbuf[curBuf], outbufPos[curBuf]);
+			u_int8_t* newbuf = new u_int8_t[newSize];
+			memcpy(newbuf, outbuf[curBuf], outbufPos[curBuf]);
 			delete[] outbuf[curBuf];
-			outbuf[curBuf] = tmp;
+			outbuf[curBuf] = newbuf;
 			outbufSize[curBuf] = newSize;
 		}
 
@@ -427,5 +428,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.69 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.70 2004/05/23 18:22:53 arnetheduck Exp $
  */

@@ -219,7 +219,7 @@ public:
 	virtual ~TreeInputStream() {
 	}
 
-	virtual size_t read(void* buf, size_t& len) {
+	virtual size_t read(void* buf, size_t& len) throw(Exception) {
 		size_t total = 0;
 		while(n < tree.getLeaves().size() && total < len) {
 			Value& v = tree.getLeaves()[n];
@@ -255,5 +255,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.12 2004/05/22 18:17:35 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.13 2004/05/23 18:22:53 arnetheduck Exp $
  */

@@ -201,7 +201,7 @@ int Socket::read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException)
 	int len = 0;
 
 	sockaddr_in remote_addr = { 0 };
-	int addr_length = sizeof(remote_addr);
+	socklen_t addr_length = sizeof(remote_addr);
 
 	checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length)); //
 	aIP = string(inet_ntoa(remote_addr.sin_addr));
@@ -549,6 +549,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.55 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.56 2004/05/23 18:22:53 arnetheduck Exp $
  */
 
