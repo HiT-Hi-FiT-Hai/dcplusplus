@@ -17,14 +17,18 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.131"
-#define VERSIONFLOAT 0.131
+#define VERSIONSTRING "0.132"
+#define VERSIONFLOAT 0.132
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: version.h,v 1.17 2002/01/22 00:10:38 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.17  2002/01/22 00:10:38  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.16  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

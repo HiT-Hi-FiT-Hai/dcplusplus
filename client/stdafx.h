@@ -46,6 +46,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 
+#include <ctime>
 #include <algorithm>
 #include <vector>
 #include <string>
@@ -61,9 +62,13 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.15 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.16 2002/01/22 00:10:38 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.16  2002/01/22 00:10:38  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.15  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

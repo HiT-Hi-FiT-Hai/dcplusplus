@@ -36,6 +36,7 @@
 #include "ShareManager.h"
 #include "SearchManager.h"
 #include "FavoritesFrm.h"
+#include "NotepadFrame.h"
 
 MainFrame::~MainFrame() {
 	arrows.Destroy();
@@ -592,6 +593,17 @@ LRESULT MainFrame::onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT MainFrame::onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(NotepadFrame::frame == NULL) {
+		NotepadFrame* pChild = new NotepadFrame();
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+	} else {
+		MDIActivate(NotepadFrame::frame->m_hWnd);
+	}
+	return 0;
+}
+
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(PublicHubsFrame::frame == NULL) {
 		PublicHubsFrame* pChild = new PublicHubsFrame();
@@ -620,7 +632,29 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
-
+#ifdef PELI
+#include "PropertiesDlg.h"
+LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	PropertiesDlg dlg(SettingsManager::getInstance());
+	
+	if(dlg.DoModal(m_hWnd) == IDOK)
+	{		
+		SettingsManager::getInstance()->save();
+		
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			try {
+				ConnectionManager::getInstance()->setPort(SETTING(PORT));
+				SearchManager::getInstance()->setPort(SETTING(PORT));
+			} catch(Exception e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
+			}
+		}
+	}
+	return 0;
+}
+#else // PELI
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	SettingsDlg dlg;
 	dlg.nick = SettingsManager::getInstance()->get(SettingsManager::NICK, false);
@@ -664,6 +698,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 	return 0;
 }
+#endif //PELI
 
 LRESULT MainFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
@@ -824,9 +859,13 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.44 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.45 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.45  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.44  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

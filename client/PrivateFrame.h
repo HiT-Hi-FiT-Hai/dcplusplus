@@ -49,10 +49,20 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		if(hWnd == ctrlClient.m_hWnd) {
+			return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
 
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
@@ -109,6 +119,8 @@ public:
 		}
 		ctrlClient.AppendText(aLine.c_str());
 		ctrlClient.AppendText("\r\n");
+		addClientLine("Last change: " + Util::getTimeString());
+		setDirty();
 	}
 
 	void addClientLine(const char* aLine) {
@@ -116,6 +128,7 @@ public:
 			CreateEx(parent);
 		}
 		ctrlStatus.SetText(0, aLine);
+		setDirty();
 	}
 	void addClientLine(const string& aLine) {
 		addClientLine(aLine.c_str());
@@ -159,9 +172,13 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.7 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.8 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.8  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.7  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

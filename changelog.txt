@@ -1,7 +1,21 @@
- -- 0.14 --
+ -- 0.132 2002-01-21 --
 * Fixed a bug when downloading tiny file lists (people with 0b share...)
-* Removed the empty line in the chat window
+* Removed the empty line in the chat windows
 * Set default focus in the chat window to the box where messages are entered
+* Fixed aborted uploads bug
+* Fixed the add similar directory bug
+* Added sound when new private message window opens
+* Added hub address to hub frame title
+* Added bold text in the window tabs whenever chat text changes...
+* Added time stamp to private messages
+* Fixed a bug where DC++ was returning bad search results ("At least" was not working correctly)
+* Because of a design flaw in the original dc client, I had to remove the small files and dc list extra slots
+  feature for original dc users, but hey, it's their loss really (there's a problem with file listings closing
+  just because "no free slots" is reported as soon as they try to download)
+* Fixed a private message crash
+* Added automatic saves every time the download list changes (now you only have to hope it doesn't crash while saving...=)
+* Added notepad (stupid feature really, what's wrong with windows' notepad?) (only visible in menu so far...)
+* Fixed missing close button on pm window (I think...can't find a window without at least...)
 
 
  -- 0.131 2002-01-20 --

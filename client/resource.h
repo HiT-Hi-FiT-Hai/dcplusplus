@@ -24,6 +24,7 @@
 #define IDR_FAVORITES                   217
 #define IDR_PRIVATE                     218
 #define IDR_DIRECTORY                   219
+#define IDR_NOTEPAD                     220
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -54,6 +55,7 @@
 #define IDC_REDIRECT                    1024
 #define IDC_REMOVESOURCE                1025
 #define IDC_EDIT                        1026
+#define IDC_NOTEPAD                     1027
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

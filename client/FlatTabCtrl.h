@@ -33,7 +33,7 @@
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
 public:
-	FlatTabCtrlImpl() : active(NULL) { };
+	FlatTabCtrlImpl() : active(NULL), boldFont(NULL) { };
 
 	static LPCTSTR GetWndClassName()
 	{
@@ -108,6 +108,11 @@ public:
 		return 0;
 	}
 		
+	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) { return 0; };
+		
+	int getTabHeight() { return 14; };
+	int getHeight() { return getTabHeight()+1; };
+
 	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		int pos = 0;
 		int activepos = -1;
@@ -115,11 +120,19 @@ public:
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
 			HFONT oldfont = dc.SelectFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
+
+			if(boldFont == NULL) {
+				LOGFONT lf;
+				::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+
+				lf.lfWeight = FW_BOLD;
+				boldFont = CreateFontIndirect(&lf);
+			}
 			//ATLTRACE("%d, %d\n", rc.left, rc.right);
-				
+			
 			for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
-				t->update(dc);
+				t->update(dc, boldFont);
 				if(pos <= rc.right && (pos + t->getWidth()) >= rc.left) {
 					if(*i == active) {
 						activepos = pos;
@@ -127,12 +140,12 @@ public:
 					} else {
 						pos += drawTab(dc, *i, pos);
 					}
-
+					
 				} else {
 					pos += t->getWidth();
 				}
 			}
-
+			
 			if(active) {
 				if(activepos != -1 && activepos <= rc.right && (activepos + active->getWidth()) >= rc.left) {
 					drawTab(dc, active, activepos, true);
@@ -146,10 +159,6 @@ public:
 		}
 		return 0;
 	}
-	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) { return 0; };
-		
-	int getTabHeight() { return 14; };
-	int getHeight() { return getTabHeight()+1; };
 
 private:
 	class TabInfo {
@@ -163,7 +172,7 @@ private:
 		SIZE size;
 		bool dirty;
 
-		void update(CDC& dc) {
+		void update(CDC& dc, HFONT boldFont) {
 			len = ::GetWindowTextLength(hWnd);
 			if(len >= MAX_LENGTH) {
 				::GetWindowText(hWnd, name, MAX_LENGTH - 3);
@@ -176,7 +185,14 @@ private:
 				::GetWindowText(hWnd, name, MAX_LENGTH);
 			}
 
-			dc.GetTextExtent(name, len, &size);
+			if(dirty) {
+				HFONT f = dc.SelectFont(boldFont);
+				dc.GetTextExtent(name, len, &size);
+				dc.SelectFont(f);		
+			} else {
+				dc.GetTextExtent(name, len, &size);
+			}
+			
 		};
 
 		int getWidth() {
@@ -187,65 +203,70 @@ private:
 		}
 	};
 
+	HFONT boldFont;
+	
 	TabInfo* active;
-	/**
-	 * Draws a tab
-	 * @return The width of the tab
-	 */
-
-//	\-------------/
-//	 \  | abc |  /
-//	  \---------/
-	int drawTab(CDC& dc, TabInfo* tab, int pos, bool aActive = false) {
-		HWND hWnd = tab->hWnd;
-
-		CPen black;
-		black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
-		HPEN oldpen = dc.SelectPen(black);
-		
-		POINT p[4];
-		dc.BeginPath();
-		dc.MoveTo(pos, 0);
-		p[0].x = pos + tab->getWidth() + (getTabHeight()+1)/2;
-		p[0].y = 0;
-		p[1].x = pos + tab->getWidth();
-		p[1].y = getTabHeight();
-		p[2].x = pos + (getTabHeight()+1)/2;
-		p[2].y = getTabHeight();
-		p[3].x = pos;
-		p[3].y = 0;
-
-		dc.PolylineTo(p, 4);
-		dc.CloseFigure();
-		dc.EndPath();
-
-		HBRUSH oldbrush = dc.SelectBrush(GetSysColorBrush(aActive ? COLOR_WINDOW : COLOR_BTNFACE));
-		dc.FillPath();
-
-		dc.MoveTo(p[1].x + 1, p[1].y);
-		dc.LineTo(p[0].x + 1, p[0].y);
-		dc.MoveTo(p[2]);
-		dc.LineTo(p[3]);
-
-		CPen grey;
-		grey.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(128,128,128));
-		dc.SelectPen(grey);
-		dc.MoveTo(p[1]);
-		dc.LineTo(p[0]);
-		dc.MoveTo(p[1]);
-		dc.LineTo(p[2]);
-
-		dc.SelectPen(oldpen);
-		dc.SelectBrush(oldbrush);
-
-		dc.SetBkMode(TRANSPARENT);
-		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
-		tab->dirty;
-
-		return tab->getWidth();
-	};
-
 	vector<TabInfo*> tabs;
+
+/**
+ * Draws a tab
+ * @return The width of the tab
+ */
+int drawTab(CDC& dc, TabInfo* tab, int pos, bool aActive = false) {
+	HWND hWnd = tab->hWnd;
+	
+	CPen black;
+	black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
+	HPEN oldpen = dc.SelectPen(black);
+	
+	POINT p[4];
+	dc.BeginPath();
+	dc.MoveTo(pos, 0);
+	p[0].x = pos + tab->getWidth() + (getTabHeight()+1)/2;
+	p[0].y = 0;
+	p[1].x = pos + tab->getWidth();
+	p[1].y = getTabHeight();
+	p[2].x = pos + (getTabHeight()+1)/2;
+	p[2].y = getTabHeight();
+	p[3].x = pos;
+	p[3].y = 0;
+	
+	dc.PolylineTo(p, 4);
+	dc.CloseFigure();
+	dc.EndPath();
+	
+	HBRUSH oldbrush = dc.SelectBrush(GetSysColorBrush(aActive ? COLOR_WINDOW : COLOR_BTNFACE));
+	dc.FillPath();
+	
+	dc.MoveTo(p[1].x + 1, p[1].y);
+	dc.LineTo(p[0].x + 1, p[0].y);
+	dc.MoveTo(p[2]);
+	dc.LineTo(p[3]);
+	
+	CPen grey;
+	grey.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(128,128,128));
+	dc.SelectPen(grey);
+	dc.MoveTo(p[1]);
+	dc.LineTo(p[0]);
+	dc.MoveTo(p[1]);
+	dc.LineTo(p[2]);
+	
+	dc.SelectPen(oldpen);
+	dc.SelectBrush(oldbrush);
+	
+	dc.SetBkMode(TRANSPARENT);
+
+	if(tab->dirty) {
+		HFONT f = dc.SelectFont(boldFont);
+		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
+		dc.SelectFont(f);		
+	} else {
+		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
+	}
+	
+	return tab->getWidth();
+};
+
 };
 
 class FlatTabCtrl : public FlatTabCtrlImpl<FlatTabCtrl> {
@@ -319,9 +340,13 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.4 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.5 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.5  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.4  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

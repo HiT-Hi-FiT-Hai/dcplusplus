@@ -28,8 +28,13 @@
 #include "ShareManager.h"
 #include "Util.h"
 
-class Upload : public Transfer {
+class Upload : public Transfer, public Flags {
 public:
+	enum Flags {
+		USER_LIST = 0x01,
+		SMALL_FILE = USER_LIST << 1
+	};
+
 	typedef Upload* Ptr;
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
@@ -81,7 +86,15 @@ public:
 	}
 
 	int getUploads() { Lock l(cs); return uploads.size(); };
-	int getFreeSlots() { return SETTING(SLOTS) - getUploads(); }
+	int getFreeSlots() { int i =  (SETTING(SLOTS) - running); return (i > 0) ? i : 0; }
+	int getFreeExtraSlots() { int i = 3 - getExtra(); return (i > 0) ? i : 0; };
+
+	bool isExtra(Upload* u) {
+		if(u->isSet(Upload::SMALL_FILE) || u->isSet(Upload::USER_LIST))
+			return true;
+		else
+			return false;
+	}
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
@@ -118,13 +131,15 @@ public:
 		}
 	}
 	
+	GETSET(int, running, Running);
+	GETSET(int, extra, Extra);
 private:
 	UserConnection::List connections;
 	Upload::Map uploads;
 	CriticalSection cs;
 	
 	friend class Singleton<UploadManager>;
-	UploadManager() { 
+	UploadManager() : running(0), extra(0) { 
 		TimerManager::getInstance()->addListener(this);
 	};
 	~UploadManager() {
@@ -205,9 +220,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.31 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.32 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.32  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.31  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

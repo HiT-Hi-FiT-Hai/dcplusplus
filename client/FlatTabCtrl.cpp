@@ -21,11 +21,17 @@
 
 #include "FlatTabCtrl.h"
 
+
+
 /**
  * @file FlatTabCtrl.cpp
- * $Id: FlatTabCtrl.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: FlatTabCtrl.cpp,v 1.3 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.cpp,v $
+ * Revision 1.3  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.2  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

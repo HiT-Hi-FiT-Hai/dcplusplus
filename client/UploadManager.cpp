@@ -25,8 +25,11 @@ UploadManager* UploadManager::instance = NULL;
 
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 	Upload* u;
-
+	dcassert(aFile.size() > 0);
+	
 	try {
+		bool userlist = false;
+		bool smallfile = false;
 
 		string file;
 		try {
@@ -36,8 +39,16 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			return;
 		}
 		
+		if( stricmp(aFile.c_str(), "MyList.DcLst") == 0 ) {
+			userlist = true;
+		}
+
+		if( Util::getFileSize(file) < (LONGLONG)(16 * 1024) ) {
+			smallfile = true;
+		}
+
 		cs.enter();
-		if( (getFreeSlots()<=0) && (Util::getFileSize(file) > (LONGLONG)(16 * 1024)) && ((stricmp(aFile.c_str(), "MyList.DcLst") != 0) || (uploads.size() > (SETTING(SLOTS) + 2))) ) {
+		if( (getFreeSlots()<=0) && !( (smallfile || userlist) && (getFreeExtraSlots() > 0) && (aSource->getUser()->isSet(User::DCPLUSPLUS)) ) ) {
 			cs.leave();
 			aSource->maxedOut();
 			removeConnection(aSource);
@@ -55,6 +66,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		}
 
 		Upload::MapIter i = uploads.find(aSource);
+
 		if(i != uploads.end()) {
 			// This is bad!
 			
@@ -70,12 +82,12 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			removeConnection(aSource);
 			return;
 		} 
-		cs.leave();
 
 		File* f;
 		try {
 			f = new File(file, File::READ, File::OPEN);
 		} catch(FileException e) {
+			cs.leave();
 			aSource->error("File Not Available");
 			return;
 		}
@@ -85,18 +97,32 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		u->setPos(aResume, true);
 		u->setFileName(aFile);
 		u->setUser(aSource->getUser());
+		if(smallfile)
+			u->setFlag(Upload::SMALL_FILE);
+		if(userlist)
+			u->setFlag(Upload::USER_LIST);
 		
-		aSource->fileLength(Util::toString(u->getSize()));
-		
-		{
-			Lock l(cs);
-			uploads[aSource] = u;
+		try {
+			aSource->fileLength(Util::toString(u->getSize()));
+		} catch (...) {
+			// Make sure we leave the critical section...
+			cs.leave();
+			throw;
 		}
 		
+		uploads[aSource] = u;
+		if(isExtra(u)) {
+			extra++;
+		} else {
+			running++;
+		}
+		
+		cs.leave();
+			
 	} catch(SocketException e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
+		removeConnection(aSource);
 	}
-	
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
@@ -119,11 +145,18 @@ void UploadManager::onSend(UserConnection* aSource) {
 		fire(UploadManagerListener::STARTING, u);
 	} catch(Exception e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
-		dcdebug("onSend: Removing upload\n");
-		cs.enter();
-		uploads.erase(aSource);
-		cs.leave();
 
+		{
+			Lock l(cs);
+			uploads.erase(aSource);
+
+			if(isExtra(u)) {
+				extra--;
+			} else {
+				running--;
+			}
+		}
+		
 		delete u;
 		removeConnection(aSource);
 	}
@@ -148,22 +181,33 @@ void UploadManager::onBytesSent(UserConnection* aSource, DWORD aBytes) {
 
 void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
 	Upload* u;
-	aSource->disconnect();
 	cs.enter();
 	Upload::MapIter i = uploads.find(aSource);
 	if(i != uploads.end()) {
 		u = i->second;
+		uploads.erase(i);
+
+		if(isExtra(u)) {
+			extra--;
+		} else {
+			running--;
+		}
+		
+		cs.leave();
+
 		fire(UploadManagerListener::FAILED, u, aError);
 		dcdebug("onError: Removing upload\n");
-		uploads.erase(i);
 		delete u;
+	} else {
+		cs.leave();
 	}
-	cs.leave();
+
 	removeConnection(aSource);
 }
 
 void UploadManager::onTransmitDone(UserConnection* aSource) {
-	Upload * u;
+	Upload* u;
+
 	cs.enter();
 	Upload::MapIter i = uploads.find(aSource);
 	if(i == uploads.end()) {
@@ -175,19 +219,31 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 		return;
 	}
 	u = i->second;
-	fire(UploadManagerListener::COMPLETE, u);
 	dcdebug("onTransmitDone: Removing upload\n");
 	uploads.erase(i);
+
+	if(isExtra(u)) {
+		extra--;
+	} else {
+		running--;
+	}
+	
 	cs.leave();
+
+	fire(UploadManagerListener::COMPLETE, u);
 	delete u;
 	
 }
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.10 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.11 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.11  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.10  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

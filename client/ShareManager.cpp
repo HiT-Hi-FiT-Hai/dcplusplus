@@ -92,14 +92,15 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		} else {
 			d = aDirectory;
 		}
+
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			if(d.find(i->first) != string::npos) {
+			if(d.find(i->first + '\\') != string::npos) {
 				throw ShareException("Directory already shared.");
-			} else if(i->first.find(aDirectory) != string::npos) {
+			} else if(i->first.find(d + '\\') != string::npos) {
 				throw ShareException("Remove all subdirectories before adding this one.");
 			}
 		}
-		
+
 		string dir = Util::toLower(d.substr(d.rfind('\\') + 1));
 		
 		if(dirs.find(dir) != dirs.end()) {
@@ -110,6 +111,7 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 			}
 			dir += c;
 		}
+		
 		Directory* dp = buildTree(d, NULL);
 		dp->setName(dir);
 		directories[d] = dp;
@@ -306,9 +308,13 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.17 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.17  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.16  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

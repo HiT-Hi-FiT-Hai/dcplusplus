@@ -108,6 +108,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
 		CHAIN_MDI_CHILD_COMMANDS()
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, (IDC_BROWSELIST + menuItems), onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, (IDC_REMOVE_SOURCE + menuItems), onRemoveSource)
@@ -139,6 +140,8 @@ public:
 		}
 		return 0;
 	}
+
+	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -421,9 +424,13 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.33 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.34 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.34  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.33  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

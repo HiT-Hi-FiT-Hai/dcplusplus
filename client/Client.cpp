@@ -67,7 +67,7 @@ void Client::onLine(const string& aLine) throw() {
 		int a;
 		if(param[i] == 'F') {
 			a = SearchManager::SIZE_DONTCARE;
-		} else if(param[2] == 'F') {
+		} else if(param[i+2] == 'F') {
 			a = SearchManager::SIZE_ATLEAST;
 		} else {
 			a = SearchManager::SIZE_ATMOST;
@@ -258,9 +258,13 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.20 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.21 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.21  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.20  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -206,6 +206,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const User::
 				} else {
 					fileName = aFile;
 				}
+				SettingsManager::getInstance()->save();
 				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
@@ -273,7 +274,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const User::
 	}
 	
 	cs.leave();
-	
+	SettingsManager::getInstance()->save();
 	fire(DownloadManagerListener::ADDED, d);
 	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 	
@@ -325,6 +326,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 				} else {
 					fileName = aFile;
 				}
+				SettingsManager::getInstance()->save();
 				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
@@ -364,6 +366,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	queue.push_back(d);
 	cs.leave();
 
+	SettingsManager::getInstance()->save();
 	fire(DownloadManagerListener::ADDED, d);
 	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 
@@ -403,6 +406,8 @@ void DownloadManager::removeDownload(Download* aDownload) {
 		queue.erase(i);
 	}
 
+	SettingsManager::getInstance()->save();
+	
 	fire(DownloadManagerListener::REMOVED, aDownload);
 	delete aDownload;
 
@@ -511,12 +516,14 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 		if(i != queue.end()) {
 			queue.erase(i);
 			cs.leave();
+			SettingsManager::getInstance()->save();
 			fire(DownloadManagerListener::REMOVED, aDownload);
 			delete aDownload;
 		}
 	} else {
 		aDownload->removeSource(aSource);
 		cs.leave();
+		SettingsManager::getInstance()->save();
 		fire(DownloadManagerListener::SOURCE_REMOVED, aDownload, aSource);
 	}
 }
@@ -633,6 +640,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			removeConnection(aSource);
 			
 			// We're done...and this connection is broken...
+			SettingsManager::getInstance()->save();
 			fire(DownloadManagerListener::COMPLETE, d);
 			fire(DownloadManagerListener::REMOVED, d);
 			delete d;
@@ -667,6 +675,7 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 		
 		p->setFile(NULL);
 		
+		SettingsManager::getInstance()->save();
 		dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
 		fire(DownloadManagerListener::COMPLETE, p);
 		fire(DownloadManagerListener::REMOVED, p);
@@ -777,9 +786,13 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.36 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.37 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.37  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.36  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -23,6 +23,7 @@
 #include "ShareManager.h"
 #include "DownloadManager.h"
 #include "HubManager.h"
+#include "NotepadFrame.h"
 
 SettingsManager* SettingsManager::instance = 0;
 
@@ -111,6 +112,8 @@ void SettingsManager::load(string const& aFileName)
 	DownloadManager::getInstance()->load(&xml);
 	xml.resetCurrentChild();
 	HubManager::getInstance()->load(&xml);
+	xml.resetCurrentChild();
+	NotepadFrame::load(&xml);
 	xml.stepOut();
 }
 
@@ -169,7 +172,8 @@ void SettingsManager::save(string const& aFileName) const
 	ShareManager::getInstance()->save(&xml);
 	DownloadManager::getInstance()->save(&xml);
 	HubManager::getInstance()->save(&xml);
-
+	NotepadFrame::save(&xml);
+	
 	try {
 		File f(aFileName, File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write(xml.toXML());

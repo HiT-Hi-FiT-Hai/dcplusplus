@@ -25,6 +25,17 @@
 
 #include "CriticalSection.h"
 
+class Flags {
+	public:
+		Flags() : flags(0) { };
+		bool isSet(int aFlag) { return (flags & aFlag) > 0; };
+		void setFlag(int aFlag) { flags |= aFlag; };
+		void unsetFlag(int aFlag) { flags &= ~aFlag; };
+
+	private:
+		int flags;
+};
+
 template<typename Listener>
 class Speaker {
 public:
@@ -171,7 +182,9 @@ public:
 		if(pidl != NULL) {
 			SHGetPathFromIDList(pidl, buf);
 			target = buf;
-			target+='\\';
+
+			if(target.size() > 0 && target[target.size()-1] != '\\')
+				target+='\\';
 
 			if(SHGetMalloc(&ma) != E_FAIL) {
 				ma->Free(pidl);
@@ -219,6 +232,15 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 
+	static string getTimeString() {
+		char buf[64];
+		time_t _tt;
+		time(&_tt);
+		tm* _tm = localtime(&_tt);
+		strftime(buf, 64, "%X", _tm);
+		return buf;
+	}
+	
 	static string formatBytes(LONGLONG aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
@@ -389,9 +411,13 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.20 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Util.h,v 1.21 2002/01/22 00:10:38 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.21  2002/01/22 00:10:38  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.20  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

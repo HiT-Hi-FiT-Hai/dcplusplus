@@ -23,7 +23,7 @@
 
 #else //_DEBUG
 #define dcdebug ATLTRACE
-#define dcassert(exp) __assume(exp)
+#define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
 
@@ -56,9 +56,13 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.12 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.13 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.13  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.12  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

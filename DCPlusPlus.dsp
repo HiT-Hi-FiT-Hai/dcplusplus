@@ -182,6 +182,10 @@ SOURCE=.\client\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\NotepadFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Pointer.cpp
 # End Source File
 # Begin Source File
@@ -352,6 +356,10 @@ SOURCE=.\client\LineDlg.h
 # Begin Source File
 
 SOURCE=.\client\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\NotepadFrame.h
 # End Source File
 # Begin Source File
 

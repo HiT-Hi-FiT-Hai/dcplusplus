@@ -315,7 +315,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete (string*)lParam;
 		//ctrlClient.Invalidate();
 	} else if(wParam == CLIENT_HUBNAME) {
-		SetWindowText(client->getName().c_str());
+		SetWindowText( (client->getName() + " (" + client->getServer() + ")").c_str());
 		addClientLine("Connected");
 	} else if(wParam == CLIENT_VALIDATEDENIED) {
 		addClientLine("Your nick was already taken, please change to something else!");
@@ -324,7 +324,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		PMInfo* i = (PMInfo*)lParam;
 		if(i->frm->m_hWnd == NULL) {
 			i->frm->setTab(getTab());
-			i->frm->Create(m_hWndMDIClient);
+			i->frm->CreateEx(m_hWndMDIClient);
+			MessageBeep(MB_OK);
 		} 
 		i->frm->addLine(i->msg);
 		delete i;
@@ -336,9 +337,13 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.24 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.25 2002/01/22 00:10:37 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.25  2002/01/22 00:10:37  arnetheduck
+ * Version 0.132, removed extra slots feature for nm dc users...and some bug
+ * fixes...
+ *
  * Revision 1.24  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *
