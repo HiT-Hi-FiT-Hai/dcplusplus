@@ -16,6 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "autoconf.h"
+#endif
+
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
 #define WINVER		0x0501
@@ -126,5 +130,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.26 2004/10/22 17:03:33 arnetheduck Exp $
+ * $Id: config.h,v 1.27 2004/11/03 08:51:14 arnetheduck Exp $
  */
