@@ -221,7 +221,10 @@ public:
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
-			ctrlTransfers.setSortDirection(!ctrlTransfers.getSortDirection());
+			if (!ctrlTransfers.getSortDirection())
+				ctrlTransfers.setSort(-1, ctrlTransfers.getSortType());
+			else
+				ctrlTransfers.setSortDirection(false);
 		} else {
 			switch(l->iSubItem) {
 			case COLUMN_TIMELEFT:
@@ -471,7 +474,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.20 2003/08/07 13:28:18 arnetheduck Exp $
  */
 
  

@@ -89,7 +89,10 @@ public:
 	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlSearches.getSortColumn()) {
-			ctrlSearches.setSortDirection(!ctrlSearches.getSortDirection());
+			if (!ctrlSearches.getSortDirection())
+				ctrlSearches.setSort(-1, ctrlSearches.getSortType());
+			else
+				ctrlSearches.setSortDirection(false);
 		} else {
 			if(l->iSubItem == COLUMN_COUNT) {
 				ctrlSearches.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
@@ -130,6 +133,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.10 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.11 2003/08/07 13:28:18 arnetheduck Exp $
  */
 

@@ -102,7 +102,10 @@ public:
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlList.getSortColumn()) {
-			ctrlList.setSortDirection(!ctrlList.getSortDirection());
+			if (!ctrlList.getSortDirection())
+				ctrlList.setSort(-1, ctrlList.getSortType());
+			else
+				ctrlList.setSortDirection(false);
 		} else {
 			switch(l->iSubItem) {
 			case COLUMN_SIZE:
@@ -203,5 +206,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.8 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.9 2003/08/07 13:28:18 arnetheduck Exp $
  */

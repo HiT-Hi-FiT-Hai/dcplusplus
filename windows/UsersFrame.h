@@ -91,7 +91,10 @@ public:
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
-			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
+			if (!ctrlUsers.getSortDirection())
+				ctrlUsers.setSort(-1, ctrlUsers.getSortType());
+			else
+				ctrlUsers.setSortDirection(false);
 		} else {
 			ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}
@@ -178,6 +181,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.6 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.7 2003/08/07 13:28:18 arnetheduck Exp $
  */
 

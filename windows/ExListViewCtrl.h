@@ -25,12 +25,14 @@
 
 #include "../client/Util.h"
 
-class ExListViewCtrl : public CListViewCtrl
+class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CControlWinTraits>
 {
 	int sortColumn;
 	int sortType;
 	bool ascending;
 	int (*fun)(LPARAM, LPARAM);
+	HBITMAP upArrow;
+	HBITMAP downArrow;
 
 public:
 	enum {	
@@ -41,12 +43,23 @@ public:
 		SORT_INT,
 		SORT_FLOAT
 	};
+
+	BEGIN_MSG_MAP(ExListViewCtrl)
+		MESSAGE_HANDLER(WM_CREATE, onCreate)
+		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
+		MESSAGE_HANDLER(WM_SETTINGCHANGE, onSettingChange)
+	END_MSG_MAP()
+
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
+		bool doUpdateArrow = (aColumn != sortColumn || aAscending != ascending);
+		
 		sortColumn = aColumn;
 		sortType = aType;
 		ascending = aAscending;
 		fun = aFun;
 		resort();
+		if (doUpdateArrow)
+			updateArrow();
 	}
 
 	void resort() {
@@ -149,15 +162,43 @@ public:
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
 	}
 
-	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) { };
-	virtual ~ExListViewCtrl() { };
+	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1), upArrow(0), downArrow(0) { };
 
+	virtual ~ExListViewCtrl()
+	{
+		if (upArrow)
+			::DeleteObject(upArrow);
+		if (downArrow)
+			::DeleteObject(downArrow);
+	};
+
+protected:
+	void rebuildArrows();
+	void updateArrow();
+
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		rebuildArrows();
+		_Module.AddSettingChangeNotify(m_hWnd);
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		_Module.RemoveSettingChangeNotify(m_hWnd);
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
+		rebuildArrows();
+		return 1;
+	}
 };
 
 #endif // !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.7 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.8 2003/08/07 13:28:18 arnetheduck Exp $
  */
 

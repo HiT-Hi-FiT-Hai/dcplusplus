@@ -140,7 +140,10 @@ public:
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		
 		if(l->iSubItem == ctrlList.getSortColumn()) {
-			ctrlList.setSortDirection(!ctrlList.getSortDirection());
+			if (!ctrlList.getSortDirection())
+				ctrlList.setSort(-1, ctrlList.getSortType());
+			else
+				ctrlList.setSortDirection(false);
 		} else {
 			if(l->iSubItem == COLUMN_FILENAME) {
 				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortFile);
@@ -254,5 +257,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.17 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.18 2003/08/07 13:28:18 arnetheduck Exp $
  */

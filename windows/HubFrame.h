@@ -170,7 +170,10 @@ public:
 	LRESULT onColumnClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
-			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
+			if (!ctrlUsers.getSortDirection())
+				ctrlUsers.setSort(-1, ctrlUsers.getSortType());
+			else
+				ctrlUsers.setSortDirection(false);
 		} else {
 			if(l->iSubItem == COLUMN_SHARED) {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
@@ -343,6 +346,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.23 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.24 2003/08/07 13:28:18 arnetheduck Exp $
  */
 

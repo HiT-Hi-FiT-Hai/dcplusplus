@@ -693,7 +693,10 @@ LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 	if(l->iSubItem == ctrlResults.getSortColumn()) {
-		ctrlResults.setSortDirection(!ctrlResults.getSortDirection());
+		if (!ctrlResults.getSortDirection())
+			ctrlResults.setSort(-1, ctrlResults.getSortType());
+		else
+			ctrlResults.setSortDirection(false);
 	} else {
 		if( (l->iSubItem == COLUMN_SIZE) || (l->iSubItem == COLUMN_EXACT_SIZE) ) {
 			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
@@ -1032,5 +1035,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.21 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.22 2003/08/07 13:28:18 arnetheduck Exp $
  */

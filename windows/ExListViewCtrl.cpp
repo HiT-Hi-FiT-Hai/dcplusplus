@@ -189,8 +189,115 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 	
 }
 
+void ExListViewCtrl::rebuildArrows()
+{
+	POINT pathArrowLong[9] = {{0L,7L},{7L,7L},{7L,6L},{6L,6L},{6L,4L},{5L,4L},{5L,2L},{4L,2L},{4L,0L}};
+	POINT pathArrowShort[7] = {{0L,6L},{1L,6L},{1L,4L},{2L,4L},{2L,2L},{3L,2L},{3L,0L}};
+
+	HDC dc = 0;
+	HBRUSH brush = 0;
+	HPEN penLight = 0;
+	HPEN penShadow = 0;
+	
+	const int bitmapWidth = 8;
+	const int bitmapHeight = 8;
+	const RECT rect = {0, 0, bitmapWidth, bitmapHeight};
+
+	dc = ::CreateCompatibleDC(GetDC());
+	if (!dc)
+		goto Ldestroy;
+
+	brush = ::GetSysColorBrush(COLOR_3DFACE);
+	if (!brush)
+		goto Ldestroy;
+
+	penLight = ::CreatePen(PS_SOLID, 1, ::GetSysColor(COLOR_3DHIGHLIGHT));
+	if (!penLight)
+		goto Ldestroy;
+
+	penShadow = ::CreatePen(PS_SOLID, 1, ::GetSysColor(COLOR_3DSHADOW));
+	if (!penShadow)
+		goto Ldestroy;
+
+	if (!upArrow)
+		upArrow = ::CreateCompatibleBitmap(GetDC(), bitmapWidth, bitmapHeight);
+
+	if (!downArrow)
+		downArrow = ::CreateCompatibleBitmap(GetDC(), bitmapWidth, bitmapHeight);
+
+	int i;
+
+	// create up arrow
+	::SelectObject(dc, upArrow);
+	::FillRect(dc, &rect, brush);
+	::SelectObject(dc, penLight);
+	::Polyline(dc, pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
+	::SelectObject(dc, penShadow);
+	::Polyline(dc, pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
+
+	// create down arrow
+	::SelectObject(dc, downArrow);
+	::FillRect(dc, &rect, brush);
+	for (i=0; i < sizeof(pathArrowShort)/sizeof(pathArrowShort[0]); ++i)
+	{
+		POINT& pt = pathArrowShort[i];
+		pt.x = bitmapWidth - pt.x;
+		pt.y = bitmapHeight - pt.y;
+	}
+	::SelectObject(dc, penLight);
+	::Polyline(dc, pathArrowShort, sizeof(pathArrowShort)/sizeof(pathArrowShort[0]));
+	for (i=0; i < sizeof(pathArrowLong)/sizeof(pathArrowLong[0]); ++i)
+	{
+		POINT& pt = pathArrowLong[i];
+		pt.x = bitmapWidth - pt.x;
+		pt.y = bitmapHeight - pt.y;
+	}
+	::SelectObject(dc, penShadow);
+	::Polyline(dc, pathArrowLong, sizeof(pathArrowLong)/sizeof(pathArrowLong[0]));
+
+Ldestroy:
+	if (dc)
+		::DeleteDC(dc);
+
+	if (penLight)
+		::DeleteObject(penLight);
+
+	if (penShadow)
+		::DeleteObject(penShadow);
+}
+
+void ExListViewCtrl::updateArrow()
+{
+	if (!upArrow)
+		return;
+
+	HBITMAP bitmap = (ascending ? upArrow : downArrow);
+
+	CHeaderCtrl headerCtrl = GetHeader();
+	const int itemCount = headerCtrl.GetItemCount();
+	for (int i=0; i < itemCount; ++i)
+	{
+		HDITEM item;
+		item.mask = HDI_FORMAT;
+		headerCtrl.GetItem(i, &item);
+		item.mask = HDI_FORMAT | HDI_BITMAP;
+		if (i == sortColumn)
+		{
+			item.fmt |= HDF_BITMAP | HDF_BITMAP_ON_RIGHT;
+			item.hbm = bitmap;
+		}
+		else
+		{
+			item.fmt &= ~(HDF_BITMAP | HDF_BITMAP_ON_RIGHT);
+			item.hbm = 0;
+		}
+		headerCtrl.SetItem(i, &item);
+	}
+}
+
+
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.7 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.8 2003/08/07 13:28:18 arnetheduck Exp $
  */
 

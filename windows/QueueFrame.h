@@ -178,7 +178,10 @@ public:
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlQueue.getSortColumn()) {
-			ctrlQueue.setSortDirection(!ctrlQueue.getSortDirection());
+			if (!ctrlQueue.getSortDirection())
+				ctrlQueue.setSort(-1, ctrlQueue.getSortType());
+			else
+				ctrlQueue.setSortDirection(false);
 		} else {
 			if(l->iSubItem == COLUMN_SIZE) {
 				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
@@ -356,5 +359,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.18 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.19 2003/08/07 13:28:18 arnetheduck Exp $
  */
