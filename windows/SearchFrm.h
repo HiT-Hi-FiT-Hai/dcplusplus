@@ -375,6 +375,7 @@ private:
 	// WM_SPEAKER
 	enum Speakers {
 		ADD_RESULT,
+		FILTER_RESULT,
 		HUB_ADDED,
 		HUB_CHANGED,
 		HUB_REMOVED,
@@ -478,6 +479,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.48 2004/12/19 18:15:46 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.49 2005/01/04 20:37:16 arnetheduck Exp $
  */
 

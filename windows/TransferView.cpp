@@ -66,7 +66,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	appendUserItems(transferMenu);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CTSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CTSTRING(COPY_NICK));
-	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
+	transferMenu.AppendMenu(MF_SEPARATOR);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(CLOSE_CONNECTION));
 	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
@@ -585,5 +585,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.39 2004/11/13 11:54:11 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.40 2005/01/04 20:37:16 arnetheduck Exp $
  */

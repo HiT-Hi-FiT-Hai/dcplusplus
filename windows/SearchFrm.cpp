@@ -342,7 +342,7 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 					) 
 				{
 					droppedResults++;
-					ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
+					PostMessage(WM_SPEAKER, FILTER_RESULT, NULL);
 					return;
 				}
 			}
@@ -879,7 +879,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			}
 		}
 		break;
- 	case HUB_ADDED: 
+	case FILTER_RESULT:
+		ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
+		break;
+	case HUB_ADDED: 
 		onHubAdded((HubInfo*)(lParam));
 		break;
   	case HUB_CHANGED:
@@ -920,13 +923,13 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
 				n++;
 			}
-			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetMenu.AppendMenu(MF_SEPARATOR);
 		}
 
 		n = 0;
 		targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CTSTRING(BROWSE));
 		if(WinUtil::lastDirs.size() > 0) {
-			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetMenu.AppendMenu(MF_SEPARATOR);
 			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
 				n++;
@@ -944,7 +947,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 
 			if(targets.size() > 0) {
-				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				targetMenu.AppendMenu(MF_SEPARATOR);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(*i).c_str());
 					n++;
@@ -959,7 +962,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
 				n++;
 			}
-			targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
 		}
 
 		n = 0;
@@ -1081,5 +1084,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.78 2004/12/19 18:15:46 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.79 2005/01/04 20:37:02 arnetheduck Exp $
  */

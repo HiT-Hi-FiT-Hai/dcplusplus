@@ -32,7 +32,6 @@
 * Added initial ADC file transfers support
 * ADC hub connectivity improved
 
-
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)
 * Added option to make /join open a new window (thanks ullner)
