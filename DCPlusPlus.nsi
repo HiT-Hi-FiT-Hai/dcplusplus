@@ -1,4 +1,4 @@
-;SetCompressor "lzma"
+SetCompressor "lzma"
 
 ; The name of the installer
 Name "DC++"

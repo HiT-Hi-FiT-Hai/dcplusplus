@@ -56,11 +56,12 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2003 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/");
+		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2004 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/");
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
 		ctrl.Detach();
+		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
 		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
 		SetDlgItemText(IDC_TOTALS, ("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
@@ -125,6 +126,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.28 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.29 2004/06/27 17:59:20 arnetheduck Exp $
  */
 

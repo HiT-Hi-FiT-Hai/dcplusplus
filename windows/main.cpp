@@ -360,7 +360,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 			n2 = DEBUG_BUFSIZE;
 		}
 		tth.finalize();
-		strcpy(::tth, tth.getRoot().toBase32().c_str());
+		WinUtil::tth = tth.getRoot().toBase32();
+		strcpy(::tth, WinUtil::tth.c_str());
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
@@ -377,5 +378,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.22 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: main.cpp,v 1.23 2004/06/27 17:59:20 arnetheduck Exp $
  */

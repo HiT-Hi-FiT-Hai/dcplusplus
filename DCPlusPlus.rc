@@ -87,26 +87,28 @@ IDR_NET_STATS           ICON                    "res\\netstats.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 205, 271
+IDD_ABOUTBOX DIALOGEX 0, 0, 243, 287
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,77,250,50,14
-    CTEXT           "DC++ v0.20\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
-                    IDC_VERSION,31,38,143,49
-    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,20,20
-    GROUPBOX        "",IDC_STATIC,7,7,191,86
-    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,97,191,82,
+    DEFPUSHBUTTON   "OK",IDOK,96,266,50,14
+    ICON            IDR_MAINFRAME,IDC_STATIC,110,15,21,20
+    GROUPBOX        "",IDC_STATIC,7,7,229,102
+    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,112,229,82,
                     BS_CENTER
-    GROUPBOX        "Latest version",IDC_STATIC,7,224,191,24,BS_CENTER
-    CTEXT           "0.xxx",IDC_LATEST,13,235,179,8
-    GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
+    GROUPBOX        "Latest version",IDC_STATIC,7,239,229,24,BS_CENTER
+    CTEXT           "0.xxx",IDC_LATEST,13,250,218,8
+    GROUPBOX        "Totals",IDC_STATIC,7,197,229,39,BS_CENTER
     CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,
-                    193,179,8
-    CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
-    EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
+                    208,218,8
+    CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,221,218,8
+    EDITTEXT        IDC_THANKS,13,122,218,66,ES_MULTILINE | ES_READONLY | 
                     WS_VSCROLL
+    CTEXT           "Static",IDC_VERSION,13,37,218,54
+    EDITTEXT        IDC_TTH,35,93,196,12,ES_AUTOHSCROLL | ES_READONLY | NOT 
+                    WS_BORDER
+    LTEXT           "TTH:",IDC_STATIC,13,93,18,12
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46
@@ -446,11 +448,11 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 198
+        RIGHTMARGIN, 236
         VERTGUIDE, 13
-        VERTGUIDE, 192
+        VERTGUIDE, 231
         TOPMARGIN, 7
-        BOTTOMMARGIN, 264
+        BOTTOMMARGIN, 280
     END
 
     IDD_LINE, DIALOG
@@ -592,8 +594,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,4,0,2
- PRODUCTVERSION 0,4,0,2
+ FILEVERSION 0,4,0,3
+ PRODUCTVERSION 0,4,0,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -610,12 +612,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 4, 0, 2"
+            VALUE "FileVersion", "0, 4, 0, 3"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 4, 0, 2"
+            VALUE "ProductVersion", "0, 4, 0, 3"
         END
     END
     BLOCK "VarFileInfo"

@@ -54,11 +54,11 @@ public:
 #undef CMD
 
 	template<typename T>
-	explicit Command(const T&) : cmdInt(T::CMD), type(0) { }
+	explicit Command(const T&) : cmdInt(T::CMD), type(TYPE_CLIENT) { }
 
 	//explicit Command(u_int32_t cmd) : cmdInt(cmd), type(0) { }
 
-	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(0) {
+	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
 	}
 
@@ -78,6 +78,14 @@ public:
 			tmp += getType();
 		}
 		tmp += cmdChar;
+		if(getType() != TYPE_CLIENT) {
+			tmp += ' ';
+			tmp += from.toBase32();
+		}
+		if(getType() == TYPE_DIRECT) {
+			tmp += ' ';
+			tmp += to.toBase32();
+		}
 		for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 			tmp += ' ';
 			tmp += escape(*i);
@@ -134,6 +142,8 @@ public:
 		}
 		return tmp;
 	}
+	const CID& getTo() const { return to; }
+	const CID& getFrom() const { return from; }
 private:
 	StringList parameters;
 	union {
@@ -142,6 +152,7 @@ private:
 		u_int32_t cmdInt;
 	};
 	char type;
+	CID from;
 	CID to;
 
 };
@@ -177,5 +188,5 @@ public:
 #endif // _COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.6 2004/05/03 12:38:04 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.7 2004/06/27 17:59:20 arnetheduck Exp $
 */

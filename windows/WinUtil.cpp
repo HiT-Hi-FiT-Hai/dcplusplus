@@ -55,6 +55,7 @@ HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
+string WinUtil::tth;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -648,5 +649,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.43 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.44 2004/06/27 17:59:20 arnetheduck Exp $
  */

@@ -1258,6 +1258,8 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
+	bool found = false;
+
 	if(BOOLSETTING(AUTO_SEARCH)) {
 		Lock l(cs);
 		QueueItem::List matches;
@@ -1280,15 +1282,17 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			if(found) {
 				try {
 					addSource(qi, sr->getFile(), sr->getUser(), false, false);
-
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
-						addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 				} catch(const Exception&) {
 					// ...
 				}
+				break;
 			}
 		}
 	}
+
+	if(found && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+		addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
+
 }
 
 // ClientManagerListener
@@ -1319,5 +1323,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.87 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.88 2004/06/27 17:59:20 arnetheduck Exp $
  */

@@ -149,6 +149,7 @@ public:
 	static FlatTabCtrl* tabCtrl;
 	static string commands;
 	static HHOOK hook;
+	static string tth;
 
 	static void init(HWND hWnd);
 	static void uninit();
@@ -252,5 +253,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.26 2004/05/09 22:06:24 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.27 2004/06/27 17:59:20 arnetheduck Exp $
  */

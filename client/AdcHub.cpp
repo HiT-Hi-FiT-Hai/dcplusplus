@@ -29,7 +29,6 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	string::size_type i = 5;
 
 	if(nmdc) {
-
 		// "$ADCxxx ..."
 		if(aLine.length() < 7)
 			return;
@@ -49,30 +48,43 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	string cur;
 	cur.reserve(128);
 
-	bool first = true;
+	bool toSet = false;
+	bool fromSet = false;
+
 	while(i < len) {
 		switch(buf[i]) {
 		case '\\': i++; cur += buf[i];
 		case ' ': 
 			// New parameter...
 			{
-				if(type == TYPE_DIRECT && first) {
+				if(!fromSet && type != TYPE_CLIENT) {
+					from = CID(cur);
+					fromSet = true;
+				} else 	if(type == TYPE_DIRECT && !toSet) {
 					to = CID(cur);
+					toSet = true;
 				} else {
 					parameters.push_back(cur);
 				}
 				cur.clear();
-				first = false;
 			}
 			break;
 		default:
 			cur += buf[i];
 		}
-
 		i++;
 	}
-	if(!first && !cur.empty()) {
-		parameters.push_back(cur);
+	if(!cur.empty()) {
+		if(!fromSet && type != TYPE_CLIENT) {
+			from = CID(cur);
+			fromSet = true;
+		} else 	if(type == TYPE_DIRECT && !toSet) {
+			to = CID(cur);
+			toSet = true;
+		} else {
+			parameters.push_back(cur);
+		}
+		cur.clear();
 	}
 }
 
@@ -80,9 +92,10 @@ AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n') {
 }
 
 void AdcHub::handle(Command::INF, Command& c) throw() {
-	if(c.getParameters().empty())
+	if(c.getFrom().isZero() || c.getParameters().empty())
 		return;
-	User::Ptr u = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), this, true);
+
+	User::Ptr u = ClientManager::getInstance()->getUser(c.getFrom(), this, true);
 
 	int op = 0;
 	int reg = 0;
@@ -90,7 +103,7 @@ void AdcHub::handle(Command::INF, Command& c) throw() {
 	string ve;
 	int sl = 0;
 
-	for(StringIterC i = (c.getParameters().begin()+1); i != c.getParameters().end(); ++i) {
+	for(StringIterC i = c.getParameters().begin(); i != c.getParameters().end(); ++i) {
 		if(i->length() < 2)
 			continue;
 
@@ -164,17 +177,17 @@ void AdcHub::handle(Command::SUP, Command& c) throw() {
 }
 
 void AdcHub::handle(Command::MSG, Command& c) throw() {
-	if(c.getParameters().size() < 2)
+	if(c.getFrom().isZero() || c.getParameters().empty())
 		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
+	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p)
 		return;
-	string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[1]);
+	string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[0]);
 	fire(ClientListener::Message(), this, msg);
 }
 
 void AdcHub::handle(Command::GPA, Command& c) throw() {
-	if(c.getParameters().size() < 1)
+	if(c.getParameters().empty())
 		return;
 	salt = c.getParameters()[0];
 
@@ -182,7 +195,9 @@ void AdcHub::handle(Command::GPA, Command& c) throw() {
 }
 
 void AdcHub::handle(Command::QUI, Command& c) throw() {
-	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
+	if(c.getFrom().isZero())
+		return;
+	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p)
 		return;
 	ClientManager::getInstance()->putUserOffline(p);
@@ -247,7 +262,7 @@ void AdcHub::password(const string& pwd) {
 		th.update(getMe()->getCID().getData(), CID::SIZE);
 		th.update(x.data(), x.length());
 		th.update(buf, SALT_SIZE);
-		send("HPAS " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
+		send("HPAS " + getMe()->getCID().toBase32() + " " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
 		salt.clear();
 	}
 }
@@ -296,5 +311,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.10 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.11 2004/06/27 17:59:20 arnetheduck Exp $
  */
