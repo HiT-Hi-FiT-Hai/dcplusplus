@@ -160,7 +160,7 @@ private:
 	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { };
 	virtual ~CryptoManager() { };
 
-	class Leaf : public FastAlloc<DecNode> {
+	class Leaf : public FastAlloc<Leaf> {
 	public:
 		int chr;
 		int len;
@@ -203,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.31 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.32 2004/01/05 09:59:18 arnetheduck Exp $
  */
