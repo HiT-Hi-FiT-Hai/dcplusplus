@@ -12,7 +12,7 @@
 * Added NoGetINFO extension support
 
  -- 0.300 2003-10-27 --
-* ---- IMPORTANT ---- 
+* ---- IMPORTANT ----
   Security update, upgrade unless you want to risk losing files anywhere
   on your hd (this is for all versions prior to this one) (thanks fusbar for bringing 
   it to my attention) 
