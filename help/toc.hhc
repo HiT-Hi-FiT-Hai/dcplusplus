@@ -17,6 +17,23 @@
 		<param name="Local" value="changelog.html">
 		</OBJECT>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Windows">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADLSearch">
+			<param name="Local" value="adlsearch.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Favorite Hubs">
+			<param name="Local" value="favorite_hubs.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Favorite Users">
+			<param name="Local" value="favorite_users.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Settings">
 		</OBJECT>
 	<UL>
