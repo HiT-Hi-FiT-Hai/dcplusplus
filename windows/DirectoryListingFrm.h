@@ -50,6 +50,7 @@ public:
 	enum {
 		COLUMN_FILENAME,
 		COLUMN_TYPE,
+		COLUMN_EXACTSIZE,
 		COLUMN_SIZE,
 		COLUMN_TTH,
 		COLUMN_LAST
@@ -224,6 +225,7 @@ private:
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
 				columns[COLUMN_TYPE].erase(0, 1);
 
+			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(f->getSize()));
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
 				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
@@ -234,6 +236,7 @@ private:
 			} else {
 				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
 			}
+			columns[COLUMN_EXACTSIZE] = Text::toT(Util::formatExactSize(d->getTotalSize()));
 			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
 
@@ -251,6 +254,7 @@ private:
 			if(a->type == DIRECTORY) {
 				if(b->type == DIRECTORY) {
 					switch(col) {
+					case COLUMN_EXACTSIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
 					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
 					default: return Util::stricmp(a->columns[col], b->columns[col]);
 					}
@@ -261,6 +265,7 @@ private:
 				return 1;
 			} else {
 				switch(col) {
+				case COLUMN_EXACTSIZE: return compare(a->file->getSize(), b->file->getSize());
 				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
 				default: return Util::stricmp(a->columns[col], b->columns[col]);
 				}
@@ -312,5 +317,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.46 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.47 2005/02/01 16:41:44 arnetheduck Exp $
  */

@@ -235,7 +235,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
-		c.addParam("TR", aString);
+		c.addParam("TR", AdcCommand::escape(aString));
 	} else {
 		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
 			c.addParam(">=", Util::toString(aSize));
@@ -244,7 +244,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		}
 		StringTokenizer<string> st(aString, ' ');
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			c.addParam("++", *i);
+			c.addParam("++", AdcCommand::escape(*i));
 		}
 	}
 	send(c);
@@ -353,5 +353,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.37 2005/01/18 15:53:30 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.38 2005/02/01 16:41:35 arnetheduck Exp $
  */

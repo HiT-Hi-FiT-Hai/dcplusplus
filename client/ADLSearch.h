@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom at home se
+ * Henrik Engstrï¿½m, henrikengstrom at home se
  */
 
 #if !defined(__ADLSEARCH_H__)
@@ -122,20 +122,20 @@ public:
 	int64_t maxFileSize;
 	enum SizeType {
 		SizeBytes     = TypeFirst,
-		SizeKiloBytes,
-		SizeMegaBytes,
-		SizeGigaBytes
+		SizeKibiBytes,
+		SizeMebiBytes,
+		SizeGibiBytes
 	};
 	SizeType typeFileSize;
 	SizeType StringToSizeType(const string& s) {
 		if(Util::stricmp(s.c_str(), "B") == 0) {
 			return SizeBytes;
-		} else if(Util::stricmp(s.c_str(), "kB") == 0) {
-			return SizeKiloBytes;
-		} else if(Util::stricmp(s.c_str(), "MB") == 0) {
-			return SizeMegaBytes;
-		} else if(Util::stricmp(s.c_str(), "GB") == 0) {
-			return SizeGigaBytes;
+		} else if(Util::stricmp(s.c_str(), "KiB") == 0) {
+			return SizeKibiBytes;
+		} else if(Util::stricmp(s.c_str(), "MiB") == 0) {
+			return SizeMebiBytes;
+		} else if(Util::stricmp(s.c_str(), "GiB") == 0) {
+			return SizeGibiBytes;
 		} else {
 			return SizeBytes;
 		}
@@ -144,27 +144,27 @@ public:
 		switch(t) {
 		default:
 		case SizeBytes:		return "B";
-		case SizeKiloBytes:	return "kB";
-		case SizeMegaBytes:	return "MB";
-		case SizeGigaBytes:	return "GB";
+		case SizeKibiBytes:	return "KiB";
+		case SizeMebiBytes:	return "MiB";
+		case SizeGibiBytes:	return "GiB";
 		}
 	}
 	tstring SizeTypeToDisplayString(SizeType t) {
 		switch(t) {
 		default:
 		case SizeBytes:		return CTSTRING(B);
-		case SizeKiloBytes:	return CTSTRING(KB);
-		case SizeMegaBytes:	return CTSTRING(MB);
-		case SizeGigaBytes:	return CTSTRING(GB);
+		case SizeKibiBytes:	return CTSTRING(KiB);
+		case SizeMebiBytes:	return CTSTRING(MiB);
+		case SizeGibiBytes:	return CTSTRING(GiB);
 		}
 	}
 	int64_t GetSizeBase() {
 		switch(typeFileSize) {
 		default:
 		case SizeBytes:		return (int64_t)1;
-		case SizeKiloBytes:	return (int64_t)1024;
-		case SizeMegaBytes:	return (int64_t)1024 * (int64_t)1024;
-		case SizeGigaBytes:	return (int64_t)1024 * (int64_t)1024 * (int64_t)1024;
+		case SizeKibiBytes:	return (int64_t)1024;
+		case SizeMebiBytes:	return (int64_t)1024 * (int64_t)1024;
+		case SizeGibiBytes:	return (int64_t)1024 * (int64_t)1024 * (int64_t)1024;
 		}
 	}
 
@@ -309,5 +309,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.20 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.21 2005/02/01 16:41:36 arnetheduck Exp $
  */

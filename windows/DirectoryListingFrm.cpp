@@ -78,6 +78,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	ctrlList.InsertColumn(COLUMN_FILENAME, CTSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
 	ctrlList.InsertColumn(COLUMN_TYPE, CTSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
+	ctrlList.InsertColumn(COLUMN_EXACTSIZE, CTSTRING(EXACT_SIZE), LVCFMT_RIGHT, 100, COLUMN_EXACTSIZE);
 	ctrlList.InsertColumn(COLUMN_SIZE, CTSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	ctrlList.InsertColumn(COLUMN_TTH, CTSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
 
@@ -919,7 +920,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		ucParams["tth"] = "NONE";
 		if(ii->type == ItemInfo::FILE) {
 			ucParams["type"] = "File";
-			ucParams["file"] = ii->file->getName();
+			ucParams["file"] = dl->getPath(ii->file) + ii->file->getName();
 			ucParams["filesize"] = Util::toString(ii->file->getSize());
 			ucParams["filesizeshort"] = Util::formatBytes(ii->file->getSize());
 			TTHValue *hash = ii->file->getTTH();
@@ -930,7 +931,7 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 		else
 		{
 			ucParams["type"] = "Directory";
-			ucParams["file"] = ii->dir->getName();
+			ucParams["file"] = dl->getPath(ii->dir) + ii->dir->getName();
 			ucParams["filesize"] = Util::toString(ii->dir->getTotalSize());
 			ucParams["filesizeshort"] = Util::formatBytes(ii->dir->getTotalSize());
 		}
@@ -946,5 +947,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.51 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.52 2005/02/01 16:41:45 arnetheduck Exp $
  */

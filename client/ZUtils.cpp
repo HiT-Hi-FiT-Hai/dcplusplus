@@ -28,7 +28,7 @@ const double ZFilter::MIN_COMPRESSION_LEVEL = 0.9;
 ZFilter::ZFilter() : totalIn(0), totalOut(0), compressing(true) {
 	memset(&zs, 0, sizeof(zs));
 
-	if(deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK) {
+	if(deflateInit(&zs, 3) != Z_OK) {
 		throw Exception(STRING(COMPRESSION_ERROR));
 	}
 }
@@ -107,5 +107,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.6 2005/01/14 13:46:04 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.7 2005/02/01 16:41:35 arnetheduck Exp $
  */

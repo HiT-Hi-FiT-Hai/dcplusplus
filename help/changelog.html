@@ -12,6 +12,58 @@
 <body>
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
+<h2>0.669 <span style="color: gray;">(2005-01-20)</span></h2>
+<ul>
+  <li>Fixed an issue with international formats of float numbers (also fixes UDP port setting)</li>
+  <li>Fixed a minor crash log output address issue</li>
+  <li>Split off color and sound to a new page (thanks ullner)</li>
+  <li>[bug 359] Fixed an issue with negative search terms (thanks naga)</li>
+  <li>Added option to filter TTH results in search spy (thanks joakim tosteberg)</li>
+  <li>[bug 184] Updated log functionality to allow users to customize log filenames (thanks naga)</li>
+  <li>Fixes to log edit function (thanks naga)</li>
+  <li>Added possibility to filter all searches without tth (thanks naga)</li>
+  <li>More preferences splitting (thanks ullner)</li>
+  <li>Small socket fix (thanks tremor)</li>
+  <li>Search tab goes bold if set to (thanks naga)</li>
+  <li>Hopefully fixed an UPnP crash</li>
+  <li>[bug 302] User commands in file lists (thanks joakim tosteberg)</li>
+  <li>ADC url's clickable (thanks naga)</li>
+  <li>Improved search timer to avoid spamming hub (thanks naga)</li>
+  <li>Redid some of the hash storage code, should be slighly more efficient</li>
+  <li>[bug 94] Share is cached for faster startup</li>
+  <li>Temporary targetnames are now filled in when download starts, not when item is added to queue, which makes temp target dir changes happen for current queue items as well, plus we get a huge memory save on huge queues.</li>
+  <li>[bug 363] Added "Remove All Sources" to queue (thanks izzzo &amp; garg)</li>
+  <li>Queue menu items greyed out when there are no itels (thanks izzzo)</li>
+  <li>Fixed a crash with certain empty lists (thanks garg)</li>
+  <li>Added "restore all" to undo "minimize all" (thanks guitarm)</li>
+  <li>Added optional pm history (thanks trem and ullner)</li>
+  <li>Better log file managment (thanks trem)</li>
+  <li>[bug 412] Fixed a queue count issue on removal (thanks ullner)</li>
+  <li>[bug 9] Fixed a queue move issue (thanks paka)</li>
+  <li>[bug 20] Fixed upload auto-slot granting (thanks naga)</li>
+  <li>Redid adl search to accomodate for partial list browsing (thanks garg)</li>
+  <li>Added initial ADC file transfers support</li>
+  <li>ADC hub connectivity improved</li>
+  <li>Fixed unnecessary COM initialisation (thanks garg)</li>
+  <li>Some linux compile fixes</li>
+  <li>Added readd all sources (thanks garg)</li>
+  <li>Fixed a deadlock when closing hub windows (thanks trem)</li>
+  <li>Added user ip logging in up and downloads (thanks ullner)</li>
+  <li>Small spy frame fix (thanks garg)</li>
+  <li>Small pm fix (thanks garg)</li>
+  <li>Added password warning for n00bs (thanks sed)</li>
+  <li>Help file updates (thanks ullner, garg)</li>
+  <li>Probably fixed the list redownloading bug</li>
+  <li>Hash index format change (as a side effect, it's very easy to find dupes in the new format, someone should make a tool)</li>
+  <li>Download manager changes in preparation for partial list browsing and other ADC features</li>
+  <li>Improved efficiency for small files (&lt;=64KiB) in the hash storage</li>
+  <li>Added advanced resume that detects and tries to repair rollback inconsistencies using tiger trees</li>
+  <li>Fixed a rare invalid zlib decompression error</li>
+  <li>Autosearch and automatch queue is now done by tth only (!) (thanks garg)</li>
+  <li>Automatch search done by tth only, should make things slightly faster</li>
+  <li>Search for alternates automatically uses tth if available (thanks garg)</li>
+</ul>
+
 <h2>0.668 <span style="color: gray;">(2004-11-30)</span></h2>
 <ul>
   <li>[bug 311] Fixed crash on open own filelist (thanks sulan)</li>

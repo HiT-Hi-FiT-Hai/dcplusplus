@@ -29,6 +29,7 @@
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
 #include "../client/FastAlloc.h"
+#include "../client/version.h"
 
 #define SHOWTREE_MESSAGE_MAP 12
 
@@ -399,11 +400,14 @@ private:
 	}
 
 	void removeSelected() {
-		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T("Really remove?"), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
 			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
 	
-	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };
+	void removeSelectedDir() { 
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)	
+			removeDir(ctrlDirs.GetSelectedItem()); 
+	};
 	
 	const tstring& getSelectedDir() { 
 		HTREEITEM ht = ctrlDirs.GetSelectedItem();
@@ -423,5 +427,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.50 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.51 2005/02/01 16:41:45 arnetheduck Exp $
  */

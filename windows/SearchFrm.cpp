@@ -139,9 +139,9 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlMode.SetCurSel(1);
 	
 	ctrlSizeMode.AddString(CTSTRING(B));
-	ctrlSizeMode.AddString(CTSTRING(KB));
-	ctrlSizeMode.AddString(CTSTRING(MB));
-	ctrlSizeMode.AddString(CTSTRING(GB));
+	ctrlSizeMode.AddString(CTSTRING(KiB));
+	ctrlSizeMode.AddString(CTSTRING(MiB));
+	ctrlSizeMode.AddString(CTSTRING(GiB));
 	if(initialSize == 0)
 		ctrlSizeMode.SetCurSel(2);
 	else
@@ -1084,5 +1084,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.81 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.82 2005/02/01 16:41:44 arnetheduck Exp $
  */

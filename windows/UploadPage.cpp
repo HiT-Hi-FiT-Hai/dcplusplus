@@ -38,7 +38,7 @@ PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
 	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
 	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
-	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS },
+	{ IDC_SETTINGS_KBPS, ResourceManager::KiBPS },
 	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
 	{ IDC_SETTINGS_ONLY_HASHED, ResourceManager::SETTINGS_ONLY_HASHED },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
@@ -263,6 +263,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.33 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.34 2005/02/01 16:41:44 arnetheduck Exp $
  */
 

@@ -219,15 +219,22 @@ public:
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)wParam;
-		if(MDIGetActive() != hWnd) {
-			MDIActivate(hWnd);
+
+		if(BOOLSETTING(TOGGLE_ACTIVE_WINDOW)) {
+			if(MDIGetActive() != hWnd) {
+				MDIActivate(hWnd);
+			} else {
+				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+				MDINext(hWnd);
+				hWnd = MDIGetActive();
+			}
+			if(::IsIconic(hWnd))
+				::ShowWindow(hWnd, SW_RESTORE);
 		} else {
-			::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
-			MDINext(hWnd);
-			hWnd = MDIGetActive();
+			if(::IsIconic(hWnd))
+				::ShowWindow(hWnd, SW_RESTORE);
+			MDIActivate(hWnd);
 		}
-		if(::IsIconic(hWnd))
-			::ShowWindow(hWnd, SW_RESTORE);
 		return 0;
 	}
 	
@@ -380,7 +387,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.52 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.53 2005/02/01 16:41:45 arnetheduck Exp $
  */
 
  

@@ -39,9 +39,12 @@ public:
 		bufPos = 0;
 
 		cur.finalize();
-		if(cur.getRoot() != real.getRoot())
-			throw FileException(STRING(TTH_INCONSISTENCY));
-		checkTrees();
+		if(cur.getLeaves().size() == real.getLeaves().size()) {
+			if (cur.getRoot() != real.getRoot())
+				throw FileException(STRING(TTH_INCONSISTENCY));
+		} else {
+			checkTrees();
+		}
 		return s->flush();
 	}
 
@@ -104,5 +107,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleCheckOutputStream.h,v 1.2 2005/01/18 15:53:34 arnetheduck Exp $
+ * $Id: MerkleCheckOutputStream.h,v 1.3 2005/02/01 16:41:35 arnetheduck Exp $
  */

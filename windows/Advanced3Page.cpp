@@ -32,10 +32,10 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_ROLLBACK, ResourceManager::SETTINGS_ROLLBACK },
 	{ IDC_SETTINGS_B, ResourceManager::B },
 	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
-	{ IDC_SETTINGS_KB, ResourceManager::KB },
+	{ IDC_SETTINGS_KB, ResourceManager::KiB },
 	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
-	{ IDC_SETTINGS_MBS, ResourceManager::MBPS },
+	{ IDC_SETTINGS_MBS, ResourceManager::MiBPS },
 	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY }, 
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };

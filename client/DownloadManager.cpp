@@ -217,8 +217,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
 
-		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && d->getStartPos() > 0) {
-			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), d->getStartPos()));
+		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && start > 0) {
+			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), start));
 		} else {
 			int rollback = SETTING(ROLLBACK);
 			if(rollback > start) {
@@ -284,14 +284,24 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 
 		try {
 			File inFile(file, File::READ, File::OPEN);
+			if(blockPos + tt.getBlockSize() >= inFile.getSize()) {
+				startPos = blockPos;
+				continue;
+			}
+
 			inFile.setPos(blockPos);
 			int64_t bytesLeft = tt.getBlockSize();
 			while(bytesLeft > 0) {
 				size_t n = buf.size();
 				n = inFile.read(&buf[0], n);
+				if(n == 0) {
+					// Huh??
+					check.flush();
+				}
 				check.write(&buf[0], n);
 				bytesLeft -= n;
 			}
+			check.flush();
 			break;
 		} catch(const Exception&) {
 			dcdebug("Removed bad block at " I64_FMT "\n", blockPos);
@@ -877,5 +887,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.144 2005/01/18 15:53:32 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.145 2005/02/01 16:41:35 arnetheduck Exp $
  */

@@ -135,7 +135,7 @@
 		<String Name="FinishedUploads">Finished Uploads</String>
 		<String Name="ForbiddenDollarFile">File with '$' cannot be downloaded and will not be shared: </String>
 		<String Name="ForceAttempt">Force attempt</String>
-		<String Name="Gb">GiB</String>
+		<String Name="Gib">GiB</String>
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
@@ -168,8 +168,8 @@
 		<String Name="JoinShowingOff">Join/part showing off</String>
 		<String Name="JoinShowingOn">Join/part showing on</String>
 		<String Name="Joins">Joins: </String>
-		<String Name="Kb">KiB</String>
-		<String Name="Kbps">KiB/s</String>
+		<String Name="Kib">KiB</String>
+		<String Name="Kibps">KiB/s</String>
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastChange">Last change: </String>
@@ -196,8 +196,8 @@
 		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="MaxHubs">Max Hubs</String>
 		<String Name="MaxUsers">Max Users</String>
-		<String Name="Mb">MiB</String>
-		<String Name="Mbps">MiB/s</String>
+		<String Name="Mib">MiB</String>
+		<String Name="Mibps">MiB/s</String>
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuAdlSearch">ADL Search</String>
 		<String Name="MenuArrange">Arrange icons</String>
@@ -449,6 +449,7 @@
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
+		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>
 		<String Name="SettingsUdpPort">UDP Port</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploads">Sharing</String>
@@ -486,7 +487,7 @@
 		<String Name="StoredPasswordSent">Stored password sent...</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
-		<String Name="Tb">TiB</String>
+		<String Name="Tib">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
@@ -508,8 +509,9 @@
 		<String Name="UploadedBytes">Uploaded %s (%.01f%%) in %s</String>
 		<String Name="UploadedTo"> uploaded to </String>
 		<String Name="Uploads">Uploads</String>
-		<String Name="UpnpFailedToCreateMappings">Failed to create port mappings</String>
+		<String Name="UpnpFailedToCreateMappings">Failed to create port mappings. Please set up your NAT yourself.</String>
 		<String Name="UpnpFailedToRemoveMappings">Failed to remove port mappings</String>
+		<String Name="UpnpFailedToGetExternalIp">Failed to get external IP via  UPnP. Please set it yourself.</String>
 		<String Name="User">User</String>
 		<String Name="UserCmdChat">Chat</String>
 		<String Name="UserCmdCommand">Command</String>

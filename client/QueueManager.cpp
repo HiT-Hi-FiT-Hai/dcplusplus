@@ -78,7 +78,16 @@ namespace {
 const string& QueueItem::getTempTarget() {
 	if(!isSet(QueueItem::FLAG_USER_LIST) && tempTarget.empty()) {
 		if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(getTarget()) == -1)) {
+#ifdef _WIN32
+			::StringMap sm;
+			if(target.length() >= 3 && target[1] == ':' && target[2] == '\\')
+				sm["targetdrive"] = target.substr(0, 3);
+			else
+				sm["targetdrive"] = Util::getAppPath().substr(0, 3);
+			setTempTarget(Util::formatParams(SETTING(TEMP_DOWNLOAD_DIRECTORY), sm) + getTempName(getTargetFileName(), getTTH()));
+#else //_WIN32
 			setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(getTargetFileName(), getTTH()));
+#endif //_WIN32
 		}
 	}
 	return tempTarget;
@@ -388,11 +397,11 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 				online = qi->hasOnlineUsers();
 				recent.push_back(qi->getTarget());
 				nextSearch = aTick + (online ? 120000 : 300000);
+				SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 			}
 		}
 	}
 
-	SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
@@ -1302,5 +1311,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.118 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.119 2005/02/01 16:41:35 arnetheduck Exp $
  */
