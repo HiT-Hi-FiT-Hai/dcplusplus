@@ -272,7 +272,10 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 	nodes.sort(greater<Node*>());
 	dcdebug("\n");
+#ifdef _DEBUG
 	for(list<Node*>::iterator it = nodes.begin(); it != nodes.end(); ++it) dcdebug("%.02x:%d, ", (*it)->chr, (*it)->weight);
+#endif
+	
 	walkTree(nodes);
 	dcassert(nodes.size() == 1);
 
@@ -324,9 +327,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.17 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.18 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.18  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.17  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

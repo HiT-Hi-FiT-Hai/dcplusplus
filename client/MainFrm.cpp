@@ -40,6 +40,8 @@
 #include "QueueManager.h"
 #include "QueueFrame.h"
 
+int MainFrame::columnIndexes[MainFrame::COLUMN_LAST] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SIZE, COLUMN_FILE };
+int MainFrame::columnSizes[MainFrame::COLUMN_LAST] = { 200, 300, 400, 100 };
 MainFrame::~MainFrame() {
 	arrows.Destroy();
 	images.Destroy();
@@ -341,7 +343,7 @@ HWND MainFrame::createToolbar() {
 }
 
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-
+	
 	SettingsManager::newInstance();
 	ShareManager::newInstance();
 	TimerManager::newInstance();
@@ -415,11 +417,16 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+	} else {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
+	}
 	
-	ctrlTransfers.InsertColumn(COLUMN_USER, "User", LVCFMT_LEFT, 200, COLUMN_USER);
-	ctrlTransfers.InsertColumn(COLUMN_STATUS, "Status", LVCFMT_LEFT, 300, COLUMN_STATUS);
-	ctrlTransfers.InsertColumn(COLUMN_FILE, "File", LVCFMT_LEFT, 400, COLUMN_FILE);
-	ctrlTransfers.InsertColumn(COLUMN_SIZE, "Size", LVCFMT_RIGHT, 100, COLUMN_SIZE);
+	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_USER], "User", LVCFMT_LEFT, columnSizes[COLUMN_USER], COLUMN_USER);
+	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_STATUS], "Status", LVCFMT_LEFT, columnSizes[COLUMN_STATUS], COLUMN_STATUS);
+	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_FILE], "File", LVCFMT_LEFT, columnSizes[COLUMN_FILE], COLUMN_FILE);
+	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_SIZE], "Size", LVCFMT_RIGHT, columnSizes[COLUMN_SIZE], COLUMN_SIZE);
 
 	ctrlTransfers.SetBkColor(Util::bgColor);
 	ctrlTransfers.SetTextBkColor(Util::bgColor);
@@ -443,11 +450,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
-	
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		try {
 			ConnectionManager::getInstance()->setPort((short)SETTING(PORT));
@@ -717,9 +719,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.65 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.66 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.66  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.65  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

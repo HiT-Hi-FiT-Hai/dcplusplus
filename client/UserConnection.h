@@ -121,8 +121,6 @@ public:
 	typedef UserConnection* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef map<string, Ptr> NickMap;
-	typedef NickMap::iterator NickIter;
 	
 	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
@@ -161,14 +159,7 @@ public:
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
-	
-	void get(const string& aFile, LONGLONG aResume) { 
-		char* buf = new char[aFile.length() + 24 + 10];
-		sprintf(buf, "$Get %s$%I64d|", aFile.c_str(), aResume+1);
-		send(buf);
-		delete buf;
-	}
-	
+	void get(const string& aFile, LONGLONG aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + "|"); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + "|"); }
 	void startSend() { send("$Send|"); }
 	void error(const string& aError) { send("$Error " + aError + "|"); };
@@ -177,20 +168,24 @@ public:
 
 	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
-	void connect(const string& aServer, short aPort = 412);
-	void accept(const ServerSocket& aSocket);
-	void disconnect() {
-		socket.disconnect();
+	void UserConnection::connect(const string& aServer, short aPort) { 
+		dcassert(!socket.isConnected()); 
+		socket.connect(aServer, aPort);
 	}
 	
-	void transmitFile(File* f) {
-		socket.transmitFile(f);
+	void UserConnection::accept(const ServerSocket& aServer) {
+		dcassert(!socket.isConnected());
+		socket.accept(aServer);
 	}
+	
+	void disconnect() { socket.disconnect(); };
+	void transmitFile(File* f) { socket.transmitFile(f); };
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
 		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
+
 	const string& getNick() {
 		if(nick.empty()) {
 			return SETTING(NICK);
@@ -198,16 +193,12 @@ public:
 			return nick;
 		}
 	}
-	void setNick(const string& aNick) {
-		nick = aNick;
-	}
 	
+	void setNick(const string& aNick) { nick = aNick; };
 	User::Ptr& getUser() { return user; };
 
 	GETSET(States, state, State);
 	GETSET(Status, status, Status);
-	GETSETREF(string, server, Server);
-	GETSET(short, port, Port);
 	GETSET(DWORD, lastActivity, LastActivity);
 
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
@@ -232,7 +223,7 @@ private:
 	}
 
 	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), status(CONNECTING), port(0), lastActivity(0), download(NULL) { 
+	UserConnection() : socket('|'), status(CONNECTING), lastActivity(0), download(NULL) { 
 		socket.addListener(this);
 	};
 	UserConnection(const UserConnection&) { dcassert(0); };
@@ -293,7 +284,7 @@ private:
 	void onLine(const string& aLine) throw();
 
 	void send(const string& aString) {
-		TimerManager::getTick();
+		lastActivity = TimerManager::getTick();
 		socket.write(aString);
 	}
 };
@@ -302,9 +293,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.37 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.38 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.38  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.37  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

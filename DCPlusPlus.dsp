@@ -233,6 +233,10 @@ SOURCE=.\client\QueueManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\ResourceManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\SearchFrm.cpp
 # End Source File
 # Begin Source File
@@ -455,6 +459,10 @@ SOURCE=.\client\QueueManager.h
 # Begin Source File
 
 SOURCE=.\client\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\ResourceManager.h
 # End Source File
 # Begin Source File
 

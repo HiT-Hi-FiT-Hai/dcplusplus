@@ -61,11 +61,6 @@ public:
 		IMAGE_UPLOAD
 	};
 	
-	enum {
-		IMAGE_USER = 0,
-		IMAGE_OP
-	};
-	
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -344,6 +339,8 @@ private:
 	CMenu transferMenu;
 	
 	int lastUpload;
+	static int columnIndexes[];
+	static int columnSizes[];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -460,9 +457,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.45 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.46 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.46  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.45  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -75,6 +75,7 @@ public:
 		while(readers > 0) {
 			LeaveCriticalSection(&cs);
 			Sleep(0);
+			dcdebug(".");
 			EnterCriticalSection(&cs);
 		}
 	}
@@ -111,9 +112,12 @@ public:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.7 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.8 2002/03/07 19:07:51 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.8  2002/03/07 19:07:51  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.7  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

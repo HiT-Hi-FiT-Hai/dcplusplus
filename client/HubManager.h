@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Exception.h"
 #include "Util.h"
 #include "CriticalSection.h"
 #include "HttpConnection.h"
@@ -115,30 +114,33 @@ public:
 	}
 
 	void addFavorite(const FavoriteHubEntry& aEntry) {
-		cs.enter();
-		FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
-		if(i == favoriteHubs.end()) {
+		FavoriteHubEntry* f;
+
+		{
+			Lock l(cs);
+			FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+			if(i != favoriteHubs.end()) {
+				return;
+			}
 			FavoriteHubEntry* f = new FavoriteHubEntry(aEntry);
 			favoriteHubs.push_back(f);
-			cs.leave();
-			fire(HubManagerListener::FAVORITE_ADDED, f);
-			return;
 		}
-		cs.leave();
+		fire(HubManagerListener::FAVORITE_ADDED, f);
 	}
 
 	void removeFavorite(FavoriteHubEntry* entry) {
-		cs.enter();
-		FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
-		if(i != favoriteHubs.end()) {
+		{
+			Lock l(cs);
+			
+			FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
+			if(i == favoriteHubs.end()) {
+				return;
+			}
+			
 			favoriteHubs.erase(i);
-			cs.leave();
-			fire(HubManagerListener::FAVORITE_REMOVED, entry);
-			delete entry;
-			return;
 		}
-				
-		cs.leave();
+		fire(HubManagerListener::FAVORITE_REMOVED, entry);
+		delete entry;
 	}
 	
 	void getPublicHubs() {
@@ -154,11 +156,13 @@ public:
 	}
 	
  	void refresh() {
-		cs.enter();
-		publicHubs.clear();
-		running = true;
-		downloaded = false;
-		cs.leave();
+		{
+			Lock l(cs);
+			publicHubs.clear();
+			running = true;
+			downloaded = false;
+			
+		}
 		
 		reset();
 
@@ -248,9 +252,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.21 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.22 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.22  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.21  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

@@ -142,7 +142,7 @@ public:
 
 	void sendMessage(const string& aMessage) {
 		dcdebug("sendMessage ...\n");
-		send("<" + getNick() + "> " + Util::removeInvalid(aMessage) + "|");
+		send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|");
 	}
 	void getInfo(User::Ptr aUser) {
 		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
@@ -156,7 +156,7 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + "$ $" + aSpeed + "\x01$" + Util::removeInvalid(aEmail) + '$' + aBytesShared + "$|");
+		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + "$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -168,10 +168,10 @@ public:
 		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
-		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + aMessage + "|");
+		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
 	}
 	void privateMessage(User* aUser, const string& aMessage) {
-		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + aMessage + "|");
+		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
 	}
 	void revConnectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
@@ -182,8 +182,53 @@ public:
 		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
 	
-	void kick(const User::Ptr& aUser) {
+	void kick(const User::Ptr& aUser, const string& aMsg) {
 		dcdebug("Client::kick\n");
+		static const char str[] = 
+			"$To: %s $From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+		string msg2 = Util::validateMessage(aMsg);
+
+		char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
+		const char* u = aUser->getNick().c_str();
+		const char* n = getNick().c_str();
+		const char* m = msg2.c_str();
+		sprintf(tmp, str, u, n, n, m, n, n, u, m);
+		send(tmp);
+		delete tmp;
+
+/*		send("$To: " + aUser->getNick() + " $From: " + getNick() + " <" + getNick() + 
+			"> You are being kicked because: " + Util::removeInvalid(aMsg) + 
+			"|<" + getNick() + "> " + getNick() + "  is kicking " + aUser->getNick() + 
+			" because: " + Util::removeInvalid(aMsg) + "|");
+*/
+		// Short, short break to allow the message to reach the client...
+		Sleep(100);
+		send("$Kick " + aUser->getNick() + "|");
+		
+	}
+
+	void kick(User* aUser, const string& aMsg) {
+		dcdebug("Client::kick\n");
+		
+		static const char str[] = 
+			"$To: %s $From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+		string msg2 = Util::validateMessage(aMsg);
+
+		char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
+		const char* u = aUser->getNick().c_str();
+		const char* n = getNick().c_str();
+		const char* m = msg2.c_str();
+		sprintf(tmp, str, u, n, n, m, n, n, u, m);
+		send(tmp);
+		delete tmp;
+
+/*		send("$To: " + aUser->getNick() + " $From: " + getNick() + " <" + getNick() + 
+			"> You are being kicked because: " + Util::removeInvalid(aMsg) + 
+			"|<" + getNick() + "> " + getNick() + "  is kicking " + aUser->getNick() + 
+			" because: " + Util::removeInvalid(aMsg) + "|");
+*/
+		// Short, short break to allow the message to reach the client...
+		Sleep(100);
 		send("$Kick " + aUser->getNick() + "|");
 	}
 	
@@ -321,9 +366,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.41 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: Client.h,v 1.42 2002/03/07 19:07:51 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.42  2002/03/07 19:07:51  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.41  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

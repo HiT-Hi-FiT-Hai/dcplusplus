@@ -26,21 +26,8 @@
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
-void UserConnection::connect(const string& aServer, short aPort /* = 412 */) {
-	dcassert(!socket.isConnected());
-	socket.connect(aServer, aPort);
-}
-
-void UserConnection::accept(const ServerSocket& aServer) {
-	dcassert(!socket.isConnected());
-	
-	socket.accept(aServer);
-}
-
 void UserConnection::onLine(const string& aLine) throw () {
-	TimerManager::getTick();
 
-	
 	if(aLine.length() == 0)
 		return;
 
@@ -90,15 +77,18 @@ void UserConnection::onLine(const string& aLine) throw () {
 	} else if(cmd == "$MaxedOut"){
 		fire(UserConnectionListener::MAXED_OUT, this);
 	} else {
-		//dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
+		dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
 	}
 }
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.12 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.13 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.13  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.12  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -28,7 +28,7 @@
 class Flags {
 	public:
 		Flags() : flags(0) { };
-		bool isSet(int aFlag) { return (flags & aFlag) > 0; };
+		bool isSet(int aFlag) const { return (flags & aFlag) > 0; };
 		void setFlag(int aFlag) { flags |= aFlag; };
 		void unsetFlag(int aFlag) { flags &= ~aFlag; };
 
@@ -40,7 +40,7 @@ template<typename Listener>
 class Speaker {
 public:
 	void fire(Listener::Types type) throw () {
-		Lock l(listenerCS);
+		RLock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
@@ -49,7 +49,7 @@ public:
 	
 	template<class T> 
 		void fire(Listener::Types type, const T& param) throw () {
-		Lock l(listenerCS);
+		RLock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, param);
@@ -58,7 +58,7 @@ public:
 	
 	template<class T, class T2> 
 		void fire(Listener::Types type, const T& p, const T2& p2) throw() {
-		Lock l(listenerCS);
+		RLock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2);
@@ -66,7 +66,7 @@ public:
 	};
 	template<class T, class T2, class T3> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
-		Lock l(listenerCS);
+		RLock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3);
@@ -74,7 +74,7 @@ public:
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
-		Lock l(listenerCS);
+		RLock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
@@ -83,13 +83,13 @@ public:
 	
 	
 	void addListener(Listener* aListener) {
-		Lock l(listenerCS);
+		WLock l(listenerCS);
 		if(find(listeners.begin(), listeners.end(), aListener) == listeners.end())
 			listeners.push_back(aListener);
 	}
 	
 	void removeListener(Listener* aListener) {
-		Lock l(listenerCS);
+		WLock l(listenerCS);
 
 		vector<Listener*>::iterator i = find(listeners.begin(), listeners.end(), aListener);
 		if(i != listeners.end())
@@ -97,12 +97,12 @@ public:
 	}
 	
 	void removeListeners() {
-		Lock l(listenerCS);
+		WLock l(listenerCS);
 		listeners.clear();
 	}
 protected:
 	vector<Listener*> listeners;
-	CriticalSection listenerCS;
+	RWLock listenerCS;
 };
 
 template<typename T>
@@ -321,41 +321,7 @@ public:
 		return itoa(val, buf, 10);
 	}
 
-
-	static string getLocalIp() {
-		string tmp;
-
-		char buf[256];
-		gethostname(buf, 256);
-		hostent* he = gethostbyname(buf);
-		if(he == NULL || he->h_addr_list[0] == 0)
-			return "";
-		sockaddr_in dest;
-        int i = 0;
-
-		// We take the first ip as default, but if we can find a better one, use it instead...
-		memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
-		tmp = inet_ntoa(dest.sin_addr);
-		if( strcmp(tmp.c_str(), "192") == 0 || 
-			strcmp(tmp.c_str(), "169") == 0 || 
-			strcmp(tmp.c_str(), "127") == 0 || 
-			strcmp(tmp.c_str(), "10") == 0 ) {
-			
-			while(he->h_addr_list[i]) {
-				memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
-				string tmp2 = inet_ntoa(dest.sin_addr);
-				if(	strcmp(tmp2.c_str(), "192") != 0 &&
-					strcmp(tmp2.c_str(), "169") != 0 &&
-					strcmp(tmp2.c_str(), "127") != 0 &&
-					strcmp(tmp2.c_str(), "10") != 0) {
-					
-					tmp = tmp2;
-				}
-				i++;
-			}
-		}
-		return tmp;
-	}
+	static string getLocalIp();
 	/**
 	 * Case insensitive substring search.
 	 * @return First position found or string::npos
@@ -382,22 +348,18 @@ public:
 		return (string::size_type)string::npos;
 	}
 
-	static string validateString(const string& aNick) {	
-		string nick = aNick;
+	static string validateNick(string tmp) {	
 		int i;
-		while((i=nick.find('$')) != string::npos)
-			nick.replace(i, 1, 1, '_');
-		while((i=nick.find(' ')) != string::npos)
-			nick.replace(i, 1, 1, '_');
-		while((i=nick.find('|')) != string::npos)
-			nick.replace(i, 1, 1, '_');
-		return nick;
+		while( (i = tmp.find_first_of("|$ ")) != string::npos) {
+			tmp[i]='_';
+		}
+		return tmp;
 	}
 
-	static string removeInvalid(string tmp) {
+	static string validateMessage(string tmp) {
 		int i = -1;
 		while( (i = tmp.find_first_of("|$")) != string::npos) {
-			tmp.erase(i, 1);
+			tmp[i]='_';
 		}
 		return tmp;
 	}
@@ -414,25 +376,19 @@ private:
 	static string awayMsg;
 	static const string defaultMsg;	
 
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
-		switch(uMsg) {
-		case BFFM_INITIALIZED: 
-			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
-			break;
-		}
-		return 0;
-	}
-		
-		
+	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.31 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: Util.h,v 1.32 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.32  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.31  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

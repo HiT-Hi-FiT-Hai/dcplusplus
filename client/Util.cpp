@@ -34,25 +34,23 @@ const string Util::defaultMsg = "I'm away. I might answer later if you're lucky.
 
 /**
  * Decodes a URL the best it can...
- * Recognised protocols:
+ * Default ports:
  * http:// -> port 80
  * dchub:// -> port 411
- *
- * Any unknown fields are set to 0 or ""
  */
 
-void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile) {
+void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
-	string::size_type i;
-	string url = aUrl;
-
+	string::size_type i = 0, j, k;
+	
 	aServer = "";
 	aFile = "";
 
-	if( (i=url.find("://")) != string::npos) {
+	if( (j=url.find("://"), i) != string::npos) {
 		// Protocol found
-		string protocol = aUrl.substr(0, i);
-		url = url.substr(i+3);
+		string protocol = url.substr(0, j);
+		i = j + 3;
+
 		if(protocol == "http") {
 			aPort = 80;
 		} else if(protocol == "dchub") {
@@ -60,20 +58,21 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 		}
 	}
 
-	if( (i=url.find('/')) != string::npos) {
+	if( (j=url.find('/', i)) != string::npos) {
 		// We have a filename...
-		aFile = url.substr(i);
-		url = url.substr(0, i);
+		aFile = url.substr(j);
 	}
 
-	if( (i=url.find(':')) != string::npos) {
+	if( (k=url.find(':', i)) != string::npos) {
 		// Port
-		aPort = (short)Util::toInt(aUrl.substr(i+1));
-		url = url.substr(0, i);
+		if(k < j)
+			aPort = (short)Util::toInt(url.substr(k+1, j-k-1));
+	} else {
+		k = j;
 	}
 
 	// Only the server should be left now...
-	aServer = url;
+	aServer = url.substr(i, k-i);
 }
 
 void Util::decodeFont(const string& setting, LOGFONT &dest) {
@@ -96,12 +95,58 @@ void Util::decodeFont(const string& setting, LOGFONT &dest) {
 	}
 }
 
+string Util::getLocalIp() {
+	string tmp;
+	
+	char buf[256];
+	gethostname(buf, 256);
+	hostent* he = gethostbyname(buf);
+	if(he == NULL || he->h_addr_list[0] == 0)
+		return "";
+	sockaddr_in dest;
+	int i = 0;
+	
+	// We take the first ip as default, but if we can find a better one, use it instead...
+	memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
+	tmp = inet_ntoa(dest.sin_addr);
+	if( strncmp(tmp.c_str(), "192", 3) == 0 || 
+		strncmp(tmp.c_str(), "169", 3) == 0 || 
+		strncmp(tmp.c_str(), "127", 3) == 0 || 
+		strncmp(tmp.c_str(), "10", 2) == 0 ) {
+		
+		while(he->h_addr_list[i]) {
+			memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
+			string tmp2 = inet_ntoa(dest.sin_addr);
+			if(	strncmp(tmp2.c_str(), "192", 3) != 0 &&
+				strncmp(tmp2.c_str(), "169", 3) != 0 &&
+				strncmp(tmp2.c_str(), "127", 3) != 0 &&
+				strncmp(tmp2.c_str(), "10", 2) != 0) {
+				
+				tmp = tmp2;
+			}
+			i++;
+		}
+	}
+	return tmp;
+}
+
+int CALLBACK Util::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
+	switch(uMsg) {
+	case BFFM_INITIALIZED: 
+		SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+		break;
+	}
+	return 0;
+}
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.8 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.8  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.7  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

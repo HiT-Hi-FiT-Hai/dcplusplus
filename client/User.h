@@ -30,10 +30,9 @@ class Client;
 class SocketException;
 
 /**
- * A user connected to one or more hubs.
- * @todo Something clever for handling different users with the same nick (on different hubs)
+ * A user connected to a hubs.
  */
-class User : public PointerBase
+class User : public PointerBase, public Flags
 {
 public:
 	enum {
@@ -59,7 +58,6 @@ public:
 	void clientMessage(const string& aMsg);
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
-
 	bool isClientOp();
 	
 	LONGLONG getBytesShared() const { return sharingLong; };
@@ -67,17 +65,12 @@ public:
 	void setBytesShared(LONGLONG aSharing) { sharing = Util::toString(aSharing); sharingLong = aSharing; };
 	void setBytesShared(const string& aSharing) { sharing = aSharing; sharingLong = Util::toInt64(aSharing); };
 
-	void setFlag(DWORD aFlag) { flags |= aFlag; };
-	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
-	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
-
 	bool isOnline() const { return isSet(ONLINE); };
 	bool isClient(Client* aClient) const { return client == aClient; };
 	
 	static void updated(User::Ptr& aUser);
 	
-	User() : sharingLong(0), client(NULL), flags(0) { };
-	User(const string& aNick, DWORD aFlags = 0) : sharingLong(0), client(NULL), nick(aNick), flags(aFlags) { };
+	User(const string& aNick) : sharingLong(0), client(NULL), nick(aNick) { };
 	~User() { };
 
 	GETSETREF(string, connection, Connection);
@@ -89,7 +82,6 @@ public:
 private:
 	CriticalSection cs;
 	
-	DWORD flags;
 	Client* client;
 	string sharing;
 	LONGLONG sharingLong;		// Cache this...requested very frequently...
@@ -100,9 +92,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.13 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: User.h,v 1.14 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.14  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.13  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

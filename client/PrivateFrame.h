@@ -177,7 +177,7 @@ public:
 		if(user && user->isOnline()) {
 			string s = "<" + user->getClientNick() + "> " + msg;
 			user->privateMessage(s);
-			addLine(s);
+			addLine(Util::validateMessage(s));
 		}
 	}
 	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
@@ -210,9 +210,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.15 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.16 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.16  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.15  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

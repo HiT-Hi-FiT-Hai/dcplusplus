@@ -19,6 +19,7 @@
 * Fixed so that priorities are saved / loaded
 * Improved rollback buffering, the app now discards the last <rollback> bytes, and 
   then checks the <rollback> bytes before that for inconsistensies.
+* Fixed so that the correct edit box gets the focus when switching windows
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

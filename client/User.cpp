@@ -57,6 +57,7 @@ void User::updated(User::Ptr& aUser) {
 		aUser->client->updated(aUser);
 	}
 }
+
 string User::getClientName() {
 	Lock l(cs);
 	if(client) {
@@ -84,11 +85,7 @@ bool User::isClientOp() {
 void User::kick(const string& aMsg) {
 	Lock l(cs);
 	if(client) {
-		client->privateMessage(this, "You are being kicked because: " + aMsg);
-		// Short, short break to allow the message to reach the client...
-		Sleep(100);
-		client->sendMessage(client->getNick() + " is kicking " + getNick() + " because: " + aMsg);
-		client->kick(this);
+		client->kick(this, aMsg);
 	}
 }
 
@@ -120,9 +117,12 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.9 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: User.cpp,v 1.10 2002/03/07 19:07:52 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.10  2002/03/07 19:07:52  arnetheduck
+ * Minor fixes + started code review
+ *
  * Revision 1.9  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *
