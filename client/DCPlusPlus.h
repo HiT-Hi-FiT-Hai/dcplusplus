@@ -51,7 +51,7 @@ typedef StringMap::iterator StringMapIter;
 
 #include "resource.h"
 #include "SettingsManager.h"
-#include "Version.h"
+#include "version.h"
 
 
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
@@ -70,9 +70,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.16 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.17 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.17  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.16  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

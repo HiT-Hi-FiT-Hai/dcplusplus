@@ -82,9 +82,9 @@
 #else
 #	define closesocket(x) close(x)
 #	define checksocket(x) if((x) < 0) { throw SocketException(errno); }
-#	define checkconnect(x) if((x) == -1) { throw SocketException(errno); }
+#	define checkconnect(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
 #	define checksend(x, len) if((x) != len) { throw SocketException(errno); }
-#	define checkrecv(x) if((x) == -1) { throw SocketException(errno); }
+#	define checkrecv(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
 #endif
 
 
@@ -124,7 +124,7 @@ public:
 	virtual void disconnect() {
 		connected = false;
 		closesocket(sock);
-		sock = -1;
+		sock = INVALID_SOCKET;
 		if(event) {
 			CloseHandle(event);
 			event = NULL;
@@ -135,7 +135,7 @@ public:
 		TYPE_UDP = 1
 	};
 	void create(int aType = TYPE_TCP) throw(SocketException) {
-		if(sock != -1)
+		if(sock != INVALID_SOCKET)
 			Socket::disconnect();
 
 		switch(aType) {
@@ -201,7 +201,7 @@ public:
 	static DWORD getUp() { return stats.up; };
 	static LONGLONG getTotalDown() { return stats.totalDown; };
 	static LONGLONG getTotalUp() { return stats.totalUp; };
-	int sock;
+	SOCKET sock;
 
 	GETSETREF(string, ip, Ip);
 private:
@@ -226,9 +226,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.21 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: Socket.h,v 1.22 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.22  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.21  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

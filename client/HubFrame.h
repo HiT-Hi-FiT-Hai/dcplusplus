@@ -187,7 +187,7 @@ public:
 				i++;
 			}
 			CloseHandle(stopperThread);
-			stopperThread = FALSE;
+			stopperThread = NULL;
 			bHandled = FALSE;
 		} else {
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
@@ -398,6 +398,10 @@ private:
 	string redirect;
 	bool timeStamps;
 	
+	string lastKick;
+	string lastRedir;
+	string lastServer;
+
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
@@ -553,9 +557,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.52 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.53 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.53  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.52  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

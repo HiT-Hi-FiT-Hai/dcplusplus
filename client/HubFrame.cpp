@@ -41,7 +41,7 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- ht
 "\r\n-- I can resume my files to a different filename, can you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
 };
 
-#define MSGS 4
+#define MSGS 10
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -301,7 +301,10 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 	LineDlg dlg;
 	dlg.title = "Kick user(s)";
 	dlg.description = "Please enter a reason";
+	dlg.line = lastKick;
 	if(dlg.DoModal() == IDOK) {
+		lastKick = dlg.line;
+		
 		int i = -1;
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			char buf[256];
@@ -345,10 +348,15 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	LineDlg dlg1, dlg2;
 	dlg1.title = "Redirect user(s)";
 	dlg1.description = "Please enter a reason";
+	dlg1.line = lastRedir;
+
 	if(dlg1.DoModal() == IDOK) {
+		lastRedir = dlg1.line;
 		dlg2.title = "Redirect user(s)";
 		dlg2.description = "Please enter destination server";
+		dlg2.line = lastServer;
 		if(dlg2.DoModal() == IDOK) {
+			lastServer = dlg2.line;
 			int i = -1;
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				char buf[256];
@@ -435,7 +443,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				client->password(client->getPassword());
 			} else {
 				LineDlg dlg;
-				dlg.title = "Hub Password";
+				dlg.title = "Hub Password - " + client->getName();
 				dlg.description = "Please enter your password";
 				dlg.password = true;
 				
@@ -495,9 +503,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.37 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.38 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.38  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.37  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -201,7 +201,7 @@ public:
 			}
 			CloseHandle(stopperThread);
 			
-			stopperThread = FALSE;
+			stopperThread = NULL;
 			bHandled = FALSE;
 		} else {
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
@@ -301,9 +301,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.7 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.8 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.8  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.7  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

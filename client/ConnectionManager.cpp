@@ -364,6 +364,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 		if(!aSource->getUser()) {
 			// We still don't know who this is!!!
 			putDownloadConnection(aSource);
+			return;
 		} else {
 			dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 			DownloadManager::getInstance()->addConnection(aSource);
@@ -473,9 +474,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.31 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.32 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.32  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.31  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

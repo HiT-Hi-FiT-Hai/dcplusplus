@@ -174,30 +174,31 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		q->setStatus(aQI->getStatus());
 	}
 	StringListInfo* i = new StringListInfo((LPARAM)aQI);
+
+	string tmp;
+	
+	int online = 0;
+	for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
+		if(tmp.size() > 0)
+			tmp += ", ";
+		
+		QueueItem::Source::Ptr sr = *j;
+		if(sr->getUser()) {
+			
+			if(sr->getUser()->isOnline())
+				online++;
+			
+			tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
+		} else {
+			tmp += sr->getNick() + " (Offline)";
+		}
+	}
+	if(tmp.empty()) {
+		tmp = "No users";
+	}
+	i->columns[COLUMN_USERS] = tmp;
 	
 	if(aQI->getStatus() == QueueItem::WAITING) {
-		string tmp;
-			
-		int online = 0;
-		for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-			if(tmp.size() > 0)
-				tmp += ", ";
-			
-			QueueItem::Source::Ptr sr = *j;
-			if(sr->getUser()) {
-				
-				if(sr->getUser()->isOnline())
-					online++;
-				
-				tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
-			} else {
-				tmp += sr->getNick() + " (Offline)";
-			}
-		}
-		if(tmp.empty()) {
-			tmp = "No users";
-		}
-		i->columns[COLUMN_USERS] = tmp;
 		
 		char buf[64];
 		if(online > 0) {
@@ -473,9 +474,12 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.8 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.9  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.8  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

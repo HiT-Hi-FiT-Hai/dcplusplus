@@ -32,6 +32,7 @@
 
 #include "config.h"
 
+#ifdef WIN32
 #include <Winsock2.h>
 
 #include <atlbase.h>
@@ -47,6 +48,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 #include <Shellapi.h>
+#endif // WIN32
 
 #include <time.h>
 #include <algorithm>
@@ -69,9 +71,12 @@ using namespace _STL;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.21 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.22 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.22  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.21  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

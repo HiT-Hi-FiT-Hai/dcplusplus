@@ -54,7 +54,7 @@ SettingsManager::SettingsManager()
 	}
 
 	setDefault(SERVER, Util::getLocalIp());
-	setDefault(PORT, 412);
+	setDefault(PORT, 1412);
 	setDefault(ROLLBACK, 1024);
 	setDefault(CLIENTVERSION, "1,0091");
 	setDefault(AUTO_FOLLOW, true);
@@ -215,9 +215,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.18 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.19 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.19  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.18  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -152,7 +152,6 @@ public:
 		return res;
 	}
 	
-	
 	static bool browseSaveFile(string& target, HWND owner = NULL) {
 		char buf[MAX_PATH];
 		OPENFILENAME ofn;       // common dialog box structure
@@ -204,7 +203,6 @@ public:
 		return false;
 	}
 			
-	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
 	static void ensureDirectory(const string& aFile)
 	{
 		string::size_type start = 0;
@@ -222,7 +220,28 @@ public:
 		return string(buf, i + 1);
 		
 	}	
+
+	static string translateError(int aError) {
+		LPVOID lpMsgBuf;
+		FormatMessage( 
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+			FORMAT_MESSAGE_FROM_SYSTEM | 
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			aError,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) &lpMsgBuf,
+			0,
+			NULL 
+			);
+		string tmp = (LPCTSTR)lpMsgBuf;
+		// Free the buffer.
+		LocalFree( lpMsgBuf );
+		return tmp;
+	}
 	
+	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
+
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
 	}
@@ -302,24 +321,6 @@ public:
 		return itoa(val, buf, 10);
 	}
 
-	static string translateError(int aError) {
-		LPVOID lpMsgBuf;
-		FormatMessage( 
-			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-			FORMAT_MESSAGE_FROM_SYSTEM | 
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			aError,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL 
-			);
-		string tmp = (LPCTSTR)lpMsgBuf;
-		// Free the buffer.
-		LocalFree( lpMsgBuf );
-		return tmp;
-	}
 
 	static string getLocalIp() {
 		string tmp;
@@ -424,9 +425,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.29 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: Util.h,v 1.30 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.30  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.29  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

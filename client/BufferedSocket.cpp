@@ -126,7 +126,7 @@ bool BufferedSocket::threadConnect() {
 				
 				// Check the task queue that we don't have a pending shutdown / disconnect...
 				for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-					if(*i != SHUTDOWN && *i != DISCONNECT) {
+					if(*i != SHUTDOWN && *i != DISCONNECT && *i != CONNECT) {
 						// Should never happen...
 						dcdebug("Bad tasks in BufferedSocket in threadConnect 2, %d\n", *i);
 						dcassert(0);
@@ -333,9 +333,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.30 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.31 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.31  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.30  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

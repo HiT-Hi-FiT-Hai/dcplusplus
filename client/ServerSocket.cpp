@@ -52,15 +52,17 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 		s->fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
-	s->waiterThread = NULL;
 	return 0;
 }
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.4 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.5 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.5  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.4  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

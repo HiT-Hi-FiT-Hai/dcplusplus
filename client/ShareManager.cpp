@@ -231,7 +231,8 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */) t
 		refreshThread = CreateThread(NULL, 0, refresher, this, NULL, &id);
 		
 		// We don't want the compression to take up useful CPU time...
-		SetThreadPriority(refreshThread, THREAD_PRIORITY_LOWEST);
+		if(refreshThread)
+			SetThreadPriority(refreshThread, THREAD_PRIORITY_LOWEST);
 	}
 }
 
@@ -445,9 +446,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.26 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.27 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.27  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.26  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -74,14 +74,14 @@ string SocketException::errorToString(int aError) {
 	}
 }
 
-Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(-1) {
+Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
 }
 
-Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
+Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
 	connect(ip, port);	
 }
 
-Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
+Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
 	connect(ip, port);	
 }
 
@@ -127,7 +127,7 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 
 	dcassert(!isConnected());
 	
-	if(sock == -1) {
+	if(sock == INVALID_SOCKET) {
 		create();
 	}
 
@@ -181,7 +181,6 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 
 /**
  * Sends data.
- * @todo Fix the blocking stuff!!! This is really ugly...
  * @param aData The string to send
  * @throw SocketExcpetion Send failed.
  */
@@ -190,15 +189,31 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
 	int pos = 0;
-	int sendSize = min(aLen, 8192);
+	int sendSize = min(aLen, 4096);
 
 	while(pos < aLen) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
-				Sleep(10);
+				fd_set rfd, wfd, efd;
+				FD_ZERO(&rfd);
+				FD_ZERO(&wfd);
+				FD_ZERO(&efd);
+				FD_SET(sock, &rfd);
+				FD_SET(sock, &wfd);
+				FD_SET(sock, &efd);
+				// Wait until something happens with the socket...
+				select(1, &rfd, &wfd, &efd, NULL);
 			} else if(errno == ENOBUFS) {
-				Sleep(10);
+				fd_set rfd, wfd, efd;
+				FD_ZERO(&rfd);
+				FD_ZERO(&wfd);
+				FD_ZERO(&efd);
+				FD_SET(sock, &rfd);
+				FD_SET(sock, &wfd);
+				FD_SET(sock, &efd);
+				// Wait until something happens with the socket...
+				select(1, &rfd, &wfd, &efd, NULL);
 				if(sendSize > 32) {
 					sendSize /= 2;
 					dcdebug("Reducing send window size to %d\n", sendSize);
@@ -222,9 +237,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.21 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.22 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.22  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.21  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

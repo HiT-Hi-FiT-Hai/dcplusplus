@@ -94,7 +94,7 @@ private:
 			if(WaitForSingleObject(waiterThread, 2000) == WAIT_TIMEOUT) {
 				MessageBox(NULL, _T("Unable to stop waiter thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
-			
+			CloseHandle(waiterThread);
 			waiterThread = NULL;
 			CloseHandle(waiterEvent);
 			waiterEvent = NULL;
@@ -106,9 +106,12 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.8 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.9  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.8  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

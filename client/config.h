@@ -33,3 +33,4 @@
 // Remove this line if hashes are not available in your stl
 // Hint: the once that comes with mcvc++ doesn't have hashes...
 #define HAS_HASH 1
+

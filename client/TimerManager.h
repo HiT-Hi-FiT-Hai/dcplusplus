@@ -74,7 +74,7 @@ private:
 			if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
 				MessageBox(NULL, _T("TimerManager: Unable to stop timer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
-			
+			CloseHandle(readerThread);
 			readerThread = NULL;
 			CloseHandle(stopEvent);
 			stopEvent = NULL;
@@ -89,9 +89,12 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.8 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.9  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.8  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

@@ -1,4 +1,11 @@
- -- 0.154 --
+ -- 0.155 --
+* Fixed a resource leak that might have caused the sudden deaths (thanks carxor)
+* Added saving of last kick & redirect reasons (and server...)
+* Added hub name to the password dialog
+* Changed default port to 1412, should improve compatibility with a lot of firewalls (that only allow incoming data on port >1024)
+
+
+ -- 0.154 2002-02-11 --
 * Added passive user detection, those that are behind a set of bricks are passive.
   (detected when the user searches or tries to connect to you)
 * Added a primitive search history
@@ -17,7 +24,6 @@
 * Fixed various invalid display bugs in the download queue
 * Fixed missing users and bots in the user list
 * Upgraded STLport (4.5.3 now...)
-* Added a primitive search history function
 * Hopefully fixed the growing threads issue
 * Fixed the connection type icon being reported to nmdc users
 * Partially fixed the connection timeout bug (++ now correctly shows reconnection attempts...)

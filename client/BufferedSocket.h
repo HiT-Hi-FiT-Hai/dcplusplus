@@ -211,6 +211,9 @@ private:
 		if(WaitForSingleObject(workerThread, 5000) == WAIT_TIMEOUT) {
 			dcassert("BufferedSocket::stopWorker: Waiting for thread failed!" == NULL);
 		}
+
+		CloseHandle(workerThread);
+		workerThread = NULL;
 	}
 	
 };
@@ -219,9 +222,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.30 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.31 2002/02/26 23:25:22 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.31  2002/02/26 23:25:22  arnetheduck
+ * Minor updates and fixes
+ *
  * Revision 1.30  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *
