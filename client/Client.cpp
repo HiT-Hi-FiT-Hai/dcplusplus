@@ -24,6 +24,8 @@
 #include "ClientManager.h"
 #include "SearchManager.h"
 
+int Client::hubs = 0;
+
 void Client::connect(const string& aServer) {
 	
 	string tmp;
@@ -359,9 +361,12 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.32 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.33 2002/03/13 23:06:07 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.33  2002/03/13 23:06:07  arnetheduck
+ * New info sent in the description part of myinfo...
+ *
  * Revision 1.32  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

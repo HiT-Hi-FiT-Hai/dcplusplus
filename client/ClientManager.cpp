@@ -201,18 +201,35 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 	return k->second;
 }
 
-void ClientManager::putUserOffline(User::Ptr& aUser) {
-	{
+void ClientManager::onTimerMinute(DWORD aTick) {
+	if(minutes++ >= 5) {
+		minutes = 0;
 		Lock l(cs);
-		aUser->setClient(NULL);
-	}
-}
+		UserIter i = users.begin();
+		while(i != users.end()) {
+			if(i->second->unique()) {
+				users.erase(i++);
+			} else {
+				++i;
+			}
+		}
 
+		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
+			if((*j)->lastUpdate + 10 * 1000 < aTick && (*j)->lastHubs != Client::hubs) {
+				(*j)->myInfo((*j)->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
+			}
+		}
+	}
+	
+}
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.13 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.14 2002/03/13 23:06:07 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.14  2002/03/13 23:06:07  arnetheduck
+ * New info sent in the description part of myinfo...
+ *
  * Revision 1.13  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

@@ -89,7 +89,11 @@ public:
 		return false;
 	}
 
-	void putUserOffline(User::Ptr& aUser);
+	void ClientManager::putUserOffline(User::Ptr& aUser) {
+		Lock l(cs);
+		aUser->setClient(NULL);
+	}
+	
 private:
 	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
@@ -160,31 +164,25 @@ private:
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
-	void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+	void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		if(type == TimerManagerListener::MINUTE) {
-			if(minutes++ >= 5) {
-				minutes = 0;
-				Lock l(cs);
-				UserIter i = users.begin();
-				while(i != users.end()) {
-					if(i->second->unique()) {
-						users.erase(i++);
-					} else {
-						++i;
-					}
-				}
-			}
+			onTimerMinute(aTick);
 		}
 	}
+
+	void onTimerMinute(DWORD aTick);
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.18 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.19 2002/03/13 23:06:07 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.19  2002/03/13 23:06:07  arnetheduck
+ * New info sent in the description part of myinfo...
+ *
  * Revision 1.18  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

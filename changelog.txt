@@ -27,6 +27,8 @@
 * Added timestamps to private frames as well
 * Added possibility to change column order and widths
 * Added write buffering to reduce fragmentation when downloading multiple files
+* New search window with new search options (file types, free slots)
+* A first go at internationalization...many of the texts in DC++ can now be changed by loading a different language XML
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

@@ -103,7 +103,10 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + "$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
+		lastHubs = hubs;
+		lastUpdate = TimerManager::getTick();
+		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
+			"<++ V:" VERSIONSTRING ",H:" + Util::toString(lastHubs) + ",S:" + Util::toString(SETTING(SLOTS)) + ">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -235,14 +238,19 @@ private:
 	CriticalSection cs;
 
 	User::NickMap users;
+	static int hubs;
 
+	int lastHubs;
+	bool counted;
+	DWORD lastUpdate;
+	
 	typedef HASH_MAP<string, int> FloodMap;
 	typedef FloodMap::iterator FloodIter;
 	FloodMap searchFlood;
 	
 	DWORD lastSearchFlood;
 
-	Client() : lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
+	Client() : lastHubs(0), counted(false), lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	// No copying...
@@ -286,6 +294,11 @@ private:
 		case BufferedSocketListener::FAILED:
 			fire(ClientListener::FAILED, this, aLine);
 			disconnect();
+			if(counted) {
+				hubs--;
+				dcassert( hubs >= 0 );
+				counted = false;
+			}
 			break;
 		default:
 			dcassert(0);
@@ -296,6 +309,8 @@ private:
 		case BufferedSocketListener::CONNECTED:
 			lastActivity = TimerManager::getTick();
 			fire(ClientListener::CONNECTED, this);
+			hubs++;
+			counted = true;
 			break;
 		}
 	}
@@ -313,9 +328,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.43 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: Client.h,v 1.44 2002/03/13 23:06:07 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.44  2002/03/13 23:06:07  arnetheduck
+ * New info sent in the description part of myinfo...
+ *
  * Revision 1.43  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

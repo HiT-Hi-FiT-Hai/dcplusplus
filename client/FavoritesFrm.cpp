@@ -88,7 +88,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	for(int j=0; j<COLUMN_LAST; j++)
 	{
 		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
-		lvc.fmt = j = LVCFMT_LEFT;
+		lvc.fmt = LVCFMT_LEFT;
 		lvc.cx = columnSizes[j];
 		lvc.iOrder = columnIndexes[j];
 		lvc.iSubItem = j;
@@ -217,9 +217,12 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.8 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.9 2002/03/13 23:06:07 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.9  2002/03/13 23:06:07  arnetheduck
+ * New info sent in the description part of myinfo...
+ *
  * Revision 1.8  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists
