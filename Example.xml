@@ -12,6 +12,7 @@
 		<String Name="AddressNotAvailable">Address not available</String>
 		<String Name="AdlDiscard">Discard</String>
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
+		<String Name="AdlFullPath">Full Path</String>
 		<String Name="AllDownloadSlotsTaken">All download slots taken</String>
 		<String Name="AllUsersOffline">All %d users offline</String>
 		<String Name="All3UsersOffline">All 3 users offline</String>

@@ -16,6 +16,7 @@ enum Strings { // @DontAdd
 	ADDRESS_NOT_AVAILABLE, // "Address not available"
 	ADL_DISCARD, // "Discard"
 	ADL_SEARCH, // "Automatic Directory Listing Search"
+	ADL_FULL_PATH, // "Full Path"
 	ALL_DOWNLOAD_SLOTS_TAKEN, // "All download slots taken"
 	ALL_USERS_OFFLINE, // "All %d users offline"
 	ALL_3_USERS_OFFLINE, // "All 3 users offline"

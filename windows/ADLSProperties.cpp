@@ -30,20 +30,20 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 {
 	// Initialize combo boxes
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToString(ADLSearch::OnlyFile).c_str());
+		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::OnlyFile).c_str());
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToString(ADLSearch::OnlyDirectory).c_str());
+		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::OnlyDirectory).c_str());
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SourceTypeToString(ADLSearch::FullPath).c_str());
+		(LPARAM)search->SourceTypeToDisplayString(ADLSearch::FullPath).c_str());
 
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeKiloBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeKiloBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeMegaBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeMegaBytes).c_str());
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_ADDSTRING, 0, 
-		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeGigaBytes).c_str());
+		(LPARAM)search->SizeTypeToDisplayString(ADLSearch::SizeGigaBytes).c_str());
 
 	// Load search data
 	SetDlgItemText(IDC_SEARCH_STRING, Text::toT(search->searchString).c_str());
@@ -91,5 +91,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.4 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.5 2004/10/03 15:11:02 arnetheduck Exp $
  */

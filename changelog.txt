@@ -6,6 +6,7 @@
 * Added item count to finished frames (thanks garg)
 * Fixed user commands encoding (thanks garg)
 * Added last search time to search spy (thanks ullner)
+* Fixed queue size growing on queue item move
 
 
 -- 0.4033 2004-09-27 --
