@@ -15,14 +15,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
-
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "Util.h"
+#include "File.h"
 
 #include "SettingsManager.h"
 #include "ResourceManager.h"
+#include "StringTokenizer.h"
 
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -48,6 +49,7 @@ char Util::upper[256];
 char Util::lower[256];
 int8_t Util::cmp[256][256];
 int8_t Util::cmpi[256][256];
+Util::CountryList Util::countries;
 
 static void sgenrand(unsigned long seed);
 
@@ -73,6 +75,19 @@ void Util::initialize() {
 	}
 
 	sgenrand(time(NULL));
+
+	try {
+		StringTokenizer st(File(Util::getAppPath() + "GeoIpCountryWhois.csv", File::READ, File::OPEN).read());
+		CountryIter last = countries.end();
+		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+			string::size_type j = i->find(',');
+			if(j != string::npos && j < i->length() - 2) {
+				u_int16_t* country = (u_int16_t*)(i->c_str() + j + 1);
+				last = countries.insert(last, make_pair(Util::toUInt32(i->c_str()), *country));
+			}
+		}
+	} catch(const FileException&) {
+	}
 }
 
 string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
@@ -616,8 +631,36 @@ string Util::getOsVersion() {
 #endif // _WIN32
 }
 
+/*	getIpCountry
+	This function returns the country(Abbreviation) of an ip
+	for exemple: it returns "PT", whitch standards for "Portugal"
+	more info: http://www.maxmind.com/app/csv
+*/
+string Util::getIpCountry (string IP) {
+	if (BOOLSETTING(GET_USER_COUNTRY)) {
+		dcassert(count(IP.begin(), IP.end(), '.') == 3);
+
+		//e.g IP 23.24.25.26 : w=23, x=24, y=25, z=26
+		string::size_type a = IP.find('.');
+		string::size_type b = IP.find('.', a+1);
+		string::size_type c = IP.find('.', b+2);
+
+		u_int32_t ipnum = (Util::toUInt32(IP.c_str()) << 24) | 
+			(Util::toUInt32(IP.c_str() + a + 1) << 16) | 
+			(Util::toUInt32(IP.c_str() + b + 1) << 8) | 
+			(Util::toUInt32(IP.c_str() + c + 1) );
+
+		CountryIter i = countries.lower_bound(ipnum);
+
+		if(i != countries.end()) {
+			return string((char*)&(i->second), 2);
+		}
+	}
+
+	return Util::emptyString; //if doesn't returned anything already, something is wrong...
+}
 /**
  * @file
- * $Id: Util.cpp,v 1.49 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.50 2004/05/03 12:38:05 arnetheduck Exp $
  */
 

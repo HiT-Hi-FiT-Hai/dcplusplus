@@ -162,6 +162,7 @@ private:
 		string file;
 		string path;
 		string IP;
+		string country;
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,
@@ -245,5 +246,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.14 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.15 2004/05/03 12:38:05 arnetheduck Exp $
  */

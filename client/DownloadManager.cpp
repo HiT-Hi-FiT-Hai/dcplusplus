@@ -182,7 +182,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	removeConnection(aConn, true);
 }
 
-void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) {
+void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) throw() {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
@@ -193,7 +193,7 @@ void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSourc
 	}
 }
 
-void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSource, int64_t aFileLength) {
+void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSource, int64_t aFileLength) throw() {
 
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
@@ -344,8 +344,9 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
 	}
 
-	if(SETTING(BUFFER_SIZE) != 0)
+	if(SETTING(BUFFER_SIZE) != 0) {
 		d->setFile(new BufferedOutputStream<true>(d->getFile()));
+	}
 
 	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 
@@ -373,7 +374,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	return true;
 }	
 
-void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, const u_int8_t* aData, size_t aLen) {
+void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, const u_int8_t* aData, size_t aLen) throw() {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -535,7 +536,7 @@ noCRC:
 	checkDownloads(aSource);
 }
 
-void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) { 
+void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
 		return;
@@ -551,7 +552,7 @@ void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSour
 	removeConnection(aSource);
 }
 
-void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) {
+void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
 	Download* d = aSource->getDownload();
 
 	if(d == NULL) {
@@ -644,5 +645,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.99 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.100 2004/05/03 12:38:04 arnetheduck Exp $
  */

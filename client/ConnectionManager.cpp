@@ -155,7 +155,7 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 	}
 }
 
-void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) {
+void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
 	ConnectionQueueItem::List removed;
@@ -574,5 +574,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.71 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.72 2004/05/03 12:38:04 arnetheduck Exp $
  */

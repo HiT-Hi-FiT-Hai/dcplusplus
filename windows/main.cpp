@@ -64,7 +64,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 #endif
 
-	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE | File::TRUNCATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
@@ -72,7 +72,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\nVersion: %s\r\nOs: %s\r\n", 
 		exceptionCode, VERSIONSTRING, Util::getOsVersion().c_str() );
 
-	f.write(buf);
+	f.write(buf, strlen(buf));
 
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
 	f.close();
@@ -319,5 +319,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.18 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: main.cpp,v 1.19 2004/05/03 12:38:05 arnetheduck Exp $
  */

@@ -33,6 +33,7 @@ class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
 		FLAG_USER_LIST = 0x01,
+		FLAG_TTH_LEAVES = 0x02,
 		FLAG_ZUPLOAD = 0x04
 	};
 
@@ -156,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.63 2004/04/24 20:56:27 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.64 2004/05/03 12:38:05 arnetheduck Exp $
  */

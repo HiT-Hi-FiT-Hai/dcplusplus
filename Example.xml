@@ -368,6 +368,7 @@
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
+		<String Name="SettingsGetUserCountry">Get User Country</String>
 		<String Name="Settings">Settings</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

@@ -53,6 +53,7 @@ const string SettingsManager::settingTags[] =
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands", "MaxHashSpeed",
+	"GetUserCountry",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -152,6 +153,8 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);
+	setDefault(GET_USER_COUNTRY, true);
+
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
@@ -294,6 +297,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.72 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.73 2004/05/03 12:38:04 arnetheduck Exp $
  */
 

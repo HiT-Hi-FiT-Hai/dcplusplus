@@ -44,6 +44,7 @@ PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
 	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, ResourceManager::UPLOADS },
 	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS }, 
+	{ IDC_SETTINGS_GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY }, 
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -65,6 +66,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
+	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -191,5 +193,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.13 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.14 2004/05/03 12:38:05 arnetheduck Exp $
  */

@@ -111,10 +111,12 @@ private: type name; \
 public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 	void set##name2(TypeTraits<type>::ParameterType a##name2) { name = a##name2; };
 
+#define LIT(x) x, (sizeof(x)-1)
+
 #endif // _DCPLUSPLUS_H
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.38 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.39 2004/05/03 12:38:04 arnetheduck Exp $
  */
 

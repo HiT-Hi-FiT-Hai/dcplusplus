@@ -55,7 +55,7 @@ void HashManager::hashDone(const string& aFileName, TigerTree& tth, int64_t spee
 	}
 
 	string fn = aFileName;
-	if(count(fn.begin(), fn.end(), PATH_SEPARATOR)) {
+	if(count(fn.begin(), fn.end(), PATH_SEPARATOR) >= 2) {
 		string::size_type i = fn.rfind(PATH_SEPARATOR);
 		i = fn.rfind(PATH_SEPARATOR, i-1);
 		fn.erase(0, i);
@@ -514,5 +514,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.15 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.16 2004/05/03 12:38:04 arnetheduck Exp $
  */

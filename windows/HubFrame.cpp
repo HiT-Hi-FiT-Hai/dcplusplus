@@ -75,7 +75,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUsers.SetFont(WinUtil::systemFont);
-	ctrlShowUsers.SetCheck(SETTING(GET_USER_INFO));
+	ctrlShowUsers.SetCheck(BOOLSETTING(GET_USER_INFO) ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
@@ -467,12 +467,12 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
-	if(ctrlShowUsers.GetCheck() != BST_CHECKED) {
-		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_NONE);
-	} else {
-		if(GetSinglePaneMode() != SPLIT_PANE_LEFT)
+	if(!BOOLSETTING(GET_USER_INFO)) {
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
+	} else {
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+		SetSinglePaneMode(SPLIT_PANE_NONE);
 	}
 	SetSplitterRect(rc);
 	
@@ -938,6 +938,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, true);
 		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
 		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
@@ -946,8 +947,8 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		client->unlockUserList();
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
-
 	} else {
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, false);
 		clearUserList();
 	}
 
@@ -1128,5 +1129,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.60 2004/04/30 07:14:56 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.61 2004/05/03 12:38:05 arnetheduck Exp $
  */

@@ -179,8 +179,8 @@ private:
 	static int columnSizes[];
 	
 	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
-	virtual void on(DownloadFailed, const string& l) throw() { speak(FINISHED, l); }
-	virtual void on(DownloadFinished, const string& l) throw() { speak(FAILED, l); }
+	virtual void on(DownloadFailed, const string& l) throw() { speak(FAILED, l); }
+	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
 
 	void speak(int x, const string& l) {
 		PostMessage(WM_SPEAKER, x, (LPARAM)new string(l));
@@ -194,5 +194,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.19 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.20 2004/05/03 12:38:05 arnetheduck Exp $
  */

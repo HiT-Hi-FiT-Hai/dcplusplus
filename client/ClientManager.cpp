@@ -80,19 +80,21 @@ void ClientManager::infoUpdated() {
 }
 
 void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
-									int aFileType, const string& aString) throw() {
+									int aFileType, const string& aString) throw() 
+{
 	
-	string::size_type pos = aSeeker.find("Hub:");
+	bool isPassive = (aSeeker.compare(0, 4, "Hub:") == 0);
+
 	// We don't wan't to answer passive searches if we're in passive mode...
-	if(pos != string::npos && SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) {
+	if(isPassive && SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) {
 		return;
 	}
 	
 	SearchResult::List l;
-	ShareManager::getInstance()->search(l, aString, aSearchType, aSize, aFileType, aClient, (pos == string::npos) ? 10 : 5);
+	ShareManager::getInstance()->search(l, aString, aSearchType, aSize, aFileType, aClient, isPassive ? 5 : 10);
 //		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
 	if(l.size() > 0) {
-		if(pos != string::npos) {
+		if(isPassive) {
 			string name = aSeeker.substr(4);
 			// Good, we have a passive seeker, those are easier...
 			string str;
@@ -259,9 +261,9 @@ User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline
 
 	AdcPair p = adcUsers.equal_range(cid);
 	for(AdcIter i = p.first; i != p.second; ++i) {
-		User::Ptr& p = i->second;
-		if(p->isClient(aClient))
-			return p;
+		User::Ptr& u = i->second;
+		if(u->isClient(aClient))
+			return u;
 	}
 
 	if(putOnline) {
@@ -283,7 +285,7 @@ User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline
 	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
 }
 
-void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) {
+void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) throw() {
 	Lock l(cs);
 
 	// Collect some garbage...
@@ -335,5 +337,5 @@ void ClientManager::onAction(ClientListener::Types type, Client* aClient, const 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.56 2004/04/30 07:14:49 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.57 2004/05/03 12:38:04 arnetheduck Exp $
  */

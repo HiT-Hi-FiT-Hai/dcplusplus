@@ -26,6 +26,7 @@
 #include "TigerHash.h"
 #include "Encoder.h"
 #include "HashValue.h"
+#include "File.h"
 
 #include <math.h>
 
@@ -201,6 +202,39 @@ private:
 typedef MerkleTree<TigerHash> TigerTree;
 typedef TigerTree::MerkleValue TTHValue;
 
+template<class T>
+class TreeInputStream : public InputStream {
+public:
+	
+	TreeInputStream(const MerkleTree<T>& aTree) : tree(aTree), pos(0), n(0) {
+	}
+	virtual ~TreeInputStream() {
+	}
+
+	virtual size_t read(void* buf, size_t& len) {
+		size_t total = 0;
+		while(n < tree.getLeaves().size() && total < len) {
+			Value& v = tree.getLeaves()[n];
+			size_t left = Value::SIZE - pos;
+			size_t bytes = min(len, left);
+			memcpy((u_int8_t*)buf + total, v.data, bytes);
+			total += bytes;
+
+			if(bytes == left) {
+				pos = 0;
+				n++;
+			}
+		}
+		len = total;
+		return total;
+	}
+private:
+	typedef typename MerkleTree<T>::MerkleValue Value;
+	MerkleTree<T> tree;
+	size_t pos;
+	typename MerkleTree<T>::MerkleList::size_type n;
+
+};
 struct TTFilter {
 	TTFilter(size_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
 	void operator()(const void* data, size_t len) { tt.update(data, len); }
@@ -213,5 +247,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.9 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.10 2004/05/03 12:38:04 arnetheduck Exp $
  */

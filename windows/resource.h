@@ -252,6 +252,7 @@
 #define IDC_MAX_HASH_SPEED              1223
 #define IDC_SETTINGS_MAX_HASH_SPEED     1225
 #define IDC_SETTINGS_MBS                1226
+#define IDC_SETTINGS_GET_USER_COUNTRY	1227
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -287,7 +288,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1227
+#define _APS_NEXT_CONTROL_VALUE         1228
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -279,7 +279,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 		if ( SuspendThread( hThread ) == -1 )
 		{
 		   // whaaat ?!
-			f.write("Call stack info failed\r\n");
+			f.write(LIT("Call stack info failed\r\n"));
 			return;
 		}
 
@@ -288,7 +288,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 
 	if ( !GetThreadContext( hThread, &context ) )
 	{
-		f.write("Call stack info failed\r\n");
+		f.write(LIT("Call stack info failed\r\n"));
 		return;
 	}
 	
@@ -300,12 +300,16 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 	callStack.AddrStack.Mode   = AddrModeFlat;
 	callStack.AddrFrame.Mode   = AddrModeFlat;
 
-	f.write("Call stack info: \r\n");
-	f.write(lpszMessage);
+	f.write(LIT("Call stack info: \r\n"));
+	f.write(lpszMessage, strlen(lpszMessage));
 
 	GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 	GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-	f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+	f.write(LIT("     "));
+	f.write(srcInfo, strlen(srcInfo));
+	f.write(LIT(" : "));
+	f.write(symInfo, strlen(symInfo));
+	f.write(LIT("\r\n"));
 	
 	for( ULONG index = 0; ; index++ ) 
 	{
@@ -328,8 +332,12 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 	
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-		f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
 
+		f.write(LIT("     "));
+		f.write(srcInfo, strlen(srcInfo));
+		f.write(LIT(" : "));
+		f.write(symInfo, strlen(symInfo));
+		f.write(LIT("\r\n"));
 	}
 
 	if ( hThread != GetCurrentThread() )
@@ -349,7 +357,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		if ( SuspendThread( hThread ) == -1 )
 		{
 			// whaaat ?!
-			f.write("Call stack info failed\r\n");
+			f.write(LIT("Call stack info failed\r\n"));
 			return;
 		}
 
@@ -361,12 +369,17 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		callStack.AddrStack.Mode   = AddrModeFlat;
 		callStack.AddrFrame.Mode   = AddrModeFlat;
 
-		f.write("Call stack info: \r\n");
-		f.write(lpszMessage);
+		f.write(LIT("Call stack info: \r\n"));
+		f.write(lpszMessage, strlen(lpszMessage));
 
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-		f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+
+		f.write(LIT("     "));
+		f.write(srcInfo, strlen(srcInfo));
+		f.write(LIT(" : "));
+		f.write(symInfo, strlen(symInfo));
+		f.write(LIT("\r\n"));
 
 		for( ULONG index = 0; ; index++ ) 
 		{
@@ -389,7 +402,12 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-			f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+
+			f.write(LIT("     "));
+			f.write(srcInfo, strlen(srcInfo));
+			f.write(LIT(" : "));
+			f.write(symInfo, strlen(symInfo));
+			f.write(LIT("\r\n"));
 
 		}
 
