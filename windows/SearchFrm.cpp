@@ -726,6 +726,7 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 		rc.SetRect(0,0,0,0);
 		ctrlSearchBox.MoveWindow(rc);
 		ctrlMode.MoveWindow(rc);
+		ctrlPurge.MoveWindow(rc);
 		ctrlSize.MoveWindow(rc);
 		ctrlSizeMode.MoveWindow(rc);
 		ctrlFiletype.MoveWindow(rc);
@@ -1102,5 +1103,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.83 2005/02/04 14:40:50 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.84 2005/02/07 18:24:04 arnetheduck Exp $
  */

@@ -74,16 +74,16 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		CRect rc(dc.m_ps.rcPaint);
 		dcdebug("Update: %d, %d, %d, %d\n", rc.left, rc.top, rc.right, rc.bottom);
 
-		dc.SelectBrush(black);
+		dc.SelectBrush(backgr);
 		dc.BitBlt(rc.left, rc.top, rc.Width(), rc.Height(), NULL, 0, 0, PATCOPY);
 
 		CRect clientRC;
 		GetClientRect(clientRC);
 		
-		dc.SetTextColor(RGB(255, 255, 255));
-		dc.SetBkColor(RGB(0, 0, 0));
+		dc.SetTextColor(WinUtil::textColor);
+		dc.SetBkColor(WinUtil::bgColor);
 	
-		dc.SelectPen(grey);
+		dc.SelectPen(foregr);
 		dc.SelectFont(WinUtil::font);
 		int lines = height / (WinUtil::fontHeight * LINE_HEIGHT);
 		int lheight = height / (lines+1);
@@ -212,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.12 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.13 2005/02/07 18:24:04 arnetheduck Exp $
  */

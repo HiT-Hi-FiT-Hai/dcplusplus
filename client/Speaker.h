@@ -23,7 +23,7 @@
 
 template<typename Listener>
 class Speaker {
-	typedef vector<Listener*> ListenerList;
+	typedef list<Listener*> ListenerList;
 	typedef typename ListenerList::iterator ListenerIter;
 
 public:
@@ -33,63 +33,105 @@ public:
 	template<typename T0>
 	void fire(T0 type) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1>
 	void fire(T0 type, const T1& p1) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1, class T2>
 	void fire(T0 type, const T1& p1, const T2& p2) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1, p2);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1, p2);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1, class T2, class T3>
 	void fire(T0 type, const T1& p1, const T2& p2, const T3& p3) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1, p2, p3);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1, p2, p3);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1, class T2, class T3, class T4>
 	void fire(T0 type, const T1& p1, const T2& p2, const T3& p3, const T4& p4) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1, p2, p3, p4);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1, p2, p3, p4);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1, class T2, class T3, class T4, class T5>
 	void fire(T0 type, const T1& p1, const T2& p2, const T3& p3, const T4& p4, const T5& p5) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1, p2, p3, p4, p5);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1, p2, p3, p4, p5);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
 	template<typename T0, class T1, class T2, class T3, class T4, class T5, class T6>
 	void fire(T0 type, const T1& p1, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
 		Lock l(listenerCS);
-		tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i ) {
-			(*i)->on(type, p1, p2, p3, p4, p5, p6);
+		ListenerIter i = listeners.begin();
+		ListenerIter end = listeners.end(); 
+		while(i != end) {
+			if (*i) {
+				(*i)->on(type, p1, p2, p3, p4, p5, p6);
+				i++;
+			} else {
+				i = listeners.erase(i);
+			}
 		}
 	}
 
@@ -103,22 +145,22 @@ public:
 		Lock l(listenerCS);
 		ListenerIter it = find(listeners.begin(), listeners.end(), aListener);
 		if(it != listeners.end())
-			listeners.erase(it);
+			*it = NULL;
 	}
 
 	void removeListeners() {
 		Lock l(listenerCS);
-		listeners.clear();
+		for(ListenerIter i=listeners.begin(); i != listeners.end(); i++)
+			*i = NULL;
 	}
 	
 protected:
 	ListenerList listeners;
-	ListenerList tmp;
 	CriticalSection listenerCS;
 };
 
 #endif // SPEAKER_H
 /**
  * @file
- * $Id: Speaker.h,v 1.6 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: Speaker.h,v 1.7 2005/02/07 18:24:23 arnetheduck Exp $
  */

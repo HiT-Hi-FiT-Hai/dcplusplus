@@ -31,13 +31,13 @@
 #define FILE_LIST_NAME _T("File Lists")
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUMN_TTH };
+COLUMN_USERS, COLUMN_PATH, COLUMN_EXACT_SIZE, COLUMN_ERRORS, COLUMN_ADDED, COLUMN_TTH, COLUMN_TYPE };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 75, 200, 100, 125 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 75, 200, 100, 125, 75 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
 ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::EXACT_SIZE, ResourceManager::ERRORS,
-ResourceManager::ADDED, ResourceManager::TTH_ROOT };
+ResourceManager::ADDED, ResourceManager::TTH_ROOT, ResourceManager::TYPE };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -256,6 +256,11 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 		if(colMask & MASK_TTH && getTTH() != NULL) {
 			display->columns[COLUMN_TTH] = Text::toT(getTTH()->toBase32());
+		}
+		if(colMask & MASK_TYPE) {
+			display->columns[COLUMN_TYPE] = Util::getFileExt(Util::getFileName(getTarget()));
+			if(display->columns[COLUMN_TYPE].size() > 0 && display->columns[COLUMN_TYPE][0] == '.')
+				display->columns[COLUMN_TYPE].erase(0, 1);
 		}
 	}
 }
@@ -1258,7 +1263,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.68 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.69 2005/02/07 18:24:03 arnetheduck Exp $
  */
 
 

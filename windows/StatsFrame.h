@@ -34,10 +34,10 @@ public:
 	StatsFrame() : width(0), height(0), timerId(0), twidth(0), lastTick(GET_TICK()), scrollTick(0),
 		lastUp(Socket::getTotalUp()), lastDown(Socket::getTotalDown()), max(0) 
 	{ 
-		black.CreateSolidBrush(RGB(0, 0, 0));
+		backgr.CreateSolidBrush(WinUtil::bgColor);
 		upload.CreatePen(PS_SOLID, 0, SETTING(UPLOAD_BAR_COLOR));
 		download.CreatePen(PS_SOLID, 0, SETTING(DOWNLOAD_BAR_COLOR));
-		grey.CreatePen(PS_SOLID, 0, RGB(127, 127, 127));
+		foregr.CreatePen(PS_SOLID, 0, WinUtil::textColor);
 	}
 
 	~StatsFrame() { 
@@ -83,10 +83,10 @@ private:
 	enum { LINE_HEIGHT = 10 };
 	enum { AVG_SIZE = 5 };
 
-	CBrush black;
+	CBrush backgr;
 	CPen upload;
 	CPen download;
-	CPen grey;
+	CPen foregr;
 
 	struct Stat {
 		Stat() : scroll(0), speed(0) { };
@@ -124,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.8 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.9 2005/02/07 18:24:03 arnetheduck Exp $
  */

@@ -1,5 +1,10 @@
 ﻿-- 0.671 --
 * Added possibility to set minislot size (thanks ullner)
+* [bug 22] Added possibility for multiline away messages and user commands (thanks ullner)
+* Added file type to queue frame (thanks ullner)
+* Avoided a list copy on events (thanks farcry)
+* Changed stats frame to use standard colors (thanks yoji)
+* [bug 439] Fixed purge button (thanks ullner)
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
