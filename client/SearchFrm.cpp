@@ -54,7 +54,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlMode.AddString("Normal");
 	ctrlMode.AddString("At Least");
 	ctrlMode.AddString("At Most");
-	ctrlMode.SetCurSel(0);
+	ctrlMode.SetCurSel(1);
 	
 	ctrlSizeMode.AddString("B");
 	ctrlSizeMode.AddString("kB");
@@ -103,9 +103,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.9 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.10 2002/01/09 19:01:35 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.10  2002/01/09 19:01:35  arnetheduck
+ * Made some small changed to the key generation and search frame...
+ *
  * Revision 1.9  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

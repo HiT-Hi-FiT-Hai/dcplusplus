@@ -55,26 +55,17 @@ string CryptoManager::keySubst(string aKey, int n) {
 
 string CryptoManager::makeKey(const string& lock) {
 	BYTE* temp = new BYTE[lock.length()];
-	int v1, v2, v3, v4, v5, v6;
+	BYTE v1;
 	int extra=0;
 	
-	v1 = lock[0];
-	v2 = v1^5;
-	v3 = v2 / 0x10;
-	v4 = v2 * 0x10;
-	v5 = v4 % 0x100;
-	v6 = v3 | v5;
-	
-	temp[0] = (BYTE)v6;
+	v1 = lock[0]^5;
+	v1 = (v1 >> 4) | (v1 << 4);
+	temp[0] = v1;
 	
 	for(int i = 1; i<lock.length(); i++) {
-		v1 = lock[i];
-		v2 = v1^lock[i-1];
-		v3 = v2 / 0x10;
-		v4 = v2 * 0x10;
-		v5 = v4 % 0x100;
-		v6 = v3 | v5;
-		temp[i] = (BYTE)v6;
+		v1 = lock[i]^lock[i-1];
+		v1 = (v1 >> 4) | (v1 << 4);
+		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
 	}
@@ -333,9 +324,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.12 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.13 2002/01/09 19:01:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.13  2002/01/09 19:01:35  arnetheduck
+ * Made some small changed to the key generation and search frame...
+ *
  * Revision 1.12  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

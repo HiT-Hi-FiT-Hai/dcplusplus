@@ -157,6 +157,14 @@ public:
 		return buf;
 	}
 
+	static string toLower(const string& aString) {
+		string tmp = aString;
+		for(int i = 0; i < tmp.size(); i++) {
+			tmp[i] = tolower(tmp[i]);
+		}
+		return tmp;
+	}
+
 	static LONGLONG toInt64(const string& aString) {
 		return _atoi64(aString.c_str());
 	}
@@ -216,9 +224,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.12 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: Util.h,v 1.13 2002/01/09 19:01:35 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.13  2002/01/09 19:01:35  arnetheduck
+ * Made some small changed to the key generation and search frame...
+ *
  * Revision 1.12  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

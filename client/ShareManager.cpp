@@ -56,10 +56,11 @@ void ShareManager::load(SimpleXML* aXml) {
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {
-			string name = aXml->getChildData();
-			directories[name] = buildTree(name, NULL);
-			string dir = name.substr(name.rfind('\\') + 1);
-			dirs[dir] = name;
+			try {
+				addDirectory(aXml->getChildData());
+			} catch(...) {
+				// ...
+			}
 		}
 		aXml->stepOut();
 	}
@@ -77,8 +78,11 @@ void ShareManager::save(SimpleXML* aXml) {
 }
 
 void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) {
+	if(aDirectory.size() == 0) {
+		throw ShareException("No directory specified");
+	}
+
 	cs.enter();
-	dcassert(aDirectory.size() > 0);
 	string d;
 	if(aDirectory[aDirectory.size() - 1] == '\\') {
 		d = aDirectory.substr(0, aDirectory.size()-1);
@@ -95,9 +99,19 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		}
 	}
 
+	string dir = Util::toLower(d.substr(d.rfind('\\') + 1));
 	
-	directories[d] = buildTree(d, NULL);
-	string dir = d.substr(d.rfind('\\') + 1);
+	if(dirs.find(dir) != dirs.end()) {
+		// We have a duplicate, rename it internally...
+		char c = 'a';
+		while(dirs.find(dir + c) != dirs.end()) {
+			c++;
+		}
+		dir += c;
+	}
+	Directory* dp = buildTree(d, NULL);
+	dp->setName(dir);
+	directories[d] = dp;
 	dirs[dir] = d;
 
 	dirty = true;
@@ -151,7 +165,6 @@ StringList ShareManager::getDirectories() {
 	}
 	return tmp;
 }
-
 
 void ShareManager::refresh() throw(ShareException) {
 
@@ -292,9 +305,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.10 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.11 2002/01/09 19:01:35 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.11  2002/01/09 19:01:35  arnetheduck
+ * Made some small changed to the key generation and search frame...
+ *
  * Revision 1.10  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *
