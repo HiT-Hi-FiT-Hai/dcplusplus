@@ -24,7 +24,7 @@
 #include "TimerManager.h"
 #include "CryptoManager.h"
 
-#include "File.h"
+#include "Streams.h"
 
 #define SMALL_BUFFER_SIZE 1024
 
@@ -458,5 +458,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.78 2005/01/06 18:19:48 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.79 2005/01/13 15:07:58 arnetheduck Exp $
  */

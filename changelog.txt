@@ -41,6 +41,15 @@
 * Added password warning for n00bs (thanks sed)
 * Help file updates (thanks pretorian, garg)
 * Probably fixed the list redownloading bug
+* Hash index format change (as a side effect, it's very easy to find dupes
+  in the new format, someone should make a tool)
+* Download manager changes in preparation for partial list browsing and other
+  ADC features 
+* Improved efficiency for small files (<=64KiB) in the hash storage
+* Added advanced resume that detects and tries to repair rollback inconsistencies
+  using tiger trees
+* Readded automatic compression disabling on files that don't compress well
+  (improves cpu usage on fast connections)
 
 
 -- 0.668 2004-11-30 --

@@ -50,6 +50,10 @@ class HashManager : public Singleton<HashManager>, public Speaker<HashManagerLis
 	private TimerManagerListener 
 {
 public:
+
+	/** We don't keep leaves for blocks smaller than this... */
+	static const int64_t MIN_BLOCK_SIZE = 64*1024;
+
 	HashManager() {
 		TimerManager::getInstance()->addListener(this);
 	}
@@ -77,8 +81,8 @@ public:
 
 	bool getTree(const TTHValue& root, TigerTree& tt);
 
-	void addTree(const string& aFileName, const TigerTree& tt) {
-		hashDone(aFileName, tt, -1);
+	void addTree(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tt) {
+		hashDone(aFileName, aTimeStamp, tt, -1);
 	}
 	void addTree(const TigerTree& tt) {
 		Lock l(cs);
@@ -112,7 +116,6 @@ private:
 
 	class Hasher : public Thread {
 	public:
-		enum { MIN_BLOCK_SIZE = 64*1024 };
 		Hasher() : stop(false), running(false), rebuild(false), total(0) { }
 
 		void hashFile(const string& fileName, int64_t size) {
@@ -161,7 +164,7 @@ private:
 
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
-		// set because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
+		// map because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
 		typedef map<string, int64_t> WorkMap;	
 		typedef WorkMap::iterator WorkIter;
 
@@ -181,7 +184,7 @@ private:
 	class HashStore {
 	public:
 		HashStore();
-		void addFile(const string& aFileName, const TigerTree& tth, bool aUsed);
+		void addFile(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, bool aUsed);
 		bool addTree(const TigerTree& tt);
 
 		void load();
@@ -257,7 +260,11 @@ private:
 
 	CriticalSection cs;
 
-	void hashDone(const string& aFileName, const TigerTree& tth, int64_t speed);
+	/** Single node tree where node = root, no storage in HashData.dat */
+	static const int64_t SMALL_TREE = -1;
+	static const int64_t STORE_FAILED = 0;
+
+	void hashDone(const string& aFileName, u_int32_t aTimeStamp, const TigerTree& tth, int64_t speed);
 	void doRebuild() {
 		Lock l(cs);
 		store.rebuild();
@@ -272,5 +279,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.28 2005/01/12 23:16:19 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.29 2005/01/13 15:08:00 arnetheduck Exp $
  */

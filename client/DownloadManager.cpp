@@ -31,6 +31,7 @@
 #include "User.h"
 #include "File.h"
 #include "FilteredFile.h"
+#include "MerkleCheckOutputStream.h"
 
 #include <limits>
 
@@ -215,14 +216,19 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		}
-		
-		int rollback = SETTING(ROLLBACK);
-		if(rollback > start) {
-			d->setStartPos(0);
+
+		if(BOOLSETTING(ADVANCED_RESUME) && d->getTreeValid() && d->getStartPos() > 0) {
+			d->setStartPos(getResumePos(d->getDownloadTarget(), d->getTigerTree(), d->getStartPos()));
 		} else {
-			d->setStartPos(start - rollback);
-			d->setFlag(Download::FLAG_ROLLBACK);
+			int rollback = SETTING(ROLLBACK);
+			if(rollback > start) {
+				d->setStartPos(0);
+			} else {
+				d->setStartPos(start - rollback);
+				d->setFlag(Download::FLAG_ROLLBACK);
+			}
 		}
+		
 	} else {
 		d->setStartPos(0);
 	}
@@ -256,6 +262,44 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 }
 
+class DummyOutputStream : public OutputStream {
+public:
+	virtual size_t write(const void*, size_t n) throw(Exception) { return n; }
+	virtual size_t flush() throw(Exception) { return 0; }
+};
+
+int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
+	// Always discard data until the last block
+	startPos = startPos - (startPos % tt.getBlockSize());
+	DummyOutputStream dummy;
+
+	vector<u_int8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
+
+	while(startPos >= tt.getBlockSize()) {
+
+		int64_t blockPos = startPos - tt.getBlockSize();
+		MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
+
+		try {
+			File inFile(file, File::READ, File::OPEN);
+			inFile.setPos(blockPos);
+			int64_t bytesLeft = tt.getBlockSize();
+			while(bytesLeft > 0) {
+				size_t n = buf.size();
+				n = inFile.read(&buf[0], n);
+				check.write(&buf[0], n);
+				bytesLeft -= n;
+			}
+		} catch(const Exception&) {
+			dcdebug("Removed bad block at " I64_FMT "\n", blockPos);
+			startPos -= tt.getBlockSize();
+		}
+		break;
+	}
+	return startPos;
+}
+
+
 void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) throw() {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
@@ -286,32 +330,19 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 		return;
 	}
 
+	const string& type = cmd.getParam(0);
 	int64_t bytes = Util::toInt64(cmd.getParam(3));
 
-	if(cmd.getParam(0) == "tthl") {
-		Download* d = aSource->getDownload();
-		if(!d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-			// Uhh???
-			aSource->disconnect();
-			return;
-		}
+	if((aSource->getDownload()->isSet(Download::FLAG_TREE_DOWNLOAD) && type != "tthl") ||
+		(type != "file") ) 
+	{
+		// Uhh??? We didn't ask for this?
+		aSource->disconnect();
+		return;
+	}
 
-		d->setFile(new TreeOutputStream(d->getTigerTree()));
-		d->setSize(bytes);
-		d->setPos(0);
-		dcassert(d->isSet(Download::FLAG_TREE_DOWNLOAD));
-		aSource->setState(UserConnection::STATE_DONE);
-
-		if(cmd.hasFlag("ZL", 4)) {
-			d->setFile(new FilteredOutputStream<UnZFilter, true>(d->getFile()));
-		}
-
+	if(prepareFile(aSource, (bytes == -1) ? -1 : aSource->getDownload()->getPos() + bytes, cmd.hasFlag("ZL", 4))) {
 		aSource->setDataMode();
-	} else if(cmd.getParam(0) == "file") {
-
-		if(prepareFile(aSource, (bytes == -1) ? -1 : aSource->getDownload()->getPos() + bytes, cmd.hasFlag("ZL", 4))) {
-			aSource->setDataMode();
-		}
 	}
 }
 
@@ -358,79 +389,6 @@ private:
 	u_int8_t* buf;
 };
 
-template<bool managed>
-class TigerCheckOutputStream : public OutputStream {
-public:
-	TigerCheckOutputStream(const TigerTree& aTree, OutputStream* aStream) : s(aStream), real(aTree), cur(aTree.getBlockSize()), verified(0), bufPos(0) {
-	}
-	virtual ~TigerCheckOutputStream() { if(managed) delete s; };
-
-	virtual size_t flush() throw(FileException) {
-		if (bufPos != 0)
-			cur.update(buf, bufPos);
-		bufPos = 0;
-
-		cur.finalize();
-		checkTrees();
-		return s->flush();
-	}
-
-	virtual size_t write(const void* b, size_t len) throw(FileException) {
-		u_int8_t* xb = (u_int8_t*)b;
-		size_t pos = 0;
-
-		if(bufPos != 0) {
-			size_t bytes = min(TigerTree::BASE_BLOCK_SIZE - bufPos, len);
-			memcpy(buf + bufPos, xb, bytes);
-			pos = bytes;
-			bufPos += bytes;
-
-			if(bufPos == TigerTree::BASE_BLOCK_SIZE) {
-				cur.update(buf, TigerTree::BASE_BLOCK_SIZE);
-				bufPos = 0;
-			}
-		}
-
-		if(pos < len) {
-			dcassert(bufPos == 0);
-			size_t left = len - pos;
-			size_t part = left - (left %  TigerTree::BASE_BLOCK_SIZE);
-			if(part > 0) {
-				cur.update(xb + pos, part);
-				pos += part;
-			}
-			left = len - pos;
-			memcpy(buf, xb + pos, left);
-			bufPos = left;
-		}
-
-		checkTrees();
-		return s->write(b, len);
-	}
-	
-	virtual int64_t verifiedBytes() {
-		return min(real.getFileSize(), (int64_t)(cur.getBlockSize() * cur.getLeaves().size()));
-	}
-private:
-	OutputStream* s;
-	const TigerTree& real;
-	TigerTree cur;
-	size_t verified;
-
-	u_int8_t buf[TigerTree::BASE_BLOCK_SIZE];
-	size_t bufPos;
-
-	void checkTrees() throw(FileException) {
-		while(cur.getLeaves().size() > verified) {
-			if(cur.getLeaves().size() > real.getLeaves().size() ||
-				!(cur.getLeaves()[verified] == real.getLeaves()[verified])) 
-			{
-				throw FileException(STRING(TTH_INCONSISTENCY));
-			}
-			verified++;
-		}
-	}
-};
 
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool z) {
 	Download* d = aSource->getDownload();
@@ -442,71 +400,77 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 	if(d->getPos() >= d->getSize()) {
 		// Already finished?
 		aSource->setDownload(NULL);
-		removeDownload(d, true);
+		removeDownload(d);
+		QueueManager::getInstance()->putDownload(d, true);
 		removeConnection(aSource);
 		return false;
 	}
 
 	dcassert(d->getSize() != -1);
 
-	string target = d->getDownloadTarget();
-	File::ensureDirectory(target);
-	if(d->isSet(Download::FLAG_USER_LIST)) {
-		if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
-			target += ".xml.bz2";
-		} else {
-			target += ".DcLst";
+	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		d->setFile(new TreeOutputStream(d->getTigerTree()));
+	} else {
+		string target = d->getDownloadTarget();
+		File::ensureDirectory(target);
+		if(d->isSet(Download::FLAG_USER_LIST)) {
+			if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+				target += ".xml.bz2";
+			} else {
+				target += ".DcLst";
+			}
 		}
-	}
 
-	File* file = NULL;
-	try {
-		// Let's check if we can find this file in a any .SFV...
-		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
-		file = new File(target, File::RW, File::OPEN | File::CREATE | trunc);
-		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
-			file->setSize(d->getSize());
+		File* file = NULL;
+		try {
+			// Let's check if we can find this file in a any .SFV...
+			int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
+			file = new File(target, File::RW, File::OPEN | File::CREATE | trunc);
+			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
+				file->setSize(d->getSize());
+			}
+			file->setPos(d->getPos());
+		} catch(const FileException& e) {
+			delete file;
+			removeDownload(d);
+			fire(DownloadManagerListener::Failed(), d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
+			aSource->setDownload(NULL);
+			QueueManager::getInstance()->putDownload(d, false);
+			removeConnection(aSource);
+			return false;
+		} catch(const Exception& e) {
+			delete file;
+			removeDownload(d);
+			fire(DownloadManagerListener::Failed(), d, e.getError());
+			aSource->setDownload(NULL);
+			QueueManager::getInstance()->putDownload(d, false);
+			removeConnection(aSource);
+			return false;
 		}
-		file->setPos(d->getPos());
-	} catch(const FileException& e) {
-		delete file;
-		fire(DownloadManagerListener::Failed(), d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
-		aSource->setDownload(NULL);
-		removeDownload(d, false);
-		removeConnection(aSource);
-		return false;
-	} catch(const Exception& e) {
-		delete file;
-		fire(DownloadManagerListener::Failed(), d, e.getError());
-		aSource->setDownload(NULL);
-		removeDownload(d, false);
-		removeConnection(aSource);
-		return false;
-	}
 
-	d->setFile(file);
+		d->setFile(file);
 
-	if(d->isSet(Download::FLAG_ROLLBACK)) {
-		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
-	}
+		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 
-	if(SETTING(BUFFER_SIZE) != 0) {
-		d->setFile(new BufferedOutputStream<true>(d->getFile()));
-	}
+		if(sfvcheck) {
+			d->setFlag(Download::FLAG_CALC_CRC32);
+			Download::CrcOS* crc = new Download::CrcOS(d->getFile());
+			d->setCrcCalc(crc);
+			d->setFile(crc);
+		}
 
-	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
-
-	if(sfvcheck) {
-		d->setFlag(Download::FLAG_CALC_CRC32);
-		Download::CrcOS* crc = new Download::CrcOS(d->getFile());
-		d->setCrcCalc(crc);
-		d->setFile(crc);
-	}
-
-	/** @todo something when resuming... */
-	if(d->getPos() == 0) {
+		/** @todo something when resuming... */
 		if(d->getTreeValid()) {
-			d->setFile(new TigerCheckOutputStream<true>(d->getTigerTree(), d->getFile()));
+			if((d->getPos() % d->getTigerTree().getBlockSize()) == 0) {
+				d->setFile(new MerkleCheckOutputStream<TigerTree, true>(d->getTigerTree(), d->getFile(), d->getPos()));
+			}
+		}
+		if(d->isSet(Download::FLAG_ROLLBACK)) {
+			d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
+		}
+
+		if(SETTING(BUFFER_SIZE) > 0 ) {
+			d->setFile(new BufferedOutputStream<true>(d->getFile()));
 		}
 	}
 
@@ -514,6 +478,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 		d->setFlag(Download::FLAG_ZDOWNLOAD);
 		d->setFile(new FilteredOutputStream<UnZFilter, true>(d->getFile()));
 	}
+
 	dcassert(d->getPos() != -1);
 	d->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
@@ -539,27 +504,30 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
 		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
+		removeDownload(d);
 		fire(DownloadManagerListener::Failed(), d, e.getError());
 
 		d->resetPos();
 		aSource->setDownload(NULL);
-		removeDownload(d, false);
+		QueueManager::getInstance()->putDownload(d, false);
 		removeConnection(aSource);
 		return;
 	} catch(const FileException& e) {
+		removeDownload(d);
 		fire(DownloadManagerListener::Failed(), d, e.getError());
 
 		d->resetPos();
 		aSource->setDownload(NULL);
-		removeDownload(d, false);
+		QueueManager::getInstance()->putDownload(d, false);
 		removeConnection(aSource);
 		return;
 	} catch(const Exception& e) {
+		removeDownload(d);
 		fire(DownloadManagerListener::Failed(), d, e.getError());
 		// Nuke the bytes we have written, this is probably a compression error
 		d->resetPos();
 		aSource->setDownload(NULL);
-		removeDownload(d, false);
+		QueueManager::getInstance()->putDownload(d, false);
 		removeConnection(aSource);
 		return;
 	}
@@ -585,12 +553,13 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 		if(!(*d->getTTH() == d->getTigerTree().getRoot())) {
 			// This tree is for a different file, remove from queue...
+			removeDownload(d);
 			fire(DownloadManagerListener::Failed(), d, STRING(INVALID_TREE));
 
 			string target = d->getTarget();
 
 			aSource->setDownload(NULL);
-			removeDownload(d, false);
+			QueueManager::getInstance()->putDownload(d, false);
 
 			QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
 			checkDownloads(aSource);
@@ -598,13 +567,13 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		}
 	} else {
 
+		// Hm, if the real crc == 0, we'll get a file reread extra, but what the heck...
 		u_int32_t crc = 0;
-		bool hasCrc = (d->getCrcCalc() != NULL);
 
 		// First, finish writing the file (flushing the buffers and closing the file...)
 		try {
 			d->getFile()->flush();
-			if(hasCrc)
+			if(d->getCrcCalc() != NULL)
 				crc = d->getCrcCalc()->getFilter().getValue();
 			delete d->getFile();
 			d->setFile(NULL);
@@ -623,10 +592,11 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				}
 			}
 		} catch(const FileException& e) {
+			removeDownload(d);
 			fire(DownloadManagerListener::Failed(), d, e.getError());
 			
 			aSource->setDownload(NULL);
-			removeDownload(d, false);
+			QueueManager::getInstance()->putDownload(d, false);
 			removeConnection(aSource);
 			return;
 		}
@@ -636,110 +606,126 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 
 		// Check if we have some crc:s...
 		if(BOOLSETTING(SFV_CHECK)) {
-			SFVReader sfv(d->getTarget());
-			if(sfv.hasCRC()) {
-				bool crcMatch;
-				string tgt = d->getDownloadTarget();
-				if(hasCrc) {
-					crcMatch = (crc == sfv.getCRC());
-				} else {
-					// More complicated, we have to reread the file
-					try {
-						
-						File ff(tgt, File::READ, File::OPEN);
-						CalcInputStream<CRC32Filter, false> f(&ff);
-
-						const size_t BUF_SIZE = 16 * 65536;
-						AutoArray<u_int8_t> b(BUF_SIZE);
-						size_t n = BUF_SIZE;
-						while(f.read((u_int8_t*)b, n) > 0)
-							;		// Keep on looping...
-
-						crcMatch = (f.getFilter().getValue() == sfv.getCRC());
-					} catch (FileException&) {
-						// Nope; read failed...
-						goto noCRC;
-					}
-				}
-
-				if(!crcMatch) {
-					File::deleteFile(tgt);
-					dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getTarget().c_str());
-					LogManager::getInstance()->message(STRING(SFV_INCONSISTENCY) + " (" + STRING(FILE) + ": " + d->getTarget() + ")");
-					fire(DownloadManagerListener::Failed(), d, STRING(SFV_INCONSISTENCY));
-					
-					string target = d->getTarget();
-					
-					aSource->setDownload(NULL);
-					removeDownload(d, false);				
-					
-					QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
-					checkDownloads(aSource);
-					return;
-				} 
-
-				d->setFlag(Download::FLAG_CRC32_OK);
-				
-				dcdebug("DownloadManager: CRC32 match for %s\n", d->getTarget().c_str());
-			}
+			if(!checkSfv(aSource, d, crc))
+				return;
 		}
-	noCRC:
+
 		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST))) {
-			StringMap params;
-			params["target"] = d->getTarget();
-			params["user"] = aSource->getUser()->getNick();
-			params["userip"] = aSource->getRemoteIp();
-			params["hub"] = aSource->getUser()->getLastHubName();
-			params["hubip"] = aSource->getUser()->getLastHubAddress();
-			params["size"] = Util::toString(d->getSize());
-			params["sizeshort"] = Util::formatBytes(d->getSize());
-			params["chunksize"] = Util::toString(d->getTotal());
-			params["chunksizeshort"] = Util::formatBytes(d->getTotal());
-			params["actualsize"] = Util::toString(d->getActual());
-			params["actualsizeshort"] = Util::formatBytes(d->getActual());
-			params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
-			params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
-			params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
-			TTHValue *hash = d->getTTH();
-			if(hash != NULL) {
-				params["tth"] = d->getTTH()->toBase32();
-			}
-			LOG(LogManager::DOWNLOAD, params);
+			logDownload(aSource, d);
 		}
 
 		// Check if we need to move the file
 		if( !d->getTempTarget().empty() && (Util::stricmp(d->getTarget().c_str(), d->getTempTarget().c_str()) != 0) ) {
+			moveFile(d->getTempTarget(), d->getTarget());
+		}
+	}
+
+	removeDownload(d);
+	fire(DownloadManagerListener::Complete(), d);
+	
+	aSource->setDownload(NULL);
+	QueueManager::getInstance()->putDownload(d, true);
+	checkDownloads(aSource);
+}
+
+u_int32_t DownloadManager::calcCrc32(const string& file) throw(FileException) {
+	File ff(file, File::READ, File::OPEN);
+	CalcInputStream<CRC32Filter, false> f(&ff);
+
+	const size_t BUF_SIZE = 1024*1024;
+	AutoArray<u_int8_t> b(BUF_SIZE);
+	size_t n = BUF_SIZE;
+	while(f.read((u_int8_t*)b, n) > 0)
+		;		// Keep on looping...
+
+	return f.getFilter().getValue();
+}
+
+bool DownloadManager::checkSfv(UserConnection* aSource, Download* d, u_int32_t crc) {
+	SFVReader sfv(d->getTarget());
+	if(sfv.hasCRC()) {
+		bool crcMatch = (crc == sfv.getCRC());
+		if(!crcMatch && crc == 0) {
+			// Blah. We have to reread the file...
 			try {
-				File::ensureDirectory(d->getTarget());
-				if(File::getSize(d->getTempTarget()) > MOVER_LIMIT) {
-					mover.moveFile(d->getTempTarget(), d->getTarget());
-				} else {
-					File::renameFile(d->getTempTarget(), d->getTarget());
-				}
-				d->setTempTarget(Util::emptyString);
+				crcMatch = (calcCrc32(d->getDownloadTarget()) == sfv.getCRC());
+			} catch(const FileException& ) {
+				// Couldn't read the file to get the CRC(!!!)
+				crcMatch = false;
+			}
+		}
+
+		if(!crcMatch) {
+			File::deleteFile(d->getDownloadTarget());
+			dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getTarget().c_str());
+			LogManager::getInstance()->message(STRING(SFV_INCONSISTENCY) + " (" + STRING(FILE) + ": " + d->getTarget() + ")");
+			removeDownload(d);				
+			fire(DownloadManagerListener::Failed(), d, STRING(SFV_INCONSISTENCY));
+
+			string target = d->getTarget();
+
+			aSource->setDownload(NULL);
+			QueueManager::getInstance()->putDownload(d, false);
+
+			QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
+			checkDownloads(aSource);
+			return false;
+		} 
+
+		d->setFlag(Download::FLAG_CRC32_OK);
+
+		dcdebug("DownloadManager: CRC32 match for %s\n", d->getTarget().c_str());
+	}
+	return true;
+}
+
+void DownloadManager::logDownload(UserConnection* aSource, Download* d) {
+	StringMap params;
+	params["target"] = d->getTarget();
+	params["user"] = aSource->getUser()->getNick();
+	params["userip"] = aSource->getRemoteIp();
+	params["hub"] = aSource->getUser()->getLastHubName();
+	params["hubip"] = aSource->getUser()->getLastHubAddress();
+	params["size"] = Util::toString(d->getSize());
+	params["sizeshort"] = Util::formatBytes(d->getSize());
+	params["chunksize"] = Util::toString(d->getTotal());
+	params["chunksizeshort"] = Util::formatBytes(d->getTotal());
+	params["actualsize"] = Util::toString(d->getActual());
+	params["actualsizeshort"] = Util::formatBytes(d->getActual());
+	params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
+	params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
+	params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+	TTHValue *hash = d->getTTH();
+	if(hash != NULL) {
+		params["tth"] = d->getTTH()->toBase32();
+	}
+	LOG(LogManager::DOWNLOAD, params);
+}
+
+void DownloadManager::moveFile(const string& source, const string& target) {
+	try {
+		File::ensureDirectory(target);
+		if(File::getSize(source) > MOVER_LIMIT) {
+			mover.moveFile(source, target);
+		} else {
+			File::renameFile(source, target);
+		}
+	} catch(const FileException&) {
+		try {
+			if(!SETTING(DOWNLOAD_DIRECTORY).empty()) {
+				File::renameFile(source, SETTING(DOWNLOAD_DIRECTORY) + Util::getFileName(target));
+			} else {
+				File::renameFile(source, Util::getFilePath(source) + Util::getFileName(target));
+			}
+		} catch(const FileException&) {
+			try {
+				File::renameFile(source, Util::getFilePath(source) + Util::getFileName(target));
 			} catch(const FileException&) {
-				try {
-					if(!SETTING(DOWNLOAD_DIRECTORY).empty()) {
-						File::renameFile(d->getTempTarget(), SETTING(DOWNLOAD_DIRECTORY) + d->getTargetFileName());
-					} else {
-						File::renameFile(d->getTempTarget(), Util::getFilePath(d->getTempTarget()) + d->getTargetFileName());
-					}
-				} catch(const FileException&) {
-					try {
-						File::renameFile(d->getTempTarget(), Util::getFilePath(d->getTempTarget()) + d->getTargetFileName());
-					} catch(const FileException&) {
-						// Ignore...
-					}
-				}
+				// Ignore...
 			}
 		}
 	}
 
-	fire(DownloadManagerListener::Complete(), d);
-	
-	aSource->setDownload(NULL);
-	removeDownload(d, true);
-	checkDownloads(aSource);
 }
 
 void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 
@@ -754,10 +740,11 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
+	removeDownload(d);
 	fire(DownloadManagerListener::Failed(), d, STRING(NO_SLOTS_AVAILABLE));
 
 	aSource->setDownload(NULL);
-	removeDownload(d, false);
+	QueueManager::getInstance()->putDownload(d, false);
 	removeConnection(aSource, false, !aSource->isSet(UserConnection::FLAG_NMDC));
 }
 
@@ -769,21 +756,21 @@ void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource
 		return;
 	}
 	
+	removeDownload(d);
 	fire(DownloadManagerListener::Failed(), d, aError);
 
 	string target = d->getTarget();
 	aSource->setDownload(NULL);
-	removeDownload(d, false);
+	QueueManager::getInstance()->putDownload(d, false);
 	removeConnection(aSource);
 }
 
-void DownloadManager::removeDownload(Download* d, bool finished) {
+void DownloadManager::removeDownload(Download* d) {
 	if(d->getFile()) {
 		if(d->getActual() > 0) {
 			try {
 				d->getFile()->flush();
 			} catch(const Exception&) {
-				finished = false;
 			}
 		}
 		delete d->getFile();
@@ -813,7 +800,6 @@ void DownloadManager::removeDownload(Download* d, bool finished) {
 			}
 		}
 	}
-	QueueManager::getInstance()->putDownload(d, finished);
 }
 
 void DownloadManager::abortDownload(const string& aTarget) {
@@ -873,18 +859,19 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 		d->setCrcCalc(NULL);
 	}
 
+	removeDownload(d);
 	fire(DownloadManagerListener::Failed(), d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
 
 	aSource->setDownload(NULL);
 
 	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false, d->isSet(Download::FLAG_TREE_DOWNLOAD));
 
-	removeDownload(d, false);
+	QueueManager::getInstance()->putDownload(d, false);
 	checkDownloads(aSource);
 }
 
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.139 2005/01/12 23:16:20 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.140 2005/01/13 15:07:58 arnetheduck Exp $
  */

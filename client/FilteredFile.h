@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "File.h"
+#include "Streams.h"
 
 template<class Filter, bool managed>
 class CalcOutputStream : public OutputStream {
@@ -186,5 +186,5 @@ private:
 
 /**
 * @file
-* $Id: FilteredFile.h,v 1.8 2005/01/05 19:30:24 arnetheduck Exp $
+* $Id: FilteredFile.h,v 1.9 2005/01/13 15:07:59 arnetheduck Exp $
 */

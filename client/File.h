@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
-#define AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_
+#ifndef FILE_H
+#define FILE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,9 +25,9 @@
 
 #include "SettingsManager.h"
 
-#include "Exception.h"
 #include "Util.h"
 #include "Text.h"
+#include "Streams.h"
 
 #ifndef _WIN32
 #include <sys/stat.h>
@@ -35,82 +35,11 @@
 #include <errno.h>
 #endif
 
-STANDARD_EXCEPTION(FileException);
-
 #ifdef _WIN32
 #include "../zlib/zlib.h"
 #else
 #include <zlib.h>
 #endif
-
-/**
- * A naive output stream. We don't use the stl ones to avoid compiling STLPort,
- * besides this is a lot more lightweight (and less flexible)...
- */
-class OutputStream {
-public:
-	virtual ~OutputStream() { }
-	
-	/**
-	 * @return The actual number of bytes written. len bytes will always be
-	 *         consumed, but fewer or more bytes may actually be written,
-	 *         for example if the stream is being compressed.
-	 */
-	virtual size_t write(const void* buf, size_t len) throw(Exception) = 0;
-	/**
-	 * This must be called before destroying the object to make sure all data
-	 * is properly written (we don't want destructors that throw exceptions
-	 * and the last flush might actually throw). Note that some implementations
-	 * might not need it...
-	 */
-	virtual size_t flush() throw(Exception) = 0;
-
-	size_t write(const string& str) throw(Exception) { return write(str.c_str(), str.size()); };
-private:
-	OutputStream& operator=(const OutputStream&);
-};
-
-class InputStream {
-public:
-	virtual ~InputStream() { }
-	/**
-	 * Call this function until it returns 0 to get all bytes.
-	 * @return The number of bytes read. len reflects the number of bytes
-	 *		   actually read from the stream source in this call.
-	 */
-	virtual size_t read(void* buf, size_t& len) throw(Exception) = 0;
-};
-
-class MemoryInputStream : public InputStream {
-public:
-	MemoryInputStream(const u_int8_t* src, size_t len) : pos(0), size(len), buf(new u_int8_t[len]) {
-		memcpy(buf, src, len);
-	}
-	MemoryInputStream(const string& src) : pos(0), size(src.size()), buf(new u_int8_t[src.size()]) {
-		memcpy(buf, src.data(), src.size());
-	}
-
-	~MemoryInputStream() {
-		delete[] buf;
-	}
-
-	virtual size_t read(void* tgt, size_t& len) throw(Exception) {
-		len = min(len, size - pos);
-		memcpy(tgt, buf+pos, len);
-		pos += len;
-		return len;
-	}
-
-	size_t getSize() { return size; }
-
-private:
-	size_t pos;
-	size_t size;
-	u_int8_t* buf;
-};
-
-class IOStream : public InputStream, public OutputStream {
-};
 
 class File : public IOStream {
 public:
@@ -332,7 +261,7 @@ public:
 
 	bool isOpen() { return h != -1; };
 
-	virtual void close() throw(FileException) {
+	virtual void close() throw() {
 		if(h != -1) {
 			::close(h);
 			h = -1;
@@ -416,34 +345,22 @@ public:
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
 
-//	static void copyFile(const string& source, const string& target) throw(FileException) { 
-//		File src(source, File::READ, File::OPEN);
-//		File tgt(target, File::WRITE, File::CREATE | File::TRUNCATE);
-//		
-//		const size_t BUF_SIZE = 128 * 1024;
-///		AutoArray<char> buf(BUF_SIZE);
-//		size_t n = BUF_SIZE; 
-//		while( (n = src.read((char*)buf, n)) > 0) {
-//			tgt.write((char*)buf, n);
-//			n = BUF_SIZE;
-//		}
-//	}
-
 	// This doesn't assume all bytes are written in one write call, it is a bit safer
 	static void copyFile(const string& source, const string& target) throw(FileException) { 
-		char buffer[2048];
-		size_t count = sizeof(buffer);
+		const size_t BUF_SIZE = 64 * 1024;
+		AutoArray<char> buffer(BUF_SIZE);
+		size_t count = BUF_SIZE;
 		File src(source, File::READ, 0);
 		File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);
 
-		while ( src.read((void*)buffer, count) > 0) {
-			char* p = buffer;
+		while ( src.read((char*)buffer, count) > 0) {
+			char* p = (char*)buffer;
 			while (count  > 0) {
 				size_t ret = dst.write(p, count);
 				p += ret;
 				count -= ret;
 			}
-			count = sizeof(buffer);
+			count = BUF_SIZE;
 		}
 	}
 
@@ -467,7 +384,7 @@ public:
 
 #endif // _WIN32
 
-	virtual ~File() throw(FileException) {
+	virtual ~File() throw() {
 		File::close();
 	}
 
@@ -500,97 +417,10 @@ private:
 	File& operator=(const File&);
 };
 
-template<bool managed>
-class LimitedInputStream : public InputStream {
-public:
-	LimitedInputStream(InputStream* is, int64_t aMaxBytes) : s(is), maxBytes(aMaxBytes) {
-	}
-	virtual ~LimitedInputStream() { if(managed) delete s; }
-
-	size_t read(void* buf, size_t& len) throw(FileException) {
-		dcassert(maxBytes >= 0);
-		len = (size_t)min(maxBytes, (int64_t)len);
-		if(len == 0)
-			return 0;
-		size_t x = s->read(buf, len);
-		maxBytes -= x;
-		return x;
-	}
-
-private:
-	InputStream* s;
-	int64_t maxBytes;
-};
-
-template<bool managed>
-class BufferedOutputStream : public OutputStream {
-public:
-	using OutputStream::write;
-
-	BufferedOutputStream(OutputStream* aStream, size_t aBufSize = SETTING(BUFFER_SIZE) * 1024) : s(aStream), pos(0), bufSize(aBufSize), buf(new u_int8_t[bufSize]) { }
-	virtual ~BufferedOutputStream() { 
-		try {
-			// We must do this in order not to lose bytes when a download
-			// is disconnected prematurely
-			flush();
-		} catch(const Exception&) {
-		}
-		if(managed) delete s; delete buf; 
-	}
-
-	virtual size_t flush() throw(Exception) {
-		if(pos > 0)
-			s->write(buf, pos);
-		pos = 0;
-		s->flush();
-		return 0;
-	}
-
-	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
-		u_int8_t* b = (u_int8_t*)wbuf;
-		size_t l2 = len;
-		while(len > 0) {
-			if(pos == 0 && len >= bufSize) {
-				s->write(b, len);
-				break;
-			} else {
-				size_t n = min(bufSize - pos, len);
-				memcpy(buf + pos, b, n);
-				b += n;
-				pos += n;
-				len -= n;
-				if(pos == bufSize) {
-					s->write(buf, bufSize);
-					pos = 0;
-				}
-			}
-		}
-		return l2;
-	}
-private:
-	OutputStream* s;
-	size_t pos;
-	size_t bufSize;
-	u_int8_t* buf;
-};
-
-class StringOutputStream : public OutputStream {
-public:
-	using OutputStream::write;
-
-	virtual size_t flush() throw(Exception) { return 0; }
-	virtual size_t write(const void* buf, size_t len) throw(Exception) {
-		str.append((char*)buf, len);
-		return len;
-	}
-	const string& getString() { return str; }
-private:
-	string str;
-};
-#endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
+#endif // FILE_H
 
 /**
  * @file
- * $Id: File.h,v 1.48 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: File.h,v 1.49 2005/01/13 15:08:00 arnetheduck Exp $
  */
 

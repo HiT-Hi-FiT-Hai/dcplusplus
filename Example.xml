@@ -339,6 +339,7 @@
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">Advanced</String>
 		<String Name="SettingsAdvanced3">Advanced\\Experts only</String>
+		<String Name="SettingsAdvancedResume">Advanced resume using TTH</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>

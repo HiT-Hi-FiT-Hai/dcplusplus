@@ -23,7 +23,9 @@
 #include "Exception.h"
 #include "ResourceManager.h"
 
-ZFilter::ZFilter() {
+const double ZFilter::MIN_COMPRESSION_LEVEL = 0.9;
+
+ZFilter::ZFilter() : totalIn(0), totalOut(0), compressing(true) {
 	memset(&zs, 0, sizeof(zs));
 
 	if(deflateInit(&zs, Z_DEFAULT_COMPRESSION) != Z_OK) {
@@ -45,6 +47,23 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 	zs.avail_out = outsize;
 	zs.next_out = (Bytef*)out;
 
+	if(compressing && totalIn > 64*1024) {
+		if(((double)totalOut / (double)totalIn) > MIN_COMPRESSION_LEVEL) {
+			size_t tmpIn = zs.avail_in;
+			zs.avail_in = 0;
+			if(::deflateParams(&zs, Z_NO_COMPRESSION, Z_DEFAULT_STRATEGY) != Z_OK)
+				throw Exception(STRING(COMPRESSION_ERROR));
+
+			compressing = false;
+
+			zs.avail_in = tmpIn;
+			if(zs.avail_out == 0) {
+				totalOut += outsize;
+				return true;
+			}
+		}
+	}
+
 	if(insize == 0) {
 		int err = ::deflate(&zs, Z_FINISH);
 		if(err != Z_OK && err != Z_STREAM_END)
@@ -52,6 +71,8 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
+		totalOut += outsize;
+		totalIn += insize;
 		return err == Z_OK;
 	} else {
 		int err = ::deflate(&zs, Z_NO_FLUSH);
@@ -60,6 +81,8 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 
 		outsize = outsize - zs.avail_out;
 		insize = insize - zs.avail_in;
+		totalOut += outsize;
+		totalIn += insize;
 		return true;
 	}
 }
@@ -102,5 +125,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.4 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.5 2005/01/13 15:07:59 arnetheduck Exp $
  */

@@ -31,6 +31,9 @@
 
 class ZFilter {
 public:
+	/** Compression will automatically be turned off if below this... */
+	static const double MIN_COMPRESSION_LEVEL;
+
 	ZFilter();
 	~ZFilter();
 	/**
@@ -44,6 +47,9 @@ public:
 	bool operator()(const void* in, size_t& insize, void* out, size_t& outsize);
 private:
 	z_stream zs;
+	int64_t totalIn;
+	int64_t totalOut;
+	bool compressing;
 };
 
 class UnZFilter {
@@ -77,5 +83,5 @@ private:
 
 /**
  * @file
- * $Id: ZUtils.h,v 1.6 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: ZUtils.h,v 1.7 2005/01/13 15:08:00 arnetheduck Exp $
  */

@@ -38,8 +38,8 @@ public:
 	 */
 	void load(const string& fileName) throw();
 
-	bool hasCRC() throw() { return crcFound; };
-	u_int32_t getCRC() throw() { return crc32; };
+	bool hasCRC() const throw() { return crcFound; };
+	u_int32_t getCRC() const throw() { return crc32; };
 	
 private:
 
@@ -52,5 +52,5 @@ private:
 
 /**
  * @file
- * $Id: SFVReader.h,v 1.4 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: SFVReader.h,v 1.5 2005/01/13 15:07:59 arnetheduck Exp $
  */

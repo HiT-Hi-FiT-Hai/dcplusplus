@@ -374,6 +374,9 @@
 				RelativePath=".\client\LogManager.h">
 			</File>
 			<File
+				RelativePath=".\client\MerkleCheckOutputStream.h">
+			</File>
+			<File
 				RelativePath=".\client\MerkleTree.h">
 			</File>
 			<File
@@ -429,6 +432,9 @@
 			</File>
 			<File
 				RelativePath=".\client\stdinc.h">
+			</File>
+			<File
+				RelativePath=".\client\Streams.h">
 			</File>
 			<File
 				RelativePath=".\client\StringDefs.h">

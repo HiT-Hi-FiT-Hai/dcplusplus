@@ -343,6 +343,7 @@ enum Strings { // @DontAdd
 	SETTINGS_ADLS_BREAK_ON_FIRST, // "Break on first ADLSearch match"
 	SETTINGS_ADVANCED, // "Advanced"
 	SETTINGS_ADVANCED3, // "Advanced\\Experts only"
+	SETTINGS_ADVANCED_RESUME, // "Advanced resume using TTH"
 	SETTINGS_ADVANCED_SETTINGS, // "Advanced settings"
 	SETTINGS_ANTI_FRAG, // "Use antifragmentation method for downloads"
 	SETTINGS_APPEARANCE, // "Appearance"
