@@ -384,6 +384,13 @@ public:
 		return nick;
 	}
 
+	static string removeInvalid(string tmp) {
+		int i = -1;
+		while( (i = tmp.find_first_of("|$")) != string::npos) {
+			tmp.erase(i, 1);
+		}
+		return tmp;
+	}
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData) {
 		switch(uMsg) {
@@ -411,9 +418,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.25 2002/02/01 02:00:48 arnetheduck Exp $
+ * $Id: Util.h,v 1.26 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.26  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.25  2002/02/01 02:00:48  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

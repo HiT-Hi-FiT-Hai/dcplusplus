@@ -156,12 +156,7 @@ public:
 
 	void sendMessage(const string& aMessage) {
 		dcdebug("sendMessage ...\n");
-		int i;
-		string tmp = aMessage;
-		while( (i = tmp.find_first_of("|$")) != string::npos) {
-			tmp.erase(i, 1);
-		}
-		send("<" + getNick() + "> " + tmp + "|");
+		send("<" + getNick() + "> " + Util::removeInvalid(aMessage) + "|");
 	}
 	void getInfo(User::Ptr aUser) {
 		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
@@ -175,7 +170,7 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "\x05$" + aEmail + "$" + aBytesShared + "$|");
+		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + " $ $" + aSpeed + "\x05$" + Util::removeInvalid(aEmail) + "$" + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -346,7 +341,7 @@ private:
 	void send(const string& a) throw() {
 		lastActivity = TimerManager::getTick();
 		try {
-			dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
+			//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
 			socket.write(a);
 		} catch(SocketException e) {
 			fire(ClientListener::FAILED, this, e.getError());
@@ -359,9 +354,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.34 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: Client.h,v 1.35 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.35  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.34  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

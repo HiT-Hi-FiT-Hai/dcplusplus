@@ -115,7 +115,8 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		if(!isExtra(u) && si == slots.end()) {
 			slots.push_back(aSource);
 		}
-
+		aSource->setStatus(UserConnection::BUSY);
+		
 		uploads[aSource] = u;
 		if(isExtra(u)) {
 			extra++;
@@ -236,6 +237,7 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 		running--;
 	}
 	
+	aSource->setStatus(UserConnection::IDLE);
 	cs.leave();
 
 	fire(UploadManagerListener::COMPLETE, u);
@@ -301,9 +303,12 @@ void UploadManager::removeUpload(UserConnection* aConn) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.14 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.15 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.15  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.14  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

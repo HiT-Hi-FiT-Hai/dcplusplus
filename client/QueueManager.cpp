@@ -30,9 +30,9 @@ void QueueManager::onTimerMinute(DWORD aTick) {
 				continue;
 			}
 			
-			if(q->updateUsers())
+			if(q->updateUsers(q->getPriority() != QueueItem::PAUSED))
 				updated.push_back(q);
-			
+						
 		}
 	}
 
@@ -46,7 +46,7 @@ void QueueManager::onTimerMinute(DWORD aTick) {
 	
 }
 
-bool QueueItem::updateUsers() {
+bool QueueItem::updateUsers(bool reconnect) {
 	bool updated = false;
 	for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 		Source* s = *i;
@@ -56,8 +56,6 @@ bool QueueItem::updateUsers() {
 				continue;
 			}
 			
-			// Try to connect...
-			ConnectionManager::getInstance()->getDownloadConnection(s->getUser());
 			updated = true;
 		}
 
@@ -73,6 +71,11 @@ bool QueueItem::updateUsers() {
 				continue;
 			}
 		}
+
+		if(reconnect) {
+			ConnectionManager::getInstance()->getDownloadConnection(s->getUser());
+		}
+
 	}
 
 	return updated;

@@ -546,41 +546,26 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	transferMenu.CreatePopupMenu();
-	browseMenu.CreatePopupMenu();
-	removeMenu.CreatePopupMenu();
-	pmMenu.CreatePopupMenu();
 
 	CMenuItemInfo mi;
 	int n = 0;
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Search for alternates";
-	mi.wID = IDC_SEARCH_ALTERNATES;
+	mi.dwTypeData = "Close connection";
+	mi.wID = IDC_REMOVE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Remove Transfer";
-	mi.wID = IDC_REMOVE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Get File List";
-	mi.hSubMenu = browseMenu;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Remove Source";
-	mi.hSubMenu = removeMenu;
+	mi.wID = IDC_GETLIST;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Send Private Message";
-	mi.hSubMenu = pmMenu;
+	mi.wID = IDC_PRIVATEMESSAGE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	c.addListener(this);
@@ -604,66 +589,7 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 	ctrlTransfers.ScreenToClient(&pt); 
 	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
 	{ 
-		int n = 0;
-		CMenuItemInfo mi;
-		
-		while(browseMenu.GetMenuItemCount() > 0) {
-			browseMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		while(removeMenu.GetMenuItemCount() > 0) {
-			removeMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		while(pmMenu.GetMenuItemCount() > 0) {
-			pmMenu.RemoveMenu(0, MF_BYPOSITION);
-		}
-		
-		if(ctrlTransfers.GetSelectedCount() == 1) {
-			LVITEM lvi;
-			lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-			lvi.iSubItem = 0;
-			lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-			
-			ctrlTransfers.GetItem(&lvi);
-			menuItems = 0;
-			
-/*			if(lvi.iImage == IMAGE_DOWNLOAD) {
-				Download* d = (Download*)lvi.lParam;
-				for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
-
-					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-					mi.fType = MFT_STRING;
-					mi.dwTypeData = (LPSTR)(*i)->getNick().c_str();
-					mi.dwItemData = (DWORD)*i;
-					mi.wID = IDC_BROWSELIST + menuItems;
-					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					mi.wID = IDC_REMOVE_SOURCE + menuItems;
-					removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					if((*i)->getUser()) {
-						mi.wID = IDC_PM + menuItems;
-						pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
-					}
-					menuItems++;
-				}
-			} else {
-				Upload* u = (Upload*) lvi.lParam;
-
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPSTR)u->getNick().c_str();
-				mi.dwItemData = (DWORD)u;
-				mi.wID = IDC_BROWSELIST + menuItems;
-				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_REMOVE_SOURCE + menuItems;
-				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_PM + menuItems;
-				pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				menuItems++;
-				
-			}
-*/		}
-		
 		ctrlTransfers.ClientToScreen(&pt);
-		
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		return TRUE; 
@@ -759,121 +685,6 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			}
 		}
 	}
-	return 0;
-}
-
-LRESULT MainFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
-	if(ctrlTransfers.GetSelectedCount() == 1) {
-		
-		LVITEM lvi;
-		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = 0;
-		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-		
-		ctrlTransfers.GetItem(&lvi);
-		
-/*		if(lvi.iImage == IMAGE_DOWNLOAD) {
-			Download* d = (Download*)lvi.lParam;
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-			
-			transferMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			Download::Source* s = (Download::Source*)mi.dwItemData;
-			try {
-				if(s->getUser())
-					DownloadManager::getInstance()->downloadList(s->getUser());
-				else
-					DownloadManager::getInstance()->downloadList(s->getNick());
-			} catch(...) {
-				// ...
-			}
-		} else {
-			Upload* u = (Upload*)lvi.lParam;
-			try {
-				DownloadManager::getInstance()->downloadList(u->getUser());
-			} catch(...) {
-				// ...
-			}
-		}
-*/	}
-	
-	return 0;
-}
-
-LRESULT MainFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
-	if(ctrlTransfers.GetSelectedCount() == 1) {
-		
-		LVITEM lvi;
-		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = 0;
-		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-		
-		ctrlTransfers.GetItem(&lvi);
-		
-/*		if(lvi.iImage == IMAGE_DOWNLOAD) {
-			Download* d = (Download*)lvi.lParam;
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-			
-			transferMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			Download::Source* s = (Download::Source*)mi.dwItemData;
-			try {
-				DownloadManager::getInstance()->removeSource(d, s);
-			} catch(...) {
-				// ...
-			}
-		} else {
-			Upload* u = (Upload*)lvi.lParam;
-			try {
-				UploadManager::getInstance()->removeUpload(u);
-			} catch(...) {
-				// ...
-			}
-		}
-*/	}
-	
-	return 0;
-}
-
-LRESULT MainFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
-	if(ctrlTransfers.GetSelectedCount() == 1) {
-		
-		LVITEM lvi;
-		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = 0;
-		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-		
-		ctrlTransfers.GetItem(&lvi);
-		
-/*		if(lvi.iImage == IMAGE_DOWNLOAD) {
-			Download* d = (Download*)lvi.lParam;
-			CMenuItemInfo mi;
-			mi.fMask = MIIM_DATA;
-			
-			transferMenu.GetMenuItemInfo(wID, FALSE, &mi);
-			Download::Source* s = (Download::Source*)mi.dwItemData;
-			PrivateFrame* frm = PrivateFrame::getFrame(s->getUser(), m_hWndClient);
-			if(frm->m_hWnd == NULL) {
-				frm->setTab(&ctrlTab);
-				frm->CreateEx(m_hWndClient);
-			} else {
-				frm->MDIActivate(frm->m_hWnd);
-			}
-		} else {
-			Upload* u = (Upload*)lvi.lParam;
-			PrivateFrame* frm = PrivateFrame::getFrame(u->getUser(), m_hWndClient);
-			if(frm->m_hWnd == NULL) {
-				frm->setTab(&ctrlTab);
-				frm->CreateEx(m_hWndClient);
-			} else {
-				frm->MDIActivate(frm->m_hWnd);
-			}
-		}
-*/	}
-	
 	return 0;
 }
 
@@ -981,12 +792,28 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
+LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		PrivateFrame* frm = PrivateFrame::getFrame(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), m_hWndMDIClient);
+		if(frm->m_hWnd == NULL) {
+			frm->setTab(&ctrlTab);
+			frm->CreateEx(m_hWndMDIClient);
+		} else {
+			frm->MDIActivate(frm->m_hWnd);
+		}
+	}
+	return 0;
+}
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.54 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.55 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.55  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.54  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

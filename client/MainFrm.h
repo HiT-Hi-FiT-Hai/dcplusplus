@@ -109,10 +109,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
+		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		CHAIN_MDI_CHILD_COMMANDS()
-		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, (IDC_BROWSELIST + menuItems), onBrowseList)
-		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, (IDC_REMOVE_SOURCE + menuItems), onRemoveSource)
-		COMMAND_RANGE_HANDLER(IDC_PM, (IDC_PM + menuItems), onPM)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
@@ -145,24 +144,24 @@ public:
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		int i = -1;
+		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
+		}
+		return 0;
+	}
 	
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
 	}
 	
 	void removeSelected() {
-		LVITEM item;
-		item.iItem = -1;
-		item.iSubItem = 0;
-		item.mask = LVIF_PARAM | LVIF_IMAGE;
-		while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
-			ctrlTransfers.GetItem(&item);
-
-			ConnectionManager::getInstance()->removeConnection((ConnectionQueueItem*)item.lParam);
+		int i = -1;
+		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			ConnectionManager::getInstance()->removeConnection((ConnectionQueueItem*)ctrlTransfers.GetItemData(i));
 		}
 	}
 	
@@ -276,12 +275,6 @@ public:
 private:
 
 	enum {
-		IDC_BROWSELIST = 3000,
-		IDC_REMOVE_SOURCE = 3200,
-		IDC_PM = 3400
-	};
-
-	enum {
 		COLUMN_USER,
 		COLUMN_STATUS,
 		COLUMN_FILE,
@@ -328,9 +321,6 @@ private:
 	StringList searchFilter;
 	
 	CMenu transferMenu;
-	CMenu browseMenu;
-	CMenu removeMenu;
-	CMenu pmMenu;
 	
 	int lastUpload;
 	
@@ -456,9 +446,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.37 2002/02/01 02:00:37 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.38 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.38  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.37  2002/02/01 02:00:37  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

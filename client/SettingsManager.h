@@ -38,6 +38,7 @@ public:
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT,
 		REMOVE_NOT_AVAILABLE, BACKGROUND_COLOR, TEXT_COLOR, SHARE_HIDDEN, REMOVE_FINISHED,
+		FILTER_KICKMSGS,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -168,9 +169,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.11 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.12 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.12  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.11  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

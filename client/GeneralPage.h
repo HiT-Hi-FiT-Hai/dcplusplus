@@ -32,10 +32,14 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, onClickedActive)
 		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, onClickedActive)
+		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onTextChanged)
+		COMMAND_HANDLER(IDC_EMAIL, EN_CHANGE, onTextChanged)
+		COMMAND_HANDLER(IDC_DESCRIPTION, EN_CHANGE, onTextChanged)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -44,15 +48,19 @@ public:
 private:
 	static Item items[];
 	CComboBox ctrlConnection;
+	CEdit nick;
 };
 
 #endif // GENERALPAGE_H
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.h,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: GeneralPage.h,v $
+ * Revision 1.3  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.2  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

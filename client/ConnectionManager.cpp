@@ -59,7 +59,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		}
 
 		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
-			if(k->first->getUser() == aUser) {
+			if(k->first->getUser() == aUser && k->first->isSet(UserConnection::FLAG_DOWNLOAD)) {
 				return;
 			}
 		}
@@ -82,6 +82,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			if(i == connections.end()) {
 				dcdebug("ConnectionManager::putDownloadConnection CQI not found (%s)\n", aSource->getUser()->getNick().c_str());
 			}
+			aSource->setStatus(UserConnection::IDLE);
 			downPool[aSource] = i->second;
 			
 			cs.leave();
@@ -371,37 +372,51 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 	bool found = false;
 	{
 		Lock l(cs);
-		
-		ConnectionQueueItem::QueueIter i = connections.find(aCqi->getConnection());
-		if(i!=connections.end()) {
-			found = true;
 
-			if(aCqi->getConnection() && aCqi->getConnection()->getStatus() == UserConnection::BUSY) {
-				if(aCqi->getConnection()->isSet(UserConnection::FLAG_DOWNLOAD)) {
-					DownloadManager::getInstance()->removeDownload(aCqi->getConnection());
-					return;
-				} else {
-					UploadManager::getInstance()->removeUpload(aCqi->getConnection());
-					return;
-				}
+		if(pendingDown.find(aCqi) != pendingDown.end()) {
+			pendingDown.erase(aCqi);
+			found = true;
+		} else {
+			ConnectionQueueItem::QueueIter i;
+			for(i = connections.begin(); i != connections.end(); ++i) {
+				if(i->second == aCqi)
+					break;
 			}
+
+			if(i!=connections.end()) {
+				found = true;
+				dcassert(aCqi->getConnection());
+				
+				if(aCqi->getConnection()->getStatus() == UserConnection::BUSY) {
+					if(aCqi->getConnection()->isSet(UserConnection::FLAG_DOWNLOAD)) {
+						DownloadManager::getInstance()->removeDownload(aCqi->getConnection());
+						return;
+					} else {
+						UploadManager::getInstance()->removeUpload(aCqi->getConnection());
+						return;
+					}
+				} else {
+					connections.erase(i);
+				}
+			} 
 		}
 	}
 
 	if(found) {
-		
-		TimerManager::getInstance()->removeListener(aCqi->getConnection());
-		{
-			Lock l(cs);
-			if(downPool.find(aCqi->getConnection()) != downPool.end()) {
-				downPool.erase(aCqi->getConnection());
-				pendingDelete.push_back(aCqi->getConnection());
+		if(aCqi->getConnection()) {
+			TimerManager::getInstance()->removeListener(aCqi->getConnection());
+			{
+				Lock l(cs);
+				if(downPool.find(aCqi->getConnection()) != downPool.end()) {
+					downPool.erase(aCqi->getConnection());
+					pendingDelete.push_back(aCqi->getConnection());
+				}
+				
 			}
-			
 		}
 		fire(ConnectionManagerListener::REMOVED, aCqi);
 		delete aCqi;
-	}
+	} 
 }
 
 void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
@@ -421,9 +436,12 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.24 2002/02/01 02:00:24 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.25 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.25  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.24  2002/02/01 02:00:24  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

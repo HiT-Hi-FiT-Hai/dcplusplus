@@ -167,7 +167,7 @@ private:
 		return false;
 	}
 
-	bool updateUsers();
+	bool updateUsers(bool reconnect);
 	
 };
 

@@ -36,7 +36,17 @@ public:
 		SET_TEXT
 	};
 	
-	
+	enum {
+		IDC_BROWSELIST = 3000,
+		IDC_REMOVE_SOURCE = 3400,
+		IDC_PM = 3600,
+		IDC_PRIORITY_PAUSED = 4000,
+		IDC_PRIORITY_LOW = 4001,
+		IDC_PRIORITY_NORMAL = 4002,
+		IDC_PRIORITY_HIGH = 4003,
+		
+	};
+
 	DECLARE_FRAME_WND_CLASS("QueueFrame", IDR_QUEUE);
 
 	static QueueFrame* frame;
@@ -195,7 +205,12 @@ private:
 	
 	
 	HANDLE stopperThread;
-
+	CMenu transferMenu;
+	CMenu browseMenu;
+	CMenu removeMenu;
+	CMenu pmMenu;
+	CMenu priorityMenu;
+	
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
 		switch(type) {
 		case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
@@ -221,9 +236,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.2 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.3  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.2  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

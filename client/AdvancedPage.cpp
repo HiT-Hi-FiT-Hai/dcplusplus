@@ -35,6 +35,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
 	{ IDC_REMOVENOTAVAILABLE, SettingsManager::REMOVE_NOT_AVAILABLE, PropPage::T_BOOL }, 
 	{ IDC_REMOVEFINISHED, SettingsManager::REMOVE_FINISHED, PropPage::T_BOOL },
+	{ IDC_FILTERKICK, SettingsManager::FILTER_KICKMSGS, PropPage::T_BOOL }, 
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -64,9 +65,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.6 2002/02/01 02:00:24 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.7 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.7  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.6  2002/02/01 02:00:24  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

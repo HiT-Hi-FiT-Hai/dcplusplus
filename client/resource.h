@@ -80,7 +80,8 @@
 #define IDC_SELFONT                     1034
 #define IDC_SHAREHIDDEN                 1035
 #define IDC_REMOVEFINISHED              1036
-#define IDC_QUEUE						1037
+#define IDC_QUEUE                       1037
+#define IDC_FILTERKICK                  1037
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -97,7 +98,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

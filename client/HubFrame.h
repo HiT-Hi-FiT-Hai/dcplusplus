@@ -136,7 +136,7 @@ public:
 		Lock l(cs);
 		
 		if(client && client->isConnected()) {
-			ctrlUsers.DeleteAllItems();
+			clearUserList();
 			client->getNickList();
 		}
 		return 0;
@@ -246,7 +246,7 @@ public:
 		Lock l(cs);
 		if(client) {
 			client->connect(server);
-			ctrlUsers.DeleteAllItems();
+			clearUserList();
 		}
 		return 0;
 	}
@@ -336,6 +336,7 @@ private:
 		CLIENT_UNKNOWN,
 		CLIENT_VALIDATEDENIED,
 		CLIENT_SEARCH_FLOOD,
+		CLIENT_STATUS,
 		STATS,
 		DISCONNECT
 	};
@@ -358,6 +359,13 @@ private:
 
 	string redirect;
 
+	void clearUserList() {
+		int j = ctrlUsers.GetItemCount();
+		for(int i = 0; i < j; i++) {
+			delete (UserInfo*) ctrlUsers.GetItemData(i);
+		}
+		ctrlUsers.DeleteAllItems();
+	}
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		switch(type) {
@@ -385,14 +393,25 @@ private:
 	}
 	
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line) {
-		string* x = new string(line);
+		string* x;
 		switch(type) {
 		case ClientListener::SEARCH_FLOOD:
+			x = new string(line);
 			PostMessage(WM_SPEAKER, CLIENT_SEARCH_FLOOD, (LPARAM)x); break;
 		case ClientListener::FAILED:
+			x = new string(line);
 			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
-		case ClientListener::MESSAGE:
-			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x); break;
+		case ClientListener::MESSAGE: 
+			x = new string(line);
+			if(SETTING(FILTER_KICKMSGS) && ( 
+				((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) || 
+				((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) )) {
+				PostMessage(WM_SPEAKER, CLIENT_STATUS, (LPARAM)x); 
+			} else {
+				PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x);
+			}
+			break;
+
 		case ClientListener::FORCE_MOVE:
 			redirect = line;
 			if(BOOLSETTING(AUTO_FOLLOW)) {
@@ -477,9 +496,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.45 2002/02/01 02:00:30 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.46 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.46  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.45  2002/02/01 02:00:30  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

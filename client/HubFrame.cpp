@@ -187,6 +187,8 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 				Lock l(cs);
 				if(client)
 					client->sendMessage("\r\n-- I'm a happy dc++ user. You could be happy too. --\r\n-- http://sourceforge.net/projects/dcplusplus --");
+			} else if(stricmp(s.c_str(), "clear") == 0) {
+				ctrlClient.SetWindowText("");
 			}
 		} else {
 			Lock l(cs);
@@ -329,6 +331,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	if(wParam == CLIENT_MESSAGE) {
 		addLine(*(string*)lParam);
 		delete (string*)lParam;
+	} else if (wParam == CLIENT_STATUS) {
+		addClientLine(*(string*)lParam);
+		delete (string*)lParam;
 	} else if(wParam == CLIENT_MYINFO) {
 		User::Ptr& u = *(User::Ptr*)lParam;
 		LV_FINDINFO fi;
@@ -414,6 +419,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			SetWindowText(client->getServer().c_str());
 		}
 	} else if(wParam == CLIENT_FAILED) {
+		clearUserList();
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
 		//ctrlClient.Invalidate();
@@ -455,9 +461,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.30 2002/02/01 02:00:29 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.31 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.31  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.30  2002/02/01 02:00:29  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

@@ -35,7 +35,7 @@ char const* SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
-	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished",
+	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages",
 	"SENTRY"
 };
 
@@ -64,6 +64,7 @@ SettingsManager::SettingsManager()
 	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(REMOVE_FINISHED, true);
+	setDefault(FILTER_KICKMSGS, false);
 	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -202,9 +203,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.13 2002/02/01 02:00:44 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.14 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.14  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.13  2002/02/01 02:00:44  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

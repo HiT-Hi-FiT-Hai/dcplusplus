@@ -46,6 +46,73 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlQueue.SetTextBkColor(Util::bgColor);
 	ctrlQueue.SetTextColor(Util::textColor);
 	
+	transferMenu.CreatePopupMenu();
+	browseMenu.CreatePopupMenu();
+	removeMenu.CreatePopupMenu();
+	pmMenu.CreatePopupMenu();
+	priorityMenu.CreatePopupMenu();
+	
+	CMenuItemInfo mi;
+	int n = 0;
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Search for alternates";
+	mi.wID = IDC_SEARCH_ALTERNATES;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Remove Download";
+	mi.wID = IDC_REMOVE;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Priority";
+	mi.hSubMenu = priorityMenu;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Get File List";
+	mi.hSubMenu = browseMenu;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Remove Source";
+	mi.hSubMenu = removeMenu;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Send Private Message";
+	mi.hSubMenu = pmMenu;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	n = 0;
+
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Paused";
+	mi.wID = IDC_PRIORITY_PAUSED;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Low";
+	mi.wID = IDC_PRIORITY_LOW;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Normal";
+	mi.wID = IDC_PRIORITY_NORMAL;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "High";
+	mi.wID = IDC_PRIORITY_HIGH;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	QueueManager::getInstance()->getQueue();
 	
@@ -131,6 +198,15 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		}
+
+		switch(aQI->getPriority()) {
+		case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
+		case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
+		case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
+		case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
+		default: dcassert(0); break;
+		}
+		
 		PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 	}
 }
@@ -166,11 +242,73 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	return 0;
 }
 
+//LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+/*	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlTransfers.GetClientRect(&rc);
+	ctrlTransfers.ScreenToClient(&pt); 
+	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
+	{ 
+		int n = 0;
+		CMenuItemInfo mi;
+		
+		while(browseMenu.GetMenuItemCount() > 0) {
+			browseMenu.RemoveMenu(0, MF_BYPOSITION);
+		}
+		while(removeMenu.GetMenuItemCount() > 0) {
+			removeMenu.RemoveMenu(0, MF_BYPOSITION);
+		}
+		while(pmMenu.GetMenuItemCount() > 0) {
+			pmMenu.RemoveMenu(0, MF_BYPOSITION);
+		}
+		
+		if(ctrlTransfers.GetSelectedCount() == 1) {
+			LVITEM lvi;
+			lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+			lvi.iSubItem = 0;
+			lvi.mask = LVIF_IMAGE | LVIF_PARAM;
+			
+			ctrlTransfers.GetItem(&lvi);
+			menuItems = 0;
+			
+			QueueItem* q = (QueueItem*)lvi.lParam;
+			for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = (LPSTR)(*i)->getNick().c_str();
+				mi.dwItemData = (DWORD)*i;
+				mi.wID = IDC_BROWSELIST + menuItems;
+				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				mi.wID = IDC_REMOVE_SOURCE + menuItems;
+				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				if((*i)->getUser()) {
+					mi.wID = IDC_PM + menuItems;
+					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				}
+				menuItems++;
+			}
+		}
+		
+		ctrlTransfers.ClientToScreen(&pt);
+		
+		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+		return TRUE; 
+	}
+	return FALSE; 
+}
+*/
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.2 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.3  2002/02/03 01:06:56  arnetheduck
+ * More bugfixes and some minor changes
+ *
  * Revision 1.2  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *
