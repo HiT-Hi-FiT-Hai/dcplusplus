@@ -259,9 +259,6 @@
 				RelativePath="windows\ADLSProperties.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\Advanced2Page.cpp">
-			</File>
-			<File
 				RelativePath=".\windows\Advanced3Page.cpp">
 			</File>
 			<File
@@ -304,19 +301,22 @@
 				RelativePath=".\windows\FinishedULFrame.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\NetworkPage.cpp">
-			</File>
-			<File
 				RelativePath=".\windows\GeneralPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\HubFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\LogPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\main.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\NetworkPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\NotepadFrame.cpp">
@@ -398,9 +398,6 @@
 				RelativePath="windows\ADLSProperties.h">
 			</File>
 			<File
-				RelativePath=".\windows\Advanced2Page.h">
-			</File>
-			<File
 				RelativePath=".\windows\Advanced3Page.h">
 			</File>
 			<File
@@ -446,9 +443,6 @@
 				RelativePath=".\windows\FlatTabCtrl.h">
 			</File>
 			<File
-				RelativePath=".\windows\NetworkPage.h">
-			</File>
-			<File
 				RelativePath=".\windows\GeneralPage.h">
 			</File>
 			<File
@@ -464,10 +458,16 @@
 				RelativePath=".\windows\ListViewArrows.h">
 			</File>
 			<File
+				RelativePath=".\windows\LogPage.h">
+			</File>
+			<File
 				RelativePath=".\windows\MagnetDlg.h">
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.h">
+			</File>
+			<File
+				RelativePath=".\windows\NetworkPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\NotepadFrame.h">

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by e:\src\code\DCplusplus_local\DCPlusPlus.rc
+// Used by f:\Programmering\C++\test\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -34,7 +34,7 @@
 #define IDR_SPY                         223
 #define IDD_FAVORITEHUB                 224
 #define IDR_USERS                       225
-#define IDD_ADVANCED2PAGE               226
+#define IDD_LOGPAGE                     226
 #define IDI_MAGNET                      229
 #define IDD_USER_COMMAND                230
 #define IDR_FINISHED_DL                 231
@@ -257,10 +257,7 @@
 #define IDC_OPEN_DOWNLOADS              1204
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1205
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1206
-#define IDC_SETTINGS_FORMAT1            1207
-#define IDC_SETTINGS_FORMAT2            1208
-#define IDC_SETTINGS_FORMAT3            1209
-#define IDC_SETTINGS_FORMAT4            1210
+#define IDC_SETTINGS_FORMAT             1207
 #define IDC_LOG_SYSTEM                  1211
 #define IDC_SEARCH_BY_TTH               1212
 #define IDC_SETTINGS_HASH_SPEED         1213
@@ -323,10 +320,10 @@
 #define IDC_PRIVATE_CHAT_FILE           1270
 #define IDC_STATUS_FILE                 1271
 #define IDC_MAIN_CHAT_FILE              1272
-#define IDC_SETTINGS_FILE_NAME1         1273
-#define IDC_SETTINGS_FILE_NAME2         1274
-#define IDC_SETTINGS_FILE_NAME3         1275
-#define IDC_SETTINGS_FILE_NAME4         1276
+#define IDC_LOG_FORMAT                  1273
+#define IDC_LOG_FILE                    1274
+#define IDC_LOG_OPTIONS                 1275
+#define IDC_SETTINGS_FILE_NAME          1276
 #define IDC_ONLYTTH                     1277
 #define IDC_SETTINGS_FILELIST_MENU      1278
 #define IDC_REMOVE_SOURCE_ALL           1279

@@ -39,7 +39,8 @@ const string SettingsManager::settingTags[] =
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
-	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", 
+	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", "LogFormatSystem", 
+	"LogFormatStatus",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -124,11 +125,14 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(LOG_FORMAT_STATUS, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(LOG_FORMAT_SYSTEM, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FILE_MAIN_CHAT, "%[hubaddr].log");
 	setDefault(LOG_FILE_STATUS, "%[hubaddr]_status.log");
 	setDefault(LOG_FILE_PRIVATE_CHAT, "%[user].log");
 	setDefault(LOG_FILE_UPLOAD, "Uploads.log");
 	setDefault(LOG_FILE_DOWNLOAD, "Downloads.log");
+	setDefault(LOG_FILE_SYSTEM, "system.log");
 	setDefault(GET_USER_INFO, true);
 	setDefault(URL_HANDLER, false);
 	setDefault(AUTO_AWAY, false);
@@ -334,6 +338,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.102 2004/12/28 17:34:42 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.103 2004/12/29 19:52:34 arnetheduck Exp $
  */
 

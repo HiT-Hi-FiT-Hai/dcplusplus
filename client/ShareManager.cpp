@@ -116,10 +116,10 @@ ShareManager::Directory::~Directory() {
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	RLock<> l(cs);
-	if(aFile == "MyList.DcLst") {
+	if(aFile == "/MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
-	} else if(aFile == "files.xml.bz2") {
+	} else if(aFile == "/files.xml.bz2") {
 		generateXmlList();
 		return getBZXmlFile();
 	} else {
@@ -1424,6 +1424,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.119 2004/12/27 20:30:04 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.120 2004/12/29 19:52:34 arnetheduck Exp $
  */
 

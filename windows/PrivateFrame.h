@@ -201,6 +201,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.24 2004/12/28 17:34:40 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.25 2004/12/29 19:52:37 arnetheduck Exp $
  */
 

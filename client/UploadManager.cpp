@@ -294,7 +294,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		if(!u->getTTH() != NULL) {
 			params["tth"] = u->getTTH()->toBase32();
 		}
-		LOG(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
+		LOG(LogManager::UPLOAD, params);
 	}
 
 	fire(UploadManagerListener::Complete(), u);
@@ -406,5 +406,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.77 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.78 2004/12/29 19:52:34 arnetheduck Exp $
  */

@@ -252,7 +252,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 		params["mynick"] = user->getClientNick(); 
 		params["mycid"] = user->getClientCID().toBase32(); 
 		params["cid"] = user->getCID().toBase32(); 
-		LOG(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
+		LOG(LogManager::PM, params);
 	}
 
 	if(BOOLSETTING(TIME_STAMPS)) {
@@ -410,7 +410,7 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.41 2004/12/28 17:34:40 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.42 2004/12/29 19:52:36 arnetheduck Exp $
  */
 
 

@@ -622,7 +622,7 @@ void HubFrame::addLine(const tstring& aLine) {
 		params["hub"] = client->getName();
 		params["hubaddr"] = client->getAddressPort();
 		params["mynick"] = client->getNick(); 
-		LOG(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
+		LOG(LogManager::CHAT, params);
 	}
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
@@ -1027,7 +1027,8 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		StringMap params;
 		params["hub"] = client->getName();
 		params["hubaddr"] = client->getAddressPort();
-		LOGDT(Util::formatParams(SETTING(LOG_FILE_STATUS), params), Text::fromT(aLine));
+		params["message"] = Text::fromT(aLine);
+		LOG(LogManager::STATUS, params);
 	}
 }
 
@@ -1130,5 +1131,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.92 2004/12/05 15:51:03 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.93 2004/12/29 19:52:36 arnetheduck Exp $
  */

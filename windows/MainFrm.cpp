@@ -1183,5 +1183,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.79 2004/12/28 17:34:40 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.80 2004/12/29 19:52:36 arnetheduck Exp $
  */
