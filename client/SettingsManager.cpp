@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "File.h"
 #include "version.h"
+#include "CID.h"
 
 const string SettingsManager::settingTags[] =
 {
@@ -269,6 +270,9 @@ void SettingsManager::load(string const& aFileName)
 			set(UDP_PORT, SETTING(IN_PORT));
 		}
 
+		if(SETTING(CLIENT_ID).empty())
+			set(CLIENT_ID, CID::generate().toBase32());
+
 		setDefault(UDP_PORT, SETTING(IN_PORT));
 
 		fire(SettingsManagerListener::Load(), &xml);
@@ -339,6 +343,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.104 2005/01/01 18:09:54 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.105 2005/01/01 18:38:39 arnetheduck Exp $
  */
 

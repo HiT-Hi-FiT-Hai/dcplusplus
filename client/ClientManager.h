@@ -128,8 +128,6 @@ private:
 	friend class Singleton<ClientManager>;
 	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
-		if(SETTING(CLIENT_ID).empty())
-			SettingsManager::getInstance()->set(SettingsManager::CLIENT_ID, CID::generate().toBase32());
 	};
 
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
@@ -151,6 +149,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.52 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.53 2005/01/01 18:38:39 arnetheduck Exp $
  */
 
