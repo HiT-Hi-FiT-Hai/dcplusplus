@@ -21,14 +21,14 @@
 
 #include "AdcCommand.h"
 
-void Command::parse(const string& aLine, bool nmdc /* = false */) {
+void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) {
 	string::size_type i = 5;
 
 	if(nmdc) {
 		// "$ADCxxx ..."
 		if(aLine.length() < 7)
 			return;
-		type = Command::TYPE_CLIENT;
+		type = TYPE_CLIENT;
 		memcpy(cmd, &aLine[4], 3);
 		i += 3;
 	} else {
@@ -83,7 +83,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	}
 }
 
-string Command::toString(bool nmdc /* = false */) const {
+string AdcCommand::toString(bool nmdc /* = false */) const {
 	string tmp;
 	if(nmdc) {
 		tmp += "$ADC";
@@ -115,7 +115,7 @@ string Command::toString(bool nmdc /* = false */) const {
 	return tmp;
 }
 
-bool Command::getParam(const char* name, size_t start, string& ret) const {
+bool AdcCommand::getParam(const char* name, size_t start, string& ret) const {
 	for(string::size_type i = start; i < getParameters().size(); ++i) {
 		if(toCode(name) == toCode(getParameters()[i].c_str())) {
 			ret = getParameters()[i].substr(2);
@@ -125,7 +125,7 @@ bool Command::getParam(const char* name, size_t start, string& ret) const {
 	return false;
 }
 
-bool Command::hasFlag(const char* name, size_t start) const {
+bool AdcCommand::hasFlag(const char* name, size_t start) const {
 	for(string::size_type i = start; i < getParameters().size(); ++i) {
 		if(toCode(name) == toCode(getParameters()[i].c_str()) && 
 			getParameters()[i][2] == '1' &&
@@ -139,5 +139,5 @@ bool Command::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.7 2004/11/27 15:46:20 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.8 2005/01/05 19:21:33 arnetheduck Exp $
  */

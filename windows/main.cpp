@@ -301,7 +301,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		}
 	}
 	
-	HRESULT hRes = ::CoInitialize(NULL);
+	// For SHBrowseForFolder, UPnP
+	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); 
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
 	//File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
@@ -346,5 +347,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.33 2004/12/17 15:12:10 arnetheduck Exp $
+ * $Id: main.cpp,v 1.34 2005/01/05 19:21:42 arnetheduck Exp $
  */

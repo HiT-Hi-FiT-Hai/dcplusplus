@@ -177,9 +177,9 @@ private:
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
-	virtual void on(Command::GET, UserConnection*, const Command&) throw();
-	virtual void on(Command::GFI, UserConnection*, const Command&) throw();
-	virtual void on(Command::NTD, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::GET, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::GFI, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool listRecursive = false);
@@ -189,5 +189,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.75 2005/01/04 14:16:06 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.76 2005/01/05 19:21:34 arnetheduck Exp $
  */

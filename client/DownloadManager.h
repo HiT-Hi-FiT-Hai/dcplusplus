@@ -91,7 +91,7 @@ public:
 	}
 
 	/** @internal */
-	Command getCommand(bool zlib, bool tthf);
+	AdcCommand getCommand(bool zlib, bool tthf);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);
@@ -260,8 +260,8 @@ private:
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
-	virtual void on(Command::SND, UserConnection*, const Command&) throw();
-	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::SND, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
@@ -272,5 +272,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.74 2005/01/03 20:23:33 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.75 2005/01/05 19:21:33 arnetheduck Exp $
  */

@@ -32,7 +32,7 @@ const string AdcHub::CLIENT_PROTOCOL("ADC/0.8");
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n', true), state(STATE_PROTOCOL) {
 }
 
-void AdcHub::handle(Command::INF, Command& c) throw() {
+void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 	if(c.getFrom().isZero() || c.getParameters().empty())
 		return;
 
@@ -112,7 +112,7 @@ void AdcHub::handle(Command::INF, Command& c) throw() {
 	fire(ClientListener::UserUpdated(), this, u);
 }
 
-void AdcHub::handle(Command::SUP, Command& c) throw() {
+void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
 		disconnect();
 		return;
@@ -121,7 +121,7 @@ void AdcHub::handle(Command::SUP, Command& c) throw() {
 	info(true);
 }
 
-void AdcHub::handle(Command::MSG, Command& c) throw() {
+void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 	if(c.getFrom().isZero() || c.getParameters().empty())
 		return;
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
@@ -141,7 +141,7 @@ void AdcHub::handle(Command::MSG, Command& c) throw() {
 	}		
 }
 
-void AdcHub::handle(Command::GPA, Command& c) throw() {
+void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
 	if(c.getParameters().empty())
 		return;
 	salt = c.getParameters()[0];
@@ -150,7 +150,7 @@ void AdcHub::handle(Command::GPA, Command& c) throw() {
 	fire(ClientListener::GetPassword(), this);
 }
 
-void AdcHub::handle(Command::QUI, Command& c) throw() {
+void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParam(0)), false);
 	if(!p)
 		return;
@@ -158,7 +158,7 @@ void AdcHub::handle(Command::QUI, Command& c) throw() {
 	fire(ClientListener::UserRemoved(), this, p);
 }
 
-void AdcHub::handle(Command::CTM, Command& c) throw() {
+void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p || p == getMe())
 		return;
@@ -167,8 +167,8 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 
 	if(c.getParam(0) != CLIENT_PROTOCOL) {
 		// Protocol unhandled...
-		Command cc(Command::STA(), p->getCID());
-		cc.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
+		AdcCommand cc(AdcCommand::CMD_STA, p->getCID());
+		cc.addParam(Util::toString(AdcCommand::ERROR_PROTOCOL_UNSUPPORTED));
 		cc.addParam(c.getParam(0));
 		cc.addParam(c.getParam(1));
 		cc.addParam("Protocol unsupported");
@@ -180,7 +180,7 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	ConnectionManager::getInstance()->adcConnect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), token);
 }
 
-void AdcHub::handle(Command::RCM, Command& c) throw() {
+void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
 		return;
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
@@ -203,9 +203,9 @@ void AdcHub::connect(const User* user, string const& token) {
 		return;
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
+		send(AdcCommand(AdcCommand::CMD_CTM, user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
 	} else {
-		send(Command(Command::RCM(), user->getCID()).addParam(CLIENT_PROTOCOL));
+		send(AdcCommand(AdcCommand::CMD_RCM, user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
 }
 
@@ -218,21 +218,21 @@ void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
 	string strtmp;
-	send(Command(Command::MSG(), Command::TYPE_BROADCAST).addParam(aMessage)); 
+	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage)); 
 }
 
 void AdcHub::privateMessage(const User* user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
 	string strtmp;
-	send(Command(Command::MSG(), user->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
+	send(AdcCommand(AdcCommand::CMD_MSG, user->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	if(state != STATE_NORMAL)
 		return;
 
-	Command c(Command::SCH(), Command::TYPE_BROADCAST);
+	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
 		c.addParam("TR", aString);
@@ -261,7 +261,7 @@ void AdcHub::password(const string& pwd) {
 		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, SALT_SIZE);
-		send(Command(Command::PAS(), Command::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
+		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
 		salt.clear();
 	}
 }
@@ -272,7 +272,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	if(!getMe())
 		return;
 
-	Command c(Command::INF(), Command::TYPE_BROADCAST);
+	AdcCommand c(AdcCommand::CMD_INF, AdcCommand::TYPE_BROADCAST);
 	string tmp;
 
 	StringMapIter i;
@@ -332,7 +332,7 @@ void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
 	lastInfoMap.clear();
-	send(Command(Command::SUP(), Command::TYPE_HUB).addParam("+BAS0"));
+	send(AdcCommand(AdcCommand::CMD_SUP, AdcCommand::TYPE_HUB).addParam("+BAS0"));
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -346,5 +346,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.34 2005/01/04 14:59:47 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.35 2005/01/05 19:21:35 arnetheduck Exp $
  */

@@ -35,6 +35,7 @@
 
 #include "SearchManagerListener.h"
 #include "TimerManager.h"
+#include "AdcCommand.h"
 
 class SearchManager;
 
@@ -68,7 +69,7 @@ public:
 
 	string getFileName() const;
 	string toSR() const;
-	string toRES() const;
+	AdcCommand toRES(char type) const;
 
 	User::Ptr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
@@ -198,5 +199,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.48 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.49 2005/01/05 19:21:34 arnetheduck Exp $
  */

@@ -59,8 +59,8 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_UTF8);
 };
 
-Command Download::getCommand(bool zlib, bool tthf) {
-	Command cmd = Command(Command::GET());
+AdcCommand Download::getCommand(bool zlib, bool tthf) {
+	AdcCommand cmd(AdcCommand::CMD_GET);
 	if(isSet(FLAG_TREE_DOWNLOAD)) {
 		cmd.addParam("tthl");
 	} else {
@@ -310,7 +310,7 @@ void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSo
 	}
 }
 
-void DownloadManager::on(Command::SND, UserConnection* aSource, const Command& cmd) throw() {
+void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	int64_t bytes = Util::toInt64(cmd.getParam(3));
 
 	if(cmd.getParam(0) == "tthl") {
@@ -914,7 +914,7 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 }
 
 /** @todo Handle errors better */
-void DownloadManager::on(Command::STA, UserConnection* aSource, const Command& cmd) throw() {
+void DownloadManager::on(AdcCommand::STA, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(cmd.getParameters().size() < 2) {
 		aSource->disconnect();
 		return;
@@ -927,15 +927,15 @@ void DownloadManager::on(Command::STA, UserConnection* aSource, const Command& c
 	}
 
 	switch(Util::toInt(err.substr(0, 1))) {
-	case Command::SEV_FATAL:
+	case AdcCommand::SEV_FATAL:
 		aSource->disconnect();
 		return;
-	case Command::SEV_RECOVERABLE:
+	case AdcCommand::SEV_RECOVERABLE:
 		switch(Util::toInt(err.substr(1))) {
-		case Command::ERROR_FILE_NOT_AVAILABLE:
+		case AdcCommand::ERROR_FILE_NOT_AVAILABLE:
 			fileNotAvailable(aSource);
 			return;
-		case Command::ERROR_SLOTS_FULL:
+		case AdcCommand::ERROR_SLOTS_FULL:
 			noSlots(aSource);
 			return;
 		}
@@ -977,5 +977,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.133 2005/01/04 23:23:02 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.134 2005/01/05 19:21:34 arnetheduck Exp $
  */

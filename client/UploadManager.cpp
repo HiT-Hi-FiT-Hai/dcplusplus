@@ -330,11 +330,11 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
 }
 
-void UploadManager::on(Command::NTD, UserConnection* conn, const Command& c) throw() {
-
+void UploadManager::on(AdcCommand::NTD, UserConnection* aConn, const AdcCommand&) throw() {
+	removeConnection(aConn, true);
 }
 
-void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) throw() {
+void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcCommand& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
 	int64_t aStartPos = Util::toInt64(c.getParam(2));
 	const string& fname = c.getParam(1);
@@ -351,7 +351,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 
 		u->setStart(GET_TICK());
 
-		Command cmd = Command(Command::SND());
+		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
 		cmd.addParam(c.getParam(2));
@@ -371,7 +371,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 }
 
 /** @todo fixme */
-void UploadManager::on(Command::GFI, UserConnection* aSource, const Command& c) throw() {
+void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
 
 }
 
@@ -411,5 +411,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.81 2005/01/04 14:16:06 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.82 2005/01/05 19:21:34 arnetheduck Exp $
  */

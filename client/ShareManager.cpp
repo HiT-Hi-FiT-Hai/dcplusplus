@@ -169,6 +169,26 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	}
 }
 
+/** @todo Fix for file list */
+AdcCommand ShareManager::getFileInfo(const string& aFile) throw(ShareException) {
+	if(aFile.compare(0, 4, "TTH/") != 0)
+		throw ShareException("File Not Available");
+
+	RLock<> l(cs);
+	TTHValue val(aFile.substr(4));
+	HashFileIter i = tthIndex.find(&val);
+	if(i == tthIndex.end()) {
+		throw ShareException("File Not Available");
+	}
+
+	Directory::File::Iter f = i->second;
+	AdcCommand cmd(AdcCommand::CMD_RES);
+	cmd.addParam("FN", f->getADCPath());
+	cmd.addParam("SI", Util::toString(f->getSize()));
+	cmd.addParam("TR", f->getTTH().toBase32());
+	return cmd;
+}
+
 StringPairIter ShareManager::findVirtual(const string& name) {
 	for(StringPairIter i = virtualMap.begin(); i != virtualMap.	end(); ++i) {
 		if(Util::stricmp(name, i->second) == 0)
@@ -1439,6 +1459,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.124 2005/01/04 14:59:46 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.125 2005/01/05 19:21:34 arnetheduck Exp $
  */
 

@@ -381,7 +381,7 @@ void ConnectionManager::adcConnect(const string& aServer, short aPort, const str
 	}
 }
 
-void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&) throw() {
+void ConnectionManager::on(AdcCommand::SUP, UserConnection* aSource, const AdcCommand&) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
@@ -397,11 +397,11 @@ void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&
 	aSource->setState(UserConnection::STATE_INF);
 }
 
-void ConnectionManager::on(Command::NTD, UserConnection*, const Command&) throw() {
+void ConnectionManager::on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw() {
 
 }
 
-void ConnectionManager::on(Command::STA, UserConnection*, const Command&) throw() {
+void ConnectionManager::on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw() {
 	
 }
 
@@ -583,10 +583,10 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 	}
 }
 
-void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command& cmd) throw() {
+void ConnectionManager::on(AdcCommand::INF, UserConnection* aSource, const AdcCommand& cmd) throw() {
 	if(aSource->getState() != UserConnection::STATE_INF) {
 		// Already got this once, ignore...
-		aSource->sta(Command::SEV_FATAL, Command::ERROR_PROTOCOL_GENERIC, "Expecting INF");
+		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_PROTOCOL_GENERIC, "Expecting INF");
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
 		return;
 	}
@@ -595,7 +595,7 @@ void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command&
 
 	if(!aSource->getUser()) {
 		dcdebug("CM::onINF: User not found");
-		aSource->sta(Command::SEV_FATAL, Command::ERROR_INF_MISSING, "User not found");
+		aSource->sta(AdcCommand::SEV_FATAL, AdcCommand::ERROR_INF_MISSING, "User not found");
 		putConnection(aSource);
 		return;
 	}
@@ -718,5 +718,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.88 2005/01/04 14:16:06 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.89 2005/01/05 19:21:35 arnetheduck Exp $
  */

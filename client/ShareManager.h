@@ -46,7 +46,6 @@ class OutputStream;
 class MemoryInputStream;
 
 struct ShareLoader;
-
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
 	private HashManagerListener, private DownloadManagerListener
 {
@@ -70,6 +69,8 @@ public:
 
 	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
+
+	AdcCommand getFileInfo(const string& aFile);
 
 	int64_t getShareSize() throw();
 	int64_t getShareSize(const string& aDir) throw();
@@ -319,6 +320,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.72 2005/01/04 14:59:47 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.73 2005/01/05 19:21:35 arnetheduck Exp $
  */
 

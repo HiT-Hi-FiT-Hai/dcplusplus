@@ -23,7 +23,6 @@
 #include "UploadManager.h"
 
 #include "ClientManager.h"
-#include "AdcCommand.h"
 
 SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH, bool aUtf8) :
 file(aFile), hubName(aClient->getName()), hubIpPort(aClient->getIpPort()), user(aClient->getMe()), 
@@ -62,15 +61,11 @@ string SearchResult::toSR() const {
 	return tmp;
 }
 
-string SearchResult::toRES() const {
-	string tmp;
-	tmp.reserve(128);
-	tmp.append(user->getCID().toBase32());
-	tmp.append(" SI");
-	tmp.append(Util::toString(size));
-	tmp.append(" SL");
-	tmp.append(Util::toString(freeSlots));
-	tmp.append(" FN");
+AdcCommand SearchResult::toRES(char type) const {
+	AdcCommand cmd(AdcCommand::CMD_RES, type);
+	cmd.addParam("SI", Util::toString(size));
+	cmd.addParam("SL", Util::toString(freeSlots));
+
 	string fn = utf8 ? file : Text::acpToUtf8(file);
 	string::size_type i = 0;
 	while( (i = fn.find('\\', i)) != string::npos ) {
@@ -78,13 +73,11 @@ string SearchResult::toRES() const {
 	}
 	fn.insert(0, "/");
 
+	cmd.addParam("FN", fn);
 	if(getTTH() != NULL) {
-		tmp.append(" TR");
-		tmp.append(getTTH()->toBase32());
+		cmd.addParam("TR", getTTH()->toBase32());
 	}
-
-	tmp.append(1, '\n');
-	return tmp;
+	return cmd;
 }
 
 void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
@@ -249,7 +242,7 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0) {
-		Command c(x);
+		AdcCommand c(x);
 		if(c.getParameters().empty())
 			return;
 
@@ -299,6 +292,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.48 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.49 2005/01/05 19:21:34 arnetheduck Exp $
  */
 

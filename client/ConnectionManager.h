@@ -146,10 +146,10 @@ private:
 	virtual void on(MyNick, UserConnection*, const string&) throw();
 	virtual void on(Supports, UserConnection*, const StringList&) throw();
 
-	virtual void on(Command::SUP, UserConnection*, const Command&) throw();
-	virtual void on(Command::INF, UserConnection*, const Command&) throw();
-	virtual void on(Command::NTD, UserConnection*, const Command&) throw();
-	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+	virtual void on(AdcCommand::SUP, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::INF, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::NTD, UserConnection*, const AdcCommand&) throw();
+	virtual void on(AdcCommand::STA, UserConnection*, const AdcCommand&) throw();
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();	
@@ -161,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.62 2005/01/04 14:16:05 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.63 2005/01/05 19:21:32 arnetheduck Exp $
  */

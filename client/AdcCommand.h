@@ -22,7 +22,7 @@
 #include "CID.h"
 #include "SettingsManager.h"
 
-class Command {
+class AdcCommand {
 public:
 	template<u_int32_t T>
 	struct Type {
@@ -88,19 +88,12 @@ public:
 	CMD(NTD, 'N','T','D');
 #undef CMD
 
-	template<typename T>
-	explicit Command(const T&, char aType = TYPE_CLIENT) : cmdInt(T::CMD), from(SETTING(CLIENT_ID)), type(aType) { }
+	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
+	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
 
-	template<typename T>
-	explicit Command(const T&, const CID& aTarget) : cmdInt(T::CMD), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
-
-	//explicit Command(u_int32_t cmd) : cmdInt(cmd), type(0) { }
-
-	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(TYPE_CLIENT) {
+	explicit AdcCommand(const string& aLine, bool nmdc = false) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
 	}
-
-	static Command makeSTA(Severity sev, Error err, const string& desc) { return Command(STA()).addParam(Util::toString(sev * 100 + err)).addParam(desc); }
 
 	void parse(const string& aLine, bool nmdc = false);
 
@@ -112,12 +105,12 @@ public:
 
 	string toString(bool nmdc = false) const;
 
-	Command& addParam(const string& name, const string& value) {
+	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
 		parameters.back() += value;
 		return *this;
 	}
-	Command& addParam(const string& str) {
+	AdcCommand& addParam(const string& str) {
 		parameters.push_back(str);
 		return *this;
 	}
@@ -159,9 +152,9 @@ template<class T>
 class CommandHandler {
 public:
 	void dispatch(const string& aLine, bool nmdc = false) {
-		Command c(aLine, nmdc);
+		AdcCommand c(aLine, nmdc);
 
-#define CMD(n) case Command::CMD_##n: ((T*)this)->handle(Command::n(), c); break;
+#define CMD(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
 		switch(c.getCommand()) {
 			CMD(SUP);
 			CMD(STA);
@@ -191,5 +184,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.14 2005/01/03 20:23:35 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.15 2005/01/05 19:21:35 arnetheduck Exp $
 */

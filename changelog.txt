@@ -31,6 +31,8 @@
 * Redid adl search to accomodate for partial list browsing (thanks garg)
 * Added initial ADC file transfers support
 * ADC hub connectivity improved
+* Fixed unnecessary COM initialisation (thanks garg)
+
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)
