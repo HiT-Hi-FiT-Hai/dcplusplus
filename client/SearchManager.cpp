@@ -202,12 +202,12 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 			if(j < i + 1) {
 				return;
 			}
-			file = Text::acpToUtf8(x.substr(i, j-i) + '\\');
+			file = x.substr(i, j-i) + '\\';
 		} else if(cnt == 2) {
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			file = Text::acpToUtf8(x.substr(i, j-i));
+			file = x.substr(i, j-i);
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
@@ -238,9 +238,8 @@ void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& addre
 		string hubIpPort = x.substr(i, j-i);
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
-		// utf8 = true is a lie, it's not really Unicode, but we have converted all the text from acp to utf8...
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort, address, true);
+			file, hubName, hubIpPort, address, false);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
 	} else if(x.compare(1, 4, "RES ") == 0) {
@@ -294,6 +293,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.46 2004/11/07 17:23:59 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.47 2004/11/30 15:46:19 arnetheduck Exp $
  */
 

@@ -310,10 +310,10 @@ private:
 		void update() { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-					fileName = Text::toT(sr->getFile());
+					fileName = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				} else {
-					fileName = Text::toT(Util::getFileName(sr->getFile()));
-					path = Text::toT(Util::getFilePath(sr->getFile()));
+					fileName = Text::toT(Util::getFileName(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
+					path = Text::toT(Util::getFilePath(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile())));
 				}
 
 				type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
@@ -322,8 +322,8 @@ private:
 				size = Text::toT(Util::formatBytes(sr->getSize()));
 				exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
 			} else {
-				fileName = Text::toT(sr->getFileName());
-				path = Text::toT(sr->getFile());
+				fileName = Text::toT(sr->getUtf8() ? sr->getFileName() : Text::acpToUtf8(sr->getFileName()));
+				path = Text::toT(sr->getUtf8() ? sr->getFile() : Text::acpToUtf8(sr->getFile()));
 				type = TSTRING(DIRECTORY);
 			}
 			nick = Text::toT(sr->getUser()->getNick());
@@ -465,6 +465,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.45 2004/11/02 11:03:06 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.46 2004/11/30 15:46:19 arnetheduck Exp $
  */
 
