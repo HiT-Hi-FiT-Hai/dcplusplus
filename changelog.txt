@@ -1,4 +1,4 @@
- -- 0.404 2004---
+ -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done
 * Added folder histore for single file downloads (thanks slowmo)

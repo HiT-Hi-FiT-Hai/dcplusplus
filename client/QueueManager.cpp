@@ -1208,7 +1208,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			QueueItem* qi = *i;
 			bool found = false;
 			if(qi->getTTH()) {
-				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH());
+				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
 			} else {
 				found = (Util::stricmp(qi->getTargetFileName(), sr->getFileName()) == 0);
 			}
@@ -1261,5 +1261,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.94 2004/08/07 09:36:05 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.95 2004/08/08 18:37:22 arnetheduck Exp $
  */
