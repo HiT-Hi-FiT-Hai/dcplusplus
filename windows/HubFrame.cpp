@@ -656,7 +656,9 @@ void HubFrame::addLine(const string& aLine) {
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
 	}
-	setDirty();
+	if (BOOLSETTING(TAB_DIRTY)) {
+		setDirty();
+	}
 }
 
 LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -1026,7 +1028,9 @@ void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
 		lastLinesList.erase(lastLinesList.begin());
 	lastLinesList.push_back(line);
 
-	setDirty();
+	if (BOOLSETTING(TAB_DIRTY)) {
+		setDirty();
+	}
 	
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine("*** " + aLine);
@@ -1135,5 +1139,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.68 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.69 2004/08/08 11:01:39 arnetheduck Exp $
  */

@@ -24,6 +24,7 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
+#include "SettingsManager.h"
 
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -45,7 +46,6 @@ string Util::emptyString;
 
 bool Util::away = false;
 string Util::awayMsg;
-string Util::setTs;
 time_t Util::awayTime;
 char Util::upper[256];
 char Util::lower[256];
@@ -210,6 +210,18 @@ string Util::validateFileName(string tmp) {
 	return tmp;
 }
 
+string Util::getShortTimeString() {
+	char buf[255];
+	time_t _tt = time(NULL);
+	tm* _tm = localtime(&_tt);
+	if(_tm == NULL) {
+		strcpy(buf, "xx:xx");
+	} else {
+		strftime(buf, 254, SETTING(TIME_STAMPS_FORMAT).c_str(), _tm);
+	}
+	return buf;
+}
+
 /**
  * Decodes a URL the best it can...
  * Default ports:
@@ -259,9 +271,6 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 
 string Util::getAwayMessage() { 
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
-}
-string Util::getTimeStamps() {
-	return SETTING(TIME_STAMPS_SET);
 }
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
@@ -728,6 +737,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.58 2004/08/07 14:38:58 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.59 2004/08/08 11:01:39 arnetheduck Exp $
  */
 

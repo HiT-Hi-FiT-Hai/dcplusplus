@@ -424,6 +424,13 @@
 						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml"
+						Outputs=".\client\StringDefs.cpp"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="client\StringSearch.h">

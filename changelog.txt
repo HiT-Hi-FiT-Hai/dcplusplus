@@ -1,4 +1,4 @@
- -- 0.404 --
+ -- 0.404 2004---
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done
 * Added folder histore for single file downloads (thanks slowmo)
@@ -52,6 +52,11 @@
 * Sources with rollback errors are now automatically removed (thanks garg)
 * Fixed compile.txt and readme.txt (thanks garg)
 * Magnet handler included in installer (thanks garg & magnethandler author)
+* New icon with alpha channels for xp (thanks olle svensson, sorry all other icon 
+  submitters who sent it before him, neither aestethic nor personal reasons why 
+  yours wasn't chosen =)
+* Fixed another download to crash (thanks garg)
+* Stringdefs automatically rebuilt (thanks farcry & garg)
 
 
  -- 0.403 2004-06-27 --

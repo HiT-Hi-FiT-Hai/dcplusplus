@@ -795,9 +795,7 @@ public:
 
 	void setDirty() {
 		dcassert(getTab());
-		if (BOOLSETTING(TAB_DIRTY)) {
-			getTab()->setDirty(m_hWnd);
-		}
+		getTab()->setDirty(m_hWnd);
 	}
 	void setTabColor(COLORREF color) {
 		dcassert(getTab());
@@ -812,5 +810,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.31 2004/08/07 09:36:05 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.32 2004/08/08 11:01:39 arnetheduck Exp $
  */

@@ -245,7 +245,9 @@ void PrivateFrame::addLine(const string& aLine) {
 	}
 	addClientLine(CSTRING(LAST_CHANGE) + Util::getTimeString());
 
-	setDirty();
+	if (BOOLSETTING(TAB_DIRTY)) {
+		setDirty();
+	}
 }
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -335,7 +337,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.28 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.29 2004/08/08 11:01:39 arnetheduck Exp $
  */
 
 

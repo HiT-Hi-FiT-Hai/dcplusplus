@@ -36,7 +36,7 @@ const string SettingsManager::settingTags[] =
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
-	"DefaultAwayMessage", "TimeStampsSet", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
+	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID",
 	"SENTRY", 
 	// Ints
@@ -135,7 +135,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_PROGRESS_BARS, true);
 	setDefault(SFV_CHECK, false);
 	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. I might answer later if you're lucky.");
-	setDefault(TIME_STAMPS_SET, "%H:%M");
+	setDefault(TIME_STAMPS_FORMAT, "%H:%M");
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
@@ -310,6 +310,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.82 2004/08/07 14:38:58 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.83 2004/08/08 11:01:39 arnetheduck Exp $
  */
 

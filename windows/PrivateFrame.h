@@ -129,7 +129,9 @@ public:
 			CreateEx(WinUtil::mdiClient);
 		}
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		setDirty();
+		if (BOOLSETTING(TAB_DIRTY)) {
+			setDirty();
+		}
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
@@ -194,6 +196,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.18 2004/04/24 20:56:27 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.19 2004/08/08 11:01:39 arnetheduck Exp $
  */
 
