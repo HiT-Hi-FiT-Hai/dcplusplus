@@ -1,0 +1,135 @@
+/* 
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#if !defined(AFX_HASH_PROGRESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
+#define AFX_HASH_PROGESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+#include "../client/HashManager.h"
+
+class HashProgressDlg : public CDialogImpl<HashProgressDlg>
+{
+public:
+	enum { IDD = IDD_HASH_PROGRESS };
+	enum { WM_VERSIONDATA = WM_APP + 53 };
+
+	HashProgressDlg(bool aAutoClose) : autoClose(aAutoClose), startTime(GET_TICK()), startBytes(0), startFiles(0) { 
+		
+	};
+	virtual ~HashProgressDlg() { };
+
+	BEGIN_MSG_MAP(HashProgressDlg)
+		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_TIMER, onTimer)
+		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
+		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
+		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+	END_MSG_MAP()
+
+	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		string tmp;
+		startTime = GET_TICK();
+		HashManager::getInstance()->getStats(tmp, startBytes, startFiles);
+		if(startBytes == 0)
+			startBytes = 1;
+		if(startFiles == 0)
+			startFiles = 1;
+
+		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
+		progress.SetRange(0, 10000);
+		updateStats();
+		
+		SetTimer(1, 1000);
+		return TRUE;
+	}
+
+	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		updateStats();
+		return 0;
+	}
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		progress.Detach();
+		KillTimer(1);
+		return 0;
+	}
+
+	void updateStats() {
+		string file;
+		int64_t bytes = 0;
+		size_t files = 0;
+		u_int32_t tick = GET_TICK();
+
+		HashManager::getInstance()->getStats(file, bytes, files);
+
+		if(autoClose && files == 0) {
+			PostMessage(WM_CLOSE);
+			return;
+		}
+		double diff = tick - startTime;
+		if(diff == 0)
+			diff = 1;
+
+		double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
+		double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
+		
+		SetDlgItemText(IDC_FILES_PER_HOUR, WinUtil::toT(Util::toString(filestat) + " " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
+		SetDlgItemText(IDC_HASH_SPEED, WinUtil::toT(Util::formatBytes((int64_t)speedStat) + "/s, " + Util::formatBytes(bytes) + STRING(LEFT)).c_str());
+
+		if(filestat == 0 || speedStat == 0) {
+			SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT("-:--:-- " + STRING(LEFT)).c_str());
+		} else {
+			double fs = files * 60 * 60 / filestat;
+			double ss = bytes / speedStat;
+
+			SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT(Util::formatSeconds((int64_t)(fs + ss) / 2) + " " + STRING(LEFT)).c_str());
+		}
+		if(files == 0) {
+			SetDlgItemText(IDC_CURRENT_FILE, CTSTRING(DONE));
+		} else {
+			SetDlgItemText(IDC_CURRENT_FILE, WinUtil::toT(file).c_str());
+		}
+
+		progress.SetPos((int)(10000 * ((0.5 * (startFiles - files)/startFiles) + 0.5 * (startBytes - bytes) / startBytes)));
+	}
+
+	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		EndDialog(wID);
+		return 0;
+	}
+
+private:
+	HashProgressDlg(const HashProgressDlg&);
+	
+	bool autoClose;
+	int64_t startBytes;
+	size_t startFiles;
+	u_int32_t startTime;
+	CProgressBarCtrl progress;
+	
+};
+
+#endif // !defined(AFX_HASH_PROGRESSDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
+
+/**
+ * @file
+ * $Id: HashProgressDlg.h,v 1.1 2004/09/06 12:33:26 arnetheduck Exp $
+ */
+
