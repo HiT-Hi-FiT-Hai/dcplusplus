@@ -23,6 +23,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef WIN32
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#endif
+
 /** Evaluates op(pair<T1, T2>.first, compareTo) */
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
@@ -107,11 +114,16 @@ public:
 
 	static void ensureDirectory(const string& aFile)
 	{
-#ifdef WIN32
 		string::size_type start = 0;
-		
+
+#ifdef WIN32
 		while( (start = aFile.find_first_of("\\/", start)) != string::npos) {
 			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
+			start++;
+		}
+#else
+		while( (start = aFile.find_first_of("/", start)) != string::npos) {
+			mkdir(aFile.substr(0, start+1).c_str(), 0755);
 			start++;
 		}
 #endif
@@ -124,6 +136,10 @@ public:
 		int i = (strrchr(buf, '\\') - buf);
 		return string(buf, i + 1);
 #else // WIN32
+		char* home = getenv("HOME");
+		if (home) {
+			return string(home) + "/.dc++/";
+		}
 		return emptyString;
 #endif // WIN32
 	}	
@@ -134,7 +150,15 @@ public:
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return string(buf, x);
 #else // WIN32
-		return emptyString;
+		char buf[PATH_MAX + 1];
+		char* path = getenv("_");
+		if (!path) {
+			if (readlink("/proc/self/exe", buf, sizeof (buf)) == -1) {
+				return emptyString;
+			}
+			path = buf;
+		}
+		return string(path);
 #endif // WIN32
 	}	
 
@@ -144,6 +168,18 @@ public:
 		DWORD x = GetTempPath(MAX_PATH, buf);
 		return string(buf, x);
 #else
+		return "/tmp/";
+#endif
+	}
+
+	static string getDataPath() {
+#ifdef WIN32
+		return getAppPath();
+#else
+		char* home = getenv("HOME");
+		if (home) {
+			return string(home) + "/dc++/";
+		}
 		return emptyString;
 #endif
 	}
@@ -247,7 +283,7 @@ public:
 		SetLocaleInfoA(GetUserDefaultLCID(), LOCALE_IDIGITS, "0");
 		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, NULL, buf, sizeof(buf)/sizeof(buf[0]));
 #else
-		sprintf(buf, "%lld", aNumber);
+		sprintf(buf, "%'lld", aNumber);
 #endif		
 		return buf;
 	}
@@ -300,7 +336,7 @@ public:
 
 	static string toString(u_int32_t val) {
 		char buf[16];
-		sprintf(buf, "%lu", val);
+		sprintf(buf, "%lu", (unsigned long)val);
 		return buf;
 	}
 	static string toString(int val) {
@@ -484,5 +520,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.69 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: Util.h,v 1.70 2003/11/13 10:55:52 arnetheduck Exp $
  */

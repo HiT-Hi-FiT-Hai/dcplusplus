@@ -95,11 +95,15 @@ typedef unsigned __int64 u_int64_t;
 
 #ifdef WIN32
 #define PATH_SEPARATOR '\\'
+#define PATH_SEPARATOR_STR "\\"
+#define I64_FMT "%I64d"
 #else
 #define PATH_SEPARATOR '/'
+#define PATH_SEPARATOR_STR "/"
+#define I64_FMT "%lld"
 #endif
 
 /**
  * @file
- * $Id: config.h,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: config.h,v 1.16 2003/11/13 10:55:52 arnetheduck Exp $
  */

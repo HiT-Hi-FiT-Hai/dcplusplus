@@ -66,7 +66,7 @@ _CrtDbgBreak(); } } while (0)
 #else
 #define dcasserta(exp)
 #endif // WIN32
-#define dcdebug true ? (0) : printf
+#define dcdebug if (false) printf
 #define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
@@ -98,6 +98,6 @@ extern void shutdown();
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.33 2003/11/11 13:16:09 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.34 2003/11/13 10:55:52 arnetheduck Exp $
  */
 

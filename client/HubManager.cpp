@@ -314,6 +314,8 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 	case HttpConnectionListener::REDIRECTED:
 		fire(HubManagerListener::DOWNLOAD_STARTING, aLine);
 		break;
+	default:
+		break;
 	}
 }
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
@@ -322,6 +324,8 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 		listType = TYPE_BZIP2; break;
 	case HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL:
 		listType = TYPE_NORMAL; break;
+	default:
+		break;
 	}
 }
 
@@ -334,5 +338,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.37 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.38 2003/11/13 10:55:52 arnetheduck Exp $
  */

@@ -278,7 +278,7 @@ private:
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), userInfo(true), supportFlags(0), op(false), 
+	Client() : nick(SETTING(NICK)), supportFlags(0), userInfo(true), op(false), 
 		registered(false), firstHello(true), state(STATE_CONNECT), 
 		socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
 		countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
@@ -306,6 +306,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.72 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Client.h,v 1.73 2003/11/13 10:55:52 arnetheduck Exp $
  */
 

@@ -58,7 +58,7 @@ bool BufferedSocket::threadSendFile() {
 
 				u_int32_t br = 0;
 				bytes = comp->compress(inbuf, s, br);
-				if(bytes == -1) {
+				if(bytes == (u_int32_t)-1) {
 					// Finished!
 					delete comp;
 					comp = NULL;
@@ -451,5 +451,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.57 2003/11/11 20:31:56 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.58 2003/11/13 10:55:52 arnetheduck Exp $
  */

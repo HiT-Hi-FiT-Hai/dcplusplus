@@ -147,6 +147,8 @@ void UserConnection::onAction(BufferedSocketListener::Types type) throw() {
 		break;
 	case BufferedSocketListener::TRANSMIT_DONE:
 		fire(UserConnectionListener::TRANSMIT_DONE, this); break;
+	default:
+		break;
 	}
 }
 void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t bytes) throw() {
@@ -191,5 +193,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.30 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.31 2003/11/13 10:55:52 arnetheduck Exp $
  */

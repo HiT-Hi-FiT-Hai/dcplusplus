@@ -414,7 +414,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	}
 	
 	dcassert(d->getPos() == d->getSize());
-	dcdebug("Download finished: %s, size %I64d, downloaded %I64d\n", d->getTarget().c_str(), d->getSize(), d->getTotal());
+	dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getTarget().c_str(), d->getSize(), d->getTotal());
 
 	// Check if we have some crc:s...
 	dcassert(d->getFile() != NULL);
@@ -666,5 +666,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.80 2003/11/11 13:16:09 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.81 2003/11/13 10:55:52 arnetheduck Exp $
  */

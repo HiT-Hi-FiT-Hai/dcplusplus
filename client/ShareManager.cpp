@@ -420,7 +420,7 @@ void ShareManager::Directory::toString(string& tmp, DupeMap& dupes, int ident /*
 		DupeIter k = p.first;
 		for(; k != p.second; ++k) {
 			if(k->second == j->first) {
-				dcdebug("SM::D::toString Dupe found: %s (%I64d bytes)\n", k->second.c_str(), j->second);
+				dcdebug("SM::D::toString Dupe found: %s (" I64_FMT " bytes)\n", k->second.c_str(), j->second);
 				break;
 			}
 		}
@@ -730,6 +730,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.61 2003/11/11 20:31:56 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.62 2003/11/13 10:55:52 arnetheduck Exp $
  */
 

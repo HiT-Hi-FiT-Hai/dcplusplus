@@ -16,6 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef WIN32
+#include <sys/types.h>
+#include <dirent.h>
+#include <fnmatch.h>
+#endif
+
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
@@ -34,6 +40,12 @@
 #include "DirectoryListing.h"
 
 QueueManager* Singleton<QueueManager>::instance = NULL;
+
+#ifdef WIN32
+#define FILELISTS_DIR "FileLists\\"
+#else
+#define FILELISTS_DIR "filelists/"
+#endif
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
@@ -247,11 +259,11 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : dirty(false), nextSearch(0), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
+QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(false), nextSearch(0) { 
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
-	Util::ensureDirectory(Util::getAppPath() + "FileLists\\");
+	Util::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
 };
 
 QueueManager::~QueueManager() { 
@@ -261,13 +273,13 @@ QueueManager::~QueueManager() {
 
 	saveQueue();
 
-#ifdef WIN32
-
 	if(!BOOLSETTING(KEEP_LISTS)) {
-		string path = Util::getAppPath() + "FileLists\\";
+		string path = Util::getAppPath() + FILELISTS_DIR;
+
+#ifdef WIN32
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
-		
+	
 		hFind = FindFirstFile((path + "\\*.bz2").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
@@ -285,8 +297,20 @@ QueueManager::~QueueManager() {
 			
 			FindClose(hFind);
 		}
-	}
+
+#else
+		DIR* dir = opendir(path.c_str());
+		if (dir) {
+			while (struct dirent* ent = readdir(dir)) {
+				if (fnmatch("*.bz2", ent->d_name, 0) == 0 ||
+					fnmatch("*.DcLst", ent->d_name, 0) == 0) {
+					File::deleteFile(path + ent->d_name);	
+				}
+			}
+			closedir(dir);
+		}		
 #endif
+	}
 };
 
 void QueueManager::onTimerMinute(u_int32_t aTick) {
@@ -1178,6 +1202,8 @@ void QueueManager::onAction(ClientManagerListener::Types type, const User::Ptr& 
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	if(aUser->isOnline() && hasDown)	
@@ -1198,5 +1224,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.56 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.57 2003/11/13 10:55:52 arnetheduck Exp $
  */

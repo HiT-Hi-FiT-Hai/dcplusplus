@@ -57,7 +57,7 @@ public:
 
 	FavoriteHubEntry() throw() : connect(false) { };
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false) { };
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), userdescription(rhs.userdescription) { };
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick) { };
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
@@ -136,7 +136,7 @@ public:
 	bool isFavoriteUser(const User::Ptr& aUser) {
 		return (find(users.begin(), users.end(), aUser) != users.end());
 	}
-/**/
+*/
 	
 	//void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
 	void addFavorite(const FavoriteHubEntry& aEntry) {
@@ -324,6 +324,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.46 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.47 2003/11/13 10:55:52 arnetheduck Exp $
  */
 

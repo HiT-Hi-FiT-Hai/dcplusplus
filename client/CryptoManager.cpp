@@ -69,7 +69,7 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRea
 	// the adler32...we want at least 5% compression, a completely arbitrary value.
 	// The 64kb probe zone is also taken out of the air...
 	if( (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
-		dcdebug("Disabling compression for 0x%x (%d/%d = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
+		dcdebug("Disabling compression for 0x%p (%ld/%ld = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
 		setStrength(0);
 		if(zs.avail_out == 0)
 			return bufLen;
@@ -571,5 +571,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.35 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.36 2003/11/13 10:55:52 arnetheduck Exp $
  */
