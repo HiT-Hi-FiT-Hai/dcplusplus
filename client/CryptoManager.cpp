@@ -90,7 +90,7 @@ string CryptoManager::makeKey(const string& lock) {
 	return keySubst(tmp, extra);
 }
 
-void CryptoManager::decodeHuffman(BYTE* is, string& os) {
+void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 
@@ -180,7 +180,7 @@ void CryptoManager::decodeHuffman(BYTE* is, string& os) {
  */
 int CryptoManager::countChars(const string& aString, int* c, BYTE& csum) {
 	int chars = 0;
-	BYTE* a = (BYTE*)aString.data();
+	const BYTE* a = (const BYTE*)aString.data();
 	string::size_type len = aString.length();
 	for(int i=0; i<len; i++) {
 
@@ -325,7 +325,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	bos.skipToByte();
 
 	for(i=0; i<is.size(); i++) {
-		dcassert(lookup[(BYTE)is[i]].size != 0);
+		dcassert(lookup[(BYTE)is[i]].size() != 0);
 		bos.put(lookup[(BYTE)is[i]]);
 	}
 	bos.skipToByte();
@@ -333,9 +333,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.10 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.10  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.9  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

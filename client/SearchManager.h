@@ -117,6 +117,11 @@ public:
 		socket.create(Socket::TYPE_UDP);
 		socket.bind(aPort);
 	}
+
+	void onSearchResult(const string& aLine) {
+		onData((const BYTE*)aLine.data(), aLine.length());
+	}
+	
 private:
 	static SearchManager* instance;
 	
@@ -135,7 +140,7 @@ private:
 		socket.removeListener(this);
 	};
 
-	virtual void onData(BYTE* buf, int aLen);
+	virtual void onData(const BYTE* buf, int aLen);
 
 	void fireResult(SearchResult* aResult) {
 		listenerCS.enter();
@@ -153,9 +158,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.5 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.5  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.4  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -38,8 +38,11 @@ void UserConnection::accept(const ServerSocket& aServer) {
 		disconnect();
 
 	socket.accept(aServer);
+	TimerManager::getInstance()->addListener(this);
 }
 void UserConnection::onLine(const string& aLine) {
+	lastActivity = TimerManager::getTick();
+
 	if(aLine.length() == 0) {
 		// Do nothing
 	} else if(aLine.find("$MyNick") != string::npos) {
@@ -84,9 +87,12 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.5 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.6 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.6  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.5  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

@@ -27,8 +27,9 @@
 #include "UserConnection.h"
 #include "User.h"
 #include "CriticalSection.h"
+#include "TimerManager.h"
 
-class ConnectionManager : public UserConnectionListener, ServerSocketListener
+class ConnectionManager : public UserConnectionListener, ServerSocketListener, TimerManagerListener
 {
 public:
 	static void newInstance() {
@@ -47,7 +48,7 @@ public:
 		instance = NULL;
 	}
 
-	int getDownloadConnection(User* aUser, bool aRemind = false);
+	int getDownloadConnection(User* aUser);
 	
 	void putDownloadConnection(UserConnection* aSource) {
 		cs.enter();
@@ -89,17 +90,21 @@ private:
 	/** Main critical section for the connection manager */
 	CriticalSection cs;
 
-	User::NickMap pendingDown;
+	map<string, DWORD> pendingDown;
 	UserConnection::NickMap downloaders;
 	UserConnection::NickMap uploaders;
 	UserConnection::List pool;
 
+	// UserConnectionListener
 	virtual void onIncomingConnection();
 	virtual void onMyNick(UserConnection* aSource, const string& aNick);
 	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk);
 	virtual void onConnected(UserConnection* aSource);
 	virtual void onKey(UserConnection* aSource, const string& aKey);
 	virtual void onError(UserConnection* aSource, const string& aError);
+	
+	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick);
 	
 	/**
 	 * Returns an unused connection, either from the pool or a brand new fresh one.
@@ -160,9 +165,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.13 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.13  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.12  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

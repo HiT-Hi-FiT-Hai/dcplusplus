@@ -25,6 +25,7 @@
 
 #include "BufferedSocket.h"
 #include "CriticalSection.h"
+#include "TimerManager.h"
 
 class UserConnection;
 class User;
@@ -38,7 +39,7 @@ public:
 	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) { };
 	virtual void onConnecting(UserConnection* aSource, const string& aServer) { };
 	virtual void onConnected(UserConnection* aSource) { };
-	virtual void onData(UserConnection* aSource, BYTE* aBuf, int aLen) { };
+	virtual void onData(UserConnection* aSource, const BYTE* aBuf, int aLen) { };
 	virtual void onError(UserConnection* aSource, const string& aError) { };
 	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk) { };
 	virtual void onKey(UserConnection* aSource, const string& aKey) { };
@@ -93,7 +94,7 @@ private:
 };
 class ServerSocket;
 
-class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener
+class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, TimerManagerListener
 {
 public:
 	friend class ConnectionManager;
@@ -140,7 +141,8 @@ public:
 	void maxedOut() { send("$MaxedOut|"); };
 
 	User* getUser() { return user; };
-
+	const string& getNick() { return nick; };
+	
 	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
 	void connect(const string& aServer, short aPort = 412);
@@ -164,12 +166,17 @@ private:
 	short port;
 	BufferedSocket socket;
 	User* user;
+	string nick;
+	
 	int state;
 	int flags;
-
+	DWORD lastActivity;
+	
 	static const string UPLOAD, DOWNLOAD;
 	
 	void reset() {
+		TimerManager::getInstance()->removeListener(this);
+		
 		dcdebug("UserConnection(%p)::reset\n", this );
 		disconnect();
 		removeListeners();
@@ -178,10 +185,11 @@ private:
 		state = LOGIN;
 		server = "";
 		port = 0;
-
+		lastActivity = 0;
 	}
+
 	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0), port(0) { 
+	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0), port(0), lastActivity(0) { 
 		socket.addListener(this);
 	};
 	virtual ~UserConnection() {
@@ -189,19 +197,34 @@ private:
 	};
 
 	// BufferedSocketListener
-	virtual void onBytesSent(DWORD aBytes) { fireBytesSent(aBytes); };
-	virtual void onConnected() { fireConnected(); };
+	virtual void onBytesSent(DWORD aBytes) { lastActivity = TimerManager::getTick();	fireBytesSent(aBytes); };
+	virtual void onConnected() { TimerManager::getInstance()->addListener(this); lastActivity = TimerManager::getTick(); fireConnected(); };
 	virtual void onLine(const string& aLine);
 	virtual void onError(const string& aError) { fireError(aError); };
 	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
-	virtual void onData(BYTE *aBuf, int aLen) { fireData(aBuf, aLen); };
+	virtual void onData(const BYTE *aBuf, int aLen) { lastActivity = TimerManager::getTick(); fireData(aBuf, aLen); };
 	virtual void onTransmitDone() {
 		fireTransmitDone();
 	};
-	
-	void send(const string& aString) {
-		socket.write(aString);
+
+	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick) {
+		if((lastActivity + 120 * 1000) < aTick) {
+			// Nothing's happened for 120 seconds, fire error...
+			fireError("Connection Timeout");
+			lastActivity = aTick;
+		}
 	}
+
+	void send(const string& aString) {
+		lastActivity = TimerManager::getTick();
+		try {
+			socket.write(aString);
+		} catch(SocketException e) {
+			fireError(e.getError());
+		}
+	}
+
 	void fireBytesSent(DWORD aBytes) {
 		listenerCS.enter();
 	//	dcdebug("UserConnection(%p)::fireBytesSent\n", this );
@@ -229,7 +252,7 @@ private:
 			(*i)->onConnecting(this, aServer);
 		}
 	}
-	void fireData(BYTE* aData, int aLen) {
+	void fireData(const BYTE* aData, int aLen) {
 		listenerCS.enter();
 //		dcdebug("UserConnection(%p)::fireData %d\n", this , aLen);
 		UserConnectionListener::List tmp = listeners;
@@ -352,9 +375,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.14 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.15 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.15  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.14  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

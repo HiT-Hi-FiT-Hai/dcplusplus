@@ -30,7 +30,7 @@
 class BitInputStream  
 {
 public:
-	BitInputStream(BYTE* aStream, int aStart) : is(aStream), bitPos(aStart*8) { };
+	BitInputStream(const BYTE* aStream, int aStart) : is(aStream), bitPos(aStart*8) { };
 	~BitInputStream() { };
 	
 	bool get() {
@@ -50,16 +50,19 @@ public:
 	}
 private:
 	int bitPos;
-	BYTE* is;
+	const BYTE* is;
 };
 
 #endif // !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.4 2001/12/07 20:02:58 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.5 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.h,v $
+ * Revision 1.5  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.4  2001/12/07 20:02:58  arnetheduck
  * More work done towards application stability
  *

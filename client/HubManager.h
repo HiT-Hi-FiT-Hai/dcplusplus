@@ -118,7 +118,7 @@ private:
 	string downloadBuf;
 
 	// HttpConnectionListener
-	virtual void onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen);
+	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
 	virtual void onHttpError(HttpConnection* aConn, const string& aError);
 	virtual void onHttpComplete(HttpConnection* aConn);	
 
@@ -205,9 +205,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.8 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.9  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.8  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

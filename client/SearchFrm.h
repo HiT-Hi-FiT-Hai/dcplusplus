@@ -27,6 +27,7 @@
 #include "DownloadManager.h"
 #include "SearchManager.h"
 #include "ExListViewCtrl.h"
+#include "StringTokenizer.h"
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 
@@ -46,10 +47,23 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
+		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+		char buf[1024];
+		
+		if(item->iItem != -1) {
+			ctrlResults.GetItemText(item->iItem, 0, buf, 1024);
+			DownloadManager::getInstance()->downloadList(buf);
+		}
+		return 0;
+		
+	}
 
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		ctrlSearch.SetFocus();
@@ -121,10 +135,8 @@ public:
 			//client->sendMessage(s);
 			ctrlSearch.SetWindowText("");
 			
-			if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE)
-				ctrlStatus.SetText(0, "Passive mode searching not finished yet...");
-			else
-				ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+			search = StringTokenizer(s).getTokens();
 
 		} else {
 			bHandled = FALSE;
@@ -147,7 +159,16 @@ private:
 	CContainedWindow ctrlSearchContainer;
 	ExListViewCtrl ctrlResults;
 
+	StringList search;
+
 	virtual void onSearchResult(SearchResult* aResult) {
+		// Check that this is really a relevant search result...
+		for(StringIter j = search.begin(); j != search.end(); ++j) {
+			if(aResult->getFile().find(*j) == string::npos) {
+				return;
+			}
+		}
+
 		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick());
 		ctrlResults.SetItemText(i, 1, aResult->getFile().c_str());
 		ctrlResults.SetItemText(i, 2, Util::shortenBytes(aResult->getSize()).c_str());
@@ -165,9 +186,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.3 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.3  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.2  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

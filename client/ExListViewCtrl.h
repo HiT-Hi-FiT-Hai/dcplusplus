@@ -158,9 +158,8 @@ public:
 		case SORT_INT:
 			return compare(atoi(a.c_str()), atoi(b.c_str()), p->ascending);
 		default:
-			dcassert(0);
+			return -1;
 		}
-		dcassert(0);
 	}
 	
 	template<class T> static int compare(const T& a, const T& b, bool d) {
@@ -191,9 +190,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.8 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.9  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.8  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

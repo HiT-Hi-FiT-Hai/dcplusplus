@@ -42,12 +42,29 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 					if(aTick > j->second + 60*1000) {
 						lastConnection[u] = aTick;
 						d->setLastTry(aTick);
-						if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY, true) {
+						if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY) {
 							fireConnecting(d);
 						}
 					}
+				} else {
+					lastConnection[u] = aTick;
+					d->setLastTry(aTick);
+					if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY) {
+						fireConnecting(d);
+					}
 				}
 			}
+		}
+	}
+}
+
+void DownloadManager::connectFailed(const string& aUser) {
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		// First, search the queue for the same download...
+		Download* dd = *i;
+		if(dd->getLastNick() == aUser) {
+			// Same download it seems
+			fireFailed(dd, "Connection Timeout");
 		}
 	}
 }
@@ -158,6 +175,17 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	cs.leave();
 }
 
+void DownloadManager::downloadList(User* aUser) {
+	string file = Settings::getAppPath() + aUser->getNick() + ".DcLst";
+	download("MyList.DcLst", -1, aUser, file, false);
+	userLists.push_back(file);
+}
+
+void DownloadManager::downloadList(const string& aUser) {
+	string file = Settings::getAppPath() + aUser + ".DcLst";
+	download("MyList.DcLst", -1, aUser, file, false);
+	userLists.push_back(file);
+}
 
 void DownloadManager::removeDownload(Download* aDownload) {
 	cs.enter();
@@ -219,24 +247,15 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.enter();
 	dcdebug("Checking downloads...");
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(aConn->getUser()->getNick() == (*i)->getLastNick()) {
+		if(aConn->getNick() == (*i)->getLastNick()) {
 			Download* d = *i;
 			queue.erase(i);
 
 			running[aConn] = d;
 			
 			if(d->getResume()) {
-				WIN32_FIND_DATA fd;
-				HANDLE hFind;
-				
-				hFind = FindFirstFile(d->getTarget().c_str(), &fd);
-				
-				if (hFind == INVALID_HANDLE_VALUE) {
-					d->setPos(0);
-				} else {
-					d->setPos(fd.nFileSizeHigh << 32 | fd.nFileSizeLow);
-					FindClose(hFind);
-				}
+				LONGLONG x = Util::getFileSize(d->getTarget());
+				d->setPos( (x == -1) ? 0 : x);
 			} else {
 				d->setPos(0);
 			}
@@ -252,7 +271,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.leave();
 }
 
-void DownloadManager::onData(UserConnection* aSource, BYTE* aData, int aLen) {
+void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
 	cs.enter();
 	dcassert(running.find(aSource) != running.end());
 	DWORD len;
@@ -364,9 +383,12 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.11 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.12 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.12  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.11  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -95,7 +95,9 @@ public:
 		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true);
-
+	void downloadList(User* aUser);
+	void downloadList(const string& aUser);
+	void connectFailed(const string& aUser);
 	
 	void removeDownload(Download* aDownload);
 
@@ -143,12 +145,13 @@ private:
 	static DownloadManager* instance;
 	
 	UserConnection::List connections;
-
+	StringList userLists;
+	
 	void checkDownloads(UserConnection* aConn);
 	
 	// UserConnectionListener
 	virtual void onError(UserConnection* aSource, const string& aError);
-	virtual void onData(UserConnection* aSource, BYTE* aData, int aLen);
+	virtual void onData(UserConnection* aSource, const BYTE* aData, int aLen);
 	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
 	virtual void onMaxedOut(UserConnection* aSource);
 	virtual void onModeChange(UserConnection* aSource, int aNewMode);
@@ -215,6 +218,9 @@ private:
 	DownloadManager() { };
 	virtual ~DownloadManager() {
 		removeConnections();
+		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
+			DeleteFile(i->c_str());
+		}
 	};
 };
 
@@ -222,9 +228,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.11 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.12 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.12  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.11  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

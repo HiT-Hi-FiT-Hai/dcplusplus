@@ -71,7 +71,7 @@ public:
 	string getLock() { return lock; };
 	string getPk() { return pk; };
 
-	void decodeHuffman(BYTE* is, string& os);
+	void decodeHuffman(const BYTE* is, string& os);
 	void encodeHuffman(const string& is, string& os);
 	
 	static CryptoManager* getInstance() {
@@ -136,9 +136,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.5 2001/12/07 20:03:06 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.6 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.6  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.5  2001/12/07 20:03:06  arnetheduck
  * More work done towards application stability
  *

@@ -65,11 +65,11 @@ public:
 			char buf[128];
 			sprintf(buf, "D: %s", Util::shortenBytes(Socket::getTotalDown()).c_str());
 			ctrlStatus.SetText(1, buf);
-			sprintf(buf, "D: %s", Util::shortenBytes(Socket::getTotalUp()).c_str());
+			sprintf(buf, "U: %s", Util::shortenBytes(Socket::getTotalUp()).c_str());
 			ctrlStatus.SetText(2, buf);
 			sprintf(buf, "D: %s/s", Util::shortenBytes(Socket::getDown()).c_str());
 			ctrlStatus.SetText(3, buf);
-			sprintf(buf, "D: %s/s", Util::shortenBytes(Socket::getUp()).c_str());
+			sprintf(buf, "U: %s/s", Util::shortenBytes(Socket::getUp()).c_str());
 			ctrlStatus.SetText(4, buf);
 		}
 		Socket::resetStats();
@@ -247,9 +247,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.13 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.13  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.12  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -90,6 +90,8 @@ void Client::onLine(const string& aLine) {
 				fireRevConnectToMe(i->second);
 			}
 		}
+	} else if(cmd == "$SR") {
+		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
 		name = param;
 		fireHubName();
@@ -196,9 +198,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.8 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.9  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.8  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

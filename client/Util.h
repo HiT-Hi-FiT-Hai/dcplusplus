@@ -114,7 +114,20 @@ public:
 			start++;
 		}
 	}
+	
+	static LONGLONG getFileSize(const string& aName) {
+		WIN32_FIND_DATA fd;
+		HANDLE hFind;
 		
+		hFind = FindFirstFile(aName.c_str(), &fd);
+		
+		if (hFind == INVALID_HANDLE_VALUE) {
+			return -1;
+		} else {
+			FindClose(hFind);
+			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
+		}
+	}
 	static string shortenBytes(const string& aString) {
 		return shortenBytes(_atoi64(aString.c_str()));
 	}
@@ -122,7 +135,7 @@ public:
 	static string shortenBytes(LONGLONG aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
-			sprintf(buf, "%d B", aBytes );
+			sprintf(buf, "%I64d B", aBytes );
 		} else if(aBytes < 1024*1024) {
 			sprintf(buf, "%.02f kB", (double)aBytes/(1024.0) );
 		} else if(aBytes < 1024*1024*1024) {
@@ -142,9 +155,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Util.h,v 1.4 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.4  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.3  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

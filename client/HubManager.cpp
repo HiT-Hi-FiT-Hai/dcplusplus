@@ -65,7 +65,7 @@ DWORD WINAPI HubManager::lister(void* p) {
 	return 0;
 }
 
-void HubManager::onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen) {
+void HubManager::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
 	downloadBuf.append((char*)aBuf, aLen);
 	string::size_type i;
 	
@@ -99,9 +99,12 @@ void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.7 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.7  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.6  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

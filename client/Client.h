@@ -139,21 +139,25 @@ public:
 	}
 
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
-		char buf[MAX_PATH + 128];
+		char buf[768];
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 
-		string server = Settings::getServer();
-		int port = Settings::getPort();
-		if(server.empty()) {
-			server = socket.getLocalIp();
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			string server = Settings::getServer();
+			int port = Settings::getPort();
+			if(server.empty()) {
+				server = socket.getLocalIp();
+			}
+			
+			if(port==-1) {
+				port = 412;
+			}
+			
+			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, aString.c_str());
+		} else {
+			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", Settings::getNick().c_str(), c1, c2, aSize, aFileType+1, aString.c_str());
 		}
-		
-		if(port==-1) {
-			port = 412;
-		}
-		
-		sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, aString.c_str());
 		send(buf);
 	}
 
@@ -208,15 +212,19 @@ public:
 	const string& getServer() { return server; };
 
 	User* getUser(const string& aNick) {
+		dcassert(aNick.length() > 0);
+
 		User::NickIter j = users.find(aNick);
 		if(j != users.end()) {
 			return j->second;
 		} else {
 			return NULL;
 		}
-		dcassert(0);
 	}
+
 	static User* findUser(const string& aNick) {
+		dcassert(aNick.length() > 0);
+
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
 			User::NickIter j = (*i)->users.find(aNick);
 			if(j != (*i)->users.end()) {
@@ -290,11 +298,17 @@ private:
 	}
 
 	virtual void onConnected() {
+		lastActivity = TimerManager::getTick();
 		fireConnected();
 	}
 
 	void send(const string& a) {
-		socket.write(a);
+		lastActivity = TimerManager::getTick();
+		try {
+			socket.write(a);
+		} catch(SocketException e) {
+			fireError(e.getError());
+		}
 	}
 	
 	void fireConnected() {
@@ -388,7 +402,7 @@ private:
 		}
 	}
 	void fireMyInfo(User* aUser) {
-		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
+//		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
@@ -424,7 +438,7 @@ private:
 		}
 	}
 	void fireQuit(User* aUser) {
-		dcdebug("fireQuit %s\n", aUser->getNick().c_str());
+		//dcdebug("fireQuit %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
@@ -475,9 +489,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Client.h,v 1.10 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.10  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.9  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

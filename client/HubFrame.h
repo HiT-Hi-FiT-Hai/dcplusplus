@@ -97,7 +97,6 @@ protected:
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
-	StringList userLists;
 
 public:
 
@@ -107,9 +106,6 @@ public:
 	}
 
 	~HubFrame() {
-		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
-			DeleteFile(i->c_str());
-		}
 		if(client) {
 			client->removeListeners();
 			delete client;
@@ -231,9 +227,11 @@ public:
 		if(client->isConnected() && item->iItem != -1) {
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
 			user = buf;
-			string file = Settings::getAppPath() + user + ".DcLst";
-			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), file, false);
-			userLists.push_back(file);
+			User* u = client->getUser(user);
+			if(u == NULL)
+				DownloadManager::getInstance()->downloadList(user);
+			else 
+				DownloadManager::getInstance()->downloadList(u);
 		}
 		return 0;
 	}
@@ -282,7 +280,12 @@ public:
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 			string s(message, ctrlMessage.GetWindowTextLength());
 			delete message;
-			client->sendMessage(s);
+			try {
+				client->sendMessage(s);
+			} catch(Exception e) {
+				// ...
+
+			}
 			ctrlMessage.SetWindowText("");
 		} else {
 			bHandled = FALSE;
@@ -300,9 +303,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.14 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.15 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.15  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.14  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -294,17 +294,21 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040904B0"
+        BLOCK "040904b0"
         BEGIN
+            VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "test1 Module\0"
+            VALUE "FileDescription", "DC++\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "TEST1\0"
-            VALUE "LegalCopyright", "Copyright 2001\0"
-            VALUE "OriginalFilename", "DCPlusPlus.exe\0"
-            VALUE "ProductName", "DCPlusPlus Module\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "DC++\0"
+            VALUE "LegalCopyright", "Copyright 2001 Jacek Sieka\0"
+            VALUE "LegalTrademarks", "\0"
             VALUE "OLESelfRegister", "\0"
+            VALUE "OriginalFilename", "DCPlusPlus.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "DC++\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
         END
     END
     BLOCK "VarFileInfo"

@@ -34,7 +34,7 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	virtual void onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen) { };
+	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) { };
 	virtual void onHttpError(HttpConnection* aConn, const string& aError) { };
 	virtual void onHttpComplete(HttpConnection* aConn) { };	
 };
@@ -50,7 +50,7 @@ private:
 
 	virtual void onConnected();
 	virtual void onLine(const string& aLine);
-	virtual void onData(BYTE* aBuf, int aLen) { fireData(aBuf, aLen); }
+	virtual void onData(const BYTE* aBuf, int aLen) { fireData(aBuf, aLen); }
 	virtual void onError(const string& aReason) { fireError(aReason); }
 	virtual void onModeChange(int newMode) { fireComplete(); socket.disconnect(); }
 	
@@ -62,7 +62,7 @@ private:
 	bool ok;
 	BufferedSocket socket;
 	
-	void fireData(BYTE* aBuf, int aLen) {
+	void fireData(const BYTE* aBuf, int aLen) {
 		listenerCS.enter();
 		dcdebug("HttpConnection::fireData %d\n", aLen);
 		HttpConnectionListener::List tmp = listeners;
@@ -95,9 +95,12 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.2 2001/12/07 20:03:07 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.3 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
+ * Revision 1.3  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.2  2001/12/07 20:03:07  arnetheduck
  * More work done towards application stability
  *

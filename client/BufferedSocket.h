@@ -36,7 +36,7 @@ public:
 	virtual void onConnected() { };
 	virtual void onLine(const string& aLine) { };
 	virtual void onError(const string& aReason) { };
-	virtual void onData(BYTE* aBuf, int aLen) { };
+	virtual void onData(const BYTE* aBuf, int aLen) { };
 	virtual void onModeChange(int newMode) { };
 	virtual void onTransmitDone() { };
 };
@@ -170,7 +170,7 @@ private:
 			(*i)->onConnected();
 		}
 	}
-	void fireData(BYTE* aBuf, int aLen) {
+	void fireData(const BYTE* aBuf, int aLen) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
 		listenerCS.leave();
@@ -222,9 +222,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.13 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.14 2001/12/15 17:01:06 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.14  2001/12/15 17:01:06  arnetheduck
+ * Passive mode searching as well as some searching code added
+ *
  * Revision 1.13  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...
