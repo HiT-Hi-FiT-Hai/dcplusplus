@@ -230,13 +230,13 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 * @throw SocketExcpetion Send failed.
 */
 void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen) throw(SocketException) {
+	if(sock == INVALID_SOCKET) {
+		create(TYPE_UDP);
+	}
 	dcassert(type == TYPE_UDP);
 	//	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
 	dcassert(aLen < 1450);
-	if(sock == INVALID_SOCKET) {
-		create(TYPE_UDP);
-	}
 	dcassert(sock != INVALID_SOCKET);
 
 	sockaddr_in  serv_addr;
@@ -352,6 +352,6 @@ string Socket::resolve(const string& aDns) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.41 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.42 2002/06/08 09:49:18 arnetheduck Exp $
  */
 
