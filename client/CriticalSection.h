@@ -65,13 +65,56 @@ private:
 	CriticalSection& operator=(const CriticalSection&);
 };
 
-class Lock {
+/**
+* A fast, non-recursive and unfair implementation of the Critical Section.
+* It is meant to be used in situations where the risk for lock conflict is very low, 
+* i e locks that are held for a very short time. The lock is _not_ recursive, i e if 
+* the same thread will try to grab the lock it'll hang in a never-ending loop. The lock
+* is not fair, i e the first to try to enter a locked lock is not guaranteed to be the
+* first to get it when it's freed...
+*/
+class FastCriticalSection {
 public:
-	Lock(CriticalSection& aCs) throw() : cs(aCs)  { cs.enter(); };
-	~Lock() throw() { cs.leave(); };
+#ifdef _WIN32
+	FastCriticalSection() : state(0) { };
+
+	void enter() {
+		while(Thread::safeExchange(&state, 1) == 1) {
+			Thread::yield();
+		}
+	}
+	void leave() {
+		Thread::safeDec(&state);
+	}
 private:
-	CriticalSection& cs;
+	long state;
+
+#else
+	// We have to use a pthread (nonrecursive) mutex, didn't find any test_and_set on linux...
+	FastCriticalSection() { 
+		pthread_mutexattr_t attr;
+		pthread_mutexattr_init(&attr);
+		pthread_mutex_init(&mtx, &attr);
+	};
+	~FastCriticalSection() { pthread_mutex_destroy(&mtx); };
+	void enter() { pthread_mutex_lock(&mtx); };
+	void leave() { pthread_mutex_unlock(&mtx); };
+private:
+	pthread_mutex_t mtx;	
+#endif
 };
+
+template<class T>
+class SimpleLock {
+public:
+	SimpleLock(T& aCs) throw() : cs(aCs)  { cs.enter(); };
+	~SimpleLock() throw() { cs.leave(); };
+private:
+	T& cs;
+};
+
+typedef SimpleLock<CriticalSection> Lock;
+typedef SimpleLock<FastCriticalSection> FastLock;
 
 class RWLock
 {
@@ -126,5 +169,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.17 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.18 2004/01/30 17:05:56 arnetheduck Exp $
  */

@@ -32,8 +32,6 @@
 
 #define ADLS_STORE_FILENAME "ADLSearch.xml"
 
-ADLSearchManager* Singleton<ADLSearchManager>::instance = NULL;
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //	Load old searches from disk
@@ -291,6 +289,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.9 2004/01/28 19:37:54 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.10 2004/01/30 17:05:56 arnetheduck Exp $
 */
 

@@ -29,8 +29,6 @@
 #include "SFVReader.h"
 #include "User.h"
 
-DownloadManager* Singleton<DownloadManager>::instance = NULL;
-
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
@@ -678,5 +676,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.88 2004/01/24 20:42:06 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.89 2004/01/30 17:05:56 arnetheduck Exp $
  */

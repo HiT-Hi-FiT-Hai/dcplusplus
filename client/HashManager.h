@@ -79,7 +79,8 @@ private:
 
 	class Hasher : public Thread {
 	public:
-		Hasher() : stop(false) { };
+		enum { MIN_BLOCK_SIZE = 64*1024 };
+		Hasher() : stop(false) { }
 
 		void hashFile(const string& fileName) {
 			Lock l(cs);
@@ -183,5 +184,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.4 2004/01/30 14:12:59 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.5 2004/01/30 17:05:56 arnetheduck Exp $
  */

@@ -26,8 +26,6 @@
 #include "ShareManager.h"
 #include "ClientManager.h"
 
-UploadManager* Singleton<UploadManager>::instance = NULL;
-
 static const string UPLOAD_AREA = "Uploads";
 
 UploadManager::UploadManager() throw() : running(0), extra(0), lastAutoGrant(0) { 
@@ -385,5 +383,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.49 2004/01/07 14:14:52 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.50 2004/01/30 17:05:56 arnetheduck Exp $
  */

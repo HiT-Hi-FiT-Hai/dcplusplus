@@ -21,9 +21,7 @@
 
 #include "LogManager.h"
 
-LogManager* Singleton<LogManager>::instance = NULL;
-
 /**
  * @file
- * $Id: LogManager.cpp,v 1.5 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: LogManager.cpp,v 1.6 2004/01/30 17:05:56 arnetheduck Exp $
  */

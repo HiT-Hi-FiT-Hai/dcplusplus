@@ -19,41 +19,71 @@
 #ifndef _FAST_ALLOC
 #define _FAST_ALLOC
 
-#ifdef HAS_STLPORT
+#include "CriticalSection.h"
+
+#pragma once
+
 struct FastAllocBase {
-	/** This one should allocate one byte at a time. */
-	static allocator<u_int8_t> alloc;
+	static FastCriticalSection cs;
 };
 
 /** 
- * Fast new/delete replacements that use the node allocator from STLPort to 
- * alloc/dealloc memory. Only makes sense if STLPort is used...
+ * Fast new/delete replacements for constant sized objects, that also give nice
+ * reference locality...
  */
 template<class T>
-struct FastAlloc : private FastAllocBase {
+struct FastAlloc : public FastAllocBase {
 	// Custom new & delete that (hopefully) use the node allocator
 	static void* operator new(size_t s) {
 		if(s != sizeof(T))
 			return ::operator new(s);
-		return alloc.allocate(s);
+		return allocate();
 	}
 	static void operator delete(void* m, size_t s) {
 		if (s != sizeof(T)) {
 			::operator delete(m);
 		} else {
-			alloc.deallocate((u_int8_t*)m, s);
+			deallocate((u_int8_t*)m);
 		}
 	}
+
+private:
+
+	static void* allocate() {
+		FastLock l(cs);
+		if(freeList == NULL) {
+			grow();
+		}
+		void* tmp = freeList;
+		freeList = *((void**)freeList);
+		return tmp;
+	}
+
+	static void deallocate(void* p) {
+		FastLock l(cs);
+		*(void**)p = freeList;
+		freeList = p;
+	}
+
+	static void* freeList;
+
+	static void grow() {
+		dcassert(sizeof(T) >= sizeof(void*));
+		// We want to grow by approximately 128kb at a time...
+		size_t items = ((128*1024 + sizeof(T) - 1)/sizeof(T));
+		freeList = new u_int8_t[sizeof(T)*items];
+		u_int8_t* tmp = (u_int8_t*)freeList;
+		for(int i = 0; i < items - 1; i++) {
+			*(void**)tmp = tmp + sizeof(T);
+			tmp += sizeof(T);
+		}
+		*(void**)tmp = NULL;
+	}
 };
-#else
-template<class T>
-struct FastAlloc {
-	// Empty
-};
-#endif
+template<class T> void* FastAlloc<T>::freeList = NULL;
 
 #endif // _FAST_ALLOC
 /**
  * @file
- * $Id: FastAlloc.h,v 1.1 2004/01/28 20:19:20 arnetheduck Exp $
+ * $Id: FastAlloc.h,v 1.2 2004/01/30 17:05:56 arnetheduck Exp $
  */

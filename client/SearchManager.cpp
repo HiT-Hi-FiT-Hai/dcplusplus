@@ -23,8 +23,6 @@
 
 #include "ClientManager.h"
 
-SearchManager* Singleton<SearchManager>::instance = NULL;
-
 string SearchResult::toSR() const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
 	// Directory:	"$SR %s %s %d/%d%c%s (%s)|"
@@ -222,6 +220,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.32 2004/01/24 20:42:32 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.33 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

@@ -29,8 +29,6 @@
 
 #include "UserConnection.h"
 
-ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
-
 ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
@@ -632,5 +630,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.67 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.68 2004/01/30 17:05:56 arnetheduck Exp $
  */

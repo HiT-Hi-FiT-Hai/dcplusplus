@@ -40,8 +40,6 @@
 #include "StringTokenizer.h"
 #include "DirectoryListing.h"
 
-QueueManager* Singleton<QueueManager>::instance = NULL;
-
 #ifdef _WIN32
 #define FILELISTS_DIR "FileLists\\"
 #else
@@ -1290,5 +1288,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.72 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.73 2004/01/30 17:05:56 arnetheduck Exp $
  */

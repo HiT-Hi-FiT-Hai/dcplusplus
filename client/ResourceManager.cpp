@@ -24,8 +24,6 @@
 #include "SimpleXML.h"
 #include "File.h"
 
-ResourceManager* Singleton<ResourceManager>::instance;
-
 void ResourceManager::loadLanguage(const string& aFile) {
 	try {
 		File f(aFile, File::READ, File::OPEN);
@@ -58,6 +56,6 @@ void ResourceManager::loadLanguage(const string& aFile) {
 }
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.8 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

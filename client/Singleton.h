@@ -53,10 +53,11 @@ private:
 	Singleton& operator=(const Singleton&);
 
 };
+template<typename T> T* Singleton<T>::instance = NULL;
 
 #endif // !defined(AFX_SINGLETON_H__3B62D311_53B4_42E9_8522_D890E70BDFE3__INCLUDED_)
 
 /**
  * @file
- * $Id: Singleton.h,v 1.5 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: Singleton.h,v 1.6 2004/01/30 17:05:56 arnetheduck Exp $
  */

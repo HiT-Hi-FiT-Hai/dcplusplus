@@ -21,8 +21,6 @@
 
 #include "TimerManager.h"
 
-TimerManager* Singleton<TimerManager>::instance = NULL;
-
 #ifndef _WIN32
 timeval TimerManager::tv;
 #endif
@@ -49,6 +47,6 @@ int TimerManager::run() {
 
 /**
  * @file
- * $Id: TimerManager.cpp,v 1.14 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.15 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

@@ -31,8 +31,6 @@
 #include <bzlib.h>
 #endif
 
-CryptoManager* Singleton<CryptoManager>::instance;
-
 ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
 	inbuf(NULL), f(file), maxBytes(aMaxBytes), level(aStrength) {
 	
@@ -531,5 +529,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.41 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.42 2004/01/30 17:05:56 arnetheduck Exp $
  */

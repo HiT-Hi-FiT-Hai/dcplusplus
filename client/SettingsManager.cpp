@@ -25,8 +25,6 @@
 #include "Util.h"
 #include "File.h"
 
-SettingsManager* Singleton<SettingsManager>::instance = 0;
-
 const string SettingsManager::settingTags[] =
 {
 	// Strings
@@ -291,6 +289,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.65 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.66 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

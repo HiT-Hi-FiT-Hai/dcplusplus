@@ -65,6 +65,8 @@ public:
 	static void yield() { ::Sleep(0); };
 	static long safeInc(long* v) { return InterlockedIncrement(v); };
 	static long safeDec(long* v) { return InterlockedDecrement(v); };
+	static long safeExchange(long* target, long value) { return InterlockedExchange(target, value); };
+
 #else
 
 	enum Priority {
@@ -140,6 +142,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.12 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Thread.h,v 1.13 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

@@ -37,8 +37,6 @@
 #include <unistd.h>
 #endif
 
-ShareManager* Singleton<ShareManager>::instance = NULL;
-
 ShareManager::ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(false), 
 	update(false), listN(0), lFile(NULL), bFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) { 
 	SettingsManager::getInstance()->addListener(this);
@@ -826,6 +824,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.74 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.75 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

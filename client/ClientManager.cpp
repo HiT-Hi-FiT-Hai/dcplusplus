@@ -27,8 +27,6 @@
 #include "ConnectionManager.h"
 #include "HubManager.h"
 
-ClientManager* Singleton<ClientManager>::instance = NULL;
-
 Client* ClientManager::getClient() {
 	Client* c = new Client();
 
@@ -355,5 +353,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.47 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.48 2004/01/30 17:05:56 arnetheduck Exp $
  */

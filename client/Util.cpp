@@ -35,9 +35,7 @@
 
 #include "FastAlloc.h"
 
-#ifdef HAS_STLPORT
-allocator<u_int8_t> FastAllocBase::alloc;
-#endif
+FastCriticalSection FastAllocBase::cs;
 
 string Util::emptyString;
 
@@ -556,6 +554,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.42 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.43 2004/01/30 17:05:56 arnetheduck Exp $
  */
 

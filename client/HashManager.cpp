@@ -25,8 +25,6 @@
 #include "LogManager.h"
 #include "File.h"
 
-HashManager* Singleton<HashManager>::instance = NULL;
-
 #define HASH_FILE_VERSION_STRING "1"
 static const u_int32_t HASH_FILE_VERSION=1;
 
@@ -246,7 +244,7 @@ int HashManager::Hasher::run() {
 		if(!fname.empty()) {
 			try {
 				File f(fname, File::READ, File::OPEN);
-				TigerTree tth(f.getSize(), max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)64*1024));
+				TigerTree tth(f.getSize(), max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE));
 				
 				u_int32_t n = 0;
 				do {
@@ -265,5 +263,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.5 2004/01/30 14:12:59 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.6 2004/01/30 17:05:56 arnetheduck Exp $
  */

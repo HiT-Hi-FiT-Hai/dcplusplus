@@ -21,8 +21,6 @@
 
 #include "FinishedManager.h"
 
-FinishedManager* Singleton<FinishedManager>::instance = NULL;
-
 FinishedManager::~FinishedManager()
 {
 	Lock l(cs);
@@ -82,5 +80,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.14 2004/01/07 14:14:52 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.15 2004/01/30 17:05:56 arnetheduck Exp $
  */

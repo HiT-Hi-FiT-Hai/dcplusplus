@@ -29,8 +29,6 @@
 #include "SimpleXML.h"
 #include "UserCommand.h"
 
-HubManager* Singleton<HubManager>::instance = NULL;
-
 #define FAVORITES_FILE "Favorites.xml"
 
 void HubManager::onHttpFinished() throw() {
@@ -341,5 +339,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.44 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.45 2004/01/30 17:05:56 arnetheduck Exp $
  */
