@@ -460,7 +460,7 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 			Download* d = *j;
 
 			sprintf(buf, CSTRING(DOWNLOADED_BYTES), Util::formatBytes(d->getPos()).c_str(), 
-				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatSeconds((GET_TICK()-d->getStart())/1000));
+				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatSeconds((GET_TICK() - d->getStart())/1000).c_str());
 
 			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
 			ItemInfo* ii = transferItems[aCqi];

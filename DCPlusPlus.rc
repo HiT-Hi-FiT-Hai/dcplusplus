@@ -51,6 +51,7 @@ IDB_ARROWS              BITMAP                  "res\\arrows.bmp"
 IDB_USERS               BITMAP                  "res\\users.bmp"
 IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
 IDB_TOOLBAR20           BITMAP                  "res\\toolbar20.bmp"
+IDB_TOOLBAR20_HOT       BITMAP                  "res\\toolbar20-highlight.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -72,6 +73,7 @@ IDR_FINISHED_DL         ICON                    "res\\FinishedDL.ico"
 IDR_ADLSEARCH           ICON                    "res\\ADLSearch.ico"
 IDR_FINISHED_UL         ICON                    "res\\FinishedUL.ico"
 IDR_USERS               ICON                    "res\\FavoriteUser.ico"
+IDR_SPY                 ICON                    "res\\searchspy.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -203,7 +205,7 @@ BEGIN
     GROUPBOX        "Limits",IDC_STATIC,7,82,261,58
     LTEXT           "Maximum simultaneous downloads (0 = infinite)",
                     IDC_STATIC,46,96,215,8
-    LTEXT           "Maximum download speed to start new downloads (kB/s, 0 = disable)",
+    LTEXT           "No new downloads if speed exceeds (kB/s, 0 = disable)",
                     IDC_STATIC,46,112,218,8
     LTEXT           "HTTP Proxy (for hublist only)",IDC_STATIC,14,183,247,8
     LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",

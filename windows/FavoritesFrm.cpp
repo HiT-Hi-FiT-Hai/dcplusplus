@@ -110,6 +110,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	nosave = false;
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -313,6 +315,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.14 2003/10/07 15:46:27 arnetheduck Exp $
  */
 

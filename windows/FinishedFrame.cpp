@@ -82,6 +82,8 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -193,5 +195,5 @@ void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.8 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.9 2003/10/07 15:46:27 arnetheduck Exp $
  */

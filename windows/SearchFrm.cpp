@@ -56,7 +56,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	modeContainer.SubclassWindow(ctrlMode.m_hWnd);
 
 	ctrlSize.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+		ES_AUTOHSCROLL | ES_NUMBER, WS_EX_CLIENTEDGE);
 	sizeContainer.SubclassWindow(ctrlSize.m_hWnd);
 	
 	ctrlSizeMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -201,6 +201,8 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
 	}
+
+	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
 	return 1;
@@ -1041,5 +1043,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.24 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.25 2003/10/07 15:46:27 arnetheduck Exp $
  */

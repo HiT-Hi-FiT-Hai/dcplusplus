@@ -138,6 +138,8 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Load all searches
 	LoadAll();
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -603,5 +605,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.7 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.8 2003/10/07 15:46:26 arnetheduck Exp $
  */

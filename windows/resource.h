@@ -3,7 +3,6 @@
 // Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
-#define IDD_PROPPAGE_1                  107
 #define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -20,7 +19,6 @@
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
 #define IDB_USERS                       210
-#define IDD_PROPPAGE_2                  210
 #define IDD_ADVANCEDPAGE                210
 #define IDD_DOWNLOADPAGE                211
 #define IDD_UPLOADPAGE                  212
@@ -43,6 +41,7 @@
 #define IDR_FINISHED_UL                 232
 #define IDR_ADLSEARCH                   233
 #define IDD_ADLS_PROPERTIES             234
+#define IDB_TOOLBAR20_HOT               235
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -98,7 +97,6 @@
 #define IDC_HUBPASS                     1042
 #define IDC_NEWFAV                      1042
 #define IDC_HUBNAME                     1043
-#define IDC_COMBO1                      1044
 #define IDC_SOURCE_TYPE                 1044
 #define IDC_AUTOSEARCH                  1045
 #define IDC_SIZE_TYPE                   1045
@@ -231,7 +229,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        235
+#define _APS_NEXT_RESOURCE_VALUE        236
 #define _APS_NEXT_COMMAND_VALUE         32788
 #define _APS_NEXT_CONTROL_VALUE         1130
 #define _APS_NEXT_SYMED_VALUE           102

@@ -57,6 +57,8 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ClientManager::getInstance()->addListener(this);
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -266,7 +268,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.15 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.16 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
 

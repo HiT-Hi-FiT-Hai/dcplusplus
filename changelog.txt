@@ -9,6 +9,14 @@
 * Fixed a bug when changing priorities from paused
 * Reduced transfer view flicker somewhat when sorted by status
 * Reconnect time is randomized a little to reduce stress on hub when everyone reconnects
+* Small i18n fix in uploads settings (thanks atomicjo)
+* Numbers only on search size box (thanks atomicjo)
+* Delete multiple favorite users (thanks gargoyle)
+* Autocomplete turned off when using shift-tab (to tab between the windows instead) 
+  (thanks gargoyle)
+* Small fixes (thanks gargoyle)
+* Toolbar updates (thanks gargoyle)
+
 
  -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)

@@ -264,7 +264,7 @@ private:
 	HttpConnection* c;
 	string versionInfo;
 	CImageList images;
-	CImageList largeImages;
+	CImageList largeImages, largeImagesHot;
 	
 	UINT trayMessage;
 	/** Is the tray icon visible? */
@@ -308,7 +308,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.22 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.23 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
  

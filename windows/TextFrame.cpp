@@ -53,6 +53,8 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
 	}
 	
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -72,7 +74,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.2 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.3 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
 

@@ -120,6 +120,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	showJoins = BOOLSETTING(SHOW_JOINS);
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	client->connect(server);
 	return 1;
@@ -818,7 +820,7 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 };
 
 void HubFrame::onTab() {
-	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd)) {
+	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd) && !(GetAsyncKeyState(VK_SHIFT) & 0x8000)) {
 		int n = ctrlMessage.GetWindowTextLength();
 		AutoArray<char> buf(n+1);
 		ctrlMessage.GetWindowText(buf, n+1);
@@ -1099,5 +1101,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.30 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.31 2003/10/07 15:46:27 arnetheduck Exp $
  */

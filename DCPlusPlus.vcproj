@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 /fixed:no"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib vc7/Debug/client/client.lib vc7/Debug/bzip/bzip2.lib vc7/debug/zlib/zlib.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -115,7 +115,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib vc7/Release/client/client.lib vc7/Release/bzip/bzip2.lib vc7/Release/zlib/zlib.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
 				LinkIncremental="1"

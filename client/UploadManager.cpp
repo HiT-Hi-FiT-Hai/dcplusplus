@@ -35,8 +35,8 @@ UploadManager::UploadManager() throw() : running(0), extra(0), lastAutoGrant(0) 
 };
 
 UploadManager::~UploadManager() throw() {
-	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->removeListener(this);
+	ClientManager::getInstance()->removeListener(this);
 	while(true) {
 		{
 			Lock l(cs);
@@ -365,5 +365,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.40 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.41 2003/10/07 15:46:26 arnetheduck Exp $
  */

@@ -147,6 +147,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
 	
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -855,5 +857,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.21 2003/10/07 15:46:27 arnetheduck Exp $
  */

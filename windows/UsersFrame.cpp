@@ -80,6 +80,8 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return TRUE;
 
@@ -89,7 +91,6 @@ LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	int i = -1;
 	while( (i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		HubManager::getInstance()->removeFavoriteUser(((UserInfo*)ctrlUsers.GetItemData(i))->user);
-		break;
 	}
 	return 0;
 }
@@ -171,6 +172,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.11 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.12 2003/10/07 15:46:27 arnetheduck Exp $
  */
 

@@ -140,6 +140,8 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlStatus.SetParts(6, statusSizes);
 	updateStatus();
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -1158,7 +1160,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.27 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.28 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
 

@@ -54,6 +54,8 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	SetWindowText(CSTRING(NOTEPAD));
 	frame = this;
 	
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -92,7 +94,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.9 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.10 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
 

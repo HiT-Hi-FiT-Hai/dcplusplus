@@ -140,7 +140,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && !d->isSet(Download::FLAG_USER_LIST) && 
 			aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK)) {
 
-			// This one, we'll download with a bzblock download instead...
+			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
 			d->setComp(new ZDecompressor());
@@ -653,5 +653,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.75 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.76 2003/10/07 15:46:26 arnetheduck Exp $
  */

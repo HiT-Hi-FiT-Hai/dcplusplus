@@ -53,8 +53,8 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	PropPage::read((HWND)*this, items);
 
 	// Prepare shared dir list
-	ctrlDirectories.InsertColumn(0, "Directory", LVCFMT_LEFT, 277, 0);
-	ctrlDirectories.InsertColumn(1, "Size", LVCFMT_RIGHT, 90, 1);
+	ctrlDirectories.InsertColumn(0, CSTRING(DIRECTORY), LVCFMT_LEFT, 277, 0);
+	ctrlDirectories.InsertColumn(1, CSTRING(SIZE), LVCFMT_RIGHT, 90, 1);
 	StringList directories = ShareManager::getInstance()->getDirectories();
 	for(StringIter j = directories.begin(); j != directories.end(); j++)
 	{
@@ -129,6 +129,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.9 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.10 2003/10/07 15:46:27 arnetheduck Exp $
  */
 

@@ -82,6 +82,8 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 
+	m_hMenu = WinUtil::mainMenu;
+
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -192,5 +194,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.4 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.5 2003/10/07 15:46:27 arnetheduck Exp $
  */

@@ -48,6 +48,7 @@ MainFrame::~MainFrame() {
 
 	images.Destroy();
 	largeImages.Destroy();
+	largeImagesHot.Destroy();
 
 	WinUtil::uninit();
 }
@@ -98,19 +99,21 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	images.CreateFromImage(IDB_TOOLBAR, 16, 14, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
 
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+	m_CmdBar.m_arrCommand.Add(IDC_FAVUSERS);
 	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED); // adds icon to File menu
-	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL); // Finished Upload 16 x 16 menu icon
+	m_CmdBar.m_arrCommand.Add(IDC_FINISHED);
+	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+	m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
+	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
 	
@@ -218,84 +221,130 @@ void MainFrame::startSocket() {
 }
 
 HWND MainFrame::createToolbar() {
+	CToolBarCtrl ctrlToolbar;
+	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	largeImagesHot.CreateFromImage(IDB_TOOLBAR20_HOT, 20, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
-	CToolBarCtrl ctrl;
-	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrl.SetImageList(largeImages);
+	ctrlToolbar.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrlToolbar.SetImageList(largeImages);
+	ctrlToolbar.SetHotImageList(largeImagesHot);
 
-	TBBUTTON tb[11];
+	const int numButtons = 21;
+
+
+	TBBUTTON tb[numButtons];
 	memset(tb, 0, sizeof(tb));
-	int n = 0;
-	tb[n].iBitmap = n;
+	int n = 0, bitmap = 0;
+
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = ID_FILE_CONNECT;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = ID_FILE_RECONNECT;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FOLLOW;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FAVORITES;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_FAVUSERS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_QUEUE;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	n++; // toolbar icon
-	tb[n].iBitmap = n;
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FINISHED;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	n++; // Finished Upload 20x20 toolbar icon
-	tb[n].iBitmap = n;
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FINISHED_UL;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = ID_FILE_SEARCH;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_SEARCH_SPY;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
+	tb[n].idCommand = IDC_OPEN_FILE_LIST;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+		
+	n++;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = ID_FILE_SETTINGS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
 	n++;
-	tb[n].iBitmap = n;
+	tb[n].fsStyle = TBSTYLE_SEP;
+
+	n++;
+	tb[n].iBitmap = bitmap++;
 	tb[n].idCommand = IDC_NOTEPAD;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(11, tb);
-	ctrl.AutoSize();
+	ctrlToolbar.SetButtonStructSize();
+	ctrlToolbar.AddButtons(numButtons, tb);
+	ctrlToolbar.AutoSize();
 
-	return ctrl.m_hWnd;
+	return ctrlToolbar.m_hWnd;
 }
 
 
@@ -553,13 +602,16 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_RECONNECT; break;
 			case IDC_FOLLOW: stringId = ResourceManager::MENU_FOLLOW_REDIRECT; break;
 			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;
+			case IDC_FAVUSERS: stringId = ResourceManager::MENU_FAVORITE_USERS; break;
 			case IDC_QUEUE: stringId = ResourceManager::MENU_DOWNLOAD_QUEUE; break;
+			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break;
+			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break;
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
+			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
+			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
+			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
-			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
-			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break; // tooltip
-			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break; // Finished Uploads tooltip
 		}
 		if(stringId != -1) {
 			strncpy(pDispInfo->lpszText, ResourceManager::getInstance()->getString((ResourceManager::Strings)stringId).c_str(), 79);
@@ -909,6 +961,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.30 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.31 2003/10/07 15:46:27 arnetheduck Exp $
  */
 
