@@ -92,12 +92,12 @@ void CryptoManager::encodeBZ2(const string& is, string& os) {
 	delete buf;
 }
 
-string CryptoManager::keySubst(string aKey, int n) {
-	u_int8_t* temp = new u_int8_t[aKey.length() + n * 10];
+string CryptoManager::keySubst(const u_int8_t* aKey, int len, int n) {
+	u_int8_t* temp = new u_int8_t[len + n * 10];
 	
 	int j=0;
 	
-	for(string::size_type i = 0; i<aKey.length(); i++) {
+	for(int i = 0; i<len; i++) {
 		if(isExtra(aKey[i])) {
 			temp[j++] = '/'; temp[j++] = '%'; temp[j++] = 'D';
 			temp[j++] = 'C'; temp[j++] = 'N';
@@ -147,9 +147,9 @@ string CryptoManager::makeKey(const string& lock) {
 		extra++;
 	}
 	
-	string tmp((char*)temp, i);
+	string tmp = keySubst(temp, lock.length(), extra);
 	delete[] temp;
-	return keySubst(tmp, extra);
+	return tmp;
 }
 
 void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
@@ -409,5 +409,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.25 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.26 2002/06/27 23:38:24 arnetheduck Exp $
  */

@@ -64,7 +64,7 @@ class Flags {
 		int flags;
 };
 
-template<typename Listener>
+template<typename Listener, bool treadSafe = true>
 class Speaker {
 public:
 
@@ -380,7 +380,12 @@ public:
 		return awayMsg.empty() ? defaultMsg : awayMsg;
 	};
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
-	
+
+	static u_int32_t rand();
+	static u_int32_t rand(u_int32_t high) { return rand() % high; };
+	static u_int32_t rand(u_int32_t low, u_int32_t high) { return rand(high-low) + low; };
+	static double randd() { return ((double)rand()) / ((double)0xffffffff); };
+
 private:
 	static bool away;
 	static string awayMsg;
@@ -393,6 +398,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.48 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: Util.h,v 1.49 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

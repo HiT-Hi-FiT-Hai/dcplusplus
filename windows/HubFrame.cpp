@@ -418,7 +418,8 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInf
 			l.push_back(u->getDescription());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
-			return ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
+			ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
+			return newUser;
 		} else {
 			i = ctrlUsers.insert(ctrlUsers.GetItemCount(), u->getNick(), getImage(u), (LPARAM)ui);
 		}
@@ -826,5 +827,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.16 2002/06/27 23:38:24 arnetheduck Exp $
  */

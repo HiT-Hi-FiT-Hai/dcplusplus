@@ -179,7 +179,7 @@ void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 
 void MainFrame::onConnectionStatus(ConnectionQueueItem* aCqi) {
 	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
-	i->columns[COLUMN_STATUS] = aCqi->getStatus() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
+	i->columns[COLUMN_STATUS] = aCqi->getState() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
@@ -1088,6 +1088,6 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.16 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

@@ -1,4 +1,4 @@
- -- --
+ -- 0.18 --
 * Added a finished downloads window
 * Added temporary download directory option
 * Added support for dchub://hubip:port and dchub://hubip:port/nick (will download that users filelist) (partially
@@ -11,8 +11,10 @@
 * Shift-enter in hub send message instead of adding a newline to the text (use ctrl-enter for newlines)
   (because a lot of people can't type properly and keep holding shift when pressing enter...I hear old (60+) 
   people often do this...=)
-
-
+* More changes to the autosearch, it should now be more random and therefore yield better results...
+* Old download queues (pre 0.174) are no longer loaded
+* Added better error reporting on failed downloads (look in the queue window to see why a source failed)
+* Some fixes in the queue/connection handling
 
  -- 0.177 2002-06-07 --
 * Improved performance on "File not available" (connection / slot is now kept)
@@ -593,3 +595,4 @@
 
 * Initial release.
 * List hubs, connect to them and chat.
+ 

@@ -18,7 +18,7 @@
 		<String Name="B">B</String>
 		<String Name="BothUsersOffline">Both users offline</String>
 		<String Name="Browse">Browse...</String>
-		<String Name="CantConnectInPassiveMode">Can't connect to passive user while in passive mode</String>
+		<String Name="CantConnectInPassiveMode">Can't download from passive user while in passive mode</String>
 		<String Name="ChooseFolder">Choose folder</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
@@ -60,6 +60,7 @@
 		<String Name="EnterSearchString">Enter search string</String>
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="ErrorOpeningFile">Error opening file</String>
+		<String Name="Errors">Errors</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
 		<String Name="FavoriteUsers">Favorite Users</String>
@@ -144,6 +145,7 @@
 		<String Name="NotSocket">Not a socket</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
+		<String Name="NoErrors">No errors</String>
 		<String Name="NoMatches">No matches</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
 		<String Name="NoUsers">No users</String>
@@ -156,6 +158,7 @@
 		<String Name="OpenFileList">Open file list</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
+		<String Name="PassiveUser">Passive user</String>
 		<String Name="Password">Password</String>
 		<String Name="Parts">Parts: </String>
 		<String Name="Path">Path</String>

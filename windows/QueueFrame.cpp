@@ -30,12 +30,12 @@
 QueueFrame* QueueFrame::frame = NULL;
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH };
+COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, 
-	ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH };
+ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -169,6 +169,27 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
 		tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
 	}
 	columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
+	tmp = Util::emptyString;
+	for(QueueItem::Source::Iter j = qi->getBadSources().begin(); j != qi->getBadSources().end(); ++j) {
+		QueueItem::Source::Ptr sr = *j;
+		if(!sr->isSet(QueueItem::Source::FLAG_REMOVED)) {
+			if(tmp.size() > 0)
+				tmp += ", ";
+
+			tmp += " (";
+			if(sr->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
+				tmp += STRING(FILE_NOT_AVAILABLE);
+			} else if(sr->isSet(QueueItem::Source::FLAG_PASSIVE)) {
+				tmp += STRING(PASSIVE_USER);
+			} else if(sr->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
+				tmp += STRING(ROLLBACK_INCONSISTENCY);
+			} else {
+				dcassert(0 == "Unkown error?");
+			}
+			tmp += ')';
+		}
+	}
+	columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
 	
 	if(qi->getStatus() == QueueItem::WAITING) {
 		
@@ -514,7 +535,7 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->removeSource(q->getTarget(), s->getUser());
+			QueueManager::getInstance()->removeSource(q->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 		} catch(...) {
 			// ...
 		}
@@ -664,7 +685,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.12 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.13 2002/06/27 23:38:24 arnetheduck Exp $
  */
 
 

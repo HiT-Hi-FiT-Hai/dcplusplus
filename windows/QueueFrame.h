@@ -190,6 +190,7 @@ private:
 		COLUMN_PRIORITY,
 		COLUMN_USERS,
 		COLUMN_PATH,
+		COLUMN_ERRORS,
 		COLUMN_LAST
 	};
 
@@ -286,6 +287,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.10 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.11 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

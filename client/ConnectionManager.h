@@ -40,20 +40,19 @@ public:
 	typedef TimeMap::iterator TimeIter;
 	typedef map<UserConnection*, Ptr> QueueMap;
 	typedef QueueMap::iterator QueueIter;
-
-	enum Status {
-		CONNECTING,
-		IDLE,
-		WAITING,
-		NO_DOWNLOAD_SLOTS
+	
+	enum State {
+		CONNECTING,					// In pendingDown, recently sent request to connect
+		WAITING,					// In pendingDown, waiting to send request to connect
+		NO_DOWNLOAD_SLOTS,			// In pendingDown, but not needed right now
+		IDLE,						// In the download pool
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser) : status(CONNECTING), connection(NULL), user(aUser) { };
+	ConnectionQueueItem(const User::Ptr& aUser) : state(WAITING), connection(NULL), user(aUser) { };
 	
-	void setUser(const User::Ptr& aUser) { user = aUser; };
 	User::Ptr& getUser() { return user; };
 	
-	GETSET(Status, status, Status);
+	GETSET(State, state, State);
 	GETSET(UserConnection*, connection, Connection);
 private:
 	User::Ptr user;
@@ -97,12 +96,12 @@ public:
 
 private:
 
-	/** Main critical section for the connection manager */
 	CriticalSection cs;
 
 	ConnectionQueueItem::TimeMap pendingDown;
 	ConnectionQueueItem::List downPool;
 	ConnectionQueueItem::QueueMap connections;
+
 	User::List pendingAdd;
 	UserConnection::List pendingDelete;
 	UserConnection::List userConnections;
@@ -120,7 +119,7 @@ private:
 		features.push_back("BZList");
 	};
 	
-	virtual ~ConnectionManager();
+	virtual ~ConnectionManager() { shutdown(); };
 	
 	UserConnection* getConnection() throw() {
 		UserConnection* uc = new UserConnection();
@@ -160,5 +159,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.43 2002/06/18 19:06:33 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.44 2002/06/27 23:38:24 arnetheduck Exp $
  */

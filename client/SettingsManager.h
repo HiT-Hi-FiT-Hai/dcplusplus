@@ -137,7 +137,7 @@ public:
 		intDefaults[key - INT_FIRST] = value;
 	}
 	void setDefault(Int64Setting key, int64_t value) {
-		int64Defaults[key - INT_FIRST] = value;
+		int64Defaults[key - INT64_FIRST] = value;
 	}
 
 	void load() {
@@ -174,6 +174,6 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.37 2002/06/18 19:06:33 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.38 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

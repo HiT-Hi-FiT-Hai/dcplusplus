@@ -243,8 +243,6 @@ void BufferedSocket::threadRun() {
 		try {
 
 			while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
-				dcdebug("Got task....\n");
-
 				Tasks t;
 				{
 					Lock l(cs);
@@ -292,5 +290,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.43 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.44 2002/06/27 23:38:24 arnetheduck Exp $
  */

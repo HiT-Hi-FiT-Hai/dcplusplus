@@ -198,7 +198,7 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 				aSource->setDownload(NULL);
 				removeDownload(d);				
 
-				QueueManager::getInstance()->removeSource(target, aSource->getUser());
+				QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
 				removeConnection(aSource);
 				return;
 			} 
@@ -292,7 +292,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	removeDownload(d);
 	
 	if(aError == "File Not Available") {
-		QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
+		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	}
 
 	removeConnection(aSource);
@@ -352,7 +352,7 @@ void DownloadManager::onFileNotAvailabe(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 
-	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), false);
+	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	removeDownload(d, false);
 	checkDownloads(aSource);
 }
@@ -396,5 +396,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.66 2002/06/13 18:46:59 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.67 2002/06/27 23:38:24 arnetheduck Exp $
  */

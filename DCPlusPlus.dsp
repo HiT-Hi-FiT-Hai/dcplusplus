@@ -383,6 +383,10 @@ SOURCE=.\windows\SearchFrm.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\windows\SingleInstance.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\windows\SpyFrame.h
 # End Source File
 # Begin Source File

@@ -153,11 +153,15 @@ bool operator<(T* lhs, const Pointer<T>& rhs) { return rhs > lhs; };
 template <class T>
 bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
+template <class T>
+struct DeleteFunction {
+	void operator()(T& p) const { delete p; };
+};
 
 #endif // !defined(AFX_POINTER_H__FCC38D23_858F_43AC_BF23_73FD708FDC82__INCLUDED_)
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.9 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.10 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

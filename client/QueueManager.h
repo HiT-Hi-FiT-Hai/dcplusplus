@@ -46,7 +46,7 @@ public:
 			const char* y = s.data();
 			string::size_type j = s.size();
 			for(string::size_type i = 0; i < j; ++i) {
-				x = x*31 + (unsigned)Util::toLower(y[i]);
+				x = x*31 + (size_t)Util::toLower(y[i]);
 			}
 			return x;
 		}
@@ -92,14 +92,17 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		enum {
-			FLAG_FILE_NOT_FOUND,
-			FLAG_ROLLBACK_INCONSISTENCY
+			FLAG_FILE_NOT_AVAILABLE = 0x01,
+			FLAG_ROLLBACK_INCONSISTENCY = 0x02,
+			FLAG_PASSIVE = 0x04,
+			FLAG_REMOVED = 0x08
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
 		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
+		const User::Ptr& getUser() const { return user; };
 		void setUser(const User::Ptr& aUser) { user = aUser; };
 		string getFileName() { return Util::getFileName(path); };
 
@@ -113,24 +116,37 @@ public:
 	
 	QueueItem(const QueueItem& aQi) : target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
 		current(aQi.current) {
-		
-		for(Source::List::const_iterator i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
+		Source::List::const_iterator i;
+		for(i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
 			sources.push_back(new Source(*(*i)));
 		}
+		for(i = aQi.badSources.begin(); i != aQi.badSources.end(); ++i) {
+			badSources.push_back(new Source(*(*i)));
+		}
+		
 	}
 
 	~QueueItem() { 
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			delete *i;
-		}
+		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
+		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
 	};
 	
+	bool hasOnlineUsers() {
+		Source::Iter i = sources.begin();
+		for(; i != sources.end(); ++i) {
+			if((*i)->getUser()->isOnline())
+				break;
+		}
+		return (i != sources.end());
+	}
+
 	const string& getSourcePath(const User::Ptr& aUser) { 
 		dcassert(isSource(aUser)); 
 		return (*getSource(aUser))->getPath();
 	}
 
 	Source::List& getSources() { return sources; };
+	Source::List& getBadSources() { return badSources; };
 	string getTargetFileName() { return Util::getFileName(getTarget()); };
 	
 	GETSETREF(string, tempTarget, TempTarget);
@@ -142,18 +158,25 @@ public:
 private:
 	friend class QueueManager;
 	Source::List sources;
+	Source::List badSources;
 	
 	Source* addSource(const User::Ptr& aUser, const string& aPath) {
 		dcassert(!isSource(aUser));
+		Source::Iter i = getBadSource(aUser);
+		if(i != badSources.end()) {
+			delete *i;
+			badSources.erase(i);
+		}
 		Source* s = new Source(aUser, aPath);
 		sources.push_back(s);
 		return s;
 	}
 
-	void removeSource(const User::Ptr& aUser) {
+	void removeSource(const User::Ptr& aUser, int reason) {
 		dcassert(isSource(aUser));
 		Source::Iter i = getSource(aUser);
-		delete *i;
+		(*i)->setFlag(reason);
+		badSources.push_back(*i);
 		sources.erase(i);
 	}
 	
@@ -165,14 +188,14 @@ private:
 	bool isSource(const User::Ptr& aUser) { return (getSource(aUser) != sources.end()); };
 
 	Source::Iter getSource(const User::Ptr& aUser) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser) {
-				return i;
-			}
-		}
-		return sources.end();
+		return find(sources.begin(), sources.end(), aUser);
+	}
+
+	Source::Iter getBadSource(const User::Ptr& aUser) {
+		return find(badSources.begin(), badSources.end(), aUser);
 	}
 };
+inline bool operator==(QueueItem::Source* s, const User::Ptr& u) { return s->getUser() == u; };
 
 class QueueManagerListener {
 public:
@@ -193,7 +216,7 @@ public:
 class ConnectionQueueItem;
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
-	private SearchManagerListener, private SettingsManagerListener, private ClientManagerListener
+	private SearchManagerListener, private ClientManagerListener
 {
 public:
 	
@@ -210,7 +233,8 @@ public:
 	}
 	
 	void remove(const string& aTarget) throw(QueueException);
-	void removeSource(const string& aTarget, User::Ptr& aUser, bool removeConn = true);
+	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true);
+	void removeSources(User::Ptr& aUser, int reason);
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
@@ -252,7 +276,6 @@ private:
 	friend class Singleton<QueueManager>;
 	
 	QueueManager() : dirty(false), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
-		SettingsManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this); 
 		SearchManager::getInstance()->addListener(this);
 		ClientManager::getInstance()->addListener(this);
@@ -267,13 +290,11 @@ private:
 	QueueItem::UserListMap userQueue[QueueItem::LAST];
 	QueueItem::UserMap running;
 
-	typedef deque<pair<string, u_int32_t> > SearchList;
-	typedef SearchList::iterator SearchIter;
-	SearchList search;
-	SearchList recent;
+	/** Recent searches list, to avoid searching for the same thing too often */
+	StringList recent;
 
 	static const string USER_LIST_NAME;
-	string getTempName(const string& aFileName);
+	static string getTempName(const string& aFileName);
 	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
 
 	void removeAll(QueueItem* q);
@@ -289,9 +310,6 @@ private:
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types, SearchResult*);
 
-	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);
-
 	// ClientManagerListener
 	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser);
 };
@@ -300,6 +318,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.28 2002/06/13 18:47:00 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.29 2002/06/27 23:38:24 arnetheduck Exp $
  */
 

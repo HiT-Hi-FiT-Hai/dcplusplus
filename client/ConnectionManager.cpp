@@ -30,29 +30,6 @@
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
-ConnectionManager::~ConnectionManager() {
-	TimerManager::getInstance()->removeListener(this);
-
-	socket.removeListener(this);
-	socket.disconnect();
-
-	{
-		Lock l(cs);
-		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-			(*j)->disconnect();
-		}
-	}
-
-	while(true) {
-		{
-			Lock l(cs);
-			if(userConnections.empty())
-				break;
-		}
-		Thread::sleep(100);			
-	}
-}
-
 /**
  * Request a connection for downloading.
  * DownloadManager::addConnection will be called as soon as the connection is ready
@@ -65,12 +42,10 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	{
 		Lock l(cs);
 
-        ConnectionQueueItem::Iter j;
 		if(find(pendingAdd.begin(), pendingAdd.end(), aUser) != pendingAdd.end())
 			return;
 		
-		if( (j = find(downPool.begin(), downPool.end(), aUser)) != downPool.end()) {
-			dcassert((*j)->getConnection());
+		if(find(downPool.begin(), downPool.end(), aUser) != downPool.end()) {
 			pendingAdd.push_back(aUser);
 			return;
 		}
@@ -82,15 +57,15 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		}
 
 		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
-			if(k->first->getUser() == aUser && k->first->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			if(k->first->isSet(UserConnection::FLAG_DOWNLOAD) && k->first->getUser() == aUser) {
 				return;
 			}
 		}
 		
 		// Add it to the pending...
 		cqi = new ConnectionQueueItem(aUser);
-		
-		pendingDown[cqi] = 0;
+		cqi->setState(ConnectionQueueItem::WAITING);
+		pendingDown.insert(make_pair(cqi, 0));
 
 		fire(ConnectionManagerListener::ADDED, cqi);
 	}
@@ -105,37 +80,36 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			
 			ConnectionQueueItem::QueueIter i = connections.find(aSource);
 			dcassert(i != connections.end());
+			i->second->setState(ConnectionQueueItem::IDLE);
 			downPool.push_back(i->second);
 			aSource->setLastActivity(GET_TICK());
+			connections.erase(i);
 		}
 		dcdebug("ConnectionManager::putDownloadConnection Pooling reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
 		
 	} else {
-		if(aSource->getUser()) {
-			if(QueueManager::getInstance()->hasDownload(aSource->getUser())) {
-				aSource->removeListeners();
-				aSource->disconnect();
-				Lock l(cs);
-				
-				ConnectionQueueItem::QueueIter i = connections.find(aSource);
-				if(i != connections.end()) {
-					User::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second->getUser());
-					if(j != pendingAdd.end()) {
-						pendingAdd.erase(j);
-					}
-					i->second->setConnection(NULL);
-					i->second->setStatus(ConnectionQueueItem::WAITING);
-					dcassert(pendingDown.find(i->second) == pendingDown.end());
-					pendingDown[i->second] = GET_TICK();
-					connections.erase(i);
-				}
-
-				dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
-				userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
-				pendingDelete.push_back(aSource);
-				return;
-			}
+		if(aSource->getUser() && QueueManager::getInstance()->hasDownload(aSource->getUser())) {
+			aSource->removeListeners();
+			aSource->disconnect();
+			Lock l(cs);
 			
+			ConnectionQueueItem::QueueIter i = connections.find(aSource);
+			if(i != connections.end()) {
+				User::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second->getUser());
+				if(j != pendingAdd.end()) {
+					pendingAdd.erase(j);
+				}
+				i->second->setConnection(NULL);
+				i->second->setState(ConnectionQueueItem::WAITING);
+				dcassert(pendingDown.find(i->second) == pendingDown.end());
+				pendingDown[i->second] = GET_TICK();
+				connections.erase(i);
+			}
+
+			dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
+			userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
+			pendingDelete.push_back(aSource);
+			return;
 		}
 		putConnection(aSource);
 	}
@@ -164,12 +138,9 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 }
 
 void ConnectionManager::onTimerSecond(u_int32_t aTick) {
-	ConnectionQueueItem::List remove;
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
-
-	int attempts = 0;
-
+	ConnectionQueueItem::List removed;
 	{
 		Lock l(cs);
 		{
@@ -182,27 +153,23 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					ConnectionQueueItem* cqi = *i;
 					downPool.erase(i);
 					dcassert(cqi->getConnection());
+					dcassert(connections.find(cqi->getConnection()) == connections.end());
+					connections.insert(make_pair(cqi->getConnection(), cqi));
 					cqi->getConnection()->removeListener(this);
 					DownloadManager::getInstance()->addConnection((cqi)->getConnection());
 				}
 			}
+			pendingAdd.clear();
 		}
 
-		{
-			for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
-				delete *i;
-			}
-		}
-		pendingDelete.clear();
+		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS));
+		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
+		
+		bool startDown = !tooMany && !tooFast;
 
+		int attempts = 0;
+		
 		ConnectionQueueItem::TimeIter i = pendingDown.begin();
-		bool startDown = true;
-		
-		if( ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
-			((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) ) ) {
-			startDown = false;
-		}
-		
 		while(i != pendingDown.end()) {
 			ConnectionQueueItem* cqi = i->first;
 			dcassert(cqi->getUser());
@@ -210,64 +177,74 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 			if(!cqi->getUser()->isOnline()) {
 				// Not online anymore...remove him from the pending...
 				pendingDown.erase(i++);
-				remove.push_back(cqi);
+				removed.push_back(cqi);
 				continue;
 			}
 
-			if( ((i->second + 60*1000) < aTick) ) {
+			if( ((i->second + 60*1000) < aTick) && (attempts < 2) ) {
+				i->second = aTick;
 
-				if(startDown) {
-					if( attempts == 0 ) {
-						// Nothing's happened for 60 seconds, try again...
-						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-							pendingDown.erase(i++);
-							remove.push_back(cqi);
-							continue;
-						}
-						i->second = aTick;
+				if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+					pendingDown.erase(i++);
+					removed.push_back(cqi);
+					continue;
+				}
 
-						if(cqi->getUser()->isSet(User::PASSIVE) && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
-							failPassive.push_back(cqi);
-						} else {
-							cqi->getUser()->connect();
-							connecting.push_back(cqi);
-							attempts++;
-							cqi->setStatus(ConnectionQueueItem::CONNECTING);
-						}
-					}
-				} else {
-					if(cqi->getStatus() != ConnectionQueueItem::NO_DOWNLOAD_SLOTS) {
-						cqi->setStatus(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
+				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)) {
+					pendingDown.erase(i++);
+					failPassive.push_back(cqi);
+					continue;
+				}
+
+				if(cqi->getState() == ConnectionQueueItem::WAITING) {
+					if(startDown) {
+						cqi->setState(ConnectionQueueItem::CONNECTING);
+						cqi->getUser()->connect();
+						fire(ConnectionManagerListener::STATUS_CHANGED, cqi);
+						attempts++;
+					} else {
+						cqi->setState(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
 						fire(ConnectionManagerListener::FAILED, cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
 					}
+				} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
+					cqi->setState(ConnectionQueueItem::WAITING);
 				}
-			} else if(((i->second + 50*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
+			} else if(((i->second + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
 				fire(ConnectionManagerListener::FAILED, cqi, STRING(CONNECTION_TIMEOUT));
-				cqi->setStatus(ConnectionQueueItem::WAITING);
+				cqi->setState(ConnectionQueueItem::WAITING);
 			}
 			++i;
 		}
 	}
 
-	for(ConnectionQueueItem::Iter l = remove.begin(); l != remove.end(); ++l) {
-		fire(ConnectionManagerListener::REMOVED, *l);
-		delete *l;
+	ConnectionQueueItem::Iter m;
+	for(m = removed.begin(); m != removed.end(); ++m) {
+		fire(ConnectionManagerListener::REMOVED, *m);
+		delete *m;
 	}
-	for(ConnectionQueueItem::Iter m = failPassive.begin(); m != failPassive.end(); ++m) {
-		fire(ConnectionManagerListener::FAILED, *m, STRING(CANT_CONNECT_IN_PASSIVE_MODE));
+	for(m = failPassive.begin(); m != failPassive.end(); ++m) {
+		QueueManager::getInstance()->removeSources((*m)->getUser(), QueueItem::Source::FLAG_PASSIVE);
+		fire(ConnectionManagerListener::REMOVED, *m);
+		delete *m;
 	}
-	for(ConnectionQueueItem::Iter n = connecting.begin(); n != connecting.end(); ++n) {
-		fire(ConnectionManagerListener::STATUS_CHANGED, *n);
-	}
-	
 }
 
 void ConnectionManager::onTimerMinute(u_int32_t aTick) {
 	Lock l(cs);
-	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-		if(((*j)->getLastActivity() + 180*1000) < aTick) {
-			(*j)->disconnect();
+
+	{
+		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+			if(((*j)->getLastActivity() + 180*1000) < aTick) {
+				(*j)->disconnect();
+			}
 		}
+	}
+
+	{
+		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
+			delete *i;
+		}
+		pendingDelete.clear();
 	}
 }
 
@@ -591,5 +568,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.53 2002/06/19 14:29:35 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.54 2002/06/27 23:38:24 arnetheduck Exp $
  */
