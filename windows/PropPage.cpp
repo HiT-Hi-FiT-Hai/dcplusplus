@@ -126,7 +126,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 }
 
 /**
- * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.4 2003/03/13 13:31:57 arnetheduck Exp $
+ * @file
+ * $Id: PropPage.cpp,v 1.5 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

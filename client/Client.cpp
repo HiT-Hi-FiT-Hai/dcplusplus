@@ -651,7 +651,7 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 }
 
 /**
- * @file Client.cpp
- * $Id: Client.cpp,v 1.50 2003/03/13 13:31:13 arnetheduck Exp $
+ * @file
+ * $Id: Client.cpp,v 1.51 2003/04/15 10:13:51 arnetheduck Exp $
  */
 

@@ -19,6 +19,7 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
+#include "SettingsManager.h"
 #include "Util.h"
 
 #ifndef WIN32
@@ -458,7 +459,7 @@ string Util::getOsVersion() {
 
 
 /**
- * @file Util.cpp
- * $Id: Util.cpp,v 1.22 2003/03/31 11:22:43 arnetheduck Exp $
+ * @file
+ * $Id: Util.cpp,v 1.23 2003/04/15 10:13:58 arnetheduck Exp $
  */
 

@@ -216,35 +216,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-
-		short lastPort = (short)SETTING(IN_PORT);
-		short firstPort = lastPort;
-
-		while(true) {
-			try {
-				ConnectionManager::getInstance()->setPort(lastPort);
-				WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
-				SearchManager::getInstance()->setPort(lastPort);
-				break;
-			} catch(Exception e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
-				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
-					// Changing default didn't change port, a fixed port must be in use...(or we
-					// tried all ports
-					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
-					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
-					MessageBox(buf);
-					delete[] buf;
-					break;
-				}
-				lastPort = newPort;
-			}
-		}
-	}
-
 	transferMenu.CreatePopupMenu();
 
 	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
@@ -271,9 +242,45 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
 
+	startSocket();
+
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
+}
+
+void MainFrame::startSocket() {
+	SearchManager::getInstance()->disconnect();
+	ConnectionManager::getInstance()->disconnect();
+
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+
+		short lastPort = (short)SETTING(IN_PORT);
+		short firstPort = lastPort;
+
+		while(true) {
+			try {
+				ConnectionManager::getInstance()->setPort(lastPort);
+				WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
+				SearchManager::getInstance()->setPort(lastPort);
+				break;
+			} catch(const Exception& e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
+				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
+					// Changing default didn't change port, a fixed port must be in use...(or we
+					// tried all ports
+					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					MessageBox(buf);
+					delete[] buf;
+					break;
+				}
+				lastPort = newPort;
+			}
+		}
+	}
 }
 
 HWND MainFrame::createToolbar() {
@@ -820,37 +827,13 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	PropertiesDlg dlg(SettingsManager::getInstance());
 
 	short lastPort = (short)SETTING(IN_PORT);
-	short firstPort = lastPort;
 	int lastConn = SETTING(CONNECTION_TYPE);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
-	{		
+	{
 		SettingsManager::getInstance()->save();
-		
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE && 
-			((SETTING(CONNECTION_TYPE) != lastConn) || (SETTING(IN_PORT) != lastPort))) {
-			while(true) {
-				try {
-					lastPort = (short)SETTING(IN_PORT);
-					ConnectionManager::getInstance()->setPort((short)SETTING(IN_PORT));
-					SearchManager::getInstance()->setPort((short)SETTING(IN_PORT));
-					break;
-				} catch(Exception e) {
-					dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-					short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-					SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
-					if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
-						// Changing default didn't change port, a fixed port must be in use...(or we
-						// tried all ports
-						char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
-						sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
-						MessageBox(buf);
-						delete[] buf;
-						break;
-					}
-					lastPort = newPort;
-				}
-			}
+		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort) {
+			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();
 	}
@@ -1115,6 +1098,10 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
 
 			ShowWindow(SW_HIDE);
+			
+			SearchManager::getInstance()->disconnect();
+			ConnectionManager::getInstance()->disconnect();
+
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
 		}
 	}
@@ -1401,7 +1388,7 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 }
 
 // HttpConnectionListener
-void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn) throw() {
+void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn, string const& /*aLine*/) throw() {
 	switch(type) {
 		case HttpConnectionListener::COMPLETE: onHttpComplete(conn); break;
 	}
@@ -1430,7 +1417,7 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 }
 
 /**
- * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.20 2003/03/26 08:47:45 arnetheduck Exp $
+ * @file
+ * $Id: MainFrm.cpp,v 1.21 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

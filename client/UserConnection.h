@@ -292,7 +292,7 @@ private:
 #endif // !defined(AFX_USERCONNECTION_H__52BFD1A0_9924_4C07_BAFA_FB9682884841__INCLUDED_)
 
 /**
- * @file UserConnection.h
- * $Id: UserConnection.h,v 1.53 2003/03/26 08:47:35 arnetheduck Exp $
+ * @file
+ * $Id: UserConnection.h,v 1.54 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

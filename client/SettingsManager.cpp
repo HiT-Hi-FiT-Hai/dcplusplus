@@ -48,7 +48,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized",
+	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -85,7 +85,7 @@ SettingsManager::SettingsManager()
 	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(OPEN_PUBLIC, false);
-	setDefault(OPEN_QUEUE, true);
+	setDefault(OPEN_QUEUE, false);
 	setDefault(AUTO_SEARCH, false);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, false);
@@ -132,6 +132,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(FINISHED_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
+	setDefault(NO_AWAYMSG_TO_BOTS, true);
 
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -149,7 +150,7 @@ void SettingsManager::load(string const& aFileName)
 	try {
 		File f(aFileName, File::READ, File::OPEN);
 		xmltext = f.read();		
-	} catch(FileException e) {
+	} catch(const FileException&) {
 		// ...
 		return;
 	}
@@ -207,7 +208,7 @@ void SettingsManager::load(string const& aFileName)
 		fire(SettingsManagerListener::LOAD, &xml);
 
 		xml.stepOut();
-	} catch(Exception e) {
+	} catch(const Exception&) {
 		// Oops, bad...
 	}
 }
@@ -262,13 +263,13 @@ void SettingsManager::save(string const& aFileName) {
 		f.close();
 		File::deleteFile(aFileName);
 		File::renameFile(aFileName + ".tmp", aFileName);
-	} catch(FileException e) {
+	} catch(const FileException&) {
 		// ...
 	}
 }
 
 /**
- * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.49 2003/03/31 11:22:40 arnetheduck Exp $
+ * @file
+ * $Id: SettingsManager.cpp,v 1.50 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

@@ -66,7 +66,7 @@ protected:
 #endif //ADVANCEDPAGE_H
 
 /**
- * @file AdvancedPage.h
- * $Id: AdvancedPage.h,v 1.3 2003/03/13 13:31:45 arnetheduck Exp $
+ * @file
+ * $Id: AdvancedPage.h,v 1.4 2003/04/15 10:14:00 arnetheduck Exp $
  */
 

@@ -86,10 +86,10 @@ typedef StringList::const_iterator StringIterC;
 typedef HASH_MAP<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
+#include "version.h"
+
 #include "Singleton.h"
 #include "ResourceManager.h"
-#include "SettingsManager.h"
-#include "version.h"
 
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
@@ -100,7 +100,7 @@ extern void shutdown();
 #endif // _DCPLUSPLUS_H
 
 /**
- * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.30 2003/03/13 13:31:18 arnetheduck Exp $
+ * @file
+ * $Id: DCPlusPlus.h,v 1.31 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

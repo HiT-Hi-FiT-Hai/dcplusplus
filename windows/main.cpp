@@ -265,6 +265,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
 
+	dcdebug("String: %d\n", sizeof(string));
 #ifndef _DEBUG
 	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
 
@@ -317,6 +318,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 }
 
 /**
- * @file main.cpp
- * $Id: main.cpp,v 1.10 2003/03/13 13:32:09 arnetheduck Exp $
+ * @file
+ * $Id: main.cpp,v 1.11 2003/04/15 10:14:06 arnetheduck Exp $
  */

@@ -946,6 +946,6 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 }
 
 /**
- * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.14 2003/03/13 13:32:02 arnetheduck Exp $
+ * @file
+ * $Id: SearchFrm.cpp,v 1.15 2003/04/15 10:14:03 arnetheduck Exp $
  */

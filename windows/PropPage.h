@@ -60,7 +60,7 @@ protected:
 #endif // PROPPAGE_H
 
 /**
- * @file PropPage.h
- * $Id: PropPage.h,v 1.3 2003/03/13 13:31:57 arnetheduck Exp $
+ * @file
+ * $Id: PropPage.h,v 1.4 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

@@ -29,7 +29,7 @@
 #endif
 
 /**
- * @file stdafx.cpp
- * $Id: stdafx.cpp,v 1.5 2003/03/13 13:32:11 arnetheduck Exp $
+ * @file
+ * $Id: stdafx.cpp,v 1.6 2003/04/15 10:14:06 arnetheduck Exp $
  */
 

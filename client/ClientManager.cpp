@@ -153,7 +153,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					if(len > 0 && len < 1400)
 						s.writeTo(ip, port, buf, len);
 				}
-			} catch(SocketException /* e */) {
+			} catch(const SocketException& /* e */) {
 				dcdebug("Search caught error\n");
 			}
 			delete[] buf;
@@ -342,7 +342,7 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 }
 
 /**
- * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.32 2003/03/13 13:31:14 arnetheduck Exp $
+ * @file
+ * $Id: ClientManager.cpp,v 1.33 2003/04/15 10:13:52 arnetheduck Exp $
  */
 

@@ -27,6 +27,7 @@
 #include "User.h"
 #include "TimerManager.h"
 #include "CriticalSection.h"
+#include "SettingsManager.h"
 
 class Client;
 
@@ -265,7 +266,7 @@ private:
 #endif // !defined(AFX_Client_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
 
 /**
- * @file Client.h
- * $Id: Client.h,v 1.63 2003/03/26 08:47:11 arnetheduck Exp $
+ * @file
+ * $Id: Client.h,v 1.64 2003/04/15 10:13:52 arnetheduck Exp $
  */
 

@@ -183,6 +183,16 @@ bool FavoriteHubsFrame::checkNick() {
 	return true;
 }
 
+LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
+	if(l->iItem != -1) {
+		FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
+		f->setConnect(ctrlHubs.GetCheckState(l->iItem) != FALSE);
+		HubManager::getInstance()->save();
+	}
+	return 0;
+}
+
 LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	HubManager::getInstance()->removeListener(this);
 	
@@ -254,7 +264,7 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 };
 
 /**
- * @file FavoritesFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.9 2003/03/31 11:22:46 arnetheduck Exp $
+ * @file
+ * $Id: FavoritesFrm.cpp,v 1.10 2003/04/15 10:14:01 arnetheduck Exp $
  */
 

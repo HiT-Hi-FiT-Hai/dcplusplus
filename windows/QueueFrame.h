@@ -349,7 +349,7 @@ private:
 #endif // !defined(AFX_QUEUEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
- * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.15 2003/03/31 11:23:05 arnetheduck Exp $
+ * @file
+ * $Id: QueueFrame.h,v 1.16 2003/04/15 10:14:03 arnetheduck Exp $
  */
 

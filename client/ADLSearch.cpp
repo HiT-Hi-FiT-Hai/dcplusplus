@@ -88,6 +88,10 @@ void ADLSearchManager::Load()
 					{
 						search.minFileSize = Util::toInt64(xml.getChildData());
 					}
+					if(xml.findChild("SizeType"))
+					{
+						search.typeFileSize = search.StringToSizeType(xml.getChildData());
+					}
 
 					// Add search to collection
 					if(search.searchString.size() > 0)
@@ -101,9 +105,9 @@ void ADLSearchManager::Load()
 				}
 			}
 		}
-	} catch(SimpleXMLException) {
+	} catch(const SimpleXMLException&) {
 		return;
-	} catch(FileException) {
+	} catch(const FileException&) {
 		return;
 	}
 }
@@ -158,6 +162,9 @@ void ADLSearchManager::Save()
 					xml.addTag("MinSize", search.minFileSize);
 					xml.addChildAttrib(type, string("int64"));
 
+					xml.addTag("SizeType", search.SizeTypeToString(search.typeFileSize));
+					xml.addChildAttrib(type, string("string"));
+
 					xml.stepOut();
 				}
 
@@ -166,26 +173,21 @@ void ADLSearchManager::Save()
 		xml.stepOut();
 
 		// Save string to file			
-		try 
-		{
+		try {
 			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
 			fout.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
 			fout.write(xml.toXML());
 			fout.close();
-		} 
-		catch(FileException e) 
-		{
+		} catch(const FileException&) {
 			return;
 		}
-	}
-	catch(SimpleXMLException e) 
-	{
+	} catch(const SimpleXMLException&) {
 		return;
 	}
 }
 
 /**
- * @file ADLSearch.cpp
- * $Id: ADLSearch.cpp,v 1.2 2003/03/26 08:47:09 arnetheduck Exp $
+ * @file
+ * $Id: ADLSearch.cpp,v 1.3 2003/04/15 10:13:50 arnetheduck Exp $
  */
 

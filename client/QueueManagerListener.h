@@ -45,3 +45,8 @@ public:
 };
 
 #endif
+
+/**
+ * @file
+ * $Id: QueueManagerListener.h,v 1.3 2003/04/15 10:13:54 arnetheduck Exp $
+ */

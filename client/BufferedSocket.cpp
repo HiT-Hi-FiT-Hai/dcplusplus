@@ -65,9 +65,8 @@ bool BufferedSocket::threadSendFile() {
 					if(!tasks.empty())
 						return false;
 				}
-				int waitFor = WAIT_READ;
-				wait(0, waitFor);
-				if(waitFor & WAIT_READ)
+				
+				if(wait(0, WAIT_READ) & WAIT_READ)
 					return false;
 
 				u_int32_t br = 0;
@@ -96,9 +95,7 @@ bool BufferedSocket::threadSendFile() {
 						return false;
 				}
 
-				int waitFor = WAIT_READ;
-				wait(0, waitFor);
-				if(waitFor & WAIT_READ)
+				if(wait(0, WAIT_READ) & WAIT_READ)
 					return false;
 
 				dcassert(inbufSize >= SMALL_BUFFER_SIZE);
@@ -115,7 +112,7 @@ bool BufferedSocket::threadSendFile() {
 				size -= len;
 			}
 		}
-	} catch(Exception e) {
+	} catch(const Exception& e) {
 		if(comp) {
 			delete comp;
 			comp = NULL;
@@ -135,9 +132,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 	int start = GET_TICK();
 
 	while(bytesIn < bufLen) {
-		int waitFor = WAIT_READ;
-		while(!wait(POLL_TIMEOUT, waitFor)) {
-			waitFor = WAIT_READ;
+		while(!wait(POLL_TIMEOUT, WAIT_READ)) {
 			{
 				Lock l(cs);
 				if(!tasks.empty()) {
@@ -189,10 +184,7 @@ void BufferedSocket::threadConnect() {
 			Socket::connect(s, p);
 		}
 		
-		int waitFor = WAIT_CONNECT;
-
-		while(!wait(POLL_TIMEOUT, waitFor)) {
-			waitFor = WAIT_CONNECT;
+		while(!wait(POLL_TIMEOUT, WAIT_CONNECT)) {
 			{
 				Lock l(cs);
 				if(!tasks.empty()) {
@@ -305,7 +297,7 @@ void BufferedSocket::threadConnect() {
 		fire(BufferedSocketListener::CONNECTED);
 
 		setBlocking(true);
-	} catch(SocketException e) {
+	} catch(const SocketException& e) {
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			fail("Socks5: " + e.getError());
 		} else {
@@ -367,7 +359,7 @@ void BufferedSocket::threadRead() {
 				}
 			}
 		}
-	} catch(SocketException e) {
+	} catch(const SocketException& e) {
 		dcdebug("BufferedSocket::threadRead caught: %s\n", e.getError().c_str());
 		// Ouch...
 		fail(e.getError());
@@ -416,7 +408,7 @@ void BufferedSocket::threadSendData() {
  * Main task dispatcher for the buffered socket abstraction.
  * @todo Fix the polling...
  */
-void BufferedSocket::threadRun() {
+int BufferedSocket::run() {
 	bool sendingFile = false;
 
 	while(true) {
@@ -432,7 +424,7 @@ void BufferedSocket::threadRun() {
 				}
 
 				switch(t) {
-				case SHUTDOWN: threadShutDown(); return;
+				case SHUTDOWN: threadShutDown(); return 0;
 				case DISCONNECT:
 					if(isConnected()) {
 						Socket::disconnect(); 
@@ -450,25 +442,24 @@ void BufferedSocket::threadRun() {
 
 			// Now check if there's any activity on the socket
 			if(isConnected()) {
-				int waitFor = sendingFile ? WAIT_READ | WAIT_WRITE : WAIT_READ;
-				if(wait(POLL_TIMEOUT, waitFor)) {
-					if(waitFor & WAIT_WRITE) {
-						dcassert(sendingFile);
-						if(threadSendFile())
-							sendingFile = false;
-					}
-					if(waitFor & WAIT_READ) {
-						threadRead();
-					}
+				int waitFor = wait(POLL_TIMEOUT, sendingFile ? WAIT_READ | WAIT_WRITE : WAIT_READ);
+				if(waitFor & WAIT_WRITE) {
+					dcassert(sendingFile);
+					if(threadSendFile())
+						sendingFile = false;
+				}
+				if(waitFor & WAIT_READ) {
+					threadRead();
 				}
 			}
-		} catch(SocketException e) {
+		} catch(const SocketException& e) {
 			fail(e.getError());
 		}
 	}
+	return 0;
 }
 
 /**
- * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.48 2003/03/31 11:22:36 arnetheduck Exp $
+ * @file
+ * $Id: BufferedSocket.cpp,v 1.49 2003/04/15 10:13:50 arnetheduck Exp $
  */

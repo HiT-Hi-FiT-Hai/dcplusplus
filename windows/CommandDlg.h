@@ -110,6 +110,6 @@ Example: +ban %[nick] %[line:Time] %[line:Reason]");
 #endif // !defined(AFX_CommandDlg_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_)
 
 /**
-* @file CommandDlg.h
-* $Id: CommandDlg.h,v 1.1 2003/03/13 13:31:46 arnetheduck Exp $
-*/
+ * @file
+ * $Id: CommandDlg.h,v 1.2 2003/04/15 10:14:00 arnetheduck Exp $
+ */

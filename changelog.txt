@@ -1,3 +1,17 @@
+ -- 0.242 --
+* Updated compile.txt with some notes on submitting patches
+* Perhaps fixed the multicpu/hyperthreading issue (could someone try and report to the bug tracker?)
+* Various optimizations of the socket code to regain some of the upload performance that some seem to have problems
+  with (keep in mind that SFV-checking, when enabled, slows things down on the downloading end when a file is checked...)
+* Fixed problems with changing active port
+* Fixed favorite hub properties saving
+* Added option not to send away message to bots (users that have not sent a myinfo that is...) (thanks sedulus)
+* Fixed 302-moved code a bit (thanks sedulus)
+* Added match queue feature to the file listing window. This will take every file in the file listing and see if there
+  is any matching file in the queue (exact filename & size match). Every match will then be added to the queue as an
+  extra source. Depending on your queue size and the number of files in the listing this might take some time to do...
+* UI updates to ADLSearch (by Henrik Engström)
+
  -- 0.241 --
 * Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
 * Favorite users and hubs are now saved on edit instead of on exit.
@@ -24,7 +38,6 @@
 * Added a few keyboard shortcuts here and there
 * Fixed bug with SFV retrying (files will now properly be retried _once_ beforer a source is discarded)
 * The maximization state of the inner windows is now remebered, default to maximized first time.
-
 
  -- 0.24 2003-03-11 --
 * The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)

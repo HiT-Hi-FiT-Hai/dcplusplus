@@ -75,6 +75,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
+		COMMAND_ID_HANDLER(IDC_GO_TO_DIRECTORY, onGoToDirectory)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
@@ -82,6 +83,7 @@ public:
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
 		COMMAND_HANDLER(IDC_FIND, BN_CLICKED, onFind)
 		COMMAND_HANDLER(IDC_NEXT, BN_CLICKED, onNext)
+		COMMAND_HANDLER(IDC_MATCH_QUEUE, BN_CLICKED, onMatchQueue)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -89,6 +91,7 @@ public:
 	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
@@ -171,6 +174,8 @@ public:
 		return 0;
 	}
 
+	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -193,6 +198,7 @@ private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(string const& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
+	void GoToDirectory(HTREEITEM hItem, StringList::iterator& iPath, const StringList::iterator& iPathEnd);
 
 	class ItemInfo {
 	public:
@@ -225,6 +231,8 @@ private:
 	HTREEITEM treeRoot;
 	
 	CButton ctrlFind, ctrlFindNext;
+	CButton ctrlMatchQueue;
+
 	int skipHits;
 	string findStr;
 
@@ -235,7 +243,7 @@ private:
 
 	bool updating;
 
-	int statusSizes[7];
+	int statusSizes[8];
 	
 	DirectoryListing* dl;
 };
@@ -243,6 +251,6 @@ private:
 #endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
 
 /**
- * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.14 2003/03/31 11:22:45 arnetheduck Exp $
+ * @file
+ * $Id: DirectoryListingFrm.h,v 1.15 2003/04/15 10:14:00 arnetheduck Exp $
  */

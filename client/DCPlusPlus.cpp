@@ -124,7 +124,7 @@ void shutdown() {
 }
 
 /**
- * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.20 2003/03/13 13:31:17 arnetheduck Exp $
+ * @file
+ * $Id: DCPlusPlus.cpp,v 1.21 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

@@ -80,6 +80,6 @@ typedef unsigned __int64 u_int64_t;
 #endif
 
 /**
- * @file config.h
- * $Id: config.h,v 1.10 2003/03/13 13:31:41 arnetheduck Exp $
+ * @file
+ * $Id: config.h,v 1.11 2003/04/15 10:13:59 arnetheduck Exp $
  */

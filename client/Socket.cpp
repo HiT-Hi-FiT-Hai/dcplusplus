@@ -21,6 +21,7 @@
 
 #include "Socket.h"
 #include "ServerSocket.h"
+#include "SettingsManager.h"
 
 string Socket::udpServer;
 short Socket::udpPort;
@@ -105,6 +106,10 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
+#ifdef WIN32
+	// Make sure we disable any inherited windows message things for this socket.
+	::WSAAsyncSelect(sock, NULL, 0, 0);
+#endif
 	setBlocking(true);
 	connected = true;
 	
@@ -202,7 +207,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
 	int pos = 0;
-	int sendSize = min(aLen, 16384);
+	int sendSize = min(aLen, 64 * 1024);
 
 	bool blockAgain = false;
 
@@ -222,8 +227,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				} else {
 					blockAgain = true;
 				}
-				int waitFor = WAIT_WRITE;
-				wait(2000, waitFor);
+				wait(2000, WAIT_WRITE);
 
 			} else if(errno == ENOBUFS) {
 				if(sendSize > 32) {
@@ -339,13 +343,13 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
  * Blocks until timeout is reached one of the specified conditions have been fulfilled
  * @param waitFor WAIT_*** flags that set what we're waiting for, set to the combination of flags that
  *				  triggered the wait stop on return (==WAIT_NONE on timeout)
- * @return True if the socket false if there was a timeout, true otherwise
- * @throw SocketException Select or the connection attempt failed
+ * @return WAIT_*** ored together of the current state.
+ * @throw SocketException Select or the connection attempt failed.
  */
-bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
+int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 	timeval tv;
 	fd_set rfd, wfd, efd;
-	fd_set *rfdp = NULL, *wfdp = NULL, *efdp = NULL;
+	fd_set *rfdp = NULL, *wfdp = NULL;
 	tv.tv_sec = millis/1000;
 	tv.tv_usec = (millis%1000)*1000; 
 
@@ -367,9 +371,9 @@ bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
 			if(y != 0)
 				throw SocketException(y);
 			// No errors! We're connected (?)...
-			return true;
+			return WAIT_CONNECT;
 		}
-		return false;
+		return 0;
 	}
 
 	if(waitFor & WAIT_READ) {
@@ -385,7 +389,7 @@ bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
 		FD_SET(sock, wfdp);
 	}
 	waitFor = WAIT_NONE;
-	checksockerr(select(sock+1, rfdp, wfdp, efdp, &tv));
+	checksockerr(select(sock+1, rfdp, wfdp, NULL, &tv));
 
 	if(rfdp && FD_ISSET(sock, rfdp)) {
 		waitFor |= WAIT_READ;
@@ -394,7 +398,7 @@ bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
 		waitFor |= WAIT_WRITE;
 	}
 
-	return waitFor != WAIT_NONE;
+	return waitFor;
 }
 
 string Socket::resolve(const string& aDns) {
@@ -505,7 +509,7 @@ void Socket::socksUpdated() {
 			
 			serv_addr.sin_addr.s_addr = *((long*)(&connStr[4]));
 			udpServer = inet_ntoa(serv_addr.sin_addr);
-		} catch(SocketException e) {
+		} catch(const SocketException&) {
 			dcdebug("Socket: Failed to register with socks server\n");
 			// ...
 		}
@@ -513,7 +517,7 @@ void Socket::socksUpdated() {
 }
 
 /**
- * @file Socket.cpp
- * $Id: Socket.cpp,v 1.44 2003/03/13 13:31:34 arnetheduck Exp $
+ * @file
+ * $Id: Socket.cpp,v 1.45 2003/04/15 10:13:56 arnetheduck Exp $
  */
 

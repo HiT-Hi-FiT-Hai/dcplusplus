@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Thread.h"
+
 class PointerBase
 {
 public:
@@ -161,7 +163,7 @@ struct DeleteFunction {
 #endif // !defined(AFX_POINTER_H__FCC38D23_858F_43AC_BF23_73FD708FDC82__INCLUDED_)
 
 /**
- * @file Pointer.h
- * $Id: Pointer.h,v 1.11 2003/03/13 13:31:26 arnetheduck Exp $
+ * @file
+ * $Id: Pointer.h,v 1.12 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

@@ -58,6 +58,6 @@ using namespace _STL;
 #endif // !defined(AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 
 /**
- * @file stdinc.h
- * $Id: stdinc.h,v 1.3 2003/03/13 13:31:41 arnetheduck Exp $
+ * @file
+ * $Id: stdinc.h,v 1.4 2003/04/15 10:13:59 arnetheduck Exp $
  */

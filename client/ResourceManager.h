@@ -49,6 +49,6 @@ private:
 #endif // !defined(AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_)
 
 /**
- * @file ResourceManager.h
- * $Id: ResourceManager.h,v 1.6 2003/03/13 13:31:28 arnetheduck Exp $
+ * @file
+ * $Id: ResourceManager.h,v 1.7 2003/04/15 10:13:54 arnetheduck Exp $
  */

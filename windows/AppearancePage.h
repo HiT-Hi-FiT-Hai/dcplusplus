@@ -68,6 +68,6 @@ protected:
 #endif //APPEARANCEPAGE_H
 
 /**
- * @file AppearancePage.h
- * $Id: AppearancePage.h,v 1.3 2003/03/13 13:31:46 arnetheduck Exp $
+ * @file
+ * $Id: AppearancePage.h,v 1.4 2003/04/15 10:14:00 arnetheduck Exp $
  */

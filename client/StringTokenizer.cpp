@@ -33,7 +33,7 @@ StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */
 }
 
 /**
- * @file StringTokenizer.cpp
- * $Id: StringTokenizer.cpp,v 1.7 2003/03/13 13:31:35 arnetheduck Exp $
+ * @file
+ * $Id: StringTokenizer.cpp,v 1.8 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

@@ -24,6 +24,6 @@
 LogManager* Singleton<LogManager>::instance = NULL;
 
 /**
- * @file LogManager.cpp
- * $Id: LogManager.cpp,v 1.4 2003/03/13 13:31:25 arnetheduck Exp $
+ * @file
+ * $Id: LogManager.cpp,v 1.5 2003/04/15 10:13:54 arnetheduck Exp $
  */

@@ -53,7 +53,7 @@ public:\
 #endif // _EXCEPTION_H
 
 /**
- * @file Exception.h
- * $Id: Exception.h,v 1.10 2003/03/13 13:31:21 arnetheduck Exp $
+ * @file
+ * $Id: Exception.h,v 1.11 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

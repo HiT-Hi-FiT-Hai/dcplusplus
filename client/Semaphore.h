@@ -90,6 +90,6 @@ private:
 #endif // !defined(AFX_SEMAPHORE_H__99141DD0_FECE_4131_BC9B_7BE4CF216874__INCLUDED_)
 
 /**
- * @file Semaphore.h
- * $Id: Semaphore.h,v 1.6 2003/03/13 13:31:30 arnetheduck Exp $
+ * @file
+ * $Id: Semaphore.h,v 1.7 2003/04/15 10:13:54 arnetheduck Exp $
  */

@@ -30,6 +30,7 @@
 #include "DirectoryListing.h"
 #include "CryptoManager.h"
 #include "ShareManager.h"
+#include "DirectoryListing.h"
 
 QueueManager* Singleton<QueueManager>::instance = NULL;
 
@@ -455,10 +456,52 @@ void QueueManager::addDirectory(const string& aDir, User::Ptr& aUser, const stri
 	if(needList) {
 		try {
 			addList(aUser, true);
-		} catch(Exception) {
+		} catch(const Exception&) {
 			// Ignore, we don't really care...
 		}
 	}
+}
+
+typedef vector<pair<DirectoryListing::File*, string> > MatchList;
+typedef MatchList::iterator MatchIter;
+
+static void matchFile(const string& name, const int64_t& size, 
+					  MatchList& f, DirectoryListing::Directory* dir, const string& target) throw() {
+
+	for(DirectoryListing::File::Iter i = dir->files.begin(); i != dir->files.end(); ++i) {
+		DirectoryListing::File* df = *i;
+		if(df->getSize() == size && Util::stricmp(df->getName(), name) == 0) {
+			f.push_back(make_pair(df, target));
+		}
+	}
+
+	for(DirectoryListing::Directory::Iter j = dir->directories.begin(); j != dir->directories.end(); ++j) {
+		if(!(*j)->getAdls())
+			matchFile(name, size, f, *j, target);
+	}
+}
+
+int QueueManager::matchListing(DirectoryListing* dl, const User::Ptr& aUser) throw() {
+	MatchList f;
+	{
+		Lock l(cs);
+		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
+			QueueItem* qi = i->second;
+			if(qi->getSize() != -1) {
+				matchFile(qi->getTargetFileName(), qi->getSize(), f, dl->getRoot(), qi->getTarget());
+			}
+		}
+	}
+	int totalItems = (int)f.size();
+	for(MatchIter i = f.begin(); i != f.end(); ++i) {
+		DirectoryListing::File* df = i->first;
+		try {
+			add(df->getName(), df->getSize(), aUser, i->second);
+		} catch(const Exception&) {
+			totalItems--;
+		}
+	}
+	return totalItems;
 }
 
 void QueueManager::move(const string& aSource, const string& aTarget) throw() {
@@ -502,7 +545,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 			try {
 				QueueItem::Source* s = *i;
 				add(s->getPath(), copy->getSize(), s->getUser(), aTarget);
-			} catch(Exception e) {
+			} catch(const Exception&) {
 				// Blah, ignore...
 			}
 		}
@@ -555,7 +598,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 						string fname = q->isSet(QueueItem::FLAG_BZLIST) ? aDownload->getTarget().substr(0, aDownload->getTarget().length() - 5) + "bz2" : aDownload->getTarget();
 						file = File(fname, File::READ, File::OPEN).read();
 						up = q->getCurrent()->getUser();
-					} catch(FileException) {
+					} catch(const FileException&) {
 						// ...
 					}
 				}
@@ -600,7 +643,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 			} else {
 				CryptoManager::getInstance()->decodeHuffman((u_int8_t*)file.c_str(), userList);
 			}
-		} catch(CryptoException) {
+		} catch(const CryptoException&) {
 			addList(up, true);
 			return;
 		}
@@ -825,7 +868,7 @@ void QueueManager::saveQueue() throw() {
 
 		dirty = false;
 		lastSave = GET_TICK();
-	} catch(FileException) {
+	} catch(const FileException&) {
 		// ...
 	}
 }
@@ -836,7 +879,7 @@ void QueueManager::loadQueue() throw() {
 		xml.fromXML(File(getQueueFile(), File::READ, File::OPEN).read());
 
 		load(&xml);
-	} catch(Exception e) {
+	} catch(const Exception&) {
 		// ...
 	}
 }
@@ -873,7 +916,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				
 				try {
 					add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p, tempTarget);
-				} catch(Exception e) {
+				} catch(const Exception&) {
 					// ...
 				}
 			}
@@ -907,7 +950,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 		f.read(buf, size);
 		try {
 			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-		} catch(CryptoException) {
+		} catch(const CryptoException&) {
 			return;
 		}
 	} else {
@@ -945,7 +988,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 		try {
 			add(file, size, ClientManager::getInstance()->getUser(nick), target);
-		} catch(Exception e) {
+		} catch(const Exception&) {
 			// ...
 		}
 	}
@@ -976,7 +1019,7 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 				try {
 					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, true, 
 						QueueItem::DEFAULT, Util::emptyString, false);
-				} catch(Exception e) {
+				} catch(const Exception&) {
 					// ...
 				}
 			}
@@ -1021,6 +1064,6 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 }
 
 /**
- * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.38 2003/03/31 11:22:40 arnetheduck Exp $
+ * @file
+ * $Id: QueueManager.cpp,v 1.39 2003/04/15 10:13:54 arnetheduck Exp $
  */

@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Socket.h"
+#include "Speaker.h"
 
 class ServerSocketListener {
 public:
@@ -41,11 +42,11 @@ public:
 	void waitForConnections(short aPort) throw(SocketException);
 	ServerSocket() : sock(INVALID_SOCKET) { };
 
-	virtual ~ServerSocket() {
+	virtual ~ServerSocket() throw() {
 		disconnect();
 	}
 	
-	void disconnect() {
+	void disconnect() throw() {
 		if(sock != INVALID_SOCKET) {
 			closesocket(sock);
 			sock = INVALID_SOCKET;
@@ -66,7 +67,7 @@ private:
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
- * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.17 2003/03/26 08:47:24 arnetheduck Exp $
+ * @file
+ * $Id: ServerSocket.h,v 1.18 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

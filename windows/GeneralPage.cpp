@@ -177,7 +177,7 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 }
 
 /**
- * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.5 2003/03/13 13:31:51 arnetheduck Exp $
+ * @file
+ * $Id: GeneralPage.cpp,v 1.6 2003/04/15 10:14:01 arnetheduck Exp $
  */
 

@@ -207,6 +207,6 @@ private:
 #endif // FINISHEDULFRAME_H
 
 /**
- * @file FinishedULFrame.h
- * $Id: FinishedULFrame.h,v 1.2 2003/03/31 11:23:01 arnetheduck Exp $
+ * @file
+ * $Id: FinishedULFrame.h,v 1.3 2003/04/15 10:14:01 arnetheduck Exp $
  */

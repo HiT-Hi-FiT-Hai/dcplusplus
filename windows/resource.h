@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Microsoft Developer Studio generated include file.
+// Used by F:\MsDev\DCBuild\0.241.h1\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_PROPPAGE_1                  107
@@ -42,6 +42,7 @@
 #define IDR_FINISHED_DL                 231
 #define IDR_FINISHED_UL                 232
 #define IDR_ADLSEARCH                   233
+#define IDD_ADLS_PROPERTIES             234
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -98,7 +99,9 @@
 #define IDC_NEWFAV                      1042
 #define IDC_HUBNAME                     1043
 #define IDC_COMBO1                      1044
+#define IDC_SOURCE_TYPE                 1044
 #define IDC_AUTOSEARCH                  1045
+#define IDC_SIZE_TYPE                   1045
 #define IDC_TIMESTAMPS                  1046
 #define IDC_HUBDESCR                    1047
 #define IDC_CONFIRMEXIT                 1047
@@ -198,8 +201,15 @@
 #define IDC_ADLLIST                     1113
 #define IDC_MOVE_UP                     1114
 #define IDC_MOVE_DOWN                   1115
-#define IDC_HUBUSERDESCR				1116
-#define IDC_FINISHED_UL					1117
+#define IDC_HUBUSERDESCR                1116
+#define IDC_FINISHED_UL                 1117
+#define IDC_SEARCH_STRING               1118
+#define IDC_DEST_DIR                    1119
+#define IDC_IS_ACTIVE                   1120
+#define IDC_MIN_FILE_SIZE               1121
+#define IDC_MAX_FILE_SIZE               1122
+#define IDC_GO_TO_DIRECTORY             1124
+#define IDC_MATCH_QUEUE					1125
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -217,9 +227,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        234
+#define _APS_NEXT_RESOURCE_VALUE        235
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1118
+#define _APS_NEXT_CONTROL_VALUE         1125
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

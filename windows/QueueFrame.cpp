@@ -952,8 +952,8 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 };
 
 /**
- * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.18 2003/03/26 08:47:47 arnetheduck Exp $
+ * @file
+ * $Id: QueueFrame.cpp,v 1.19 2003/04/15 10:14:03 arnetheduck Exp $
  */
 
 

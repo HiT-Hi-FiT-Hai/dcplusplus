@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "HttpConnection.h"
+#include "SettingsManager.h"
 
 /**
  * Downloads a file and returns it as a string
@@ -30,6 +31,17 @@
  */
 void HttpConnection::downloadFile(const string& aUrl) {
 	dcassert(Util::findSubString(aUrl, "http://") == 0);
+	currentUrl = aUrl;
+	// reset all settings (as in constructor), moved here from onLine(302) because ok was not reset properly
+	moved302 = false; 
+	ok = false;
+	size = -1;
+	// set download type
+	if(aUrl.substr(aUrl.size() - 4) == ".bz2") {
+		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);
+	} else {
+		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL, this);
+	}
 
 	if(SETTING(HTTP_PROXY).empty()) {
 		Util::decodeUrl(aUrl, server, port, file);
@@ -63,6 +75,7 @@ void HttpConnection::onConnected() {
 		Util::decodeUrl(file, sRemoteServer, tport, tfile); 
 	} 
 	socket->write("Host: " + sRemoteServer + "\r\n"); 
+	socket->write("Connection: close\r\n");	// we'll only be doing one request
 	socket->write("Cache-Control: no-cache\r\n\r\n"); 
 } 
 
@@ -76,31 +89,43 @@ void HttpConnection::onLine(const string& aLine) {
 				socket->disconnect();
 				BufferedSocket::putSocket(socket);
 				socket = NULL;
-				fire(HttpConnectionListener::FAILED, this, aLine);
+				fire(HttpConnectionListener::FAILED, this, aLine + " (" + currentUrl + ")");
 				return;
 			}
 		}
 		ok = true;
-	} else if(moved302 == true && aLine.find("Location") != string::npos){
-		socket->removeListener(this); 
-		socket->disconnect(); 
-		location302 = aLine.substr(10, aLine.length() - 11); 
-		// reset all settings (as in constructor) 
-		moved302 = false; 
-		ok = false;
-		port = 80; 
-		size = -1;
+	} else if(moved302 && aLine.find("Location") != string::npos){
+		dcassert(socket);
+		socket->removeListener(this);
+		socket->disconnect();
+		BufferedSocket::putSocket(socket);
+		socket = NULL;
 
-		if(socket) {
-			socket->removeListener(this); 
-			BufferedSocket::putSocket(socket);
-			socket = NULL;
+		string location302 = aLine.substr(10, aLine.length() - 11);
+		// make sure we can also handle redirects with relative paths
+		if(Util::strnicmp(location302.c_str(), "http://", 7) != 0) {
+			if(location302[0] == '/') {
+				Util::decodeUrl(currentUrl, server, port, file);
+				string tmp = "http://" + server;
+				if(port != 80)
+					tmp += ':' + Util::toString(port);
+				location302 = tmp + location302;
+			} else {
+				string::size_type i = currentUrl.rfind('/');
+				dcassert(i != string::npos);
+				location302 = currentUrl.substr(0, i + 1) + location302;
+			}
 		}
+		fire(HttpConnectionListener::REDIRECTED, this, location302);
+
 		downloadFile(location302); 		
 	} else if(aLine == "\x0d") {
 		socket->setDataMode(size);
 	} else if(aLine.find("Content-Length") != string::npos) {
 		size = Util::toInt(aLine.substr(16, aLine.length() - 17));
+	} else if(aLine.find("Content-Encoding") != string::npos) {
+		if(aLine.substr(18, aLine.length() - 19) == "x-bzip2")
+			fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);            
 	}
 }
 
@@ -121,7 +146,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const string& 
 		socket->removeListener(this);
 		BufferedSocket::putSocket(socket);
 		socket = NULL;
-		fire(HttpConnectionListener::FAILED, this, aLine); break;
+		fire(HttpConnectionListener::FAILED, this, aLine + " (" + currentUrl + ")"); break;
 	default:
 		break;
 	}
@@ -133,7 +158,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) 
 		socket->disconnect();
 		BufferedSocket::putSocket(socket);
 		socket = NULL;
-		fire(HttpConnectionListener::COMPLETE, this); 
+		fire(HttpConnectionListener::COMPLETE, this, currentUrl); 
 		break;
 	default:
 		dcasserta(0);
@@ -149,7 +174,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 }
 
 /**
- * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.15 2003/03/26 08:47:20 arnetheduck Exp $
+ * @file
+ * $Id: HttpConnection.cpp,v 1.16 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

@@ -26,6 +26,7 @@
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 #include "User.h"
+#include "SettingsManager.h"
 
 class HubEntry {
 public:
@@ -254,7 +255,7 @@ private:
 #endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
 
 /**
- * @file HubManager.h
- * $Id: HubManager.h,v 1.36 2003/03/26 08:47:22 arnetheduck Exp $
+ * @file
+ * $Id: HubManager.h,v 1.37 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

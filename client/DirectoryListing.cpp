@@ -80,12 +80,17 @@ void DirectoryListing::load(const string& in)
 			if(dAdls != NULL)
 			{
 				// Add file to destination directory
-				dAdls->files.push_back(currentFile);
+				File *copyFile = new File(*currentFile);
+				copyFile->setAdls(true);
+				dAdls->files.push_back(copyFile);
+
 			}
 			if(dAdlsSub != NULL)
 			{
 				// Add file to substructure being stored
-				dAdlsSub->files.push_back(currentFile);
+				File *copyFile = new File(*currentFile);
+				copyFile->setAdls(true);
+				dAdlsSub->files.push_back(copyFile);
 			}
 		} 
 		else 
@@ -105,14 +110,12 @@ void DirectoryListing::load(const string& in)
 				{
 					// Start to store a new substructure
 					dAdlsSubRoot = dAdls;
-					dAdlsSub     = new Directory(dAdlsSubRoot, d->getName(), true);
+					dAdlsSub     = new AdlDirectory(fullPath, dAdlsSubRoot, d->getName());
 					dAdlsSubRoot->directories.push_back(dAdlsSub);
 				}
-			}
-			else
-			{
+			} else {
 				// Add directory to substructure being stored
-				Directory* d2 = new Directory(dAdlsSub, d->getName(), true);
+				Directory* d2 = new AdlDirectory(fullPath, dAdlsSub, d->getName());
 				dAdlsSub->directories.push_back(d2);
 				dAdlsSub = d2;
 			}
@@ -149,9 +152,9 @@ void DirectoryListing::download(Directory* aDir, const User::Ptr& aUser, const s
 		File* file = *i;
 		try {
 			download(file, aUser, target + file->getName());
-		} catch(QueueException e) {
+		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
-		} catch(FileException e) {
+		} catch(const FileException&) {
 			//..
 		}
 	}
@@ -181,20 +184,20 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 	return NULL;
 }
 
-int64_t DirectoryListing::Directory::getTotalSize(bool nosymbolic) {
+int64_t DirectoryListing::Directory::getTotalSize(bool adls) {
 	int64_t x = getSize();
 	for(Iter i = directories.begin(); i != directories.end(); ++i) {
-		if(!(nosymbolic && (*i)->getSymbolic()))
-			x += (*i)->getTotalSize();
+		if(!(adls && (*i)->getAdls()))
+			x += (*i)->getTotalSize(adls);
 	}
 	return x;
 }
 
-int DirectoryListing::Directory::getTotalFileCount(bool nosymbolic) {
+int DirectoryListing::Directory::getTotalFileCount(bool adls) {
 	int x = getFileCount();
 	for(Iter i = directories.begin(); i != directories.end(); ++i) {
-		if(!(nosymbolic && (*i)->getSymbolic()))
-			x += (*i)->getTotalFileCount();
+		if(!(adls && (*i)->getAdls()))
+			x += (*i)->getTotalFileCount(adls);
 	}
 	return x;
 }
@@ -204,6 +207,6 @@ void DirectoryListing::download(File* aFile, const User::Ptr& aUser, const strin
 }
 
 /**
- * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.12 2003/03/26 08:47:16 arnetheduck Exp $
+ * @file
+ * $Id: DirectoryListing.cpp,v 1.13 2003/04/15 10:13:53 arnetheduck Exp $
  */

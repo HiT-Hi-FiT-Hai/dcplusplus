@@ -189,6 +189,6 @@ private:
 #endif // !defined(AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_)
 
 /**
- * @file DownloadManager.h
- * $Id: DownloadManager.h,v 1.50 2003/03/31 11:22:38 arnetheduck Exp $
+ * @file
+ * $Id: DownloadManager.h,v 1.51 2003/04/15 10:13:53 arnetheduck Exp $
  */

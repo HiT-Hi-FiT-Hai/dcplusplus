@@ -93,3 +93,8 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
 		break;
 	}
 }
+
+/**
+ * @file
+ * $Id: FinishedManager.cpp,v 1.7 2003/04/15 10:13:53 arnetheduck Exp $
+ */

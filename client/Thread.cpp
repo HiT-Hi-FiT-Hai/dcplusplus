@@ -22,7 +22,7 @@
 #include "Thread.h"
 
 /**
- * @file Thread.cpp
- * $Id: Thread.cpp,v 1.2 2003/03/13 13:31:35 arnetheduck Exp $
+ * @file
+ * $Id: Thread.cpp,v 1.3 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

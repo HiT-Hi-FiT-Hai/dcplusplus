@@ -146,7 +146,7 @@ private:
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
- * @file ClientManager.h
- * $Id: ClientManager.h,v 1.32 2003/03/26 08:47:12 arnetheduck Exp $
+ * @file
+ * $Id: ClientManager.h,v 1.33 2003/04/15 10:13:52 arnetheduck Exp $
  */
 

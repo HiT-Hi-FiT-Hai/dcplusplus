@@ -564,6 +564,6 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 }
 
 /**
- * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.30 2003/03/31 11:22:37 arnetheduck Exp $
+ * @file
+ * $Id: CryptoManager.cpp,v 1.31 2003/04/15 10:13:53 arnetheduck Exp $
  */

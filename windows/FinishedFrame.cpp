@@ -197,6 +197,6 @@ void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 
 /**
- * @file FinishedFrame.cpp
- * $Id: FinishedFrame.cpp,v 1.5 2003/03/26 08:47:43 arnetheduck Exp $
+ * @file
+ * $Id: FinishedFrame.cpp,v 1.6 2003/04/15 10:14:01 arnetheduck Exp $
  */

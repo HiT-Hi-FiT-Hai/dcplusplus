@@ -35,7 +35,7 @@ public:
 			File f(SETTING(LOG_DIRECTORY) + area + ".log", File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
 			f.write(msg + "\r\n");
-		} catch (FileException) {
+		} catch (const FileException&) {
 			// ...
 		}
 	};
@@ -62,6 +62,6 @@ private:
 #endif // !defined(AFX_LOGMANAGER_H__73C7E0F5_5C7D_4A2A_827B_53267D0EF4C5__INCLUDED_)
 
 /**
- * @file LogManager.h
- * $Id: LogManager.h,v 1.4 2003/03/13 13:31:25 arnetheduck Exp $
+ * @file
+ * $Id: LogManager.h,v 1.5 2003/04/15 10:13:54 arnetheduck Exp $
  */

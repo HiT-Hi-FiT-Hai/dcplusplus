@@ -93,7 +93,7 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 }
 
 /**
- * @file Advanced2Page.cpp
- * $Id: Advanced2Page.cpp,v 1.5 2003/03/13 13:31:44 arnetheduck Exp $
+ * @file
+ * $Id: Advanced2Page.cpp,v 1.6 2003/04/15 10:14:00 arnetheduck Exp $
  */
 

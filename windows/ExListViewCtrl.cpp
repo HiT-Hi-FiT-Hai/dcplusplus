@@ -190,7 +190,7 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 }
 
 /**
- * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.6 2003/03/13 13:31:47 arnetheduck Exp $
+ * @file
+ * $Id: ExListViewCtrl.cpp,v 1.7 2003/04/15 10:14:01 arnetheduck Exp $
  */
 

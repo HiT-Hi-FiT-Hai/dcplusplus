@@ -68,8 +68,10 @@ public:
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
 	bool checkNick();
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
@@ -102,15 +104,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
-		if(l->iItem != -1) {
-			FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
-			f->setConnect(ctrlHubs.GetCheckState(l->iItem) != FALSE);
-		}
-		return 0;
-	}
-	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
@@ -121,8 +114,6 @@ public:
 		return 0;
 	}
 	
-	void UpdateLayout(BOOL bResizeBars = TRUE);
-
 	static FavoriteHubsFrame* frame;
 	
 private:
@@ -178,7 +169,7 @@ private:
 #endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
- * @file FavoritesFrm.h
- * $Id: FavoritesFrm.h,v 1.8 2003/03/31 11:22:46 arnetheduck Exp $
+ * @file
+ * $Id: FavoritesFrm.h,v 1.9 2003/04/15 10:14:01 arnetheduck Exp $
  */
 

@@ -26,6 +26,7 @@
 #include "Socket.h"
 #include "Semaphore.h"
 #include "Thread.h"
+#include "Speaker.h"
 
 class File;
 
@@ -140,7 +141,7 @@ public:
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(16384), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
+		dataBytes(0), inbufSize(64*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -154,7 +155,7 @@ private:
 		}
 		try {
 			start();
-		} catch(ThreadException e) {
+		} catch(const ThreadException& e) {
 			delete[] inbuf;
 			for(int i = 0; i < BUFFERS; i++) {
 				delete[] outbuf[i];
@@ -202,10 +203,8 @@ private:
 	virtual void create(int) throw(SocketException) { dcassert(0); }; // Sockets are created implicitly
 	virtual void bind(short) throw(SocketException) { dcassert(0); }; // Binding / UDP not supported...
 
-	// From Thread
-	virtual int run() { threadRun(); return 0; };
+	virtual int run();
 
-	void threadRun();
 	void threadConnect();
 	void threadRead();
 	bool threadSendFile();
@@ -236,6 +235,6 @@ private:
 #endif // !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
 
 /**
- * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.45 2003/03/26 08:47:10 arnetheduck Exp $
+ * @file
+ * $Id: BufferedSocket.h,v 1.46 2003/04/15 10:13:51 arnetheduck Exp $
  */

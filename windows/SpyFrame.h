@@ -125,7 +125,7 @@ private:
 #endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
 
 /**
- * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.7 2003/03/13 13:32:07 arnetheduck Exp $
+ * @file
+ * $Id: SpyFrame.h,v 1.8 2003/04/15 10:14:03 arnetheduck Exp $
  */
 

@@ -289,7 +289,7 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->setState(UserConnection::STATE_NICK);
 		uc->setLastActivity(GET_TICK());
 		uc->accept(socket);
-	} catch(Exception e) {
+	} catch(const Exception& e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
 	}
@@ -598,6 +598,6 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 }
 
 /**
- * @file ConnectionManager.cpp
- * $Id: ConnectionManager.cpp,v 1.59 2003/03/31 11:22:37 arnetheduck Exp $
+ * @file
+ * $Id: ConnectionManager.cpp,v 1.60 2003/04/15 10:13:52 arnetheduck Exp $
  */

@@ -28,6 +28,7 @@
 #pragma once
 #endif
 
+#include "Util.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -138,7 +139,7 @@ public:
 
 	// Constructor
 	ADLSearch() : searchString("<Enter string>"), isActive(true), sourceType(OnlyFile), 
-		minFileSize(-1), maxFileSize(-1), destDir(""), ddIndex(0) {}
+		minFileSize(-1), maxFileSize(-1), destDir("ADLSearch"), ddIndex(0), typeFileSize(SizeBytes) {}
 
 	// Prepare search
 	void Prepare()
@@ -196,6 +197,73 @@ public:
 	// Negative values means do not check.
 	int64_t minFileSize;
 	int64_t maxFileSize;
+	enum SizeType
+	{
+		SizeBytes     = TypeFirst,
+		SizeKiloBytes,
+		SizeMegaBytes,
+		SizeGigaBytes
+	};
+	SizeType typeFileSize;
+	SizeType StringToSizeType(const string& s)
+	{
+		if(Util::stricmp(s.c_str(), "B") == 0)
+		{
+			return SizeBytes;
+		}
+		else 
+		if(Util::stricmp(s.c_str(), "kB") == 0)
+		{
+			return SizeKiloBytes;
+		}
+		else 
+		if(Util::stricmp(s.c_str(), "MB") == 0)
+		{
+			return SizeMegaBytes;
+		}
+		else 
+		if(Util::stricmp(s.c_str(), "GB") == 0)
+		{
+			return SizeGigaBytes;
+		}
+		else
+		{
+			return SizeBytes;
+		}
+	}
+	string SizeTypeToString(SizeType t)
+	{
+		switch(t)
+		{
+		default:
+		case SizeBytes:		return "B";
+		case SizeKiloBytes:	return "kB";
+		case SizeMegaBytes:	return "MB";
+		case SizeGigaBytes:	return "GB";
+		}
+	}
+	string SizeTypeToStringInternational(SizeType t)
+	{
+		switch(t)
+		{
+		default:
+		case SizeBytes:		return CSTRING(B);
+		case SizeKiloBytes:	return CSTRING(KB);
+		case SizeMegaBytes:	return CSTRING(MB);
+		case SizeGigaBytes:	return CSTRING(GB);
+		}
+	}
+	int64_t GetSizeBase()
+	{
+		switch(typeFileSize)
+		{
+		default:
+		case SizeBytes:		return (int64_t)1;
+		case SizeKiloBytes:	return (int64_t)1024;
+		case SizeMegaBytes:	return (int64_t)1024 * (int64_t)1024;
+		case SizeGigaBytes:	return (int64_t)1024 * (int64_t)1024 * (int64_t)1024;
+		}
+	}
 
 	// Name of the destination directory (empty = 'ADLSearch') and its index
 	string destDir;
@@ -213,12 +281,12 @@ public:
 		// Check size for files
 		if(size >= 0 && (sourceType == OnlyFile || sourceType == FullPath))
 		{
-			if(minFileSize >= 0 && size < minFileSize)
+			if(minFileSize >= 0 && size < minFileSize * GetSizeBase())
 			{
 				// Too small
 				return false;
 			}
-			if(maxFileSize >= 0 && size > maxFileSize)
+			if(maxFileSize >= 0 && size > maxFileSize * GetSizeBase())
 			{
 				// Too large
 				return false;
@@ -401,6 +469,6 @@ private:
 #endif
 
 /**
- * @file ADLSearch.h
- * $Id: ADLSearch.h,v 1.2 2003/03/26 08:47:09 arnetheduck Exp $
+ * @file
+ * $Id: ADLSearch.h,v 1.3 2003/04/15 10:13:50 arnetheduck Exp $
  */

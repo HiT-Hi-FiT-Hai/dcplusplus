@@ -36,11 +36,12 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : name(aName), size(aSize), parent(aDir) { };
+		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : name(aName), size(aSize), parent(aDir), adls(false) { };
 
 		GETSETREF(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
+		GETSET(bool, adls, Adls);		
 	};
 
 	class Directory {
@@ -52,17 +53,16 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _symbolic = false) 
-			: name(aName), parent(aParent), symbolic(_symbolic) { };
+		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
+			: name(aName), parent(aParent), adls(_adls) { };
 		
 		~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
-			if(!symbolic) // Condition added for ADLSearch
-				for_each(files.begin(), files.end(), DeleteFunction<File*>());
+			for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
 
-		int getTotalFileCount(bool nosymbolic = false);		
-		int64_t getTotalSize(bool nosymbolic = false);
+		int getTotalFileCount(bool adls = false);		
+		int64_t getTotalSize(bool adls = false);
 		
 		int getFileCount() { return files.size(); };
 		
@@ -76,7 +76,13 @@ public:
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
-		GETSET(bool, symbolic, Symbolic);		
+		GETSET(bool, adls, Adls);		
+	};
+	class AdlDirectory : public Directory {
+	public:
+		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true), fullPath(aFullPath) { };
+
+		GETSETREF(string, fullPath, FullPath);
 	};
 
 	DirectoryListing() {
@@ -93,8 +99,8 @@ public:
 	string getPath(Directory* d);
 	
 	string getPath(File* f) { return getPath(f->getParent()); };
-	int64_t getTotalSize(bool nosymbolic = false) { return root->getTotalSize(nosymbolic); };
-	int getTotalFileCount(bool nosymbolic = false) { return root->getTotalFileCount(nosymbolic); };
+	int64_t getTotalSize(bool adls = false) { return root->getTotalSize(adls); };
+	int getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
 	Directory* getRoot() { return root; };
 	
 	void download(File* aFile, const User::Ptr& aUser, const string& aTarget);
@@ -109,6 +115,6 @@ private:
 #endif // !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
 
 /**
- * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.15 2003/03/26 08:47:17 arnetheduck Exp $
+ * @file
+ * $Id: DirectoryListing.h,v 1.16 2003/04/15 10:13:53 arnetheduck Exp $
  */

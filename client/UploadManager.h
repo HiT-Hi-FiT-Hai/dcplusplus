@@ -149,6 +149,6 @@ private:
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
- * @file UploadManager.h
- * $Id: UploadManager.h,v 1.53 2003/03/26 08:47:34 arnetheduck Exp $
+ * @file
+ * $Id: UploadManager.h,v 1.54 2003/04/15 10:13:57 arnetheduck Exp $
  */

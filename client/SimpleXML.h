@@ -209,7 +209,7 @@ private:
 #endif // !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
 
 /**
- * @file SimpleXML.h
- * $Id: SimpleXML.h,v 1.20 2003/03/26 08:47:28 arnetheduck Exp $
+ * @file
+ * $Id: SimpleXML.h,v 1.21 2003/04/15 10:13:55 arnetheduck Exp $
  */
 

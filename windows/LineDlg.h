@@ -87,6 +87,6 @@ public:
 #endif // !defined(AFX_LineDLG_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_)
 
 /**
- * @file LineDlg.h
- * $Id: LineDlg.h,v 1.5 2003/03/31 11:23:04 arnetheduck Exp $
+ * @file
+ * $Id: LineDlg.h,v 1.6 2003/04/15 10:14:02 arnetheduck Exp $
  */

@@ -60,7 +60,7 @@ void SFVReader::load(const string& fileName) throw() {
 				FindClose(hf);
 				return;
 			}
-		} catch(FileException) {
+		} catch(const FileException&) {
 			// Ignore...
 		}
 	} while(FindNextFile(hf, &fd));
@@ -71,6 +71,6 @@ void SFVReader::load(const string& fileName) throw() {
 }
 
 /**
- * @file SFVReader.cpp
- * $Id: SFVReader.cpp,v 1.1 2003/03/13 13:31:29 arnetheduck Exp $
+ * @file
+ * $Id: SFVReader.cpp,v 1.2 2003/04/15 10:13:54 arnetheduck Exp $
  */

@@ -26,6 +26,7 @@
 #include "../client/DCPlusPlus.h"
 #include "../client/Client.h"
 #include "ADLSearchFrame.h"
+#include "AdlsProperties.h"
 
 ADLSearchFrame* ADLSearchFrame::frame = NULL;
 
@@ -55,7 +56,7 @@ static ResourceManager::Strings columnNames[] = {
 };
 
 // Frame creation
-LRESULT ADLSearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	// Only one of this window please...
 	dcassert(frame == NULL);
@@ -92,12 +93,36 @@ LRESULT ADLSearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	}
 	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 
-	// Create context menu
-	contextMenu.CreatePopupMenu();
-	contextMenu.AppendMenu(MF_STRING, IDC_ADD,       CSTRING(ADD));
-	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE,    CSTRING(REMOVE));
-	contextMenu.AppendMenu(MF_STRING, IDC_MOVE_UP,   CSTRING(MOVE_UP));
-	contextMenu.AppendMenu(MF_STRING, IDC_MOVE_DOWN, CSTRING(MOVE_DOWN));
+	// Create buttons
+	ctrlAdd.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_ADD);
+	ctrlAdd.SetWindowText(CSTRING(ADD));
+	ctrlAdd.SetFont(WinUtil::font);
+
+	ctrlEdit.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_EDIT);
+	ctrlEdit.SetWindowText(CSTRING(EDIT));
+	ctrlEdit.SetFont(WinUtil::font);
+
+	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_REMOVE);
+	ctrlRemove.SetWindowText(CSTRING(REMOVE));
+	ctrlRemove.SetFont(WinUtil::font);
+
+	ctrlMoveUp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_MOVE_UP);
+	ctrlMoveUp.SetWindowText(CSTRING(MOVE_UP));
+	ctrlMoveUp.SetFont(WinUtil::font);
+
+	ctrlMoveDown.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_MOVE_DOWN);
+	ctrlMoveDown.SetWindowText(CSTRING(MOVE_DOWN));
+	ctrlMoveDown.SetFont(WinUtil::font);
+
+	ctrlHelp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_HELP_FAQ);
+	ctrlHelp.SetWindowText(CSTRING(WHATS_THIS));
+	ctrlHelp.SetFont(WinUtil::font);
 
 	// Load all searches
 	LoadAll();
@@ -107,9 +132,10 @@ LRESULT ADLSearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 // Close window
-LRESULT ADLSearchFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
+LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
 {
 	ADLSearchManager::getInstance()->Save();
+	ADLSearchFrame::frame = NULL;
 
 	string tmp1;
 	string tmp2;
@@ -147,69 +173,118 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 		ctrlStatus.SetParts(1, w);
 	}
 
-	// Possition list control
+	// Position list control
 	CRect rc = rect;
 	rc.top += 2;
+	rc.bottom -= 28;
 	ctrlList.MoveWindow(rc);
-}
 
-// Invoke context menu
-LRESULT ADLSearchFrame::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
-{
-	// Get the bounding rectangle of the client area. 
-	RECT rc;
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-	
-	// Hit-test
-	if(PtInRect(&rc, pt)) 
-	{ 
-		ctrlList.ClientToScreen(&pt);
-		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		return TRUE; 
-	}
-	
-	return FALSE; 
+	// Position buttons
+	const long bwidth = 80;
+	const long bspace = 10;
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+
+	rc.left = 2;
+	rc.right = rc.left + bwidth;
+	ctrlAdd.MoveWindow(rc);
+
+	rc.left += bwidth + 2;
+	rc.right = rc.left + bwidth;
+	ctrlEdit.MoveWindow(rc);
+
+	rc.left += bwidth + 2;
+	rc.right = rc.left + bwidth;
+	ctrlRemove.MoveWindow(rc);
+
+	rc.left += bspace;
+
+	rc.left += bwidth + 2;
+	rc.right = rc.left + bwidth;
+	ctrlMoveUp.MoveWindow(rc);
+
+	rc.left += bwidth + 2;
+	rc.right = rc.left + bwidth;
+	ctrlMoveDown.MoveWindow(rc);
+
+	rc.left += bspace;
+
+	rc.left += bwidth + 2;
+	rc.right = rc.left + bwidth;
+	ctrlHelp.MoveWindow(rc);
+
 }
 
 // Add new search
-LRESULT ADLSearchFrame::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
-	// Add a new blank search to the end or if selected, just before
-	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	// Invoke edit dialog with fresh search
+	ADLSearch search;
+	ADLSProperties dlg(&search);
+	if(dlg.DoModal((HWND)*this) == IDOK)
+	{
+		// Add new search to the end or if selected, just before
+		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+		search.Prepare();
 
+		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
+		if(i < 0)
+		{
+			// Add to end
+			collection.push_back(search);
+			i = collection.size() - 1;
+		}
+		else
+		{
+			// Add before selection
+			collection.insert(collection.begin() + i, search);
+		}
+
+		// Update list control
+		int j = i;
+		while(j < (int)collection.size())
+		{
+			UpdateSearch(j++);
+		}
+		ctrlList.EnsureVisible(i, FALSE);
+	}
+
+	return 0;
+}
+
+// Edit existing search
+LRESULT ADLSearchFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
+	// Get selection info
 	int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 	if(i < 0)
 	{
-		// Add to end
-		collection.push_back(ADLSearch());
-		i = collection.size() - 1;
+		// Nothing selected
+		return 0;
 	}
-	else
+
+	// Edit existing
+	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+	ADLSearch search = collection[i];
+
+	// Invoke dialog with selected search
+	ADLSProperties dlg(&search);
+	if(dlg.DoModal((HWND)*this) == IDOK)
 	{
-		// Add before selection
-		collection.insert(collection.begin() + i, ADLSearch());
+		// Update search collection
+		search.Prepare();
+		collection[i] = search;
+
+		// Update list control
+		UpdateSearch(i);	  
 	}
-
-	// Update list control
-	int j = i;
-	while(j < (int)collection.size())
-	{
-		UpdateSearch(j++);
-	}
-
-	// Ensure visible
-	ctrlList.EnsureVisible(i, FALSE);
-
-	// Start editing new item
-	EditSubItem(i, COLUMN_SEARCH_STRING);
 
 	return 0;
 }
 
 // Remove searches
-LRESULT ADLSearchFrame::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -223,8 +298,42 @@ LRESULT ADLSearchFrame::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+// Help
+LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
+	char title[] =
+		"ADLSearch brief description";
+
+	char message[] = 
+		"ADLSearch is a tool for fast searching of directory listings downloaded from users. \n"
+		"Create a new ADLSearch entering 'mp3' as search string for example. When you \n"
+		"download a directory listing from a user, all mp3 files will be placed in a special folder \n"
+		"called <<<ADLSearch>>> for easy finding. It is almost the same as using the standard \n"
+		"'Find' multiple times in a directory listing. \n"
+		"\n"
+		"Special options: \n"
+		"- 'Source Type' can be the following options; 'Filename' matches search against filename, \n"
+		"   'Directory' matches against current subdirectory and places the whole structure in the \n"
+		"   special folder, 'Full Path' matches against whole directory + filename. \n"
+		"- 'Destination Directory' selects the special output folder for a search. Multiple folders \n"
+		"   can exist simultaneously. \n"
+		"- 'Active' selects if the search is used or not. \n"
+		"- 'Min/Max Size' sets file size limits. This is not used for 'Directory' type searches. \n"
+		"\n"
+		"Note also that the order of the searches is important. The top item search is matched first, \n"
+		"then the second, etc. If a search is matched, the ones below will not be tried. You can alter \n"
+		"the order with 'Move Up' and 'Move Down', which will move the current selection. \n"
+		"\n"
+		"There is a new option in the context menu (right-click) for directory listings. It is called \n"
+		"'Go to directory' and can be used to jump to the original location of the file or directory. \n"
+		;
+
+	MessageBox(message, title, MB_OK);
+	return 0;
+}
+
 // Move selected entries up one step
-LRESULT ADLSearchFrame::OnMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -279,7 +388,7 @@ LRESULT ADLSearchFrame::OnMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 // Move selected entries down one step
-LRESULT ADLSearchFrame::OnMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
 	ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
 
@@ -342,148 +451,14 @@ LRESULT ADLSearchFrame::OnDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bH
 {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
-	// Check if no items
-	if(ctrlList.GetItemCount() <= 0)
-	{
-		// Treat as 'add'-command
-		return OnAdd(0, 0, 0, bHandled);
-	}
-
 	// Hit-test
 	LVHITTESTINFO info;
 	info.pt = item->ptAction;
     int iItem = ctrlList.SubItemHitTest(&info);
-
-	if(iItem < 0)
+	if(iItem >= 0)
 	{
-		// No direct hit. If clicked last row, treat as 'add'-command
-		RECT label;
-		memset(&label, 0, sizeof(label));
-		ctrlList.GetSubItemRect(0, 0, LVIR_LABEL, &label);
-		int cy = label.bottom - label.top;
-		label.top    += ctrlList.GetItemCount() * cy;
-		label.bottom += ctrlList.GetItemCount() * cy;
-		if(PtInRect(&label, item->ptAction))
-		{
-			return OnAdd(0, 0, 0, bHandled);
-		}
-	}
-	else
-	{
-		// Get search info
-		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-		if(iItem >= (int)collection.size())
-		{
-			return 0;
-		}
-		ADLSearch& search = collection[iItem];
-
-		// Dedicated handling
-		BOOL bUpdate = TRUE;
-		if(info.iSubItem == COLUMN_SEARCH_STRING)
-		{
-			EditSubItem(info.iItem, info.iSubItem);
-			return FALSE;
-		}
-		else
-		if(info.iSubItem == COLUMN_SOURCE_TYPE)
-		{
-			search.sourceType = (ADLSearch::SourceType)((long)search.sourceType + 1);
-			if(search.sourceType >= ADLSearch::TypeLast)
-			{
-				search.sourceType = ADLSearch::TypeFirst;
-			}
-		}
-		else
-		if(info.iSubItem == COLUMN_DEST_DIR)
-		{
-			EditSubItem(info.iItem, info.iSubItem);
-			return FALSE;
-		}
-		else
-		if(info.iSubItem == COLUMN_IS_ACTIVE)
-		{
-			search.isActive = !search.isActive;
-		}
-		else
-		if(info.iSubItem == COLUMN_MIN_FILE_SIZE)
-		{
-			EditSubItem(info.iItem, info.iSubItem);
-			return FALSE;
-		}
-		else
-		if(info.iSubItem == COLUMN_MAX_FILE_SIZE)
-		{
-			EditSubItem(info.iItem, info.iSubItem);
-			return FALSE;
-		}
-
-		// Optionally update search
-		if(bUpdate)
-		{
-			UpdateSearch(info.iItem);
-		}
-	}
-
-	return 0;
-}
-
-// End of inline editing of search string
-LRESULT ADLSearchFrame::OnEndLabelEditList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) 
-{
-	NMLVDISPINFO* info = (NMLVDISPINFO*)pnmh;
-	
-	if(info->item.iItem >= 0 && info->item.pszText != NULL)
-	{
-		// Get current search
-		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
-		if(info->item.iItem >= (int)collection.size())
-		{
-			return 0;
-		}
-		ADLSearch& search = collection[info->item.iItem];
-
-		// Update search after inline editing
-		if(info->item.iSubItem == COLUMN_SEARCH_STRING)
-		{
-			search.searchString = info->item.pszText;
-			search.Prepare();
-		}
-		else
-		if(info->item.iSubItem == COLUMN_DEST_DIR)
-		{
-			search.destDir = info->item.pszText;
-		}
-		else
-		if(info->item.iSubItem == COLUMN_MIN_FILE_SIZE)
-		{
-			if(strlen(info->item.pszText) > 0)
-			{
-				search.minFileSize = Util::toInt64(info->item.pszText);
-			}
-			else
-			{
-				search.minFileSize = (int64_t)-1;
-			}
-		}
-		else
-		if(info->item.iSubItem == COLUMN_MAX_FILE_SIZE)
-		{
-			if(strlen(info->item.pszText) > 0)
-			{
-				search.maxFileSize = Util::toInt64(info->item.pszText);
-			}
-			else
-			{
-				search.maxFileSize = (int64_t)-1;
-			}
-		}
-
-		// Update UI
-		ctrlList.SetItemText(info->item.iItem, info->item.iSubItem, info->item.pszText);
-
-		bHandled = TRUE;
-		return 1;
+		// Treat as onEdit command
+		onEdit(0, 0, 0, bHandled);
 	}
 
 	return 0;
@@ -522,51 +497,37 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	}
 
 	// Generate values
-	char buf[32];
 	StringList line;
+	char buf[32];
+	string fs;
 	line.push_back(search.searchString);
 	line.push_back(search.SourceTypeToString(search.sourceType));
 	line.push_back(search.destDir);
 	line.push_back(search.isActive ? CSTRING(YES) : CSTRING(NO));
-	line.push_back(search.minFileSize >= 0 ? _i64toa(search.minFileSize, buf, 10) : "");
-	line.push_back(search.maxFileSize >= 0 ? _i64toa(search.maxFileSize, buf, 10) : "");
+
+	fs = "";
+	if(search.minFileSize >= 0)
+	{
+		fs = _i64toa(search.minFileSize, buf, 10);
+		fs += " ";
+		fs += search.SizeTypeToStringInternational(search.typeFileSize);
+	}
+	line.push_back(fs);
+
+	fs = "";
+	if(search.maxFileSize >= 0)
+	{
+		fs = _i64toa(search.maxFileSize, buf, 10);
+		fs += " ";
+		fs += search.SizeTypeToStringInternational(search.typeFileSize);
+	}
+	line.push_back(fs);
 
 	// Insert in list control
 	ctrlList.insert(index, line);
 }
 
-// Begin editing a subitem
-void ADLSearchFrame::EditSubItem(int iItem, int iSubItem)
-{
-	// Save input for return
-	inlineEdit.iItem = iItem;
-	inlineEdit.iSubItem = iSubItem;
-
-	// Deselect all
-	ctrlList.SetItemState(-1, 0, LVIS_SELECTED);
-
-	// Get rect for new edit control
-	RECT label;
-	memset(&label, 0, sizeof(label));
-	ctrlList.GetSubItemRect(iItem, iSubItem, LVIR_LABEL, &label);
-
-	// Create a new edit control for inline editing
-	HWND hInlineEdit = inlineEdit.Create(ctrlList.m_hWnd, label, "InlineEdit", 
-		WS_CHILD|WS_VISIBLE|WS_BORDER|ES_AUTOHSCROLL);
-	if(hInlineEdit != NULL)
-	{
-		// Set font
-		inlineEdit.SetFont(ctrlList.GetFont(), FALSE);
-
-		// Transfer text
-		char text[256];
-		ctrlList.GetItemText(iItem, iSubItem, text, 255);
-		inlineEdit.SetWindowText(text);
-		inlineEdit.SetSel(0, -1);
-
-		// Show window
-		inlineEdit.ShowWindow(SW_SHOW);
-		inlineEdit.UpdateWindow();
-		inlineEdit.SetFocus();
-	}
-}
+/**
+ * @file
+ * $Id: ADLSearchFrame.cpp,v 1.2 2003/04/15 10:13:59 arnetheduck Exp $
+ */

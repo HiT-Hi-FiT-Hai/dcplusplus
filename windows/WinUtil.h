@@ -23,6 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/Util.h"
+#include "../client/SettingsManager.h"
+
 class FlatTabCtrl;
 
 class WinUtil {
@@ -155,6 +158,6 @@ private:
 #endif // __WINUTIL_H
 
 /**
- * @file WinUtil.h
- * $Id: WinUtil.h,v 1.8 2003/03/13 13:32:09 arnetheduck Exp $
+ * @file
+ * $Id: WinUtil.h,v 1.9 2003/04/15 10:14:06 arnetheduck Exp $
  */

@@ -25,6 +25,7 @@
 
 #include "Exception.h"
 #include "../zlib/zlib.h"
+#include "SettingsManager.h"
 
 STANDARD_EXCEPTION(CryptoException);
 
@@ -185,6 +186,6 @@ private:
 #endif // !defined(AFX_CRYPTO_H__28F66860_0AD5_44AD_989C_BA4326C42F46__INCLUDED_)
 
 /**
- * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.20 2003/03/26 08:47:15 arnetheduck Exp $
+ * @file
+ * $Id: CryptoManager.h,v 1.21 2003/04/15 10:13:53 arnetheduck Exp $
  */

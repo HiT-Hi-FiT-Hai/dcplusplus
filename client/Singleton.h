@@ -50,6 +50,6 @@ protected:
 #endif // !defined(AFX_SINGLETON_H__3B62D311_53B4_42E9_8522_D890E70BDFE3__INCLUDED_)
 
 /**
- * @file Singleton.h
- * $Id: Singleton.h,v 1.2 2003/03/13 13:31:32 arnetheduck Exp $
+ * @file
+ * $Id: Singleton.h,v 1.3 2003/04/15 10:13:56 arnetheduck Exp $
  */

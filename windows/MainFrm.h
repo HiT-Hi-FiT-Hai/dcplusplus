@@ -435,6 +435,7 @@ private:
 	void updateTray(bool add = true);
 
 	void autoConnect(const FavoriteHubEntry::List& fl);
+	void startSocket();
 
 	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
@@ -466,7 +467,7 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) throw();
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, string const& /*aLine*/) throw();
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) throw();	
 	void onHttpComplete(HttpConnection* aConn);
 
@@ -477,8 +478,8 @@ private:
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
 
 /**
- * @file MainFrm.h
- * $Id: MainFrm.h,v 1.14 2003/03/26 08:47:46 arnetheduck Exp $
+ * @file
+ * $Id: MainFrm.h,v 1.15 2003/04/15 10:14:02 arnetheduck Exp $
  */
 
  

@@ -128,7 +128,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 }
 
 /**
- * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.5 2003/03/13 13:32:07 arnetheduck Exp $
+ * @file
+ * $Id: UploadPage.cpp,v 1.6 2003/04/15 10:14:04 arnetheduck Exp $
  */
 

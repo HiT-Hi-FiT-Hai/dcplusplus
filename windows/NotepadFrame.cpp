@@ -91,8 +91,8 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 }
 
 /**
- * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.6 2003/03/13 13:31:56 arnetheduck Exp $
+ * @file
+ * $Id: NotepadFrame.cpp,v 1.7 2003/04/15 10:14:02 arnetheduck Exp $
  */
 
 

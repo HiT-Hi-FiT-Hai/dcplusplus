@@ -439,7 +439,7 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 }
 
 /**
- * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.18 2003/03/13 13:31:32 arnetheduck Exp $
+ * @file
+ * $Id: SimpleXML.cpp,v 1.19 2003/04/15 10:13:55 arnetheduck Exp $
  */
 

@@ -90,7 +90,9 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 			p->setTab(aTab);
 			p->addLine(aMessage);
 			if(Util::getAway()) {
-				p->sendMessage(Util::getAwayMessage());
+				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
+				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
+					p->sendMessage(Util::getAwayMessage());
 			}
 
 			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
@@ -260,8 +262,8 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 }
 
 /**
- * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.11 2003/03/13 13:31:56 arnetheduck Exp $
+ * @file
+ * $Id: PrivateFrame.cpp,v 1.12 2003/04/15 10:14:02 arnetheduck Exp $
  */
 
 

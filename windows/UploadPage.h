@@ -58,7 +58,7 @@ protected:
 #endif //UPLOADPAGE_H
 
 /**
- * @file UploadPage.h
- * $Id: UploadPage.h,v 1.3 2003/03/13 13:32:08 arnetheduck Exp $
+ * @file
+ * $Id: UploadPage.h,v 1.4 2003/04/15 10:14:05 arnetheduck Exp $
  */
 

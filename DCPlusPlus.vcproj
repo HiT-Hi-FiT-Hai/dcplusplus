@@ -95,7 +95,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
+				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO,_STLP_NO_EXCEPTIONS"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -120,6 +120,7 @@
 				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				IgnoreDefaultLibraryNames=""
 				DelayLoadDLLs="comdlg32.dll;dbghelp.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="./App/DCPlusPlus.pdb"
@@ -222,6 +223,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath="windows\ADLSProperties.cpp">
+			</File>
+			<File
 				RelativePath="windows\ADLSearchFrame.cpp">
 			</File>
 			<File
@@ -321,6 +325,9 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath="windows\ADLSProperties.h">
+			</File>
 			<File
 				RelativePath="windows\ADLSearchFrame.h">
 			</File>

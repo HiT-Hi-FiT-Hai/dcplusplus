@@ -22,7 +22,7 @@
 #include "Exception.h"
 
 /**
- * @file Exception.cpp
- * $Id: Exception.cpp,v 1.7 2003/03/13 13:31:21 arnetheduck Exp $
+ * @file
+ * $Id: Exception.cpp,v 1.8 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

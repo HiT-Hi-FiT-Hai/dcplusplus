@@ -23,7 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
 #include "Pointer.h"
+#include "CriticalSection.h"
 
 class Client;
 
@@ -97,7 +99,7 @@ private:
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
 
 /**
- * @file User.h
- * $Id: User.h,v 1.24 2003/03/26 08:47:34 arnetheduck Exp $
+ * @file
+ * $Id: User.h,v 1.25 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

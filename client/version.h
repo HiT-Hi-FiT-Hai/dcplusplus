@@ -23,6 +23,6 @@
 /* Update the .rc file as well... */
 
 /**
- * @file Version.h
- * $Id: version.h,v 1.38 2003/04/01 12:25:35 arnetheduck Exp $
+ * @file
+ * $Id: version.h,v 1.39 2003/04/15 10:13:59 arnetheduck Exp $
  */

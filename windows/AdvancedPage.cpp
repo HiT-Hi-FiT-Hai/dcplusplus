@@ -59,6 +59,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SFV_CHECK, ResourceManager::SETTINGS_ADVANCED_SFV_CHECK },
 	{ SettingsManager::AUTO_UPDATE_LIST, ResourceManager::SETTINGS_ADVANCED_AUTO_UPDATE_LIST },
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ADVANCED_ANTI_FRAG },
+	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_ADVANCED_NO_AWAYMSG_TO_BOTS },
 	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
@@ -160,7 +161,7 @@ void AdvancedPage::write()
 }
 
 /**
- * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.11 2003/03/31 11:22:44 arnetheduck Exp $
+ * @file
+ * $Id: AdvancedPage.cpp,v 1.12 2003/04/15 10:14:00 arnetheduck Exp $
  */
 

@@ -26,6 +26,7 @@
 #include "Socket.h"
 #include "User.h"
 #include "Thread.h"
+#include "SettingsManager.h"
 
 #include "SearchManagerListener.h"
 
@@ -109,6 +110,7 @@ public:
 	}
 
 	void setPort(short aPort) throw(SocketException);
+	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length());
 	}
@@ -139,6 +141,6 @@ private:
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
- * @file SearchManager.h
- * $Id: SearchManager.h,v 1.23 2003/03/13 13:31:30 arnetheduck Exp $
+ * @file
+ * $Id: SearchManager.h,v 1.24 2003/04/15 10:13:54 arnetheduck Exp $
  */

@@ -187,6 +187,6 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 }
 
 /**
- * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.9 2003/03/13 13:32:06 arnetheduck Exp $
+ * @file
+ * $Id: SpyFrame.cpp,v 1.10 2003/04/15 10:14:03 arnetheduck Exp $
  */

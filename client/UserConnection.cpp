@@ -166,6 +166,6 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 }
 
 /**
- * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.25 2003/03/13 13:31:40 arnetheduck Exp $
+ * @file
+ * $Id: UserConnection.cpp,v 1.26 2003/04/15 10:13:57 arnetheduck Exp $
  */

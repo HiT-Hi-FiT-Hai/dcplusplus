@@ -66,6 +66,7 @@
 		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
 		<String Name="DuplicateSource">Duplicate source</String>
+		<String Name="Edit">Edit</String>
 		<String Name="Email">E-Mail</String>
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
 		<String Name="EnterPassword">Please enter a password</String>
@@ -94,6 +95,7 @@
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GB</String>
 		<String Name="GetFileList">Get file list</String>
+		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
@@ -123,6 +125,8 @@
 		<String Name="Low">Low</String>
 		<String Name="Lowest">Lowest</String>
 		<String Name="ManualAddress">Manual connect address</String>
+		<String Name="MatchQueue">Match queue</String>
+		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="Mb">MB</String>
 		<String Name="MenuFile">&amp;File</String>
 		<String Name="MenuFileAdlSearch">ADL Search</String>
@@ -160,7 +164,7 @@
 		<String Name="MenuWindowMinimizeAll">Minimize &amp;All</String>
 		<String Name="MenuWindowTile">Tile</String>
 		<String Name="Move">Move/Rename</String>
-		<String Name="MoveDown">MoveDown</String>
+		<String Name="MoveDown">Move Down</String>
 		<String Name="MoveUp">Move Up</String>
 		<String Name="NetworkUnreachable">Network unreachable (are you connected to the internet?)</String>
 		<String Name="Next">Next</String>
@@ -224,7 +228,7 @@
 		<String Name="SearchOptions">Search options</String>
 		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>
-		<String Name="SearchString">Search string</String>
+		<String Name="SearchString">Search String</String>
 		<String Name="SearchingFor">Searching for </String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Server">Server</String>
@@ -241,6 +245,7 @@
 		<String Name="SettingsAdvancedIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
 		<String Name="SettingsAdvancedKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsAdvancedName">Name</String>
+		<String Name="SettingsAdvancedNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsAdvancedOpenPublic">Open the public hubs window at startup</String>
 		<String Name="SettingsAdvancedOpenQueue">Open the download queue window at startup</String>
 		<String Name="SettingsAdvancedPopupOffline">Popup messages from users that are not online (if not ignoring, messages go to main chat if enabled)</String>
@@ -310,6 +315,7 @@
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
 		<String Name="WaitingToRetry">Waiting to retry...</String>
+		<String Name="WhatsThis">What's this?</String>
 		<String Name="Yes">Yes</String>
 		<String Name="YouAreBeingRedirected">You are being redirected to </String>
 	</Strings>

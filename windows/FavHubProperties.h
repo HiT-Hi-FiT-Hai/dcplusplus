@@ -53,6 +53,6 @@ protected:
 #endif // !defined(AFX_FAVHUBPROPERTIES_H__12B4C4DD_D28F_47FB_AFE8_8C75E5C4FF96__INCLUDED_)
 
 /**
- * @file FavHubProperties.h
- * $Id: FavHubProperties.h,v 1.3 2003/03/13 13:31:49 arnetheduck Exp $
+ * @file
+ * $Id: FavHubProperties.h,v 1.4 2003/04/15 10:14:01 arnetheduck Exp $
  */

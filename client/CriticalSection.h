@@ -125,6 +125,6 @@ private:
 #endif // !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
 
 /**
- * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.13 2003/03/13 13:31:16 arnetheduck Exp $
+ * @file
+ * $Id: CriticalSection.h,v 1.14 2003/04/15 10:13:53 arnetheduck Exp $
  */

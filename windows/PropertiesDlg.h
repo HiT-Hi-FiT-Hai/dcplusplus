@@ -48,6 +48,6 @@ protected:
 #endif // !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
 
 /**
- * @file PropertiesDlg.h
- * $Id: PropertiesDlg.h,v 1.3 2003/03/13 13:31:59 arnetheduck Exp $
+ * @file
+ * $Id: PropertiesDlg.h,v 1.4 2003/04/15 10:14:02 arnetheduck Exp $
  */

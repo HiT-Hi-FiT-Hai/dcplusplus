@@ -37,6 +37,6 @@ public:
 #endif // !defined(AFX_STRINGTOKENIZER_H__E9B493AC_97A7_4A18_AF7C_06BFE1926A52__INCLUDED_)
 
 /**
- * @file StringTokenizer.h
- * $Id: StringTokenizer.h,v 1.4 2003/03/13 13:31:35 arnetheduck Exp $
+ * @file
+ * $Id: StringTokenizer.h,v 1.5 2003/04/15 10:13:57 arnetheduck Exp $
  */

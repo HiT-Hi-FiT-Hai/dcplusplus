@@ -35,79 +35,6 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//	Class a simple edit control used for inline editing in list control
-//
-///////////////////////////////////////////////////////////////////////////////
-class CInlineEdit : public CWindowImpl<CInlineEdit, CEdit>
-{
-public:
-
-	// Base class typedef
-	typedef CWindowImpl<CInlineEdit, CEdit> baseClass;
-
-	// Constructor/destructor
-	CInlineEdit() { }
-	virtual ~CInlineEdit() { }
-
-	// Inline message map
-	BEGIN_MSG_MAP(CInlineEdit)
-		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
-		MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
-	END_MSG_MAP()
-
-	// Key pressed
-	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		// Key-dependant processing
-		if(wParam == VK_RETURN)
-		{
-			// Get edited text
-			char text[256];
-			GetWindowText(text, 255);
-
-			// Prepare to send LVN_ENDLABELEDIT command to frame
-			LV_DISPINFO dispInfo;
-			dispInfo.hdr.hwndFrom    = GetParent();
-			dispInfo.hdr.idFrom      = IDC_ADLLIST; 
-			dispInfo.hdr.code        = LVN_ENDLABELEDIT;
-			dispInfo.item.mask       = LVIF_TEXT;
-			dispInfo.item.iItem      = iItem;
-			dispInfo.item.iSubItem   = iSubItem;
-			dispInfo.item.pszText    = text;
-			dispInfo.item.cchTextMax = strlen(text);
-
-			// Send to frame (two levels up)
-			::SendMessage(::GetParent(GetParent()), WM_NOTIFY, (WPARAM)0, (LPARAM)&dispInfo);
-
-			// Take down window
-			DestroyWindow();
-		}
-		else
-		if(wParam == VK_ESCAPE)
-		{
-			// Hit escape, take down window
-			DestroyWindow();
-		}
-
-		bHandled = FALSE;
-		return 0;
-	}
-
-	// Focus lost
-	LRESULT OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		// Focus lost, simulate enter key
-		OnKeyDown(0, VK_RETURN, 0, bHandled);
-		return 0;
-	}
-
-	// Owner variables
-	int iItem;
-	int iSubItem;
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //	Class that represent an ADL search manager interface
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,38 +57,38 @@ public:
 
 	// Inline message map
 	BEGIN_MSG_MAP(ADLSearchFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CLOSE, OnClose)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
-		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
-		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColor)
-		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, OnAdd)
-		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, OnRemove)
-		COMMAND_HANDLER(IDC_MOVE_UP, BN_CLICKED, OnMoveUp)
-		COMMAND_HANDLER(IDC_MOVE_DOWN, BN_CLICKED, OnMoveDown)
+		MESSAGE_HANDLER(WM_CREATE, onCreate)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
+		COMMAND_HANDLER(IDC_EDIT, BN_CLICKED, onEdit)
+		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
+		COMMAND_HANDLER(IDC_HELP_FAQ, BN_CLICKED, onHelp)
+		COMMAND_HANDLER(IDC_MOVE_UP, BN_CLICKED, onMoveUp)
+		COMMAND_HANDLER(IDC_MOVE_DOWN, BN_CLICKED, onMoveDown)
 		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, OnDoubleClickList)
-		NOTIFY_HANDLER(IDC_ADLLIST, LVN_ENDLABELEDIT, OnEndLabelEditList)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	// Message handlers
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);	
-	LRESULT OnAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onHelp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnEndLabelEditList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	// Update colors
-	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 	{
 		HWND hWnd = (HWND)lParam;
 		HDC hDC   = (HDC)wParam;
-		if(hWnd == ctrlList.m_hWnd || hWnd == inlineEdit.m_hWnd) 
+		if(hWnd == ctrlList.m_hWnd) 
 		{
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
@@ -172,13 +99,13 @@ public:
 	};
 
 	// Forward message
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+	LRESULT onForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
 	{
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
 	// Final message
-	virtual void OnFinalMessage(HWND /*hWnd*/) 
+	virtual void onFinalMessage(HWND /*hWnd*/) 
 	{
 		frame = NULL;
 		delete this;
@@ -196,11 +123,12 @@ private:
 	// Contained controls
 	CStatusBarCtrl ctrlStatus;
 	ExListViewCtrl ctrlList;
-	CMenu contextMenu;
-
-	// Sub-item editing
-	CInlineEdit inlineEdit;
-	void EditSubItem(int iItem, int iSubItem);
+	CButton ctrlAdd;
+	CButton ctrlEdit;
+	CButton ctrlRemove;
+	CButton ctrlMoveUp;
+	CButton ctrlMoveDown;
+	CButton ctrlHelp;
 
 	// Column order
 	enum 
@@ -222,3 +150,7 @@ private:
 
 #endif
 
+/**
+ * @file
+ * $Id: ADLSearchFrame.h,v 1.2 2003/04/15 10:13:59 arnetheduck Exp $
+ */

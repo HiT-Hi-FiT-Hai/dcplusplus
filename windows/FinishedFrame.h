@@ -208,6 +208,6 @@ private:
 #endif // FINISHEDFRAME_H
 
 /**
- * @file FinishedFrame.h
- * $Id: FinishedFrame.h,v 1.5 2003/03/31 11:22:46 arnetheduck Exp $
+ * @file
+ * $Id: FinishedFrame.h,v 1.6 2003/04/15 10:14:01 arnetheduck Exp $
  */

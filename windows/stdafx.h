@@ -75,7 +75,7 @@ using namespace _STL;
 #endif // !defined(AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 
 /**
- * @file stdafx.h
- * $Id: stdafx.h,v 1.3 2003/03/13 13:32:11 arnetheduck Exp $
+ * @file
+ * $Id: stdafx.h,v 1.4 2003/04/15 10:14:06 arnetheduck Exp $
  */
 

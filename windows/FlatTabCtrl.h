@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/SettingsManager.h"
+
 #define FT_BASE (WM_APP + 700)
 /** This will be sent when the user presses a tab. WPARAM = HWND */
 #define FTN_SELECTED (FT_BASE + 0)
@@ -580,6 +582,6 @@ private:
 #endif // !defined(AFX_FLATTABCTRL_H__FFFCBD5C_891D_44FB_B9F3_1DF83DA3EA83__INCLUDED_)
 
 /**
- * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.12 2003/04/01 12:25:35 arnetheduck Exp $
+ * @file
+ * $Id: FlatTabCtrl.h,v 1.13 2003/04/15 10:14:01 arnetheduck Exp $
  */

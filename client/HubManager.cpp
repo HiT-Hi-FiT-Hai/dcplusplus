@@ -39,7 +39,7 @@ void HubManager::onHttpFinished() throw() {
 	if(listType == TYPE_BZIP2) {
 		try {
 			CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
-		} catch(CryptoException) {
+		} catch(const CryptoException&) {
 			bzlist.clear();
 		}
 		x = &bzlist;
@@ -124,7 +124,7 @@ void HubManager::save() {
 		File::deleteFile(fname);
 		File::renameFile(fname + ".tmp", fname);
 
-	} catch(Exception e) {
+	} catch(const Exception& e) {
 		dcdebug("HubManager::save: %s\n", e.getError().c_str());
 	}
 }
@@ -139,7 +139,7 @@ void HubManager::load() {
 			load(&xml);
 			xml.stepOut();
 		}
-	} catch(Exception e) {
+	} catch(const Exception& e) {
 		dcdebug("HubManager::load: %s\n", e.getError().c_str());
 	}
 }
@@ -226,11 +226,6 @@ void HubManager::refresh() {
 		}
 		c->addListener(this);
 		c->downloadFile(server);
-		if(server.substr(server.size() - 4) == ".bz2") {
-			listType = TYPE_BZIP2;
-		} else {
-			listType = TYPE_NORMAL;
-		}
 		running = true;
 	}
 }
@@ -246,22 +241,31 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 }
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
 	switch(type) {
+	case HttpConnectionListener::COMPLETE:
+		dcassert(c);
+		c->removeListener(this);
+		onHttpFinished();
+		running = false;
+		fire(HubManagerListener::DOWNLOAD_FINISHED, aLine);
+		break;
 	case HttpConnectionListener::FAILED:
 		dcassert(c);
 		c->removeListener(this);
 		lastServer++;
 		running = false;
 		fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
+		break;
+	case HttpConnectionListener::REDIRECTED:
+		fire(HubManagerListener::DOWNLOAD_STARTING, aLine);
+		break;
 	}
 }
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
 	switch(type) {
-	case HttpConnectionListener::COMPLETE:
-		dcassert(c);
-		c->removeListener(this);
-		onHttpFinished();
-		running = false;
-		fire(HubManagerListener::DOWNLOAD_FINISHED);
+	case HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2:
+		listType = TYPE_BZIP2; break;
+	case HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL:
+		listType = TYPE_NORMAL; break;
 	}
 }
 
@@ -273,6 +277,6 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 }
 
 /**
- * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.28 2003/03/26 08:47:21 arnetheduck Exp $
+ * @file
+ * $Id: HubManager.cpp,v 1.29 2003/04/15 10:13:53 arnetheduck Exp $
  */

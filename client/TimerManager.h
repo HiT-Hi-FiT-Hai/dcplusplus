@@ -25,6 +25,7 @@
 
 #include "Thread.h"
 #include "Semaphore.h"
+#include "Speaker.h"
 
 #ifndef WIN32
 #include <sys/time.h>
@@ -84,7 +85,7 @@ private:
 #endif // !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
 
 /**
- * @file TimerManager.h
- * $Id: TimerManager.h,v 1.17 2003/03/26 08:47:33 arnetheduck Exp $
+ * @file
+ * $Id: TimerManager.h,v 1.18 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

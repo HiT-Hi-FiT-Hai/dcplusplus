@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
 #include "Exception.h"
 
 #ifdef WIN32
@@ -149,7 +150,7 @@ public:
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
 	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
 	
-	bool wait(u_int32_t millis, int& waitFor) throw(SocketException);
+	int wait(u_int32_t millis, int waitFor) throw(SocketException);
 	bool isConnected() { return connected; };
 	
 	static string resolve(const string& aDns);
@@ -244,7 +245,7 @@ private:
 #endif // _SOCKET_H
 
 /**
- * @file Socket.h
- * $Id: Socket.h,v 1.40 2003/03/13 13:31:34 arnetheduck Exp $
+ * @file
+ * $Id: Socket.h,v 1.41 2003/04/15 10:13:56 arnetheduck Exp $
  */
 

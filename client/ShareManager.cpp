@@ -138,7 +138,7 @@ void ShareManager::load(SimpleXML* aXml) {
 		while(aXml->findChild("Directory")) {
 			try {
 				addDirectory(aXml->getChildData());
-			} catch(ShareException) {
+			} catch(const ShareException&) {
 				// ...
 			}
 		}
@@ -331,7 +331,7 @@ int ShareManager::run() {
 			lFile = NULL;
 
 			lFile = new File(getListFile(), File::READ, File::OPEN);
-		} catch(FileException) {
+		} catch(const FileException&) {
 		}
 
 		listLen = tmp2.length();
@@ -352,7 +352,7 @@ int ShareManager::run() {
 			bFile = NULL;
 			
 			bFile = new File(getBZListFile(), File::READ, File::OPEN);
-		} catch(FileException) {
+		} catch(const FileException&) {
 		}
 		
 		dirty = false;
@@ -682,14 +682,14 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 				dirty = true;
 				refresh(true, true);
 				lastUpdate = tick;
-			} catch(ShareException) {
+			} catch(const ShareException&) {
 			}
 		}
 	}
 }
 
 /**
- * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.47 2003/03/26 08:47:26 arnetheduck Exp $
+ * @file
+ * $Id: ShareManager.cpp,v 1.48 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

@@ -88,7 +88,7 @@ private:
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
- * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.6 2003/03/13 13:31:56 arnetheduck Exp $
+ * @file
+ * $Id: NotepadFrame.h,v 1.7 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

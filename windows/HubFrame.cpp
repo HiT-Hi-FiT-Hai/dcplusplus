@@ -1028,6 +1028,6 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 }
 
 /**
- * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.21 2003/03/31 11:23:03 arnetheduck Exp $
+ * @file
+ * $Id: HubFrame.cpp,v 1.22 2003/04/15 10:14:02 arnetheduck Exp $
  */

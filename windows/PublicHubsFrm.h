@@ -167,19 +167,13 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 	
-	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type) throw() {
-		switch(type) {
-		case HubManagerListener::DOWNLOAD_FINISHED:
-			PostMessage(WM_SPEAKER, FINISHED); break;
-		}
-	}
-
 	virtual void onAction(HubManagerListener::Types type, const string& line) throw() {
 		string* x = new string(line);
 		switch(type) {
 		case HubManagerListener::DOWNLOAD_STARTING:
 			PostMessage(WM_SPEAKER, STARTING, (LPARAM)x); break;
+		case HubManagerListener::DOWNLOAD_FINISHED:
+			PostMessage(WM_SPEAKER, FINISHED, (LPARAM)x); break;
 		case HubManagerListener::DOWNLOAD_FAILED:
 			PostMessage(WM_SPEAKER, FAILED, (LPARAM)x); break;
 		}
@@ -192,6 +186,6 @@ private:
 #endif // !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
- * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.7 2003/03/31 11:23:05 arnetheduck Exp $
+ * @file
+ * $Id: PublicHubsFrm.h,v 1.8 2003/04/15 10:14:03 arnetheduck Exp $
  */

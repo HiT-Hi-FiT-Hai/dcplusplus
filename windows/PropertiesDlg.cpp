@@ -84,7 +84,7 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 }
 
 /**
- * @file PropertiesDlg.cpp
- * $Id: PropertiesDlg.cpp,v 1.4 2003/03/13 13:31:58 arnetheduck Exp $
+ * @file
+ * $Id: PropertiesDlg.cpp,v 1.5 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

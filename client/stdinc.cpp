@@ -19,6 +19,6 @@
 #include "stdinc.h"
 
 /**
- * @file stdinc.cpp
- * $Id: stdinc.cpp,v 1.2 2003/03/13 13:31:41 arnetheduck Exp $
+ * @file
+ * $Id: stdinc.cpp,v 1.3 2003/04/15 10:13:59 arnetheduck Exp $
  */

@@ -38,6 +38,7 @@ STANDARD_EXCEPTION(QueueException);
 class QueueManager;
 class Download;
 class UserConnection;
+class DirectoryListing;
 
 class QueueItem : public Flags {
 public:
@@ -254,6 +255,8 @@ public:
 
 	void addDirectory(const string& aDir, User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 	
+	int matchListing(DirectoryListing* dl, const User::Ptr& aUser) throw();
+
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();
 
@@ -374,7 +377,7 @@ private:
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
- * @file QueueManager.h
- * $Id: QueueManager.h,v 1.34 2003/03/26 08:47:23 arnetheduck Exp $
+ * @file
+ * $Id: QueueManager.h,v 1.35 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

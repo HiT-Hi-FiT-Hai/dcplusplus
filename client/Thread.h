@@ -53,6 +53,9 @@ public:
 		if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
 			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
+		// Ugly fix for the multi-cpu issues: we set all threads to run on processor 0
+		if(::SetThreadAffinityMask(threadHandle, 1) == 0)
+			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 	}
 
 	void join() throw(ThreadException) {
@@ -136,7 +139,7 @@ private:
 #endif // !defined(AFX_THREAD_H__3006956B_7C69_4DAD_9596_A49E1BD007D5__INCLUDED_)
 
 /**
- * @file Thread.h
- * $Id: Thread.h,v 1.6 2003/03/13 13:31:36 arnetheduck Exp $
+ * @file
+ * $Id: Thread.h,v 1.7 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

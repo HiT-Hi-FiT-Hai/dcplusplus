@@ -23,8 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "CriticalSection.h"
-
 /** Evaluates op(pair<T1, T2>.first, compareTo) */
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
@@ -87,95 +85,6 @@ private:
 	void operator=(const AutoArray&) { };
 
 	TPtr p;
-};
-
-template<typename Listener>
-class Speaker {
-	typedef vector<Listener*> ListenerList;
-	typedef typename ListenerList::iterator ListenerIter;
-	
-public:
-
-	void fire(typename Listener::Types type) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type);
-		}
-	};
-	
-	template<class T> 
-		void fire(typename Listener::Types type, const T& param) throw () {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, param);
-		}
-	};
-	
-	template<class T, class T2> 
-		void fire(typename Listener::Types type, const T& p, const T2& p2) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, p, p2);
-		}
-	};
-	template<class T, class T2, class T3> 
-		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, p, p2, p3);
-		}
-	};
-	template<class T, class T2, class T3, class T4> 
-		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, p, p2, p3, p4);
-		}
-	};
-	template<class T, class T2, class T3, class T4, class T5> 
-		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, p, p2, p3, p4, p5);
-		}
-	};
-	template<class T, class T2, class T3, class T4, class T5, class T6> 
-		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
-		Lock l(listenerCS);
-		ListenerList tmp = listeners;
-		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
-		}
-	};
-	
-	
-	void addListener(Listener* aListener) {
-		Lock l(listenerCS);
-		if(find(listeners.begin(), listeners.end(), aListener) == listeners.end())
-			listeners.push_back(aListener);
-	}
-	
-	void removeListener(Listener* aListener) {
-		Lock l(listenerCS);
-
-		ListenerIter i = find(listeners.begin(), listeners.end(), aListener);
-		if(i != listeners.end())
-			listeners.erase(i);
-	}
-	
-	void removeListeners() {
-		Lock l(listenerCS);
-		listeners.clear();
-	}
-protected:
-	ListenerList listeners;
-	CriticalSection listenerCS;
 };
 
 class Util  
@@ -400,8 +309,9 @@ public:
 		if(alen >= blen) {
 			const char* a = aString.c_str();
 			const char* b = aSubString.c_str();
-			for(string::size_type pos = start; pos < alen - blen + 1; pos++) {
-				if(strnicmp(a+pos, b, blen) == 0)
+			char c = lower[(u_int8_t)*b];
+			for(string::size_type pos = start; pos < (alen - blen + 1); pos++) {
+				if((c == lower[(u_int8_t)*a]) && strnicmp(a+pos+1, b+1, blen-1) == 0)
 					return pos;
 			}
 		}
@@ -414,7 +324,7 @@ public:
 		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			a++; b++;
 		}
-		return cmpi[*a][*b];
+		return cmpi[(u_int8_t)*a][(u_int8_t)*b];
 	}
 	static int strnicmp(const char* a, const char* b, int n) {
 		// return ::strnicmp(a, b, n);
@@ -489,7 +399,6 @@ struct noCaseStringLess {
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
- * @file Util.h
- * $Id: Util.h,v 1.52 2003/03/13 13:31:41 arnetheduck Exp $
+ * @file
+ * $Id: Util.h,v 1.53 2003/04/15 10:13:59 arnetheduck Exp $
  */
-

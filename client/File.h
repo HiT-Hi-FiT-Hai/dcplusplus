@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "SettingsManager.h"
 #include "Exception.h"
 
 #ifndef WIN32
@@ -155,7 +156,7 @@ public:
 		}
 	}
 	virtual void setEOF() throw(FileException) {
-		dcassert(h != NULL);
+		dcassert(h != INVALID_HANDLE_VALUE);
 		if(!SetEndOfFile(h)) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
@@ -302,7 +303,7 @@ public:
 	bool hasCRC32() const { return calcCRC; };
 	u_int32_t getCRC32() const { return crc32.getValue(); };
 
-private:
+protected:
 #ifdef WIN32
 	HANDLE h;
 #else
@@ -321,7 +322,7 @@ public:
 		buf = new u_int8_t[size];
 	}
 	
-	virtual ~BufferedFile() {
+	virtual ~BufferedFile() throw(FileException) {
 		flush();
 		delete[] buf;
 	}
@@ -361,7 +362,7 @@ public:
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
 	
-	virtual void close() throw(FileException) { flush(); File::close(); };
+	virtual void close() throw(FileException) { if(h != INVALID_HANDLE_VALUE) { flush(); File::close(); } };
 	virtual int64_t getSize() throw(FileException) { flush(); return File::getSize(); };
 	virtual int64_t getPos() throw(FileException) { flush(); return File::getPos(); };
 	virtual void setPos(int64_t aPos) throw(FileException) { flush(); File::setPos(aPos); };
@@ -376,10 +377,33 @@ private:
 	u_int32_t size;
 };
 
+class SizedFile : public BufferedFile {
+public:
+	SizedFile(int64_t aExpectedSize, const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
+		BufferedFile(aFileName, access, mode, aCrc32, bufSize)
+	{
+		int64_t pos = getPos();
+		setPos(aExpectedSize);
+		setEOF();
+		setPos(pos);
+	}
+
+	~SizedFile() throw(FileException) {
+		close();
+	}
+
+	virtual void close() throw(FileException) {
+		if(h != INVALID_HANDLE_VALUE) {
+			setEOF();
+			BufferedFile::close();
+		}
+	}
+private:
+};
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
- * @file File.h
- * $Id: File.h,v 1.19 2003/03/31 11:22:39 arnetheduck Exp $
+ * @file
+ * $Id: File.h,v 1.20 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

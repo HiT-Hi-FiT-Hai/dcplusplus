@@ -164,13 +164,10 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 			try {
 				File::deleteFile(atarget);
 				File::renameFile(target, atarget);
-			} catch(FileException e) {
+			} catch(const FileException& e) {
 				dcdebug("AntiFrag: %s\n", e.getError().c_str());
 			}
-			file = new BufferedFile(atarget, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
-			// Move EOF to expected size
-			file->setPos(d->getSize());
-			file->setEOF();
+			file = new SizedFile(d->getSize(), atarget, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
 
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		} else {
@@ -179,7 +176,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 		file->setPos(d->getPos());
 		
-	} catch(FileException e) {
+	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
@@ -240,7 +237,8 @@ bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen
 		if(cmp != 0) {
 			return false;
 		}
-		d->getFile()->setEOF();
+		if(!d->isSet(Download::FLAG_ANTI_FRAG))
+			d->getFile()->setEOF();
 		// Write the rest...the file pointer should have been moved to the correct position by now...
 		d->getFile()->write(aData+len, aLen - len);
 	} else {
@@ -261,18 +259,38 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 		int l = aLen;
 		while(l > 0) {
 			const u_int8_t* data = aData + (aLen - l);
-			u_int32_t b = d->getComp()->decompress(data, l);
-			if(!handleData(aSource, d->getComp()->getOutbuf(), b))
-				break;
-			d->bytesLeft -= b;
-			if(d->bytesLeft == 0) {
-				aSource->setLineMode();
-				handleEndData(aSource);
-				if(l != 0) {
-					// Uhm, this client must be sending junk data after the compressed block...
-					aSource->disconnect();
-					return;
+			try {
+				u_int32_t b = d->getComp()->decompress(data, l);
+				if(!handleData(aSource, d->getComp()->getOutbuf(), b))
+					break;
+				d->bytesLeft -= b;
+				if(d->bytesLeft == 0) {
+					aSource->setLineMode();
+					handleEndData(aSource);
+					if(l != 0) {
+						// Uhm, this client must be sending junk data after the compressed block...
+						aSource->disconnect();
+						return;
+					}
 				}
+			} catch(const CryptoException&) {
+				// Oops, decompression error...could happen for many reasons
+				// but the most probable is that we received bad data...
+				// We remove whatever we managed to download in this sessions
+				// as it might be bad all of it...
+				try {
+					d->getFile()->movePos(-d->getTotal());
+					d->getFile()->setEOF();
+				} catch(const FileException&) {
+					// Ignore...
+				}
+
+				fire(DownloadManagerListener::FAILED, d, STRING(DECOMPRESSION_ERROR));
+
+				aSource->setDownload(NULL);
+				removeDownload(d);
+				removeConnection(aSource);
+				return;
 			}
 		}
 	} else {
@@ -304,7 +322,7 @@ bool DownloadManager::handleData(UserConnection* aSource, const u_int8_t* aData,
 			d->getFile()->write(aData, aLen);
 		}
 		d->addPos(aLen);
-	} catch(FileException e) {
+	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
 		
 		aSource->setDownload(NULL);
@@ -342,7 +360,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				// Now what?
 			}
 		}
-	} catch(FileException e) {
+	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
 		
 		aSource->setDownload(NULL);
@@ -376,7 +394,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 						;		// Keep on looping...
 
 					crcMatch = (f.getCRC32() == sfv.getCRC());
-				} catch (FileException) {
+				} catch (FileException&) {
 					// Nope; read failed...
 					goto noCRC;
 				}
@@ -428,7 +446,7 @@ noCRC:
 			Util::ensureDirectory(d->getTarget());
 			File::renameFile(d->getTempTarget(), d->getTarget());
 			d->setTempTarget(Util::emptyString);
-		} catch(FileException e) {
+		} catch(const FileException&) {
 			// Huh??? Now what??? Oh well...let it be...
 		}
 	}
@@ -481,7 +499,6 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 		try {
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
-				d->getFile()->setEOF();
 				d->getFile()->close();
 				const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
 				File::renameFile(tgt + ANTI_FRAG_EXT, tgt);
@@ -489,11 +506,11 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 			} else {
 				d->getFile()->close();
 			}
-		} catch(FileException e) {
+			delete d->getFile();
+		} catch(const FileException&) {
 			finished = false;
 		}
 
-		delete d->getFile();
 		d->setFile(NULL);
 	}
 
@@ -602,6 +619,6 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 }
 
 /**
- * @file DownloadManager.cpp
- * $Id: DownloadManager.cpp,v 1.71 2003/03/31 11:22:37 arnetheduck Exp $
+ * @file
+ * $Id: DownloadManager.cpp,v 1.72 2003/04/15 10:13:53 arnetheduck Exp $
  */

@@ -117,7 +117,7 @@ void User::setClient(Client* aClient) {
 };
 
 /**
- * @file User.cpp
- * $Id: User.cpp,v 1.17 2003/03/13 13:31:39 arnetheduck Exp $
+ * @file
+ * $Id: User.cpp,v 1.18 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

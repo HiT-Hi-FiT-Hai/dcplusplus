@@ -51,12 +51,12 @@ void ResourceManager::loadLanguage(const string& aFile) {
 				}
 			}
 		}
-	} catch(Exception e) {
+	} catch(const Exception&) {
 		// ...
 	}
 }
 /**
- * @file ResourceManager.h
- * $Id: ResourceManager.cpp,v 1.5 2003/03/13 13:31:28 arnetheduck Exp $
+ * @file
+ * $Id: ResourceManager.cpp,v 1.6 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

@@ -59,6 +59,6 @@ private:
 #endif // !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
 
 /**
- * @file BitOutputStream.h
- * $Id: BitOutputStream.h,v 1.10 2003/03/13 13:31:12 arnetheduck Exp $
+ * @file
+ * $Id: BitOutputStream.h,v 1.11 2003/04/15 10:13:50 arnetheduck Exp $
  */

@@ -45,10 +45,7 @@ string SearchResult::getFileName() {
 void SearchManager::setPort(short aPort) throw(SocketException) {
 	port = aPort;
 	if(socket != NULL) {
-		stop = true;
-		socket->disconnect();
-		join();
-		stop = false;
+		disconnect();
 	} else {
 		socket = new Socket();
 	}
@@ -56,6 +53,15 @@ void SearchManager::setPort(short aPort) throw(SocketException) {
 	socket->create(Socket::TYPE_UDP);
 	socket->bind(aPort);
 	start();
+}
+
+void SearchManager::disconnect() throw() {
+	if(socket != NULL) {
+		stop = true;
+		socket->disconnect();
+		join();
+		stop = false;
+	}
 }
 
 #define BUFSIZE 8192
@@ -70,7 +76,7 @@ int SearchManager::run() {
 			while( (len = socket->read((u_int8_t*)buf, BUFSIZE)) != 0) {
 				onData(buf, len);
 			}
-		} catch(SocketException e) {
+		} catch(const SocketException& e) {
 			dcdebug("SearchManager::run Error: %s\n", e.getError().c_str());
 		}
 		if(stop) {
@@ -81,7 +87,7 @@ int SearchManager::run() {
 			socket->disconnect();
 			socket->create(Socket::TYPE_UDP);
 			socket->bind(port);
-		} catch(SocketException e) {
+		} catch(const SocketException& e) {
 			// Oops, fatal this time...
 			dcdebug("SearchManager::run Stopped listening: %s\n", e.getError().c_str());
 			return 1;
@@ -167,7 +173,7 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 }
 
 /**
- * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.24 2003/03/13 13:31:29 arnetheduck Exp $
+ * @file
+ * $Id: SearchManager.cpp,v 1.25 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

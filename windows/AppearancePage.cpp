@@ -150,6 +150,6 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 /**
- * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.5 2003/03/26 08:47:40 arnetheduck Exp $
+ * @file
+ * $Id: AppearancePage.cpp,v 1.6 2003/04/15 10:14:00 arnetheduck Exp $
  */

@@ -32,7 +32,6 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 		throw SocketException(errno);
 	}
 
-
 	// Set reuse address option...
 	int x = 1;
 	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&x, sizeof(x));
@@ -50,7 +49,7 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 }
 
 /**
- * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.12 2003/03/13 13:31:30 arnetheduck Exp $
+ * @file
+ * $Id: ServerSocket.cpp,v 1.13 2003/04/15 10:13:54 arnetheduck Exp $
  */
 

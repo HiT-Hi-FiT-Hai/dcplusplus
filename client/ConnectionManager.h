@@ -89,6 +89,9 @@ public:
 	void setPort(short aPort) throw(SocketException) {
 		socket.waitForConnections(aPort);
 	}
+	void disconnect() throw() {
+		socket.disconnect();
+	}
 
 	// Ugly trick to use windows messages...
 	ServerSocket& getServerSocket() {
@@ -158,6 +161,6 @@ private:
 #endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
- * @file ConnectionManager.h
- * $Id: ConnectionManager.h,v 1.48 2003/03/26 08:47:12 arnetheduck Exp $
+ * @file
+ * $Id: ConnectionManager.h,v 1.49 2003/04/15 10:13:53 arnetheduck Exp $
  */

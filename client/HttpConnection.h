@@ -35,7 +35,10 @@ public:
 	enum Types {
 		DATA,
 		FAILED,
-		COMPLETE
+		COMPLETE,
+		REDIRECTED,
+		SET_DOWNLOAD_TYPE_NORMAL,
+		SET_DOWNLOAD_TYPE_BZIP2
 	};
 
 	virtual void onAction(Types, HttpConnection*) throw() { };	
@@ -59,13 +62,13 @@ private:
 
 	HttpConnection(const HttpConnection&) { dcassert(0); };
 
+	string currentUrl;
 	string file;
 	string server;
 	bool ok;
 	short port;
 	int64_t size;
 	bool moved302;
-	string location302;
 
 	BufferedSocket* socket;
 
@@ -83,7 +86,7 @@ private:
 #endif // !defined(AFX_HTTPCONNECTION_H__47AE2649_8D90_4C38_B048_69B3C26B3954__INCLUDED_)
 
 /**
- * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.13 2003/03/26 08:47:21 arnetheduck Exp $
+ * @file
+ * $Id: HttpConnection.h,v 1.14 2003/04/15 10:13:53 arnetheduck Exp $
  */
 

@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/Util.h"
+
 class ExListViewCtrl : public CListViewCtrl
 {
 	int sortColumn;
@@ -155,7 +157,7 @@ public:
 #endif // !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
 
 /**
- * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.6 2003/03/13 13:31:48 arnetheduck Exp $
+ * @file
+ * $Id: ExListViewCtrl.h,v 1.7 2003/04/15 10:14:01 arnetheduck Exp $
  */
 

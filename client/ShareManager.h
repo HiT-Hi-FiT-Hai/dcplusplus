@@ -27,6 +27,7 @@
 #include "CriticalSection.h"
 #include "TimerManager.h"
 #include "SearchManager.h"
+#include "SettingsManager.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -213,7 +214,7 @@ private:
 #endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
 
 /**
- * @file ShareManager.h
- * $Id: ShareManager.h,v 1.33 2003/03/26 08:47:27 arnetheduck Exp $
+ * @file
+ * $Id: ShareManager.h,v 1.34 2003/04/15 10:13:55 arnetheduck Exp $
  */
 

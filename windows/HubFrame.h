@@ -338,7 +338,7 @@ private:
 #endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
 
 /**
- * @file HubFrame.h
- * $Id: HubFrame.h,v 1.19 2003/03/31 11:23:04 arnetheduck Exp $
+ * @file
+ * $Id: HubFrame.h,v 1.20 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

@@ -344,10 +344,12 @@ LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 	if(wParam == FINISHED) {
 		hubs = HubManager::getInstance()->getPublicHubs();
 		updateList();
-		ctrlStatus.SetText(0, CSTRING(HUB_LIST_DOWNLOADED));
+		string* x = (string*)lParam;
+		ctrlStatus.SetText(0, (STRING(HUB_LIST_DOWNLOADED) + " (" + (*x) + ")").c_str());
+		delete x;
 	} else if(wParam == STARTING) {
 		string* x = (string*)lParam;
-		ctrlStatus.SetText(0, (STRING(DOWNLOADING_HUB_LIST) + "(" + (*x) + ")").c_str());
+		ctrlStatus.SetText(0, (STRING(DOWNLOADING_HUB_LIST) + " (" + (*x) + ")").c_str());
 		delete x;
 	} else if(wParam == FAILED) {
 		string* x = (string*)lParam;
@@ -394,7 +396,7 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 }
 
 /**
- * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.10 2003/03/31 11:23:05 arnetheduck Exp $
+ * @file
+ * $Id: PublicHubsFrm.cpp,v 1.11 2003/04/15 10:14:02 arnetheduck Exp $
  */
 

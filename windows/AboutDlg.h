@@ -88,17 +88,6 @@ private:
 
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
 		switch(type) {
-		case HttpConnectionListener::FAILED: 
-			c.removeListener(this);
-			{
-				string* x = new string(aLine);
-				PostMessage(WM_VERSIONDATA, (WPARAM) x);
-			}
-		}
-	}
-
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
-		switch(type) {
 		case HttpConnectionListener::COMPLETE:
 			c.removeListener(this);
 			if(!downBuf.empty()) {
@@ -112,6 +101,14 @@ private:
 					}
 				}
 			}
+			break;
+		case HttpConnectionListener::FAILED: 
+			c.removeListener(this);
+			{
+				string* x = new string(aLine);
+				PostMessage(WM_VERSIONDATA, (WPARAM) x);
+			}
+			break;
 		}
 	}
 
@@ -121,7 +118,7 @@ private:
 #endif // !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
 
 /**
- * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.7 2003/03/13 13:31:44 arnetheduck Exp $
+ * @file
+ * $Id: AboutDlg.h,v 1.8 2003/04/15 10:14:00 arnetheduck Exp $
  */
 

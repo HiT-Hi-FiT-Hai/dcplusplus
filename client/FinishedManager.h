@@ -133,6 +133,6 @@ private:
 #endif // FINISHEDMANAGER_H
 
 /**
- * @file FinishedManager.h
- * $Id: FinishedManager.h,v 1.5 2003/03/26 08:47:19 arnetheduck Exp $
+ * @file
+ * $Id: FinishedManager.h,v 1.6 2003/04/15 10:13:53 arnetheduck Exp $
  */

@@ -288,6 +288,6 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 }
 
 /**
- * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.11 2003/03/26 08:47:47 arnetheduck Exp $
+ * @file
+ * $Id: WinUtil.cpp,v 1.12 2003/04/15 10:14:06 arnetheduck Exp $
  */

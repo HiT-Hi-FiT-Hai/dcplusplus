@@ -292,7 +292,7 @@ private:
 #endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
 
 /**
- * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.14 2003/03/13 13:32:03 arnetheduck Exp $
+ * @file
+ * $Id: SearchFrm.h,v 1.15 2003/04/15 10:14:03 arnetheduck Exp $
  */
 

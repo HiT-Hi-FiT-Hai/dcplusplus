@@ -48,7 +48,7 @@ int TimerManager::run() {
 }
 
 /**
- * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.12 2003/03/13 13:31:36 arnetheduck Exp $
+ * @file
+ * $Id: TimerManager.cpp,v 1.13 2003/04/15 10:13:57 arnetheduck Exp $
  */
 

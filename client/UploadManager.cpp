@@ -62,7 +62,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	string file;
 	try {
 		file = ShareManager::getInstance()->translateFileName(aFile);
-	} catch(ShareException e) {
+	} catch(const ShareException&) {
 		aSource->error("File Not Available");
 		return false;
 	}
@@ -102,14 +102,14 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	File* f;
 	try {
 		f = new File(file, File::READ, File::OPEN);
-	} catch(FileException e) {
+	} catch(const FileException&) {
 		// Why isn't this possible?...let's reload the directory listing...
 		if(Util::stricmp(aFile.c_str(), "MyList.DcLst") == 0 || userlist) {
 			
 			ShareManager::getInstance()->refresh(true, true, true);
 			try {
 				f = new File(file, File::READ, File::OPEN);
-			} catch(FileException e) {
+			} catch(const FileException&) {
 				// Still not...very strange...?
 				cs.leave();
 				aSource->error("File Not Available");
@@ -361,6 +361,6 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 }
 
 /**
- * @file UploadManager.cpp
- * $Id: UploadManager.cpp,v 1.36 2003/03/13 13:31:36 arnetheduck Exp $
+ * @file
+ * $Id: UploadManager.cpp,v 1.37 2003/04/15 10:13:57 arnetheduck Exp $
  */
