@@ -24,7 +24,6 @@
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
 
-const string UserConnection::FEATURE_BZLIST = "BZList";
 const string UserConnection::FEATURE_GET_ZBLOCK = "GetZBlock";
 const string UserConnection::FEATURE_MINISLOTS = "MiniSlots";
 const string UserConnection::FEATURE_XML_BZLIST = "XmlBZList";
@@ -168,5 +167,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.41 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.42 2004/05/22 15:28:07 arnetheduck Exp $
  */

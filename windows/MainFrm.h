@@ -337,7 +337,7 @@ private:
 	
 	// HttpConnectionListener
 	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
-	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const BYTE* buf, int len) throw();	
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw();	
 
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
@@ -347,7 +347,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.33 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.34 2004/05/22 15:28:07 arnetheduck Exp $
  */
 
  

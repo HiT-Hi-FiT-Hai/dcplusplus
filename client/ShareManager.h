@@ -87,8 +87,6 @@ public:
 	
 	int64_t getListLen() { return listLen; };
 	string getListLenString() { return Util::toString(getListLen()); };
-	int64_t getBZListLen() { return bzListLen; };
-	string getBZListLenString() { return Util::toString(getBZListLen()); };
 	
 	SearchManager::TypeModes getType(const string& fileName);
 	u_int32_t getMask(const string& fileName);
@@ -101,7 +99,6 @@ public:
 	
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
-	GETSET(string, bzListFile, BZListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 private:
@@ -264,7 +261,6 @@ private:
 	HashFileMap tthIndex;
 
 	int64_t listLen;
-	int64_t bzListLen;
 	int64_t bzXmlListLen;
 	bool dirty;
 	bool refreshDirs;
@@ -273,7 +269,6 @@ private:
 	int listN;
 
 	File* lFile;
-	File* bFile;
 	File* xFile;
 
 	u_int32_t lastUpdate;
@@ -316,6 +311,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.49 2004/04/30 07:14:50 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.50 2004/05/22 15:28:06 arnetheduck Exp $
  */
 

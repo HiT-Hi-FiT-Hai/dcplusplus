@@ -56,11 +56,7 @@ void DirectoryListing::loadFile(const string& name, bool doAdl) {
 				break;
 		}
 
-		if(txt.compare(0, 5, "<?xml") == 0) {
-			loadXML(txt, doAdl);
-		} else {
-			load(txt, doAdl);
-		}
+		loadXML(txt, doAdl);
 	}
 }
 
@@ -328,5 +324,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.30 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.31 2004/05/22 15:28:06 arnetheduck Exp $
  */

@@ -51,7 +51,8 @@ public:
 		FLAG_CRC32_OK = 0x20,
 		FLAG_ANTI_FRAG = 0x40,
 		FLAG_UTF8 = 0x80,
-		FLAG_TREE_DOWNLOAD=0x100,
+		FLAG_TREE_DOWNLOAD = 0x100,
+		FLAG_TREE_TRIED = 0x200,
 	};
 
 	Download() throw();
@@ -75,6 +76,25 @@ public:
 
 	TigerTree& getTigerTree() {
 		return tt;
+	}
+
+	Command getCommand(bool zlib) {
+		Command cmd = Command(Command::GET());
+		if(isSet(FLAG_TREE_DOWNLOAD)) {
+			cmd.addParam("tthl");
+		} else {
+			cmd.addParam("file");
+		}
+		cmd.addParam(Util::toAdcFile(getSource()));
+		cmd.addParam(Util::toString(getPos()));
+		cmd.addParam(Util::toString(getSize()));
+
+		if(zlib && getSize() != -1 && BOOLSETTING(COMPRESS_TRANSFERS)) {
+			setFlag(FLAG_ZDOWNLOAD);
+			cmd.addParam("ZL1");
+		}
+
+		return cmd;
 	}
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
@@ -121,7 +141,7 @@ public:
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
-		checkDownloads(conn, false);
+		checkDownloads(conn);
 	}
 
 	void abortDownload(const string& aTarget);
@@ -183,7 +203,7 @@ private:
 		}
 	};
 	
-	void checkDownloads(UserConnection* aConn, bool afterTree);
+	void checkDownloads(UserConnection* aConn);
 	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener
@@ -206,5 +226,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.60 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.61 2004/05/22 15:28:06 arnetheduck Exp $
  */

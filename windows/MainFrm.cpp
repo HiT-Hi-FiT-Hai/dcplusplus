@@ -945,7 +945,7 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	lastDown = Socket::getTotalDown();
 }
 
-void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const BYTE* buf, int len) throw() {
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
 	versionInfo += string((const char*)buf, len);
 }
 
@@ -968,5 +968,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.51 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.52 2004/05/22 15:28:07 arnetheduck Exp $
  */

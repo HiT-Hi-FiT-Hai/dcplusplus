@@ -138,11 +138,11 @@ private:
 	size_t bufPos;
 };
 
-void DownloadManager::checkDownloads(UserConnection* aConn, bool afterTree) {
+void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 	Download* d = aConn->getDownload();
 
-	if(!afterTree) {
+	if(d == NULL) {
 		bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= SETTING(DOWNLOAD_SLOTS));
 		bool speedFull = (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
 
@@ -153,94 +153,86 @@ void DownloadManager::checkDownloads(UserConnection* aConn, bool afterTree) {
 				return;
 			}
 		}
+
 		d = QueueManager::getInstance()->getDownload(aConn->getUser());
-	} else {
-		Download* old = d;
-		d = d->getOldDownload();
-		dcassert(d != NULL);
-		old->setUserConnection(NULL);
+
+		if(d == NULL) {
+			removeConnection(aConn, true);
+			return;
+		}
+
+		{
+			Lock l(cs);
+			downloads.push_back(d);
+		}
+
+		d->setUserConnection(aConn);
 		aConn->setDownload(d);
-		delete old;
 	}
 
-	if(d) {
-		if(!afterTree) {
-			dcassert(aConn->getDownload() == NULL);
-			d->setUserConnection(aConn);
-			aConn->setDownload(d);
-
-			{
-				Lock l(cs);
-				downloads.push_back(d);
-			}
-		}
-
-		if(!d->getTreeValid() && !d->isSet(Download::FLAG_USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) {
-			if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
-				d->setTreeValid(true);
-			} else {
-				// So, we need to download the tree...
-				Download* tthd = new Download();
-				tthd->setOldDownload(d);
-				tthd->setFlag(Download::FLAG_TREE_DOWNLOAD);
-				tthd->setTarget(d->getTarget());
-
-				tthd->setUserConnection(aConn);
-				aConn->setDownload(tthd);
-
-				Command cmd = Command(Command::GET());
-				cmd.addParam("tthl");
-				cmd.addParam(Util::toAdcFile(d->getSource()));
-				cmd.addParam(Util::toString(0));
-				cmd.addParam(Util::toString(-1));
-				if(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)) {
-					cmd.addParam("ZL1");
-				}
-				aConn->setState(UserConnection::STATE_TREE);
-				aConn->send(cmd);
-				return;
-			}
-		}
-
-		aConn->setState(UserConnection::STATE_FILELENGTH);
-		
-		if(d->isSet(Download::FLAG_RESUME)) {
-			dcassert(d->getSize() != -1);
-
-			const string& target = (d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
-			int64_t start = File::getSize(target);
-
-			// Only use antifrag if we don't have a previous non-antifrag part
-			if( BOOLSETTING(ANTI_FRAG) && (start == -1) && (d->getSize() != -1) ) {
-				int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
-
-				if(aSize == d->getSize())
-					start = d->getPos();
-				else
-					start = 0;
-
-				d->setFlag(Download::FLAG_ANTI_FRAG);
-			}
-			
-			int rollback = SETTING(ROLLBACK);
-			if(rollback > start) {
-				d->setStartPos(0);
-			} else {
-				d->setStartPos(start - rollback);
-				d->setFlag(Download::FLAG_ROLLBACK);
-			}
+	if(!d->getTreeValid() && !d->isSet(Download::FLAG_TREE_TRIED) && 
+		!d->isSet(Download::FLAG_USER_LIST) && 
+		aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 
+	{
+		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
+			d->setTreeValid(true);
 		} else {
+			// So, we need to download the tree...
+			Download* tthd = new Download();
+			tthd->setOldDownload(d);
+			tthd->setFlag(Download::FLAG_TREE_DOWNLOAD);
+			tthd->setTarget(d->getTarget());
+
+			tthd->setUserConnection(aConn);
+			aConn->setDownload(tthd);
+
+			aConn->setState(UserConnection::STATE_TREE);
+			aConn->send(tthd->getCommand(false));
+
+			return;
+		}
+	}
+
+	aConn->setState(UserConnection::STATE_FILELENGTH);
+	
+	if(d->isSet(Download::FLAG_RESUME)) {
+		dcassert(d->getSize() != -1);
+
+		const string& target = (d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
+		int64_t start = File::getSize(target);
+
+		// Only use antifrag if we don't have a previous non-antifrag part
+		if( BOOLSETTING(ANTI_FRAG) && (start == -1) && (d->getSize() != -1) ) {
+			int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
+
+			if(aSize == d->getSize())
+				start = d->getPos();
+			else
+				start = 0;
+
+			d->setFlag(Download::FLAG_ANTI_FRAG);
+		}
+		
+		int rollback = SETTING(ROLLBACK);
+		if(rollback > start) {
 			d->setStartPos(0);
+		} else {
+			d->setStartPos(start - rollback);
+			d->setFlag(Download::FLAG_ROLLBACK);
 		}
+	} else {
+		d->setStartPos(0);
+	}
 
-		if(d->isSet(Download::FLAG_USER_LIST)) {
-			if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
-				d->setSource("files.xml.bz2");
-			} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
-				d->setSource("MyList.bz2");
-			}
+	if(d->isSet(Download::FLAG_USER_LIST)) {
+		if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+			d->setSource("files.xml.bz2");
 		}
+	}
 
+	if(aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && d->isSet(Download::FLAG_UTF8)) {
+		aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)));
+	} else {
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
@@ -250,11 +242,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn, bool afterTree) {
 		} else{
 			aConn->get(d->getSource(), d->getPos());
 		}
-		return;
 	}
-
-	// Connection not needed any more, return it to the ConnectionManager...
-	removeConnection(aConn, true);
 }
 
 void DownloadManager::on(UserConnectionListener::Sending, UserConnection* aSource, int64_t aBytes) throw() {
@@ -452,8 +440,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			target += ".xml.bz2";
-		} else if(aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
-			target += ".bz2";
 		} else {
 			target += ".DcLst";
 		}
@@ -560,11 +546,14 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		d->getFile()->flush();
 		delete d->getFile();
 		d->setFile(NULL);
-		d->unsetFlag(Download::FLAG_TREE_DOWNLOAD);
 		d->getOldDownload()->setTreeValid(true);
 
+		aSource->setDownload(d->getOldDownload());
+
+		delete d;
+
 		// Ok, now we can continue to the actual file...
-		checkDownloads(aSource, true);
+		checkDownloads(aSource);
 		return;
 	}
 
@@ -644,7 +633,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				removeDownload(d);				
 				
 				QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
-				checkDownloads(aSource, false);
+				checkDownloads(aSource);
 				return;
 			} 
 
@@ -690,11 +679,11 @@ noCRC:
 	
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
-	checkDownloads(aSource, false);
+	checkDownloads(aSource);
 }
 
 void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 
-	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
+	if(aSource->getState() != UserConnection::STATE_FILELENGTH && aSource->getState() != UserConnection::STATE_TREE) {
 		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
 		return;
 	}
@@ -747,8 +736,11 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
 			} 
 		}
+
 		Download* old = d;
 		d = d->getOldDownload();
+		old->getUserConnection()->setDownload(d);
+		old->setUserConnection(NULL);
 		delete old;
 	}
 
@@ -804,6 +796,16 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
+	if(d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+		// No tree, too bad...
+		aSource->setDownload(d->getOldDownload());
+		delete d->getFile();
+		d->setFile(NULL);
+		delete d;
+		checkDownloads(aSource);
+		return;
+	}
+
 	dcdebug("File Not Available: %s\n", d->getTarget().c_str());
 
 	if(d->getFile()) {
@@ -818,11 +820,11 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	removeDownload(d, false);
-	checkDownloads(aSource, false);
+	checkDownloads(aSource);
 }
 
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.101 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.102 2004/05/22 15:28:06 arnetheduck Exp $
  */

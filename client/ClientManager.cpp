@@ -243,7 +243,6 @@ void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
 	fire(ClientManagerListener::UserUpdated(), aUser);
 }
 
-
 User::Ptr ClientManager::getUser(const CID& cid, bool createUser) {
 	Lock l(cs);
 	dcassert(!cid.isZero());
@@ -341,5 +340,5 @@ void ClientManager::onAction(ClientListener::Types type, Client* aClient, const 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.58 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.59 2004/05/22 15:28:06 arnetheduck Exp $
  */

@@ -41,9 +41,9 @@
 
 #include <limits>
 
-ShareManager::ShareManager() : hits(0), listLen(0), bzListLen(0), bzXmlListLen(0),
+ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	dirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
-	bFile(NULL), xFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) 
+	xFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) 
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
@@ -78,12 +78,10 @@ ShareManager::~ShareManager() {
 	join();
 
 	delete lFile;
-	delete bFile;
 	delete xFile;
 
 	for(int i = 0; i <= listN; ++i) {
 		File::deleteFile(Util::getAppPath() + "MyList" + Util::toString(i) + ".DcLst");
-		File::deleteFile(Util::getAppPath() + "MyList" + Util::toString(i) + ".bz2");
 		File::deleteFile(Util::getAppPath() + "files" + Util::toString(i) + ".xml.bz2");
 	}
 
@@ -96,8 +94,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
 		return getListFile();
-	} else if(aFile == "MyList.bz2") {
-		return getBZListFile();
 	} else if(aFile == "files.xml.bz2") {
 		return getBZXmlFile();
 	} else {
@@ -416,23 +412,6 @@ int ShareManager::run() {
 			xFile = new File(newXmlName, File::READ, File::OPEN);
 			setBZXmlFile(newXmlName);
 			bzXmlListLen = File::getSize(newXmlName);
-
-			string newBZName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2";
-
-			{
-				FilteredOutputStream<BZFilter, true> f(new File(newBZName, File::WRITE, File::TRUNCATE | File::CREATE));
-				f.write(tmp);
-				f.flush();
-			}
-
-			if(bFile != NULL) {
-				delete bFile;
-				bFile = NULL;
-				File::deleteFile(getBZListFile());
-			}
-			bFile = new File(newBZName, File::READ, File::OPEN);
-			setBZListFile(newBZName);
-			bzListLen = File::getSize(newBZName);
 
 			string newName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst";
 			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
@@ -999,6 +978,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.86 2004/04/30 07:14:49 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.87 2004/05/22 15:28:06 arnetheduck Exp $
  */
 

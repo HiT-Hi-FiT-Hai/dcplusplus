@@ -160,7 +160,6 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	static const string FEATURE_BZLIST;
 	static const string FEATURE_GET_ZBLOCK;
 	static const string FEATURE_MINISLOTS;
 	static const string FEATURE_XML_BZLIST;
@@ -180,8 +179,7 @@ public:
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
 		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
-		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
-		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
+		FLAG_SUPPORTS_GETZBLOCK = FLAG_INVALIDKEY << 1,
 		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
 		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_MINISLOTS << 1,
 		FLAG_SUPPORTS_ADCGET = FLAG_SUPPORTS_XML_BZLIST << 1,
@@ -344,6 +342,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.72 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.73 2004/05/22 15:28:07 arnetheduck Exp $
  */
 

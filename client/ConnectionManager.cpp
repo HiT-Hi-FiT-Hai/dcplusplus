@@ -33,7 +33,6 @@ ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
-	features.push_back(UserConnection::FEATURE_BZLIST);
 	features.push_back(UserConnection::FEATURE_MINISLOTS);
 	features.push_back(UserConnection::FEATURE_XML_BZLIST);
 	features.push_back(UserConnection::FEATURE_ADCGET);
@@ -561,9 +560,7 @@ void ConnectionManager::shutdown() {
 // UserConnectionListener
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-		if(*i == UserConnection::FEATURE_BZLIST)
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
-		else if(*i == UserConnection::FEATURE_GET_ZBLOCK)
+		if(*i == UserConnection::FEATURE_GET_ZBLOCK)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 		else if(*i == UserConnection::FEATURE_MINISLOTS)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
@@ -580,5 +577,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.73 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.74 2004/05/22 15:28:06 arnetheduck Exp $
  */

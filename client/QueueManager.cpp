@@ -1268,52 +1268,20 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			fileQueue.find(matches, sr->getTTH());
 		}
 
-		string fileName = Util::toLower(sr->getFileName());
-		StringTokenizer t(SearchManager::clean(fileName), ' ');
-		StringList& tok = t.getTokens();
-
 		for(QueueItem::Iter i = matches.begin(); i != matches.end(); ++i) {
-			bool found = true;
-			bool exact = false;
 			QueueItem* qi = *i;
-
+			bool found = false;
 			if(qi->getTTH()) {
-				if(sr->getTTH() && *qi->getTTH() == *sr->getTTH()) {
-					found = true;
-					exact = true;
-				}
+				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH());
 			} else {
-				if(BOOLSETTING(AUTO_SEARCH_EXACT)) {
-					found = (Util::stricmp(qi->getTargetFileName(), fileName) == 0);
-					exact = true;
-				} else {
-					string target = Util::toLower(qi->getTargetFileName());
-					if (target.size() >= fileName.size()) {
-						for(StringIter j = tok.begin(); j != tok.end(); ++j) {
-							if(Util::findSubStringCaseSensitive(target, *j) == string::npos) {
-								found = false;
-								break;
-							}
-						}
-					} else {
-						StringTokenizer t2(SearchManager::clean(target), ' ');
-						StringList& tok2 = t2.getTokens();
-
-						for(StringIter k = tok2.begin(); k != tok2.end(); ++k) {
-							if(Util::findSubStringCaseSensitive(fileName, *k) == string::npos) {
-								found = false;
-								break;
-							}
-						}
-					}
-				}
+				found = (Util::stricmp(qi->getTargetFileName(), sr->getFileName()) == 0);
 			}
 
 			if(found) {
 				try {
 					addSource(qi, sr->getFile(), sr->getUser(), false, false);
 
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (exact || (Util::stricmp(qi->getTargetFileName(), fileName) == 0)) )
+					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
 						addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 				} catch(const Exception&) {
 					// ...
@@ -1351,5 +1319,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.85 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.86 2004/05/22 15:28:06 arnetheduck Exp $
  */

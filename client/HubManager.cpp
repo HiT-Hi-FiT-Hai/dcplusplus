@@ -340,8 +340,8 @@ UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool o
 }
 
 // HttpConnectionListener
-void HubManager::on(Data, HttpConnection*, u_int8_t* buf, size_t len) throw() { 
-	downloadBuf.append((char*)buf, len);
+void HubManager::on(Data, HttpConnection*, const u_int8_t* buf, size_t len) throw() { 
+	downloadBuf.append((const char*)buf, len);
 }
 
 void HubManager::on(Failed, HttpConnection* c, const string& aLine) throw() { 
@@ -368,5 +368,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.49 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.50 2004/05/22 15:28:06 arnetheduck Exp $
  */

@@ -281,7 +281,7 @@ private:
 	}
 
 	// HttpConnectionListener
-	virtual void on(Data, HttpConnection*, u_int8_t*, size_t) throw();
+	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, HttpConnection*, const string&) throw();
 	virtual void on(Complete, HttpConnection*, const string&) throw();
 	virtual void on(Redirected, HttpConnection*, const string&) throw();
@@ -303,6 +303,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.53 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.54 2004/05/22 15:28:06 arnetheduck Exp $
  */
 
