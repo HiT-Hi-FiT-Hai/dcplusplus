@@ -646,13 +646,15 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 			nicks.insert(sr->getUser());
 		}
 		ucParams["mynick"] = sr->getUser()->getClientNick();
+		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
 
-		sr->getUser()->getParams(ucParams);
-
-		sr->getUser()->send(Util::formatParams(uc.getCommand(), ucParams));
+		StringMap tmp = ucParams;
+		sr->getUser()->getParams(tmp);
+		sr->getUser()->clientEscapeParams(tmp);
+		sr->getUser()->send(Util::formatParams(uc.getCommand(), tmp));
 	}
 	return;
 };
@@ -951,5 +953,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.59 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.60 2004/09/07 01:36:53 arnetheduck Exp $
  */

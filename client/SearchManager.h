@@ -145,6 +145,11 @@ public:
 		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
 	static string clean(const string& aSearchString);
+	
+	short getPort()
+	{
+		return port;
+	}
 
 	void setPort(short aPort) throw(SocketException);
 	void disconnect() throw();
@@ -179,5 +184,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.41 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.42 2004/09/07 01:36:52 arnetheduck Exp $
  */

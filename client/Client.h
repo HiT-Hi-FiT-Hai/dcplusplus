@@ -130,6 +130,14 @@ public:
 
 	void scheduleDestruction() const { socket->shutdown(); }
 
+	virtual string escape(string const& str) const { return str; };
+	StringMap& escapeParams(StringMap& sm) {
+		for(StringMapIter i = sm.begin(); i != sm.end(); ++i) {
+			i->second = escape(i->second);
+		}
+		return sm;
+	}
+
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);
@@ -181,5 +189,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.84 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: Client.h,v 1.85 2004/09/07 01:36:52 arnetheduck Exp $
  */

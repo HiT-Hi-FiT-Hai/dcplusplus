@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -151,6 +151,6 @@ private:
 
 /**
 * @file
-* $Id: ListViewArrows.h,v 1.2 2003/11/12 01:17:12 arnetheduck Exp $
+* $Id: ListViewArrows.h,v 1.3 2004/09/07 01:36:53 arnetheduck Exp $
 */
 

@@ -880,8 +880,38 @@ string Util::toDOS(const string& tmp) {
 	}
 	return tmp2;
 }
+
+int Util::getOsMajor() 
+{
+#ifdef _WIN32
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMajorVersion;
+#endif //_WIN32
+}
+
+int Util::getOsMinor() 
+{
+#ifdef _WIN32
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMinorVersion;
+#endif //_WIN32
+}
 /**
  * @file
- * $Id: Util.cpp,v 1.61 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.62 2004/09/07 01:36:52 arnetheduck Exp $
  */
 

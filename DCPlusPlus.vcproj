@@ -357,6 +357,9 @@
 				RelativePath=".\windows\UploadPage.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\UPnP.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
@@ -491,6 +494,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\UploadPage.h">
+			</File>
+			<File
+				RelativePath=".\windows\UPnP.h">
 			</File>
 			<File
 				RelativePath=".\windows\UsersFrame.h">

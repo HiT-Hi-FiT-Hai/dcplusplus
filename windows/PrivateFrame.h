@@ -137,8 +137,8 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
+			user->privateMessage(WinUtil::fromT(msg));
 			string s = "<" + user->getClientNick() + "> " + WinUtil::fromT(msg);
-			user->privateMessage(s);
 			addLine(WinUtil::toT(s));
 		}
 	}
@@ -196,6 +196,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.20 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.21 2004/09/07 01:36:53 arnetheduck Exp $
  */
 

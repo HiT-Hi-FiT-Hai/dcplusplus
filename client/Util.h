@@ -502,6 +502,9 @@ public:
 
 	static string getIpCountry (string IP);
 
+	static int getOsMinor();
+	static int getOsMajor(); 
+
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) {
 		away = aAway;
@@ -592,5 +595,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.95 2004/09/06 16:27:34 arnetheduck Exp $
+ * $Id: Util.h,v 1.96 2004/09/07 01:36:52 arnetheduck Exp $
  */

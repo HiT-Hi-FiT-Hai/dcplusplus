@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -287,6 +287,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.12 2004/02/23 17:42:16 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.13 2004/09/07 01:36:51 arnetheduck Exp $
 */
 

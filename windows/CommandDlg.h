@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -133,5 +133,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.7 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.8 2004/09/07 01:36:53 arnetheduck Exp $
  */

@@ -181,7 +181,7 @@
 		<String Name="MenuHashProgress">Indexing progress</String>
 		<String Name="MenuNetworkStatistics">Network Statistics</String>
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
-		<String Name="MenuOpenFileList">Open file list...</String>
+		<String Name="MenuOpenFileList">Open file list...	Ctrl+L</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>

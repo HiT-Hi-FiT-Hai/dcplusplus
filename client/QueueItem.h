@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -279,5 +279,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.12 2004/08/04 09:35:03 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.13 2004/09/07 01:36:52 arnetheduck Exp $
 */

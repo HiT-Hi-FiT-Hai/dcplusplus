@@ -140,11 +140,13 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
 
 		ucParams["mynick"] = itemI->user->getClientNick();
+		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
 
-		itemI->user->getParams(ucParams);
-
-		itemI->user->send(Util::formatParams(uc.getCommand(), ucParams));
-		}
+		StringMap tmp = ucParams;
+		itemI->user->getParams(tmp);
+		itemI->user->clientEscapeParams(tmp);
+		itemI->user->send(Util::formatParams(uc.getCommand(), tmp));
+	}
 	return;
 };
 
@@ -583,5 +585,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.33 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.34 2004/09/07 01:36:53 arnetheduck Exp $
  */

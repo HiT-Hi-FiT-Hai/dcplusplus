@@ -379,10 +379,10 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 }
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
-	wchar_t buf[MAX_PATH];
+	TCHAR buf[MAX_PATH];
 	OPENFILENAMEW ofn;       // common dialog box structure
 	target = Util::utf8ToWide(Util::validateFileName(Util::wideToUtf8(target)));
-	memcpy(buf, target.c_str(), target.length() + 1);
+	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
@@ -459,7 +459,7 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 			dlg.description = WinUtil::toT(name);
 			dlg.line = WinUtil::toT(sm["line:" + name]);
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = Util::validateMessage(WinUtil::fromT(dlg.line), false);
+				sm["line:" + name] = dlg.line;
 				done[name] = WinUtil::fromT(dlg.line);
 			} else {
 				return false;
@@ -886,5 +886,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.51 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.52 2004/09/07 01:36:53 arnetheduck Exp $
  */

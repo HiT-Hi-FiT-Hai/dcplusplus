@@ -186,7 +186,7 @@ void HubManager::save() {
 
 void HubManager::load() {
 	
-	// Add standard op commands
+	// Add NMDC standard op commands
 	static const char kickstr[] = 
 		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
@@ -195,6 +195,25 @@ void HubManager::load() {
 		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
 	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
 		STRING(REDIRECT_USER), redirstr, "op");
+
+	// Add ADC standard op commands
+	static const char adc_disconnectstr[] =
+		"HDSC %[mycid] %[cid] DI ND Friendly\\ disconnect\n";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
+		STRING(DISCONNECT_USER), adc_disconnectstr, "adc://op");
+	static const char adc_kickstr[] =
+		"HDSC %[mycid] %[cid] KK KK %[line:Reason]\n";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
+		STRING(KICK_USER), adc_kickstr, "adc://op");
+	static const char adc_banstr[] =
+		"HDSC %[mycid] %[cid] BN BN %[line:Seconds (-1 = forever)] %[line:Reason]\n";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
+		STRING(BAN_USER), adc_banstr, "adc://op");
+	static const char adc_redirstr[] =
+		"HDSC %[mycid] %[cid] RD RD %[line:Redirect address] %[line:Reason]\n";
+	addUserCommand(UserCommand::TYPE_RAW_ONCE, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE,
+		STRING(REDIRECT_USER), adc_redirstr, "adc://op");
+
 
 	try {
 		SimpleXML xml;
@@ -327,11 +346,12 @@ void HubManager::refresh() {
 UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool op) {
 	Lock l(cs);
 	UserCommand::List lst;
+	bool adc = hub.size() >= 6 && hub.substr(0, 6) == "adc://";
 	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
 		if(uc.getCtx() & ctx) {
-			if( (uc.getHub().empty()) || 
-				(op && uc.getHub() == "op") || 
+		if( (!adc && (uc.getHub().empty() || (op && uc.getHub() == "op"))) ||
+				(adc && (uc.getHub() == "adc://" || (op && uc.getHub() == "adc://op"))) ||
 				(Util::stricmp(hub, uc.getHub()) == 0) )
 			{
 				lst.push_back(*i);
@@ -370,5 +390,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.52 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.53 2004/09/07 01:36:52 arnetheduck Exp $
  */

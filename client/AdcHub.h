@@ -43,7 +43,7 @@ public:
 	virtual int getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
 	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
-	virtual bool getOp() const { return false;};
+	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
 
 	virtual User::NickMap& lockUserList() { return nickMap; };
 	virtual void unlockUserList() { };
@@ -57,6 +57,8 @@ public:
 	void handle(Command::INF, Command& c) throw();
 	void handle(Command::GPA, Command& c) throw();
 	void handle(Command::QUI, Command& c) throw();
+
+	virtual string escape(string const& str) const { return Command::escape(str); };
 
 private:
 	friend class ClientManager;
@@ -83,5 +85,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.7 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.8 2004/09/07 01:36:51 arnetheduck Exp $
  */

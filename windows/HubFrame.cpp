@@ -31,6 +31,7 @@
 #include "../client/StringTokenizer.h"
 #include "../client/HubManager.h"
 #include "../client/LogManager.h"
+#include "../client/AdcCommand.h"
 
 HubFrame::FrameMap HubFrame::frames;
 
@@ -737,15 +738,19 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 		return;
 
 	ucParams["mynick"] = client->getNick();
+	ucParams["mycid"] = client->getMe()->getCID().toBase32();
 
 	if(tabMenuShown) {
+		client->escapeParams(ucParams);
 		client->send(Util::formatParams(uc.getCommand(), ucParams));
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
-			u->user->getParams(ucParams);
-			client->send(Util::formatParams(uc.getCommand(), ucParams));
+			StringMap tmp = ucParams;
+			u->user->getParams(tmp);
+			client->escapeParams(tmp);
+			client->send(Util::formatParams(uc.getCommand(), tmp));
 		}
 	}
 	return;
@@ -1139,5 +1144,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.71 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.72 2004/09/07 01:36:53 arnetheduck Exp $
  */

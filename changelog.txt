@@ -16,6 +16,9 @@
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
+* Added UPnP support (thanks mark gillespie)
+* Ctrl-L now opens file lists (thanks garg)
+* Various ADC patches (thanks sedulus)
 
 
  -- 0.4032 2004-08-08 --

@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -76,6 +76,6 @@ public:
 
 /**
  * @file
- * $Id: UserCommand.h,v 1.7 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: UserCommand.h,v 1.8 2004/09/07 01:36:52 arnetheduck Exp $
  */
 

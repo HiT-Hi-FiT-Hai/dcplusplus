@@ -301,14 +301,12 @@ void BufferedSocket::threadRead() {
 					for(string::iterator k = l.begin(); k != l.end(); ++k) {
 						if(*k == '\\') {
 							escaped = !escaped;
-						} else if(*k == separator) {
-							if(!escaped) {
-								pos = k - l.begin();
-								foundSeparator = true;
-								break;
-							} else {
-								escaped = false;
-							}
+						} else if(*k == separator && !escaped) {
+							pos = k - l.begin();
+							foundSeparator = true;
+							break;
+						} else {
+							escaped = false;
 						}
 					}
 				} else {
@@ -450,5 +448,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.73 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.74 2004/09/07 01:36:52 arnetheduck Exp $
  */

@@ -57,12 +57,12 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		case ' ': 
 			// New parameter...
 			{
-				if(!fromSet && type != TYPE_CLIENT) {
-					from = CID(cur);
-					fromSet = true;
-				} else 	if(type == TYPE_DIRECT && !toSet) {
+				if(type == TYPE_DIRECT && !toSet) {
 					to = CID(cur);
 					toSet = true;
+				} else if(!fromSet && type != TYPE_CLIENT) {
+					from = CID(cur);
+					fromSet = true;
 				} else {
 					parameters.push_back(cur);
 				}
@@ -107,20 +107,21 @@ void AdcHub::handle(Command::INF, Command& c) throw() {
 		if(i->length() < 2)
 			continue;
 
+		string tmp;
 		if(i->compare(0, 2, "NI") == 0) {
-			u->setNick(i->substr(2));
+			u->setNick(Util::toAcp(i->substr(2), tmp));
 		} else if(i->compare(0, 2, "HU") == 0) {
 			hub = u;
 		} else if(i->compare(0, 2, "DE") == 0) {
-			u->setDescription(i->substr(2));
+			u->setDescription(Util::toAcp(i->substr(2), tmp));
 		} else if(i->compare(0, 2, "I4") == 0) {
-			u->setIp(i->substr(2));
+			u->setIp(Util::toAcp(i->substr(2), tmp));
 		} else if(i->compare(0, 2, "SS") == 0) {
-			u->setBytesShared(i->substr(2));
+			u->setBytesShared(Util::toAcp(i->substr(2), tmp));
 		} else if(i->compare(0, 2, "VE") == 0) {
-			ve=i->substr(2);
+			ve = Util::toAcp(i->substr(2), tmp);
 		} else if(i->compare(0, 2, "EM") == 0) {
-			u->setEmail(i->substr(2));
+			u->setEmail(Util::toAcp(i->substr(2), tmp));
 		} else if(i->compare(0, 2, "OP") == 0) {
 			if(i->length() == 2) {
 				u->unsetFlag(User::OP);
@@ -182,8 +183,18 @@ void AdcHub::handle(Command::MSG, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p)
 		return;
-	string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[0]);
-	fire(ClientListener::Message(), this, msg);
+	if(c.getParameters().size() == 2 && c.getParameters()[1] == "PM") { // add PM<group-cid> as well
+		string msg = Util::toAcp(c.getParameters()[0]);
+		if(c.getFrom() == getMe()->getCID()) {
+			p = ClientManager::getInstance()->getUser(c.getTo(), false);
+			if(!p)
+				return;
+		}
+		fire(ClientListener::PrivateMessage(), this, p, msg);
+	} else {
+		string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[0]);
+		fire(ClientListener::Message(), this, msg);
+	}		
 }
 
 void AdcHub::handle(Command::GPA, Command& c) throw() {
@@ -311,5 +322,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.14 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.15 2004/09/07 01:36:51 arnetheduck Exp $
  */

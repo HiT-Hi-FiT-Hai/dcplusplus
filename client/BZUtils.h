@@ -64,3 +64,8 @@ private:
 };
 
 #endif // _BZ_UTILS
+
+/**
+* @file
+* $Id: BZUtils.h,v 1.4 2004/09/07 01:36:51 arnetheduck Exp $
+*/

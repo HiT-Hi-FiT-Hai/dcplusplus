@@ -48,6 +48,15 @@ const string& User::getClientNick() const {
 	}
 }
 
+const CID User::getClientCID() const {
+	RLock l(cs);
+	if(client) {
+		return client->getMe()->getCID();
+	} else {
+		return CID(SETTING(CLIENT_ID));
+	}
+}
+
 void User::updated(User::Ptr& aUser) {
 	RLock l(aUser->cs);
 	if(aUser->client) {
@@ -136,6 +145,7 @@ void User::setClient(Client* aClient) {
 
 void User::getParams(StringMap& ucParams) {
 	ucParams["nick"] = getNick();
+	ucParams["cid"] = getCID().toBase32();
 	ucParams["tag"] = getTag();
 	ucParams["description"] = getDescription();
 	ucParams["email"] = getEmail();
@@ -204,8 +214,12 @@ void User::setUserDescription(const string& aDescription) {
 		favoriteUser->setDescription(aDescription);
 }
 
+StringMap& User::clientEscapeParams(StringMap& sm) const {
+	return client->escapeParams(sm);
+}
+
 /**
  * @file
- * $Id: User.cpp,v 1.32 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: User.cpp,v 1.33 2004/09/07 01:36:52 arnetheduck Exp $
  */
 

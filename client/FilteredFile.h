@@ -183,3 +183,8 @@ private:
 };
 
 #endif // _FILTERED_FILE
+
+/**
+* @file
+* $Id: FilteredFile.h,v 1.7 2004/09/07 01:36:52 arnetheduck Exp $
+*/

@@ -267,8 +267,10 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 		return;
 
 	ucParams["mynick"] = user->getClientNick();
+	ucParams["mycid"] = user->getClientCID().toBase32();
 
 	user->getParams(ucParams);
+	user->clientEscapeParams(ucParams);
 
 	user->send(Util::formatParams(uc.getCommand(), ucParams));
 	return;
@@ -337,7 +339,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.30 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.31 2004/09/07 01:36:53 arnetheduck Exp $
  */
 
 

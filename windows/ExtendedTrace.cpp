@@ -336,3 +336,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 
 #endif //_DEBUG && _WIN32
 
+/**
+* @file
+* $Id: ExtendedTrace.cpp,v 1.10 2004/09/07 01:36:53 arnetheduck Exp $
+*/
