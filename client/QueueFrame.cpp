@@ -21,6 +21,9 @@
 
 #include "QueueFrame.h"
 #include "SimpleXML.h"
+#include "StringTokenizer.h"
+#include "SearchFrm.h"
+#include "PrivateFrame.h"
 
 QueueFrame* QueueFrame::frame = NULL;
 
@@ -69,7 +72,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Priority";
+	mi.dwTypeData = "Set Priority";
 	mi.hSubMenu = priorityMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
@@ -97,22 +100,25 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Paused";
 	mi.wID = IDC_PRIORITY_PAUSED;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
+	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Low";
 	mi.wID = IDC_PRIORITY_LOW;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
+
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Normal";
 	mi.wID = IDC_PRIORITY_NORMAL;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
+
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = "High";
 	mi.wID = IDC_PRIORITY_HIGH;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	QueueManager::getInstance()->getQueue();
 	
@@ -121,6 +127,12 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 void QueueFrame::onQueueAdded(QueueItem* aQI) {
+	QueueItem* qi = new QueueItem(*aQI);
+	{
+		Lock l(cs);
+		dcassert(queue.find(aQI) == queue.end());
+		queue[aQI] = qi;
+	}
 	StringListInfo* i = new StringListInfo((LPARAM)aQI);
 
 	i->columns[COLUMN_TARGET] = aQI->getTargetFileName();
@@ -142,6 +154,12 @@ void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 }
 
 void QueueFrame::onQueueStatus(QueueItem* aQI) {
+	{
+		Lock l(cs);
+		dcassert(queue.find(aQI) != queue.end());
+		queue[aQI]->setPriority(aQI->getPriority());
+	}
+
 	StringListInfo*i = new StringListInfo((LPARAM) aQI);
 
 	switch(aQI->getStatus()) {
@@ -150,11 +168,34 @@ void QueueFrame::onQueueStatus(QueueItem* aQI) {
 	case QueueItem::WAITING: break;
 	default: dcassert(0); break;
 	}
-
+	switch(aQI->getPriority()) {
+	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
+	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
+	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
+	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
+	default: dcassert(0); break;
+	}
+	
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void QueueFrame::onQueueUpdated(QueueItem* aQI) {
+
+	{
+		Lock l(cs);
+		dcassert(queue.find(aQI) != queue.end());
+		QueueItem* q = queue[aQI];
+		for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+			delete *i;
+		}
+		q->getSources().clear();
+		for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
+			q->getSources().push_back(new QueueItem::Source(*(*j)));
+		}
+		q->setPriority(aQI->getPriority());
+		q->setStatus(aQI->getStatus());
+	}
+	
 	if(aQI->getStatus() != QueueItem::FINISHED) {
 		StringListInfo* i = new StringListInfo((LPARAM)aQI);
 		string tmp;
@@ -174,6 +215,9 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 			} else {
 				tmp += sr->getNick() + " (Offline)";
 			}
+		}
+		if(tmp.empty()) {
+			tmp = "No users";
 		}
 		i->columns[COLUMN_USERS] = tmp;
 		
@@ -198,7 +242,6 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		}
-
 		switch(aQI->getPriority()) {
 		case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
 		case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
@@ -225,6 +268,14 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	} else if(wParam == REMOVE_ITEM) {
 		dcassert(ctrlQueue.find(lParam) != -1);
 		ctrlQueue.DeleteItem(ctrlQueue.find(lParam));
+
+		{
+			Lock l(cs);
+			dcassert(queue.find((QueueItem*)lParam) != queue.end());
+			delete queue[(QueueItem*)lParam];
+			queue.erase((QueueItem*)lParam);
+		}
+		
 	} else if(wParam == SET_TEXT) {
 		StringListInfo* l = (StringListInfo*)lParam;
 		int n = ctrlQueue.find(l->lParam);
@@ -242,14 +293,14 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	return 0;
 }
 
-//LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-/*	RECT rc;                    // client area of window 
+LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
 	// Get the bounding rectangle of the client area. 
-	ctrlTransfers.GetClientRect(&rc);
-	ctrlTransfers.ScreenToClient(&pt); 
-	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
+	ctrlQueue.GetClientRect(&rc);
+	ctrlQueue.ScreenToClient(&pt); 
+	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) 
 	{ 
 		int n = 0;
 		CMenuItemInfo mi;
@@ -264,35 +315,43 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			pmMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
 		
-		if(ctrlTransfers.GetSelectedCount() == 1) {
+		if(ctrlQueue.GetSelectedCount() == 1) {
 			LVITEM lvi;
-			lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+			lvi.iItem = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 			lvi.iSubItem = 0;
 			lvi.mask = LVIF_IMAGE | LVIF_PARAM;
 			
-			ctrlTransfers.GetItem(&lvi);
+			ctrlQueue.GetItem(&lvi);
 			menuItems = 0;
 			
-			QueueItem* q = (QueueItem*)lvi.lParam;
-			for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+			QueueItem* q = NULL;
+			{
+				Lock l(cs);
+				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)lvi.lParam);
+				if(j == queue.end())
+					return FALSE;
+				q = j->second;
 
-				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPSTR)(*i)->getNick().c_str();
-				mi.dwItemData = (DWORD)*i;
-				mi.wID = IDC_BROWSELIST + menuItems;
-				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_REMOVE_SOURCE + menuItems;
-				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				if((*i)->getUser()) {
-					mi.wID = IDC_PM + menuItems;
-					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+					mi.fType = MFT_STRING;
+					mi.dwTypeData = (LPSTR)(*i)->getNick().c_str();
+					mi.dwItemData = (DWORD)*i;
+					mi.wID = IDC_BROWSELIST + menuItems;
+					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					mi.wID = IDC_REMOVE_SOURCE + menuItems;
+					removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					if((*i)->getUser()) {
+						mi.wID = IDC_PM + menuItems;
+						pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
+					}
+					menuItems++;
 				}
-				menuItems++;
 			}
 		}
 		
-		ctrlTransfers.ClientToScreen(&pt);
+		ctrlQueue.ClientToScreen(&pt);
 		
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
@@ -300,12 +359,129 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	}
 	return FALSE; 
 }
-*/
+
+LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		string tmp;
+		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
+		{
+			Lock l(cs);
+			map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+			if(j == queue.end())
+				return FALSE;
+
+			tmp = j->second->getTargetFileName();
+		}
+
+		// Remove all strange characters from the search
+		while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
+			tmp.replace(i, 1, 1, ' ');
+		}
+		
+		
+		StringList tok = StringTokenizer(tmp, ' ').getTokens();
+		tmp = "";
+		
+		for(StringIter si = tok.begin(); si != tok.end(); ++si) {
+			bool found = false;
+			
+			for(StringIter j = searchFilter.begin(); j != searchFilter.end(); ++j) {
+				if(stricmp(si->c_str(), j->c_str()) == 0) {
+					found = true;
+				}
+			}
+			
+			if(!found && !si->empty()) {
+				tmp += *si + ' ';
+			}
+		}
+		
+		if(!tmp.empty()) {
+			SearchFrame* pChild = new SearchFrame();
+			pChild->setTab(getTab());
+			pChild->setInitial(tmp);
+			pChild->CreateEx(m_hWndMDIClient);
+			
+		}
+	} 
+	
+	return 0;
+}
+
+LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+		
+		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			if(s->getUser())
+				QueueManager::getInstance()->addList(s->getUser());
+			else
+				QueueManager::getInstance()->addList(s->getNick());
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+
+LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		string tmp;
+		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
+		QueueItem* q = (QueueItem*)ctrlQueue.GetItemData(i);
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+		
+		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			QueueManager::getInstance()->removeSource(q->getTarget(), s->getNick());
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+
+LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+		
+		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			if(s->getUser()) {
+				PrivateFrame* frm = PrivateFrame::getFrame(s->getUser(), m_hWndMDIClient);
+				if(frm->m_hWnd == NULL) {
+					frm->setTab(getTab());
+					frm->CreateEx(m_hWndMDIClient);
+				} else {
+					frm->MDIActivate(frm->m_hWnd);
+				}
+			}
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+	
+
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.4 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.4  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.3  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

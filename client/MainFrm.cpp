@@ -40,6 +40,10 @@
 #include "QueueManager.h"
 #include "QueueFrame.h"
 
+bool MainFrame::away = false;
+string MainFrame::awayMsg;
+const string MainFrame::defaultMsg = "I'm away. I might answer later if you're lucky. <DC++ v" VERSIONSTRING ">";
+
 MainFrame::~MainFrame() {
 	arrows.Destroy();
 }
@@ -109,48 +113,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		ctrlTransfers.SetRedraw(TRUE);
 		delete l;
-	}
-/*	
-	} else if(wParam == DOWNLOAD_REMOVED) {
-		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
-		if(lastUpload > -1)
-			lastUpload--;
-	} else if(wParam == UPLOAD_STARTING) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		int pos = ctrlTransfers.insert(i->l, IMAGE_UPLOAD, i->lParam);
-		if(lastUpload == -1)
-			lastUpload = pos;
-		
-		delete i;
-	} else if(wParam == DOWNLOAD_ADDED) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		ctrlTransfers.insert(lastUpload == -1 ? ctrlTransfers.GetItemCount() : lastUpload++, i->l, IMAGE_DOWNLOAD, i->lParam);
-		delete i;
-	} else if(wParam == DOWNLOAD_FAILED) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		int j = ctrlTransfers.find(i->lParam);
-		ctrlTransfers.SetItemText(j, COLUMN_STATUS, i->l[0].c_str());
-		ctrlTransfers.SetItemText(j, COLUMN_USER, i->l[1].c_str());
-		delete i;
-	} else if(wParam == UPLOAD_TICK || wParam == DOWNLOAD_TICK) {
-		StringInfo* i = (StringInfo*)lParam;
-		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, i->str.c_str());
-		delete i;
-	} else if(wParam == DOWNLOAD_CONNECTING) {
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, "Connecting...");
-	} else if(wParam == DOWNLOAD_STARTING) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		int pos = ctrlTransfers.find(i->lParam);
-		pos = ctrlTransfers.moveItem(pos, 0);
-		ctrlTransfers.SetItemText(pos, 2, i->l[0].c_str());
-		ctrlTransfers.SetItemText(pos, 3, i->l[1].c_str());
-	} else if(wParam == DOWNLOAD_SOURCEADDED) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		int j = ctrlTransfers.find(i->lParam);
-		ctrlTransfers.SetItemText(j, COLUMN_STATUS, i->l[0].c_str());
-		ctrlTransfers.SetItemText(j, COLUMN_USER, i->l[1].c_str());
-		delete i;
-	}*/ else if(wParam == DOWNLOAD_LISTING) {
+	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		int n = ctrlTransfers.find(i->lParam);
 		ctrlTransfers.SetItemText(n, COLUMN_STATUS, "Preparing file list...");
@@ -304,67 +267,6 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
-/*
-void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
-	if(!aDownload->isSet(Download::RUNNING)) {
-		StringListInfo* i = new StringListInfo((LPARAM)aDownload);
-		string tmp;
-
-		int online = 0;
-		for(Download::Source::Iter j = aDownload->getSources().begin(); j != aDownload->getSources().end(); ++j) {
-			if(tmp.size() > 0)
-				tmp += ", ";
-
-			Download::Source::Ptr sr = *j;
-			if(sr->getUser()) {
-				
-				if(sr->getUser()->isOnline())
-					online++;
-
-				tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
-			} else {
-				tmp += sr->getNick() + " (Offline)";
-			}
-		}
-
-		char buf[64];
-		if(online > 0) {
-
-			if(aDownload->getSources().size() == 1) {
-				i->l.push_back("Waiting to connect (User online)");
-			} else {
-				sprintf(buf, "Waiting to connect (%d of %d users online)", online, aDownload->getSources().size());
-				i->l.push_back(buf);
-			}
-		} else {
-			if(aDownload->getSources().size() == 0) {
-				i->l.push_back("No users to download from");
-			} else if(aDownload->getSources().size() == 1) {
-				i->l.push_back("User offline");
-			} else if(aDownload->getSources().size() == 2) {
-				i->l.push_back("Both users offline");
-			} else {
-				sprintf(buf, "All %d users offline", aDownload->getSources().size());
-				i->l.push_back(buf);
-			}
-		}
-		
-		i->l.push_back(tmp);
-
-		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)i);
-	}
-}
-
-void MainFrame::onDownloadStarting(Download* aDownload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload);
-	i->l.push_back(Util::formatBytes(aDownload->getSize()));
-	dcassert(aDownload->getCurrentSource());
-	i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClientName() + ")");
-	
-	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)i);
-}
-
-*/
 HWND MainFrame::createToolbar() {
 	
 	CToolBarCtrl ctrl;
@@ -740,58 +642,6 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 	}
 }
 
-LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlTransfers.GetSelectedCount() == 1) {
-		
-		LVITEM lvi;
-		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-		lvi.iSubItem = 0;
-		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-		
-		ctrlTransfers.GetItem(&lvi);
-		
-		if(lvi.iImage == IMAGE_DOWNLOAD) {
-			char buf[256];
-			ctrlTransfers.GetItemText(lvi.iItem, COLUMN_FILE, buf, 256);
-			string tmp(buf);
-			int i = -1;
-
-			// Remove all strange characters from the search
-			while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
-				tmp.replace(i, 1, 1, ' ');
-			}
-
-			
-			StringList tok = StringTokenizer(tmp, ' ').getTokens();
-			tmp = "";
-
-			for(StringIter si = tok.begin(); si != tok.end(); ++si) {
-				bool found = false;
-
-				for(StringIter j = searchFilter.begin(); j != searchFilter.end(); ++j) {
-					if(stricmp(si->c_str(), j->c_str()) == 0) {
-						found = true;
-					}
-				}
-
-				if(!found && !si->empty()) {
-					tmp += *si + ' ';
-				}
-			}
-
-			if(!tmp.empty()) {
-				SearchFrame* pChild = new SearchFrame();
-				pChild->setTab(&ctrlTab);
-				pChild->setInitial(tmp);
-				pChild->CreateEx(m_hWndClient);
-
-			}
-		} 
-	}
-	
-	return 0;
-}
-
 LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
@@ -808,9 +658,12 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.55 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.56 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.56  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.55  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

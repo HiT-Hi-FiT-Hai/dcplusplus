@@ -121,7 +121,7 @@ public:
 	}
 
 	void removeDownload(QueueItem* aItem);
-	void removeDownload(UserConnection* aConn);
+	void removeDownload(UserConnection* aConn, bool pause = false);
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
@@ -211,9 +211,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.31 2002/02/01 02:00:28 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.32 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.32  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.31  2002/02/01 02:00:28  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

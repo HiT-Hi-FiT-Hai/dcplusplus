@@ -60,7 +60,7 @@ void DownloadManager::removeDownload(QueueItem* aItem) {
 	QueueManager::getInstance()->putDownload(d);
 }
 
-void DownloadManager::removeDownload(UserConnection* aConn) {
+void DownloadManager::removeDownload(UserConnection* aConn, bool pause) {
 	Download* d = NULL;
 	{
 		Lock l(cs);
@@ -72,6 +72,9 @@ void DownloadManager::removeDownload(UserConnection* aConn) {
 				d = j->second;
 				running.erase(j);
 				removeConnection(conn);
+				if(pause) {
+					QueueManager::getInstance()->setPriority(j->second->getQueueItem()->getTarget(), QueueItem::PAUSED);
+				}
 				break;
 			}
 		}
@@ -352,9 +355,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.41 2002/02/01 02:00:27 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.42 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.42  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.41  2002/02/01 02:00:27  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

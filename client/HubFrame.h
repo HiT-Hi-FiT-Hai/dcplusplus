@@ -338,7 +338,7 @@ private:
 		CLIENT_SEARCH_FLOOD,
 		CLIENT_STATUS,
 		STATS,
-		DISCONNECT
+		REDIRECT
 	};
 
 	enum {
@@ -403,10 +403,14 @@ private:
 			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
 		case ClientListener::MESSAGE: 
 			x = new string(line);
-			if(SETTING(FILTER_KICKMSGS) && ( 
-				((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) || 
-				((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) )) {
-				PostMessage(WM_SPEAKER, CLIENT_STATUS, (LPARAM)x); 
+			if(SETTING(FILTER_KICKMSGS)) {
+				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
+					// Do nothing...
+				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
+					PostMessage(WM_SPEAKER, CLIENT_STATUS, (LPARAM)x); 
+				} else {
+					PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x);
+				}
 			} else {
 				PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x);
 			}
@@ -417,7 +421,7 @@ private:
 			if(BOOLSETTING(AUTO_FOLLOW)) {
 				PostMessage(WM_COMMAND, IDC_FOLLOW);
 			} else {
-				PostMessage(WM_SPEAKER, DISCONNECT);
+				PostMessage(WM_SPEAKER, REDIRECT);
 			}
 			
 			break;
@@ -450,8 +454,6 @@ private:
 	}
 
 	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user, const string&  line) {
-		User::Ptr* x = new User::Ptr();
-		*x = user;
 		switch(type) {
 		case ClientListener::PRIVATE_MESSAGE:
 			PMInfo* i = new PMInfo();
@@ -496,9 +498,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.46 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.47 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.47  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.46  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -371,6 +371,8 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 				QueueManager::getInstance()->add(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
 			MessageBox(e.getError().c_str());
+		} catch(FileException e) {
+			//..
 		}
 	}
 	return 0;
@@ -378,9 +380,12 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.21 2002/02/01 02:00:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.22 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.22  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.21  2002/02/01 02:00:26  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

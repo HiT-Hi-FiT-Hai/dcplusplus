@@ -97,6 +97,18 @@ public:
 	void connect(const string& aServer, short aPort, const string& aNick);
 	void updateUser(UserConnection* aConn);
 	
+	bool isConnected(const User::Ptr& aUser, bool downOnly = true) {
+		Lock l(cs);
+		for(ConnectionQueueItem::QueueIter i = connections.begin(); i != connections.end(); ++i) {
+			if(i->first->getUser() == aUser) {
+				if( !downOnly || i->first->isSet(UserConnection::FLAG_DOWNLOAD) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Set this ConnectionManager to listen at a different port.
 	 */
@@ -222,9 +234,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.24 2002/02/01 02:00:25 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.25 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.25  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.24  2002/02/01 02:00:25  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

@@ -61,7 +61,7 @@ bool QueueItem::updateUsers(bool reconnect) {
 
 		if( !s->getUser()->isOnline() ) {
 
-			if(DownloadManager::getInstance()->isConnected(s->getUser())) {
+			if(ConnectionManager::getInstance()->isConnected(s->getUser())) {
 				continue;
 			}
 
@@ -102,7 +102,7 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 		fire(QueueManagerListener::ADDED, q);
 
 	fire(QueueManagerListener::SOURCES_UPDATED, q);
-
+	dirty = true;
 	// And make sure we're trying to connect to this fellow...
 	ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
@@ -132,6 +132,8 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const string& aNick,
 		fire(QueueManagerListener::ADDED, q);
 	
 	fire(QueueManagerListener::SOURCES_UPDATED, q);
+	dirty = true;
+	
 }
 
 QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, LONGLONG aSize, bool aResume, bool& newItem) {
@@ -152,7 +154,7 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 			throw QueueException("A file with a different size already exists in the queue");
 		}
 
-		if( (q->getSize() != -1) && (q->getSize() >= File::getSize(aTarget)) )  {
+		if( (q->getSize() != -1) && (q->getSize() <= File::getSize(aTarget)) )  {
 			throw FileException("A file of equal or larger size already exists at the target location");
 		}
 
@@ -192,6 +194,7 @@ Download* QueueManager::getDownload(UserConnection* aUserConnection) {
 
 		// Set the flag to running, so that we don't get the same download twice...
 		q->setStatus(QueueItem::RUNNING);
+		q->setCurrent(aUserConnection->getUser());
 	}
 	fire(QueueManagerListener::STATUS_UPDATED, q);
 	return new Download(q, ConnectionManager::getInstance()->getQueueItem(aUserConnection));
@@ -212,12 +215,15 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 			}
 
 			fire(QueueManagerListener::REMOVED, aDownload->getQueueItem());
-
+			
 			delete aDownload->getQueueItem();
 			delete aDownload;
 		}
+		dirty = true;
+		
 	} else {
 		aDownload->getQueueItem()->setStatus(QueueItem::WAITING);
+		aDownload->getQueueItem()->setCurrent(NULL);
 		fire(QueueManagerListener::SOURCES_UPDATED, aDownload->getQueueItem());
 		delete aDownload;
 	}
@@ -237,26 +243,21 @@ void QueueManager::remove(const string& aTarget) throw(QueueException) {
 		if(i != queue.end()) {
 			queue.erase(i);
 			fire(QueueManagerListener::REMOVED, q);
-
+			dirty = true;
 			delete q;
 		}
 	}
 }
 
-void QueueManager::remove(QueueItem* qi) throw(QueueException) {
+void QueueManager::remove(QueueItem* aQI) throw(QueueException) {
+	dcassert(aQI != NULL);
 	
-	Lock l(cs);
-	QueueItem::Iter i = find(queue.begin(), queue.end(), qi);
-
+	QueueItem::Iter i = find(queue.begin(), queue.end(), aQI);
 	if(i != queue.end()) {
-		if(qi->getStatus() == QueueItem::RUNNING) {
-			DownloadManager::getInstance()->removeDownload(qi);
-		}
-		
 		queue.erase(i);
-		fire(QueueManagerListener::REMOVED, qi);
-		
-		delete qi;
+		fire(QueueManagerListener::REMOVED, aQI);
+		dirty = true;
+		delete aQI;
 	}
 }
 
@@ -272,7 +273,26 @@ void QueueManager::removeSource(const string& aTarget, const string& aUser)  {
 				DownloadManager::getInstance()->removeDownload(q);
 			}
 		}
-		q->removeSource(aUser);
+		if(q->isSet(QueueItem::USER_LIST)) {
+			remove(q);
+		} else {
+			q->removeSource(aUser);
+			fire(QueueManagerListener::SOURCES_UPDATED, q);
+			dirty = true;
+		}
+	}
+}
+
+void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) throw(QueueException) {
+	
+	{
+		Lock l(cs);
+	
+		QueueItem* q = findByTarget(aTarget);
+		if(q != NULL) {
+			q->setPriority(p);
+			fire(QueueManagerListener::STATUS_UPDATED, q);
+		}
 	}
 }
 

@@ -562,8 +562,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,2,2
- PRODUCTVERSION 0,1,2,2
+ FILEVERSION 0,1,5,0
+ PRODUCTVERSION 0,1,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -581,7 +581,7 @@ BEGIN
             VALUE "Comments", "http://sourceforge.net/dcplusplus\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "0, 1, 2, 2\0"
+            VALUE "FileVersion", "0, 1, 5, 0\0"
             VALUE "InternalName", "DC++\0"
             VALUE "LegalCopyright", "Copyright 2001 Jacek Sieka\0"
             VALUE "LegalTrademarks", "\0"
@@ -589,7 +589,7 @@ BEGIN
             VALUE "OriginalFilename", "DCPlusPlus.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "0, 1, 2, 2\0"
+            VALUE "ProductVersion", "0, 1, 5, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -609,6 +609,7 @@ END
 
 IDR_MAINFRAME ACCELERATORS DISCARDABLE 
 BEGIN
+    "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
     "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_CONNECT,        VIRTKEY, CONTROL, NOINVERT

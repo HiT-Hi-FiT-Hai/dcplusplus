@@ -22,10 +22,10 @@
 #include "SearchFrm.h"
 #include "LineDlg.h"
 #include "QueueManager.h"
+#include "PrivateFrame.h"
 
 LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
@@ -95,6 +95,13 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Private Message";
+	mi.wID = IDC_PRIVATEMESSAGE;
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Get File List";
 	mi.wID = IDC_GETLIST;
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
@@ -156,6 +163,8 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), target);
 			} catch(QueueException e) {
 				MessageBox(e.getError().c_str());
+			} catch(FileException e) {
+				//..
 			}
 		}
 	} else {
@@ -180,6 +189,8 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
 			MessageBox(e.getError().c_str());
+		} catch(FileException e) {
+			//..
 		}
 	} 
 	return 0;
@@ -407,6 +418,8 @@ LRESULT SearchFrame::onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
 		} catch(QueueException e) {
 			MessageBox(e.getError().c_str());
+		} catch(FileException e) {
+			//..
 		}
 	}
 	return 0;
@@ -429,11 +442,31 @@ void SearchFrame::downloadSelected(const string& aDir) {
 	}
 }
 
+LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		if(sr->getUser()) {
+			PrivateFrame* frm = PrivateFrame::getFrame(sr->getUser(), m_hWndMDIClient);
+			if(frm->m_hWnd == NULL) {
+				frm->setTab(getTab());
+				frm->CreateEx(m_hWndMDIClient);
+			} else {
+				frm->MDIActivate(frm->m_hWnd);
+			}
+		}
+	}
+	return 0;
+}
+
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.23 2002/02/01 02:00:41 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.24 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.24  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.23  2002/02/01 02:00:41  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

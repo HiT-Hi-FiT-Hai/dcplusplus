@@ -38,11 +38,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private ConnectionManagerListener
 {
 public:
-	MainFrame() : lastUpload(-1), stopperThread(NULL), menuItems(0) { 
-		searchFilter.push_back("the");
-		searchFilter.push_back("of");
-		searchFilter.push_back("divx");
-		searchFilter.push_back("frail");
+	MainFrame() : lastUpload(-1), stopperThread(NULL) { 
 	};
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
@@ -108,7 +104,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
-		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -140,7 +135,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -272,8 +266,17 @@ public:
 		MDIIconArrange();
 		return 0;
 	}
-private:
 
+	static bool getAway() { return away; };
+	static void setAway(bool aAway) { away = aAway; };
+	static const string& getAwayMessage() { 
+		return awayMsg.empty() ? defaultMsg : awayMsg;
+	};
+	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
+private:
+	static bool away;
+	static string awayMsg;
+	static const string defaultMsg;	
 	enum {
 		COLUMN_USER,
 		COLUMN_STATUS,
@@ -282,8 +285,6 @@ private:
 		COLUMN_LAST
 	};
 
-	int menuItems;
-	
 	class StringInfo {
 	public:
 		StringInfo(LPARAM lp = NULL, const string& s = "") : lParam(lp), str(s) { };
@@ -318,7 +319,6 @@ private:
 	string versionInfo;
 	CImageList images;
 	CImageList largeImages;
-	StringList searchFilter;
 	
 	CMenu transferMenu;
 	
@@ -446,9 +446,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.38 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.39 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.39  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.38  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

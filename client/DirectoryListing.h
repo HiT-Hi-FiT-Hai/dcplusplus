@@ -114,6 +114,8 @@ public:
 				download(file, aUser, target + file->getName());
 			} catch(QueueException e) {
 				// Catch it here to allow parts of directories to be added...
+			} catch(FileException e) {
+				//..
 			}
 		}
 	}
@@ -131,6 +133,8 @@ public:
 				download(file, aUser, target + file->getName());
 			} catch(QueueException e) {
 				// Catch it here to allow parts of directories to be added...
+			} catch(FileException e) {
+				//..
 			}
 		}
 	}
@@ -164,9 +168,12 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.8 2002/02/01 02:00:26 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.9 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.9  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.8  2002/02/01 02:00:26  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

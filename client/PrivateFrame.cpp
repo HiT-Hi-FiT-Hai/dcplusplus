@@ -100,12 +100,9 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
 			message = new char[ctrlMessage.GetWindowTextLength()+1];
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-			string s = "<" + user->getClientNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
+			sendMessage(string(message, ctrlMessage.GetWindowTextLength()));
 			delete message;
-			user->privateMessage(s);
-
 			ctrlMessage.SetWindowText("");
-			addLine(s);
 		} else {
 			bHandled = FALSE;
 		}
@@ -118,9 +115,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.13 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.14 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.14  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.13  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

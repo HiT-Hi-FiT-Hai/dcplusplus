@@ -26,6 +26,7 @@
 #include "FlatTabCtrl.h"
 #include "QueueManager.h"
 #include "ExListViewCtrl.h"
+#include "CriticalSection.h"
 
 class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManagerListener
 {
@@ -53,7 +54,12 @@ public:
 
 	QueueFrame() : stopperThread(NULL) { 
 		QueueManager::getInstance()->addListener(this);
+		searchFilter.push_back("the");
+		searchFilter.push_back("of");
+		searchFilter.push_back("divx");
+		searchFilter.push_back("frail");
 	}
+
 	~QueueFrame() { }
 	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
@@ -68,10 +74,53 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGH, onPriority)
+		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
+		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
+		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
+		
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<QueueFrame>)
 	END_MSG_MAP()
+
+	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		int i = -1;
+		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			string tmp;
+			QueueItem::Priority p;
+			{
+				Lock l(cs);
+				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+				if(j == queue.end())
+					continue;
+				
+				tmp = j->second->getTarget();
+				switch(wID) {
+				case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
+				case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
+				case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
+				case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
+				default: p = QueueItem::NORMAL; break;
+				}
+			}
+			QueueManager::getInstance()->setPriority(tmp, p);
+		}
+		return 0;
+	}
+	
+	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		removeSelected();
+		return 0;
+	}
 
 	LRESULT onKeyDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
@@ -85,17 +134,41 @@ public:
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->remove((QueueItem*)ctrlQueue.GetItemData(i));
+			string tmp;
+			{
+				Lock l(cs);
+				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+				if(j == queue.end())
+					continue;
+				
+				tmp = j->second->getTarget();
+			}
+			QueueManager::getInstance()->remove(tmp);
 		}
 	}
 	
+	static int sortSize(LPARAM a, LPARAM b) {
+		LVITEM* c = (LVITEM*)a;
+		LVITEM* d = (LVITEM*)b;
+		
+		QueueItem* e = (QueueItem*)c->lParam;
+		QueueItem* f = (QueueItem*)d->lParam;
+		LONGLONG g = e->getSize();
+		LONGLONG h = f->getSize();
+			
+		return (g < h) ? -1 : ((g == h) ? 0 : 1);
+	}
 	
 	LRESULT onColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlQueue.getSortColumn()) {
 			ctrlQueue.setSortDirection(!ctrlQueue.getSortDirection());
 		} else {
-			ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			if(l->iSubItem == COLUMN_SIZE) {
+				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+			} else {
+				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			}
 		}
 		return 0;
 	}
@@ -153,9 +226,18 @@ public:
 
 	static DWORD WINAPI stopper(void* p) {
 		QueueFrame* f = (QueueFrame*)p;
-		
+				
 		QueueManager::getInstance()->removeListener(f);
+		f->ctrlQueue.DeleteAllItems();
+		{
+			Lock l(f->cs);
+			for(map<QueueItem*, QueueItem*>::iterator i = f->queue.begin(); i != f->queue.end(); ++i) {
+				delete i->second;
+			}
+			f->queue.clear();
+		}
 		f->PostMessage(WM_CLOSE);
+		QueueFrame::frame = NULL;
 		return 0;
 	}
 	
@@ -211,6 +293,9 @@ private:
 	CMenu pmMenu;
 	CMenu priorityMenu;
 	
+	int menuItems;
+	StringList searchFilter;
+	
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
 		switch(type) {
 		case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
@@ -227,6 +312,9 @@ private:
 	void onQueueUpdated(QueueItem* aQI);
 	void onQueueStatus(QueueItem* aQI);
 	
+	map<QueueItem*, QueueItem*> queue;
+
+	CriticalSection cs;
 	ExListViewCtrl ctrlQueue;
 	CStatusBarCtrl ctrlStatus;
 	
@@ -236,9 +324,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.4 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.4  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.3  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -190,7 +190,13 @@ void ConnectionManager::onIncomingConnection() throw() {
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
 	dcassert(aNick.size() > 0);
 	dcdebug("ConnectionManager::onMyNick %s\n", aNick.c_str());
-	dcassert(!aSource->user);
+	if(aSource->user) {
+		// Not good, this user sent his nick twice, and we don't want that...
+		dcdebug("ConnectionManager::onMyNick Nick sent twice, aborting: %s\n", aNick.c_str());
+		
+		putConnection(aSource);
+		return;
+	}
 	ConnectionQueueItem* cqi = NULL;
 	{
 		Lock l(cs);
@@ -389,7 +395,7 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 				
 				if(aCqi->getConnection()->getStatus() == UserConnection::BUSY) {
 					if(aCqi->getConnection()->isSet(UserConnection::FLAG_DOWNLOAD)) {
-						DownloadManager::getInstance()->removeDownload(aCqi->getConnection());
+						DownloadManager::getInstance()->removeDownload(aCqi->getConnection(), true);
 						return;
 					} else {
 						UploadManager::getInstance()->removeUpload(aCqi->getConnection());
@@ -436,9 +442,12 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.25 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.26 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.26  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.25  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -149,9 +149,16 @@ public:
 	}
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	void setUser(const User::Ptr& aUser) { user = aUser; };
-	
+	void sendMessage(const string& msg) {
+		if(user && user->isOnline()) {
+			string s = "<" + user->getClientNick() + "> " + msg;
+			user->privateMessage(s);
+			addLine(s);
+		}
+	}
 	static PrivateFrame* getFrame(const User::Ptr& aUser, HWND aParent = NULL);
 	
+	User::Ptr& getUser() { return user; };
 private:
 	PrivateFrame(const User::Ptr& aUser, HWND aParent = NULL) : user(aUser), parent(aParent), created(false), ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
 	}
@@ -176,9 +183,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.9 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.10 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.10  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.9  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

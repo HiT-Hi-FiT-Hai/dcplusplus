@@ -24,8 +24,17 @@
 #include "LineDlg.h"
 #include "ShareManager.h"
 #include "SearchFrm.h"
+#include "MainFrm.h"
 
 CImageList* HubFrame::images = NULL;
+
+char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://sourceforge.net/projects/dcplusplus",
+"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://sourceforge.net/projects/dcplusplus",
+"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://sourceforge.net/projects/dcplusplus",
+"\r\n-- I share, therefore I am.\r\n-- http://sourceforge.net/projects/dcplusplus"
+};
+
+#define MSGS 4
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -186,9 +195,16 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 			} else if(stricmp(s.c_str(), "dc++") == 0) {
 				Lock l(cs);
 				if(client)
-					client->sendMessage("\r\n-- I'm a happy dc++ user. You could be happy too. --\r\n-- http://sourceforge.net/projects/dcplusplus --");
+					client->sendMessage(msgs[TimerManager::getTick() % MSGS]);
 			} else if(stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
+			} else if(stricmp(s.c_str(), "away") == 0) {
+				MainFrame::setAway(true);
+				MainFrame::setAwayMessage(param);
+				addClientLine("Away mode on: " + MainFrame::getAwayMessage());
+			} else if(stricmp(s.c_str(), "back") == 0) {
+				MainFrame::setAway(false);
+				addClientLine("Away mode off");
 			}
 		} else {
 			Lock l(cs);
@@ -440,8 +456,14 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			i->frm->setTab(getTab());
 			i->frm->CreateEx(m_hWndMDIClient);
 			MessageBeep(MB_OK);
-		} 
+		}
 		i->frm->addLine(i->msg);
+		if(MainFrame::getAway()) {
+			Lock l(cs);
+			if(client) {
+				i->frm->sendMessage(MainFrame::getAwayMessage());
+			}
+		}
 		delete i;
 	} else if(wParam == CLIENT_CONNECTED) {
 		//ctrlClient.Invalidate();
@@ -451,19 +473,26 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches withing 7 seconds)").c_str());
 
-	} else if(wParam == DISCONNECT) {
+	} else if(wParam == REDIRECT) {
 		Lock l(cs);
 		if(client)
 			client->disconnect();
+
+		if(!redirect.empty()) {
+			ctrlStatus.SetText(0, ("Redirect to " + redirect + " received, press the follow redirect button if you want to go there").c_str());
+		}
 	}
 	return 0;
 };
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.31 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.32 2002/02/04 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.32  2002/02/04 01:10:29  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.31  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

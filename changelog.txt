@@ -1,15 +1,27 @@
- -- --
+ -- 0.151 2001-02-03 --
+* Fixed stupid resume file bug (abnormal progam termination...)
+
+ -- 0.15 2002-02-03 --
 * Added a new queue window, to reduce clutter in the transfer window at the bottom
 * Totally reworked the queue managment code, queue related bugs should now be a lot easier to find...=)
 * Added a check to ensure the minimum 1 slot
-* The client now disconnects on a received redirect request (if the user's disabled automatic following of redirects). This should 
-  be a reasonable tradeoff between users that don't want to be redirected and hub owners that are too lazy or feel too important
-  to fix their scripts...
 * Added option to keep finished downloads in the queue
 * Fixed a small error with the rollback
-* Fixed incorrect search results for nm search by file type (oops, one less way of finding and banning dc++ users?)
+* Fixed incorrect search results for nm search by file type
 * Fixed lost slot problem, slots are now kept until the connection is broken (note; you do not get a slot for downloading the 
   dc list, only when you start downloading real files...)
+* Fixed another small incompatibility with search results
+* Fixed description cheat
+* Added download priorities
+* Fixed redirect compatibility
+* Fixed dns resolution bug (for url:s beginning with a number)
+* Added option to filter away kick messages from the chat window
+* Fixed a memory leak when reconnecting to hubs
+* User list is now cleared upon hub disconnection
+* Added /clear in the chat
+* Added /away <msg> and /back (no, you don't have to specify an away message, there's a default...)
+* Added private message to search window menu
+* I've not had much time to test the new features, but hey, that's what I have you users for...=)
 
  -- 0.14 2002-01-26 --
 * Fixed upload slots bug

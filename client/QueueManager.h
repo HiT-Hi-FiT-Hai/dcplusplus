@@ -52,7 +52,8 @@ public:
 		
 		Source(const string& aNick, const string& aPath) : nick(aNick), path(aPath) { };
 		Source(const User::Ptr& aUser, const string& aPath) : user(aUser), path(aPath), nick(aUser->getNick()) { };
-		
+		Source(const Source& aSource) : nick(aSource.nick), path(aSource.path), user(aSource.user) { }
+
 		User::Ptr& getUser() { return user; };
 		void setUser(const User::Ptr& aUser) {
 			user = aUser;
@@ -76,6 +77,23 @@ public:
 		User::Ptr user;
 	};
 
+	QueueItem(const string& aTarget, LONGLONG aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
+		status(WAITING), priority(aPriority), current(NULL) { if(aResume) setFlag(RESUME); };
+	
+	QueueItem(const QueueItem& aQi) : target(aQi.target), status(aQi.status), priority(aQi.priority),
+		size(aQi.size), current(aQi.current) {
+		
+		for(Source::List::const_iterator i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
+			sources.push_back(new Source(*(*i)));
+		}
+	}
+
+	~QueueItem() { 
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			delete *i;
+		}
+	};
+	
 	const string& getSourcePath(const User::Ptr& aUser) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser)
@@ -97,7 +115,7 @@ public:
 		}
 	}
 	
-
+	
 	GETSETREF(string, target, Target);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
@@ -108,15 +126,6 @@ private:
 	
 	Source* current;
 	
-	QueueItem(const string& aTarget, LONGLONG aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
-		status(WAITING), priority(aPriority) { if(aResume) setFlag(RESUME); };
-
-	~QueueItem() { 
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			delete *i;
-		}
-	};
-
 	Source* addSource(const User::Ptr& aUser, const string& aPath) {
 		Source* s = new Source(aUser, aPath);
 		sources.push_back(s);
@@ -151,7 +160,15 @@ private:
 			}
 		}
 	}
-
+	void setCurrent(const User::Ptr& aUser) {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getUser() == aUser) {
+				// Bingo!
+				current = *i;
+			}
+		}
+	}
+	
 	void setCurrent(Source* aSource) {
 		current = aSource;
 	}
@@ -220,13 +237,14 @@ public:
 		userLists.push_back(file);
 	}
 
-	void remove(QueueItem* aQI) throw(QueueException);
 	void remove(const string& aTarget) throw(QueueException);
 	void removeSource(const string& aTarget, const User::Ptr& aUser) {
 		removeSource(aTarget, aUser->getNick());
 	}
 
 	void removeSource(const string& aTarget, const string& aUser);
+	
+	void setPriority(const string& aTarget, QueueItem::Priority p);
 	
 	StringList getTargetsBySize(LONGLONG aSize) {
 		Lock l(cs);
@@ -275,6 +293,8 @@ private:
 	StringList userLists;
 	static const string USER_LIST_NAME;
 	
+	void remove(QueueItem* aQI) throw(QueueException);
+
 	QueueItem* findByTarget(const string& aTarget) {
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
 			if((*i)->getTarget() == aTarget)

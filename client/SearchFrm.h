@@ -71,6 +71,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
+		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<SearchFrame>)
@@ -93,6 +94,7 @@ public:
 		}
 	}
 
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -322,9 +324,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.25 2002/02/01 02:00:43 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.26 2002/02/04 01:10:30 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.26  2002/02/04 01:10:30  arnetheduck
+ * Release 0.151...a lot of things fixed
+ *
  * Revision 1.25  2002/02/01 02:00:43  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...
