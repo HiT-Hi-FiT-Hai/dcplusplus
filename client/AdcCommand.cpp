@@ -53,12 +53,12 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		case ' ': 
 			// New parameter...
 			{
-				if(type == TYPE_DIRECT && !toSet) {
-					to = CID(cur);
-					toSet = true;
-				} else if(!fromSet && type != TYPE_CLIENT) {
+				if(!fromSet) {
 					from = CID(cur);
 					fromSet = true;
+				} else if(type == TYPE_DIRECT && !toSet) {
+					to = CID(cur);
+					toSet = true;
 				} else {
 					parameters.push_back(cur);
 				}
@@ -71,16 +71,15 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		i++;
 	}
 	if(!cur.empty()) {
-		if(!fromSet && type != TYPE_CLIENT) {
+		if(!fromSet) {
 			from = CID(cur);
 			fromSet = true;
-		} else 	if(type == TYPE_DIRECT && !toSet) {
+		} else if(type == TYPE_DIRECT && !toSet) {
 			to = CID(cur);
 			toSet = true;
 		} else {
 			parameters.push_back(cur);
 		}
-		cur.clear();
 	}
 }
 
@@ -91,15 +90,16 @@ string Command::toString(bool nmdc /* = false */) const {
 	} else {
 		tmp += getType();
 	}
+
 	tmp += cmdChar;
-	if(getType() != TYPE_CLIENT) {
-		tmp += ' ';
-		tmp += from.toBase32();
-	}
+	tmp += ' ';
+	tmp += from.toBase32();
+
 	if(getType() == TYPE_DIRECT) {
 		tmp += ' ';
 		tmp += to.toBase32();
 	}
+
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
 		tmp += escape(*i);
@@ -136,5 +136,5 @@ bool Command::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.2 2004/11/22 00:13:30 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.3 2004/11/22 13:38:33 arnetheduck Exp $
  */

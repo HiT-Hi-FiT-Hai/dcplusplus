@@ -168,11 +168,12 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 
 	if(c.getParam(1) != CLIENT_PROTOCOL) {
 		// Protocol unhandled...
-		Command c(Command::STA(), getMe()->getCID(), p);
-		c.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
-		c.addParam(c.getParam(0));
-		c.addParam(c.getParam(1));
-		c.addParam("Protocol unsupported");
+		Command cc(Command::STA(), p->getCID());
+		cc.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
+		cc.addParam(c.getParam(0));
+		cc.addParam(c.getParam(1));
+		cc.addParam("Protocol unsupported");
+		send(cc);
 		return;
 	}
 	ConnectionManager::getInstance()->connect(p->getIp(), (short)Util::toInt(c.getParameters()[2]), getMe()->getCID(), Util::toUInt32(c.getParameters()[0]));
@@ -199,9 +200,9 @@ void AdcHub::connect(const User* user, string const& token) {
 		return;
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(Command(Command::CTM(), getMe()->getCID(), user->getCID()).addParam(token).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))));
+		send(Command(Command::CTM(), user->getCID()).addParam(token).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))));
 	} else {
-		send(Command(Command::CTM(), getMe()->getCID(), user->getCID()).addParam(CLIENT_PROTOCOL));
+		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
 }
 
@@ -214,41 +215,36 @@ void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
 	string strtmp;
-	send("BMSG " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + "\n"); 
+	send(Command(Command::MSG(), Command::TYPE_BROADCAST).addParam(aMessage)); 
 }
 
 void AdcHub::privateMessage(const User* user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
 	string strtmp;
-	send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + " PM\n"); 
+	send(Command(Command::MSG(), user->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
 }
 
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	if(state != STATE_NORMAL)
 		return;
 
-	string strtmp;
-	strtmp += "BSCH " + getMe()->getCID().toBase32();
+	Command c(Command::SCH(), Command::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
-		strtmp += " TR";
-		strtmp += aString;
+		c.addParam("TR", aString);
 	} else {
 		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
-			strtmp += " >=";
-			strtmp += Util::toString(aSize);
+			c.addParam(">=", Util::toString(aSize));
 		} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
-			strtmp += " <=";
-			strtmp += Util::toString(aSize);
+			c.addParam("<=", Util::toString(aSize));
 		}
 		StringTokenizer<string> st(aString, ' ');
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			strtmp += " ++" + Command::escape(*i);
+			c.addParam("++", *i);
 		}
 	}
-	strtmp += '\n';
-	send(strtmp);
+	send(c);
 }
 
 void AdcHub::password(const string& pwd) { 
@@ -258,12 +254,11 @@ void AdcHub::password(const string& pwd) {
 		static const int SALT_SIZE = 192/8;
 		u_int8_t buf[SALT_SIZE];
 		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
-		const string& x = pwd;
 		TigerHash th;
 		th.update(getMe()->getCID().getData(), CID::SIZE);
-		th.update(x.data(), x.length());
+		th.update(pwd.data(), pwd.length());
 		th.update(buf, SALT_SIZE);
-		send("HPAS " + getMe()->getCID().toBase32() + " " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
+		send(Command(Command::PAS(), Command::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
 		salt.clear();
 	}
 }
@@ -274,8 +269,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	if(!getMe())
 		return;
 
-	string minf = "BINF " + getMe()->getCID().toBase32();
-	unsigned size = minf.size();
+	Command c(Command::INF(), Command::TYPE_BROADCAST);
 	string tmp;
 
 	StringMapIter i;
@@ -287,33 +281,32 @@ void AdcHub::info(bool /*alwaysSend*/) {
 				lastInfoMap.erase(i); \
 			else \
 				i->second = tmp; \
-			minf += var + tmp; \
+			c.addParam(var, tmp); \
 		} \
 	} else if(!tmp.empty()) { \
-		minf += var + tmp; \
+		c.addParam(var, tmp); \
 		lastInfoMap[var] = tmp; \
 	}
 
-	ADDPARAM(" NI", Command::escape(getNick()));
-	ADDPARAM(" DE", Command::escape(getDescription()));
-	ADDPARAM(" SL", Util::toString(SETTING(SLOTS)));
-	ADDPARAM(" SS", ShareManager::getInstance()->getShareSizeString());
-	ADDPARAM(" HN", Util::toString(counts.normal));
-	ADDPARAM(" HR", Util::toString(counts.registered));
-	ADDPARAM(" HO", Util::toString(counts.op));
-	ADDPARAM(" VE", "++\\ " VERSIONSTRING);
-	ADDPARAM(" I4", "0.0.0.0");
+	ADDPARAM("NI", getNick());
+	ADDPARAM("DE", getDescription());
+	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
+	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
+	ADDPARAM("HN", Util::toString(counts.normal));
+	ADDPARAM("HR", Util::toString(counts.registered));
+	ADDPARAM("HO", Util::toString(counts.op));
+	ADDPARAM("VE", "++\\ " VERSIONSTRING);
+	ADDPARAM("I4", "0.0.0.0");
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		ADDPARAM(" U4", Util::toString(SETTING(IN_PORT)));
+		ADDPARAM("U4", Util::toString(SETTING(IN_PORT)));
 	} else {
-		ADDPARAM(" U4", "");
+		ADDPARAM("U4", "");
 	}
 
 #undef ADDPARAM
 
-	if(minf.size() != size) {
-		minf += "\n";
-		send(minf);
+	if(c.getParameters().size() > 0) {
+		send(c);
 	}
 }
 
@@ -334,7 +327,7 @@ void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
 	lastInfoMap.clear();
-	send("HSUP +BAS0\n");
+	send(Command(Command::SUP(), Command::TYPE_HUB).addParam("BAS0"));
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -348,5 +341,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.24 2004/11/22 00:13:29 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.25 2004/11/22 13:38:33 arnetheduck Exp $
  */

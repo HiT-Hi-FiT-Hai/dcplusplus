@@ -179,7 +179,7 @@ public:
 
 	enum Flags {
 		FLAG_NMDC = 0x01,
-		FLAG_UPLOAD = FLAG_NMDC,
+		FLAG_UPLOAD = FLAG_NMDC << 1,
 		FLAG_DOWNLOAD = FLAG_UPLOAD << 1,
 		FLAG_INCOMING = FLAG_DOWNLOAD << 1,
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
@@ -383,6 +383,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.81 2004/11/22 00:13:29 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.82 2004/11/22 13:38:33 arnetheduck Exp $
  */
 
