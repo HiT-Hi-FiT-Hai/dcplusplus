@@ -41,7 +41,8 @@ public:
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) = 0;
 		virtual void endTag(const string& name, const string& data) = 0;
 
-		const string& getAttrib(StringPairList& attribs, const string& name, size_t hint) {
+	protected:
+		static const string& getAttrib(StringPairList& attribs, const string& name, size_t hint) {
 			hint = min(hint, attribs.size());
 
 			StringPairIter i = find_if(attribs.begin() + hint, attribs.end(), CompareFirst<string, string>(name));
@@ -283,6 +284,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.40 2004/12/27 20:30:04 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.41 2005/01/03 20:23:33 arnetheduck Exp $
  */
 

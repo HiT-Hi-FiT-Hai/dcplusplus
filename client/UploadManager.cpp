@@ -51,7 +51,7 @@ UploadManager::~UploadManager() throw() {
 	}
 }
 
-bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes) {
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes, bool listRecursive) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
 		dcdebug("UM:prepFile Wrong state, ignoring\n");
 		return false;
@@ -118,7 +118,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			free = true;
 		} else if(aType == "list") {
 			// Partial file list
-			MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile);
+			MemoryInputStream* mis = ShareManager::getInstance()->generatePartialList(aFile, listRecursive);
 			if(mis == NULL) {
 				aSource->fileNotAvail();
 				return false;
@@ -341,7 +341,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 	const string& type = c.getParam(0);
 	string tmp;
 
-	if(prepareFile(aSource, type, fname, aStartPos, aBytes)) {
+	if(prepareFile(aSource, type, fname, aStartPos, aBytes, c.hasFlag("RE", 4))) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
 		if(aBytes == -1)
@@ -406,5 +406,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.79 2004/12/29 19:54:20 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.80 2005/01/03 20:23:34 arnetheduck Exp $
  */

@@ -290,6 +290,16 @@ void BufferedSocket::threadRead() {
 		int bufpos = 0;
 		string l;
 		while(i > 0) {
+			// Special to autodetect nmdc connections...
+			if(separator == 0) {
+				if(inbuf[0] == '$') {
+					separator = '|';
+					usesEscapes = false;
+				} else {
+					separator = '\n';
+					usesEscapes = true;
+				}
+			}
 			if(mode == MODE_LINE) {
 				string::size_type pos = 0;
 
@@ -448,5 +458,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.75 2004/09/09 09:27:35 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.76 2005/01/03 20:23:33 arnetheduck Exp $
  */

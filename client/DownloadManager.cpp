@@ -126,10 +126,10 @@ int DownloadManager::FileMover::run() {
 	}
 }
 
-void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
+void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */, bool ntd /* = false */) {
 	dcassert(aConn->getDownload() == NULL);
 	aConn->removeListener(this);
-	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
+	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse, ntd);
 }
 
 class TreeOutputStream : public OutputStream {
@@ -792,6 +792,9 @@ noCRC:
 }
 
 void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSource) throw() { 
+	noSlots(aSource);
+}
+void DownloadManager::noSlots(UserConnection* aSource) {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH && aSource->getState() != UserConnection::STATE_TREE) {
 		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
 		return;
@@ -804,7 +807,7 @@ void DownloadManager::on(UserConnectionListener::MaxedOut, UserConnection* aSour
 
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
-	removeConnection(aSource);
+	removeConnection(aSource, false, true);
 }
 
 void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
@@ -820,11 +823,6 @@ void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource
 	string target = d->getTarget();
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
-	
-	if(aError.find("File Not Available") != string::npos || aError.find(" no more exists") != string::npos) { //solved DCTC
-		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
-	}
-
 	removeConnection(aSource);
 }
 
@@ -911,6 +909,40 @@ void DownloadManager::abortDownload(const string& aTarget) {
 }
 
 void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnection* aSource) throw() {
+	fileNotAvailable(aSource);
+}
+
+/** @todo Handle errors better */
+void DownloadManager::on(Command::STA, UserConnection* aSource, const Command& cmd) throw() {
+	if(cmd.getParameters().size() < 2) {
+		aSource->disconnect();
+		return;
+	}
+
+	const string& err = cmd.getParameters()[0];
+	if(err.length() < 3) {
+		aSource->disconnect();
+		return;
+	}
+
+	switch(Util::toInt(err.substr(0, 1))) {
+	case Command::SEV_FATAL:
+		aSource->disconnect();
+		return;
+	case Command::SEV_RECOVERABLE:
+		switch(Util::toInt(err.substr(1))) {
+		case Command::ERROR_FILE_NOT_AVAILABLE:
+			fileNotAvailable(aSource);
+			return;
+		case Command::ERROR_SLOTS_FULL:
+			noSlots(aSource);
+			return;
+		}
+	}
+	aSource->disconnect();
+}
+
+void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -944,5 +976,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.130 2004/12/29 19:52:33 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.131 2005/01/03 20:23:33 arnetheduck Exp $
  */

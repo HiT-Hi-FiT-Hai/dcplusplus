@@ -100,6 +100,8 @@ public:
 		parse(aLine, nmdc);
 	}
 
+	static Command makeSTA(Severity sev, Error err, const string& desc) { return Command(STA()).addParam(Util::toString(sev * 100 + err)).addParam(desc); }
+
 	void parse(const string& aLine, bool nmdc = false);
 
 	u_int32_t getCommand() const { return cmdInt; }
@@ -189,5 +191,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.13 2004/11/24 17:00:45 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.14 2005/01/03 20:23:35 arnetheduck Exp $
 */

@@ -227,9 +227,11 @@ private:
 	Download::List downloads;
 	
 	bool checkRollback(Download* aDownload, const u_int8_t* aBuf, int aLen) throw(FileException);
-	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
+	void removeConnection(UserConnection::Ptr aConn, bool reuse = false, bool ntd = false);
 	void removeDownload(Download* aDown, bool full, bool finished = false);
-	
+	void fileNotAvailable(UserConnection* aSource);
+	void noSlots(UserConnection* aSource);
+
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
@@ -259,7 +261,8 @@ private:
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(Command::SND, UserConnection*, const Command&) throw();
-	
+	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
@@ -269,5 +272,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.73 2004/11/09 20:29:25 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.74 2005/01/03 20:23:33 arnetheduck Exp $
  */

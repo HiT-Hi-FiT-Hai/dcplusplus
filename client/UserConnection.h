@@ -171,6 +171,8 @@ public:
 	static const string FEATURE_ZLIB_GET;
 	static const string FEATURE_TTHL;
 	static const string FEATURE_TTHF;
+
+	static const string FILE_NOT_AVAILABLE;
 	
 	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
@@ -231,8 +233,8 @@ public:
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); };
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
-	void maxedOut() { send("$MaxedOut|"); };
-	void fileNotAvail() { send("$Error File Not Available|"); }
+	void maxedOut() { isSet(FLAG_NMDC) ? send("$MaxedOut|") : sta(Command::SEV_RECOVERABLE, Command::ERROR_SLOTS_FULL, "Slots full"); };
+	void fileNotAvail() { isSet(FLAG_NMDC) ? send("$Error " + FILE_NOT_AVAILABLE + "|") : sta(Command::SEV_RECOVERABLE, Command::ERROR_FILE_NOT_AVAILABLE, FILE_NOT_AVAILABLE); }
 
 	// ADC Stuff
 	void sup(const StringList& features) { 
@@ -337,7 +339,7 @@ private:
 
 	// We only want ConnectionManager to create this...
 	UserConnection() throw(SocketException) : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
-		socket(BufferedSocket::getSocket('|')), download(NULL) { 
+		socket(BufferedSocket::getSocket(0)), download(NULL) { 
 		
 		socket->addListener(this);
 	};
@@ -388,6 +390,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.84 2004/12/04 00:33:39 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.85 2005/01/03 20:23:33 arnetheduck Exp $
  */
 

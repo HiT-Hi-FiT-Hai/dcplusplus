@@ -32,6 +32,8 @@ const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
 const string UserConnection::FEATURE_TTHL = "TTHL";
 const string UserConnection::FEATURE_TTHF = "TTHF";
 
+const string UserConnection::FILE_NOT_AVAILABLE = "File Not Available";
+
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
@@ -95,7 +97,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			fire(UserConnectionListener::Direction(), this, param.substr(0, x), param.substr(x+1));
 		}
 	} else if(cmd == "$Error") {
-		if(Util::stricmp(param.c_str(), "File Not Available") == 0 || 
+		if(Util::stricmp(param.c_str(), FILE_NOT_AVAILABLE) == 0 || 
 			param.rfind(/*path/file*/" no more exists") != string::npos) { 
 			fire(UserConnectionListener::FileNotAvailable(), this);
 		} else {
@@ -179,5 +181,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.47 2004/11/22 00:13:30 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.48 2005/01/03 20:23:34 arnetheduck Exp $
  */

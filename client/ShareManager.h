@@ -68,7 +68,7 @@ public:
 
 	StringPairList getDirectories() const { RLock<> l(cs); return virtualMap; }
 
-	MemoryInputStream* generatePartialList(const string& dir);
+	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
 
 	int64_t getShareSize() throw();
@@ -311,6 +311,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.70 2004/12/27 20:30:04 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.71 2005/01/03 20:23:35 arnetheduck Exp $
  */
 

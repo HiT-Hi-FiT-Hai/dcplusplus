@@ -39,7 +39,7 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_TTHL);
 	features.push_back(UserConnection::FEATURE_TTHF);
 
-	adcFeatures.push_back("BASE");
+	adcFeatures.push_back("+BASE");
 };
 
 /**
@@ -81,9 +81,39 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	}
 }
 
-void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
+void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */, bool ntd /* = false */) {
 	// Pool it for later usage...
-	if(reuse) {
+	if(ntd) {
+		// Nothing to do, make an upload connection out of it...
+		aSource->ntd();
+		if(aSource->getCQI()) {
+			fire(ConnectionManagerListener::Removed(), aSource->getCQI());
+			delete aSource->getCQI();
+			aSource->setCQI(NULL);
+		}
+
+		ConnectionQueueItem* cqi = new ConnectionQueueItem(aSource->getUser());
+		cqi->setConnection(aSource);
+		fire(ConnectionManagerListener::Added(), cqi);
+		aSource->setFlag(UserConnection::FLAG_UPLOAD);
+
+		aSource->removeListener(this);
+		aSource->setCQI(cqi);
+
+		dcassert(find(active.begin(), active.end(), cqi) == active.end());
+		active.push_back(cqi);
+
+		fire(ConnectionManagerListener::Connected(), cqi);
+
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			dcdebug("ConnectionManager::onINF, leaving to downloadmanager\n");
+			DownloadManager::getInstance()->addConnection(aSource);
+		} else {
+			dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
+			dcdebug("ConnectionManager::onINF, leaving to uploadmanager\n");
+			UploadManager::getInstance()->addConnection(aSource);
+		}
+	} else if(reuse) {
 		aSource->addListener(this);
 		{
 			Lock l(cs);
@@ -556,16 +586,8 @@ void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command&
 		return;
 	}
 
-	string cid;
-
-	if(!cmd.getParam("CI", 0, cid)) {
-		dcdebug("CM::onINF: No CI");
-		aSource->sta(Command::SEV_FATAL, Command::ERROR_INF_MISSING, "CI missing from INF");
-		putConnection(aSource);
-		return;
-	}
-
-	aSource->setUser(ClientManager::getInstance()->getUser(CID(cid), false));
+	aSource->setUser(ClientManager::getInstance()->getUser(cmd.getFrom(), false));
+	aSource->setCID(cmd.getFrom());
 
 	if(!aSource->getUser()) {
 		dcdebug("CM::onINF: User not found");
@@ -574,45 +596,50 @@ void ConnectionManager::on(Command::INF, UserConnection* aSource, const Command&
 		return;
 	}
 
+	ConnectionQueueItem* cqi = NULL;
 	if(aSource->isSet(UserConnection::FLAG_INCOMING)) {
 		// This one is ready to be passed to the download manager, if we have any downloads...
-		aSource->removeListener(this);
-
 		ConnectionQueueItem::Iter i = find(pendingDown.begin(), pendingDown.end(), aSource->getUser());
-		ConnectionQueueItem* cqi = NULL;
 
 		if(i == pendingDown.end()) {
 			// No pending download, pass to upload manager
 			cqi = new ConnectionQueueItem(aSource->getUser());
 			cqi->setConnection(aSource);
-			fire(ConnectionManagerListener::Added(), cqi);
+			aSource->setCQI(cqi);
 			aSource->setFlag(UserConnection::FLAG_UPLOAD);
+			fire(ConnectionManagerListener::Added(), cqi);
 			aSource->ntd();
 		} else {
 			cqi = *i;
 			pendingDown.erase(i);
 			cqi->setConnection(aSource);
+			aSource->setCQI(cqi);
 			aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 		}
-
+	} else {
+		cqi = new ConnectionQueueItem(aSource->getUser());
+		cqi->setConnection(aSource);
 		aSource->setCQI(cqi);
+		aSource->setFlag(UserConnection::FLAG_UPLOAD);
+		fire(ConnectionManagerListener::Added(), cqi);
+	}
 
-		dcassert(find(active.begin(), active.end(), cqi) == active.end());
-		active.push_back(cqi);
+	aSource->removeListener(this);
 
-		fire(ConnectionManagerListener::Connected(), cqi);
+	dcassert(find(active.begin(), active.end(), cqi) == active.end());
+	active.push_back(cqi);
 
-		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-			dcdebug("ConnectionManager::onINF, leaving to downloadmanager\n");
-			DownloadManager::getInstance()->addConnection(aSource);
-		} else {
-			dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
-			dcdebug("ConnectionManager::onINF, leaving to uploadmanager\n");
-			UploadManager::getInstance()->addConnection(aSource);
-		}
+	fire(ConnectionManagerListener::Connected(), cqi);
+
+	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+		dcdebug("ConnectionManager::onINF, leaving to downloadmanager\n");
+		DownloadManager::getInstance()->addConnection(aSource);
+	} else {
+		dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
+		dcdebug("ConnectionManager::onINF, leaving to uploadmanager\n");
+		UploadManager::getInstance()->addConnection(aSource);
 	}
 }
-
 
 void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& /*aError*/) throw() {
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD) && aSource->getCQI()) {
@@ -687,5 +714,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.86 2004/12/27 22:01:48 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.87 2005/01/03 20:23:35 arnetheduck Exp $
  */

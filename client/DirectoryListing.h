@@ -89,8 +89,8 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
-			: name(aName), parent(aParent), adls(_adls) { };
+		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false, bool aComplete = true) 
+			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
@@ -113,6 +113,7 @@ public:
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);
+		GETSET(bool, complete, Complete);
 
 	private:
 		Directory(const Directory&);
@@ -172,5 +173,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.36 2004/11/11 12:49:44 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.37 2005/01/03 20:23:34 arnetheduck Exp $
  */

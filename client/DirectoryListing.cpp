@@ -180,7 +180,9 @@ void DirectoryListing::loadXML(const string& xml, bool doAdl) {
 }
 
 static const string sFileListing = "FileListing";
+static const string sBase = "Base";
 static const string sDirectory = "Directory";
+static const string sIncomplete = "Incomplete";
 static const string sFile = "File";
 static const string sName = "Name";
 static const string sSize = "Size";
@@ -205,7 +207,8 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			if(n.empty()) {
 				throw SimpleXMLException("Directory missing name attribute");
 			}
-			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
+			bool incomp = getAttrib(attribs, sIncomplete, 1) == "1";
+			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n, false, incomp);
 			cur->directories.push_back(d);
 			cur = d;
 			fullPath += '\\';
@@ -221,6 +224,17 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			}
 		}
 	} else if(name == sFileListing) {
+		const string& base = getAttrib(attribs, sBase, 2);
+		if(base.size() > 1 && base[0] == '/' && base[base.size()-1] == '/') {
+			StringList sl = StringTokenizer<string>(base.substr(1), '/').getTokens();
+			for(StringIter i = sl.begin(); i != sl.end(); ++i) {
+				DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, *i);
+				cur->directories.push_back(d);
+				cur = d;
+				fullPath += '\\';
+				fullPath += d->getName();
+			}
+		}
 		inListing = true;
 	}
 }
@@ -341,5 +355,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.41 2004/12/28 17:34:42 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.42 2005/01/03 20:23:34 arnetheduck Exp $
  */

@@ -852,7 +852,7 @@ void ShareManager::generateNmdcList() {
 	}
 }
 
-MemoryInputStream* ShareManager::generatePartialList(const string& dir) {
+MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool recurse) {
 	if(dir.length() < 3 || dir[0] != '/' || dir[dir.size()-1] != '/')
 		return NULL;
 
@@ -882,7 +882,7 @@ MemoryInputStream* ShareManager::generatePartialList(const string& dir) {
 	StringOutputStream sos;
 	string tmp;
 	string indent = "\t";
-	it->second->toXml(sos, indent, tmp, false);
+	it->second->toXml(sos, indent, tmp, recurse);
 	return new MemoryInputStream(sos.getString());
 }
 
@@ -1430,6 +1430,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.122 2005/01/02 20:59:52 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.123 2005/01/03 20:23:34 arnetheduck Exp $
  */
 

@@ -285,7 +285,6 @@ void WinUtil::init(HWND hWnd) {
 		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 		dirIconIndex = 0;
 	}
-
 	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
 	LOGFONT lf, lf2;
@@ -1044,5 +1043,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.73 2005/01/01 18:09:48 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.74 2005/01/03 20:23:42 arnetheduck Exp $
  */

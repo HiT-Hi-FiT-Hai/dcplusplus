@@ -68,7 +68,7 @@ public:
 	void connect(const string& aServer, short aPort, const string& aNick);
 	void connect(const string& aServer, short aPort, const CID& cid, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
 	void putUploadConnection(UserConnection* aSource);
 	
 	void removeConnection(const User::Ptr& aUser, int isDownload);
@@ -161,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.60 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.61 2005/01/03 20:23:33 arnetheduck Exp $
  */

@@ -167,7 +167,7 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	if(c.getParameters().size() < 3)
 		return;
 
-	if(c.getParam(1) != CLIENT_PROTOCOL) {
+	if(c.getParam(0) != CLIENT_PROTOCOL) {
 		// Protocol unhandled...
 		Command cc(Command::STA(), p->getCID());
 		cc.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
@@ -325,7 +325,7 @@ string AdcHub::checkNick(const string& aNick) {
 }
 
 string AdcHub::getHubURL() {
-	return "adc://" + getAddressPort();
+	return getAddressPort();
 }
 
 void AdcHub::on(Connected) throw() { 
@@ -346,5 +346,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.30 2005/01/02 20:59:52 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.31 2005/01/03 20:23:35 arnetheduck Exp $
  */
