@@ -300,6 +300,7 @@ enum Strings { // @DontAdd
 	SETTINGS_LANGUAGE_FILE, // "Language file"
 	SETTINGS_LOG_DIR, // "Log directory"
 	SETTINGS_LOG_DOWNLOADS, // "Log downloads"
+	SETTINGS_LOG_FILELIST_TRANSFERS, // "Log filelist transfers"
 	SETTINGS_LOG_MAIN_CHAT, // "Log main chat"
 	SETTINGS_LOG_PRIVATE_CHAT, // "Log private chat"
 	SETTINGS_LOG_UPLOADS, // "Log uploads"

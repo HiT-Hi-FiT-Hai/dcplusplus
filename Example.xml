@@ -296,6 +296,7 @@
 		<String Name="SettingsLanguageFile">Language file</String>
 		<String Name="SettingsLogDir">Log directory</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
+		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>
 		<String Name="SettingsLogPrivateChat">Log private chat</String>
 		<String Name="SettingsLogUploads">Log uploads</String>
