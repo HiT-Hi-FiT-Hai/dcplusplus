@@ -253,12 +253,14 @@ public:
 
 	static string toString(int val) {
 		char buf[16];
-#ifdef WIN32
-		return itoa(val, buf, 10);
-#else
 		sprintf(buf, "%d", val);
 		return buf;
-#endif
+	}
+
+	static string toString(float val) {
+		char buf[16];
+		sprintf(buf, "%.2f", val);
+		return buf;
 	}
 
 	static string getLocalIp();
@@ -321,6 +323,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.40 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: Util.h,v 1.41 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

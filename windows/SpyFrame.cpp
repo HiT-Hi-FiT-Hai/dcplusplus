@@ -57,11 +57,69 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)*1/2;
+		w[2] = w[0] + (tmp-16)*2/2;
+
+		ctrlStatus.SetParts(3, w);
+	}
+
 	ctrlSearches.MoveWindow(&rect);
+}
+
+LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == SEARCH) {
+		string* x = (string*)lParam;
+		SearchIter i = searches.find(*x);
+		int n;
+		if(i == searches.end()) {
+			n = searches[*x] = 1;
+
+		} else {
+			n = ++i->second;
+		}
+
+		total++;
+
+		// Not thread safe, but who cares really...
+		perSecond[cur]++;
+
+		int j = ctrlSearches.find(*x);
+		if(j == -1) {
+			StringList a;
+			a.push_back(*x);
+			a.push_back(Util::toString(n));
+			ctrlSearches.insert(a);
+			if(ctrlSearches.GetItemCount() > 500) {
+				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
+			}
+		} else {
+			ctrlSearches.SetItemText(j, COLUMN_COUNT, Util::toString(n).c_str());
+			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
+				ctrlSearches.resort();
+		}
+		delete x;
+
+		ctrlStatus.SetText(1, (STRING(TOTAL) + Util::toString(total)).c_str());
+
+	} else if(wParam == TICK_AVG) {
+		float* x = (float*)lParam;
+		ctrlStatus.SetText(2, (STRING(AVERAGE) + Util::toString(*x)).c_str());
+		delete x;
+	}
+
+	return 0;
 }
 
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
  */

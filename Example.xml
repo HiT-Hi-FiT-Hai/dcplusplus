@@ -11,6 +11,7 @@
 		<String Name="AtMost">At most</String>
 		<String Name="Audio">Audio</String>
 		<String Name="AutoConnect">Auto connect / Name</String>
+		<String Name="Average">Average/s: </String>
 		<String Name="AwayModeOff">Away mode off</String>
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
@@ -146,6 +147,7 @@
 		<String Name="Picture">Picture</String>
 		<String Name="PortIsBusy">Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++</String>
 		<String Name="PreparingFileList">Preparing file list...</String>
+		<String Name="PressFollow">Press the follow redirect button to connect to </String>
 		<String Name="Priority">Priority</String>
 		<String Name="PrivateMessageFrom">Private message from </String>
 		<String Name="Properties">Properties</String>
@@ -164,6 +166,7 @@
 		<String Name="SearchFor">Search for</String>
 		<String Name="SearchForAlternates">Search for alternates</String>
 		<String Name="SearchOptions">Search options</String>
+		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search string</String>
 		<String Name="SearchingFor">Searching for </String>
@@ -182,6 +185,7 @@
 		<String Name="Tb">TB</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
+		<String Name="Total">Total: </String>
 		<String Name="Type">Type</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="Unknown">Unknown</String>

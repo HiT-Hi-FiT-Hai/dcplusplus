@@ -39,7 +39,6 @@ public:
 	typedef List::iterator Iter;
 	
 	enum Types {
-		
 		BAD_PASSWORD,
 		CONNECT_TO_ME,
 		CONNECTED,
@@ -72,7 +71,6 @@ public:
 	virtual void onAction(Types, Client*, const User::List&) { };
 	virtual void onAction(Types, Client*, const User::Ptr&, const string&) { };
 	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) { };
-	
 };
 
 class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener
@@ -162,7 +160,6 @@ public:
 		// Short, short break to allow the message to reach the client...
 		Thread::sleep(100);
 		send("$Kick " + aUser->getNick() + "|");
-		
 	}
 
 	void kick(User* aUser, const string& aMsg) {
@@ -189,8 +186,8 @@ public:
 		dcdebug("Client::opForceMove\n");
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
+
 	void connect(const string& aServer);
-	void connect(const string& aServer, short aPort);
 	
 	void updated(User::Ptr& aUser) {
 		fire(ClientListener::MY_INFO, this, aUser);
@@ -219,6 +216,7 @@ public:
 			return nick;
 		}
 	}
+
 	void setNick(const string& aNick) {
 		nick = aNick;
 	}
@@ -229,9 +227,9 @@ public:
 	}
 	
 	GETSET(bool, op, Op);
+	GETSET(bool, registered, Registered);
 	GETSETREF(string, defpassword, Password);
 private:
-
 	string nick;
 	string server;
 	short port;
@@ -252,35 +250,20 @@ private:
 	typedef FloodMap::iterator FloodIter;
 	FloodMap searchFlood;
 	
-	Client() : op(false), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(true) {
+	Client() : op(false), registered(false), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
 		TimerManager::getInstance()->addListener(this);
-		
-		Thread::safeInc(&hubs);
 	};
 	
 	// No copying...
 	Client(const Client&) { dcassert(0); };
-	virtual ~Client() throw() {
-		TimerManager::getInstance()->removeListener(this);
-		
-		if(socket) {
-			socket->removeListener(this);
-			BufferedSocket::putSocket(socket);
-		}
+	virtual ~Client() throw();
+	void connect();
 
-		socket = NULL;
-		
-		removeListeners();
-		
-		if(counted)
-			Thread::safeDec(&hubs);
-	};
-	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		if(type == TimerManagerListener::SECOND) {
 			if(socket && (lastActivity + 120 * 1000) < aTick) {
-				// Nothing's happened for 60 seconds, check if we're connected, if not, try to connect...
+				// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
 				lastActivity = aTick;
 				// Try to send something for the fun of it...
 				if(isConnected()) {
@@ -288,14 +271,15 @@ private:
 					socket->write("|", 1);
 				} else {
 					// Try to reconnect...
-					connect(server, port);
+					if(!server.empty())
+						connect();
 				}
 			}
 			{
 				Lock l(cs);
 				for(FloodIter i = searchFlood.begin(); i != searchFlood.end();) {
 					dcassert(i->second > 0);
-					if(--i->second == 0) {
+					if(--i->second <= 0) {
 						searchFlood.erase(i++);
 					} else {
 						++i;
@@ -311,10 +295,7 @@ private:
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
 		case BufferedSocketListener::FAILED:
-			fire(ClientListener::FAILED, this, aLine);
-			socket->removeListener(this);
-			disconnect();
-			break;
+			fire(ClientListener::FAILED, this, aLine); break;
 		default:
 			dcassert(0);
 		}
@@ -341,6 +322,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.50 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: Client.h,v 1.51 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

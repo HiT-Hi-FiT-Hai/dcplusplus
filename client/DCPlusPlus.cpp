@@ -78,7 +78,7 @@ void startup() {
 
 	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
 
-	ShareManager::getInstance()->refresh(false, false);
+	ShareManager::getInstance()->refresh(false, false, true);
 	HubManager::getInstance()->refresh();
 }
 
@@ -104,6 +104,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.12 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.13 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

@@ -40,7 +40,7 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 {
 public:
 	HubFrame(const string& aServer, const string& aNick = Util::emptyString, const string& aPassword = Util::emptyString) : 
-	  waitingForPW(false), op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
+	  waitingForPW(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 	  clientContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), needSort(false) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
@@ -51,7 +51,7 @@ public:
 	}
 
 	~HubFrame() {
-		dcassert(client == NULL);
+		ClientManager::getInstance()->putClient(client);
 	}
 
 	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUB, 0, COLOR_3DFACE);
@@ -84,7 +84,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<HubFrame>)
+		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -103,6 +103,7 @@ public:
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 		
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
@@ -122,25 +123,22 @@ public:
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
 			return (LRESULT)WinUtil::bgBrush;
-			
 		} else {
 			return 0;
 		}
-		
 	}
 
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(!redirect.empty()) {
 			server = redirect;
-			if(client)
-				client->connect(redirect);
+			client->addListener(this);
+			client->connect(redirect);
 		}
 		return 0;
 	}
 
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		
-		if(client && client->isConnected()) {
+		if(client->isConnected()) {
 			clearUserList();
 			client->getNickList();
 		}
@@ -154,10 +152,10 @@ public:
 	}
 	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(client) {
-			clearUserList();
-			client->connect(server);
-		}
+		clearUserList();
+		client->disconnect();
+		client->addListener(this);
+		client->connect(server);
 		return 0;
 	}
 
@@ -211,48 +209,18 @@ public:
 		}
 	}
 
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		switch(wParam) {
-		case VK_TAB:
-			if(uMsg == WM_KEYDOWN) {
-				onTab();
-			}
-			break;
-		case VK_RETURN:
-			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-				(GetKeyState(VK_CONTROL) & 0x8000) || 
-				(GetKeyState(VK_MENU) & 0x8000) ) {
-				bHandled = FALSE;
-			} else {
-				if(uMsg == WM_KEYDOWN) {
-					onEnter();
-				}
-			}
-			break;
-		default:
-			bHandled = FALSE;
-		}
-		return 0;
-	}
-
 private:
-	enum {
-		CLIENT_CONNECTING,
-		CLIENT_CONNECTED,
-		CLIENT_FAILED,
-		CLIENT_GETPASSWORD,
-		CLIENT_HUBNAME,
-		CLIENT_MESSAGE,
-		CLIENT_MYINFO,
-		CLIENT_HELLO,
-		CLIENT_PRIVATEMESSAGE,
-		CLIENT_QUIT,
-		CLIENT_UNKNOWN,
-		CLIENT_VALIDATEDENIED,
-		CLIENT_SEARCH_FLOOD,
-		CLIENT_STATUS,
-		STATS,
-		REDIRECT
+	enum Speakers {
+		UPDATE_USER,
+		UPDATE_USERS,
+		REMOVE_USER,
+		REMOVE_USERS,
+		ADD_CHAT_LINE,
+		ADD_STATUS_LINE,
+		SET_WINDOW_TITLE,
+		GET_PASSWORD,
+		PRIVATE_MESSAGE,
+		STATS
 	};
 
 	enum {
@@ -272,11 +240,13 @@ private:
 	
 	class UserInfo {
 	public:
+		UserInfo(const User::Ptr& u) : user(u) { };
 		User::Ptr user;
 	};
 
 	class PMInfo {
 	public:
+		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(m) { };
 		User::Ptr user;
 		string msg;
 	};
@@ -292,14 +262,13 @@ private:
 	bool needSort;
 	bool waitingForPW;
 	
-	Client::Ptr client;
+	Client* client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
 
 	CMenu userMenu;
 	CMenu opMenu;
-	bool op;
 	
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
@@ -328,6 +297,11 @@ private:
 		}
 		return image;	
 	}
+
+	void updateStatusBar() {
+		if(m_hWnd)
+			PostMessage(WM_SPEAKER, STATS);
+	}
 	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
@@ -337,106 +311,82 @@ private:
 		}
 	}
 
+	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
+	void speak(Speakers s, const User::Ptr& u) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new UserInfo(u)); };
+	void speak(Speakers s, const User::List& l) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new User::List(l)); };
+	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
+	
 	// ClientListener
 	virtual void onAction(ClientListener::Types type, Client* client) {
 		switch(type) {
 		case ClientListener::CONNECTING:
-			PostMessage(WM_SPEAKER, CLIENT_CONNECTING); break;
-		case ClientListener::CONNECTED:
-			PostMessage(WM_SPEAKER, CLIENT_CONNECTED); break;
-		case ClientListener::BAD_PASSWORD:
-			client->setPassword(Util::emptyString); break;
-		case ClientListener::GET_PASSWORD:
-			PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); break;
-		case ClientListener::HUB_NAME:
-			PostMessage(WM_SPEAKER, CLIENT_HUBNAME); break;
+			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServer() + "...");
+			speak(SET_WINDOW_TITLE, client->getServer());
+			break;
+		case ClientListener::CONNECTED: speak(ADD_STATUS_LINE, STRING(CONNECTED)); break;
+		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
+		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
+		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName()); break;
 		case ClientListener::VALIDATE_DENIED:
-			PostMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); break;
+			client->removeListener(this);
+			client->disconnect();
+			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+			break;
 		}
 	}
 	
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line) {
-		string* x;
 		switch(type) {
-		case ClientListener::SEARCH_FLOOD:
-			x = new string(line);
-			PostMessage(WM_SPEAKER, CLIENT_SEARCH_FLOOD, (LPARAM)x); break;
-		case ClientListener::FAILED:
-			x = new string(line);
-			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
+		case ClientListener::SEARCH_FLOOD: speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line); break;
+		case ClientListener::FAILED: speak(ADD_STATUS_LINE, line); speak(REMOVE_USERS); break;
 		case ClientListener::MESSAGE: 
-			x = new string(line);
 			if(SETTING(FILTER_KICKMSGS)) {
 				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
-					delete x;
 					// Do nothing...
 				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-					PostMessage(WM_SPEAKER, CLIENT_STATUS, (LPARAM)x); 
+					speak(ADD_STATUS_LINE, line);
 				} else {
-					PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x);
+					speak(ADD_CHAT_LINE, line);
 				}
 			} else {
-				PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x);
+				speak(ADD_CHAT_LINE, line);
 			}
 			break;
 
 		case ClientListener::FORCE_MOVE:
 			redirect = line;
 			if(BOOLSETTING(AUTO_FOLLOW)) {
-				PostMessage(WM_COMMAND, IDC_FOLLOW);
+				server = line;
+				client->connect(line);
 			} else {
-				PostMessage(WM_SPEAKER, REDIRECT);
+				speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
 			}
-			
 			break;
 		}
 	}
 
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
-		User::Ptr* x;
 		switch(type) {
-		case ClientListener::MY_INFO:
-			x = new User::Ptr(user);
-			PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x); break;
-		case ClientListener::QUIT:
-			x = new User::Ptr(user);
-			PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x); break;
-		case ClientListener::HELLO:
-			x = new User::Ptr(user);
-			PostMessage(WM_SPEAKER, CLIENT_HELLO, (LPARAM)x); break;
+		case ClientListener::MY_INFO: speak(UPDATE_USER, user); break;
+		case ClientListener::QUIT: speak(REMOVE_USER, user); break;
+		case ClientListener::HELLO: speak(UPDATE_USER, user); break;
 		}
 	}
 	
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) {
 		switch(type) {
-		case ClientListener::OP_LIST:
-			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				if((*i)->getNick() == client->getNick()) {
-					op = true;
-					return;
-				}
-			}
-			break;
+		case ClientListener::OP_LIST: // Fall through
+		case ClientListener::NICK_LIST: 
+			speak(UPDATE_USERS, aList); break;
 		}
 	}
 
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) {
 		switch(type) {
-		case ClientListener::PRIVATE_MESSAGE:
-			PMInfo* i = new PMInfo();
-			
-			i->user = user;
-			i->msg = line;
-			PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
-			break;
+		case ClientListener::PRIVATE_MESSAGE: speak(PRIVATE_MESSAGE, user, line); break;
 		}
 	}
-
-	void updateStatusBar() {
-		if(m_hWnd)
-			PostMessage(WM_SPEAKER, STATS);
-	}
-
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -448,6 +398,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.5 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

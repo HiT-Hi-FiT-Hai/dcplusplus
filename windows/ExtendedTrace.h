@@ -26,19 +26,20 @@
 #define EXTENDEDTRACEINITIALIZE( IniSymbolPath )	InitSymInfo( IniSymbolPath )
 #define EXTENDEDTRACEUNINITIALIZE()			         UninitSymInfo()
 #define STACKTRACE(file)							            StackTrace( GetCurrentThread(), _T(""), file)
-
+#define STACKTRACE2(file, eip, esp, ebp) StackTrace(GetCurrentThread(), _T(""), file, eip, esp, ebp)
 class File;
 
 BOOL InitSymInfo( PCSTR );
 BOOL UninitSymInfo();
 void StackTrace( HANDLE, LPCTSTR, File& file);
+void StackTrace( HANDLE, LPCTSTR, File& file, DWORD eip, DWORD esp, DWORD ebp);
 
 #else
 
 #define EXTENDEDTRACEINITIALIZE( IniSymbolPath )   ((void)0)
 #define EXTENDEDTRACEUNINITIALIZE()			         ((void)0)
 #define STACKTRACE(file)						         	   ((void)0)
-
+#define STACKTRACE2(file, eip, esp, ebp) ((void)0)
 #endif
 
 #endif

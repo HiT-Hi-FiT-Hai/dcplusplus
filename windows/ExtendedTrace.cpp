@@ -94,8 +94,7 @@ static void InitSymbolPath( PSTR lpszSymbolPath, PCSTR lpszIniPath )
 }
 
 // Uninitialize the loaded symbol files
-BOOL UninitSymInfo()
-{
+BOOL UninitSymInfo() {
 	return SymCleanup( GetCurrentProcess() );
 }
 
@@ -108,8 +107,6 @@ BOOL InitSymInfo( PCSTR lpszInitialSymbolPath )
 	symOptions |= SYMOPT_LOAD_LINES; 
 	symOptions &= ~SYMOPT_UNDNAME;
 	SymSetOptions( symOptions );
-
-   // Get the search path for the symbol files
 	InitSymbolPath( lpszSymbolPath, lpszInitialSymbolPath );
 
 	return SymInitialize( GetCurrentProcess(), lpszSymbolPath, TRUE);
@@ -167,8 +164,8 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 			UNDNAME_NO_MEMBER_TYPE |
 			UNDNAME_NO_MS_KEYWORDS |
 			UNDNAME_NO_ACCESS_SPECIFIERS );
-
-      // Symbol information is ANSI string
+		
+		// Symbol information is ANSI string
 		PCSTR2LPTSTR( lpszNonUnicodeUnDSymbol, lpszUnDSymbol );
 
       // I am just smarter than the symbol file :)
@@ -223,8 +220,7 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 		_tcscat( lpszSymbol, lpszParsed );
    
 		ret = TRUE;
-	}
-
+	} 
 	GlobalFree( pSym );
 
 	return ret;
@@ -311,6 +307,10 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 	f.write("Call stack info: \r\n");
 	f.write(lpszMessage);
 
+	GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
+	GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
+	f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+	
 	for( ULONG index = 0; ; index++ ) 
 	{
 		bResult = StackWalk(
@@ -338,6 +338,67 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
 
 	if ( hThread != GetCurrentThread() )
 		ResumeThread( hThread );
+}
+
+void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD esp, DWORD ebp )
+{
+	STACKFRAME     callStack;
+	BOOL           bResult;
+	TCHAR          symInfo[BUFFERSIZE] = _T("?");
+	TCHAR          srcInfo[BUFFERSIZE] = _T("?");
+	HANDLE         hProcess = GetCurrentProcess();
+
+	// If it's not this thread, let's suspend it, and resume it at the end
+	if ( hThread != GetCurrentThread() )
+		if ( SuspendThread( hThread ) == -1 )
+		{
+			// whaaat ?!
+			f.write("Call stack info failed\r\n");
+			return;
+		}
+
+		::ZeroMemory( &callStack, sizeof(callStack) );
+		callStack.AddrPC.Offset    = eip;
+		callStack.AddrStack.Offset = esp;
+		callStack.AddrFrame.Offset = ebp;
+		callStack.AddrPC.Mode      = AddrModeFlat;
+		callStack.AddrStack.Mode   = AddrModeFlat;
+		callStack.AddrFrame.Mode   = AddrModeFlat;
+
+		f.write("Call stack info: \r\n");
+		f.write(lpszMessage);
+
+		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
+		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
+		f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+
+		for( ULONG index = 0; ; index++ ) 
+		{
+			bResult = StackWalk(
+				IMAGE_FILE_MACHINE_I386,
+				hProcess,
+				hThread,
+				&callStack,
+				NULL, 
+				NULL,
+				SymFunctionTableAccess,
+				SymGetModuleBase,
+				NULL);
+
+			if ( index == 0 )
+				continue;
+
+			if( !bResult || callStack.AddrFrame.Offset == 0 ) 
+				break;
+
+			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
+			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
+			f.write(string("     ") + srcInfo + string(" : ") + symInfo + string("\r\n"));
+
+		}
+
+		if ( hThread != GetCurrentThread() )
+			ResumeThread( hThread );
 }
 
 #endif //_DEBUG && WIN32

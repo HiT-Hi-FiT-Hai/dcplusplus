@@ -38,14 +38,16 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	Lock l(cs);
 	
 	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
 
-	sprintf(buf, "Unhandled Exception\r\n  Code: %x\r\n", exceptionCode ) ;
+	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\n", exceptionCode ) ;
 
 	f.write(buf);
-	STACKTRACE(f);
-
+	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
+	f.close();
+	
 	return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -85,8 +87,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	//	ATLASSERT(SUCCEEDED(hRes));
 #ifdef _DEBUG
-	EXTENDEDTRACEINITIALIZE( NULL );
+	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
+	File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
 #endif
 
 	WSADATA wsaData;
@@ -114,5 +117,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: main.cpp,v 1.5 2002/05/01 21:22:08 arnetheduck Exp $
  */

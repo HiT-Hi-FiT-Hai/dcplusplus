@@ -31,6 +31,8 @@
 #include "../client/DirectoryListing.h"
 #include "../client/CryptoManager.h"
 
+#define FINDFILE_MESSAGE_MAP 9
+
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
@@ -45,7 +47,12 @@ public:
 		COLUMN_SIZE
 	};
 	
-	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) : user(aUser) { 
+	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
+		user(aUser),
+		skipHits(0), 
+		findContainer("BUTTON", this, FINDFILE_MESSAGE_MAP),
+		findNextContainer("BUTTON", this, FINDFILE_MESSAGE_MAP)
+	{
 		string tmp;
 		try{
 			File f(aFile, File::READ, File::OPEN);
@@ -107,6 +114,9 @@ public:
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
+	ALT_MSG_MAP(FINDFILE_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_LBUTTONUP, onFindFile2)
+		NOTIFY_HANDLER(IDC_SEARCH, BN_CLICKED, onFindFile3)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -119,6 +129,8 @@ public:
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onFindFile2(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onFindFile3(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	
 	void downloadList(const string& aTarget);
 	static int sortFile(LPARAM a, LPARAM b);
@@ -169,9 +181,13 @@ public:
 		}
 		ctrlList.DeleteAllItems();
 	}
-	
+
+	void findFile(bool findNext);
+
 private:
-	
+	static DirectoryListing::Directory *findFile(string const& str,
+		DirectoryListing::Directory *root, DirectoryListing::File *&foundFile, int &skipHits);
+
 	class ItemInfo {
 	public:
 		enum ItemType {
@@ -201,6 +217,11 @@ private:
 	ExListViewCtrl ctrlList;
 	CStatusBarCtrl ctrlStatus;
 	
+	CButton ctrlFind, ctrlFindNext;
+	CContainedWindow findContainer, findNextContainer;
+	int skipHits;
+	string findStr;
+
 	int files;
 	string size;
 	
@@ -211,5 +232,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.6 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.7 2002/05/01 21:22:08 arnetheduck Exp $
  */

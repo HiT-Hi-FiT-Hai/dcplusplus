@@ -60,19 +60,20 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 
 	if( (!aSource->isSet(UserConnection::FLAG_HASSLOT)) && 
 		(getFreeSlots()<=0) && 
-		(ui == reservedSlots.end()) ) {
+		(ui == reservedSlots.end()) ) 
+	{
+		if( !( (SETTING(MIN_UPLOAD_SPEED) > 0) && (SETTING(MIN_UPLOAD_SPEED) > UploadManager::getInstance()->getAverageSpeed() ) ) ) {
+			if( !(smallfile || userlist) ||
+				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) ) || 
+				!(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
+				) 
+			{
 
-		if( !(	(smallfile || userlist) && 
-				( (SETTING(MIN_UPLOAD_SPEED) > 0) && getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)) ) && 
-				( (aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) || (getFreeExtraSlots() > 0) ) && 
-				(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
-			) ) {
-			
-			cs.leave();
-			aSource->maxedOut();
-			removeConnection(aSource);
-			return;
-
+				cs.leave();
+				aSource->maxedOut();
+				removeConnection(aSource);
+				return;
+			}
 		}
 	}
 
@@ -211,5 +212,5 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.26 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.27 2002/05/01 21:22:08 arnetheduck Exp $
  */

@@ -26,30 +26,35 @@
 
 long Client::hubs = 0;
 
+Client::~Client() throw() {
+	TimerManager::getInstance()->removeListener(this);
+	removeListeners();
+
+	if(socket) {
+		socket->removeListener(this);
+		BufferedSocket::putSocket(socket);
+		socket = NULL;
+	}
+
+	for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+		ClientManager::getInstance()->putUserOffline(i->second);
+	}
+
+	if(counted)
+		Thread::safeDec(&hubs);
+};
+
 void Client::connect(const string& aServer) {
-	
 	string tmp;
 	port = 411;
 	Util::decodeUrl(aServer, server, port, tmp);
 
-	if(!socket) {
-		socket = BufferedSocket::getSocket('|');
-		socket->addListener(this);
-	}
-
-	if(socket->isConnected()) {
-		disconnect();
-	}
-
-	socket->addListener(this);
-	fire(ClientListener::CONNECTING, this);
-	socket->connect(server, port);
+	connect();
 }
 
-void Client::connect(const string& aServer, short aPort) {
+void Client::connect() {
 	
-	server = aServer;
-	port = aPort;
+	registered = false;
 
 	if(!socket) {
 		socket = BufferedSocket::getSocket('|');
@@ -159,11 +164,18 @@ void Client::onLine(const string& aLine) throw() {
 			return;
 		nick = param.substr(i, j-i);
 		i = j + 1;
-		User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
+		User::Ptr u;
+		dcassert(nick.size() > 0);
 
 		{
 			Lock l(cs);
-			users[nick] = u;
+			User::NickIter ni = users.find(nick);
+			if(ni == users.end()) {
+				u = ClientManager::getInstance()->getUser(nick, this);
+				users[nick] = u;
+			} else {
+				u  = ni->second;
+			}
 		}
 		j = param.find('$', i);
 		if(j == string::npos)
@@ -260,13 +272,25 @@ void Client::onLine(const string& aLine) throw() {
 		}
 	} else if(cmd == "$Hello") {
 		if(!param.empty()) {
-			User::Ptr u = ClientManager::getInstance()->getUser(param, this);
+			User::Ptr& u = ClientManager::getInstance()->getUser(param, this);
 			{
 				Lock l(cs);
 				users[param] = u;
 			}
 			
 			if(u->getNick() == getNick()) {
+				if(registered) {
+					if(counted) {
+						Thread::safeDec(&hubs);
+						counted = false;
+					}
+				} else {
+					if(!counted) {
+						Thread::safeInc(&hubs);
+						counted = true;
+					}
+				}
+
 				u->setFlag(User::DCPLUSPLUS);
 				if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
 					u->setFlag(User::PASSIVE);
@@ -283,38 +307,39 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
 			User::List v;
-			
+
 			string::size_type j, k = 0;
-			while( (j=param.find("$$", k)) != string::npos) {
-				string nick = param.substr(k, j-k);
-				User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
-				users[param] = u;
-				fire(ClientListener::MY_INFO, this, u);
-				
-				v.push_back(u);
-				k = j + 2;
+			{
+				Lock l(cs);
+				while( (j=param.find("$$", k)) != string::npos) {
+					string nick = param.substr(k, j-k);
+					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
+
+					users[nick] = u;
+
+					v.push_back(u);
+					k = j + 2;
+				}
 			}
 			
 			fire(ClientListener::NICK_LIST, this, v);
-			
 		}
 	} else if(cmd == "$OpList") {
 		if(!param.empty()) {
 			User::List v;
 			string::size_type j, k;
 			k = 0;
-			while( (j=param.find("$$", k)) != string::npos) {
-				string nick = param.substr(k, j-k);
-				User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
-				{
-					Lock l(cs);
+			{
+				Lock l(cs);
+				while( (j=param.find("$$", k)) != string::npos) {
+					string nick = param.substr(k, j-k);
+					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 					users[nick] = u;
+					u->setFlag(User::OP);
+
+					v.push_back(u);
+					k = j + 2;
 				}
-				u->setFlag(User::OP);
-				fire(ClientListener::MY_INFO, this, u);
-				
-				v.push_back(u);
-				k = j + 2;
 			}
 			fire(ClientListener::OP_LIST, this, v);
 		}
@@ -331,10 +356,7 @@ void Client::onLine(const string& aLine) throw() {
 			}
 		}
 	} else if(cmd == "$GetPass") {
-		if(counted) {
-			Thread::safeDec(&hubs);
-			counted = false;
-		}
+		registered = true;
 		fire(ClientListener::GET_PASSWORD, this);
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BAD_PASSWORD, this);
@@ -347,9 +369,7 @@ void Client::onLine(const string& aLine) throw() {
 }
 
 void Client::disconnect() throw() {	
-	
 	socket->disconnect();
-	
 	{ 
 		Lock l(cs);
 		
@@ -382,6 +402,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.40 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.41 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

@@ -19,10 +19,13 @@
 #include "stdafx.h"
 #include "Resource.h"
 
+// Only need this for older ATL:s
+#if _ATL_VER < 0x0700
 #include <atlimpl.cpp>
+#endif
 
 /**
  * @file stdafx.cpp
- * $Id: stdafx.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.3 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

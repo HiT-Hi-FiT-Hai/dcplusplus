@@ -51,7 +51,12 @@ public:
 	static int getIconIndex(const string& aFileName) {
 		if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 			SHFILEINFO fi;
-			::SHGetFileInfo(aFileName.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			CImageList il = (HIMAGELIST)::SHGetFileInfo(aFileName.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			while(il.GetImageCount() > fileImages.GetImageCount()) {
+				HICON hi = il.GetIcon(fileImages.GetImageCount());
+				fileImages.AddIcon(hi);
+				DestroyIcon(hi);
+			}
 			return fi.iIcon;
 		} else {
 			return 2;
@@ -71,5 +76,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
  */

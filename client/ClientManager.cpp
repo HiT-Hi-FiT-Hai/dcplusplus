@@ -147,16 +147,28 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 
 	if(p.first == p.second) {
 		dcdebug("Allocating %d bytes for user %s (#%d)\n", sizeof(User), aNick.c_str(), users.size());
-		return users.insert(make_pair(aNick, new User(aNick)))->second;
+		User::Ptr& u = users.insert(make_pair(aNick, new User(aNick)))->second;
+		u->setLastHubIp(aHint);
+		return u;
 	}
 
-	for(UserIter i = p.first; i != p.second; ++i) {
+	UserIter i;
+	for(i = p.first; i != p.second; ++i) {
 		if(i->second->getLastHubIp() == aHint) {
 			return i->second;
 		}
 	}
 
-	return p.first->second;
+	for(i = p.first; i != p.second; ++i) {
+		if(i->second->getLastHubIp().empty()) {
+			i->second->setLastHubIp(aHint);
+			return i->second;
+		}
+	}
+
+	User::Ptr& u = users.insert(make_pair(aNick, new User(aNick)))->second;
+	u->setLastHubIp(aHint);
+	return u;
 }
 
 User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
@@ -227,8 +239,9 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 	}
 	
 }
+
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.20 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.21 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

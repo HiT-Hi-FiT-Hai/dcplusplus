@@ -139,7 +139,7 @@ public:
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(4096), curBuf(0), file(NULL) {
+		dataBytes(0), inbufSize(8192), curBuf(0), file(NULL) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -221,7 +221,7 @@ private:
 	 * calling threadShutDown, the thread function should exit as soon as possible
 	 */
 	void threadShutDown() {
-		fire(BufferedSocketListener::FAILED, "Closing connection...");
+		fire(BufferedSocketListener::FAILED, STRING(CLOSING_CONNECTION));
 		removeListeners();
 		Socket::disconnect();
 		delete this;
@@ -237,5 +237,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.36 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.37 2002/05/01 21:22:08 arnetheduck Exp $
  */

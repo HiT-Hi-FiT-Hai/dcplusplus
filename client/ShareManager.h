@@ -41,7 +41,7 @@ public:
 	void addDirectory(const string& aDirectory) throw(ShareException);
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
-	void refresh(bool dirs = false, bool aUpdate = true) throw(ShareException);
+	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
 	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
@@ -212,6 +212,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.26 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.27 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

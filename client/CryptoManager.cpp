@@ -125,14 +125,14 @@ string CryptoManager::makeKey(const string& lock) {
 	int extra=0;
 	
 	v1 = (u_int8_t)(lock[0]^5);
-	v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
+	v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
 	temp[0] = v1;
 	
 	string::size_type i;
 
 	for(i = 1; i<lock.length(); i++) {
 		v1 = (u_int8_t)(lock[i]^lock[i-1]);
-		v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
+		v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4))&0xff);
 		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
@@ -406,5 +406,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.23 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.24 2002/05/01 21:22:08 arnetheduck Exp $
  */

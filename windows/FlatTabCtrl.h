@@ -394,7 +394,7 @@ public:
 	END_MSG_MAP()
 		
 	// Fix window maximization state issues...code taken from www.codeproject.com, article by david bowen
-	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 	DWORD dwStyle = 0, DWORD dwExStyle = 0,
 	UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
 	{
@@ -459,5 +459,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.6 2002/05/01 21:22:08 arnetheduck Exp $
  */

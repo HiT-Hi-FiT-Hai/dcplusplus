@@ -121,23 +121,23 @@ class Socket
 {
 public:
 #ifdef WIN32
-	Socket::Socket() throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) { }
+	Socket::Socket() throw(SocketException) : event(NULL), sock(INVALID_SOCKET) { }
 	
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) {
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET) {
 		connect(ip, port);	
 	}
 	
-	Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) {
+	Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET) {
 		connect(ip, port);	
 	}
 #else
-	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
+	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET) { }
 	
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET) {
 		connect(ip, port);	
 	}
 	
-	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
+	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET) {
 		connect(ip, port);	
 	}
 #endif
@@ -154,7 +154,6 @@ public:
 	}
 	
 	virtual void disconnect() {
-		connected = false;
 		if(sock != INVALID_SOCKET)
 			closesocket(sock);
 		
@@ -170,6 +169,7 @@ public:
 		TYPE_TCP = 0,
 		TYPE_UDP = 1
 	};
+
 	void create(int aType = TYPE_TCP) throw(SocketException) {
 		if(sock != INVALID_SOCKET)
 			Socket::disconnect();
@@ -199,10 +199,14 @@ public:
 	}
 
 	bool isConnected() {
-		return connected;
-	}
-	void setConnected() {
-		connected = true;
+		if(sock == INVALID_SOCKET) 
+			return false;
+
+		fd_set fd;
+		FD_ZERO(&fd);
+		FD_SET(sock, &fd);
+		select(1, NULL, &fd, NULL, NULL);
+		return FD_ISSET(sock, &fd) > 0;
 	}
 #ifdef WIN32
 	/**
@@ -269,7 +273,6 @@ private:
 #ifdef WIN32
 	HANDLE event;
 #endif
-	bool connected;
 
 	class Stats {
 	public:
@@ -285,6 +288,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.30 2002/04/22 15:50:51 arnetheduck Exp $
+ * $Id: Socket.h,v 1.31 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

@@ -353,7 +353,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		WinUtil::fileImages = (HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		WinUtil::fileImages = CImageList::Duplicate((HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES));
 		WinUtil::fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
 		WinUtil::dirIconIndex = fi.iIcon;	
 	} else {
@@ -533,7 +533,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	
+
 	// Get the bounding rectangle of the client area. 
 	ctrlTransfers.GetClientRect(&rc);
 	ctrlTransfers.ScreenToClient(&pt); 
@@ -926,6 +926,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.6 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

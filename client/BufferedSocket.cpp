@@ -144,8 +144,6 @@ bool BufferedSocket::threadConnect() {
 #endif
 			return false;
 		case WAIT_OBJECT_0 + 1:
-			// We're connected!
-			setConnected();
 			// Update the default local ip...this one should in any case be better than 
 			// whatever we might have guessed from the beginning...
 			SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
@@ -166,67 +164,61 @@ bool BufferedSocket::threadConnect() {
 
 void BufferedSocket::threadRead() {
 	try {
-		//dcdebug("Available bytes: %d\n", bs->getAvailable());
-		while(getAvailable() > inbufSize) {
-			// We grow the buffer according to how much is actually available...
-			delete[] inbuf;
-			inbufSize *= 2;
-			inbuf = new u_int8_t[inbufSize];
-			dcdebug("BufferedSocket::reader: Grown %p's buffer to %d\n", this, inbufSize);
-		}
-		int i = read(inbuf, inbufSize);
-		if(i == -1) {
-			// EWOULDBLOCK, no data recived...
-			return;
-		} else if(i == 0) {
-			// This socket has been closed...
-			disconnect();
-			return;
-		}
+		while(true) {
+			int i = read(inbuf, inbufSize);
+			if(i == -1) {
+				// EWOULDBLOCK, no data recived...
+				return;
+			} else if(i == 0) {
+				// This socket has been closed...
+				disconnect();
+				return;
+			}
 
-		int bufpos = 0;
-		string l;
-		
-		while(i) {
-			if(mode == MODE_LINE) {
-				string::size_type pos;
+			int bufpos = 0;
+			string l;
 
-				l = string((char*)inbuf + bufpos, i);
+			while(i) {
+				if(mode == MODE_LINE) {
+					string::size_type pos;
 
-				if( (pos = l.find(separator)) != string::npos) {
-					bufpos += sizeof(separator) + pos;
-					if(!line.empty()) {
-						fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
-						line = Util::emptyString;
+					l = string((char*)inbuf + bufpos, i);
+
+					if( (pos = l.find(separator)) != string::npos) {
+						bufpos += sizeof(separator) + pos;
+						if(!line.empty()) {
+							fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
+							line = Util::emptyString;
+						} else {
+							fire(BufferedSocketListener::LINE, l.substr(0, pos));
+						}
+						l = l.substr(pos+1);
+						i-=(pos+1);
 					} else {
-						fire(BufferedSocketListener::LINE, l.substr(0, pos));
+						line += l;
+						i = 0;
 					}
-					l = l.substr(pos+1);
-					i-=(pos+1);
-				} else {
-					line += l;
+				} else if(mode == MODE_DATA) {
+					if(dataBytes == -1) {
+						fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
+						bufpos+=i;
+						i = 0;
+					} else {
+						int high = (int)min(dataBytes, (int64_t)i);
+						fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
+						bufpos += high;
+						i-=high;
+
+						dataBytes -= high;
+						if(dataBytes == 0) {
+							fire(BufferedSocketListener::MODE_CHANGE, MODE_LINE);
+							mode = MODE_LINE;
+						}
+					}
+				} else if(mode == MODE_DGRAM) {
+					fire(BufferedSocketListener::DATA, inbuf, i);
 					i = 0;
 				}
-			} else if(mode == MODE_DATA) {
-				if(dataBytes == -1) {
-					fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
-					bufpos+=i;
-					i = 0;
-				} else {
-					int high = (int)min(dataBytes, (int64_t)i);
-					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
-					bufpos += high;
-					i-=high;
-					
-					dataBytes -= high;
-					if(dataBytes == 0) {
-						fire(BufferedSocketListener::MODE_CHANGE, MODE_LINE);
-						mode = MODE_LINE;
-					}
-				}
-			} else if(mode == MODE_DGRAM) {
-				fire(BufferedSocketListener::DATA, inbuf, i);
-				i = 0;
 			}
 		}
 	} catch(SocketException e) {
@@ -343,5 +335,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.37 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.38 2002/05/01 21:22:08 arnetheduck Exp $
  */

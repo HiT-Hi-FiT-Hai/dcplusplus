@@ -22,7 +22,7 @@
 #include "Socket.h"
 #include "ServerSocket.h"
 
-#define checkconnected() if(!connected) throw SocketException(STRING(NOT_CONNECTED))
+#define checkconnected() if(!isConnected()) throw SocketException(STRING(NOT_CONNECTED))
 
 #ifdef _DEBUG
 
@@ -83,7 +83,6 @@ string SocketException::errorToString(int aError) {
  */
 void Socket::bind(short aPort) throw (SocketException){
 	dcassert(type == TYPE_UDP);
-	dcassert(!isConnected());
 
 	sockaddr_in sock_addr;
 		
@@ -91,8 +90,6 @@ void Socket::bind(short aPort) throw (SocketException){
 	sock_addr.sin_port = htons(aPort);
 	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     checksockerr(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
-
-	connected = true;
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
@@ -102,7 +99,6 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
-	connected = true;
 }
 
 /**
@@ -145,8 +141,6 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 		if(errno != EWOULDBLOCK) {
 			checksockerr(SOCKET_ERROR);
 		}
-	} else {
-		connected = true;
 	}
 }
 
@@ -236,6 +230,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.33 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.34 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

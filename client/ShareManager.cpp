@@ -62,8 +62,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		
 		return j->second + aFile.substr(i);
 	}
-
-	throw ShareException("File Not Available");
 }
 
 bool ShareManager::checkFile(const string& dir, const string& aFile) {
@@ -227,13 +225,17 @@ StringList ShareManager::getDirectories() {
 	return tmp;
 }
 
-void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */) throw(ShareException) {
+void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, bool block /* = false */) throw(ShareException) {
 	update = aUpdate;
 	refreshDirs = dirs;
 	if(dirty) {
 		join();
 		start();
-		setThreadPriority(Thread::LOW);
+		if(block) {
+			join();
+		} else {
+			setThreadPriority(Thread::LOW);
+		}
 	}
 }
 
@@ -477,6 +479,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.36 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.37 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

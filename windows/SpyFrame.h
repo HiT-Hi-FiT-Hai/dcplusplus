@@ -24,19 +24,23 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/ClientManager.h"
+#include "../client/TimerManager.h"
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, private ClientManagerListener
+class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, private ClientManagerListener, private TimerManagerListener
 {
 public:
 
 	static SpyFrame* frame;
 	
-	SpyFrame() {
+	SpyFrame() : total(0), cur(0) {
+		ZeroMemory(perSecond, sizeof(perSecond));
 		ClientManager::getInstance()->addListener(this);
+		TimerManager::getInstance()->addListener(this);
 	}
+
 	virtual ~SpyFrame() {
 	}
 
@@ -62,9 +66,12 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ClientManager::getInstance()->removeListener(this);
+		TimerManager::getInstance()->removeListener(this);
+
 		bHandled = FALSE;
 		return 0;
 	}
@@ -87,44 +94,22 @@ public:
 		return 0;
 	}
 
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/){
-		string* x = (string*)lParam;
-		SearchIter i = searches.find(*x);
-		int n;
-		if(i == searches.end()) {
-			n = searches[*x] = 1;
-		
-		} else {
-			n = ++i->second;
-		}
-
-		int j = ctrlSearches.find(*x);
-		if(j == -1) {
-			StringList a;
-			a.push_back(*x);
-			a.push_back(Util::toString(n));
-			ctrlSearches.insert(a);
-			if(ctrlSearches.GetItemCount() > 500) {
-				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
-			}
-		} else {
-			ctrlSearches.SetItemText(j, COLUMN_COUNT, Util::toString(n).c_str());
-			if(ctrlSearches.getSortColumn() == COLUMN_COUNT)
-				ctrlSearches.resort();
-		}
-		
-		delete x;
-
-		return 0;
-	}
-
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 private:
 
+	enum { AVG_TIME = 60 };
+	enum {
+		SEARCH,
+		TICK_AVG
+	};
+
 	ExListViewCtrl ctrlSearches;
 	CStatusBarCtrl ctrlStatus;
-	
+	int total;
+	int perSecond[AVG_TIME];
+	int cur;
+
 	typedef HASH_MAP<string, int> SearchMap;
 	typedef SearchMap::iterator SearchIter;
 
@@ -140,18 +125,31 @@ private:
 				while( (i=x->find('$')) != string::npos) {
 					(*x)[i] = ' ';
 				}
-				PostMessage(WM_SPEAKER, 0, (LPARAM)x);
+				PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
 			}
 			break;
 		}
 	}
 	
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
+		switch(type) {
+		case TimerManagerListener::SECOND: 
+			float* f = new float(0.0);
+			for(int i = 0; i < AVG_TIME; ++i) {
+				(*f) += (float)perSecond[i];
+			}
+			(*f) /= AVG_TIME;
+
+			perSecond[++cur] = 0;
+			PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
+		}
+	}
 };
 
 #endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
 
 /**
  * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
  */
 

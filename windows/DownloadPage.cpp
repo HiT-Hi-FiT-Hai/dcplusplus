@@ -46,6 +46,7 @@ LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	CUpDownCtrl spin;
 	spin.Attach(GetDlgItem(IDC_SLOTSSPIN));
 	spin.SetRange32(0, 100);
+	spin.Detach();
 	spin.Attach(GetDlgItem(IDC_SPEEDSPIN));
 	spin.SetRange32(0, 10000);
 	// Do specialized reading here
@@ -79,5 +80,5 @@ LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 /**
  * @file DownloadPage.cpp
- * $Id: DownloadPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.3 2002/05/01 21:22:08 arnetheduck Exp $
  */
