@@ -106,7 +106,7 @@ public:
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
-	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true, bool isTree = false) throw();
+	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
 	void removeSources(User::Ptr& aUser, int reason) throw();
 
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
@@ -244,6 +244,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.66 2005/01/12 23:16:21 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.67 2005/01/14 13:46:04 arnetheduck Exp $
  */
 

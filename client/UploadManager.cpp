@@ -355,8 +355,8 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 		AdcCommand cmd(AdcCommand::CMD_SND);
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
-		cmd.addParam(c.getParam(2));
-		cmd.addParam(Util::toString(aBytes));
+		cmd.addParam(Util::toString(u->getPos()));
+		cmd.addParam(Util::toString(u->getSize() - u->getPos()));
 
 		if(c.hasFlag("ZL", 4)) {
 			u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
@@ -412,5 +412,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.85 2005/01/12 01:16:55 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.86 2005/01/14 13:46:04 arnetheduck Exp $
  */

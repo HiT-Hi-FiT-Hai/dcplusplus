@@ -173,7 +173,7 @@ public:
 	}
 
 	virtual size_t flush() throw(Exception) {
-		if(!FlushFileBuffers(h))
+		if(isOpen() && !FlushFileBuffers(h))
 			throw FileException(Util::translateError(GetLastError()));
 		return 0;
 	}
@@ -421,6 +421,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.49 2005/01/13 15:08:00 arnetheduck Exp $
+ * $Id: File.h,v 1.50 2005/01/14 13:46:04 arnetheduck Exp $
  */
 

@@ -115,6 +115,7 @@ public:
 				if(len > 0) {
 					throw Exception("Garbage data after end of stream");
 				}
+				flushed = true;
 				return written;
 			}
 		}
@@ -186,5 +187,5 @@ private:
 
 /**
 * @file
-* $Id: FilteredFile.h,v 1.9 2005/01/13 15:07:59 arnetheduck Exp $
+* $Id: FilteredFile.h,v 1.10 2005/01/14 13:46:04 arnetheduck Exp $
 */

@@ -48,9 +48,7 @@
 * Improved efficiency for small files (<=64KiB) in the hash storage
 * Added advanced resume that detects and tries to repair rollback inconsistencies
   using tiger trees
-* Readded automatic compression disabling on files that don't compress well
-  (improves cpu usage on fast connections)
-
+* Fixed a rare invalid zlib decompression error
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

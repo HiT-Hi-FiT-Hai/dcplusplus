@@ -47,23 +47,6 @@ bool ZFilter::operator()(const void* in, size_t& insize, void* out, size_t& outs
 	zs.avail_out = outsize;
 	zs.next_out = (Bytef*)out;
 
-	if(compressing && totalIn > 64*1024) {
-		if(((double)totalOut / (double)totalIn) > MIN_COMPRESSION_LEVEL) {
-			size_t tmpIn = zs.avail_in;
-			zs.avail_in = 0;
-			if(::deflateParams(&zs, Z_NO_COMPRESSION, Z_DEFAULT_STRATEGY) != Z_OK)
-				throw Exception(STRING(COMPRESSION_ERROR));
-
-			compressing = false;
-
-			zs.avail_in = tmpIn;
-			if(zs.avail_out == 0) {
-				totalOut += outsize;
-				return true;
-			}
-		}
-	}
-
 	if(insize == 0) {
 		int err = ::deflate(&zs, Z_FINISH);
 		if(err != Z_OK && err != Z_STREAM_END)
@@ -111,11 +94,10 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 	int err = ::inflate(&zs, Z_NO_FLUSH);
 
-	// No more input data, and inflate didn't think it has reached the end...
-	if(insize == 0 && zs.avail_out != 0 && err != Z_STREAM_END)
-		throw Exception(STRING(DECOMPRESSION_ERROR));
-
-	if(err != Z_OK && err != Z_STREAM_END)
+	// see zlib/contrib/minizip/unzip.c, Z_BUF_ERROR means we should have padded
+	// with a dummy byte if at end of stream - since we don't do this it's not a real
+	// error
+	if(!(err == Z_OK || err == Z_STREAM_END || (err == Z_BUF_ERROR && in == NULL)))
 		throw Exception(STRING(DECOMPRESSION_ERROR));
 
 	outsize = outsize - zs.avail_out;
@@ -125,5 +107,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.5 2005/01/13 15:07:59 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.6 2005/01/14 13:46:04 arnetheduck Exp $
  */
