@@ -1,9 +1,9 @@
  -- 0.173 --
 * Fixed some minor debug mode bugs
-* Fixed some vc7 compatibility issues, I'll probably be using it for development from now on, so the vc6
-  project files are not guaranteed to be up to date, although I'll keep them in mind...
+* Fixed some vc7 compatibility issues, but some initial experiments show that there are stability problems
+  when compiling with optimization on..._STL::list seems to generate a lot of crashes...
 * Fixed win95 missing explorer icons bug (?)
-* Fixed the <16kb and extra slots bug
+* Fixed the <16kb and file list extra slots bug
 * Added some stuff to the search spy (useless features are the best...=)
 * Fixed some hub counter issues, and updated the counter so that it only counts hubs that you've logged in to
   at least once (this should lead to a more stable hub count, especially when connecting the first time...)
@@ -13,6 +13,18 @@
 * Added file searching to directory listings
 * Improved the autosearch algorithm a little bit
 * Fixed some issues with autoconnecting to favorite hubs
+* Changed the way rollback works, it is now more tightly integrated with write buffer size. Write buffer
+  size will now be used as a cutoff, so that the last <writebuffersize> bytes will be removed and then
+  <rollbacksize> bytes will be compared to see if it's the same file. Recommended values for write buffer
+  is 64kb or your hard disk cluster size (Low-speed connectees might wish to use a lower buffer, as it
+  this many bytes are redownloaded if the file has to be resumed). If you set write buffering to 0 the old 
+  (pre-writebuffering) routines will be used which are still considered safer (when ++ crashes...). 
+  Recommended rollback is 1024 bytes, or 4096 if you want to be extra safe.
+* Fixed search for alternates bug
+* Fixed so that dupe searches are not added to the drop-down box
+* Fixed some right-click bugs in the tab at the bottom
+* Fixed tab click minimization bug when window was maximized
+
 
  -- 0.172 2002-04-28 --
 * Changed so that only bz-lists can be downloaded using the extra slot (since they're smaller...)
