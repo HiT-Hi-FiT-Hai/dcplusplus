@@ -52,7 +52,8 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 }
 
 void ShareManager::load(SimpleXML* aXml) {
-	cs.enter();
+	Lock l(cs);
+
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {
@@ -64,11 +65,11 @@ void ShareManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
-	cs.leave();
 	dirty = true;
 }
 
 void ShareManager::save(SimpleXML* aXml) {
+	Lock l(cs);
 	aXml->addTag("Share");
 	aXml->stepIn();
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
@@ -82,44 +83,44 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		throw ShareException("No directory specified");
 	}
 
-	cs.enter();
-	string d;
-	if(aDirectory[aDirectory.size() - 1] == '\\') {
-		d = aDirectory.substr(0, aDirectory.size()-1);
-	} else {
-		d = aDirectory;
-	}
-	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-		if(d.find(i->first) != string::npos) {
-			cs.leave();
-			throw ShareException("Directory already shared.");
-		} else if(i->first.find(aDirectory) != string::npos) {
-			cs.leave();
-			throw ShareException("Remove all subdirectories before adding this one.");
-		}
-	}
+	{
+		Lock l(cs);
 
-	string dir = Util::toLower(d.substr(d.rfind('\\') + 1));
-	
-	if(dirs.find(dir) != dirs.end()) {
-		// We have a duplicate, rename it internally...
-		char c = 'a';
-		while(dirs.find(dir + c) != dirs.end()) {
-			c++;
+		string d;
+		if(aDirectory[aDirectory.size() - 1] == '\\') {
+			d = aDirectory.substr(0, aDirectory.size()-1);
+		} else {
+			d = aDirectory;
 		}
-		dir += c;
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			if(d.find(i->first) != string::npos) {
+				throw ShareException("Directory already shared.");
+			} else if(i->first.find(aDirectory) != string::npos) {
+				throw ShareException("Remove all subdirectories before adding this one.");
+			}
+		}
+		
+		string dir = Util::toLower(d.substr(d.rfind('\\') + 1));
+		
+		if(dirs.find(dir) != dirs.end()) {
+			// We have a duplicate, rename it internally...
+			char c = 'a';
+			while(dirs.find(dir + c) != dirs.end()) {
+				c++;
+			}
+			dir += c;
+		}
+		Directory* dp = buildTree(d, NULL);
+		dp->setName(dir);
+		directories[d] = dp;
+		dirs[dir] = d;
+		
+		dirty = true;
 	}
-	Directory* dp = buildTree(d, NULL);
-	dp->setName(dir);
-	directories[d] = dp;
-	dirs[dir] = d;
-
-	dirty = true;
-	cs.leave();
 }
 
 void ShareManager::removeDirectory(const string& aDirectory) {
-	cs.enter();
+	Lock l(cs);
 	Directory::MapIter i = directories.find(aDirectory);
 	if(i != directories.end()) {
 		delete i->second;
@@ -127,7 +128,6 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 	}
 	
 	dirty = true;
-	cs.leave();
 }
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
@@ -159,6 +159,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 }
 
 StringList ShareManager::getDirectories() {
+	Lock l(cs);
+
 	StringList tmp;
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 		tmp.push_back(i->first);
@@ -240,7 +242,8 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			SearchResult* sr = new SearchResult();
 			sr->setFile(getFullName() + i->first);
 			sr->setSize(i->second);
-			sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+			int slots = UploadManager::getInstance()->getFreeSlots();
+			sr->setFreeSlots(slots <= 0 ? 0 : slots);
 			sr->setSlots(SETTING(SLOTS));
 			sr->setNick(aClient->getNick());
 			sr->setHubAddress(aClient->getServer());
@@ -268,7 +271,8 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				SearchResult* sr = new SearchResult();
 				sr->setFile(getFullName() + i->first);
 				sr->setSize(i->second);
-				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+				int slots = UploadManager::getInstance()->getFreeSlots();
+				sr->setFreeSlots(slots <= 0 ? 0 : slots);
 				sr->setSlots(SETTING(SLOTS));
 				sr->setNick(SETTING(NICK));
 				sr->setNick(aClient->getNick());
@@ -288,21 +292,28 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 	}
 }
 SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
+	Lock l(cs);
+
 	StringTokenizer t(aString, '$');
-	StringList& l = t.getTokens();
+	StringList& sl = t.getTokens();
 	SearchResult::List results;
 
 	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
-		i->second->search(results, l, aSearchType, aSize, aFileType, aClient);
+		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient);
 	}
 	return results;
 }
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.13 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.13  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.12  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

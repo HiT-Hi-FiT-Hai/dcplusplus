@@ -71,7 +71,6 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 }
 
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	cs.enter();
 	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED || wParam == DOWNLOAD_REMOVED) {
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
 	} else if(wParam == STATS) {
@@ -141,7 +140,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		HubManager::getInstance()->addListener(this);
 		HubManager::getInstance()->getFavoriteHubs();
 	}
-	cs.leave();
 
 	return 0;
 }
@@ -151,11 +149,9 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	i->l.push_back(aUpload->getFileName());
 	i->l.push_back("Connecting...");
 	i->l.push_back(Util::formatBytes(aUpload->getSize()));
-	if(aUpload->getUser() && aUpload->getUser()->isOnline()) {
-		i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
-	} else {
-		i->l.push_back(aUpload->getNick() + " (Offline)");
-	}
+	
+	i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClientName() + ")");
+
 	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)i);
 }
 
@@ -221,12 +217,8 @@ void MainFrame::onDownloadComplete(Download* p) {
 		StringListInfo* i = new StringListInfo((LPARAM)p);
 		i->l.push_back(p->getTarget());
 		i->l.push_back(p->getCurrentSource()->getUser()->getNick());
-
-		if(p->getCurrentSource()->getUser() && p->getCurrentSource()->getUser()->isOnline()) {
-			i->l.push_back(" (" + p->getCurrentSource()->getUser()->getClient()->getName() + ")");
-		} else {
-			i->l.push_back(" (Offline)");
-		}
+		i->l.push_back(" (" + p->getCurrentSource()->getUser()->getClientName() + ")");
+		
 		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 	}
 }
@@ -241,11 +233,7 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 		
 		Download::Source::Ptr sr = *j;
 		if(sr->getUser()) {
-			if(sr->getUser()->isOnline()) {
-				i->l[1] += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
-			} else {
-				i->l[1] += sr->getUser()->getNick() + " (Offline)";
-			}
+			i->l[1] += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
 		} else {
 			i->l[1] += sr->getNick() + " (Offline)";
 		}
@@ -262,11 +250,7 @@ void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source*
 
 			Download::Source::Ptr sr = *j;
 			if(sr->getUser()) {
-				if(sr->getUser()->isOnline()) {
-					i->str += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
-				} else {
-					i->str += sr->getUser()->getNick() + " (Offline)";
-				}
+				i->str += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
 			} else {
 				i->str += sr->getNick() + " (Offline)";
 			}
@@ -279,11 +263,8 @@ void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source*
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	StringListInfo* i = new StringListInfo((LPARAM)aDownload);
 	i->l.push_back(Util::formatBytes(aDownload->getSize()));
-	if(aDownload->getCurrentSource()->getUser()->isOnline()) {
-		i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClient()->getName() + ")");
-	} else {
-		i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (Offline)");
-	}
+	dcassert(aDownload->getCurrentSource());
+	i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClientName() + ")");
 	
 	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)i);
 }
@@ -482,8 +463,6 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 		transferMenu.InsertMenuItem(n++, TRUE, &mi);
 		
 		if(ctrlTransfers.GetSelectedCount() == 1) {
-			cs.enter();
-			
 			mi.fMask = MIIM_TYPE;
 			mi.fType = MFT_SEPARATOR;
 			transferMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -552,7 +531,6 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 				transferMenu.InsertMenuItem(n++, TRUE, &mi);
 				
 			}
-			cs.leave();
 		}
 		
 		ctrlTransfers.ClientToScreen(&pt);
@@ -771,9 +749,14 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.39 2002/01/16 20:56:27 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.40 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.40  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.39  2002/01/16 20:56:27  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

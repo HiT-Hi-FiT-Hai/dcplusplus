@@ -225,10 +225,11 @@ public:
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		
-		cs.enter();
-		waiting.erase(conn->getUser());
-		connections.push_back(conn);
-		cs.leave();
+		{
+			Lock l(cs);
+			waiting.erase(conn->getUser());
+			connections.push_back(conn);
+		}
 
 		checkDownloads(conn);
 	}
@@ -264,6 +265,7 @@ private:
 	StringList userLists;
 	
 	Download* getNextDownload(const User::Ptr& aUser) {
+		Lock l(cs);
 		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 			if((*i)->isSource(aUser) ) {
 				if( !(*i)->isSet(Download::RUNNING) )
@@ -330,9 +332,14 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.25 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.26 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.26  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.25  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

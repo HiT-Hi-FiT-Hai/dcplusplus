@@ -44,7 +44,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	if(user->isOnline()) {
-		SetWindowText((user->getNick() + " (" + user->getClient()->getName() + ")").c_str());
+		SetWindowText((user->getNick() + " (" + user->getClientNick() + ")").c_str());
 	} else {
 		SetWindowText((user->getNick() + " (Offline)").c_str());
 	}
@@ -91,9 +91,10 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
 			message = new char[ctrlMessage.GetWindowTextLength()+1];
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-			string s = "<" + user->getClient()->getNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
+			string s = "<" + user->getClientNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
 			delete message;
-			user->getClient()->privateMessage(user, s);
+			user->privateMessage(s);
+
 			ctrlMessage.SetWindowText("");
 			addLine(s);
 		} else {
@@ -108,9 +109,14 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.5 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.6 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.6  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.5  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

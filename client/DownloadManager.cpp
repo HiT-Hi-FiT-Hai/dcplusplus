@@ -152,15 +152,16 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 }
 
 void DownloadManager::connectFailed(const User::Ptr& aUser) {
-	cs.enter();
+	Lock l(cs);
+
 	map<User::Ptr, DWORD>::iterator i = waiting.find(aUser);
 	if(i != waiting.end()) {
 		Download* d = getNextDownload(aUser);
 		if(d) {
 			fire(DownloadManagerListener::FAILED, d, "Connection timeout");
+			return;
 		}
 	}
-	cs.leave();
 }
 
 /**
@@ -381,58 +382,60 @@ void DownloadManager::downloadList(const string& aUser) throw(DownloadException)
 }
 
 void DownloadManager::removeDownload(Download* aDownload) {
-	cs.enter();
-
-	// Check the running downloads...
-	for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
-		if(j->second == aDownload) {
-			// This is worse, we have to abort the download...
-			UserConnection* conn = j->first;
-			running.erase(j);
-			removeConnection(conn);
-			break;
+	{
+		Lock l(cs);
+		
+		// Check the running downloads...
+		for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
+			if(j->second == aDownload) {
+				// This is worse, we have to abort the download...
+				UserConnection* conn = j->first;
+				running.erase(j);
+				removeConnection(conn);
+				break;
+			}
 		}
-	}
-	
-	// Search the queue
-	Download::Iter i = find(queue.begin(), queue.end(), aDownload);
-
-	if(i != queue.end()) {
+		
+		// Search the queue
+		Download::Iter i = find(queue.begin(), queue.end(), aDownload);
+		dcassert(i != queue.end());
+		
 		queue.erase(i);
-		fire(DownloadManagerListener::REMOVED, aDownload);
-		delete aDownload;
-	} else {
-		dcassert(0);
 	}
 
-	cs.leave();
+	fire(DownloadManagerListener::REMOVED, aDownload);
+	delete aDownload;
+
 }
 
 void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
-	cs.enter();
+	{
+		Lock l(cs);
 
-	UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
-	if(i != connections.end()) {
-		aConn->removeListener(this);
-		connections.erase(i);
-		cs.leave();
-		ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
-	} else {
-		// We should never get here...
-		dcassert(0);
+		dcassert(find(connections.begin(), connections.end(), aConn) != connections.end());
+		connections.erase(find(connections.begin(), connections.end(), aConn));
 	}
+
+	aConn->removeListener(this);
+	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
+	
 }
 
 void DownloadManager::removeConnections() {
-	cs.enter();
 
-	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+	UserConnection::List tmp;
+
+	{
+		Lock l(cs);
+		tmp = connections;
+		connections.clear();
+	}
+
+	for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
 		UserConnection* c = *i;
 		c->removeListener(this);
 		ConnectionManager::getInstance()->putDownloadConnection(c);
 	}
-	connections.clear();
-	cs.leave();
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
@@ -445,12 +448,17 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 	cs.enter();
 	Download* d = getNextDownload(aConn->getUser());
-
+	
 	if(d) {
+		running[aConn] = d;
+		d->setFlag(Download::RUNNING);
+
+		cs.leave();
+
+
 		Download::Source* s = d->getSource(aConn->getUser());
 		dcassert(s);
-
-		running[aConn] = d;
+		
 		d->setCurrentSource(s);
 		
 		if(d->isSet(Download::RESUME)) {
@@ -461,25 +469,23 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 				d->setPos(x - (LONGLONG)SETTING(ROLLBACK));
 				d->setFlag(Download::ROLLBACK);
 			}
-
+			
 		} else {
 			d->setPos(0);
 		}
-		d->setFlag(Download::RUNNING);
 		
 		aConn->get(s->getPath()+s->getFileName(), d->getPos());
 		dcdebug("Found!\n");
-		cs.leave();
 		return;
 	}
 	// Connection not needed any more, return it to the ConnectionManager...
 	dcdebug("Not found!\n");
-
+	
 	// No more downloads for this user, make sure we're not waiting for a connection...
 	waiting.erase(aConn->getUser());
+	cs.leave();
 
 	removeConnection(aConn, true);
-	cs.leave();
 }
 
 void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aSource) {
@@ -664,17 +670,20 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 }
 
 void DownloadManager::onMaxedOut(UserConnection* aSource) { 
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
-	dcassert(i != running.end());
+	Download* d;
 
-	Download* d = i->second;
-	
-	running.erase(i);
-	d->unsetFlag(Download::RUNNING);
-	waiting[aSource->getUser()] = TimerManager::getTick();
+	{
+		Lock l(cs);
 
-	cs.leave();
+		Download::MapIter i = running.find(aSource);
+		dcassert(i != running.end());
+		
+		d = i->second;
+		
+		running.erase(i);
+		d->unsetFlag(Download::RUNNING);
+		waiting[aSource->getUser()] = TimerManager::getTick();
+	}
 
 	fire(DownloadManagerListener::FAILED, d, "No slots available");
 	removeConnection(aSource);
@@ -707,7 +716,8 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 }
 
 void DownloadManager::save(SimpleXML* aXml) {
-	cs.enter();
+	Lock l(cs);
+
 	aXml->addTag("Downloads");
 	aXml->stepIn();
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
@@ -731,11 +741,10 @@ void DownloadManager::save(SimpleXML* aXml) {
 		}
 	}
 	aXml->stepOut();
-	cs.leave();
 }
 
 void DownloadManager::load(SimpleXML* aXml) {
-	cs.enter();
+	Lock l(cs);
 	aXml->resetCurrentChild();
 	if(aXml->findChild("Downloads")) {
 		aXml->stepIn();
@@ -759,14 +768,18 @@ void DownloadManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
-	cs.leave();
 }
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.31 2002/01/15 00:41:54 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.32 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.32  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.31  2002/01/15 00:41:54  arnetheduck
  * late night fixes...
  *

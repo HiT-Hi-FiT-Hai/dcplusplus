@@ -27,6 +27,7 @@
 #include "Pointer.h"
 
 class Client;
+class SocketException;
 
 /**
  * A user connected to one or more hubs.
@@ -47,20 +48,13 @@ public:
 	typedef NickMap::iterator NickIter;
 	static Ptr nuser;
 
-	Client* getClient() const { return client; };
-	void setClient(Client* aClient) { client = aClient; };
+	void setClient(Client* aClient) { Lock l(cs); client = aClient; };
 
-	const string& getNick() const { return nick; };
-	void setNick(const string& aNick) { nick = aNick; };
-	
-	const string& getEmail() const { return email; };
-	void setEmail(const string& aEmail) { email = aEmail; };
-
-	const string& getDescription() const { return description; };
-	void setDescription(const string& aDescription) { description = aDescription; };
-
-	const string& getConnection() const { return connection; };
-	void setConnection(const string& aConnection) { connection = aConnection; };
+	void connect();
+	string getClientNick();
+	void update();
+	string getClientName();
+	void privateMessage(const string& aMsg);
 	
 	LONGLONG getBytesShared() const { return sharingLong; };
 	const string& getBytesSharedString() const { return sharing; };
@@ -73,28 +67,36 @@ public:
 
 	bool isOnline() const { return (flags & ONLINE) != 0; };
 
-	User() : client(NULL), flags(0) { };
+	User() : sharingLong(0), client(NULL), flags(0) { };
 	User(const string& aNick, DWORD aFlags = 0) : sharingLong(0), client(NULL), nick(aNick), flags(aFlags) { };
 	~User() { };
 
+	GETSETREF(string, connection, Connection);
+	GETSETREF(string, nick, Nick);
+	GETSETREF(string, email, Email);
+	GETSETREF(string, description, Description);
 private:
+	CriticalSection cs;
+	
 	DWORD flags;
 	Client* client;
-	string connection;
-	string nick;
 	string sharing;
 	LONGLONG sharingLong;		// Cache this...requested very frequently...
-	string email;
-	string description;
+	
 };
 
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.6 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: User.h,v 1.7 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.7  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.6  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

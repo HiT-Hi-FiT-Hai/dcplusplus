@@ -37,12 +37,6 @@ public:
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 
 	void putUploadConnection(UserConnection* aSource) {
-		cs.enter();
-		UserConnection::Iter i = find(uploaders.begin(), uploaders.end(), aSource);
-		if(i != uploaders.end()) {
-			uploaders.erase(i);
-		}
-		cs.leave();
 		putConnection(aSource);
 	}
 	void connect(const string& aServer, short aPort, const string& aNick);
@@ -62,8 +56,6 @@ private:
 	CriticalSection cs;
 
 	map<User::Ptr, DWORD> pendingDown;
-	UserConnection::List downloaders;
-	UserConnection::List uploaders;
 	UserConnection::List pool;
 	UserConnection::List downPool;
 	ServerSocket socket;
@@ -113,10 +105,13 @@ private:
 		switch(type) {
 		case UserConnectionListener::LOCK:
 			onLock(conn, line1, line2); break;
+		case UserConnectionListener::DIRECTION:
+			onDirection(conn, line1, line2); break;
 		}
 	}
 	void onMyNick(UserConnection* aSource, const string& aNick) throw();
 	void onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw();
+	void onDirection(UserConnection* aSource, const string& dir, const string& num) throw();
 	void onConnected(UserConnection* aSource) throw();
 	void onKey(UserConnection* aSource, const string& aKey) throw();
 	void onFailed(UserConnection* aSource, const string& aError) throw();
@@ -129,18 +124,20 @@ private:
 	 */
 	UserConnection* getConnection() {
 		UserConnection* uc;
-		cs.enter();
-		// We want to keep a few connections in the pool, so that they have time to stop...
-		if(pool.size() <= 5) {
-			uc = new UserConnection();
-			uc->addListener(this);
-		} else {
-			uc = pool.front();
-			pool.erase(pool.begin());
-			dcdebug("ConnectionManager::getConnection %p, %d listeners\n", uc, uc->listeners.size());
-			uc->addListener(this);
+		{
+			Lock l(cs);
+
+			// We want to keep a few connections in the pool, so that they have time to stop...
+			if(pool.size() <= 5) {
+				uc = new UserConnection();
+			} else {
+				uc = pool.front();
+				pool.erase(pool.begin());
+				dcdebug("ConnectionManager::getConnection %p, %d listeners\n", uc, uc->listeners.size());
+			}
 		}
-		cs.leave();
+
+		uc->addListener(this);
 		return uc;
 	}
 	/**
@@ -151,11 +148,13 @@ private:
 	 */
 	void putConnection(UserConnection* aConn) {
 		aConn->reset();
-		cs.enter();
-		if(find(pool.begin(), pool.end(), aConn) == pool.end()) {
-			pool.push_back(aConn);
+
+		{
+			Lock l(cs);
+			if(find(pool.begin(), pool.end(), aConn) == pool.end()) {
+				pool.push_back(aConn);
+			}
 		}
-		cs.leave();
 	}
 };
 
@@ -163,9 +162,14 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.21 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.22 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.22  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.21  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

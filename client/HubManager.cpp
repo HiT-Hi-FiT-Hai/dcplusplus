@@ -31,25 +31,25 @@ void HubManager::onHttpData(const BYTE* aBuf, int aLen) throw() {
 	downloadBuf.append((char*)aBuf, aLen);
 	string::size_type i;
 	
-	cs.enter();
+	{
+		Lock l(cs);
 
-	while( (i=downloadBuf.find("\r\n")) != string::npos) {
-		StringTokenizer tok(downloadBuf.substr(0, i), '|');
-		downloadBuf = downloadBuf.substr(i+2);
+		while( (i=downloadBuf.find("\r\n")) != string::npos) {
+			StringTokenizer tok(downloadBuf.substr(0, i), '|');
+			downloadBuf = downloadBuf.substr(i+2);
 
-		StringIter j = tok.getTokens().begin();
-		string& name = *j++;
-		string& server = *j++;
-		string& desc = *j++;
-		string& users = *j++;
-		publicHubs.push_back(HubEntry(name, server, desc, users));
+			StringIter j = tok.getTokens().begin();
+			string& name = *j++;
+			string& server = *j++;
+			string& desc = *j++;
+			string& users = *j++;
+			publicHubs.push_back(HubEntry(name, server, desc, users));
+		}
 	}
-
-	cs.leave();
 }
 
 void HubManager::save(SimpleXML* aXml) {
-	cs.enter();
+	Lock l(cs);
 	aXml->addTag("Favorites");
 	aXml->stepIn();
 	
@@ -63,11 +63,10 @@ void HubManager::save(SimpleXML* aXml) {
 		aXml->addChildAttrib("Server", (*i)->getServer());
 	}
 	aXml->stepOut();
-	cs.leave();
 }
 
 void HubManager::load(SimpleXML* aXml) {
-	cs.enter();
+	Lock l(cs);
 	if(aXml->findChild("Favorites")) {
 		aXml->stepIn();
 		while(aXml->findChild("Favorite")) {
@@ -81,14 +80,18 @@ void HubManager::load(SimpleXML* aXml) {
 			favoriteHubs.push_back(e);
 		}
 	}
-	cs.leave();
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.13 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.13  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.12  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

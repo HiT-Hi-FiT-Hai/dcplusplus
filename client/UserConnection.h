@@ -187,6 +187,10 @@ public:
 	
 	User::Ptr& getUser() { return user; };
 
+	void setFlag(DWORD aFlag) { flags |= aFlag; };
+	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
+	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
+	
 private:
 	string nick;
 	string server;
@@ -302,9 +306,14 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.26 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.27 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.27  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.26  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

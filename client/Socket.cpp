@@ -45,29 +45,29 @@ Socket::Stats Socket::stats = { 0, 0, 0, 0 };
 string SocketException::errorToString(int aError) {
 	switch(aError) {
 	case EWOULDBLOCK:
-		return "Operation would block execution.";
+		return "Operation would block execution";
 	case EACCES:
-		return "Permission denied.";
+		return "Permission denied";
 	case EADDRINUSE:
-		return "Address already in use.";
+		return "Address already in use";
 	case EADDRNOTAVAIL:
 		return "Address is not available.";
 	case EALREADY:
-		return "Non-blocking operation still in progress.";
+		return "Non-blocking operation still in progress";
 	case ECONNREFUSED:
-		return "Connection refused by target machine.";
+		return "Connection refused by target machine";
 	case ETIMEDOUT:
-		return "Connection timeout.";
+		return "Connection timeout";
 	case EHOSTUNREACH:
-		return "Host unreachable.";
+		return "Host unreachable";
 	case ESHUTDOWN:
-		return "Socket has been shut down.";
+		return "Socket has been shut down";
 	case ECONNABORTED:
-		return "Connection closed.";
+		return "Connection closed";
 	case ECONNRESET:
-		return "Connection reset by server.";
+		return "Connection reset by server";
 	case ENOTSOCK:
-		return "Socket error.";
+		return "Socket error";
 	default:
 		char tmp[128];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
@@ -134,7 +134,7 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
 	if(connected) {
 		disconnect();
 	}
-	if(sock == NULL) {
+	if(sock == -1) {
 		create();
 	}
 
@@ -193,7 +193,8 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
  */
 void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	checkconnected();
-
+//	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
+	dcassert(aLen > 0);			
 	while(aLen) {
 		int i = ::send(sock, aBuffer, aLen, 0);
 		if(i == SOCKET_ERROR) {
@@ -214,9 +215,14 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.14 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.15 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.15  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.14  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

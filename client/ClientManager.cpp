@@ -26,34 +26,31 @@
 ClientManager* ClientManager::instance = NULL;
 
 Client* ClientManager::getClient() {
-	cs.enter();
 	Client* c = new Client();
 
+	{
+		Lock l(cs);
+		clients.push_back(c);
+	}
+
 	c->addListener(this);
-	clients.push_back(c);
-	cs.leave();
 	return c;
 }
 
 void ClientManager::putClient(Client* aClient) {
 	aClient->removeListeners();
 	aClient->disconnect();
-	cs.enter();
 
-	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-		if( (*i) == aClient) {
-			clients.erase(i);
-			break;
-		}
+	{
+		Lock l(cs);
+		dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
+		clients.erase(find(clients.begin(), clients.end(), aClient));
+		
 	}
-	aClient->cs.enter();		// Just make sure noone's using it still...
-	aClient->cs.leave();	
 	delete aClient;
-	cs.leave();
 }
 
 void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
-	aClient->cs.enter();
 	if(aUser->getNick() == aClient->getNick()) {
 		aClient->version("1,0091");
 		aClient->getNickList();
@@ -61,11 +58,10 @@ void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw
 	} else {
 		aClient->getInfo(aUser);
 	}
-	aClient->cs.leave();
 }
 
 void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
-							int aFileType, const string& aString) throw() {
+									int aFileType, const string& aString) throw() {
 	
 	bool search = false;
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
@@ -86,35 +82,39 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 		}
 		
 		SearchResult::List l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType, aClient);
-		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
-		if(pos != string::npos) {
-			string name = aSeeker.substr(4);
-			// Good, we have a passive seeker, those are easier...
-			string str;
-			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-				char buf[512];
-				SearchResult* sr = *i;
-				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-					sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
-				str += buf;
-				delete sr;
-			}
-			
-			aClient->searchResults(str);
-		} else {
-			Socket s;
-			s.create(Socket::TYPE_UDP);
-			string ip, file;
-			short port = 412;
-			Util::decodeUrl(aSeeker, ip, port, file);
-			s.connect(ip, port);
-			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-				char buf[512];
-				SearchResult* sr = *i;
-				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-					sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-				s.write(buf, strlen(buf));
-				delete sr;
+//		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
+		if(l.size() > 0) {
+			if(pos != string::npos) {
+				string name = aSeeker.substr(4);
+				// Good, we have a passive seeker, those are easier...
+				string str;
+				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+					char buf[512];
+					SearchResult* sr = *i;
+					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					str += buf;
+					delete sr;
+				}
+				
+				if(str.size() > 0)
+					aClient->searchResults(str);
+				
+			} else {
+				Socket s;
+				s.create(Socket::TYPE_UDP);
+				string ip, file;
+				short port = 412;
+				Util::decodeUrl(aSeeker, ip, port, file);
+				s.connect(ip, port);
+				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+					char buf[512];
+					SearchResult* sr = *i;
+					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+					s.write(buf, strlen(buf));
+					delete sr;
+				}
 			}
 		}
 	}
@@ -122,9 +122,14 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.4 2002/01/13 22:50:47 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.5 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.5  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.4  2002/01/13 22:50:47  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -119,8 +119,9 @@ public:
 	virtual void connect(const string& ip, const string& port) throw(SocketException);
 	
 	virtual void disconnect() {
+		dcdebug("disconnect\n");
 		closesocket(sock);
-		sock = NULL;
+		sock = -1;
 		connected = false;
 		if(event) {
 			CloseHandle(event);
@@ -132,7 +133,7 @@ public:
 		TYPE_UDP = 1
 	};
 	void create(int aType = TYPE_TCP) throw(SocketException) {
-		if(sock)
+		if(sock != -1)
 			disconnect();
 
 		switch(aType) {
@@ -219,9 +220,14 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.14 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: Socket.h,v 1.15 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.15  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.14  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

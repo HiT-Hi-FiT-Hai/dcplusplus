@@ -26,43 +26,59 @@ UploadManager* UploadManager::instance = NULL;
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 	Upload* u;
 	HANDLE h;
-	cs.enter();
-	
+
 	try {
 		if((getFreeSlots()<=0)) {
 			aSource->maxedOut();
 			removeConnection(aSource);
-			cs.leave();
 			return;
 		}
 
 		// We only give out one connection / user...
+		cs.enter();
 		for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 			if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
+				cs.leave();
 				aSource->maxedOut();
 				removeConnection(aSource);
-				cs.leave();
 				return;					
 			}
 		}
-		string file = ShareManager::getInstance()->translateFileName(aFile);
+		cs.leave();
+
+		string file;
+
+		try {
+			file = ShareManager::getInstance()->translateFileName(aFile);
+		} catch(ShareException e) {
+			aSource->error("File Not Available");
+			return;
+		}
+
+		cs.enter();
+
 		Upload::MapIter i = uploads.find(aSource);
 		if(i != uploads.end()) {
 			// This is bad!
 			
 			dcdebug("UploadManager::onGet Unexpected command\n");				
+			
 			fire(UploadManagerListener::FAILED, i->second, "Unexpected command");
 			delete i->second;
 			dcdebug("onGet: Removing upload\n");
 			uploads.erase(i);
+			
 			cs.leave();
+
 			removeConnection(aSource);
 			return;
 		} 
+		cs.leave();
+
 		h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		if(h == INVALID_HANDLE_VALUE) {
+			
 			aSource->error("File Not Available");
-			cs.leave();
 			return;
 		}
 		
@@ -74,15 +90,15 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		
 		char buf[24];
 		aSource->fileLength(_i64toa(u->getSize(), buf, 10));
-		uploads[aSource] = u;
 		
-	} catch (ShareException e) {
-		aSource->error("File Not Available");
+		cs.enter();
+		uploads[aSource] = u;
+		cs.leave();
+		
 	} catch(SocketException e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 	}
 	
-	cs.leave();
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
@@ -91,12 +107,14 @@ void UploadManager::onSend(UserConnection* aSource) {
 	Upload::MapIter i = uploads.find(aSource);
 	if(i==uploads.end()) {
 		// Huh? Where did this come from?
-		removeConnection(aSource);
 		cs.leave();
+		removeConnection(aSource);
 		return;
 	}
 	
 	u = i->second;
+	cs.leave();
+
 	try {
 		u->setStart(TimerManager::getTick());
 		aSource->transmitFile(u->getFile());
@@ -104,11 +122,13 @@ void UploadManager::onSend(UserConnection* aSource) {
 	} catch(Exception e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		dcdebug("onSend: Removing upload\n");
-		uploads.erase(i);
+		cs.enter();
+		uploads.erase(aSource);
+		cs.leave();
+
 		delete u;
 		removeConnection(aSource);
 	}
-	cs.leave();
 }
 
 void UploadManager::onBytesSent(UserConnection* aSource, DWORD aBytes) {
@@ -167,9 +187,14 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.6 2002/01/16 20:56:27 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.7 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.7  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.6  2002/01/16 20:56:27  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

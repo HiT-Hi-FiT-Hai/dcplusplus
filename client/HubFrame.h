@@ -429,12 +429,7 @@ private:
 	}
 	
 	void updateStatusBar() {
-		StringList* str = new StringList();
-		cs.enter();
-		str->push_back(Util::toString(client->getUserCount()) + " users");
-		str->push_back(Util::formatBytes(client->getAvailable()));
-		cs.leave();
-		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+		PostMessage(WM_SPEAKER, STATS);
 	}
 
 	Client::Ptr client;
@@ -456,9 +451,14 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.37 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.38 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.38  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.37  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

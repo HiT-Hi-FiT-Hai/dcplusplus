@@ -1,3 +1,14 @@
+ -- 0.13 --
+* Added directory listing sort
+* Fixed missing '\\' in the default download directory bug
+* Fixed a small bug where search responses sometimes reported -1 free slots
+* Fixed "Download to..." bug in search frame
+* Fixed some application lockups
+* Fixed some random crashes
+* Fixed a bug in the user connection procuedure
+* Fixed data corruption bug (in rare cases, dc++ was filling files with $send)
+
+
  -- 0.122 2002-01-16 --
 * Fixed search bug
 * Hopefully fixed download bug, please report...

@@ -25,16 +25,16 @@
 
 class CriticalSection  
 {
-	dcdrun(int counter;);
+	dcdrun(long counter;);
 
 	CRITICAL_SECTION cs;
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
-		dcdrun(counter++;);	
+		dcdrun(InterlockedIncrement(&counter););	
 	}
 	void leave() throw() {
-		dcdrun(counter--; dcassert(counter >= 0););
+		dcdrun(dcassert(InterlockedDecrement(&counter) >= 0););
 		LeaveCriticalSection(&cs);
 	}
 	CriticalSection() throw() {
@@ -60,9 +60,14 @@ public:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.4 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.5 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.5  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.4  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

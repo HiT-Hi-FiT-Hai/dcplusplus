@@ -58,50 +58,49 @@ int ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 			return UserConnection::FREE;
 		}
 	}
+
+	cs.leave();
+
 	// Alright, set up a new connection attempt.
 	try {
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			aUser->getClient()->connectToMe(aUser);
-		} else {
-			aUser->getClient()->revConnectToMe(aUser);
-		}
+		User::Ptr p(aUser);
+		p->connect();
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::getDownloadConnection: Caught: %s\n", e.getError().c_str());
-		cs.leave();
-		
 		return UserConnection::BUSY;
 	}
+
 	
 	// Add to the list of pending downloads...
-	pendingDown[aUser] = TimerManager::getTick();
-	cs.leave();
+	{
+		Lock l(cs);
+		pendingDown[aUser] = TimerManager::getTick();
+	}
 	return UserConnection::CONNECTING;
 }
 
 void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
-	cs.enter();
-	UserConnection::Iter i = find(downloaders.begin(), downloaders.end(), aSource);
-	if(i != downloaders.end()) {
-		downloaders.erase(i);
-	}
 	// Pool it for later usage...
 	if(reuse) {
+		cs.enter();
 		if(find(downPool.begin(), downPool.end(), aSource) == downPool.end()) {
 			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection to %s\n", aSource->getUser()->getNick().c_str());
-			
-			aSource->addListener(this);
 			downPool.push_back(aSource);
+
+			cs.leave();
+			aSource->addListener(this);
+		} else {
+			cs.leave();
 		}
-		cs.leave();
 	} else {
-		cs.leave();		
 		putConnection(aSource);
 	}
 }
 
 void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) {
 	if(type == TimerManagerListener::SECOND) {
-		cs.enter();
+		Lock l(cs);
+		
 		map<User::Ptr, DWORD>::iterator i = pendingDown.begin();
 		
 		while(i != pendingDown.end()) {
@@ -114,7 +113,6 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 				++i;
 			}
 		}
-		cs.leave();
 	}
 }
 
@@ -127,11 +125,9 @@ void ConnectionManager::onIncomingConnection() throw() {
 
 	try { 
 		uc->accept(socket);
-		uc->flags |= UserConnection::FLAG_INCOMING;
+		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->state = UserConnection::LOGIN;
 
-		//		uc->myNick(SETTING(NICK));
-		//		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -142,53 +138,40 @@ void ConnectionManager::onIncomingConnection() throw() {
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
+	dcassert(aNick.size() > 0);
 	dcdebug("ConnectionManager::onMyNick %s\n", aNick.c_str());
-	cs.enter();
+	dcassert(!aSource->user);
 
-	for(map<User::Ptr, DWORD>::iterator i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-		if(i->first->getNick() == aNick) {
-			aSource->user = i->first;
-			break;
+	{
+		Lock l(cs);
+
+		for(map<User::Ptr, DWORD>::iterator i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+			if(i->first->getNick() == aNick) {
+				aSource->user = i->first;
+				pendingDown.erase(i);
+				break;
+			}
 		}
 	}
 
-	if(aSource->user) {
-		if(aSource->user->getClient()) {
-			aSource->myNick(aSource->user->getClient()->getNick());
-		} else {
-			aSource->myNick(SETTING(NICK));
-		}
-		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-		
-		aSource->flags |= UserConnection::FLAG_DOWNLOAD;
-		
-		downloaders.push_back(aSource);
-		if(i != pendingDown.end()) {
-			pendingDown.erase(i);
-		}
-
+	if( !aSource->isSet(UserConnection::FLAG_UPLOAD) && aSource->user) {
+		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 	} else {
+
 		// We didn't order it so it must be an uploading connection...
 		// Make sure we know who it is, i e that he/she is connected...
 		aSource->user = ClientManager::getInstance()->findUser(aNick);
 		if(!aSource->user) {
 			putConnection(aSource);
-			cs.leave();
 			return;
 		}
-		
-		if(aSource->user->getClient()) {
-			aSource->myNick(aSource->user->getClient()->getNick());
-		} else {
-			aSource->myNick(SETTING(NICK));
-		}
-		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-
-		aSource->flags |= UserConnection::FLAG_UPLOAD;
-
-		uploaders.push_back(aSource);
+		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 	} 
-	cs.leave();
+
+	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
+		aSource->myNick(aSource->getUser()->getClientNick()); 
+		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+	}
 }
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw() {
@@ -197,10 +180,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 			if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
 				aSource->getUser()->setFlag(User::DCPLUSPLUS);
-
-				if(aSource->getUser()->getClient()) {
-					aSource->getUser()->getClient()->getInfo(aSource->getUser());
-				}
+				aSource->getUser()->update();
 			}
 		}
 		aSource->direction(aSource->getDirectionString(), "666");
@@ -218,11 +198,27 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 	aSource->removeListener(this);
 	aSource->state = UserConnection::BUSY;
 	
-	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
+	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+		if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
+			// Oops, not good...
+			dcdebug("ConnectionManager::onKey, bad download connection\n");
+			
+			putDownloadConnection(aSource);
+			return;
+		}
 		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 		DownloadManager::getInstance()->addConnection(aSource);
 	} else {
 		dcassert(aSource->flags & UserConnection::FLAG_UPLOAD);
+
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			// Oops, not good...
+			dcdebug("ConnectionManager::onKey, bad upload connection\n");
+			putDownloadConnection(aSource);
+			return;
+		}
+		
+		dcdebug("ConnectionManager::onKey, leaving to uploadmanager\n");
 		UploadManager::getInstance()->addConnection(aSource);
 	}
 }
@@ -252,13 +248,15 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 
 void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) throw() {
 	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
-		cs.enter();
-		UserConnection::Iter i = find(downPool.begin(), downPool.end(), aSource);
-		if(i != downPool.end()) {
-			dcdebug("ConnectionManager::onError Removing connection to %s from active pool\n", aSource->getUser()->getNick().c_str());
-			downPool.erase(i);
+		{
+			Lock l(cs);
+			
+			UserConnection::Iter i = find(downPool.begin(), downPool.end(), aSource);
+			if(i != downPool.end()) {
+				dcdebug("ConnectionManager::onError Removing connection to %s from active pool\n", aSource->getUser()->getNick().c_str());
+				downPool.erase(i);
+			}
 		}
-		cs.leave();
 		putDownloadConnection(aSource);
 	} else if(aSource->flags & UserConnection::FLAG_UPLOAD) {
 		putUploadConnection(aSource);
@@ -277,11 +275,25 @@ void ConnectionManager::updateUser(UserConnection* aConn) {
 	
 }
 
+void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& num) throw() {
+	if(dir == "Upload") {
+		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
+	} else {
+		dcassert(dir == "Download");
+		aSource->setFlag(UserConnection::FLAG_UPLOAD);
+	}
+}
+
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.20 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.21 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.21  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.20  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

@@ -24,9 +24,11 @@
 #include "CriticalSection.h"
 
 void Client::connect(const string& aServer, short aPort) {
+	
 	if(socket.isConnected()) {
 		disconnect();
 	}
+
 	server = aServer;
 	port = aPort;
 	fire(ClientListener::CONNECTING, this);
@@ -58,45 +60,62 @@ void Client::onLine(const string& aLine) throw() {
 	}
 	
 	if(cmd == "$Search") {
-		string seeker = param.substr(0, param.find(' '));
-		param = param.substr(param.find(' ') + 1);
+		int i = 0;
+		int j = param.find(' ', i);
+		string seeker = param.substr(i, j-i);
+		i = j + 1;
 		int a;
-		if(param[0] == 'F') {
+		if(param[i] == 'F') {
 			a = SearchManager::SIZE_DONTCARE;
 		} else if(param[2] == 'F') {
 			a = SearchManager::SIZE_ATLEAST;
 		} else {
 			a = SearchManager::SIZE_ATMOST;
 		}
-		param=param.substr(4);
-		string size = param.substr(0, param.find('?'));
-		param = param.substr(param.find('?')+1);
-		int type = Util::toInt(param.substr(0, param.find('?')));
-		param = param.substr(param.find('?')+1);
-		fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
+		i += 4;
+		j = param.find('?', i);
+		string size = param.substr(i, j-i);
+		i = j + 1;
+		j = param.find('?', i);
+		int type = Util::toInt(param.substr(i, j-i));
+		i = j + 1;
+		param = param.substr(i);
+		
+		if(param.size() > 0)
+			fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
 	} else if(cmd == "$MyINFO") {
+		int i, j;
+		i = 5;
 		string nick;
-		param = param.substr(5);
-		nick = param.substr(0, param.find(' '));
-		param = param.substr(param.find(' ')+1);
+		j = param.find(' ', i);
+		nick = param.substr(i, j-i);
+		i = j + 1;
 		User::Ptr u;
-		cs.enter();
-		User::NickIter i = users.find(nick);
-		if(i == users.end()) {
-			u = new User(nick, User::ONLINE);
-			u->setClient(this);
-			users[nick] = u;
-		} else {
-			u = i->second;
+
+		{
+			Lock l(cs);
+
+			User::NickIter it = users.find(nick);
+			if(it == users.end()) {
+				u = new User(nick, User::ONLINE);
+				u->setClient(this);
+				users[nick] = u;
+			} else {
+				u = it->second;
+			}
 		}
-		cs.leave();
-		u->setDescription(param.substr(0, param.find('$')));
-		param = param.substr(param.find('$')+3);
-		u->setConnection(param.substr(0, param.find('$')-1));
-		param = param.substr(param.find('$')+1);
-		u->setEmail(param.substr(0, param.find('$')));
-		param = param.substr(param.find('$')+1);
-		u->setBytesShared(param.substr(0, param.find('$')));
+
+		j = param.find('$', i);
+		u->setDescription(param.substr(i, j-i));
+		i = j + 3;
+		j = param.find('$', i);
+		u->setConnection(param.substr(i, j-i-1));
+		i = j + 1;
+		j = param.find('$', i);
+		u->setEmail(param.substr(i, j-i));
+		i = j + 1;
+		j = param.find('$', i);
+		u->setBytesShared(param.substr(i, j-i));
 		
 		fire(ClientListener::MY_INFO, this, u);
 		
@@ -122,9 +141,11 @@ void Client::onLine(const string& aLine) throw() {
 			cs.enter();
 			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
+				cs.leave();
 				fire(ClientListener::REV_CONNECT_TO_ME, this, i->second);
+			} else {
+				cs.leave();
 			}
-			cs.leave();
 		}
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
@@ -138,20 +159,23 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
 		User::Ptr u;
-		cs.enter();
-		User::NickIter i = users.find(param);
-		if(i == users.end()) {
-			u = new User(param, User::ONLINE);
-			u->setClient(this);
-			users[param] = u;
-		} else {
-			u = i->second;
+
+		{
+			Lock l(cs);
+
+			User::NickIter i = users.find(param);
+			if(i == users.end()) {
+				u = new User(param, User::ONLINE);
+				u->setClient(this);
+				users[param] = u;
+			} else {
+				u = i->second;
+			}
+			
+			if(u->getNick() == getNick())
+				u->setFlag(User::DCPLUSPLUS);
 		}
 
-		if(u->getNick() == getNick())
-			u->setFlag(User::DCPLUSPLUS);
-		
-		cs.leave();
 		fire(ClientListener::HELLO, this, u);
 	} else if(cmd == "$ForceMove") {
 		fire(ClientListener::FORCE_MOVE, this, param);
@@ -169,9 +193,11 @@ void Client::onLine(const string& aLine) throw() {
 				User::Ptr u = new User(nick, User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
+				cs.leave();
 				fire(ClientListener::MY_INFO, this, u);
+			} else {
+				cs.leave();
 			}
-			cs.leave();
 			v.push_back(nick);
 			k = j + 2;
 		}
@@ -184,16 +210,18 @@ void Client::onLine(const string& aLine) throw() {
 		k = 0;
 		while( (j=param.find("$$", k)) != string::npos) {
 			string nick = param.substr(k, j-k);
-			cs.enter();
-			User::NickIter i = users.find(nick);
-			if( i == users.end()) {
-				User::Ptr u = new User(nick, User::OP | User::ONLINE);
-				u->setClient(this);
-				users[nick] = u;
-			} else {
-				i->second->setFlag(User::OP);
+			{
+				Lock l(cs);
+				User::NickIter i = users.find(nick);
+				if( i == users.end()) {
+					User::Ptr u = new User(nick, User::OP | User::ONLINE);
+					u->setClient(this);
+					users[nick] = u;
+				} else {
+					i->second->setFlag(User::OP);
+				}
 			}
-			cs.leave();
+
 			fire(ClientListener::MY_INFO, this, users[nick]);
 			v.push_back(nick);
 			k = j + 2;
@@ -230,9 +258,14 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.18 2002/01/13 22:50:47 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.19 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.19  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.18  2002/01/13 22:50:47  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -85,14 +85,8 @@ public:
 		write(aData.data(), aData.length());
 	}
 	virtual void write(const char* aBuf, int aLen) throw(SocketException) {
-		cs.enter();
-		try {
-			Socket::write(aBuf, aLen);
-		} catch(...) {
-			cs.leave();
-			throw;			
-		}
-		cs.leave();
+		Lock l(cs);
+		Socket::write(aBuf, aLen);
 	}
 	
 	BufferedSocket(char aSeparator = 0x0a) : inbuf(NULL), inbufSize(2048), outbufPos(0), outbuf(NULL), outbufSize(2048), file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
@@ -174,9 +168,14 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.18 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.19 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.19  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.18  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -278,10 +278,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		
 		delete (User::Ptr*)lParam;
 	} else if(wParam==STATS) {
-		StringList* str = (StringList*)lParam;
-		ctrlStatus.SetText(1, (*str)[0].c_str());
-		ctrlStatus.SetText(2, (*str)[1].c_str());
-		delete str;
+		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " users").c_str());
+		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
 
 	} else if(wParam == CLIENT_QUIT) {
 		User::Ptr& u = *(User::Ptr*)lParam;
@@ -338,9 +336,14 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.22 2002/01/15 21:57:53 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.23 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.23  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.22  2002/01/15 21:57:53  arnetheduck
  * Hopefully fixed the two annoying bugs...
  *

@@ -69,51 +69,53 @@ public:
 		cs.enter();
 		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
 			if(i->second == aUpload) {
-				removeConnection(i->first);
-				uploads.erase(i);
 				fire(UploadManagerListener::FAILED, aUpload, "Aborted");
+				uploads.erase(i);
+				cs.leave();
+				removeConnection(i->first);
 				delete aUpload;
-				break;
+				return;
 			}
 		}
 		cs.leave();
 	}
 
-	int getUploads() { cs.enter(); int sz = uploads.size(); cs.leave(); return sz; };
+	int getUploads() { Lock l(cs); return uploads.size(); };
 	int getFreeSlots() { return SETTING(SLOTS) - getUploads(); }
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
-		connections.push_back(conn);
+		{
+			Lock l(cs);
+			connections.push_back(conn);
+		}
 	}
 
 	void removeConnection(UserConnection::Ptr aConn) {
 		cs.enter();
-		bool found = false;
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-			if(*i == aConn) {
-				aConn->removeListener(this);
-				connections.erase(i);
-				found = true;
-				cs.leave();
-				ConnectionManager::getInstance()->putUploadConnection(aConn);
-				break;
-			}
-		}
-		if(!found) {
+		UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
+		if(i != connections.end()) {
+			connections.erase(i);
 			cs.leave();
+			aConn->removeListener(this);
+			ConnectionManager::getInstance()->putUploadConnection(aConn);
+			return;
 		}
+
+		cs.leave();
 	}
 
 	void removeConnections() {
-		cs.enter();
 		
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+		cs.enter();
+		UserConnection::List tmp = connections;
+		connections.clear();
+		cs.leave();
+
+		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->removeListener(this);
 			ConnectionManager::getInstance()->putUploadConnection(*i);
 		}
-		connections.clear();
-		cs.leave();
 	}
 	
 private:
@@ -141,23 +143,21 @@ private:
 		switch(type) {
 		case TimerManagerListener::SECOND: 
 			{
-				cs.enter();
+				Lock l(cs);
 				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
 					fire(UploadManagerListener::TICK, i->second);
 				}
-				cs.leave();
 			}
 			break;
 		case TimerManagerListener::MINUTE:
 			{
-				cs.enter();
+				Lock l(cs);
 				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
 					UserConnection* c = i->first;
 					if(!c->getUser()->isOnline()) {
 						ConnectionManager::getInstance()->updateUser(c);
 					}
 				}
-				cs.leave();
 			}	
 			break;
 		}
@@ -205,9 +205,14 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.29 2002/01/16 20:56:27 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.30 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.30  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.29  2002/01/16 20:56:27  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

@@ -106,9 +106,8 @@ public:
 	void save(SimpleXML* aXml);
 	
 	void getFavoriteHubs() {
-		cs.enter();
+		Lock l(cs);
 		fire(HubManagerListener::GET_FAVORITE_HUBS, favoriteHubs);
-		cs.leave();
 	}
 	
 	void addFavorite(const HubEntry& aEntry) {
@@ -143,9 +142,8 @@ public:
 	}
 	
 	void getPublicHubs() {
-		cs.enter();
+		Lock l(cs);
 		fire(HubManagerListener::GET_PUBLIC_HUBS, publicHubs);
-		cs.leave();
 	}
 
 	bool isRunning() {
@@ -220,22 +218,18 @@ private:
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const string& aLine) {
 		switch(type) {
 		case HttpConnectionListener::FAILED:
-			cs.enter();
 			conn->removeListener(this);
 			running = false;
-			cs.leave();
 			fire(HubManagerListener::MESSAGE, "Unable to download public server list. Check your internet connection!");
 		}
 	}
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
 		switch(type) {
 		case HttpConnectionListener::COMPLETE:
-			cs.enter();
 			conn->removeListener(this);
 			running = false;
 			downloaded = true;
 			fire(HubManagerListener::FINISHED);
-			cs.leave();
 		}
 	}
 	
@@ -247,9 +241,14 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.17 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.17  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.16  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

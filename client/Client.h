@@ -161,7 +161,9 @@ public:
 		send("<" + getNick() + "> " + tmp + "|");
 	}
 	void getInfo(User::Ptr aUser) {
-//		dcdebug("GetInfo %s\n", aUser->getNick().c_str());
+		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
+	}
+	void getInfo(User* aUser) {
 		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
 	}
 	void getInfo(const string& aNick) {
@@ -177,14 +179,25 @@ public:
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
+	void connectToMe(User* aUser) {
+		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
+		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
+	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
+		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + aMessage + "|");
+	}
+	void privateMessage(User* aUser, const string& aMessage) {
 		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + aMessage + "|");
 	}
 	void revConnectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
-
+	void revConnectToMe(User* aUser) {
+		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
+		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
+	}
+	
 	void kick(const User::Ptr& aUser) {
 		dcdebug("Client::kick\n");
 		send("$Kick " + aUser->getNick() + "|");
@@ -197,42 +210,36 @@ public:
 	void connect(const string& aServer, short aPort = 411);
 
 	bool userConnected(const string& aNick) {
-		cs.enter();
-		bool b = !(users.find(aNick) == users.end());
-		cs.leave();
-		return b;
+		Lock l(cs);
+		return !(users.find(aNick) == users.end());
 	}
 
 	const string& getName() { return name; };
 	const string& getServer() { return server; };
 
-	User::Ptr& getUser(const string& aNick) {
+	User::Ptr& getUser(const string& aNick) throw() {
+		Lock l(cs);
+
 		dcassert(aNick.length() > 0);
-		cs.enter();
 		User::NickIter j = users.find(aNick);
 		if(j != users.end()) {
-			cs.leave();
 			return j->second;
 		} else {
-			cs.leave();
 			return User::nuser;
 		}
 	}
 
-	int getUserCount() {
-		cs.enter();
-		int c = users.size();
-		cs.leave();
-		return c;
+	int getUserCount() throw() {
+		Lock l(cs);
+		return users.size();
 	}
 
-	LONGLONG getAvailable() {
+	LONGLONG getAvailable() throw() {
+		Lock l(cs);
 		LONGLONG x = 0;
-		cs.enter();
 		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
 			x+=i->second->getBytesShared();
 		}
-		cs.leave();
 		return x;
 	}
 
@@ -333,9 +340,14 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.28 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: Client.h,v 1.29 2002/01/17 23:35:59 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.29  2002/01/17 23:35:59  arnetheduck
+ * Reworked threading once more, now it actually seems stable. Also made
+ * sure that noone tries to access client objects that have been deleted
+ * as well as some other minor updates
+ *
  * Revision 1.28  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *
