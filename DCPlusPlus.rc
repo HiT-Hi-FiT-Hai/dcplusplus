@@ -172,6 +172,9 @@ BEGIN
     LTEXT           "Write buffer size",IDC_STATIC,15,36,52,8
     LTEXT           "B",IDC_STATIC,124,20,8,8
     LTEXT           "kB (0 to disable)",IDC_STATIC,124,36,52,8
+    CONTROL         "Install URL handler on startup (dchub://)",
+                    IDC_URL_HANDLER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    165,213,10
 END
 
 IDD_DOWNLOADPAGE DIALOGEX 0, 0, 262, 225

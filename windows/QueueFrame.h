@@ -146,15 +146,19 @@ public:
 	static int sortSize(LPARAM a, LPARAM b) {
 		LVITEM* c = (LVITEM*)a;
 		LVITEM* d = (LVITEM*)b;
-		
 		QueueItem* e = (QueueItem*)c->lParam;
 		QueueItem* f = (QueueItem*)d->lParam;
-		LONGLONG g = e->getSize();
-		LONGLONG h = f->getSize();
-			
-		return (g < h) ? -1 : ((g == h) ? 0 : 1);
+		return compare(e->getSize(), f->getSize());
 	}
-	
+
+	static int sortPriority(LPARAM a, LPARAM b) {
+		LVITEM* c = (LVITEM*)a;
+		LVITEM* d = (LVITEM*)b;
+		QueueItem* e = (QueueItem*)c->lParam;
+		QueueItem* f = (QueueItem*)d->lParam;
+		return compare(e->getPriority(), f->getPriority());
+	}
+
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlQueue.getSortColumn()) {
@@ -162,6 +166,8 @@ public:
 		} else {
 			if(l->iSubItem == COLUMN_SIZE) {
 				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+			} else if(l->iSubItem == COLUMN_PRIORITY) {
+				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortPriority);
 			} else {
 				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
@@ -280,6 +286,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.9 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.10 2002/06/18 19:06:34 arnetheduck Exp $
  */
 

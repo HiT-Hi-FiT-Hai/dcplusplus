@@ -44,7 +44,8 @@ public:
 	enum Status {
 		CONNECTING,
 		IDLE,
-		WAITING
+		WAITING,
+		NO_DOWNLOAD_SLOTS
 	};
 
 	ConnectionQueueItem(const User::Ptr& aUser) : status(CONNECTING), connection(NULL), user(aUser) { };
@@ -159,5 +160,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.42 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.43 2002/06/18 19:06:33 arnetheduck Exp $
  */

@@ -1,3 +1,19 @@
+ -- --
+* Added a finished downloads window
+* Added temporary download directory option
+* Added support for dchub://hubip:port and dchub://hubip:port/nick (will download that users filelist) (partially
+  by Luca Rota, thanks) (completely untested)
+* Sort by slots in search is now secondarily sorted by open slots
+* Fixed sort by priority in queue window
+* Fixed "don't remove dupes" option
+* Improved performance a bit when there were a lot of "no free download slots"
+* Fixed missing join messages
+* Shift-enter in hub send message instead of adding a newline to the text (use ctrl-enter for newlines)
+  (because a lot of people can't type properly and keep holding shift when pressing enter...I hear old (60+) 
+  people often do this...=)
+
+
+
  -- 0.177 2002-06-07 --
 * Improved performance on "File not available" (connection / slot is now kept)
 * Remove source on "File Not Available" is no longer an option. Don't ask why.

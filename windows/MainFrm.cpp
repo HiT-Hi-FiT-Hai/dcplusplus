@@ -158,6 +158,8 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == AUTO_CONNECT) {
 		autoConnect(HubManager::getInstance()->lockFavoriteHubs());
 		HubManager::getInstance()->unlockFavoriteHubs();
+	} else if(wParam == PARSE_COMMAND_LINE) {
+		parseCommandLine(GetCommandLine());
 	}
 
 	return 0;
@@ -530,12 +532,49 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, IDC_QUEUE);
 	
 	PostMessage(WM_SPEAKER, AUTO_CONNECT);
+	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
 	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
 	
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
+}
+
+void MainFrame::parseCommandLine(const string& cmdLine)
+{
+	string::size_type i = 0;
+	string::size_type j;
+
+	if( (j = cmdLine.find("dchub://", i)) != string::npos) {
+		i = j + 8;
+		string server;
+		string user;
+		if( (j = cmdLine.find('/', i)) == string::npos) {
+			server = cmdLine.substr(i);
+		} else {
+			server = cmdLine.substr(i, j-i);
+			i = j + 1;
+			if( (j = cmdLine.find_first_of("\\/ ", i)) == string::npos) {
+				user = cmdLine.substr(i);
+			} else {
+				user = cmdLine.substr(i, j-i);
+			}
+		}
+
+		if(!server.empty()) {
+			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, server);
+		}
+		if(!user.empty()) {
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user));
+		}
+	}
+}
+
+LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	string cmdLine = (LPCSTR) (((COPYDATASTRUCT *)lParam)->lpData);
+	parseCommandLine(Util::getAppName() + " " + cmdLine);
+	return true;
 }
 
 LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -1049,6 +1088,6 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.14 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
  */
 

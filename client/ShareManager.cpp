@@ -311,6 +311,7 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 			if(BOOLSETTING(REMOVE_DUPES)) {
 				files.erase(j++);
 			} else {
+				tmp += string(ident + 1, '\t') + j->first + "|" + Util::toString(j->second) + "\r\n";
 				++j;
 			}
 		} else {
@@ -502,6 +503,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.43 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.44 2002/06/18 19:06:33 arnetheduck Exp $
  */
 

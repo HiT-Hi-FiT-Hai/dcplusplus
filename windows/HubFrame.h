@@ -270,7 +270,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	int updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
+	bool updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
 
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
@@ -322,6 +322,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.14 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
  */
 

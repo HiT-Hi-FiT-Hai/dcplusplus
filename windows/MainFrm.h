@@ -33,6 +33,7 @@
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
+#include "SingleInstance.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
@@ -56,7 +57,8 @@ public:
 		SET_TEXTS,
 		DOWNLOAD_LISTING,
 		STATS,
-		AUTO_CONNECT
+		AUTO_CONNECT,
+		PARSE_COMMAND_LINE
 	};
 
 	enum {
@@ -93,6 +95,8 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(trayMessage, onTray)
+		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
+		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -162,10 +166,16 @@ public:
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-	
+	void parseCommandLine(const string& cmdLine);
+
+	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return WMU_WHERE_ARE_YOU;
+	}
+
 	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		updateTray(true); 
 		return 0;
@@ -371,7 +381,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.9 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.10 2002/06/18 19:06:34 arnetheduck Exp $
  */
 
  

@@ -43,6 +43,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_PUBLIC_HUBS, SettingsManager::HUBLIST_SERVERS, PropPage::T_STR },
 	{ IDC_POPUP_PMS, SettingsManager::POPUP_PMS, PropPage::T_BOOL },
+	{ IDC_URL_HANDLER, SettingsManager::URL_HANDLER, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -64,6 +65,6 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.6 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.7 2002/06/18 19:06:34 arnetheduck Exp $
  */
 

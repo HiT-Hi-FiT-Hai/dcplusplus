@@ -42,7 +42,7 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", 
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -107,6 +107,8 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(GET_USER_INFO, true);
+	setDefault(URL_HANDLER, false);
+
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -232,6 +234,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.44 2002/06/13 18:47:00 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.45 2002/06/18 19:06:33 arnetheduck Exp $
  */
 

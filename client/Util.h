@@ -164,6 +164,16 @@ public:
 #endif // WIN32
 	}	
 
+	static string getAppName() {
+#ifdef WIN32
+		TCHAR buf[MAX_PATH+1];
+		GetModuleFileName(NULL, buf, MAX_PATH);
+		return string(buf);
+#else // WIN32
+		return emptyString;
+#endif // WIN32
+	}	
+
 	static string translateError(int aError) {
 #ifdef WIN32
 		LPVOID lpMsgBuf;
@@ -383,6 +393,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.47 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: Util.h,v 1.48 2002/06/18 19:06:34 arnetheduck Exp $
  */
 

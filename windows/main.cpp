@@ -23,6 +23,7 @@
 #include "MainFrm.h"
 #include "ExtendedTrace.h"
 #include "WinUtil.h"
+#include "SingleInstance.h"
 
 CAppModule _Module;
 
@@ -56,7 +57,65 @@ void callBack(void* x, const string& a) {
 	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
-int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
+static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
+{
+	string cmdLine = _T(lpstrCmdLine);
+	LRESULT result;
+
+	COPYDATASTRUCT cpd;
+	cpd.dwData = 0;
+	cpd.cbData = cmdLine.length() + 1;
+	cpd.lpData = (void *)cmdLine.c_str();
+	result = SendMessage(hOther, WM_COPYDATA, NULL,	(LPARAM)&cpd);
+}
+
+BOOL CALLBACK searchOtherInstance(HWND hWnd, LPARAM lParam) {
+	DWORD result;
+	LRESULT ok = ::SendMessageTimeout(hWnd, WMU_WHERE_ARE_YOU, 0, 0,
+		SMTO_BLOCK | SMTO_ABORTIFHUNG, 5000, &result);
+	if(ok == 0)
+		return TRUE;
+	if(result == WMU_WHERE_ARE_YOU) {
+		// found it
+		HWND *target = (HWND *)lParam;
+		*target = hWnd;
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static void installUrlHandler() {
+	HKEY hk; 
+	char Buf[512];
+	string app = "\"" + Util::getAppName() + "\" %1";
+	Buf[0] = 0;
+
+	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
+		DWORD bufLen = sizeof(Buf);
+		DWORD type;
+		::RegQueryValueEx(hk, NULL, 0, &type, (LPBYTE)Buf, &bufLen);
+		::RegCloseKey(hk);
+	}
+
+	if(Util::stricmp(app.c_str(), Buf) != 0) {
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub", &hk);
+		char* tmp = "URL:Direct Connect Protocol";
+		::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, strlen(tmp) + 1);
+		::RegSetValueEx(hk, "URL Protocol", 0, REG_SZ, (LPBYTE)"", 1);
+		::RegCloseKey(hk);
+
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\Shell\\Open\\Command", &hk);
+		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
+		::RegCloseKey(hk); 
+
+		::RegCreateKey(HKEY_CLASSES_ROOT, "dchub\\DefaultIcon", &hk);
+		app = Util::getAppName();
+		::RegSetValueEx(hk, "", 0, REG_SZ, (LPBYTE)app.c_str(), app.length() + 1);
+		::RegCloseKey(hk);
+	}
+} 
+
+static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
@@ -90,6 +149,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	
+	if(BOOLSETTING(URL_HANDLER)) {
+		installUrlHandler();
+	}
+
 	if(wndMain.CreateEx() == NULL)
 	{
 		ATLTRACE(_T("Main window creation failed!\n"));
@@ -106,6 +169,26 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
+	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
+
+	if(dcapp.IsAnotherInstanceRunning()) {
+		HWND hOther = NULL;
+		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
+
+		if( hOther != NULL ) {
+			// pop up
+			::SetForegroundWindow(hOther);
+
+			if( IsIconic(hOther)) {
+				// restore
+				::ShowWindow(hOther, SW_RESTORE);
+			}
+			sendCmdLine(hOther, lpstrCmdLine);
+		}
+
+		return FALSE;
+	}
+
 	HRESULT hRes = ::CoInitialize(NULL);
 	// If you are running on NT 4.0 or higher you can use the following call instead to 
 	// make the EXE free threaded. This means that calls come in on a random RPC thread.
@@ -142,5 +225,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.7 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: main.cpp,v 1.8 2002/06/18 19:06:35 arnetheduck Exp $
  */

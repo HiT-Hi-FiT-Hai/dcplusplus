@@ -236,7 +236,10 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 						}
 					}
 				} else {
-					fire(ConnectionManagerListener::FAILED, cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+					if(cqi->getStatus() != ConnectionQueueItem::NO_DOWNLOAD_SLOTS) {
+						cqi->setStatus(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
+						fire(ConnectionManagerListener::FAILED, cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+					}
 				}
 			} else if(((i->second + 50*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
 				fire(ConnectionManagerListener::FAILED, cqi, STRING(CONNECTION_TIMEOUT));
@@ -588,5 +591,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.51 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.52 2002/06/18 19:06:33 arnetheduck Exp $
  */

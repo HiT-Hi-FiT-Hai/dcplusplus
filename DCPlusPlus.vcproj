@@ -377,6 +377,9 @@
 				RelativePath=".\windows\SearchFrm.h">
 			</File>
 			<File
+				RelativePath="windows\SingleInstance.h">
+			</File>
+			<File
 				RelativePath=".\windows\SpyFrame.h">
 			</File>
 			<File

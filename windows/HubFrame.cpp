@@ -403,7 +403,7 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	
 	return 0; 
 };
-int HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInfo* ui /* = NULL */) {
+bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInfo* ui /* = NULL */) {
 	int i = ctrlUsers.find(u->getNick());
 	bool newUser = false;
 	if(i == -1) {
@@ -435,14 +435,16 @@ int HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInfo
 	}
 	if(!newUser && ui == NULL)
 		delete ui;
-	return i;
+	return newUser;
 }
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USER) {
 		UserInfo* ui = (UserInfo*)lParam;
 		User::Ptr& u = ui->user;
-		updateUser(u, true, ui);
+		if(updateUser(u, true, ui) && showJoins) {
+			addLine("*** " + STRING(PARTS) + ui->user->getNick());
+		}
 	} else if(wParam == UPDATE_USERS) {
 		User::List* ul = (User::List*)lParam;
 
@@ -676,8 +678,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 			}
 			break;
 		case VK_RETURN:
-			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-				(GetKeyState(VK_CONTROL) & 0x8000) || 
+			if( (GetKeyState(VK_CONTROL) & 0x8000) || 
 				(GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				} else {
@@ -825,5 +826,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.14 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
  */

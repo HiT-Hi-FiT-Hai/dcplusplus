@@ -138,10 +138,15 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 
+
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
-	
+
+	int w[] = { 1, 2, 3};
+	ctrlStatus.SetParts(3, w);
+	updateStatus();
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -659,7 +664,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.11 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.12 2002/06/18 19:06:34 arnetheduck Exp $
  */
 
 

@@ -143,6 +143,7 @@
 #define IDC_SHOW_JOINS                  1075
 #define IDC_MIN_UPLOAD_SPIN             1075
 #define IDC_CHEVRON                     1076
+#define IDC_URL_HANDLER                 1076
 #define IDC_OPEN_FILE_LIST              1077
 #define IDC_TOTALS                      1077
 #define IDC_SEARCH                      1078
@@ -157,8 +158,8 @@
 #define IDC_PRIVATE_CHAT                1083
 #define IDC_FINISHED                    1084
 #define IDC_TEMP_DOWNLOAD_DIRECTORY     1084
-#define IDC_BUTTON1                     1085
 #define IDC_BROWSETEMPDIR               1085
+#define IDC_CHECK1                      1086
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -176,7 +177,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        228
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1086
+#define _APS_NEXT_CONTROL_VALUE         1087
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

@@ -138,7 +138,10 @@ public:
 	static int sortSlots(LPARAM a, LPARAM b) {
 		SearchResult* c = (SearchResult*)a;
 		SearchResult* d = (SearchResult*)b;
-		return compare(c->getFreeSlots(), d->getFreeSlots());
+		if(c->getFreeSlots() == d->getFreeSlots())
+			return compare(c->getSlots(), d->getSlots());
+		else
+			return compare(c->getFreeSlots(), d->getFreeSlots());
 	}
 
 	void removeSelected() {
@@ -273,6 +276,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.11 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.12 2002/06/18 19:06:34 arnetheduck Exp $
  */
 
