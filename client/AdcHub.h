@@ -71,7 +71,7 @@ private:
 
 	User::NickMap nickMap;
 	User::Ptr hub;
-	string lastInfo;
+	StringMap lastInfoMap;
 
 	string salt;
 
@@ -86,5 +86,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.10 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.11 2004/09/27 16:58:29 arnetheduck Exp $
  */

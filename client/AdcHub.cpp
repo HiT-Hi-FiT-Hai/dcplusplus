@@ -281,23 +281,46 @@ void AdcHub::info() {
 		return;
 
 	string minf = "BINF " + getMe()->getCID().toBase32();
-	minf += " NI" + Command::escape(getNick()); 
-	minf += " DE" + Command::escape(getDescription());
-	minf += " SL" + Util::toString(SETTING(SLOTS));
-	minf += " SS" + ShareManager::getInstance()->getShareSizeString();
-	minf += " HN" + Util::toString(counts.normal);
-	minf += " HR" + Util::toString(counts.registered);
-	minf += " HO" + Util::toString(counts.op);
-	minf += " VE++\\ " VERSIONSTRING;
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		minf += " I40.0.0.0";
-		minf += " U4" + Util::toString(SETTING(IN_PORT));
+	unsigned size = minf.size();
+	string tmp;
+
+	StringMapIter i;
+#define ADDPARAM(var, content) \
+	tmp = content; \
+	if((i = lastInfoMap.find(var)) != lastInfoMap.end()) { \
+		if(i->second != tmp) { \
+			if(tmp.empty()) \
+				lastInfoMap.erase(i); \
+			else \
+				i->second = tmp; \
+			minf += var + tmp; \
+		} \
+	} else if(!tmp.empty()) { \
+		minf += var + tmp; \
+		lastInfoMap[var] = tmp; \
 	}
 
-	minf += "\n";
-	if(minf != lastInfo) {
+	ADDPARAM(" NI", Command::escape(getNick()));
+	ADDPARAM(" DE", Command::escape(getDescription()));
+	ADDPARAM(" SL", Util::toString(SETTING(SLOTS)));
+	ADDPARAM(" SS", ShareManager::getInstance()->getShareSizeString());
+	ADDPARAM(" HN", Util::toString(counts.normal));
+	ADDPARAM(" HR", Util::toString(counts.registered));
+	ADDPARAM(" HO", Util::toString(counts.op));
+	ADDPARAM(" VE", "++\\ " VERSIONSTRING);
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		ADDPARAM(" I4", "0.0.0.0");
+		ADDPARAM(" U4", Util::toString(SETTING(IN_PORT)));
+	} else {
+		ADDPARAM(" I4", "");
+		ADDPARAM(" U4", "");
+	}
+
+#undef ADDPARAM
+
+	if(minf.size() != size) {
+		minf += "\n";
 		send(minf);
-		lastInfo = minf;
 	}
 }
 
@@ -312,7 +335,7 @@ string AdcHub::checkNick(const string& aNick) {
 
 void AdcHub::on(Connected) throw() { 
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
-	lastInfo.clear();
+	lastInfoMap.clear();
 	send("HSUP +BAS0\n");
 	
 	fire(ClientListener::Connected(), this);
@@ -326,5 +349,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.16 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.17 2004/09/27 16:58:29 arnetheduck Exp $
  */

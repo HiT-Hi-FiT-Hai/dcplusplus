@@ -51,6 +51,7 @@ international filenames in it - they will not be correctly converted.
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
 * Fixed a memory leak with rollback buffers under certain conditions
+* ADC INF updates only send the necessary info (thanks sed)
 
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
