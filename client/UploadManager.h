@@ -34,7 +34,7 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
-	void setUser(User::Ptr& aUser) { user = aUser; }
+	void setUser(User::Ptr& aUser) { user = aUser; if(user) nick = user->getNick(); };
 	User::Ptr& getUser() { return user; };
 	
 	GETSETREF(string, fileName, FileName);
@@ -79,8 +79,8 @@ public:
 		cs.leave();
 	}
 
-	int getConnections() { cs.enter(); int sz = connections.size(); cs.leave(); return sz; };
-	int getFreeSlots() { return SETTING(SLOTS) - getConnections(); }
+	int getUploads() { cs.enter(); int sz = uploads.size(); cs.leave(); return sz; };
+	int getFreeSlots() { return SETTING(SLOTS) - getUploads(); }
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
@@ -205,9 +205,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.28 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.29 2002/01/16 20:56:27 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.29  2002/01/16 20:56:27  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.28  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

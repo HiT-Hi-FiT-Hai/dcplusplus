@@ -144,7 +144,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,65,82,50,14
     CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
-                    IDC_STATIC,18,38,143,36
+                    IDC_VERSION,18,38,143,36
     ICON            IDR_MAINFRAME,IDC_STATIC,79,15,20,20
     GROUPBOX        "",IDC_STATIC,7,7,166,69
 END

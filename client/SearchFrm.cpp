@@ -114,7 +114,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			ctrlResults.GetItemText(i, COLUMN_NICK, buf, MAX_PATH);
 			string user = buf;
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, MAX_PATH);
+			ctrlResults.GetItemText(i, COLUMN_PATH, buf, MAX_PATH);
 			string path = buf;
 			
 			try {
@@ -213,9 +213,12 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.14 2002/01/15 21:57:53 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.15 2002/01/16 20:56:27 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.15  2002/01/16 20:56:27  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.14  2002/01/15 21:57:53  arnetheduck
  * Hopefully fixed the two annoying bugs...
  *

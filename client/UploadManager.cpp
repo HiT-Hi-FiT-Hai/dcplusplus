@@ -29,12 +29,13 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	cs.enter();
 	
 	try {
-		if((getFreeSlots()<0)) {
+		if((getFreeSlots()<=0)) {
 			aSource->maxedOut();
 			removeConnection(aSource);
 			cs.leave();
 			return;
 		}
+
 		// We only give out one connection / user...
 		for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 			if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
@@ -166,9 +167,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.5 2002/01/15 00:41:54 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.6 2002/01/16 20:56:27 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.6  2002/01/16 20:56:27  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.5  2002/01/15 00:41:54  arnetheduck
  * late night fixes...
  *

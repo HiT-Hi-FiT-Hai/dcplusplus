@@ -89,16 +89,20 @@ public:
 
 	bool isConnected() { return socket.isConnected(); };
 
-	void disconnect() {	
+	void disconnect() throw() {	
 		socket.removeListener(this);
 		socket.disconnect();
-		cs.enter();
+
+		{ 
+			Lock l(cs);
+			
+			for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+				i->second->unsetFlag(User::ONLINE);
+			}
+			users.clear();
 		
-		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
-			i->second->unsetFlag(User::ONLINE);
 		}
-		users.clear();
-		cs.leave();
+		
 	}
 
 	void validateNick(const string& aNick) {
@@ -329,9 +333,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.27 2002/01/15 00:41:54 arnetheduck Exp $
+ * $Id: Client.h,v 1.28 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.28  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.27  2002/01/15 00:41:54  arnetheduck
  * late night fixes...
  *

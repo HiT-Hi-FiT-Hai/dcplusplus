@@ -19,9 +19,12 @@
 #ifdef _DEBUG
 #define dcdebug ATLTRACE
 #define dcassert(exp) ATLASSERT(exp)
+#define dcdrun(exp) exp
+
 #else //_DEBUG
 #define dcdebug ATLTRACE
 #define dcassert(exp) __assume(exp)
+#define dcdrun(exp)
 #endif //_DEBUG
 
 typedef vector<string> StringList;
@@ -39,7 +42,6 @@ typedef StringMap::iterator StringMapIter;
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
 #define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() const { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
 
-
 /**
  * This message is posted when something's changed about the hub. It's necessary, because using a SendMessage
  * might block the main window thread if it's trying to access a resource that the Speaker owns.
@@ -50,9 +52,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.9 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.10 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.10  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.9  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

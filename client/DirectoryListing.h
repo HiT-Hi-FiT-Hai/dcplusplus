@@ -36,10 +36,11 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		string name;
-		LONGLONG size;
-		Directory* parent;
-		File(Directory* aDir = NULL, const string& aName = "", LONGLONG aSize = -1) : parent(aDir), name(aName), size(aSize) { };
+		File(Directory* aDir = NULL, const string& aName = "", LONGLONG aSize = -1) throw() : parent(aDir), name(aName), size(aSize) { };
+
+		GETSETREF(string, name, Name);
+		GETSET(LONGLONG, size, Size);
+		GETSET(Directory*, parent, Parent);
 	};
 
 	class Directory {
@@ -48,10 +49,24 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
+		List directories;
+		File::List files;
+		
+		Directory(Directory* aParent = NULL, const string& aName = "") : parent(aParent), name(aName) { };
+		
+		~Directory() {
+			for(Iter i = directories.begin(); i!=directories.end(); ++i) {
+				delete *i;
+			}
+			for(File::Iter j = files.begin(); j!= files.end(); ++j) {
+				delete *j;
+			}
+		}
+
 		LONGLONG getSize() {
 			LONGLONG x = 0;
 			for(File::Iter i = files.begin(); i != files.end(); ++i) {
-				x+=(*i)->size;
+				x+=(*i)->getSize();
 			}
 			return x;
 		}
@@ -74,22 +89,9 @@ public:
 			return x;
 		}
 		
-		string name;
-		List directories;
-		File::List files;
-
-		Directory* parent;
-		Directory(Directory* aParent = NULL, const string& aName = "") : parent(aParent), name(aName) { };
 		
-		~Directory() {
-			for(Iter i = directories.begin(); i!=directories.end(); ++i) {
-				delete *i;
-			}
-			for(File::Iter j = files.begin(); j!= files.end(); ++j) {
-				delete *j;
-			}
-		}
-		
+		GETSETREF(string, name, Name);
+		GETSET(Directory*, parent, Parent);		
 	};
 
 	LONGLONG getTotalSize() {
@@ -100,7 +102,7 @@ public:
 	}
 
 	void download(Directory* aDir, const string& aUser, const string& aTarget) {
-		string target = aTarget + aDir->name + '\\';
+		string target = aTarget + aDir->getName() + '\\';
 		// First, recurse over the directories
 		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
 			download(*j, aUser, target);
@@ -108,17 +110,17 @@ public:
 		// Then add the files
 		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 			File* file = *i;
-			download(file, aUser, target + file->name);
+			download(file, aUser, target + file->getName());
 		}
 	}
 
 	void download(File* aFile, const string& aUser, const string& aTarget) {
-		DownloadManager::getInstance()->download(getPath(aFile) + aFile->name, aFile->size, aUser, aTarget);
+		DownloadManager::getInstance()->download(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
 	
 	void load(string& i);
 	string getPath(Directory* d);
-	string getPath(File* f) { return getPath(f->parent); };
+	string getPath(File* f) { return getPath(f->getParent()); };
 
 	Directory* getRoot() { return root; };
 	DirectoryListing() {
@@ -138,9 +140,12 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.5 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.5  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.4  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

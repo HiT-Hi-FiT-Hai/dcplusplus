@@ -35,7 +35,16 @@ class User;
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
-
+	
+	enum {
+		COLUMN_FILENAME,
+		COLUMN_SIZE
+	};
+	
+	enum {
+		IMAGE_DIRECTORY = 0,
+		IMAGE_FILE = 2
+	};
 	DirectoryListingFrame(DirectoryListing* aList, const string& aNick) :  dl(aList), user(aNick) { };
 
 	~DirectoryListingFrame() {
@@ -62,11 +71,83 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
+		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	END_MSG_MAP()
 
+	static int sortFile(LPARAM a, LPARAM b) {
+		LVITEM* c = (LVITEM*)a;
+		LVITEM* d = (LVITEM*)b;
+		
+		if(c->iImage == IMAGE_DIRECTORY) {
+			if(d->iImage == IMAGE_FILE) {
+				return -1;
+			}
+			dcassert(c->iImage == IMAGE_DIRECTORY);
 
+			DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
+			DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
+			
+			return strnicmp(e->getName().c_str(), f->getName().c_str(), min(e->getName().size(), f->getName().size()));
+		} else {
+			if(d->iImage == IMAGE_DIRECTORY) {
+				return 1;
+			}
+			dcassert(c->iImage == IMAGE_FILE);
+			
+			DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
+			DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
+			
+			return strnicmp(e->getName().c_str(), f->getName().c_str(), min(e->getName().size(), f->getName().size()));
+		}
+	}
+	
+	static int sortSize(LPARAM a, LPARAM b) {
+		LVITEM* c = (LVITEM*)a;
+		LVITEM* d = (LVITEM*)b;
+		
+		if(c->iImage == IMAGE_DIRECTORY) {
+			if(d->iImage == IMAGE_FILE) {
+				return -1;
+			}
+			dcassert(c->iImage == IMAGE_DIRECTORY);
+			
+			DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
+			DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
+			LONGLONG g = e->getTotalSize();
+			LONGLONG h = f->getTotalSize();
+			
+			return (g < h) ? -1 : ((g == h) ? 0 : 1);
+		} else {
+			if(d->iImage == IMAGE_DIRECTORY) {
+				return 1;
+			}
+			dcassert(c->iImage == IMAGE_FILE);
+			
+			DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
+			DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
+			LONGLONG g = e->getSize();
+			LONGLONG h = f->getSize();
+			return (g < h) ? -1 : ((g == h) ? 0 : 1);
+		}
+	}
+
+	LRESULT onColumnClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+
+		if(l->iSubItem == ctrlList.getSortColumn()) {
+			ctrlList.setSortDirection(!ctrlList.getSortDirection());
+		} else {
+			if(l->iSubItem == COLUMN_FILENAME) {
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortFile);
+			} else if(l->iSubItem == COLUMN_SIZE) {
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+			}
+		}
+		return 0;
+	}
+	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -184,9 +265,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.10 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.11 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.11  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.10  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

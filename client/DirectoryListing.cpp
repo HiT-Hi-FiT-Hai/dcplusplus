@@ -34,7 +34,7 @@ void DirectoryListing::load(string& in) {
 		string tok = *i;
 		int j = tok.find_first_not_of('\t');
 		while(j < ident) {
-			cur = cur->parent;
+			cur = cur->getParent();
 			dcassert(cur != NULL);
 			ident--;
 		}
@@ -55,20 +55,23 @@ void DirectoryListing::load(string& in) {
 
 
 string DirectoryListing::getPath(Directory* d) {
-	string dir = d->name+"\\";
-	Directory* cur = d->parent;
+	string dir = d->getName()+"\\";
+	Directory* cur = d->getParent();
 	while(cur!=root) {
-		dir = cur->name +"\\" + dir;
-		cur = cur->parent;
+		dir = cur->getName() +"\\" + dir;
+		cur = cur->getParent();
 	}
 	return dir;
 }
 
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.4 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.5 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.5  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.4  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

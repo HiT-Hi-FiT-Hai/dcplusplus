@@ -625,6 +625,11 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.slots = SettingsManager::getInstance()->get(SettingsManager::SLOTS, false);
 
 	if(dlg.DoModal(m_hWnd) == IDOK) {
+
+		if(dlg.directory.size() > 0 && dlg.directory[dlg.directory.size() - 1] != '\\') {
+			dlg.directory += '\\';
+		}
+		
 		SettingsManager::getInstance()->set(SettingsManager::NICK, Util::validateString(dlg.nick));
 		SettingsManager::getInstance()->set(SettingsManager::DESCRIPTION, Util::validateString(dlg.description));
 		SettingsManager::getInstance()->set(SettingsManager::EMAIL, Util::validateString(dlg.email));
@@ -766,9 +771,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.38 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.39 2002/01/16 20:56:27 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.39  2002/01/16 20:56:27  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.38  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

@@ -34,7 +34,8 @@ public:
 	enum {	SORT_STRING,
 			SORT_STRING_NOCASE,
 			SORT_INT,
-			SORT_FUNC
+			SORT_FUNC,
+			SORT_FUNC_ITEM
 	};
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		sortColumn = aColumn;
@@ -59,11 +60,24 @@ public:
 		int loc = 0;
 		int count = GetItemCount();
 
+		LVITEM a;
+		a.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE | LVIF_TEXT;
+		a.iItem = -1;
+		a.iSubItem = sortColumn;
+		a.iImage = iImage;
+		a.state = 0;
+		a.stateMask = 0;
+		a.lParam = lParam;
+		a.iIndent = 0;
+		a.pszText = const_cast<char*>(sortColumn == -1 ? aList[0].c_str() : aList[sortColumn].c_str());
+		a.cchTextMax = sortColumn == -1 ? aList[0].size() : aList[sortColumn].size();
+		
 		if(sortColumn == -1) {
 			loc = count;
 		} else if(count == 0) {
 			loc = 0;
 		} else {
+
 			string& b = aList[sortColumn];
 			int c;
 			LPARAM data;			
@@ -88,7 +102,17 @@ public:
 					comp = compare(c, atoi(buf)); break;
 				case SORT_FUNC:
 					data = GetItemData(loc);
-					comp = fun(lParam, data); break; 
+					comp = fun(lParam, data); break;
+				case SORT_FUNC_ITEM:
+					{
+						LVITEM b;
+						b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+						b.iItem = loc;
+						b.iSubItem = 0;
+						GetItem(&b);
+						comp = fun((LPARAM)&a, (LPARAM)&b);
+					} 
+					break;
 				default:
 					dcassert(0);
 				}
@@ -115,6 +139,16 @@ public:
 				comp = compare(c, atoi(buf)); break;
 			case SORT_FUNC:
 				comp = fun(lParam, data); break;
+			case SORT_FUNC_ITEM:
+				{
+					LVITEM b;
+					b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+					b.iItem = loc;
+					b.iSubItem = 0;
+					GetItem(&b);
+					comp = fun((LPARAM)&a, (LPARAM)&b);
+				}
+				break;
 			default:
 				dcassert(0);
 			}
@@ -127,7 +161,10 @@ public:
 			
 		}
 		SetRedraw(FALSE);
-		int i = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, loc, aList[0].c_str(), 0, 0, iImage, lParam);
+		dcassert(loc >= 0 && loc <= GetItemCount());
+		a.iItem = loc;
+		a.iSubItem = 0;
+		int i = InsertItem(&a);
 		int k = 0;
 		for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 			SetItemText(i, k, j->c_str());
@@ -194,6 +231,21 @@ public:
 			return p->ascending ? compare(atoi(buf), atoi(buf2)) : -compare(atoi(buf), atoi(buf2));
 		case SORT_FUNC:
 			return p->ascending ? p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2)) : -p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
+		case SORT_FUNC_ITEM: 
+			{
+				LVITEM a;
+				a.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+				a.iItem = lParam1;
+				a.iSubItem = 0;
+				p->GetItem(&a);
+
+				LVITEM b;
+				b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+				b.iItem = lParam2;
+				b.iSubItem = 0;
+				p->GetItem(&b);
+				return p->ascending ? p->fun((LPARAM)&a, (LPARAM)&b) : -p->fun((LPARAM)&a, (LPARAM)&b);
+			}
 		default:
 			return -1;
 		}
@@ -219,9 +271,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.13 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.14 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.14  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.13  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -32,6 +32,7 @@ public:
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
+		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus");
 		CenterWindow(GetParent());
 		return TRUE;
 	}
@@ -47,11 +48,14 @@ public:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.2 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: AboutDlg.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

@@ -259,7 +259,7 @@ public:
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
 			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
 		} else {
-			if(l->iSubItem == 1) {
+			if(l->iSubItem == COLUMN_SHARED) {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
@@ -456,9 +456,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.36 2002/01/15 21:57:53 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.37 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.37  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.36  2002/01/15 21:57:53  arnetheduck
  * Hopefully fixed the two annoying bugs...
  *

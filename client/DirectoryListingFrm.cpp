@@ -25,7 +25,7 @@
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
-		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->name.c_str(), I_IMAGECALLBACK, I_IMAGECALLBACK, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
+		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->getName().c_str(), I_IMAGECALLBACK, I_IMAGECALLBACK, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		updateTree(*i, ht);
 	}
 }
@@ -57,16 +57,16 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 		for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
 			DirectoryListing::Directory* d = *i;
 			StringList l;
-			l.push_back(d->name);
+			l.push_back(d->getName());
 			l.push_back(Util::formatBytes(d->getTotalSize()));
-			ctrlList.insert(l, 0, (LPARAM)d);
+			ctrlList.insert(l, IMAGE_DIRECTORY, (LPARAM)d);
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 			
 			StringList l;
-			l.push_back((*j)->name);
-			l.push_back(Util::formatBytes((*j)->size));
-			ctrlList.insert(l, 2, (LPARAM)*j);
+			l.push_back((*j)->getName());
+			l.push_back(Util::formatBytes((*j)->getSize()));
+			ctrlList.insert(l, IMAGE_FILE, (LPARAM)*j);
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
@@ -89,10 +89,10 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 
 		ctrlList.GetItem(&lvi);
 
-		if(lvi.iImage == 2) {
+		if(lvi.iImage == IMAGE_FILE) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 			try {
-				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->name);
+				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->getName());
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -160,7 +160,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 		try {
 			if(lvi.iImage == 2) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-				dl->download(file, user, target + file->name);
+				dl->download(file, user, target + file->getName());
 			} else {
 				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 				dl->download(d, user, target);
@@ -187,7 +187,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		try {
 			if(lvi.iImage == 2) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-				string target = file->name;
+				string target = file->getName();
 				if(Util::browseSaveFile(target))
 					dl->download(file, user, target);
 			} else {
@@ -219,8 +219,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
 	
-	ctrlList.InsertColumn(0, _T("Filename"), LVCFMT_LEFT, 400, 0);
-	ctrlList.InsertColumn(1, _T("Size"), LVCFMT_RIGHT, 100, 1);
+	ctrlList.InsertColumn(COLUMN_FILENAME, _T("Filename"), LVCFMT_LEFT, 400, COLUMN_FILENAME);
+	ctrlList.InsertColumn(COLUMN_SIZE, _T("Size"), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	
 	ctrlImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTree.SetImageList(ctrlImages, TVSIL_NORMAL);
@@ -275,9 +275,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.17 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.17  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.16  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -25,30 +25,47 @@
 
 class CriticalSection  
 {
+	dcdrun(int counter;);
+
 	CRITICAL_SECTION cs;
 public:
-	void enter() {
+	void enter() throw() {
 		EnterCriticalSection(&cs);
+		dcdrun(counter++;);	
 	}
-	void leave() {
+	void leave() throw() {
+		dcdrun(counter--; dcassert(counter >= 0););
 		LeaveCriticalSection(&cs);
 	}
-	CriticalSection() {
+	CriticalSection() throw() {
+		dcdrun(counter = 0;);
 		InitializeCriticalSection(&cs);
 	}
-	~CriticalSection() {
+	~CriticalSection() throw() {
+		dcdrun(dcassert(counter==0););
 		DeleteCriticalSection(&cs);
 	}
 
+};
+
+class Lock {
+private:
+	CriticalSection& cs;
+public:
+	Lock(CriticalSection& aCs) throw() : cs(aCs)  { cs.enter(); };
+	~Lock() throw() { cs.leave(); };
 };
 
 #endif // !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.4 2002/01/16 20:56:26 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.4  2002/01/16 20:56:26  arnetheduck
+ * Bug fixes, file listing sort and some other small changes
+ *
  * Revision 1.3  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.
