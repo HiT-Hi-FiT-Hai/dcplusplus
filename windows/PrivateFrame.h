@@ -139,7 +139,7 @@ private:
 	
 	HWND parent;
 	bool created;
-	typedef HASH_MAP<User::Ptr, PrivateFrame*> FrameMap;
+	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
 	CEdit ctrlClient;
@@ -156,6 +156,6 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.5 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.6 2002/06/28 20:53:49 arnetheduck Exp $
  */
 

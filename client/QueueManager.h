@@ -61,9 +61,9 @@ public:
 	typedef List::iterator Iter;
 	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
-	typedef HASH_MAP<User::Ptr, Ptr> UserMap;
+	typedef HASH_MAP<User::Ptr, Ptr, User::HashFunction> UserMap;
 	typedef UserMap::iterator UserIter;
-	typedef HASH_MAP<User::Ptr, List> UserListMap;
+	typedef HASH_MAP<User::Ptr, List, User::HashFunction> UserListMap;
 	typedef UserListMap::iterator UserListIter;
 
 	enum Status {
@@ -162,12 +162,16 @@ private:
 	
 	Source* addSource(const User::Ptr& aUser, const string& aPath) {
 		dcassert(!isSource(aUser));
+		Source* s = NULL;
 		Source::Iter i = getBadSource(aUser);
 		if(i != badSources.end()) {
-			delete *i;
+			s = *i;
 			badSources.erase(i);
+			s->setPath(aPath);
+		} else {
+			s = new Source(aUser, aPath);
 		}
-		Source* s = new Source(aUser, aPath);
+
 		sources.push_back(s);
 		return s;
 	}
@@ -221,11 +225,14 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString) throw(QueueException, FileException) {
-		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p, aTempTarget);
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, 
+		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException) {
+		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, 
+			aTarget, aResume, p, aTempTarget, addBad);
 	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString) throw(QueueException, FileException);
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, 
+		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
 		string file = Util::getAppPath() + "FileLists\\" + aUser->getNick() + ".DcLst";
@@ -318,6 +325,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.29 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.30 2002/06/28 20:53:48 arnetheduck Exp $
  */
 

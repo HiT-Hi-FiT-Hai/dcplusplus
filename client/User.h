@@ -46,6 +46,10 @@ public:
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 
+	struct HashFunction {
+		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))>>2; };
+	};
+
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
 	virtual ~User() throw() { };
 
@@ -80,18 +84,10 @@ private:
 	Client* client;
 };
 
-namespace _STL {
-	template<> struct hash<User::Ptr> {
-		size_t operator()(const User::Ptr& x) const {
-			return ((int)(&(*x)))>>2;
-		}
-	};
-}
-
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
 
 /**
- * @file User.cpp
- * $Id: User.h,v 1.20 2002/06/02 00:12:44 arnetheduck Exp $
+ * @file User.h
+ * $Id: User.h,v 1.21 2002/06/28 20:53:48 arnetheduck Exp $
  */
 

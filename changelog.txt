@@ -13,8 +13,17 @@
   people often do this...=)
 * More changes to the autosearch, it should now be more random and therefore yield better results...
 * Old download queues (pre 0.174) are no longer loaded
-* Added better error reporting on failed downloads (look in the queue window to see why a source failed)
-* Some fixes in the queue/connection handling
+* Added better error handling on failed downloads
+* Added a column to the queue window that shows which sources have failed and why
+* Major changes in the connection queue handling for better stability in the future
+* Added doxygen configuration file. To generate a very nice overview of the dc++ sources
+  download doxygen (Www.doxygen.org) and graphviz (search google), then check doxyfile
+  for the proper paths, and then type start doxygen in the project directory
+* Removed sources are no longed automatically readded by the autosearch feature
+* Added option to readd a removed/bad source from the queue window
+* Added option to remove a user from all queued downloads from the transfer window
+
+
 
  -- 0.177 2002-06-07 --
 * Improved performance on "File not available" (connection / slot is now kept)
@@ -594,5 +603,4 @@
  -- 0.01 2001-11-21 --
 
 * Initial release.
-* List hubs, connect to them and chat.
- 
+* List hubs, connect to them and chat 

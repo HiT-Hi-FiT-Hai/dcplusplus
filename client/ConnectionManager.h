@@ -38,8 +38,6 @@ public:
 	typedef List::iterator Iter;
 	typedef map<Ptr, u_int32_t> TimeMap;
 	typedef TimeMap::iterator TimeIter;
-	typedef map<UserConnection*, Ptr> QueueMap;
-	typedef QueueMap::iterator QueueIter;
 	
 	enum State {
 		CONNECTING,					// In pendingDown, recently sent request to connect
@@ -83,7 +81,7 @@ public:
 	void connect(const string& aServer, short aPort, const string& aNick);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
-	void putUploadConnection(UserConnection* aSource) { putConnection(aSource); };
+	void putUploadConnection(UserConnection* aSource);
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
 	void shutdown();	
@@ -98,12 +96,16 @@ private:
 
 	CriticalSection cs;
 
+	/** Pending connections, i e users we're trying to connect to */
 	ConnectionQueueItem::TimeMap pendingDown;
+	/** Download connection pool, pool of active connections to be used for downloading */
 	ConnectionQueueItem::List downPool;
-	ConnectionQueueItem::QueueMap connections;
+	/** Connections that are currently being used by the Up/DownloadManager */
+	ConnectionQueueItem::List active;
 
 	User::List pendingAdd;
 	UserConnection::List pendingDelete;
+	/** All active connections */
 	UserConnection::List userConnections;
 
 	ServerSocket socket;
@@ -158,6 +160,6 @@ private:
 #endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
- * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.44 2002/06/27 23:38:24 arnetheduck Exp $
+ * @file ConnectionManager.h
+ * $Id: ConnectionManager.h,v 1.45 2002/06/28 20:53:47 arnetheduck Exp $
  */

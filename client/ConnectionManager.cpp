@@ -42,24 +42,25 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	{
 		Lock l(cs);
 
-		if(find(pendingAdd.begin(), pendingAdd.end(), aUser) != pendingAdd.end())
-			return;
-		
+		// Check the download pool
 		if(find(downPool.begin(), downPool.end(), aUser) != downPool.end()) {
-			pendingAdd.push_back(aUser);
+			if(find(pendingAdd.begin(), pendingAdd.end(), aUser) == pendingAdd.end())
+				pendingAdd.push_back(aUser);
 			return;
 		}
 		
+		// See if we're already trying to connect
 		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
 			if(i->first->getUser() == aUser) {
 				return;
 			}
 		}
 
-		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
-			if(k->first->isSet(UserConnection::FLAG_DOWNLOAD) && k->first->getUser() == aUser) {
+		// Check if we have an active download connection already
+		for(ConnectionQueueItem::Iter j = active.begin(); j != active.end(); ++j) {
+			dcassert((*j)->getConnection());
+			if((*j == aUser) && ((*j)->getConnection()->isSet(UserConnection::FLAG_DOWNLOAD)))
 				return;
-			}
 		}
 		
 		// Add it to the pending...
@@ -77,56 +78,58 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 		aSource->addListener(this);
 		{
 			Lock l(cs);
+			aSource->getCQI()->setState(ConnectionQueueItem::IDLE);
+
+			dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
+			active.erase(find(active.begin(), active.end(), aSource->getCQI()));
 			
-			ConnectionQueueItem::QueueIter i = connections.find(aSource);
-			dcassert(i != connections.end());
-			i->second->setState(ConnectionQueueItem::IDLE);
-			downPool.push_back(i->second);
-			aSource->setLastActivity(GET_TICK());
-			connections.erase(i);
+			downPool.push_back(aSource->getCQI());
 		}
 		dcdebug("ConnectionManager::putDownloadConnection Pooling reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
 		
 	} else {
-		if(aSource->getUser() && QueueManager::getInstance()->hasDownload(aSource->getUser())) {
+		if(QueueManager::getInstance()->hasDownload(aSource->getCQI()->getUser())) {
 			aSource->removeListeners();
 			aSource->disconnect();
 			Lock l(cs);
-			
-			ConnectionQueueItem::QueueIter i = connections.find(aSource);
-			if(i != connections.end()) {
-				User::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second->getUser());
-				if(j != pendingAdd.end()) {
-					pendingAdd.erase(j);
-				}
-				i->second->setConnection(NULL);
-				i->second->setState(ConnectionQueueItem::WAITING);
-				dcassert(pendingDown.find(i->second) == pendingDown.end());
-				pendingDown[i->second] = GET_TICK();
-				connections.erase(i);
-			}
 
+			ConnectionQueueItem* cqi = aSource->getCQI();
+			dcassert(cqi);
+			
+			// Remove the userconnection, don't need it any more
 			dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
 			userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
 			pendingDelete.push_back(aSource);
-			return;
+
+			cqi->setConnection(NULL);
+			cqi->setState(ConnectionQueueItem::WAITING);
+			
+			dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
+			active.erase(find(active.begin(), active.end(), aSource->getCQI()));
+			
+			pendingDown[cqi] = GET_TICK();
+		} else {
+			putConnection(aSource);
 		}
-		putConnection(aSource);
 	}
 }
 
+void ConnectionManager::putUploadConnection(UserConnection* aSource) {
+	{
+		Lock l(cs);
+		dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
+		active.erase(find(active.begin(), active.end(), aSource->getCQI()));
+	}
+	putConnection(aSource);
+}
 void ConnectionManager::putConnection(UserConnection* aConn) {
 	aConn->removeListeners();
 	aConn->disconnect();
 	ConnectionQueueItem* cqi = NULL;
 	{
 		Lock l(cs);
+		cqi = aConn->getCQI();
 		
-		ConnectionQueueItem::QueueIter i = connections.find(aConn);
-		if(i != connections.end()) {
-			cqi = i->second;
-			connections.erase(i);
-		}
 		dcassert(find(userConnections.begin(), userConnections.end(), aConn) != userConnections.end());
 		userConnections.erase(find(userConnections.begin(), userConnections.end(), aConn));
 		pendingDelete.push_back(aConn);
@@ -152,11 +155,12 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 				} else {
 					ConnectionQueueItem* cqi = *i;
 					downPool.erase(i);
+					dcassert(find(active.begin(), active.end(), cqi) == active.end());
+					active.push_back(cqi);
 					dcassert(cqi->getConnection());
-					dcassert(connections.find(cqi->getConnection()) == connections.end());
-					connections.insert(make_pair(cqi->getConnection(), cqi));
+					dcassert(cqi->getConnection()->getCQI() == cqi);
 					cqi->getConnection()->removeListener(this);
-					DownloadManager::getInstance()->addConnection((cqi)->getConnection());
+					DownloadManager::getInstance()->addConnection(cqi->getConnection());
 				}
 			}
 			pendingAdd.clear();
@@ -373,53 +377,16 @@ void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, 
 				// Damn! We lost!
 				aSource->unsetFlag(UserConnection::FLAG_DOWNLOAD);
 				aSource->setFlag(UserConnection::FLAG_UPLOAD);
+			} else if(aSource->getNumber() == number) {
+				putConnection(aSource);
+				return;
 			}
 		}
 	}
 
 	dcassert(aSource->isSet(UserConnection::FLAG_DOWNLOAD) ^ aSource->isSet(UserConnection::FLAG_UPLOAD));
 
-	{
-		Lock l(cs);
-		// Only one connection / user...
-		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
-			if( (k->first->getUser() == aSource->getUser()) && 
-				(aSource->isSet(UserConnection::FLAG_UPLOAD) == k->first->isSet(UserConnection::FLAG_UPLOAD)) ) {
-				
-				putConnection(aSource);
-				return;
-			}
-		}
-
-		// Now, let's see if we still want this connection...
-		// First, we try looking in the pending downloads...hopefully it's one of them...
-		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-			for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-				ConnectionQueueItem *cqi = i->first;
-				if(cqi->getUser() == aSource->getUser()) {
-					cqi->setConnection(aSource);
-					aSource->setCQI(cqi);
-					pendingDown.erase(i);
-					connections[aSource] = cqi;
-					aSource->setState(UserConnection::STATE_KEY);
-					fire(ConnectionManagerListener::CONNECTED, cqi);
-					return;
-				}
-			}
-		} else {
-			aSource->setFlag(UserConnection::FLAG_UPLOAD);
-			ConnectionQueueItem *cqi = new ConnectionQueueItem(aSource->getUser());
-			cqi->setConnection(aSource);
-			aSource->setCQI(cqi);
-			connections[aSource] = cqi;
-			aSource->setState(UserConnection::STATE_KEY);
-			fire(ConnectionManagerListener::ADDED, cqi);
-			fire(ConnectionManagerListener::CONNECTED, cqi);
-			return;
-		}
-	}
-	// Don't want it anymore???
-	putConnection(aSource);
+	aSource->setState(UserConnection::STATE_KEY);
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) throw() {
@@ -431,18 +398,62 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	aSource->removeListener(this);
 	dcassert(aSource->getUser());
 
-	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
-		DownloadManager::getInstance()->addConnection(aSource);
-	} else {
-		dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
-		dcdebug("ConnectionManager::onKey, leaving to uploadmanager\n");
-		UploadManager::getInstance()->addConnection(aSource);
+	{
+		Lock l(cs);
+
+		// Only one connection / user & direction...
+		for(ConnectionQueueItem::Iter k = active.begin(); k != active.end(); ++k) {
+			bool sameDirection = (*k)->getConnection()->isSet(UserConnection::FLAG_UPLOAD) == aSource->isSet(UserConnection::FLAG_UPLOAD);
+			if( sameDirection && (*k == aSource->getUser()) ) {
+				putConnection(aSource);
+				return;
+			}
+		}
+		
+		ConnectionQueueItem* cqi = NULL;
+
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			// See if we have a matching user in the pending connections...
+			ConnectionQueueItem::TimeIter i;
+			for(i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+				if(i->first->getUser() == aSource->getUser())
+					break;
+			}
+
+			if(i == pendingDown.end()) {
+				putConnection(aSource);
+				return;
+			}
+			cqi = i->first;
+			pendingDown.erase(i);
+			cqi->setConnection(aSource);
+		} else {
+			dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
+			cqi = new ConnectionQueueItem(aSource->getUser());
+			cqi->setConnection(aSource);
+			fire(ConnectionManagerListener::ADDED, cqi);			
+		}
+
+		aSource->setCQI(cqi);
+
+		dcassert(find(active.begin(), active.end(), cqi) == active.end());
+		active.push_back(cqi);
+
+		fire(ConnectionManagerListener::CONNECTED, cqi);
+
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
+			DownloadManager::getInstance()->addConnection(aSource);
+		} else {
+			dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
+			dcdebug("ConnectionManager::onKey, leaving to uploadmanager\n");
+			UploadManager::getInstance()->addConnection(aSource);
+		}
 	}
 }
 
 void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError*/) throw() {
-	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD) && aSource->getCQI()) {
 		{
 			Lock l(cs);
 			
@@ -457,8 +468,6 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 		}
 
 		putDownloadConnection(aSource);
-	} else if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
-		putUploadConnection(aSource);
 	} else {
 		putConnection(aSource);
 	}
@@ -468,23 +477,18 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 	{
 		Lock l(cs);
 
-		if(pendingDown.find(aCqi) != pendingDown.end()) {
-			pendingDown.erase(aCqi);
-			fire(ConnectionManagerListener::REMOVED, aCqi);
-			delete aCqi;
-		} else {
-			ConnectionQueueItem::QueueIter i;
-			for(i = connections.begin(); i != connections.end(); ++i) {
-				if(i->second == aCqi)
-					break;
-			}
+		ConnectionQueueItem::Iter i = find(active.begin(), active.end(), aCqi);
+		if(i != active.end()) {
+			dcassert((*i)->getConnection());
+			(*i)->getConnection()->disconnect();
+			return;
+		}
 
-			if(i!=connections.end()) {
-				dcassert(aCqi->getConnection());
-				aCqi->getConnection()->disconnect();
-			} else {
-				dcdebug("ConnectionManager::removeConnection: %p not found\n", aCqi);
-			}
+		i = find(downPool.begin(), downPool.end(), aCqi);
+		if(i != downPool.end()) {
+			dcassert((*i)->getConnection());
+			(*i)->getConnection()->disconnect();
+			return;
 		}
 	}
 }
@@ -567,6 +571,6 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 }
 
 /**
- * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.54 2002/06/27 23:38:24 arnetheduck Exp $
+ * @file ConnectionManager.cpp
+ * $Id: ConnectionManager.cpp,v 1.55 2002/06/28 20:53:47 arnetheduck Exp $
  */

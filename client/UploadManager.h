@@ -101,7 +101,7 @@ private:
 	Upload::List uploads;
 	CriticalSection cs;
 
-	typedef HASH_MAP<User::Ptr, u_int32_t> SlotMap;
+	typedef HASH_MAP<User::Ptr, u_int32_t, User::HashFunction> SlotMap;
 	typedef SlotMap::iterator SlotIter;
 	SlotMap reservedSlots;
 
@@ -156,6 +156,6 @@ private:
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
- * @file UploadManger.h
- * $Id: UploadManager.h,v 1.49 2002/06/02 00:12:44 arnetheduck Exp $
+ * @file UploadManager.h
+ * $Id: UploadManager.h,v 1.50 2002/06/28 20:53:48 arnetheduck Exp $
  */

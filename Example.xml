@@ -172,6 +172,7 @@
 		<String Name="PrivateMessageFrom">Private message from </String>
 		<String Name="Properties">Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
+		<String Name="ReaddSource">Readd source</String>
 		<String Name="ReallyExit">Really exit?</String>
 		<String Name="Redirect">Redirect</String>
 		<String Name="RedirectAlreadyConnected">Redirect request received to a hub that's already connected</String>
@@ -181,6 +182,7 @@
 		<String Name="Remove">Remove</String>
 		<String Name="RemoveAll">Remove all</String>
 		<String Name="RemoveAllSubdirectories">Remove all subdirectories before adding this one</String>
+		<String Name="RemoveFromAll">Remove user from queue</String>
 		<String Name="RemoveSource">Remove source</String>
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>

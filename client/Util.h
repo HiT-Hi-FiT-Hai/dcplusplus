@@ -64,7 +64,7 @@ class Flags {
 		int flags;
 };
 
-template<typename Listener, bool treadSafe = true>
+template<typename Listener>
 class Speaker {
 public:
 
@@ -398,6 +398,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.49 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: Util.h,v 1.50 2002/06/28 20:53:49 arnetheduck Exp $
  */
 

@@ -270,6 +270,6 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 }
 
 /**
- * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.33 2002/06/01 19:38:28 arnetheduck Exp $
+ * @file UploadManager.cpp
+ * $Id: UploadManager.cpp,v 1.34 2002/06/28 20:53:48 arnetheduck Exp $
  */

@@ -47,7 +47,7 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 				d->getTarget(), d->getUserConnection()->getUser()->getNick(),
 				d->getSize(), d->getAverageSpeed(), buf);
 			{
-				dcdebug("Adding finished: \"%s\" - \"%s\" (user: \"%s\")", item->getTime(), 
+				dcdebug("Adding finished: \"%s\" - \"%s\" (user: \"%s\")", item->getTime().c_str(), 
 					item->getTarget().c_str(), item->getUser().c_str());
 				Lock l(cs);
 				list.push_back(item);

@@ -18,12 +18,13 @@ string ResourceManager::strings[] = {
 "Not connected", "Not a socket", "No directory specified", "You're trying to download from yourself!", "No errors", "No matches", "No slots available", "No users", "No users to download from", "Normal", 
 "Notepad", "Offline", "Online", "Only users with free slots", "Open file list", "Operation would block execution", "Out of buffer space", "Passive user", "Password", "Parts: ", 
 "Path", "Paused", "Permission denied", "Picture", "Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++", "Preparing file list...", "Press the follow redirect button to connect to ", "Priority", "Private message from ", "Properties", 
-"Public Hubs", "Really exit?", "Redirect", "Redirect request received to a hub that's already connected", "Redirect user(s)", "Refresh", "Refresh user list", "Remove", "Remove all", "Remove all subdirectories before adding this one", 
-"Remove source", "Rollback inconsistency, existing file does not match the one being downloaded", "Running...", "Search", "Search for", "Search for alternates", "Search for file", "Search options", "Search spam detected from ", "Search Spy", 
-"Search string", "Searching for ", "Send private message", "Server", "Set priority", "Shared", "Shared Files", "Size", "Slot granted", "Slots", 
-"Slots set", "Socket has been shut down", "Specify a server to connect to", "Specify a search string", "Speed", "Status", "TB", "Time", "Timestamps disabled", "Timestamps enabled", 
-"Total: ", "Type", "Unable to create thread", "Unknown", "Unknown address", "Unknown error: 0x%x", "Upload finished, idle...", "Upload starting...", "Uploaded %s (%.01f%%), %s/s, %s left", " uploaded to ", 
-"User", "User offline", "User went offline", "Users", "Video", "Waiting...", "Waiting (User online)", "Waiting (%d of %d users online)", "Waiting to retry...", "You are being redirected to ", 
+"Public Hubs", "Readd source", "Really exit?", "Redirect", "Redirect request received to a hub that's already connected", "Redirect user(s)", "Refresh", "Refresh user list", "Remove", "Remove all", 
+"Remove all subdirectories before adding this one", "Remove user from queue", "Remove source", "Rollback inconsistency, existing file does not match the one being downloaded", "Running...", "Search", "Search for", "Search for alternates", "Search for file", "Search options", 
+"Search spam detected from ", "Search Spy", "Search string", "Searching for ", "Send private message", "Server", "Set priority", "Shared", "Shared Files", "Size", 
+"Slot granted", "Slots", "Slots set", "Socket has been shut down", "Specify a server to connect to", "Specify a search string", "Speed", "Status", "TB", "Time", 
+"Timestamps disabled", "Timestamps enabled", "Total: ", "Type", "Unable to create thread", "Unknown", "Unknown address", "Unknown error: 0x%x", "Upload finished, idle...", "Upload starting...", 
+"Uploaded %s (%.01f%%), %s/s, %s left", " uploaded to ", "User", "User offline", "User went offline", "Users", "Video", "Waiting...", "Waiting (User online)", "Waiting (%d of %d users online)", 
+"Waiting to retry...", "You are being redirected to "
 };
 string ResourceManager::names[] = {
 	"AddToFavorites", "AddressAlreadyInUse", "AddressNotAvailable", "AllDownloadSlotsTaken", "AllUsersOffline", "AlreadyGettingThatList", "Any", "AtLeast", "AtMost", "Audio", 
@@ -43,10 +44,11 @@ string ResourceManager::names[] = {
 "NotConnected", "NotSocket", "NoDirectorySpecified", "NoDownloadsFromSelf", "NoErrors", "NoMatches", "NoSlotsAvailable", "NoUsers", "NoUsersToDownloadFrom", "Normal", 
 "Notepad", "Offline", "Online", "OnlyFreeSlots", "OpenFileList", "OperationWouldBlockExecution", "OutOfBufferSpace", "PassiveUser", "Password", "Parts", 
 "Path", "Paused", "PermissionDenied", "Picture", "PortIsBusy", "PreparingFileList", "PressFollow", "Priority", "PrivateMessageFrom", "Properties", 
-"PublicHubs", "ReallyExit", "Redirect", "RedirectAlreadyConnected", "RedirectUser", "Refresh", "RefreshUserList", "Remove", "RemoveAll", "RemoveAllSubdirectories", 
-"RemoveSource", "RollbackInconsistency", "Running", "Search", "SearchFor", "SearchForAlternates", "SearchForFile", "SearchOptions", "SearchSpamFrom", "SearchSpy", 
-"SearchString", "SearchingFor", "SendPrivateMessage", "Server", "SetPriority", "Shared", "SharedFiles", "Size", "SlotGranted", "Slots", 
-"SlotsSet", "SocketShutDown", "SpecifyServer", "SpecifySearchString", "Speed", "Status", "Tb", "Time", "TimestampsDisabled", "TimestampsEnabled", 
-"Total", "Type", "UnableToCreateThread", "Unknown", "UnknownAddress", "UnknownError", "UploadFinishedIdle", "UploadStarting", "UploadedLeft", "UploadedTo", 
-"User", "UserOffline", "UserWentOffline", "Users", "Video", "Waiting", "WaitingUserOnline", "WaitingUsersOnline", "WaitingToRetry", "YouAreBeingRedirected", 
+"PublicHubs", "ReaddSource", "ReallyExit", "Redirect", "RedirectAlreadyConnected", "RedirectUser", "Refresh", "RefreshUserList", "Remove", "RemoveAll", 
+"RemoveAllSubdirectories", "RemoveFromAll", "RemoveSource", "RollbackInconsistency", "Running", "Search", "SearchFor", "SearchForAlternates", "SearchForFile", "SearchOptions", 
+"SearchSpamFrom", "SearchSpy", "SearchString", "SearchingFor", "SendPrivateMessage", "Server", "SetPriority", "Shared", "SharedFiles", "Size", 
+"SlotGranted", "Slots", "SlotsSet", "SocketShutDown", "SpecifyServer", "SpecifySearchString", "Speed", "Status", "Tb", "Time", 
+"TimestampsDisabled", "TimestampsEnabled", "Total", "Type", "UnableToCreateThread", "Unknown", "UnknownAddress", "UnknownError", "UploadFinishedIdle", "UploadStarting", 
+"UploadedLeft", "UploadedTo", "User", "UserOffline", "UserWentOffline", "Users", "Video", "Waiting", "WaitingUserOnline", "WaitingUsersOnline", 
+"WaitingToRetry", "YouAreBeingRedirected"
 };

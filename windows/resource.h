@@ -160,6 +160,7 @@
 #define IDC_TEMP_DOWNLOAD_DIRECTORY     1084
 #define IDC_BROWSETEMPDIR               1085
 #define IDC_CHECK1                      1086
+#define IDC_REMOVEALL					1087
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

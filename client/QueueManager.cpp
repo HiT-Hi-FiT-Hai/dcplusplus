@@ -140,7 +140,7 @@ string QueueManager::getTempName(const string& aFileName) {
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
-					   const string& aTempTarget /* = Util::emptyString */) throw(QueueException, FileException) {
+					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */) throw(QueueException, FileException) {
 	// Check that we're not downloading from ourselves...
 	if(aUser->getClientNick() == aUser->getNick()) {
 		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
@@ -162,9 +162,18 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		QueueItem* q = getQueueItem(aFile, aTarget, aSize, aResume, newItem);
 		QueueItem::Source* s = NULL;
 
-		for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
-			if( ((*i)->getUser() == aUser) || ((*i)->getUser()->getNick() == aUser->getNick() && (*i)->getPath() == aFile) ) {
-				return;
+		{
+			for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+				if( ((*i)->getUser() == aUser) || ((*i)->getUser()->getNick() == aUser->getNick() && (*i)->getPath() == aFile) ) {
+					return;
+				}
+			}
+		}
+		if(!addBad) {
+			for(QueueItem::Source::Iter i = q->getBadSources().begin(); i != q->getBadSources().end(); ++i) {
+				if( ((*i)->getUser() == aUser) || ((*i)->getUser()->getNick() == aUser->getNick() && (*i)->getPath() == aFile) ) {
+					return;
+				}
 			}
 		}
 
@@ -587,7 +596,8 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 				// Wow! found a new source that seems to match...add it...
 				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 				try {
-					add(sr->getFile(), sr->getSize(), sr->getUser(), *i);
+					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, true, 
+						QueueItem::DEFAULT, Util::emptyString, false);
 				} catch(Exception e) {
 					// ...
 				}
@@ -634,5 +644,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.32 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.33 2002/06/28 20:53:48 arnetheduck Exp $
  */

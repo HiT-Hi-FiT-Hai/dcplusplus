@@ -522,6 +522,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	transferMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
+	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
 
 	c->addListener(this);
 	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
@@ -771,6 +773,14 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		PrivateFrame::openWindow(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), m_hWndMDIClient, &ctrlTab);
+	}
+	return 0;
+}
+
+LRESULT MainFrame::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		QueueManager::getInstance()->removeSources(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), QueueItem::Source::FLAG_REMOVED);
 	}
 	return 0;
 }
@@ -1088,6 +1098,6 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.16 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.17 2002/06/28 20:53:49 arnetheduck Exp $
  */
 

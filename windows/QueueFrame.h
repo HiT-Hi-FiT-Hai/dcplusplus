@@ -42,6 +42,7 @@ public:
 		IDC_BROWSELIST = 3000,
 		IDC_REMOVE_SOURCE = 3400,
 		IDC_PM = 3600,
+		IDC_READD = 3800,
 		IDC_PRIORITY_PAUSED = 4000,
 		IDC_PRIORITY_LOWEST,
 		IDC_PRIORITY_LOW,
@@ -86,6 +87,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
+		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + readdItems, onReadd)
 		CHAIN_MSG_MAP(splitBase);
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -94,6 +96,7 @@ public:
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onReadd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
@@ -209,12 +212,15 @@ private:
 	CMenu removeMenu;
 	CMenu pmMenu;
 	CMenu priorityMenu;
+	CMenu readdMenu;
 	CMenu dirMenu;
 	bool usingDirMenu;
 
 	bool dirty;
 
 	int menuItems;
+	int readdItems;
+
 	StringList searchFilter;
 
 	typedef map<QueueItem*, QueueItem*> QueueMap;
@@ -287,6 +293,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.11 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.12 2002/06/28 20:53:49 arnetheduck Exp $
  */
 

@@ -204,7 +204,7 @@ private:
 #endif // !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
 
 /**
- * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.16 2002/05/12 21:54:08 arnetheduck Exp $
+ * @file SimpleXML.h
+ * $Id: SimpleXML.h,v 1.17 2002/06/28 20:53:48 arnetheduck Exp $
  */
 

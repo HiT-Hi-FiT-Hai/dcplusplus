@@ -395,6 +395,6 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 }
 
 /**
- * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.67 2002/06/27 23:38:24 arnetheduck Exp $
+ * @file DownloadManager.cpp
+ * $Id: DownloadManager.cpp,v 1.68 2002/06/28 20:53:47 arnetheduck Exp $
  */

@@ -116,11 +116,13 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	pmMenu.CreatePopupMenu();
 	priorityMenu.CreatePopupMenu();
 	dirMenu.CreatePopupMenu();
+	readdMenu.CreatePopupMenu();
 
 	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CSTRING(SEARCH_FOR_ALTERNATES));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)browseMenu, CSTRING(GET_FILE_LIST));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)pmMenu, CSTRING(SEND_PRIVATE_MESSAGE));
+	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)readdMenu, CSTRING(READD_SOURCE));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeMenu, CSTRING(REMOVE_SOURCE));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
@@ -419,6 +421,9 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		while(pmMenu.GetMenuItemCount() > 0) {
 			pmMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
+		while(readdMenu.GetMenuItemCount() > 0) {
+			readdMenu.RemoveMenu(0, MF_BYPOSITION);
+		}
 		
 		if(ctrlQueue.GetSelectedCount() == 1) {
 			LVITEM lvi;
@@ -446,6 +451,16 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				}
 				menuItems++;
 			}
+			for(QueueItem::Source::Iter i = q->getBadSources().begin(); i != q->getBadSources().end(); ++i) {
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = (LPSTR)(*i)->getUser()->getNick().c_str();
+				mi.dwItemData = (DWORD)*i;
+				mi.wID = IDC_READD + readdItems;
+				readdMenu.InsertMenuItem(readdItems, TRUE, &mi);
+				readdItems++;
+			}
+			
 		}
 		
 		ctrlQueue.ClientToScreen(&pt);
@@ -523,10 +538,29 @@ LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 	return 0;
 }
 
+LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
+		QueueItem* q = (QueueItem*)ctrlQueue.GetItemData(i);
+
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+		
+		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
+		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		try {
+			QueueManager::getInstance()->add(s->getPath(), q->getSize(), s->getUser(), q->getTarget());
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+
 LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	if(ctrlQueue.GetSelectedCount() == 1) {
-		string tmp;
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItem* q = (QueueItem*)ctrlQueue.GetItemData(i);
 		CMenuItemInfo mi;
@@ -685,7 +719,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.13 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.14 2002/06/28 20:53:49 arnetheduck Exp $
  */
 
 

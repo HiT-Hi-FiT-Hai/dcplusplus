@@ -261,7 +261,7 @@ private:
 	}
 	
 	// We only want ConnectionManager to create this...
-	UserConnection() : state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL) { };
+	UserConnection() : state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL), cqi(NULL) { };
 	UserConnection(const UserConnection&) { dcassert(0); };
 
 	virtual ~UserConnection() {
@@ -285,5 +285,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.48 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.49 2002/06/28 20:53:48 arnetheduck Exp $
  */
