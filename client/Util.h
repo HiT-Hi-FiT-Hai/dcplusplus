@@ -304,6 +304,9 @@ public:
 	}
 
 	static string toAdcFile(const string& file) {
+		if(file == "files.xml.bz2" || file == "MyList.DcLst")
+			return file;
+
 		string ret;
 		ret.reserve(file.length() + 1);
 		ret += '/';
@@ -591,5 +594,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.113 2004/12/04 00:33:38 arnetheduck Exp $
+ * $Id: Util.h,v 1.114 2004/12/29 20:00:02 arnetheduck Exp $
  */
