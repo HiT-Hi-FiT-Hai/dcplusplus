@@ -715,11 +715,18 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	d->unsetFlag(Download::RUNNING);
 	d->unsetFlag(Download::ROLLBACK); // Just in case
 	d->resetTotal();
+
 	cs.leave();
 	
 	d->setFile(NULL);
 	fire(DownloadManagerListener::FAILED, d, aError);
+	
+	if(BOOLSETTING(REMOVE_NOT_AVAILABLE) && (aError == "File Not Available")) {
+		removeSource(d, d->getCurrentSource());
+	}
+
 	d->setCurrentSource(NULL);
+
 	removeConnection(aSource);
 }
 
@@ -782,9 +789,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.39 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.40 2002/01/26 14:59:22 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.40  2002/01/26 14:59:22  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.39  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

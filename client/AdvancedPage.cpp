@@ -33,6 +33,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_AUTOFOLLOW, SettingsManager::AUTO_FOLLOW, PropPage::T_BOOL },
 	{ IDC_CLEARSEARCH, SettingsManager::CLEAR_SEARCH, PropPage::T_BOOL },
 	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
+	{ IDC_REMOVENOTAVAILABLE, SettingsManager::REMOVE_NOT_AVAILABLE, PropPage::T_BOOL }, 
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -62,9 +63,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.4 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.5 2002/01/26 14:59:22 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.5  2002/01/26 14:59:22  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.4  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

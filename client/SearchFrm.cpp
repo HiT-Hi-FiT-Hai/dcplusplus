@@ -183,7 +183,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	char* message;
 	
-	if(ctrlSearch.GetWindowTextLength() > 0) {
+	if(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 1*1000 < TimerManager::getInstance()->getTick()) {
 		message = new char[ctrlSearch.GetWindowTextLength()+1];
 		ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 		string s(message, ctrlSearch.GetWindowTextLength());
@@ -212,16 +212,14 @@ LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		SearchManager::getInstance()->search(s, (LONGLONG)lsize, 0, ctrlMode.GetCurSel());
 		//client->sendMessage(s);
 
-		if(lastSearch + 60*1000 < TimerManager::getInstance()->getTick()) {
-			
-			if(BOOLSETTING(CLEAR_SEARCH)){
-				ctrlSearch.SetWindowText("");
-				lastSearch = TimerManager::getInstance()->getTick();
-			}
-		
-			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
-			search = StringTokenizer(s, ' ').getTokens();
+		if(BOOLSETTING(CLEAR_SEARCH)){
+			ctrlSearch.SetWindowText("");
+		} else {
+			lastSearch = TimerManager::getInstance()->getTick();
 		}
+		
+		ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+		search = StringTokenizer(s, ' ').getTokens();
 		
 	}
 	return 0;
@@ -378,9 +376,12 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.20 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.21 2002/01/26 14:59:23 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.21  2002/01/26 14:59:23  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.20  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

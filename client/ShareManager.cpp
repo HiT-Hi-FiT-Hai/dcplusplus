@@ -181,8 +181,9 @@ StringList ShareManager::getDirectories() {
 	return tmp;
 }
 
-void ShareManager::refresh() throw(ShareException) {
-
+void ShareManager::refresh(bool dirs /* = false */) throw(ShareException) {
+	
+	refreshDirs = dirs;
 	if(dirty) {
 		if(refreshThread) {
 			WaitForSingleObject(refreshThread, INFINITE);
@@ -203,10 +204,13 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	string tmp, tmp2;
 	sm->cs.enter();
 
-	StringList dirs = sm->getDirectories();
-	for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
-		sm->removeDirectory(*k);
-		sm->addDirectory(*k);
+	if(sm->refreshDirs) {
+		StringList dirs = sm->getDirectories();
+		for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
+			sm->removeDirectory(*k);
+			sm->addDirectory(*k);
+		}
+		sm->refreshDirs = false;
 	}
 
 	for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
@@ -227,6 +231,8 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	sm->dirty = false;
 
 	sm->cs.leave();
+
+	ClientManager::getInstance()->infoUpdated();
 	return 0;
 }
 
@@ -323,9 +329,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.19 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.20 2002/01/26 14:59:23 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.20  2002/01/26 14:59:23  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.19  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

@@ -298,6 +298,8 @@ void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source*
 				i->l.push_back("No users to download from");
 			} else if(aDownload->getSources().size() == 1) {
 				i->l.push_back("User offline");
+			} else if(aDownload->getSources().size() == 2) {
+				i->l.push_back("Both users offline");
 			} else {
 				sprintf(buf, "All %d users offline", aDownload->getSources().size());
 				i->l.push_back(buf);
@@ -953,9 +955,12 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.50 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.51 2002/01/26 14:59:22 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.51  2002/01/26 14:59:22  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.50  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

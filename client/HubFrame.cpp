@@ -149,7 +149,7 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 			if(stricmp(s.c_str(), "refresh")==0) {
 				try {
 					ShareManager::getInstance()->setDirty();
-					ShareManager::getInstance()->refresh();
+					ShareManager::getInstance()->refresh(true);
 					ctrlStatus.SetText(0, "File list refreshed");
 				} catch(ShareException e) {
 					ctrlStatus.SetText(0, e.getError().c_str());
@@ -164,7 +164,9 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 				}
 			} else if(stricmp(s.c_str(), "join")==0) {
 				if(!param.empty()) {
-					client->connect(param);
+					Lock l(cs);
+					if(client)
+						client->connect(param);
 				} else {
 					ctrlStatus.SetText(0, "Specify a server to connect to");
 				}
@@ -178,10 +180,14 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 					ctrlStatus.SetText(0, "Specify a search string");
 				}
 			} else if(stricmp(s.c_str(), "dc++") == 0) {
-				client->sendMessage("\r\n-- I'm a happy dc++ user. You could be happy too. --\r\n-- http://sourceforge.net/projects/dcplusplus --");
+				Lock l(cs);
+				if(client)
+					client->sendMessage("\r\n-- I'm a happy dc++ user. You could be happy too. --\r\n-- http://sourceforge.net/projects/dcplusplus --");
 			}
 		} else {
-			client->sendMessage(s);
+			Lock l(cs);
+			if(client)
+				client->sendMessage(s);
 		}
 		ctrlMessage.SetWindowText("");
 	} else {
@@ -193,7 +199,9 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	char buf[256];
-	if(client->isConnected()) {
+	Lock l(cs);
+
+	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
@@ -214,7 +222,8 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	char buf[256];
-	if(client->isConnected()) {
+	Lock l(cs);
+	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
@@ -237,8 +246,9 @@ LRESULT HubFrame::onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	string user;
 	char buf[256];
-	
-	if(client->isConnected() && item->iItem != -1) {
+
+	Lock l(cs);
+	if(client && client->isConnected() && item->iItem != -1) {
 		ctrlUsers.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
 		user = buf;
 		User::Ptr& u = client->getUser(user);
@@ -264,11 +274,16 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 			char buf[256];
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
-			User::Ptr& u = client->getUser(user);
-			if(u) {
-				client->sendMessage(client->getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
-				client->privateMessage(u, "You are being kicked because: " + dlg.line);
-				client->kick(u);
+			{
+				Lock l(cs);
+				if(client) {
+					User::Ptr& u = client->getUser(user);
+					if(u) {
+						client->sendMessage(client->getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
+						client->privateMessage(u, "You are being kicked because: " + dlg.line);
+						client->kick(u);
+					}
+				}
 			}
 		}
 	}
@@ -289,9 +304,14 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 				char buf[256];
 				ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 				string user = buf;
-				User::Ptr& u = client->getUser(user);
-				if(u) {
-					client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+				{
+					Lock l(cs);
+					if(client) {
+						User::Ptr& u = client->getUser(user);
+						if(u) {
+							client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+						}
+					}
 				}
 			}
 		}
@@ -349,8 +369,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		
 		delete (User::Ptr*)lParam;
 	} else if(wParam==STATS) {
-		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " users").c_str());
-		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
+		Lock l(cs);
+		if(client) {
+			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " users").c_str());
+			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
+		}
 
 	} else if(wParam == CLIENT_QUIT) {
 		User::Ptr& u = *(User::Ptr*)lParam;
@@ -362,35 +385,45 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 		delete (User::Ptr*)lParam;
 	} else if(wParam == CLIENT_GETPASSWORD) {
-
-		if(client->getPassword().size() > 0) {
-			client->password(client->getPassword());
-		} else {
-			LineDlg dlg;
-			dlg.title = "Hub Password";
-			dlg.description = "Please enter your password";
-			dlg.password = true;
-			
-			if(dlg.DoModal() == IDOK) {
-				client->setPassword(dlg.line);
-				client->password(dlg.line);
+		Lock l(cs);
+		if(client) {
+			if(client->getPassword().size() > 0) {
+				client->password(client->getPassword());
 			} else {
-				client->disconnect();
+				LineDlg dlg;
+				dlg.title = "Hub Password";
+				dlg.description = "Please enter your password";
+				dlg.password = true;
+				
+				if(dlg.DoModal() == IDOK) {
+					client->setPassword(dlg.line);
+					client->password(dlg.line);
+				} else {
+					client->disconnect();
+				}
 			}
 		}
 	} else if(wParam == CLIENT_CONNECTING) {
-		addClientLine("Connecting to " + client->getServer() + "...");
-		SetWindowText(client->getServer().c_str());
+		Lock l(cs);
+		if(client) {
+			addClientLine("Connecting to " + client->getServer() + "...");
+			SetWindowText(client->getServer().c_str());
+		}
 	} else if(wParam == CLIENT_FAILED) {
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
 		//ctrlClient.Invalidate();
 	} else if(wParam == CLIENT_HUBNAME) {
-		SetWindowText( (client->getName() + " (" + client->getServer() + ")").c_str());
-		addClientLine("Connected");
+		Lock l(cs);
+		if(client) {
+			SetWindowText( (client->getName() + " (" + client->getServer() + ")").c_str());
+			addClientLine("Connected");
+		}
 	} else if(wParam == CLIENT_VALIDATEDENIED) {
 		addClientLine("Your nick was already taken, please change to something else!");
-		client->disconnect();
+		Lock l(cs);
+		if(client)
+			client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
 		PMInfo* i = (PMInfo*)lParam;
 		if(i->frm->m_hWnd == NULL) {
@@ -414,9 +447,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.27 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.28 2002/01/26 14:59:22 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.28  2002/01/26 14:59:22  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.27  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

@@ -37,6 +37,7 @@ public:
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT,
+		REMOVE_NOT_AVAILABLE, BACKGROUND_COLOR, TEXT_COLOR,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -163,9 +164,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.6 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.7 2002/01/26 14:59:23 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.7  2002/01/26 14:59:23  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.6  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

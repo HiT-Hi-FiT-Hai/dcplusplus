@@ -154,7 +154,7 @@ private:
 		if(readerThread != NULL) {
 			SetEvent(readerEvent);
 			
-			if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
+			if(WaitForSingleObject(readerThread, 5000) == WAIT_TIMEOUT) {
 				dcassert(0);
 			}
 			// Make sure the event is reset in case the thread had already stopped...
@@ -170,9 +170,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.22 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.23 2002/01/26 14:59:22 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.23  2002/01/26 14:59:22  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.22  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

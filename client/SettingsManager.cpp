@@ -33,7 +33,8 @@ char const* SettingsManager::settingTags[] =
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"ClientVersion", "SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
+	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
+	"BackgroundColor", "TextColor",
 	"SENTRY"
 };
 
@@ -192,9 +193,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.9 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.10 2002/01/26 14:59:23 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.10  2002/01/26 14:59:23  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.9  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

@@ -42,7 +42,7 @@ public:
 	void addDirectory(const string& aDirectory) throw(ShareException);
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
-	void refresh() throw(ShareException);
+	void refresh(bool dirs = false) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
 	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
@@ -143,7 +143,7 @@ private:
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : listLen(0), dirty(false), refreshThread(NULL) { 
+	ShareManager() : refreshDirs(false), listLen(0), dirty(false), refreshThread(NULL) { 
 		
 	};
 	
@@ -162,6 +162,7 @@ private:
 	
 	LONGLONG listLen;
 	bool dirty;
+	bool refreshDirs;
 
 	string listFile;
 
@@ -180,9 +181,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.14 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.15 2002/01/26 14:59:24 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.15  2002/01/26 14:59:24  arnetheduck
+ * Fixed disconnect crash
+ *
  * Revision 1.14  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

@@ -386,6 +386,9 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,66,126,10
     CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,77,81,10
+    CONTROL         "Remove source automatically if file is not available",
+                    IDC_REMOVENOTAVAILABLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,88,173,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
