@@ -37,6 +37,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <fnmatch.h>
 #endif
 
 #include <limits>
@@ -1270,6 +1271,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.105 2004/10/01 22:45:03 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.106 2004/10/09 12:18:16 arnetheduck Exp $
  */
 

@@ -491,8 +491,9 @@ int HashManager::Hasher::run() {
 				tth = &fastTTH;
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH, size)) {
 					tth = &slowTTH;
-					u_int32_t lastRead = GET_TICK();
 #endif
+					u_int32_t lastRead = GET_TICK();
+
 					do {
 						size_t bufSize = BUF_SIZE;
 						if(SETTING(MAX_HASH_SPEED) > 0) {
@@ -549,5 +550,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.26 2004/09/27 12:02:33 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.27 2004/10/09 12:18:16 arnetheduck Exp $
  */
