@@ -110,7 +110,7 @@ public:
 	void onEnter();
 	void onTab();
 
-	static void openWindow(HWND aParent, FlatTabCtrl* aTab, const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
+	static void openWindow(const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
 	static void closeDisconnected();
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -346,6 +346,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.24 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.25 2003/10/08 21:55:10 arnetheduck Exp $
  */
 

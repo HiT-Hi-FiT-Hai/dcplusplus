@@ -26,11 +26,9 @@
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
-class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>
+class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD>
 {
 public:
-	static NotepadFrame* frame;
-	
 	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	NotepadFrame() : dirty(false) { }
@@ -82,6 +80,6 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.9 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.10 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

@@ -26,8 +26,6 @@
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 
-FinishedFrame* FinishedFrame::frame = NULL;
-
 int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
 int FinishedFrame::columnSizes[] = { 110, 390, 125, 80, 80, 80 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::PATH, 
@@ -36,14 +34,8 @@ ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED, ResourceMa
 
 LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	// Only one of this window please...
-	dcassert(frame == NULL);
-	frame = this;
-
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
-	SetWindowText(CSTRING(FINISHED_DOWNLOADS));
 	
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_FINISHED);
@@ -195,5 +187,5 @@ void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.9 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.10 2003/10/08 21:55:10 arnetheduck Exp $
  */

@@ -455,20 +455,50 @@ void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, cons
 
 typedef vector<pair<DirectoryListing::File*, string> > MatchList;
 typedef MatchList::iterator MatchIter;
+typedef HASH_MULTIMAP<u_int32_t, QueueItem*> SizeMap;
+typedef SizeMap::iterator SizeIter;
+typedef pair<SizeIter, SizeIter> SizePair;
 
-static void matchFile(const string& name, const int64_t& size, 
-					  MatchList& f, DirectoryListing::Directory* dir, const string& target) throw() {
+#define isnum(c) (((c) >= '0') && ((c) <= '9'))
+
+static inline int adjustSize(u_int32_t sz, const string& name) {
+	if(sz == 15 * 1000 * 1000 || sz == 50 * 1000 * 1000) {
+		// Common rar-set size...handle specially because it makes
+		// the hash map ineffective
+		dcassert(name.length() > 2);
+		// filename.r32
+		u_int8_t c1 = (u_int8_t)name[name.length()-2];
+		u_int8_t c2 = (u_int8_t)name[name.length()-1];
+		if(isnum(c1) && isnum(c2)) {
+			return (c1-'0')*10 + (c2-'0');
+		} else if(name.length() > 6) {
+			// filename.part32.rar
+			c1 = name[name.length() - 6];
+			c2 = name[name.length() - 5];
+			if(isnum(c1) && isnum(c2)) {
+				return (c1-'0')*10 + (c2-'0');
+			}
+		}
+	} 
+
+	return 0;
+}
+
+static void matchFiles(SizeMap& sizeMap, MatchList& f, DirectoryListing::Directory* dir) throw() {
+	for(DirectoryListing::Directory::Iter j = dir->directories.begin(); j != dir->directories.end(); ++j) {
+		if(!(*j)->getAdls())
+			matchFiles(sizeMap, f, *j);
+	}
 
 	for(DirectoryListing::File::Iter i = dir->files.begin(); i != dir->files.end(); ++i) {
 		DirectoryListing::File* df = *i;
-		if(df->getSize() == size && Util::stricmp(df->getName(), name) == 0) {
-			f.push_back(make_pair(df, target));
-		}
-	}
 
-	for(DirectoryListing::Directory::Iter j = dir->directories.begin(); j != dir->directories.end(); ++j) {
-		if(!(*j)->getAdls())
-			matchFile(name, size, f, *j, target);
+		SizePair files = sizeMap.equal_range(((u_int32_t)df->getSize()) + adjustSize((u_int32_t)df->getSize(), df->getName()));
+		for(SizeIter j = files.first; j != files.second; ++j) {
+			QueueItem* qi = j->second;
+			if(Util::stricmp(df->getName(), qi->getTargetFileName()) == 0 && df->getSize() == qi->getSize())
+				f.push_back(make_pair(df, qi->getTarget()));
+		}
 	}
 }
 
@@ -476,12 +506,16 @@ int QueueManager::matchListing(DirectoryListing* dl) throw() {
 	MatchList f;
 	{
 		Lock l(cs);
+		SizeMap sizeMap;
 		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
 			QueueItem* qi = i->second;
 			if(qi->getSize() != -1) {
-				matchFile(qi->getTargetFileName(), qi->getSize(), f, dl->getRoot(), qi->getTarget());
+				sizeMap.insert(make_pair(((u_int32_t)qi->getSize()) + adjustSize((u_int32_t)qi->getSize(), qi->getTarget()), qi));
 			}
 		}
+
+		matchFiles(sizeMap, f, dl->getRoot());
+
 	}
 	int totalItems = (int)f.size();
 	for(MatchIter i = f.begin(); i != f.end(); ++i) {
@@ -1087,5 +1121,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.44 2003/10/07 14:58:19 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.45 2003/10/08 21:55:09 arnetheduck Exp $
  */

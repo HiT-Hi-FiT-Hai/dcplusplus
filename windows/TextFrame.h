@@ -29,8 +29,8 @@
 class TextFrame : public MDITabChildWindowImpl<TextFrame>
 {
 public:
-	static TextFrame* frame;
-	
+	static void openWindow(const string& aFileName);
+
 	DECLARE_FRAME_WND_CLASS_EX("TextFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	TextFrame(const string& fileName) : file(fileName) { }
@@ -81,6 +81,6 @@ private:
 
 /**
  * @file
- * $Id: TextFrame.h,v 1.1 2003/09/24 08:55:23 arnetheduck Exp $
+ * $Id: TextFrame.h,v 1.2 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

@@ -26,8 +26,6 @@
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
 
-PublicHubsFrame* PublicHubsFrame::frame = NULL;
-
 int PublicHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_USERS, COLUMN_SERVER };
 
 int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100 };
@@ -37,12 +35,6 @@ ResourceManager::USERS, ResourceManager::HUB_ADDRESS };
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	// Only one of this window please...
-	dcassert(frame == NULL);
-	frame = this;
-	
-	SetWindowText(CSTRING(PUBLIC_HUBS));
-	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
@@ -137,7 +129,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 		char buf[256];
 		
 		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+		HubFrame::openWindow(buf);
 	}
 
 	return 0;
@@ -152,7 +144,7 @@ LRESULT PublicHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHa
 		char buf[256];
 
 		ctrlHubs.GetItemText(item, COLUMN_SERVER, buf, 256);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+		HubFrame::openWindow(buf);
 	}
 
 	return 0;
@@ -182,14 +174,14 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), tmp);
+		HubFrame::openWindow(tmp);
 			
 	} else {
 		if(ctrlHubs.GetSelectedCount() == 1) {
 			char buf[256];
 			int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 			ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
-			HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+			HubFrame::openWindow(buf);
 		}
 	}
 
@@ -231,7 +223,7 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
 		
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), tmp);
+		HubFrame::openWindow(tmp);
 	} else {
 		bHandled = FALSE;
 	}
@@ -400,6 +392,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.15 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.16 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

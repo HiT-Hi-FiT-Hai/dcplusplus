@@ -101,11 +101,11 @@ void startup(void (*f)(void*, const string&), void* p) {
 		}
 	}
 
+	ShareManager::getInstance()->refresh(false, false, true);
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
-	ShareManager::getInstance()->refresh(false, false, true);
 }
 
 void shutdown() {
@@ -133,6 +133,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.24 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.25 2003/10/08 21:55:09 arnetheduck Exp $
  */
 

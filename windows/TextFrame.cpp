@@ -24,9 +24,13 @@
 #include "WinUtil.h"
 #include "../client/File.h"
 
-TextFrame* TextFrame::frame = NULL;
-
 #define MAX_TEXT_LEN 32768
+
+void TextFrame::openWindow(const string& aFileName) {
+	TextFrame* frame = new TextFrame(aFileName);
+	frame->CreateEx(WinUtil::mdiClient);
+}
+
 LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -48,7 +52,6 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		ctrlPad.SetWindowText(tmp.c_str());
 		ctrlPad.EmptyUndoBuffer();
 		SetWindowText(Util::getFileName(file).c_str());
-		File::deleteFile(file);
 	} catch(const FileException& e) {
 		SetWindowText((Util::getFileName(file) + ": " + e.getError()).c_str());
 	}
@@ -74,7 +77,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.3 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.4 2003/10/08 21:55:11 arnetheduck Exp $
  */
 
 

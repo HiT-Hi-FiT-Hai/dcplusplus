@@ -49,8 +49,8 @@ void TreePropertySheet::hideTab() {
 	GetWindowRect(&rcWindow);
 	ScreenToClient(&rcTab);
 
-	ScrollWindow(SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
-	rcWindow.right += SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT + TREE_WIDTH + SPACE_LEFT;
+	ScrollWindow(SPACE_LEFT + TREE_WIDTH + SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
+	rcWindow.right += SPACE_LEFT + TREE_WIDTH + SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT;
 	rcWindow.bottom += SPACE_TOP - rcPage.top;
 
 	tab.ShowWindow(SW_HIDE);
@@ -63,16 +63,13 @@ void TreePropertySheet::hideTab() {
 void TreePropertySheet::addTree()
 {
 	// Insert the space to the left
-	CRect rcWindow,rcPage,rcTab;
+	CRect rcWindow,rcPage;
 
 	HWND page = IndexToHwnd(0);
 	::GetWindowRect(page, &rcPage);
 	ScreenToClient(&rcPage);
 
-	ScrollWindow(SPACE_LEFT + TREE_WIDTH,0);
-
 	CRect rc(SPACE_LEFT, rcPage.top, TREE_WIDTH, rcPage.bottom);
-
 	ctrlTree.Create(m_hWnd, rc, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_PAGE);
 }
 

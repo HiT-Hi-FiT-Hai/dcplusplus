@@ -29,7 +29,8 @@
 #include "../client/ClientManager.h"
 #include "../client/HubManager.h"
 
-class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, private HubManagerListener, private ClientManagerListener {
+class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
+	private HubManagerListener, private ClientManagerListener {
 public:
 	
 	UsersFrame() : closed(false) { };
@@ -124,8 +125,6 @@ public:
 		ctrlUsers.MoveWindow(rc);
 	}
 	
-	static UsersFrame* frame;
-	
 private:
 	enum {
 		COLUMN_FIRST,
@@ -181,6 +180,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.7 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.8 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

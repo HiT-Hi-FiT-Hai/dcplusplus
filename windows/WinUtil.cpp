@@ -85,6 +85,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CSTRING(MENU_ADL_SEARCH));
 	view.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_SEARCH_SPY));
+	view.AppendMenu(MF_STRING, IDC_NET_STATS, CSTRING(MENU_NETWORK_STATISTICS));
 	view.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_NOTEPAD));
 	view.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_TOOLBAR));
@@ -345,7 +346,6 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 	} else if(Util::stricmp(cmd.c_str(), "search") == 0) {
 		if(!param.empty()) {
 			SearchFrame* pChild = new SearchFrame();
-			pChild->setTab(tabCtrl);
 			pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 			pChild->CreateEx(mdiClient);
 		} else {
@@ -419,5 +419,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.21 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.22 2003/10/08 21:55:11 arnetheduck Exp $
  */

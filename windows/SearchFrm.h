@@ -36,6 +36,7 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, private SearchManagerListener
 {
 public:
+	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
 
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", IDR_SEARCH, 0, COLOR_3DFACE)
 
@@ -307,6 +308,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.21 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

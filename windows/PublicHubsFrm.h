@@ -33,12 +33,10 @@
 
 #define SERVER_MESSAGE_MAP 7
 #define FILTER_MESSAGE_MAP 8
-class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private HubManagerListener
+class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>, 
+	private HubManagerListener
 {
 public:
-
-	static PublicHubsFrame* frame;
-
 	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
 		ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
 		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
@@ -50,7 +48,6 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX("PublicHubsFrame", IDR_PUBLICHUBS, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
 		delete this;
 	}
 	
@@ -195,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.13 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.14 2003/10/08 21:55:11 arnetheduck Exp $
  */

@@ -43,7 +43,7 @@ SocketException::SocketException(int aError) {
 
 #endif
 
-Socket::Stats Socket::stats = { 0, 0, 0, 0 };
+Socket::Stats Socket::stats = { 0, 0 };
 
 string SocketException::errorToString(int aError) {
 	switch(aError) {
@@ -175,7 +175,6 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	} else if(type == TYPE_UDP) {
 		checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL));
 	}
-	stats.down += len;
 	stats.totalDown += len;
 	return len;
 }
@@ -243,7 +242,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 			dcassert(i != 0);
 			pos+=i;
 
-			stats.up += i;
 			stats.totalUp += i;
 			blockAgain = false;
 		}
@@ -315,7 +313,6 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 		int i = ::sendto(sock, (char*)(u_int8_t*)connStr, connLen + aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 		checksockerr(i);
 		
-		stats.up += i;
 		stats.totalUp += i;
 	} else {
 		serv_addr.sin_port = htons(port);
@@ -334,7 +331,6 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 		int i = ::sendto(sock, aBuffer, aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 		checksockerr(i);
 		
-		stats.up += i;
 		stats.totalUp += i;
 	}
 }
@@ -518,6 +514,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.46 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.47 2003/10/08 21:55:09 arnetheduck Exp $
  */
 

@@ -24,8 +24,6 @@
 #include "WinUtil.h"
 #include "../client/File.h"
 
-NotepadFrame* NotepadFrame::frame = NULL;
-
 LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -51,9 +49,6 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetWindowText(tmp.c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
-	SetWindowText(CSTRING(NOTEPAD));
-	frame = this;
-	
 	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
@@ -72,7 +67,6 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 
-	frame = NULL;
 	MDIDestroy(m_hWnd);
 	return 0;
 	
@@ -94,7 +88,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.10 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.11 2003/10/08 21:55:11 arnetheduck Exp $
  */
 
 

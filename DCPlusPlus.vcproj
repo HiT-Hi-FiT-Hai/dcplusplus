@@ -295,6 +295,9 @@
 				RelativePath=".\windows\SpyFrame.cpp">
 			</File>
 			<File
+				RelativePath="windows\StatsFrame.cpp">
+			</File>
+			<File
 				RelativePath="windows\TextFrame.cpp">
 			</File>
 			<File
@@ -423,6 +426,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\SpyFrame.h">
+			</File>
+			<File
+				RelativePath="windows\StatsFrame.h">
 			</File>
 			<File
 				RelativePath="windows\TextFrame.h">

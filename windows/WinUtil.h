@@ -29,6 +29,25 @@
 class FlatTabCtrl;
 class UserCommand;
 
+template<class T, int title>
+class StaticFrame {
+public:
+	~StaticFrame() { frame = NULL; };
+
+	static T* frame;
+	static void openWindow() {
+		if(frame == NULL) {
+			frame = new T();
+			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, ResourceManager::getInstance()->getString(ResourceManager::Strings(title)).c_str());
+		} else {
+			frame->MDIActivate(frame->m_hWnd);
+		}
+	}
+};
+
+template<class T, int title>
+T* StaticFrame<T, title>::frame = NULL;
+
 class WinUtil {
 public:
 	static CImageList fileImages;
@@ -150,5 +169,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.15 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.16 2003/10/08 21:55:11 arnetheduck Exp $
  */

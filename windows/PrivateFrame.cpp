@@ -63,7 +63,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab) {
+void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 	PrivateFrame* p = NULL;
 	Lock l(cs);
 	FrameIter i = frames.find(aUser);
@@ -87,9 +87,8 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 			}
 		}
 		if(!found) {
-			p = new PrivateFrame(aUser, aParent);
+			p = new PrivateFrame(aUser);
 			frames[aUser] = p;
-			p->setTab(aTab);
 			p->addLine(aMessage);
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
@@ -109,17 +108,17 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab) {
+void PrivateFrame::openWindow(const User::Ptr& aUser) {
 	PrivateFrame* p = NULL;
 	Lock l(cs);
 	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
-		p = new PrivateFrame(aUser, aParent);
+		p = new PrivateFrame(aUser);
 		frames[aUser] = p;
-		p->setTab(aTab);
-		p->CreateEx(aParent);
+		p->CreateEx(WinUtil::mdiClient);
 	} else {
-		i->second->MDIActivate(i->second->m_hWnd);
+		p = i->second;
+		p->MDIActivate(p->m_hWnd);
 	}
 }
 
@@ -209,7 +208,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void PrivateFrame::addLine(const string& aLine) {
 	if(!created) {
-		CreateEx(parent);
+		CreateEx(WinUtil::mdiClient);
 	}
 
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
@@ -268,7 +267,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.16 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.17 2003/10/08 21:55:11 arnetheduck Exp $
  */
 
 

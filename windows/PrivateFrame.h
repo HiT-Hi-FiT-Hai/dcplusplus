@@ -35,6 +35,10 @@
 class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, private ClientManagerListener
 {
 public:
+	static void gotMessage(const User::Ptr& aUser, const string& aMessage);
+	static void openWindow(const User::Ptr& aUser);
+	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
+
 	enum {
 		USER_UPDATED
 	};
@@ -68,9 +72,6 @@ public:
 	void addLine(const string& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
-	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
-	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
-	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
@@ -103,7 +104,7 @@ public:
 	
 	void addClientLine(const string& aLine) {
 		if(!created) {
-			CreateEx(parent);
+			CreateEx(WinUtil::mdiClient);
 		}
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
@@ -120,15 +121,14 @@ public:
 	
 	User::Ptr& getUser() { return user; };
 private:
-	PrivateFrame(const User::Ptr& aUser, HWND aParent = NULL) : user(aUser), 
-		parent(aParent), created(false), closed(false), 
+	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
+		created(false), closed(false), 
 		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
 	}
 	
-	HWND parent;
 	bool created;
 	typedef HASH_MAP<User::Ptr, PrivateFrame*, User::HashFunction> FrameMap;
 	typedef FrameMap::iterator FrameIter;
@@ -165,6 +165,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.11 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.12 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

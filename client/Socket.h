@@ -154,9 +154,6 @@ public:
 	bool isConnected() { return connected; };
 	
 	static string resolve(const string& aDns);
-	static void resetStats() { stats.up = stats.down = 0; };
-	static int64_t getDown() { return stats.down; };
-	static int64_t getUp() { return stats.up; };
 	static int64_t getTotalDown() { return stats.totalDown; };
 	static int64_t getTotalUp() { return stats.totalUp; };
 	
@@ -234,8 +231,6 @@ private:
 
 	class Stats {
 	public:
-		int64_t down;
-		int64_t up;
 		int64_t totalDown;
 		int64_t totalUp;
 	};
@@ -246,6 +241,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.42 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: Socket.h,v 1.43 2003/10/08 21:55:09 arnetheduck Exp $
  */
 

@@ -37,6 +37,8 @@
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, public CSplitterImpl<DirectoryListingFrame>
 {
 public:
+	static void openWindow(const string& aFile, const User::Ptr& aUser);
+
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 
 	enum {
@@ -259,5 +261,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.20 2003/09/24 12:06:19 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.21 2003/10/08 21:55:09 arnetheduck Exp $
  */

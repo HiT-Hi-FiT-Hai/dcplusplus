@@ -127,13 +127,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 1;
 }
 
-void HubFrame::openWindow(HWND aParent, FlatTabCtrl* aTab, const string& aServer, const string& aNick /* = Util::emptyString */, const string& aPassword /* = Util::emptyString */, const string& aDescription /* = Util::emptyString */) {
+void HubFrame::openWindow(const string& aServer, const string& aNick /* = Util::emptyString */, const string& aPassword /* = Util::emptyString */, const string& aDescription /* = Util::emptyString */) {
 	FrameIter i = frames.find(aServer);
 	if(i == frames.end()) {
 		HubFrame* frm = new HubFrame(aServer, aNick, aPassword, aDescription);
 		frames[aServer] = frm;
-		frm->setTab(aTab);
-		frm->CreateEx(aParent);
+		frm->CreateEx(WinUtil::mdiClient);
 	} else {
 		i->second->MDIActivate(i->second->m_hWnd);
 	}
@@ -283,7 +282,7 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	int i=-1;
 	if(client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(i))->user, m_hWndMDIClient, getTab());
+			PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(i))->user);
 		}
 	}
 	return 0;
@@ -472,7 +471,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		PMInfo* i = (PMInfo*)lParam;
 		if(i->user->isOnline()) {
 			if(BOOLSETTING(POPUP_PMS) || PrivateFrame::isOpen(i->user)) {
-				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
+				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(STRING(PRIVATE_MESSAGE_FROM) + i->user->getNick() + ": " + i->msg);
 			}
@@ -480,7 +479,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
 				addClientLine(STRING(IGNORED_MESSAGE) + i->msg, false);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
-				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
+				PrivateFrame::gotMessage(i->user, i->msg);
 			} else {
 				addLine(STRING(PRIVATE_MESSAGE_FROM) + i->user->getNick() + ": " + i->msg);
 			}
@@ -617,7 +616,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			string server, file;
 			short port = 411;
 			Util::decodeUrl((x.c_str() + start), server, port, file);
-			HubFrame::openWindow(m_hWndMDIClient, getTab(), server + ":" + Util::toString(port));
+			HubFrame::openWindow(server + ":" + Util::toString(port));
 		} else {
 			string::size_type end = x.find_first_of(" >\t", start+1);
 
@@ -631,7 +630,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
-					PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(pos))->user, m_hWndMDIClient, getTab());
+					PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
 						QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
@@ -1101,5 +1100,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.31 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.32 2003/10/08 21:55:10 arnetheduck Exp $
  */

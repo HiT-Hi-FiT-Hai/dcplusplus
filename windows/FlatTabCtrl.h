@@ -25,6 +25,8 @@
 
 #include "../client/SettingsManager.h"
 
+#include "WinUtil.h"
+
 #define FT_BASE (WM_APP + 700)
 /** This will be sent when the user presses a tab. WPARAM = HWND */
 #define FTN_SELECTED (FT_BASE + 0)
@@ -500,9 +502,8 @@ template <class T, int C = RGB(128, 128, 128), class TBase = CMDIWindow, class T
 class ATL_NO_VTABLE MDITabChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits> {
 public:
 
-	MDITabChildWindowImpl() : tab(NULL), created(false) { };
-	void setTab(FlatTabCtrl* aTab) { tab = aTab; };
-	FlatTabCtrl* getTab() { return tab; };
+	MDITabChildWindowImpl() : created(false) { };
+	FlatTabCtrl* getTab() { return WinUtil::tabCtrl; };
 
  	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
@@ -552,14 +553,15 @@ public:
 
 	LRESULT onCreate(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
-		if(getTab())
-			getTab()->addTab(m_hWnd, C);
+		dcassert(getTab());
+		getTab()->addTab(m_hWnd, C);
 		created = true;
 		return 0;
 	}
 	
 	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam */, LPARAM lParam, BOOL& bHandled) {
-		if(getTab() && (m_hWnd == (HWND)lParam))
+		dcassert(getTab());
+		if((m_hWnd == (HWND)lParam))
 			getTab()->setActive(m_hWnd);
 
 		bHandled = FALSE;
@@ -568,8 +570,8 @@ public:
 
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
-		if(getTab())
-			getTab()->removeTab(m_hWnd);
+		dcassert(getTab());
+		getTab()->removeTab(m_hWnd);
 
 		BOOL bMaximized = FALSE;
 		if(::SendMessage(m_hWndMDIClient, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized) != NULL)
@@ -580,23 +582,23 @@ public:
 
 	LRESULT onSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		bHandled = FALSE;
-		if(created && getTab()) {
+		dcassert(getTab());
+		if(created) {
 			getTab()->updateText(m_hWnd, (LPCTSTR)lParam);
 		}
 		return 0;
 	}
 
 	void setDirty() {
-		if(getTab())
-			getTab()->setDirty(m_hWnd);
+		dcassert(getTab());
+		getTab()->setDirty(m_hWnd);
 	}
 	void setTabColor(COLORREF color) {
-		if(getTab())
-			getTab()->setColor(m_hWnd, color);
+		dcassert(getTab());
+		getTab()->setColor(m_hWnd, color);
 	}
 
 private:
-	FlatTabCtrl* tab;
 	bool created;
 };
 
@@ -604,5 +606,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.17 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.18 2003/10/08 21:55:10 arnetheduck Exp $
  */

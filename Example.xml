@@ -140,6 +140,7 @@
 		<String Name="MenuFavoriteUsers">Favorite &amp;Users\tCtrl+U</String>
 		<String Name="MenuFollowRedirect">Follow last redirec&amp;t\tCtrl+T</String>
 		<String Name="MenuImportQueue">Import queue from NMDC...</String>
+		<String Name="MenuNetworkStatistics">Network Statistics</String>
 		<String Name="MenuNotepad">&amp;Notepad\tCtrl+N</String>
 		<String Name="MenuOpenFileList">Open file list...</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs\tCtrl+P</String>
@@ -172,6 +173,7 @@
 		<String Name="Move">Move/Rename</String>
 		<String Name="MoveDown">Move Down</String>
 		<String Name="MoveUp">Move Up</String>
+		<String Name="NetworkStatistics">Network Statistics</String>
 		<String Name="NetworkUnreachable">Network unreachable (are you connected to the internet?)</String>
 		<String Name="Next">Next</String>
 		<String Name="New">New...</String>
@@ -239,7 +241,7 @@
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Server">Server</String>
 		<String Name="SetPriority">Set priority</String>
-		<String Name="SettingsAdvanced">Advanced\XXX</String>
+		<String Name="SettingsAdvanced">Advanced</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
@@ -278,7 +280,7 @@
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsGeneral">General</String>
-		<String Name="SettingsLogs">Advanced\Logs and Sound</String>
+		<String Name="SettingsLogs">Logs and Sound</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

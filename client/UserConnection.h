@@ -87,24 +87,11 @@ public:
 	};
 
 	void addPos(int64_t aPos) {
-		pos += aPos; last+=aPos; total+=aPos; 
+		pos += aPos; total+=aPos; 
 	};
 	
-	void updateRunningAverage() {
-		u_int32_t tick = GET_TICK();
-		if(tick > lastTick) {
-			int64_t diff = (int64_t)(tick - lastTick);
-			if(runningAverage == 0) {
-				runningAverage = last * 1000 / diff;
-			} else if( (tick - getStart()) < 30000) {
-				runningAverage = getAverageSpeed();
-			} else {
-				runningAverage = ( (runningAverage * ((int64_t)30000 - diff) ) + (last*diff)) / (int64_t)30000;
-			}
-			last = 0;
-		}
-		lastTick = tick;
-	}
+	enum { AVG_PERIOD = 30000 };
+	void updateRunningAverage();
 
 	int64_t getTotal() { return total; };
 	void resetTotal() { total = 0; };
@@ -285,6 +272,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.55 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.56 2003/10/08 21:55:09 arnetheduck Exp $
  */
 

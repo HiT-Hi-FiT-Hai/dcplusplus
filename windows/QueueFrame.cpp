@@ -28,8 +28,6 @@
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
 
-QueueFrame* QueueFrame::frame = NULL;
-
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
@@ -42,9 +40,6 @@ ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, Resour
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	dcassert(frame == NULL);
-	frame = this;
-
 	showTree = BOOLSETTING(QUEUEFRAME_SHOW_TREE);
 	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -128,8 +123,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	dirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-
-	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
@@ -816,16 +809,12 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 			}
 		}
 		if(!tmp.empty()) {
-			SearchFrame* pChild = new SearchFrame();
-			pChild->setTab(getTab());
 			bool bigFile = (qi->getSize() > 10*1024*1024);
 			if(bigFile) {
-				pChild->setInitial(tmp, qi->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
+				SearchFrame::openWindow(tmp, qi->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
 			} else {
-				pChild->setInitial(tmp, qi->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
+				SearchFrame::openWindow(tmp, qi->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
 			}
-			pChild->CreateEx(m_hWndMDIClient);
-			
 		}
 	} 
 	
@@ -891,7 +880,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
-		PrivateFrame::openWindow(s->getUser(), m_hWndMDIClient, getTab());
+		PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
 }
@@ -1063,8 +1052,6 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		QueueFrame::frame = NULL;
-
 		HTREEITEM ht = ctrlDirs.GetRootItem();
 		while(ht != NULL) {
 			clearTree(ht);
@@ -1160,7 +1147,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.28 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.29 2003/10/08 21:55:11 arnetheduck Exp $
  */
 
 

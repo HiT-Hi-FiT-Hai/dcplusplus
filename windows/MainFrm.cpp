@@ -36,6 +36,7 @@
 #include "ADLSearchFrame.h"
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
+#include "StatsFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -57,7 +58,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	MainFrame* mf = (MainFrame*)p;
 	HWND wnd, wnd2 = NULL;
 
-	while( (wnd=::GetWindow(mf->m_hWndClient, GW_CHILD)) != NULL) {
+	while( (wnd=::GetWindow(mf->m_hWndMDIClient, GW_CHILD)) != NULL) {
 		if(wnd == wnd2) 
 			Sleep(100);
 		else { 
@@ -142,7 +143,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	transferView.Create(m_hWnd);
 
-	SetSplitterPanes(m_hWndClient, transferView.m_hWnd);
+	SetSplitterPanes(m_hWndMDIClient, transferView.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 8000;
 
@@ -353,20 +354,12 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		
 	if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
-		try {
-			DirectoryListingFrame* pChild = new DirectoryListingFrame(i->file, i->user);
-			pChild->setTab(&ctrlTab);
-			pChild->CreateEx(m_hWndClient);
-			pChild->setWindowTitle();
-			delete i;
-		} catch(const FileException&) {
-			// ...
-		}
+		DirectoryListingFrame::openWindow(i->file, i->user);
+		delete i;
 	} else if(wParam == VIEW_TEXT) {
 		string* file = (string*)lParam;
-		TextFrame* pChild = new TextFrame(*file);
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
+		TextFrame::openWindow(*file);
+		File::deleteFile(*file);
 		delete file;
 	} else if(wParam == STATS) {
 		StringList& str = *(StringList*)lParam;
@@ -419,7 +412,7 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 		}
 
 		if(!server.empty()) {
-			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, server);
+			HubFrame::openWindow(server);
 		}
 		if(!user.empty()) {
 			try {
@@ -438,93 +431,48 @@ LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 }
 
 LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	
-	SearchFrame* pChild = new SearchFrame();
-	pChild->setTab(&ctrlTab);
-	pChild->CreateEx(m_hWndClient);
+	SearchFrame::openWindow();
 	return 0;
 }	
 
 LRESULT MainFrame::onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(FavoriteHubsFrame::frame == NULL) {
-		FavoriteHubsFrame* pChild = new FavoriteHubsFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(FavoriteHubsFrame::frame->m_hWnd);
-	}
+	FavoriteHubsFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(UsersFrame::frame == NULL) {
-		UsersFrame* pChild = new UsersFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(UsersFrame::frame->m_hWnd);
-	}
+	UsersFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(NotepadFrame::frame == NULL) {
-		NotepadFrame* pChild = new NotepadFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(NotepadFrame::frame->m_hWnd);
-	}
+	NotepadFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(QueueFrame::frame == NULL) {
-		QueueFrame* pChild = new QueueFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(QueueFrame::frame->m_hWnd);
-	}
+	QueueFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(PublicHubsFrame::frame == NULL) {
-		PublicHubsFrame* pChild = new PublicHubsFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(PublicHubsFrame::frame->m_hWnd);
-	}
-
+	PublicHubsFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(SpyFrame::frame == NULL) {
-		SpyFrame* pChild = new SpyFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else {
-		MDIActivate(SpyFrame::frame->m_hWnd);
-	}
-	
+	SpyFrame::openWindow();
+	return 0;
+}
+
+LRESULT MainFrame::onNetStats(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	StatsFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
-	if(ADLSearchFrame::frame == NULL) 
-	{
-		ADLSearchFrame* pChild = new ADLSearchFrame();
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-	} else 
-	{
-		MDIActivate(ADLSearchFrame::frame->m_hWnd);
-	}
-
+	ADLSearchFrame::openWindow();
 	return 0;
 }
 
@@ -625,7 +573,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect())
-			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+			HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 }
 
@@ -835,10 +783,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			if(username.rfind('.') != string::npos) {
 				username.erase(username.rfind('.'));
 			}
-			DirectoryListingFrame* pChild = new DirectoryListingFrame(file, ClientManager::getInstance()->getUser(username));
-			pChild->setTab(&ctrlTab);
-			pChild->CreateEx(m_hWndClient);
-			pChild->setWindowTitle();
+			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(username));
 		}
 	}
 	return 0;
@@ -879,24 +824,12 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
- 	if(FinishedFrame::frame == NULL) {
- 		FinishedFrame* pChild = new FinishedFrame();
- 		pChild->setTab(&ctrlTab);
- 		pChild->CreateEx(m_hWndClient);
- 	} else {
- 		MDIActivate(FinishedFrame::frame->m_hWnd);
-	}
+	FinishedFrame::openWindow();
 	return 0;
 }
 
 LRESULT MainFrame::onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
- 	if(FinishedULFrame::frame == NULL) {
-		FinishedULFrame* pChild = new FinishedULFrame();
- 		pChild->setTab(&ctrlTab);
- 		pChild->CreateEx(m_hWndClient);
- 	} else {
- 		MDIActivate(FinishedULFrame::frame->m_hWnd);
-	}
+	FinishedULFrame::openWindow();
 	return 0;
 }
 
@@ -908,6 +841,8 @@ LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
 void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	if(type == TimerManagerListener::SECOND) {
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
+		int64_t updiff = Socket::getTotalUp() - lastUp;
+		int64_t downdiff = Socket::getTotalDown() - lastDown;
 
 		StringList* str = new StringList();
 		str->push_back(Util::getAway() ? STRING(AWAY) : "");
@@ -915,13 +850,14 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-		str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
-		str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
+		str->push_back("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+		str->push_back("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
 		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
-		SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + Socket::getUp());
-		SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + Socket::getDown());
+		SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
+		SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
 		lastUpdate = aTick;
-		Socket::resetStats();
+		lastUp = Socket::getTotalUp();
+		lastDown = Socket::getTotalDown();
 	}
 }
 
@@ -961,6 +897,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.31 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.32 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

@@ -134,7 +134,7 @@ LRESULT TransferView::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 LRESULT TransferView::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		PrivateFrame::openWindow(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, WinUtil::mdiClient, WinUtil::tabCtrl);
+		PrivateFrame::openWindow(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
 	}
 	return 0;
 }

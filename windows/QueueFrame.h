@@ -31,7 +31,8 @@
 
 #define SHOWTREE_MESSAGE_MAP 12
 
-class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManagerListener, public CSplitterImpl<QueueFrame>
+class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<QueueFrame, ResourceManager::DOWNLOAD_QUEUE>,
+	private QueueManagerListener, public CSplitterImpl<QueueFrame>
 {
 public:
 	enum {
@@ -48,8 +49,6 @@ public:
 	};
 
 	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
-
-	static QueueFrame* frame;
 
 	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
 		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true), closed(false),
@@ -361,5 +360,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.21 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.22 2003/10/08 21:55:11 arnetheduck Exp $
  */

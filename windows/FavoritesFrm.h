@@ -30,16 +30,16 @@
 
 #define SERVER_MESSAGE_MAP 7
 
-class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, private HubManagerListener
+class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, public StaticFrame<FavoriteHubsFrame, ResourceManager::FAVORITE_HUBS>,
+	private HubManagerListener
 {
 public:
 	FavoriteHubsFrame() : nosave(true) { };
-	virtual ~FavoriteHubsFrame() { };
+	~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
 		delete this;
 	}
 
@@ -117,9 +117,9 @@ public:
 		return 0;
 	}
 #endif // 0
-	static FavoriteHubsFrame* frame;
 	
 private:
+
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NAME = COLUMN_FIRST,
@@ -175,6 +175,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.14 2003/10/08 21:55:10 arnetheduck Exp $
  */
 

@@ -30,7 +30,8 @@
 
 #define SERVER_MESSAGE_MAP 7
 
-class FinishedFrame : public MDITabChildWindowImpl<FinishedFrame>, private FinishedManagerListener
+class FinishedFrame : public MDITabChildWindowImpl<FinishedFrame>, public StaticFrame<FinishedFrame, ResourceManager::FINISHED_DOWNLOADS>,
+	private FinishedManagerListener
 {
 public:
 	FinishedFrame() : totalBytes(0), totalTime(0), closed(false) { };
@@ -39,7 +40,6 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX("FinishedFrame", IDR_FINISHED_DL, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
 		delete this;
 	}
 
@@ -155,8 +155,6 @@ public:
 		ctrlList.MoveWindow(rc);
 	}
 	
-	static FinishedFrame* frame;
-	
 private:
 	enum {
 		COLUMN_FIRST,
@@ -206,5 +204,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.9 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.10 2003/10/08 21:55:10 arnetheduck Exp $
  */

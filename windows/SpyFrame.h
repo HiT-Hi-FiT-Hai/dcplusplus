@@ -29,12 +29,10 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 
-class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, private ClientManagerListener, private TimerManagerListener
+class SpyFrame : public MDITabChildWindowImpl<SpyFrame>, public StaticFrame<SpyFrame, ResourceManager::SEARCH_SPY>,
+	private ClientManagerListener, private TimerManagerListener
 {
 public:
-
-	static SpyFrame* frame;
-	
 	SpyFrame() : total(0), cur(0), closed(false) {
 		ZeroMemory(perSecond, sizeof(perSecond));
 		ClientManager::getInstance()->addListener(this);
@@ -133,6 +131,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.11 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.12 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

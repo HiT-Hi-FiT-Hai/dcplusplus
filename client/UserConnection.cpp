@@ -25,6 +25,30 @@
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
+void Transfer::updateRunningAverage() {
+	u_int32_t tick = GET_TICK();
+	if(tick > lastTick) {
+		u_int32_t diff = tick - lastTick;
+		if(diff == 0) {
+			// No time passed, don't update runningAverage;
+		} else if( ((tick - getStart()) < AVG_PERIOD) ) {
+			runningAverage = getAverageSpeed();
+		} else {
+			int64_t bdiff = total - last;
+			int64_t avg = bdiff * (int64_t)1000 / diff;
+			if(diff > AVG_PERIOD) {
+				runningAverage = avg;
+			} else {
+				// Weighted average...
+				runningAverage = ((avg * diff) + (runningAverage*(AVG_PERIOD-diff)))/AVG_PERIOD;
+			}
+		}
+		last = total;
+	}
+	lastTick = tick;
+}
+
+
 void UserConnection::onLine(const string& aLine) throw () {
 
 	if(aLine.length() == 0)
@@ -167,5 +191,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.26 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.27 2003/10/08 21:55:09 arnetheduck Exp $
  */

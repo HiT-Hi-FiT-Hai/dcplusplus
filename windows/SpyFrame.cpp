@@ -26,8 +26,6 @@
 
 #include "../client/ShareManager.h"
 
-SpyFrame* SpyFrame::frame = NULL;
-
 LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -49,7 +47,6 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 
-	SetWindowText(CSTRING(SEARCH_SPY));
 	ShareManager::getInstance()->setHits(0);
 
 	m_hMenu = WinUtil::mainMenu;
@@ -152,10 +149,7 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 }
 
 LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SearchFrame* pChild = new SearchFrame();
-	pChild->setInitial(searchString, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
-	pChild->setTab(getTab());
-	pChild->CreateEx(m_hWndMDIClient);
+	SearchFrame::openWindow(searchString);
 	return 0;
 };
 
@@ -190,5 +184,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.12 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.13 2003/10/08 21:55:11 arnetheduck Exp $
  */

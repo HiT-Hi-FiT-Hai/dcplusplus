@@ -27,8 +27,6 @@
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 
-FavoriteHubsFrame* FavoriteHubsFrame::frame = NULL;
-
 int FavoriteHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
 int FavoriteHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION, 
@@ -36,12 +34,6 @@ ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, Resou
 };
 
 LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	// Only one of this window please...
-	dcassert(frame == NULL);
-	frame = this;
-	
-	SetWindowText(CSTRING(FAVORITE_HUBS));
-	
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_HUBLIST);
 
@@ -124,7 +116,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 
 	return 0;
@@ -138,7 +130,7 @@ LRESULT FavoriteHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*b
 
 	if(item != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 
 	return 0;
@@ -151,7 +143,7 @@ LRESULT FavoriteHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 	return 0;
 }
@@ -315,6 +307,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.14 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.15 2003/10/08 21:55:10 arnetheduck Exp $
  */
 

@@ -28,8 +28,6 @@
 #include "ADLSearchFrame.h"
 #include "AdlsProperties.h"
 
-ADLSearchFrame* ADLSearchFrame::frame = NULL;
-
 int ADLSearchFrame::columnIndexes[] = { 
 	COLUMN_ACTIVE_SEARCH_STRING,
 	COLUMN_SOURCE_TYPE,
@@ -55,13 +53,6 @@ static ResourceManager::Strings columnNames[] = {
 // Frame creation
 LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	// Only one of this window please...
-	dcassert(frame == NULL);
-	frame = this;
-
-	// Set frame title
-	SetWindowText(CSTRING(ADL_SEARCH));
-	
 	// Create status bar
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
@@ -148,7 +139,6 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
 	ADLSearchManager::getInstance()->Save();
-	ADLSearchFrame::frame = NULL;
 
 	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
@@ -605,5 +595,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.8 2003/10/07 15:46:26 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.9 2003/10/08 21:55:09 arnetheduck Exp $
  */

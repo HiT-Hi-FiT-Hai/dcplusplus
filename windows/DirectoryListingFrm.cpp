@@ -29,6 +29,10 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
+void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser) {
+	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
+	frame->CreateEx(WinUtil::mdiClient);
+}
 
 DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
@@ -147,6 +151,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
 	
+	setWindowTitle();
+
 	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
@@ -857,5 +863,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.21 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.22 2003/10/08 21:55:09 arnetheduck Exp $
  */

@@ -41,7 +41,9 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 {
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
-		oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), closing(false) { 
+		lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
+		closing(false) 
+	{ 
 		memset(statusSizes, 0, sizeof(statusSizes));
 	};
 	virtual ~MainFrame();
@@ -107,6 +109,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onFileADLSearch)
+		COMMAND_ID_HANDLER(IDC_NET_STATS, onNetStats)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
@@ -146,6 +149,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onNetStats(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -273,6 +277,9 @@ private:
 	bool maximized;
 	u_int32_t lastMove;
 	u_int32_t lastUpdate;
+	int64_t lastUp;
+	int64_t lastDown;
+
 	bool oldshutdown;
 
 	bool closing;
@@ -308,7 +315,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.23 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.24 2003/10/08 21:55:11 arnetheduck Exp $
  */
 
  

@@ -38,6 +38,12 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
 	ResourceManager::HUB, ResourceManager::EXACT_SIZE };
 
+void SearchFrame::openWindow(const string& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
+	SearchFrame* pChild = new SearchFrame();
+	pChild->setInitial(str, size, mode, type);
+	pChild->CreateEx(WinUtil::mdiClient);
+}
+
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -158,8 +164,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetTextColor(WinUtil::textColor);
 	ctrlResults.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
 	
-	SetWindowText(CSTRING(SEARCH));
-
 	targetDirMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	resultsMenu.CreatePopupMenu();
@@ -200,6 +204,9 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlFiletype.SetCurSel(initialType);
 		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
+		SetWindowText((STRING(SEARCH) + " - " + initialString).c_str());
+	} else {
+		SetWindowText(CSTRING(SEARCH));
 	}
 
 	m_hMenu = WinUtil::mainMenu;
@@ -510,7 +517,7 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	int i=-1;
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-		PrivateFrame::openWindow(sr->getUser(), m_hWndMDIClient, getTab());
+		PrivateFrame::openWindow(sr->getUser());
 	}
 	return 0;
 }
@@ -1043,5 +1050,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.25 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.26 2003/10/08 21:55:11 arnetheduck Exp $
  */

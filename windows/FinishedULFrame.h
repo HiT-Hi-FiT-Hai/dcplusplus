@@ -30,7 +30,8 @@
 
 #define SERVER_MESSAGE_MAP 7
 
-class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, private FinishedManagerListener
+class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, public StaticFrame<FinishedULFrame, ResourceManager::FINISHED_UPLOADS>, 
+	private FinishedManagerListener
 {
 public:
 	FinishedULFrame() : totalBytes(0), totalTime(0), closed(false) { };
@@ -39,7 +40,6 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX("FinishedULFrame", IDR_FINISHED_UL, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		frame = NULL;
 		delete this;
 	}
 
@@ -155,8 +155,6 @@ public:
 		ctrlList.MoveWindow(rc);
 	}
 	
-	static FinishedULFrame* frame;
-	
 private:
 	enum {
 		COLUMN_FIRST,
@@ -205,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.6 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.7 2003/10/08 21:55:10 arnetheduck Exp $
  */

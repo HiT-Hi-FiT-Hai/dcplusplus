@@ -16,6 +16,7 @@
   (thanks gargoyle)
 * Small fixes (thanks gargoyle)
 * Toolbar updates (thanks gargoyle)
+* Speeded up match queue a lot
 
 
  -- 0.263 2003-09-30 --

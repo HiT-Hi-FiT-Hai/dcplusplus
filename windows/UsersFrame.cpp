@@ -26,20 +26,12 @@
 #include "../client/StringTokenizer.h"
 #include "../client/QueueManager.h"
 
-UsersFrame* UsersFrame::frame = NULL;
-
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB };
 int UsersFrame::columnSizes[] = { 200, 150, 300 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::STATUS, ResourceManager::LAST_HUB };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	// Only one of this window please...
-	dcassert(frame == NULL);
-	frame = this;
-	
-	SetWindowText(CSTRING(FAVORITE_USERS));
-	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
@@ -148,7 +140,7 @@ LRESULT UsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
 		if(ui->user->isOnline())
-			PrivateFrame::openWindow(ui->user, m_hWndMDIClient, getTab());
+			PrivateFrame::openWindow(ui->user);
 	}
 	return 0;
 }
@@ -172,6 +164,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.12 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.13 2003/10/08 21:55:11 arnetheduck Exp $
  */
 

@@ -54,6 +54,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <deque>
 #include <set>
 #ifdef HAS_HASH
 #include <hash_map>
@@ -89,5 +90,5 @@ public:
 
 /**
  * @file
- * $Id: stdinc.h,v 1.5 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.6 2003/10/08 21:55:09 arnetheduck Exp $
  */

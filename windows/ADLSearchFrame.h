@@ -40,15 +40,12 @@
 //	Class that represent an ADL search manager interface
 //
 ///////////////////////////////////////////////////////////////////////////////
-class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>
+class ADLSearchFrame : public MDITabChildWindowImpl<ADLSearchFrame>, public StaticFrame<ADLSearchFrame, ResourceManager::ADL_SEARCH>
 {
 public:
 
 	// Base class typedef
 	typedef MDITabChildWindowImpl<ADLSearchFrame> baseClass;
-
-	// Static instance
-	static ADLSearchFrame* frame;
 
 	// Constructor/destructor
 	ADLSearchFrame() : listContainer("list", this, ADLLIST_MESSAGE_MAP) {}
@@ -109,7 +106,6 @@ public:
 	// Final message
 	virtual void OnFinalMessage(HWND /*hWnd*/) 
 	{
-		frame = NULL;
 		delete this;
 	}
 
@@ -155,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.5 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.6 2003/10/08 21:55:09 arnetheduck Exp $
  */
