@@ -27,10 +27,21 @@
 #include "CryptoManager.h"
 #include "ShareManager.h"
 #include "ConnectionManager.h"
+#include "SearchManager.h"
 
 class ClientManager : private ClientListener  
 {
 public:
+	Client* getConnectedClient() { 
+		Client* ret = NULL;
+		
+		cs.enter(); 
+		if(clients.size() > 0) 
+			ret = clients.front(); 
+		cs.leave(); 
+
+		return ret; 
+	};
 
 	Client* getClient();
 	void putClient(Client* aClient);
@@ -164,26 +175,58 @@ private:
 		}
 
 		if(search) {
-			StringList l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType);
-			dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
-#ifdef _DEBUG
-			for(StringIter i = l.begin(); i != l.end(); ++i) {
-				dcdebug("%s\n", i->c_str());
+			int pos = aSeeker.find("Hub:");
+			// We don't wan't to answer passive searches if we're in passive mode...
+			if(pos == string::npos && Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
+				return;
 			}
-#endif _DEBUG
+
+			SearchResult::List l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType);
+			dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
+			if(pos != string::npos) {
+				string name = aSeeker.substr(4);
+				// Good, we have a passive seeker, those are easier...
+				string str;
+				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+					char buf[512];
+					SearchResult* sr = *i;
+					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", Settings::getNick().c_str(), sr->getFile().c_str(), 5,
+						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					str += buf;
+					delete sr;
+				}
+				
+				aClient->searchResults(str);
+			} else {
+				Socket s;
+				s.create(Socket::TYPE_UDP);
+				string ip, file;
+				short port = 412;
+				Util::decodeUrl(aSeeker, ip, port, file);
+				s.connect(ip, port);
+				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+					char buf[512];
+					SearchResult* sr = *i;
+					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", Settings::getNick().c_str(), sr->getFile().c_str(), 5,
+						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+					s.write(buf, strlen(buf));
+					delete sr;
+				}
+			}
 		}
 	}
-	
-	
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.2 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.3 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.3  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.2  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

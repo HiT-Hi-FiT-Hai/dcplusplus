@@ -117,9 +117,6 @@ void Socket::connect(const string& ip, const string& port) throw(SocketException
 }
 
 void Socket::connect(const string& ip, short port) throw(SocketException) {
-	if(type != TYPE_TCP) {
-		throw SocketException("Only TCP Sockets supported by connect()");
-	}
 	SOCKADDR_IN  serv_addr;
 	hostent* host;
 
@@ -206,9 +203,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.12 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.13 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.13  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.12  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

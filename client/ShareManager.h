@@ -26,6 +26,7 @@
 #include "Exception.h"
 #include "CriticalSection.h"
 #include "Util.h"
+#include "SearchManager.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -42,10 +43,11 @@ public:
 	string translateFileName(const string& aFile) throw(ShareException);
 	void refresh() throw(ShareException);
 
-	StringList search(const string& aString, int aSearchType, const string& aSize, int aFileType) {
+	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType) {
 		return search(aString, aSearchType, Util::toInt64(aSize), aFileType);
 	}
-	StringList search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType);
+	SearchResult::List search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType);
+
 
 	LONGLONG getShareSize() {
 		LONGLONG tmp = 0;
@@ -131,7 +133,7 @@ private:
 			return tmp;
 		}
 
-		void search(StringList& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType);
+		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType);
 		
 		Map directories;
 		map<string, LONGLONG> files;
@@ -184,9 +186,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.8 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.9 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.9  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.8  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

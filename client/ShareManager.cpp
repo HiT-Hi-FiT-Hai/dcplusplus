@@ -23,6 +23,8 @@
 #include "CryptoManager.h"
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
+#include "UploadManager.h"
+#include "ClientManager.h"
 
 ShareManager* ShareManager::instance = NULL;
 
@@ -211,32 +213,61 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 	return tmp;
 }
 
-void ShareManager::Directory::search(StringList& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType) {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType) {
 	bool found = true;
-	for(StringIter k = aStrings.begin(); (k != aStrings.end()); ++k) {
+	for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
 		if(Util::findSubString(name, *k) == -1) {
 			found = false;
 			break;
 		}
 	}
 
-	if(found) {
+	if(found && aSearchType == SearchManager::SIZE_DONTCARE) {
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end() && (aResults.size() < MAX_RESULTS); ++i) {
-			aResults.push_back(name + '\\' + i->first);
+			SearchResult* sr = new SearchResult();
+			sr->setFile(name + '\\' + i->first);
+			sr->setSize(i->second);
+			sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
+			sr->setSlots(Settings::getSlots());
+			sr->setNick(Settings::getNick());
+			Client* c = ClientManager::getInstance()->getConnectedClient();
+			if(c) {
+				sr->setHubName(c->getName());
+				sr->setHubAddress(c->getServer());
+			}
+			aResults.push_back(sr);
 		}	
 	} else {
 		
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end(); ++i) {
 			bool found = true;
 			for(StringIter j = aStrings.begin(); (j != aStrings.end()); ++j) {
-				if(Util::findSubString(i->first, *j) == -1) {
+				if(aSearchType == SearchManager::SIZE_ATLEAST && i->second < aSize) {
+					found = false;
+					break;
+				} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second > aSize) {
+					found = false;
+					break;
+				} else if(Util::findSubString(i->first, *j) == -1) {
 					found = false;
 					break;
 				}
 			}
 			
 			if(found) {
-				aResults.push_back(name + '\\' + i->first);
+				SearchResult* sr = new SearchResult();
+				sr->setFile(name + '\\' + i->first);
+				sr->setSize(i->second);
+				sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
+				sr->setSlots(Settings::getSlots());
+				sr->setNick(Settings::getNick());
+				Client* c = ClientManager::getInstance()->getConnectedClient();
+				if(c) {
+					sr->setHubName(c->getName());
+					sr->setHubAddress(c->getServer());
+				}
+				aResults.push_back(sr);
+
 				if(aResults.size() >= MAX_RESULTS) {
 					break;
 				}
@@ -248,10 +279,10 @@ void ShareManager::Directory::search(StringList& aResults, StringList& aStrings,
 		l->second->search(aResults, aStrings, aSearchType, aSize, aFileType);
 	}
 }
-StringList ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType) {
+SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType) {
 	StringTokenizer t(aString, '$');
 	StringList& l = t.getTokens();
-	StringList results;
+	SearchResult::List results;
 
 	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
 		i->second->search(results, l, aSearchType, aSize, aFileType);
@@ -261,9 +292,12 @@ StringList ShareManager::search(const string& aString, int aSearchType, LONGLONG
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.9 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.9  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.8  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

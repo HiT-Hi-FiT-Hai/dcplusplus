@@ -75,6 +75,8 @@ public:
 		cs.leave();
 	}
 
+	int getConnections() { cs.enter(); int sz = connections.size(); cs.leave(); return sz; };
+	
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		connections.push_back(conn);
@@ -249,9 +251,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.23 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.24 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.24  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.23  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

@@ -81,7 +81,7 @@ public:
 		send("$MyPass " + aPass + "|");
 	}
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
-		char buf[768];
+		char buf[512];
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 		string tmp = aString;
@@ -105,6 +105,10 @@ public:
 			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", Settings::getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
 		}
 		send(buf);
+	}
+
+	void searchResults(const string& aResults) {
+		send(aResults);
 	}
 
 	void sendMessage(const string& aMessage) {
@@ -476,9 +480,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.21 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: Client.h,v 1.22 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.22  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.21  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

@@ -446,70 +446,98 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aSource) {
 	cs.enter();
-	aDownload->removeSource(aSource);
-	cs.leave();
-	fireSourceRemoved(aDownload, aSource);
+	if(aDownload->isSet(Download::RUNNING) && aSource == aDownload->getCurrentSource()) {
+		// We have to abort the download...
+		for(Download::MapIter i = running.begin(); i != running.end(); ++i) {
+			if(i->second == aDownload) {
+				// Good, found it...
+				UserConnection* uc = i->first;
+				running.erase(i);
+				removeConnection(uc);
+				aDownload->unsetFlag(Download::RUNNING);
+				aDownload->setCurrentSource(NULL);
+				fireFailed(aDownload, "User removed");
+			}
+		}
+	}
+
+	if(aDownload->isSet(Download::USER_LIST)) {
+		Download::Iter i = find(queue.begin(), queue.end(), aDownload);
+		if(i != queue.end()) {
+			queue.erase(i);
+			cs.leave();
+			fireRemoved(aDownload);
+			delete aDownload;
+		}
+	} else {
+		aDownload->removeSource(aSource);
+		cs.leave();
+		fireSourceRemoved(aDownload, aSource);
+	}
 }
 
 void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
 	cs.enter();
-	dcassert(running.find(aSource) != running.end());
-	DWORD len;
-	Download* d = running[aSource];
-	cs.leave();
-	
-	WriteFile(d->getFile(), aData, aLen, &len, NULL);
-	d->addPos(len);
+	Download::MapIter i = running.find(aSource);
+	if(i != running.end()) {
+		DWORD len;
+		Download* d = i->second;
+		cs.leave();
+		
+		WriteFile(d->getFile(), aData, aLen, &len, NULL);
+		d->addPos(len);
+	}
 }
 
 void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
 
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
-	dcassert(i != running.end());
-	Download* d = i->second;
-
-	HANDLE file;
-	Util::ensureDirectory(d->getTarget());
-	if(d->isSet(Download::RESUME))
-		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	else
-		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	
-	if(file == INVALID_HANDLE_VALUE) {
-		running.erase(i);
-		d->unsetFlag(Download::RUNNING);
-		cs.leave();
-		removeConnection(aSource);
-
-		fireFailed(d, "Could not open target file");
-		return;
-	}
-	
-	d->setFile(file, true);
-	d->setPos(d->getSize(), true);
-	d->setSize(aFileLength);
-
-	if(d->getSize() == d->getPos()) {
-		Download::Iter j = find(queue.begin(), queue.end(), d);
-		dcassert(j != queue.end());
-		queue.erase(j);
-
-		cs.leave();
-		removeConnection(aSource);
-
-		// We're done...and this connection is broken...
-		fireComplete(d);
-		fireRemoved(d);
-		delete d;
+	if(i != running.end()) {
+		Download* d = i->second;
 		
-	} else {
-		cs.leave();
-		d->setStart(TimerManager::getTick());
-		fireStarting(d);
-
-		aSource->setDataMode(d->getSize() - d->getPos());
-		aSource->startSend();
+		HANDLE file;
+		Util::ensureDirectory(d->getTarget());
+		if(d->isSet(Download::RESUME))
+			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		else
+			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		
+		if(file == INVALID_HANDLE_VALUE) {
+			running.erase(i);
+			d->unsetFlag(Download::RUNNING);
+			cs.leave();
+			removeConnection(aSource);
+			
+			fireFailed(d, "Could not open target file");
+			return;
+		}
+		
+		d->setFile(file, true);
+		d->setPos(d->getSize(), true);
+		d->setSize(aFileLength);
+		
+		if(d->getSize() == d->getPos()) {
+			Download::Iter j = find(queue.begin(), queue.end(), d);
+			dcassert(j != queue.end());
+			queue.erase(j);
+			
+			cs.leave();
+			removeConnection(aSource);
+			
+			// We're done...and this connection is broken...
+			fireComplete(d);
+			fireRemoved(d);
+			delete d;
+			
+		} else {
+			cs.leave();
+			d->setStart(TimerManager::getTick());
+			fireStarting(d);
+			
+			aSource->setDataMode(d->getSize() - d->getPos());
+			aSource->startSend();
+		}
 	}
 }
 
@@ -518,28 +546,29 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 	cs.enter();
 
 	Download::MapIter i = running.find(aSource);
-	dcassert(i != running.end());
+	if(i != running.end()) {
+		Download::Ptr p = i->second;
+		running.erase(i);
+		Download::Iter j = find(queue.begin(), queue.end(), p);
+		dcassert(j != queue.end());
+		queue.erase(j);
+		
+		cs.leave();
+		
+		if(p->getPos() != p->getSize())
+			dcdebug("Download incomplete??? : ");
+		
+		CloseHandle(p->getFile());
+		p->setFile(NULL);
+		
+		dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
+		fireComplete(p);
+		fireRemoved(p);
+		delete p;
+		
+		checkDownloads(aSource);
+	}
 	
-	Download::Ptr p = i->second;
-	running.erase(i);
-	Download::Iter j = find(queue.begin(), queue.end(), p);
-	dcassert(j != queue.end());
-	queue.erase(j);
-	
-	cs.leave();
-
-	if(p->getPos() != p->getSize())
-		dcdebug("Download incomplete??? : ");
-	
-	CloseHandle(p->getFile());
-	p->setFile(NULL);
-
-	dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
-	fireComplete(p);
-	fireRemoved(p);
-	delete p;
-
-	checkDownloads(aSource);
 }
 
 void DownloadManager::onMaxedOut(UserConnection* aSource) { 
@@ -638,9 +667,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.24 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.25 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.25  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.24  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

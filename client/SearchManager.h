@@ -27,6 +27,10 @@
 
 class SearchResult {
 public:	
+	typedef SearchResult* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
 	const string& getNick() { return nick; };
 	void setNick(const string& aNick) { nick = aNick; };
 	
@@ -158,9 +162,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.5 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.6 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.6  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.5  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

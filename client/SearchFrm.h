@@ -323,11 +323,28 @@ public:
 			ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 			string s(message, ctrlSearch.GetWindowTextLength());
 			delete message;
+
+			message = new char[ctrlSize.GetWindowTextLength()+1];
+			ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
+			string size(message, ctrlSize.GetWindowTextLength());
+			delete message;
+
+			LONGLONG lsize = Util::toInt64(size);
+			switch(ctrlSizeMode.GetCurSel()) {
+			case 1:
+				lsize*=(LONGLONG)1024; break;
+			case 2:
+				lsize*=(LONGLONG)1024*1024; break;
+			case 3:
+				lsize*=(LONGLONG)1024*1024*1024; break;
+			}
+
 			for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
 				delete (LONGLONG*)ctrlResults.GetItemData(i);
 			}
 			ctrlResults.DeleteAllItems();
-			SearchManager::getInstance()->search(s);
+
+			SearchManager::getInstance()->search(s,lsize, 0, ctrlMode.GetCurSel());
 			//client->sendMessage(s);
 			ctrlSearch.SetWindowText("");
 			
@@ -418,9 +435,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.11 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.12 2002/01/06 00:14:54 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.12  2002/01/06 00:14:54  arnetheduck
+ * Incoming searches almost done, just need some testing...
+ *
  * Revision 1.11  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *
