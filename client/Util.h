@@ -413,8 +413,13 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
+#if _MSC_VER == 1200 
+	enum {bucket_size = 4}; 
+	enum {min_buckets = 8}; 
+#else 
+	static const size_t bucket_size = 4; 
+	static const size_t min_buckets = 8; 
+#endif // _MSC_VER == 1200
 
 	size_t operator()(const string& s) const {
 		size_t x = 0;
@@ -449,5 +454,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.59 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: Util.h,v 1.60 2003/09/30 13:36:54 arnetheduck Exp $
  */

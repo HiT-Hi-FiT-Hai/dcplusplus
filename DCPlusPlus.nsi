@@ -1,3 +1,5 @@
+SetCompressor "bzip2"
+
 ; The name of the installer
 Name "DC++"
 

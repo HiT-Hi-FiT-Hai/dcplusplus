@@ -1,3 +1,12 @@
+ -- 0.263 2003-09-30 --
+* Fixed a mouse click crash (thanks sed)
+* Fixed so that donating is done in euro's from the help menu (why don't you try it out =)
+* Port can now be seen in the hub frame title (thanks sed)
+* Fixed a major bug with filename case sensitivity (causing strange queue behaviour)
+* Fixed another queue crash bug
+* Queue now starts fully expanded (makes sense with smart queues)
+* Fixed compiling issue on vc6
+
  -- 0.262 2003-09-24 --
 * Added arrows and tri-state sorting (thanks saurod)
 * Fixed a crash with certain queues when opening queue frame

@@ -509,7 +509,7 @@ public:
 	BEGIN_MSG_MAP(thisClass>)
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
+		MESSAGE_HANDLER(WM_MDIACTIVATE, onMDIActivate)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SETTEXT, onSetText)
 		CHAIN_MSG_MAP(baseClass)
@@ -558,13 +558,14 @@ public:
 		return 0;
 	}
 	
-	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-		bHandled = FALSE;
+	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam */, LPARAM lParam, BOOL& bHandled) {
 		if(getTab() && (m_hWnd == (HWND)lParam))
 			getTab()->setActive(m_hWnd);
-		return 0;
+
+		bHandled = FALSE;
+		return 1; 
 	}
-	
+
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		if(getTab())
@@ -603,5 +604,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.16 2003/09/24 12:06:19 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.17 2003/09/30 13:36:54 arnetheduck Exp $
  */

@@ -1146,7 +1146,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = "http://dcplusplus.sf.net/forum"; break;
 	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
 	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
-	case IDC_HELP_DONATE: site = "https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DC%2B%2B&no_shipping=1&cn=DC%2B%2B+forum+nick+or+greeting"; break;
+	case IDC_HELP_DONATE: site = "https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"; break;
 	default: dcassert(0);
 	}
 
@@ -1452,6 +1452,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.28 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.29 2003/09/30 13:36:54 arnetheduck Exp $
  */
 

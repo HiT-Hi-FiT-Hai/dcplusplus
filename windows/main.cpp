@@ -249,7 +249,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		return 0;
 	}
 	
-	wndMain.ShowWindow((nCmdShow == SW_SHOWDEFAULT) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
+	wndMain.ShowWindow(((nCmdShow == SW_SHOWDEFAULT) || (nCmdShow == SW_SHOWNORMAL)) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
 	
 	int nRet = theLoop.Run();
 	
@@ -314,5 +314,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.13 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: main.cpp,v 1.14 2003/09/30 13:36:54 arnetheduck Exp $
  */

@@ -40,6 +40,7 @@ HFONT WinUtil::font = NULL;
 int WinUtil::fontHeight = 0;
 HFONT WinUtil::boldFont = NULL;
 HFONT WinUtil::systemFont = NULL;
+HFONT WinUtil::monoFont = NULL;
 CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
 CImageList WinUtil::userImages;
@@ -87,7 +88,6 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CSTRING(MENU_STATUS_BAR));
-	view.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CSTRING(MENU_VIEW));
 
@@ -136,10 +136,15 @@ void WinUtil::init(HWND hWnd) {
 
 	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
-	LOGFONT lf;
+	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, encodeFont(lf));
 	decodeFont(SETTING(TEXT_FONT), lf);
+	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
+	
+	lf2.lfHeight = lf.lfHeight;
+	lf2.lfWeight = lf.lfWeight;
+	lf2.lfItalic = lf.lfItalic;
 
 	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	textColor = SETTING(TEXT_COLOR);
@@ -149,14 +154,16 @@ void WinUtil::init(HWND hWnd) {
 	lf.lfWeight = FW_BOLD;
 	boldFont = ::CreateFontIndirect(&lf);
 	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
+	monoFont = (HFONT)::CreateFontIndirect(&lf);
 }
 
 void WinUtil::uninit() {
 	fileImages.Destroy();
 	userImages.Destroy();
-	DeleteObject(font);
-	DeleteObject(boldFont);
-	DeleteObject(bgBrush);
+	::DeleteObject(font);
+	::DeleteObject(boldFont);
+	::DeleteObject(bgBrush);
+	::DeleteObject(monoFont);
 
 	mainMenu.DestroyMenu();
 
@@ -410,5 +417,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.19 2003/09/24 12:06:19 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.20 2003/09/30 13:36:54 arnetheduck Exp $
  */

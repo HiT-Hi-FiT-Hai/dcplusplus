@@ -45,6 +45,7 @@ public:
 	static int fontHeight;
 	static HFONT boldFont;
 	static HFONT systemFont;
+	static HFONT monoFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
 	static StringList lastDirs;
@@ -148,5 +149,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.14 2003/09/30 13:36:54 arnetheduck Exp $
  */

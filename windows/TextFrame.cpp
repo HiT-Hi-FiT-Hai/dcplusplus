@@ -33,7 +33,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
-	ctrlPad.SetFont(WinUtil::font);
+	ctrlPad.SetFont(WinUtil::monoFont);
 	string tmp;
 	try {
 		tmp = File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN);
@@ -72,7 +72,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.1 2003/09/24 08:55:23 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.2 2003/09/30 13:36:54 arnetheduck Exp $
  */
 
 

@@ -294,7 +294,7 @@ private:
 
 	void addQueueList(const QueueItem::StringMap& l);
 	void addQueueItem(QueueItem* qi);
-	HTREEITEM addDirectory(const string& dir, bool isFileList = false);
+	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
 	void removeDirectory(const string& dir, bool isFileList = false);
 	void removeDirectories(HTREEITEM ht);
 
@@ -314,6 +314,8 @@ private:
 			spoken = true;
 		}
 	}
+
+	bool isCurDir(const string& aDir) const { return Util::stricmp(curDir, aDir) == 0; };
 
 	void moveSelected();	
 	void moveSelectedDir();
@@ -359,5 +361,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.21 2003/09/30 13:36:54 arnetheduck Exp $
  */

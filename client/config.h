@@ -54,6 +54,9 @@
 // Hint: the once that comes with mcvc++ 6.0 doesn't have hashes...
 #define HAS_HASH 1
 
+// Remove this if you want to try using the msvc 7.x STL
+#define HAS_STLPORT 1
+
 // --- Shouldn't have to change anything under here...
 
 // User maps instead of hash_maps if they're not available...(even if there's
@@ -62,7 +65,7 @@
 #define HASH_MAP hash_map
 #define HASH_MULTIMAP hash_multimap
 
-#ifdef _STLPORT_VERSION
+#ifdef HAS_STLPORT
 #define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
 #define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
 #else // Assume the msvc 7.x stl
@@ -92,5 +95,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.13 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: config.h,v 1.14 2003/09/30 13:36:54 arnetheduck Exp $
  */

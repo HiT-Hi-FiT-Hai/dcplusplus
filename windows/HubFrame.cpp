@@ -160,7 +160,9 @@ void HubFrame::onEnter() {
 				}
 			} else if(Util::stricmp(s.c_str(), "join")==0) {
 				if(!param.empty()) {
-					client->connect(param);
+					redirect = param;
+					BOOL whatever = FALSE;
+					onFollow(0, 0, 0, whatever);
 				} else {
 					addClientLine(STRING(SPECIFY_SERVER));
 				}
@@ -616,13 +618,14 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			HubFrame::openWindow(m_hWndMDIClient, getTab(), server + ":" + Util::toString(port));
 		} else {
 			string::size_type end = x.find_first_of(" >\t", start+1);
+
 			if(end == string::npos) // get EOL as well
 				end = x.length();
 			else if(end == start + 1)
 				return 0;
 
 			// Nickname click, let's see if we can find one like it in the name list...
-			int pos = ctrlUsers.find(x.substr(start + 1, end - start - 1));
+			int pos = ctrlUsers.find(x.substr(start, end - start));
 			if(pos != -1) {
 				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
@@ -1012,7 +1015,10 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 		case ClientListener::CONNECTED: speak(CONNECTED); break;
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
-		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() + ")"); break;
+		case ClientListener::HUB_NAME:
+			speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() +
+					(client->getPort()==411?Util::emptyString:':'+Util::toString(client->getPort())) + ")");
+			break;
 		case ClientListener::VALIDATE_DENIED:
 			client->removeListener(this);
 			client->disconnect();
@@ -1083,5 +1089,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.28 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.29 2003/09/30 13:36:54 arnetheduck Exp $
  */

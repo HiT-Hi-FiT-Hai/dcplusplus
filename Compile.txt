@@ -8,7 +8,8 @@ How to compile in 4 easy steps:
    you know what you're doing, I've modified it a little bit). Mind the version.
    
    * Note; This step may not be required if you use MSVC 7.x, i e it might work without STLPort,
-     but I don't recommend this as it's completely untested, and the original distribution uses it *
+     but I don't recommend this as it's completely untested, and the original distribution uses it.
+     See client\config.h for further details
 
 3) Make sure you have a fairly recent platform sdk (November 2001 or newer has worked for me)
    The sdk is freely available from ms: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
