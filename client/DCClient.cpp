@@ -93,7 +93,25 @@ DWORD WINAPI DCClient::reader(void* p) {
 
 void DCClient::gotLine(const string& aLine) {
 	if(aLine.length() == 0) {
-		// Do Nothing
+//		dcassert(0); // should never happen
+	} else if(aLine.find("$Search") != string::npos) {
+		string tmp = aLine.substr(8);
+		string seeker = tmp.substr(0, tmp.find(' '));
+		tmp = tmp.substr(tmp.find(' ') + 1);
+		int a;
+		if(tmp[0] == 'F') {
+			a = SEARCH_PLAIN;
+		} else if(tmp[2] == 'F') {
+			a = SEARCH_ATLEAST;
+		} else {
+			a = SEARCH_ATMOST;
+		}
+		tmp=tmp.substr(4);
+		string size = tmp.substr(0, tmp.find('?'));
+		tmp = tmp.substr(tmp.find('?')+1);
+		int type = atoi(tmp.substr(0, tmp.find('?')).c_str());
+		tmp = tmp.substr(tmp.find('?')+1);
+		fireSearch(seeker, a, size, type, tmp);
 	} else if(aLine.find("$HubName") != string::npos) {
 		fireHubName(aLine.substr(9));
 	} else if(aLine.find("$Lock")!=string::npos) {
@@ -225,11 +243,15 @@ string DCClient::makeKey(const string& lock) {
 
 /**
  * @file DCClient.cpp
- * $Id: DCClient.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: DCClient.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

@@ -25,23 +25,54 @@
 
 class Settings  
 {
-public:
-	static string name;
+private:
+	static string nick;
 	static string email;
 	static string description;
 	static string connection;
+	
+	static string getAppPath() {
+		
+		TCHAR buf[MAX_PATH+1];
+		GetModuleFileName(NULL, buf, MAX_PATH);
+		
+		string b = buf;
+		b = b.substr(0, b.rfind('\\') + 1);
+		return b;
+		
+	}
+	
+public:
+	static const string& getNick() { return nick; }
+	static const string& getEmail() { return email; }
+	static const string& getDescription() { return description; }
+	static const string& getConnection() { return connection; }
 
+	static void setNick(const string& aNick) { nick = aNick; };
+	static void setEmail(const string& aEmail) { email = aEmail; };
+	static void setDescription(const string& aDescription) { description = aDescription; };
+	static void setConnection(const string& aConnection) { connection = aConnection; };
+
+	static void load() { load(getAppPath() + "DCPlusPlus.xml"); };
+	static void save() { save(getAppPath() + "DCPlusPlus.xml"); };
+
+	static void load(const string& aFileName);
+	static void save(const string& aFileName);
 };
 
 #endif // !defined(AFX_SETTINGS_H__2B9FD59C_3F31_40EA_A4FC_C41F30506476__INCLUDED_)
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: Settings.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

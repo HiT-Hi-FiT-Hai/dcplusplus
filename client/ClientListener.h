@@ -32,21 +32,42 @@ public:
 	
 	virtual void onConnecting(const string& aServer) { };
 	/**
-	* Hubname received.
-	* @param aHubName The hubname...
-	*/
+	 * Hubname received.
+	 * @param aHubName The hubname...
+	 */
 	virtual void onHubName(const string& aHubName) { };
 	/**
-	* Lock message received, suggested action: key(makeKey(aLock)); validateNick(aNick);
-	* @param aLock Lock string
-	* @param aPk PK part of the lock
-	*/
+	 * Lock message received, suggested action: key(makeKey(aLock)); validateNick(aNick);
+	 * @param aLock Lock string
+	 * @param aPk PK part of the lock
+	 */
 	virtual void onLock(const string& aLock, const string& aPk) { };
+	/**
+	 * Suggestion to move to aHub received.
+	 * @param aHub Suggested hub.
+	 */
 	virtual void onForceMove(const string& aHub) { };
+	/**
+	 * Connection denied, hub is full.
+	 */
 	virtual void onHubFull() { };
+	/**
+	 * Nick validation denied
+	 */
 	virtual void onValidateDenied() { };
+	/**
+	 * New user arrived. If this is the user's nick, send myinfo.
+	 * @param aNick Nick of the new user.
+	 */
 	virtual void onHello(const string& aNick) { };
+	/**
+	 * Another user disconnected.
+	 * @param aNick Nick of the user.
+	 */
 	virtual void onQuit(const string& aNick) { };
+	/**
+	 * Detailed information about a user.
+	 */
 	virtual void onMyInfo(const string& aNick, const string& aDescription, const string& aSpeed, 
 		const string& aEmail, const string& aBytesShared) { };
 	virtual void onMessage(const string& aMessage) { };
@@ -56,17 +77,23 @@ public:
 	virtual void onConnectionFailed(const string& aReason) { };
 	virtual void onOpList(StringList& aOps) { };
 	virtual void onPrivateMessage(const string& aFrom, const string& aMessage) { };
+	virtual void onSearch(const string& aSeeker, int aSearchType, const string& aSize, 
+		int aFileType, const string& aString) { };
 };
 
 #endif // !defined(AFX_CLIENTLISTENER_H__607F5375_97B0_47CD_B53B_D230ABF23E7E__INCLUDED_)
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

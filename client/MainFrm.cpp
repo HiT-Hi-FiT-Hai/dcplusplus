@@ -23,8 +23,45 @@
 #include "AboutDlg.h"
 #include "HubFrame.h"
 #include "PublicHubsDlg.h"
+#include "SettingsDlg.h"
 
-LRESULT MainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		
+	// Set window name
+	SetWindowText(APPNAME " " VERSIONSTRING);
+	// create command bar window
+	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+	// attach menu
+	m_CmdBar.AttachMenu(GetMenu());
+	// load command bar images
+	m_CmdBar.LoadImages(IDR_MAINFRAME);
+	// remove old menu
+	SetMenu(NULL);
+	
+	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+	
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	AddSimpleReBarBand(hWndCmdBar);
+	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+	CreateSimpleStatusBar();
+	
+	CreateMDIClient();
+	m_CmdBar.SetMDIClient(m_hWndMDIClient);
+	
+	UIAddToolBar(hWndToolBar);
+	UISetCheck(ID_VIEW_TOOLBAR, 1);
+	UISetCheck(ID_VIEW_STATUS_BAR, 1);
+	
+	// register object for message filtering and idle updates
+	CMessageLoop* pLoop = _Module.GetMessageLoop();
+	ATLASSERT(pLoop != NULL);
+	pLoop->AddMessageFilter(this);
+	pLoop->AddIdleHandler(this);
+	
+	return 0;
+}
+	
+LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PublicHubsDlg dlg;
 	if(dlg.DoModal(m_hWnd) == IDCANCEL) {
 		return 0;
@@ -42,17 +79,37 @@ LRESULT MainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CAboutDlg dlg;
-	dlg.DoModal();
+	dlg.DoModal(m_hWnd);
+	return 0;
+}
+
+LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	SettingsDlg dlg;
+	dlg.nick = Settings::getNick();
+	dlg.email = Settings::getEmail();
+	dlg.description = Settings::getDescription();
+	dlg.connection = Settings::getDescription();
+	if(dlg.DoModal(m_hWnd) == IDOK) {
+		Settings::setNick(dlg.nick);
+		Settings::setDescription(dlg.description);
+		Settings::setEmail(dlg.email);
+		Settings::setConnection(dlg.connection);
+		Settings::save();
+	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

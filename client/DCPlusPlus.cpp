@@ -35,7 +35,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
-
+	
+	Settings::load();	
 	wndMain.ShowWindow(nCmdShow);
 
 	int nRet = theLoop.Run();
@@ -79,11 +80,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

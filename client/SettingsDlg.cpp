@@ -16,35 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-typedef vector<string> StringList;
-typedef StringList::iterator StringIter;
-typedef map<string, string> StringMap;
-typedef StringMap::iterator StringMapIter;
+#include "stdafx.h"
+#include "DCPlusPlus.h"
 
-#include "resource.h"
-#include "Settings.h"
-#include "Version.h"
-
-#ifdef _DEBUG
-#define dcdebug ATLTRACE
-#define dcassert(exp) ATLASSERT(exp)
-#else //_DEBUG
-#define dcdebug ATLTRACE
-#define dcassert(exp) __assume(exp)
-#endif //_DEBUG
+#include "SettingsDlg.h"
 
 /**
- * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * @file SettingsDlg.cpp
+ * $Id: SettingsDlg.cpp,v 1.1 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
- * $Log: DCPlusPlus.h,v $
- * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * $Log: SettingsDlg.cpp,v $
+ * Revision 1.1  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.
  *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
  * @endif
  */
-

@@ -43,7 +43,9 @@ protected:
 	virtual void onUnknown(const string& aCommand) {
 		addClientLine("Unknown: " + aCommand);
 	}
-	
+	virtual void onQuit(const string& aNick) {
+
+	}
 	virtual void onHubName(const string& aHubName) {
 		SetWindowText(aHubName.c_str());
 	}
@@ -164,11 +166,15 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

@@ -36,13 +36,13 @@ class ProtocolHandler : public ClientListener
 public:
 	void onLock(const string& aLock, const string& aPk)  {
 		client->key(client->makeKey(aLock));
-		client->validateNick(Settings::name);
+		client->validateNick(Settings::getNick());
 	}
 	void onHello(const string& aNick) {
-		if(aNick.compare(Settings::name) == 0) {
+		if(aNick.compare(Settings::getNick()) == 0) {
 			client->version("1,0091");
 			client->getNickList();
-			client->myInfo(Settings::name, Settings::description, Settings::connection, "", "1000000000000");
+			client->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "1000000000000");
 		}
 	}
 	void onNickList(StringList& aNicks) {
@@ -68,11 +68,15 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

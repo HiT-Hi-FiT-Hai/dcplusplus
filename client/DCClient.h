@@ -29,6 +29,11 @@
 class DCClient  
 {
 public:
+	enum {
+		SEARCH_PLAIN,
+		SEARCH_ATLEAST,
+		SEARCH_ATMOST
+	};
 	typedef DCClient* Ptr;
 
 	DCClient() : readerThread(NULL), stopEvent(NULL) { };
@@ -85,11 +90,11 @@ public:
 		while( (i = tmp.find_first_of("|$")) != string::npos) {
 			tmp.erase(i, 1);
 		}
-		send("<" + Settings::name + "> " + tmp + "|");
+		send("<" + Settings::getNick() + "> " + tmp + "|");
 	}
 	void getInfo(const string& aUser) {
 		dcdebug("GetInfo %s\n", aUser.c_str());
-		send("$GetINFO " + aUser + " " + Settings::name + "|");
+		send("$GetINFO " + aUser + " " + Settings::getNick() + "|");
 	}
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
@@ -153,6 +158,12 @@ protected:
 		dcdebug("fireConnecting\n");
 		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
 			(*i)->onConnecting(aServer);
+		}
+	}
+	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
+		dcdebug("fireConnecting\n");
+		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+			(*i)->onSearch(aSeeker, aSearchType, aSize, aFileType, aString);
 		}
 	}
 	void fireHubName(const string& aName) {
@@ -246,11 +257,15 @@ protected:
 
 /**
  * @file DCClient.h
- * $Id: DCClient.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: DCClient.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

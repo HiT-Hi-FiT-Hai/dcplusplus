@@ -46,6 +46,7 @@ extern CAppModule _Module;
 
 #include <string>
 #include <vector>
+#include <map>
 
 using namespace std;
 
@@ -57,11 +58,15 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

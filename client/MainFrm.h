@@ -52,7 +52,8 @@ public:
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
-		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
+		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
+		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
@@ -68,51 +69,15 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-
-		// Set window name
-		SetWindowText(APPNAME " " VERSIONSTRING);
-		// create command bar window
-		HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-		// attach menu
-		m_CmdBar.AttachMenu(GetMenu());
-		// load command bar images
-		m_CmdBar.LoadImages(IDR_MAINFRAME);
-		// remove old menu
-		SetMenu(NULL);
-
-		HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
-
-		CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-		AddSimpleReBarBand(hWndCmdBar);
-		AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-		CreateSimpleStatusBar();
-
-		CreateMDIClient();
-		m_CmdBar.SetMDIClient(m_hWndMDIClient);
-
-		UIAddToolBar(hWndToolBar);
-		UISetCheck(ID_VIEW_TOOLBAR, 1);
-		UISetCheck(ID_VIEW_STATUS_BAR, 1);
-
-		// register object for message filtering and idle updates
-		CMessageLoop* pLoop = _Module.GetMessageLoop();
-		ATLASSERT(pLoop != NULL);
-		pLoop->AddMessageFilter(this);
-		pLoop->AddIdleHandler(this);
-
-		return 0;
-	}
-
-	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
 
-	LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		static BOOL bVisible = TRUE;	// initially visible
@@ -164,11 +129,15 @@ public:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/22 19:47:42  arnetheduck
+ * A simple XML parser. Doesn't have all the features, but works good enough for
+ * the configuration file.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */
