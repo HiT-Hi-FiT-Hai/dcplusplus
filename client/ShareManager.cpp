@@ -1188,9 +1188,8 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 		Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
 		if(i != d->files.end()) {
 			if(i->getTTH() != NULL) { // TTH of file updated?
-				removeTTH(i->getTTH(), i);
 				dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
-				tthIndex.erase(i->getTTH());
+				removeTTH(i->getTTH(), i);
 			}
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
@@ -1218,6 +1217,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.99 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.100 2004/09/13 23:02:43 arnetheduck Exp $
  */
 

@@ -209,13 +209,12 @@ void SettingsManager::load(string const& aFileName)
 		if(xml.findChild("Settings"))
 		{
 			xml.stepIn();
-			
+
 			int i;
-			string attr;
 			
 			for(i=STR_FIRST; i<STR_LAST; i++)
 			{
-				attr = settingTags[i];
+				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
 				
 				if(xml.findChild(attr))
@@ -224,7 +223,7 @@ void SettingsManager::load(string const& aFileName)
 			}
 			for(i=INT_FIRST; i<INT_LAST; i++)
 			{
-				attr = settingTags[i];
+				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
 				
 				if(xml.findChild(attr))
@@ -233,7 +232,7 @@ void SettingsManager::load(string const& aFileName)
 			}
 			for(i=INT64_FIRST; i<INT64_LAST; i++)
 			{
-				attr = settingTags[i];
+				const string& attr = settingTags[i];
 				dcassert(attr.find("SENTRY") == string::npos);
 				
 				if(xml.findChild(attr))
@@ -243,6 +242,10 @@ void SettingsManager::load(string const& aFileName)
 			
 			xml.stepOut();
 		}
+
+		// double v = Util::toDouble(SETTING(CONFIG_VERSION));
+		// if(v < 0.x) { // Fix old settings here }
+
 		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
@@ -298,7 +301,7 @@ void SettingsManager::save(string const& aFileName) {
 	try {
 		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		BufferedOutputStream<false> f(&ff);
-		f.write(SimpleXML::w1252Header);
+		f.write(SimpleXML::utf8Header);
 		xml.toXML(&f);
 		f.flush();
 		ff.close();
@@ -311,6 +314,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.85 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.86 2004/09/13 23:02:43 arnetheduck Exp $
  */
 

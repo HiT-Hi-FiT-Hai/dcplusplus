@@ -94,23 +94,65 @@ void HubManager::onHttpFinished() throw() {
 	{
 		Lock l(cs);
 		publicHubs.clear();
-		i = 0;
-		
-		while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
-			StringTokenizer<string> tok(x->substr(i, j-i), '|');
-			i = j + 2;
-			if(tok.getTokens().size() < 4)
-				continue;
 
-			StringList::const_iterator k = tok.getTokens().begin();
-			const string& name = *k++;
-			const string& server = *k++;
-			const string& desc = *k++;
-			const string& usersOnline = *k++;
-			publicHubs.push_back(HubEntry(name, server, desc, usersOnline));
+		if(x->compare(0, 5, "<?xml") == 0) {
+			loadXmlList(*x);
+		} else {
+			i = 0;
+
+			while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
+				StringTokenizer<string> tok(x->substr(i, j-i), '|');
+				i = j + 2;
+				if(tok.getTokens().size() < 4)
+					continue;
+
+				StringList::const_iterator k = tok.getTokens().begin();
+				const string& name = *k++;
+				const string& server = *k++;
+				const string& desc = *k++;
+				const string& usersOnline = *k++;
+				publicHubs.push_back(HubEntry(name, server, desc, usersOnline));
+			}
 		}
 	}
 	downloadBuf = Util::emptyString;
+}
+
+class XmlListLoader : public SimpleXMLReader::CallBack {
+public:
+	XmlListLoader(HubEntry::List& lst) : publicHubs(lst) { };
+	virtual ~XmlListLoader() { }
+	virtual void startTag(const string& name, StringPairList& attribs, bool) {
+		if(name == "Hub") {
+			const string& name = getAttrib(attribs, "Name", 0);
+			const string& server = getAttrib(attribs, "Address", 1);
+			const string& description = getAttrib(attribs, "Description", 2);
+			const string& users = getAttrib(attribs, "Users", 3);
+			const string& country = getAttrib(attribs, "Country", 4);
+			const string& shared = getAttrib(attribs, "Shared", 5);
+			const string& minShare = getAttrib(attribs, "Minshare", 5);
+			const string& minSlots = getAttrib(attribs, "Minslots", 5);
+			const string& maxHubs = getAttrib(attribs, "Maxhubs", 5);
+			const string& maxUsers = getAttrib(attribs, "Maxusers", 5);
+			const string& reliability = getAttrib(attribs, "Reliability", 5);
+			const string& rating = getAttrib(attribs, "Rating", 5);
+			publicHubs.push_back(HubEntry(name, server, description, users, country, shared, minShare, minSlots, maxHubs, maxUsers, reliability, rating));
+		}
+	}
+	virtual void endTag(const string&, const string&) {
+
+	}
+private:
+	HubEntry::List& publicHubs;
+};
+
+void HubManager::loadXmlList(const string& xml) {
+	try {
+		XmlListLoader loader(publicHubs);
+		SimpleXMLReader(&loader).fromXML(xml);
+	} catch(const SimpleXMLException&) {
+
+	}
 }
 
 void HubManager::save() {
@@ -173,7 +215,7 @@ void HubManager::save() {
 		string fname = Util::getAppPath() + FAVORITES_FILE;
 
 		File f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write(SimpleXML::w1252Header);
+		f.write(SimpleXML::utf8Header);
 		f.write(xml.toXML());
 		f.close();
 		File::deleteFile(fname);
@@ -390,5 +432,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.53 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.54 2004/09/13 23:02:43 arnetheduck Exp $
  */

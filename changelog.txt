@@ -1,4 +1,10 @@
 -- 0.4033 --
+*** WARNING *** 
+This update will change all your config files and queues, and it is 
+very probable that you won't be able to revert back to an older version
+once the update has been done!!!
+*** WARNING ***
+
 * Fixed a rare download crash (thanks farcry)
 * Fixed tab dropping in the last position (thanks trem)
 * Fixed directory sorting in the file listings (thanks trem)
@@ -8,7 +14,7 @@
 * TTH Values are used for right click download menus when available
 * Upgraded to WTL 7.5.4196
 * Updated license to allow others to release legal binaries compiled against WTL
-* Moved the core structures to UTF-8 to allow correct internationalisation
+* Moved the core structures to UTF-8 to allow correct internationalisation (major change)
 * Moving towards full unicodization of the user interface, MS layer for unicode
   now needed for old crappy windows versions
 * Rewrote the share manager to accomodate for future features, it can now read
@@ -22,7 +28,7 @@
 * Slightly changed temporary download name
 * Added virtual directory names to shares
 * TTH Leaf uploads no longer logged (thanks garg)
-
+* Added (initial) support for hublist.org xml hublists, now default
 
 
  -- 0.4032 2004-08-08 --

@@ -38,15 +38,36 @@ public:
 	typedef List::iterator Iter;
 	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
-	name(aName), server(aServer), description(aDescription), users(aUsers) { };
+	name(aName), server(aServer), description(aDescription), users(Util::toInt(aUsers)) { };
+
+	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
+		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
+		const string& aReliability, const string& aRating) : name(aName), server(aServer), description(aDescription), country(aCountry), 
+		rating(aRating), reliability((float)(Util::toFloat(aReliability) / 100.0)), shared(Util::toInt64(aShared)), minShare(Util::toInt64(aMinShare)),
+		users(Util::toInt(aUsers)), minSlots(Util::toInt(aMinSlots)), maxHubs(Util::toInt(aMaxHubs)), maxUsers(Util::toInt(aMaxUsers)) 
+	{
+
+	}
+
 	HubEntry() throw() { };
-	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), users(rhs.users) { }
-	virtual ~HubEntry() throw() { };
+	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), country(rhs.country), 
+		rating(rhs.rating), reliability(rhs.reliability), shared(rhs.shared), minShare(rhs.minShare), users(rhs.users), minSlots(rhs.minSlots),
+		maxHubs(rhs.maxHubs), maxUsers(rhs.maxUsers) { }
+
+	~HubEntry() throw() { };
 
 	GETSET(string, name, Name);
 	GETSET(string, server, Server);
 	GETSET(string, description, Description);
-	GETSET(string, users, Users);
+	GETSET(string, country, Country);
+	GETSET(string, rating, Rating);
+	GETSET(float, reliability, Reliability);
+	GETSET(int64_t, shared, Shared);
+	GETSET(int64_t, minShare, MinShare);
+	GETSET(int, users, Users);
+	GETSET(int, minSlots, MinSlots);
+	GETSET(int, maxHubs, MaxHubs)
+	GETSET(int, maxUsers, MaxUsers);
 };
 
 class FavoriteHubEntry {
@@ -280,6 +301,8 @@ private:
 		return favoriteHubs.end();
 	}
 
+	void loadXmlList(const string& xml);
+
 	// HttpConnectionListener
 	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw();
 	virtual void on(Failed, HttpConnection*, const string&) throw();
@@ -303,6 +326,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.56 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.57 2004/09/13 23:02:43 arnetheduck Exp $
  */
 

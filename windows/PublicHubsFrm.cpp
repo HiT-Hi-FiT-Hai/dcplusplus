@@ -27,12 +27,38 @@
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
 
-int PublicHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_USERS, COLUMN_SERVER };
+int PublicHubsFrame::columnIndexes[] = { 
+	COLUMN_NAME,
+	COLUMN_DESCRIPTION,
+	COLUMN_USERS,
+	COLUMN_SERVER,
+	COLUMN_COUNTRY,
+	COLUMN_SHARED,
+	COLUMN_MINSHARE,
+	COLUMN_MINSLOTS,
+	COLUMN_MAXHUBS,
+	COLUMN_MAXUSERS,
+	COLUMN_RELIABILITY,
+	COLUMN_RATING
+ };
 
-int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100 };
+int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100, 100, 100, 100, 100, 100, 100, 100, 100 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::HUB_NAME, ResourceManager::DESCRIPTION, 
-ResourceManager::USERS, ResourceManager::HUB_ADDRESS };
+static ResourceManager::Strings columnNames[] = { 
+	ResourceManager::HUB_NAME, 
+	ResourceManager::DESCRIPTION, 
+	ResourceManager::USERS, 
+	ResourceManager::HUB_ADDRESS,
+	ResourceManager::COUNTRY,
+	ResourceManager::SHARED,
+	ResourceManager::MIN_SHARE,
+	ResourceManager::MIN_SLOTS,
+	ResourceManager::MAX_HUBS,
+	ResourceManager::MAX_USERS,
+	ResourceManager::RELIABILITY,
+	ResourceManager::RATING,
+	
+};
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -331,13 +357,22 @@ void PublicHubsFrame::updateList() {
 			filter.match(i->getServer()) ) {
 
 			TStringList l;
-			l.push_back(Text::toT(i->getName()));
-			l.push_back(Text::toT(i->getDescription()));
-			l.push_back(Text::toT(i->getUsers()));
-			l.push_back(Text::toT(i->getServer()));
+			l.resize(COLUMN_LAST);
+			l[COLUMN_NAME] = Text::toT(i->getName());
+			l[COLUMN_DESCRIPTION] = Text::toT(i->getDescription());
+			l[COLUMN_USERS] = Text::toT(Util::toString(i->getUsers()));
+			l[COLUMN_SERVER] = Text::toT(i->getServer());
+			l[COLUMN_COUNTRY] = Text::toT(i->getCountry());
+			l[COLUMN_SHARED] = Text::toT(Util::formatBytes(i->getShared()));
+			l[COLUMN_MINSHARE] = Text::toT(Util::formatBytes(i->getMinShare()));
+			l[COLUMN_MINSLOTS] = Text::toT(Util::toString(i->getMinSlots()));
+			l[COLUMN_MAXHUBS] = Text::toT(Util::toString(i->getMaxHubs()));
+			l[COLUMN_MAXUSERS] = Text::toT(Util::toString(i->getMaxUsers()));
+			l[COLUMN_RELIABILITY] = Text::toT(Util::toString(i->getReliability()));
+			l[COLUMN_RATING] = Text::toT(i->getRating());
 			ctrlHubs.insert(ctrlHubs.GetItemCount(), l);
 			visibleHubs++;
-			users += Util::toInt(i->getUsers());
+			users += i->getUsers();
 		}
 	}
 	
@@ -419,6 +454,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.26 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.27 2004/09/13 23:02:44 arnetheduck Exp $
  */
 

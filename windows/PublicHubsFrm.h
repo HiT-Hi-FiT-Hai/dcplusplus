@@ -117,8 +117,11 @@ public:
 			else
 				ctrlHubs.setSortDirection(false);
 		} else {
-			if(l->iSubItem == 2) {
+			// BAH, sorting on bytes will break of course...oh well...later...
+			if(l->iSubItem == COLUMN_USERS || l->iSubItem == COLUMN_MINSLOTS ||l->iSubItem == COLUMN_MAXHUBS || l->iSubItem == COLUMN_MAXUSERS) {
 				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			} else if(l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE || l->iSubItem == COLUMN_RELIABILITY) {
+				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
 			} else {
 				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
@@ -133,6 +136,14 @@ private:
 		COLUMN_DESCRIPTION,
 		COLUMN_USERS,
 		COLUMN_SERVER,
+		COLUMN_COUNTRY,
+		COLUMN_SHARED,
+		COLUMN_MINSHARE,
+		COLUMN_MINSLOTS,
+		COLUMN_MAXHUBS,
+		COLUMN_MAXUSERS,
+		COLUMN_RELIABILITY,
+		COLUMN_RATING,
 		COLUMN_LAST
 	};
 
@@ -181,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.24 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.25 2004/09/13 23:02:44 arnetheduck Exp $
  */

@@ -241,11 +241,10 @@ void NmdcHub::onLine(const string& aLine) throw() {
 	} else if(cmd == "$MyINFO") {
 		string::size_type i, j;
 		i = 5;
-		string nick;
 		j = param.find(' ', i);
 		if( (j == string::npos) || (j == i) )
 			return;
-		nick = fromNmdc(param.substr(i, j-i));
+		string nick = fromNmdc(param.substr(i, j-i));
 		i = j + 1;
 		User::Ptr u;
 		dcassert(nick.size() > 0);
@@ -752,6 +751,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.11 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.12 2004/09/13 23:02:43 arnetheduck Exp $
  */
 
