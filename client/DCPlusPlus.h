@@ -52,7 +52,7 @@ inline void CDECL debugTrace(const char* format, ...)
 #endif
 #define dcdrun(exp) exp
 #else //_DEBUG
-#define dcdebug true ? ((void)0) : printf
+#define dcdebug true ? (0) : printf
 #define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
@@ -77,7 +77,7 @@ typedef StringMap::iterator StringMapIter;
 #include "SettingsManager.h"
 #include "version.h"
 
-extern void startup();
+extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
@@ -87,6 +87,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.27 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.28 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

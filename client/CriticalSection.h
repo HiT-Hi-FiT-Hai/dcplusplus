@@ -50,8 +50,18 @@ private:
 	CRITICAL_SECTION cs;
 #else
 public:
-	void enter() throw() { };
-	void leave() throw() { };
+	CriticalSection() throw() {
+		pthread_mutexattr_t attr;
+		pthread_mutexattr_init(&attr);
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+		pthread_mutex_init(&mtx, &attr);	
+	};
+	~CriticalSection() throw() { pthread_mutex_destroy(&mtx); };
+	void enter() throw() { pthread_mutex_lock(&mtx); };
+	void leave() throw() { pthread_mutex_unlock(&mtx); };
+	pthread_mutex_t& getMutex() { return mtx; };
+private:
+	pthread_mutex_t mtx;
 #endif
 };
 
@@ -116,5 +126,5 @@ private:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.11 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.12 2002/06/03 20:45:38 arnetheduck Exp $
  */

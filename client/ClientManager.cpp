@@ -120,7 +120,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					aClient->searchResults(str);
 				
 			} else {
-				char* buf = new char[1024];
+				char* buf = new char[2048];
 
 				try {
 					string ip, file;
@@ -132,7 +132,9 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 						SearchResult* sr = *i;
 						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-						s.writeTo(ip, port, buf, strlen(buf));
+						int len = strlen(buf);
+						if(len > 0 && len < 1400)
+							s.writeTo(ip, port, buf, len);
 					}
 				} catch(SocketException /* e */) {
 					dcdebug("Search caught error\n");
@@ -318,6 +320,6 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.28 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.29 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

@@ -105,7 +105,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			}
 			ctrlTransfers.SetRedraw(TRUE);
 		}
-		ctrlTransfers.resort();
+		
+		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
+			ctrlTransfers.resort();
+
 		delete l;
 	} else if(wParam == SET_TEXTS) {
 		vector<StringListInfo*>* v = (vector<StringListInfo*>*)lParam;
@@ -829,6 +832,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, tmp1);
 			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
 
+			ShowWindow(SW_HIDE);
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
 		}
 	}
@@ -1033,6 +1037,6 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.12 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.13 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

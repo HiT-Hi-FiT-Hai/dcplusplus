@@ -179,7 +179,7 @@ public:
 		STATE_FILELENGTH
 	};
 
-	int getNumber() { return (((u_int32_t)this)>>2) & 0xffff; };
+	int getNumber() { return (((u_int32_t)this)>>2) & 0x7fff; };
 
 	void myNick(const string& aNick) { send("$MyNick " + aNick + '|'); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
@@ -285,5 +285,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.47 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.48 2002/06/03 20:45:38 arnetheduck Exp $
  */

@@ -7,7 +7,7 @@
 * Improved overall queue performance (again...=)
 * Fixed a small bug that caused some unnecessary traffic to the hub (nmdc works this way, every time a user logs
   on, his info is requested from the hub, but this request is unnecessary as the info is sent out automatically 
-  to all users, in nmhub v1.0.25 at least...)
+  to all users, in nmhub v1.0.25 at least...complain if I'm wrong...)
 * Fixed the long shutdown time when a _very_ slow transfer was in progress
 * Added some other minor bandwidth saving features (only the users that need to be updated are updated when
   reviewing the user list after having seen it)
@@ -16,6 +16,8 @@
 * Fixed some more faulty "user offline" errors
 * Made autosearch more effective (much less hub bandwidth usage...)
 * Added a tiny splash sceen
+* Added a search hit counter to the search spy
+* Fixed a small redrawing bug in the tabs at the bottom
 
  -- 0.176 2002-05-26 --
 * Various optimizations of search handling and list sorting for better perfomance

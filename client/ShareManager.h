@@ -92,6 +92,8 @@ public:
 		
 		return bzListFile;
 	}
+
+	GETSET(u_int32_t, hits, Hits);
 private:
 	class Directory {
 	public:
@@ -197,6 +199,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.29 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.30 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

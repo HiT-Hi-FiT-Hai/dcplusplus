@@ -96,7 +96,6 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 					}
 
 					if(!online) {
-						SearchIter si;
 						if(find_if(recent.begin(), recent.end(), CompareFirst<string, u_int32_t>(q->getTarget())) != recent.end())
 							continue;
 
@@ -159,13 +158,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		}
 
 		if(q->getStatus() != QueueItem::RUNNING) {
-			QueueItem::UserListIter j = userQueue.find(aUser);
-			if(j == userQueue.end()) {
-				userQueue[aUser].resize(QueueItem::LAST);
-				j = userQueue.find(aUser);
-			}
-			j->second[q->getPriority()].push_back(q);
-
+			userQueue[q->getPriority()][aUser].push_back(q);
 		}
 
 		if(newItem) {
@@ -213,14 +206,13 @@ Download* QueueManager::getDownload(User::Ptr& aUser) {
 	{
 		Lock l(cs);
 
-		QueueItem::UserListIter i = userQueue.find(aUser);
-		if(i == userQueue.end()) {
-			return NULL;
-		}
+		QueueItem::UserListIter i;
 		int p = QueueItem::LAST - 1;
 		do {
-			if(!i->second[p].empty()) {
-				q = i->second[p].front();
+			i = userQueue[p].find(aUser);
+			if(i != userQueue[p].end()) {
+				dcassert(!i->second.empty());
+				q = i->second.front();
 				break;
 			}
 		} while(--p > QueueItem::PAUSED);
@@ -249,6 +241,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser) {
 }
 
 void QueueManager::putDownload(Download* aDownload, bool finished /* = false */) {
+	User::List getConn;
 	{
 		Lock l(cs);
 		QueueItem* q = findByTarget(aDownload->getTarget());
@@ -270,13 +263,10 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				q->setStatus(QueueItem::WAITING);
 				q->setCurrent(NULL);
 				for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
-					if(userQueue.find((*j)->getUser()) == userQueue.end()) {
-						userQueue[(*j)->getUser()].resize(QueueItem::LAST);
-					}
-					userQueue[(*j)->getUser()][q->getPriority()].push_back(q);
-					
+					userQueue[q->getPriority()][(*j)->getUser()].push_back(q);
+
 					if( (q->getPriority() != QueueItem::PAUSED) && (*j)->getUser()->isOnline()) {
-						ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
+						getConn.push_back((*j)->getUser());
 					}
 				}
 				fire(QueueManagerListener::STATUS_UPDATED, q);
@@ -284,6 +274,10 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 		}
  		aDownload->setUserConnection(NULL);
 		delete aDownload;
+	}
+
+	for(User::Iter i = getConn.begin(); i != getConn.end(); ++i) {
+		ConnectionManager::getInstance()->getDownloadConnection(*i);
 	}
 }
 
@@ -328,17 +322,12 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, bool re
 			dcassert(running.find(aUser) != running.end());
 			running.erase(aUser);
 		} else if(q->getStatus() != QueueItem::RUNNING) {
-			QueueItem::UserListIter i = userQueue.find(aUser);
-			dcassert(i != userQueue.end());
-			dcassert(find(i->second[q->getPriority()].begin(), i->second[q->getPriority()].end(), q) != i->second[q->getPriority()].end());
-			i->second[q->getPriority()].erase(find(i->second[q->getPriority()].begin(), i->second[q->getPriority()].end(), q));
-			int j = 0;
-			for(; j < QueueItem::LAST; ++i) {
-				if(!i->second[q->getPriority()].empty())
-					break;
-			}
-			if(j == QueueItem::LAST) {
-				userQueue.erase(i);
+			QueueItem::UserListIter i = userQueue[q->getPriority()].find(aUser);
+			dcassert(i != userQueue[q->getPriority()].end());
+			dcassert(find(i->second.begin(), i->second.end(), q) != i->second.end());
+			i->second.erase(find(i->second.begin(), i->second.end(), q));
+			if(i->second.empty()) {
+				userQueue[q->getPriority()].erase(i);
 			}
 		}
 		fire(QueueManagerListener::SOURCES_UPDATED, q);
@@ -351,18 +340,12 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, bool re
 
 void QueueManager::removeAll(QueueItem* q) {
 	for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
-		QueueItem::UserListIter j = userQueue.find((*i)->getUser());
-		dcassert(j != userQueue.end());
-		dcassert(find(j->second[q->getPriority()].begin(), j->second[q->getPriority()].end(), q) != j->second[q->getPriority()].end());
-		j->second[q->getPriority()].erase(find(j->second[q->getPriority()].begin(), j->second[q->getPriority()].end(), q));
-		int i = 0;
-		for(; i < QueueItem::LAST; i++) {
-			if(!j->second[i].empty())
-				break;
-		}
-
-		if(i == QueueItem::LAST) {
-			userQueue.erase(j);
+		QueueItem::UserListIter j = userQueue[q->getPriority()].find((*i)->getUser());
+		dcassert(j != userQueue[q->getPriority()].end());
+		dcassert(find(j->second.begin(), j->second.end(), q) != j->second.end());
+		j->second.erase(find(j->second.begin(), j->second.end(), q));
+		if(j->second.empty()) {
+			userQueue[q->getPriority()].erase(j);
 		}
 	}
 }
@@ -375,11 +358,14 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 		if( (q != NULL) && (q->getPriority() != p) ) {
 			if( q->getStatus() != QueueItem::RUNNING ) {
 				for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
-					QueueItem::UserListIter j = userQueue.find((*i)->getUser());
-					dcassert(j != userQueue.end());
-					dcassert(find(j->second[q->getPriority()].begin(), j->second[q->getPriority()].end(), q) != j->second[q->getPriority()].end());
-					j->second[q->getPriority()].erase(find(j->second[q->getPriority()].begin(), j->second[q->getPriority()].end(), q));
-					j->second[p].push_back(q);
+					QueueItem::UserListIter j = userQueue[q->getPriority()].find((*i)->getUser());
+					dcassert(j != userQueue[q->getPriority()].end());
+					dcassert(find(j->second.begin(), j->second.end(), q) != j->second.end());
+					j->second.erase(find(j->second.begin(), j->second.end(), q));
+					if(j->second.empty()) {
+						userQueue[q->getPriority()].erase(j);
+					}
+					userQueue[p][(*i)->getUser()].push_back(q);
 					if(q->getPriority() == QueueItem::PAUSED && (*i)->getUser()->isOnline()) {
 						ConnectionManager::getInstance()->getDownloadConnection((*i)->getUser());
 					}
@@ -582,12 +568,12 @@ void QueueManager::onAction(ClientManagerListener::Types type, const User::Ptr& 
 	case ClientManagerListener::USER_UPDATED:
 		{
 			Lock l(cs);
-			QueueItem::UserListIter j = userQueue.find(aUser);
-			if(j != userQueue.end()) {
-				for(int k = 0; k < QueueItem::LAST; ++k) {
-					for(QueueItem::Iter i = j->second[k].begin(); i != j->second[k].end(); ++i)
-						fire(QueueManagerListener::SOURCES_UPDATED, *i);
-					if(k != QueueItem::PAUSED && !j->second[k].empty())
+			for(int i = 0; i < QueueItem::LAST; ++i) {
+				QueueItem::UserListIter j = userQueue[i].find(aUser);
+				if(j != userQueue[i].end()) {
+					for(QueueItem::Iter m = j->second.begin(); m != j->second.end(); ++m)
+						fire(QueueManagerListener::SOURCES_UPDATED, *m);
+					if(i != QueueItem::PAUSED)
 						hasDown = true;
 				}
 			}
@@ -613,5 +599,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.29 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.30 2002/06/03 20:45:38 arnetheduck Exp $
  */

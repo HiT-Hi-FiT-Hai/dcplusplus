@@ -43,7 +43,7 @@ public:
 		HIGH = THREAD_PRIORITY_HIGHEST
 	};
 
-	Thread() : threadHandle(NULL), threadId(0){ };
+	Thread() throw() : threadHandle(NULL), threadId(0){ };
 	virtual ~Thread() { 
 		if(threadHandle)
 			CloseHandle(threadHandle);
@@ -78,7 +78,7 @@ public:
 		NORMAL = 0,
 		HIGH = -1
 	};
-	Thread() : t(0) { };
+	Thread() throw() : t(0) { };
 	virtual ~Thread() { 
 		if(t != 0) {
 			pthread_detach(t);
@@ -89,7 +89,7 @@ public:
 			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
 	};
-	void join() { 
+	void join() throw() { 
 		void* x;
 		pthread_join(t, &x);
 		t = 0;
@@ -101,12 +101,12 @@ public:
 	static long safeInc(long* v) { 
 		atomic_t t = ATOMIC_INIT(*v);
 		atomic_inc(&t);
-		return t.counter;
+		return (*v=t.counter);
 	};
 	static long safeDec(long* v) { 
 		atomic_t t = ATOMIC_INIT(*v);
 		atomic_dec(&t);
-		return t.counter;
+		return (*v=t.counter);
 	};
 #endif
 
@@ -137,6 +137,6 @@ private:
 
 /**
  * @file Thread.h
- * $Id: Thread.h,v 1.4 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Thread.h,v 1.5 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

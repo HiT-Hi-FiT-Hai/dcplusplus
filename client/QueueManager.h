@@ -63,7 +63,7 @@ public:
 	typedef StringMap::iterator StringIter;
 	typedef HASH_MAP<User::Ptr, Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
-	typedef HASH_MAP<User::Ptr, vector<List> > UserListMap;
+	typedef HASH_MAP<User::Ptr, List> UserListMap;
 	typedef UserListMap::iterator UserListIter;
 
 	enum Status {
@@ -233,12 +233,8 @@ public:
 
 	bool hasDownload(const User::Ptr& aUser) {
 		Lock l(cs);
-		QueueItem::UserListIter i = userQueue.find(aUser);
-		if(i == userQueue.end())
-			return false;
-
 		for(int j = QueueItem::LOWEST; j < QueueItem::LAST; ++j) {
-			if(!i->second[j].empty())
+			if(userQueue[j].find(aUser) != userQueue[j].end())
 				return true;
 		}
 		return false;
@@ -266,7 +262,8 @@ private:
 	CriticalSection cs;
 	
 	QueueItem::StringMap queue;
-	QueueItem::UserListMap userQueue;
+	// One user-queue for each priority
+	QueueItem::UserListMap userQueue[QueueItem::LAST];
 	QueueItem::UserMap running;
 
 	typedef deque<pair<string, u_int32_t> > SearchList;
@@ -302,6 +299,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.26 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.27 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

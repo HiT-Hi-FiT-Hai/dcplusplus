@@ -147,7 +147,6 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 }
 
 bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen) throw(FileException) {
-	
 	dcassert(d->getRollbackBuffer());
 	
 	if(d->getTotal() + aLen >= d->getRollbackSize()) {
@@ -388,5 +387,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.63 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.64 2002/06/03 20:45:38 arnetheduck Exp $
  */

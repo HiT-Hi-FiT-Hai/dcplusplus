@@ -192,11 +192,7 @@ public:
 	const string& getNick() { return nick.empty() ? SETTING(NICK) : nick; };
 	void setNick(const string& aNick) { nick = aNick; }
 	
-	const string& getIp() {
-		return (socket == NULL) ? server : socket->getIp();
-		dcassert(socket);
-		return socket->getIp();
-	}
+	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
 	
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
@@ -260,6 +256,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.59 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: Client.h,v 1.60 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

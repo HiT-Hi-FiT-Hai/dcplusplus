@@ -453,7 +453,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			sr->setHubAddress(aClient->getIp());
 			sr->setHubName(aClient->getName());
 			aResults.push_back(sr);
-
+			ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 			if(aResults.size() >= maxResults) {
 				break;
 			}
@@ -502,6 +502,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.42 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.43 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

@@ -32,12 +32,14 @@
 #include "SettingsManager.h"
 #include "StringTokenizer.h"
 
-void startup() {
+void startup(void (*f)(void*, const string&), void* p) {
 	Util::initialize();
 
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 
+	if(f != NULL)
+		(*f)(p, STRING(SHARED_FILES));
 	LogManager::newInstance();
 	TimerManager::newInstance();
 	ShareManager::newInstance();
@@ -51,7 +53,6 @@ void startup() {
 	QueueManager::newInstance();
 
 	SettingsManager::getInstance()->load();	
-	QueueManager::getInstance()->loadQueue();
 
 	int i;
 	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
@@ -81,6 +82,10 @@ void startup() {
 
 	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
 
+	if(f != NULL)
+		(*f)(p, STRING(DOWNLOAD_QUEUE));
+	QueueManager::getInstance()->loadQueue();
+
 	ShareManager::getInstance()->refresh(false, false, true);
 	HubManager::getInstance()->refresh();
 }
@@ -108,6 +113,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.17 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.18 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

@@ -24,9 +24,6 @@
 #include "ExtendedTrace.h"
 #include "WinUtil.h"
 
-extern void startup();
-extern void shutdown();
-
 CAppModule _Module;
 
 #ifdef _DEBUG
@@ -54,6 +51,11 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 #endif
 
+void callBack(void* x, const string& a) {
+	::SetWindowText((HWND)x, (STRING(LOADING) + "(" + a + ")").c_str());
+	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
+}
+
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CMessageLoop theLoop;
@@ -64,8 +66,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	RECT rc;
 	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
 	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
-	rc.left = (rc.right / 2) - 100;
-	rc.right = (rc.right / 2) + 100;
+	rc.left = (rc.right / 2) - 150;
+	rc.right = (rc.right / 2) + 150;
 	rc.top = (rc.bottom / 2) - 12;
 	rc.bottom = (rc.bottom / 2) + 12;
 
@@ -81,7 +83,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	splash.SetWindowText("Loading DC++, please wait...");
 	splash.RedrawWindow();
 
-	startup();
+	startup(callBack, (void*)splash.m_hWnd);
 
 	splash.DestroyWindow();
 	
@@ -140,5 +142,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.6 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: main.cpp,v 1.7 2002/06/03 20:45:38 arnetheduck Exp $
  */

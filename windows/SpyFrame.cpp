@@ -24,6 +24,8 @@
 #include "SearchFrm.h"
 #include "WinUtil.h"
 
+#include "../client/ShareManager.h"
+
 SpyFrame* SpyFrame::frame = NULL;
 
 LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -48,6 +50,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 
 	SetWindowText(CSTRING(SEARCH_SPY));
+	ShareManager::getInstance()->setHits(0);
 
 	bHandled = FALSE;
 	return 1;
@@ -61,16 +64,18 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[3];
+		int w[5];
 		ctrlStatus.GetClientRect(sr);
 
-		int tmp = (sr.Width()) > 366 ? 266 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		int tmp = (sr.Width()) > 616 ? 516 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
 
 		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)*1/2;
-		w[2] = w[0] + (tmp-16)*2/2;
+		w[1] = w[0] + (tmp-16)*1/4;
+		w[2] = w[0] + (tmp-16)*2/4;
+		w[3] = w[0] + (tmp-16)*3/4;
+		w[4] = w[0] + (tmp-16)*4/4;
 
-		ctrlStatus.SetParts(3, w);
+		ctrlStatus.SetParts(5, w);
 	}
 
 	ctrlSearches.MoveWindow(&rect);
@@ -110,7 +115,9 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete x;
 
 		ctrlStatus.SetText(1, (STRING(TOTAL) + Util::toString(total)).c_str());
-
+		ctrlStatus.SetText(3, (STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
+		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
+		ctrlStatus.SetText(4, (STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
 	} else if(wParam == TICK_AVG) {
 		float* x = (float*)lParam;
 		ctrlStatus.SetText(2, (STRING(AVERAGE) + Util::toString(*x)).c_str());
@@ -158,5 +165,5 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.6 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.7 2002/06/03 20:45:38 arnetheduck Exp $
  */

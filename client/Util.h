@@ -292,13 +292,18 @@ public:
 #endif
 	}
 
+	static string toString(u_int32_t val) {
+		char buf[16];
+		sprintf(buf, "%u", val);
+		return buf;
+	}
 	static string toString(int val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;
 	}
 
-	static string toString(float val) {
+	static string toString(double val) {
 		char buf[16];
 		sprintf(buf, "%.2f", val);
 		return buf;
@@ -378,6 +383,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.46 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: Util.h,v 1.47 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

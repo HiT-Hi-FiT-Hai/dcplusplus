@@ -737,7 +737,93 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
+void HubFrame::onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+	switch(type) {
+		case TimerManagerListener::SECOND:
+			updateStatusBar(); break;
+	}
+}
+
+// ClientListener
+void HubFrame::onAction(ClientListener::Types type, Client* client) {
+	switch(type) {
+		case ClientListener::CONNECTING:
+			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServer() + "...");
+			speak(SET_WINDOW_TITLE, client->getServer());
+			break;
+		case ClientListener::CONNECTED: speak(ADD_STATUS_LINE, STRING(CONNECTED)); break;
+		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
+		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
+		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() + ")"); break;
+		case ClientListener::VALIDATE_DENIED:
+			client->removeListener(this);
+			client->disconnect();
+			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+			break;
+	}
+}
+
+void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const string& line) {
+	switch(type) {
+		case ClientListener::SEARCH_FLOOD: speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line); break;
+		case ClientListener::FAILED: speak(ADD_STATUS_LINE, line); speak(REMOVE_USERS); break;
+		case ClientListener::MESSAGE: 
+			if(SETTING(FILTER_KICKMSGS)) {
+				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
+					// Do nothing...
+				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
+					speak(ADD_STATUS_LINE, line);
+				} else {
+					speak(ADD_CHAT_LINE, line);
+				}
+			} else {
+				speak(ADD_CHAT_LINE, line);
+			}
+			break;
+
+		case ClientListener::FORCE_MOVE:
+			{
+				string s, f;
+				short p = 411;
+				Util::decodeUrl(line, s, p, f);
+				if(ClientManager::getInstance()->isConnected(s)) {
+					speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
+					return;
+				}
+			}
+			redirect = line;
+			if(BOOLSETTING(AUTO_FOLLOW)) {
+				PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
+			} else {
+				speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
+			}
+			break;
+	}
+}
+
+void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
+	switch(type) {
+		case ClientListener::MY_INFO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
+		case ClientListener::QUIT: if(client->getUserInfo()) speak(REMOVE_USER, user); break;
+		case ClientListener::HELLO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
+	}
+}
+
+void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) {
+	switch(type) {
+		case ClientListener::OP_LIST: // Fall through
+		case ClientListener::NICK_LIST: 
+			if(client->getUserInfo()) speak(UPDATE_USERS, aList); break;
+	}
+}
+
+void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) {
+	switch(type) {
+		case ClientListener::PRIVATE_MESSAGE: speak(PRIVATE_MESSAGE, user, line); break;
+	}
+}
+
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.13 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.14 2002/06/03 20:45:38 arnetheduck Exp $
  */

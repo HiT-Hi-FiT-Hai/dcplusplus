@@ -78,6 +78,8 @@
 		<String Name="GrantExtraSlot">Grant extra slot</String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
+		<String Name="HitRatio">Hit Ratio: </String>
+		<String Name="Hits">Hits: </String>
 		<String Name="HostUnreachable">Host unreachable</String>
 		<String Name="Hub">Hub</String>
 		<String Name="Hubs">Hubs</String>
@@ -96,6 +98,7 @@
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastHub">Hub (last seen on if offline)</String>
+		<String Name="Loading">Loading DC++, please wait...</String>
 		<String Name="Low">Low</String>
 		<String Name="Lowest">Lowest</String>
 		<String Name="ManualAddress">Manual connect address</String>
@@ -188,6 +191,7 @@
 		<String Name="Server">Server</String>
 		<String Name="SetPriority">Set priority</String>
 		<String Name="Shared">Shared</String>
+		<String Name="SharedFiles">Shared Files</String>
 		<String Name="Size">Size</String>
 		<String Name="SlotGranted">Slot granted</String>
 		<String Name="Slots">Slots</String>

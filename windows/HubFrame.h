@@ -150,10 +150,7 @@ public:
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
-		u_int64_t e = c->user->getBytesShared();
-		u_int64_t f = d->user->getBytesShared();
-		
-		return (e < f) ? -1 : ((e == f) ? 0 : 1);
+		return compare(c->user->getBytesShared(), d->user->getBytesShared());
 	}
 
 	static int sortNick(LPARAM a, LPARAM b) {
@@ -193,32 +190,17 @@ public:
 	}
 
 private:
-	enum Speakers {
-		UPDATE_USER,
-		UPDATE_USERS,
-		REMOVE_USER,
-		REMOVE_USERS,
-		ADD_CHAT_LINE,
-		ADD_STATUS_LINE,
-		SET_WINDOW_TITLE,
-		GET_PASSWORD,
-		PRIVATE_MESSAGE,
-		STATS
+	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, REMOVE_USERS, ADD_CHAT_LINE,
+		ADD_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, PRIVATE_MESSAGE, STATS
 	};
 
 	enum {
-		IMAGE_USER = 0,
-		IMAGE_OP
+		IMAGE_USER = 0, IMAGE_OP
 	};
 	
 	enum {
-		COLUMN_FIRST,
-		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_SHARED,
-		COLUMN_DESCRIPTION,
-		COLUMN_CONNECTION,
-		COLUMN_EMAIL,
-		COLUMN_LAST
+		COLUMN_FIRST, COLUMN_NICK = COLUMN_FIRST, COLUMN_SHARED, COLUMN_DESCRIPTION, 
+		COLUMN_CONNECTION, COLUMN_EMAIL, COLUMN_LAST
 	};
 	
 	class UserInfo {
@@ -254,7 +236,6 @@ private:
 		ClientManager::getInstance()->putClient(client);
 	}
 
-
 	typedef HASH_MAP<string, HubFrame*> FrameMap;
 	typedef FrameMap::iterator FrameIter;
 	static FrameMap frames;
@@ -289,6 +270,8 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
+	int updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
+
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
@@ -312,102 +295,24 @@ private:
 		if(m_hWnd)
 			PostMessage(WM_SPEAKER, STATS);
 	}
-	int updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
-		switch(type) {
-		case TimerManagerListener::SECOND:
-			updateStatusBar(); break;
-		}
-	}
+	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/);
+
+	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client);
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line);
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user);
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList);
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line);
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
 	void speak(Speakers s, const User::Ptr& u) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new UserInfo(u)); };
 	void speak(Speakers s, const User::List& l) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new User::List(l)); };
 	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
-	
-	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client) {
-		switch(type) {
-		case ClientListener::CONNECTING:
-			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServer() + "...");
-			speak(SET_WINDOW_TITLE, client->getServer());
-			break;
-		case ClientListener::CONNECTED: speak(ADD_STATUS_LINE, STRING(CONNECTED)); break;
-		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
-		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
-		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() + ")"); break;
-		case ClientListener::VALIDATE_DENIED:
-			client->removeListener(this);
-			client->disconnect();
-			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
-			break;
-		}
-	}
-	
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line) {
-		switch(type) {
-		case ClientListener::SEARCH_FLOOD: speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line); break;
-		case ClientListener::FAILED: speak(ADD_STATUS_LINE, line); speak(REMOVE_USERS); break;
-		case ClientListener::MESSAGE: 
-			if(SETTING(FILTER_KICKMSGS)) {
-				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
-					// Do nothing...
-				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-					speak(ADD_STATUS_LINE, line);
-				} else {
-					speak(ADD_CHAT_LINE, line);
-				}
-			} else {
-				speak(ADD_CHAT_LINE, line);
-			}
-			break;
 
-		case ClientListener::FORCE_MOVE:
-			{
-				string s, f;
-				short p = 411;
-				Util::decodeUrl(line, s, p, f);
-				if(ClientManager::getInstance()->isConnected(s)) {
-					speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
-					return;
-				}
-			}
-			redirect = line;
-			if(BOOLSETTING(AUTO_FOLLOW)) {
-				PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
-			} else {
-				speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
-			}
-			break;
-		}
-	}
-
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
-		switch(type) {
-		case ClientListener::MY_INFO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
-		case ClientListener::QUIT: if(client->getUserInfo()) speak(REMOVE_USER, user); break;
-		case ClientListener::HELLO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
-		}
-	}
-	
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) {
-		switch(type) {
-		case ClientListener::OP_LIST: // Fall through
-		case ClientListener::NICK_LIST: 
-			if(client->getUserInfo()) speak(UPDATE_USERS, aList); break;
-		}
-	}
-
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) {
-		switch(type) {
-		case ClientListener::PRIVATE_MESSAGE: speak(PRIVATE_MESSAGE, user, line); break;
-		}
-	}
 };
-
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
@@ -417,6 +322,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.13 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.14 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

@@ -35,8 +35,8 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 	pages[1] = new DownloadPage(s);
 	pages[2] = new UploadPage(s);
 	pages[3] = new AppearancePage(s);
-	pages[4] = new AdvancedPage(s);
-	pages[5] = new Advanced2Page(s);
+	pages[4] = new Advanced2Page(s);
+	pages[5] = new AdvancedPage(s);
 
 	for(int i=0; i<numPages; i++)
 		AddPage(pages[i]->getPSP());
@@ -74,6 +74,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file PropertiesDlg.cpp
- * $Id: PropertiesDlg.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.3 2002/06/03 20:45:38 arnetheduck Exp $
  */
 

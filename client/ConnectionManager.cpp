@@ -179,10 +179,11 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					// Hm, connection must have failed before it could be collected...
 					getDownloadConnection(*k);
 				} else {
-					dcassert((*i)->getConnection());
-					(*i)->getConnection()->removeListener(this);
-					fire(ConnectionManagerListener::STATUS_CHANGED, *i);
-					DownloadManager::getInstance()->addConnection((*i)->getConnection());
+					ConnectionQueueItem* cqi = *i;
+					downPool.erase(i);
+					dcassert(cqi->getConnection());
+					cqi->getConnection()->removeListener(this);
+					DownloadManager::getInstance()->addConnection((cqi)->getConnection());
 				}
 			}
 		}
@@ -216,7 +217,7 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 			if( ((i->second + 60*1000) < aTick) ) {
 
 				if(startDown) {
-					if( attempts <= 1 ) {
+					if( attempts == 0 ) {
 						// Nothing's happened for 60 seconds, try again...
 						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 							pendingDown.erase(i++);
@@ -587,5 +588,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.50 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.51 2002/06/03 20:45:38 arnetheduck Exp $
  */

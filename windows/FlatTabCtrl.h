@@ -54,6 +54,7 @@ public:
 					active = NULL;
 				delete *i;
 				tabs.erase(i);
+				Invalidate();
 				break;
 			}
 		}
@@ -461,5 +462,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.8 2002/06/03 20:45:38 arnetheduck Exp $
  */

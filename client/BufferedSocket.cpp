@@ -46,25 +46,30 @@ bool BufferedSocket::threadSendFile() {
 	u_int32_t len;
 	dcassert(file != NULL);
 
-	while(size > 0) {
-		{
-			Lock l(cs);
-			if(!tasks.empty())
+	try {
+		while(size > 0) {
+			{
+				Lock l(cs);
+				if(!tasks.empty())
+					return false;
+			}
+			int waitFor = WAIT_READ;
+			if(wait(0, waitFor))
 				return false;
+			u_int32_t s = (u_int32_t)min((int64_t)inbufSize, size);
+			if( (len = file->read(inbuf, s)) == 0) {
+				// We don't want this to happen really...disconnect!
+				dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
+				disconnect();
+				return false;
+			}
+			Socket::write((char*)inbuf, len);
+			fire(BufferedSocketListener::BYTES_SENT, len);
+			size -= len;
 		}
-		int waitFor = WAIT_READ;
-		if(wait(0, waitFor))
-			return false;
-		u_int32_t s = (u_int32_t)min((int64_t)inbufSize, size);
-		if( (len = file->read(inbuf, s)) == 0) {
-			// We don't want this to happen really...disconnect!
-			dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
-			disconnect();
-			return false;
-		}
-		Socket::write((char*)inbuf, len);
-		fire(BufferedSocketListener::BYTES_SENT, len);
-		size -= len;
+	} catch(FileException e) {
+		fail(e.getError());
+		return true;
 	}
 
 	fire(BufferedSocketListener::TRANSMIT_DONE);
@@ -72,6 +77,7 @@ bool BufferedSocket::threadSendFile() {
 }
 
 void BufferedSocket::threadConnect() {
+	dcdebug("Thread running....\n");
 
 	u_int32_t start = GET_TICK();
 	string s;
@@ -237,6 +243,8 @@ void BufferedSocket::threadRun() {
 		try {
 
 			while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
+				dcdebug("Got task....\n");
+
 				Tasks t;
 				{
 					Lock l(cs);
@@ -284,5 +292,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.42 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.43 2002/06/03 20:45:38 arnetheduck Exp $
  */

@@ -13,22 +13,18 @@ class Semaphore
 {
 #ifdef WIN32
 public:
-	Semaphore() {
+	Semaphore() throw() {
 		h = CreateSemaphore(NULL, 0, MAXLONG, NULL);
 	};
 
-	operator HANDLE() {
-		return h;
-	}
-
-	void signal() {
+	void signal() throw() {
 		ReleaseSemaphore(h, 1, NULL);
 	}
 
-	bool wait() { return WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0; };
-	bool wait(u_int32_t millis) { return WaitForSingleObject(h, millis) == WAIT_OBJECT_0; };
+	bool wait() throw() { return WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0; };
+	bool wait(u_int32_t millis) throw() { return WaitForSingleObject(h, millis) == WAIT_OBJECT_0; };
 
-	~Semaphore() {
+	~Semaphore() throw() {
 		CloseHandle(h);
 	};
 
@@ -36,12 +32,44 @@ private:
 	HANDLE h;
 #else
 public:
-	Semaphore() { };
-	~Semaphore() { };
-	void signal() { };
-	bool wait() { };
-	bool wait(u_int32_t) { return false; };
+	Semaphore() throw() : count(0) { pthread_cond_init(&cond, NULL); };
+	~Semaphore() throw() { pthread_cond_destroy(&cond); };
+	void signal() throw() { 
+		Lock l(cs);
+		count++;
+		pthread_cond_signal(&cond);
+	};
 
+	bool wait() throw() { 
+		Lock l(cs);
+		if(count == 0) {
+			pthread_cond_wait(&cond, &cs.getMutex());
+		}
+		count--;
+		return true;
+	};
+	bool wait(u_int32_t millis) throw() { 
+		Lock l(cs);
+		if(count == 0) {
+			timeval timev;
+			timespec t;
+			gettimeofday(&timev, NULL);
+			millis+=timev.tv_usec/1000;
+			t.tv_sec = timev.tv_sec + (millis/1000);
+			t.tv_nsec = (millis%1000)*1000*1000;
+			int ret = pthread_cond_timedwait(&cond, &cs.getMutex(), &t);
+			if(ret != 0) {
+				return false;
+			}
+		}
+		count--;
+		return true;
+	};
+
+private:
+	pthread_cond_t cond;
+	CriticalSection cs;
+	int count;
 #endif
 };
 
@@ -49,5 +77,5 @@ public:
 
 /**
  * @file Semaphore.h
- * $Id: Semaphore.h,v 1.4 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.5 2002/06/03 20:45:38 arnetheduck Exp $
  */
