@@ -147,12 +147,12 @@ private:
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	void onSend(UserConnection* aSource);
 
-	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume);
+	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.59 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.60 2004/03/09 21:40:49 arnetheduck Exp $
  */

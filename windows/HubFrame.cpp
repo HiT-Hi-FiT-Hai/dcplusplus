@@ -1005,12 +1005,11 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
 		case ClientListener::HUB_NAME:
-			speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getAddressPort() + ")");
+			speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
 			break;
 		case ClientListener::VALIDATE_DENIED:
-			client->removeListener(this);
-			client->disconnect();
 			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
+			speak(DISCONNECTED);
 			break;
 	}
 }
@@ -1088,5 +1087,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.49 2004/03/09 12:20:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.50 2004/03/09 21:40:50 arnetheduck Exp $
  */

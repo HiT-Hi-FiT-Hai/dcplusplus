@@ -378,7 +378,7 @@ private:
 template<bool managed>
 class LimitedInputStream : public InputStream {
 public:
-	LimitedInputStream(InputStream* s, int aMaxBytes) : maxBytes(aMaxBytes) {
+	LimitedInputStream(InputStream* is, int aMaxBytes) : s(is), maxBytes(aMaxBytes) {
 	}
 	virtual ~LimitedInputStream() { if(managed) delete s; }
 
@@ -393,6 +393,7 @@ public:
 	}
 
 private:
+	InputStream* s;
 	int64_t maxBytes;
 };
 
@@ -453,6 +454,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.30 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: File.h,v 1.31 2004/03/09 21:40:49 arnetheduck Exp $
  */
 

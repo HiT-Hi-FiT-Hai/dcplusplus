@@ -159,14 +159,15 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			}
 		}
 
+		d->bytesLeft = d->getSize() - d->getPos();
+		if (d->bytesLeft <= 0) {
+			d->bytesLeft = d->getSize();
+			d->setPos(0);
+		}
+
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && (aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) || aConn->isSet(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK)) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
-			d->bytesLeft = d->getSize() - d->getPos();
-			if (d->bytesLeft <= 0) {
-				d->bytesLeft = d->getSize();
-				d->setPos(0);
-			}
 			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft, d->isSet(Download::FLAG_UTF8));
 		} else if(d->isSet(Download::FLAG_UTF8)) {
 			aConn->getBlock(d->getSource(), d->getPos(), d->bytesLeft, true);
@@ -646,5 +647,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.95 2004/03/09 12:20:19 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.96 2004/03/09 21:40:49 arnetheduck Exp $
  */
