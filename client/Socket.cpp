@@ -22,7 +22,7 @@
 #include "Socket.h"
 #include "ServerSocket.h"
 
-#define checkconnected() if(!connected) throw SocketException("Not connected")
+#define checkconnected() if(!connected) throw SocketException(STRING(NOT_CONNECTED))
 
 #ifdef _DEBUG
 
@@ -44,35 +44,35 @@ Socket::Stats Socket::stats = { 0, 0, 0, 0 };
 string SocketException::errorToString(int aError) {
 	switch(aError) {
 	case EWOULDBLOCK:
-		return "Operation would block execution";
+		return STRING(OPERATION_WOULD_BLOCK_EXECUTION);
 	case EACCES:
-		return "Permission denied";
+		return STRING(PERMISSION_DENIED);
 	case EADDRINUSE:
-		return "Address already in use";
+		return STRING(ADDRESS_ALREADY_IN_USE);
 	case EADDRNOTAVAIL:
-		return "Address is not available.";
+		return STRING(ADDRESS_NOT_AVAILABLE);
 	case EALREADY:
-		return "Non-blocking operation still in progress";
+		return STRING(NON_BLOCKING_OPERATION);
 	case ECONNREFUSED:
-		return "Connection refused by target machine";
+		return STRING(CONNECTION_REFUSED);
 	case ETIMEDOUT:
-		return "Connection timeout";
+		return STRING(CONNECTION_TIMEOUT);
 	case EHOSTUNREACH:
-		return "Host unreachable";
+		return STRING(HOST_UNREACHABLE);
 	case ESHUTDOWN:
-		return "Socket has been shut down";
+		return STRING(SOCKET_SHUT_DOWN);
 	case ECONNABORTED:
-		return "Connection closed";
+		return STRING(CONNECTION_CLOSED);
 	case ECONNRESET:
-		return "Connection reset by server";
+		return STRING(CONNECTION_RESET);
 	case ENOTSOCK:
-		return "Socket error";
+		return STRING(NOT_SOCKET);
 	case ENOTCONN:
-		return "Not connected";
+		return STRING(NOT_CONNECTED);
 	default:
 		{
 			char tmp[64];
-			sprintf(tmp, "Unknown error: 0x%x", aError);
+			sprintf(tmp, CSTRING(UNKNOWN_ERROR), aError);
 			return tmp;
 		}
 	}
@@ -131,7 +131,7 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
     if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
         host = gethostbyname(aip.c_str());
         if (host == NULL) {
-            throw SocketException("Unknown address");
+            throw SocketException(STRING(UNKNOWN_ADDRESS));
         }
         serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
 		
@@ -195,7 +195,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 						sendSize /= 2;
 						dcdebug("Reducing send window size to %d\n", sendSize);
 					} else {
-						throw SocketException("Ran out of buffer space");
+						throw SocketException(STRING(OUT_OF_BUFFER_SPACE));
 					}
 					blockAgain = false;
 				} else {
@@ -217,7 +217,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 					sendSize /= 2;
 					dcdebug("Reducing send window size to %d\n", sendSize);
 				} else {
-					throw SocketException("Ran out of buffer space");
+					throw SocketException(STRING(OUT_OF_BUFFER_SPACE));
 				}
 			} else {
 				checksockerr(SOCKET_ERROR);
@@ -236,6 +236,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.31 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.32 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

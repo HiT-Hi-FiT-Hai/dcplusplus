@@ -24,7 +24,6 @@
 #include "HubFrame.h"
 
 #include "../client/Client.h"
-#include "../client/ResourceManager.h"
 #include "../client/StringTokenizer.h"
 
 PublicHubsFrame* PublicHubsFrame::frame = NULL;
@@ -417,6 +416,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

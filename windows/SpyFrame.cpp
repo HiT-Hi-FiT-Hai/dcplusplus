@@ -23,8 +23,6 @@
 #include "SpyFrame.h"
 #include "WinUtil.h"
 
-#include "../client/ResourceManager.h"
-
 SpyFrame* SpyFrame::frame = NULL;
 
 LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -65,5 +63,5 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */

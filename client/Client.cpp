@@ -123,7 +123,7 @@ void Client::onLine(const string& aLine) throw() {
 					if(seeker.find("Hub:") != string::npos)
 						fire(ClientListener::SEARCH_FLOOD, this, seeker.substr(4));
 					else
-						fire(ClientListener::SEARCH_FLOOD, this, seeker + " (Nick unknown)");
+						fire(ClientListener::SEARCH_FLOOD, this, seeker + STRING(NICK_UNKNOWN));
 					spam = true;
 				}
 			} else {
@@ -188,23 +188,23 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::MY_INFO, this, u);
 		
 	} else if(cmd == "$Quit") {
-		User::Ptr u;
-		{
-			Lock l(cs);
-			User::NickIter i = users.find(param);
-			if(i == users.end()) {
-				dcdebug("C::onLine Quitting user %s not found\n", param.c_str());
-				return;
+		if(!param.empty()) {
+			User::Ptr u;
+			{
+				Lock l(cs);
+				User::NickIter i = users.find(param);
+				if(i == users.end()) {
+					dcdebug("C::onLine Quitting user %s not found\n", param.c_str());
+					return;
+				}
+				
+				u = i->second;
+				users.erase(param);
 			}
 			
-			u = i->second;
-			users.erase(param);
-
+			fire(ClientListener::QUIT, this, u);
+			ClientManager::getInstance()->putUserOffline(u);
 		}
-
-		fire(ClientListener::QUIT, this, u);
-		ClientManager::getInstance()->putUserOffline(u);
-
 	} else if(cmd == "$ConnectToMe") {
 		param = param.substr(param.find(' ') + 1);
 		string server = param.substr(0, param.find(':'));
@@ -242,35 +242,38 @@ void Client::onLine(const string& aLine) throw() {
 		name = param;
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Lock") {
-		string::size_type j = param.find(" Pk=");
-		string lock, pk;
-		if( j != string::npos ) {
-			lock = param.substr(0, j);
-			pk = param.substr(j + 4);
-		} else {
-			// Workaround for faulty linux hubs...
-			j = param.find(" ");
-			if(j != string::npos)
+		if(!param.empty()) {
+			string::size_type j = param.find(" Pk=");
+			string lock, pk;
+			if( j != string::npos ) {
 				lock = param.substr(0, j);
-			else
-				lock = param;
+				pk = param.substr(j + 4);
+			} else {
+				// Workaround for faulty linux hubs...
+				j = param.find(" ");
+				if(j != string::npos)
+					lock = param.substr(0, j);
+				else
+					lock = param;
+			}
+			fire(ClientListener::LOCK, this, lock, pk);	
 		}
-		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
-		
-		User::Ptr u = ClientManager::getInstance()->getUser(param, this);
-		{
-			Lock l(cs);
-			users[param] = u;
+		if(!param.empty()) {
+			User::Ptr u = ClientManager::getInstance()->getUser(param, this);
+			{
+				Lock l(cs);
+				users[param] = u;
+			}
+			
+			if(u->getNick() == getNick()) {
+				u->setFlag(User::DCPLUSPLUS);
+				if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+					u->setFlag(User::PASSIVE);
+			}
+			
+			fire(ClientListener::HELLO, this, u);
 		}
-
-		if(u->getNick() == getNick()) {
-			u->setFlag(User::DCPLUSPLUS);
-			if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
-				u->setFlag(User::PASSIVE);
-		}
-		
-		fire(ClientListener::HELLO, this, u);
 	} else if(cmd == "$ForceMove") {
 		fire(ClientListener::FORCE_MOVE, this, param);
 	} else if(cmd == "$HubIsFull") {
@@ -278,39 +281,43 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$ValidateDenide") {
 		fire(ClientListener::VALIDATE_DENIED, this);
 	} else if(cmd == "$NickList") {
-		User::List v;
-
-		string::size_type j, k = 0;
-		while( (j=param.find("$$", k)) != string::npos) {
-			string nick = param.substr(k, j-k);
-			User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
-			users[param] = u;
-			fire(ClientListener::MY_INFO, this, u);
-
-			v.push_back(u);
-			k = j + 2;
-		}
-		
-		fire(ClientListener::NICK_LIST, this, v);
-		
-	} else if(cmd == "$OpList") {
-		User::List v;
-		string::size_type j, k;
-		k = 0;
-		while( (j=param.find("$$", k)) != string::npos) {
-			string nick = param.substr(k, j-k);
-			User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
-			{
-				Lock l(cs);
-				users[nick] = u;
-			}
-			u->setFlag(User::OP);
-			fire(ClientListener::MY_INFO, this, u);
+		if(!param.empty()) {
+			User::List v;
 			
-			v.push_back(u);
-			k = j + 2;
+			string::size_type j, k = 0;
+			while( (j=param.find("$$", k)) != string::npos) {
+				string nick = param.substr(k, j-k);
+				User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
+				users[param] = u;
+				fire(ClientListener::MY_INFO, this, u);
+				
+				v.push_back(u);
+				k = j + 2;
+			}
+			
+			fire(ClientListener::NICK_LIST, this, v);
+			
 		}
-		fire(ClientListener::OP_LIST, this, v);
+	} else if(cmd == "$OpList") {
+		if(!param.empty()) {
+			User::List v;
+			string::size_type j, k;
+			k = 0;
+			while( (j=param.find("$$", k)) != string::npos) {
+				string nick = param.substr(k, j-k);
+				User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
+				{
+					Lock l(cs);
+					users[nick] = u;
+				}
+				u->setFlag(User::OP);
+				fire(ClientListener::MY_INFO, this, u);
+				
+				v.push_back(u);
+				k = j + 2;
+			}
+			fire(ClientListener::OP_LIST, this, v);
+		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
 		if(i != string::npos) {
@@ -375,6 +382,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.38 2002/04/09 18:43:27 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.39 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

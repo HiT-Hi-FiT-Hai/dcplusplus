@@ -28,8 +28,6 @@
 #include "ClientManager.h"
 #include "QueueManager.h"
 
-#include "ResourceManager.h"
-
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
 /**
@@ -476,5 +474,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.40 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.41 2002/04/16 16:45:53 arnetheduck Exp $
  */

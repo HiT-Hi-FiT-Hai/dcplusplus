@@ -36,7 +36,7 @@ public:
 	FavoriteHubsFrame() : users(0), hubs(0) { };
 	virtual ~FavoriteHubsFrame() { };
 
-	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_BTNFACE);
+	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		frame = NULL;
@@ -220,6 +220,6 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

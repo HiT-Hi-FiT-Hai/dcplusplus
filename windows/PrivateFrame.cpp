@@ -25,7 +25,6 @@
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
 #include "../client/Util.h"
-#include "../client/ResourceManager.h"
 #include "../client/LogManager.h"
 
 CriticalSection PrivateFrame::cs;
@@ -162,9 +161,42 @@ void PrivateFrame::addLine(const string& aLine) {
 	setDirty();
 }
 
+void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+	
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+		
+		ctrlStatus.SetParts(3, w);
+	}
+	
+	CRect rc = rect;
+	rc.bottom -=28;
+	ctrlClient.MoveWindow(rc);
+	
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+	rc.left +=2;
+	rc.right -=2;
+	ctrlMessage.MoveWindow(rc);
+	
+}
+
+
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 
 

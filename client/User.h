@@ -52,9 +52,9 @@ public:
 
 	void setClient(Client* aClient);
 	void connect();
-	string getClientNick();
+	const string& getClientNick();
 	void update();
-	string getClientName();
+	const string& getClientName();
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
 	void kick(const string& aMsg);
@@ -90,6 +90,6 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.17 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: User.h,v 1.18 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

@@ -37,7 +37,6 @@
 #include "../client/DownloadManager.h"
 #include "../client/UploadManager.h"
 #include "../client/StringTokenizer.h"
-#include "../client/ResourceManager.h"
 #include "../client/SimpleXML.h"
 
 int MainFrame::columnIndexes[MainFrame::COLUMN_LAST] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SIZE, COLUMN_FILE };
@@ -49,6 +48,7 @@ MainFrame::~MainFrame() {
 
 	DeleteObject(WinUtil::bgBrush);
 	DeleteObject(WinUtil::font);
+	WinUtil::fileImages.Destroy();
 }
 
 DWORD WINAPI MainFrame::stopper(void* p) {
@@ -350,7 +350,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::textColor = SETTING(TEXT_COLOR);
 	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
 	WinUtil::font = ::CreateFontIndirect(&lf);
-		
+	WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	
 	TimerManager::getInstance()->start();
 	
 	if(!SETTING(LANGUAGE_FILE).empty()) {
@@ -498,33 +499,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	transferMenu.CreatePopupMenu();
 
-	CMenuItemInfo mi;
-	int n = 0;
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
-	mi.wID = IDC_GETLIST;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	transferMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
 
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
-	mi.wID = IDC_PRIVATEMESSAGE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(FORCE_ATTEMPT));
-	mi.wID = IDC_FORCE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(CLOSE_CONNECTION));
-	mi.wID = IDC_REMOVE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
@@ -850,6 +829,6 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

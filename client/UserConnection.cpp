@@ -44,7 +44,8 @@ void UserConnection::onLine(const string& aLine) throw () {
 	if(aLine.length() == 0) {
 		// Do nothing
 	} else if(cmd == "$MyNick") {
-		fire(UserConnectionListener::MY_NICK, this, param);
+		if(!param.empty())
+			fire(UserConnectionListener::MY_NICK, this, param);
 	} else if(cmd == "$Direction") {
 		x = param.find(" ");
 		if(x != string::npos) {
@@ -53,6 +54,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 	} else if(cmd == "$Error") {
 		fire(UserConnectionListener::FAILED, this, param);
 	} else if(cmd == "$FileLength") {
+		if(!param.empty())
 		fire(UserConnectionListener::FILE_LENGTH, this, param);
 	} else if(cmd == "$GetListLen") {
 		fire(UserConnectionListener::GET_LIST_LENGTH, this);
@@ -62,19 +64,22 @@ void UserConnection::onLine(const string& aLine) throw () {
 			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
 	} else if(cmd == "$Key") {
-		fire(UserConnectionListener::KEY, this, param);
+		if(!param.empty())
+			fire(UserConnectionListener::KEY, this, param);
 	} else if(cmd == "$Lock") {
-		x = param.find(" Pk=");
-		if(x != string::npos) {
-			fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
-		} else {
-			// Workaround for faulty linux clients...
-			x = param.find(' ');
+		if(!param.empty()) {
+			x = param.find(" Pk=");
 			if(x != string::npos) {
-				setFlag(FLAG_INVALIDKEY);
-				fire(UserConnectionListener::LOCK, this, param.substr(0, x), Util::emptyString);
+				fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
 			} else {
-				fire(UserConnectionListener::LOCK, this, param, Util::emptyString);
+				// Workaround for faulty linux clients...
+				x = param.find(' ');
+				if(x != string::npos) {
+					setFlag(FLAG_INVALIDKEY);
+					fire(UserConnectionListener::LOCK, this, param.substr(0, x), Util::emptyString);
+				} else {
+					fire(UserConnectionListener::LOCK, this, param, Util::emptyString);
+				}
 			}
 		}
 	} else if(cmd == "$Send") {
@@ -88,5 +93,5 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.18 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.19 2002/04/16 16:45:54 arnetheduck Exp $
  */

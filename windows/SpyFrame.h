@@ -47,7 +47,7 @@ public:
 		COLUMN_LAST
 	};
 
-	DECLARE_FRAME_WND_CLASS("SpyFrame", IDR_SPY)
+	DECLARE_FRAME_WND_CLASS_EX("SpyFrame", IDR_SPY, 0, COLOR_3DFACE)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
@@ -152,6 +152,6 @@ private:
 
 /**
  * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

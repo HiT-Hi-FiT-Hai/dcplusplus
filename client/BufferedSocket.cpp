@@ -19,8 +19,6 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include "ResourceManager.h"
-
 #include "BufferedSocket.h"
 #include "File.h"
 
@@ -196,7 +194,7 @@ void BufferedSocket::threadRead() {
 					bufpos += sizeof(separator) + pos;
 					if(!line.empty()) {
 						fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
-						line = "";
+						line = Util::emptyString;
 					} else {
 						fire(BufferedSocketListener::LINE, l.substr(0, pos));
 					}
@@ -341,5 +339,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.34 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.35 2002/04/16 16:45:53 arnetheduck Exp $
  */

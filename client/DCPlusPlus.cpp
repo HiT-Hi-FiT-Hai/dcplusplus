@@ -26,7 +26,6 @@
 #include "ShareManager.h"
 #include "SearchManager.h"
 #include "QueueManager.h"
-#include "ResourceManager.h"
 #include "ClientManager.h"
 #include "LogManager.h"
 #include "HubManager.h"
@@ -48,6 +47,14 @@ void startup() {
 	QueueManager::newInstance();
 
 	SettingsManager::getInstance()->load();	
+
+	for(int i = 0; i < SettingsManager::SPEED_LAST; i++) {
+		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
+			break;
+	}
+	if(i == SettingsManager::SPEED_LAST) {
+		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
+	}
 
 	ShareManager::getInstance()->refresh(false, false);
 	HubManager::getInstance()->refresh();
@@ -75,6 +82,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.9 2002/04/09 18:43:27 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.10 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

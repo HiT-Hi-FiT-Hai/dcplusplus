@@ -26,7 +26,6 @@
 
 #include "../client/QueueManager.h"
 #include "../client/StringTokenizer.h"
-#include "../client/ResourceManager.h"
 
 StringList SearchFrame::lastSearches;
 
@@ -309,6 +308,8 @@ void SearchFrame::onEnter() {
 		
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + s + "...").c_str());
 		search = StringTokenizer(s, ' ').getTokens();	
+
+		SetWindowText((STRING(SEARCH) + " - " + s).c_str());
 	}
 }
 
@@ -675,13 +676,20 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 	}	
 }
 
-LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	// HWND hWnd = (HWND)lParam;
+LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	HWND hWnd = (HWND)lParam;
 	HDC hDC = (HDC)wParam;
 
-	::SetBkColor(hDC, WinUtil::bgColor);
-	::SetTextColor(hDC, WinUtil::textColor);
-	return (LRESULT)WinUtil::bgBrush;
+	if(hWnd == searchLabel.m_hWnd || hWnd == sizeLabel.m_hWnd || hWnd == optionLabel.m_hWnd || hWnd == typeLabel.m_hWnd
+		|| hWnd == ctrlSlots.m_hWnd) {
+		::SetBkColor(hDC, ::GetSysColor(COLOR_3DFACE));
+		::SetTextColor(hDC, ::GetSysColor(COLOR_BTNTEXT));
+		return (LRESULT)::GetSysColorBrush(COLOR_3DFACE);
+	} else {
+		::SetBkColor(hDC, WinUtil::bgColor);
+		::SetTextColor(hDC, WinUtil::textColor);
+		return (LRESULT)WinUtil::bgBrush;
+	}
 };
 
 LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -742,25 +750,8 @@ void SearchFrame::onTab() {
 	}
 }
 
-LRESULT SearchFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(&ps);
-	FillRect(hdc, &ps.rcPaint, ::GetSysColorBrush(COLOR_BTNFACE)); // = COLOR_3DFACE
-	EndPaint(&ps);
-	return 0;
-}
-
-LRESULT SearchFrame::onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	bHandled = false;
-	showUI = (wParam == BST_CHECKED);
-	UpdateLayout(FALSE);
-	return 0;
-}
-
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

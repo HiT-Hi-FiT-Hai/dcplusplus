@@ -21,7 +21,6 @@
 
 #include "Util.h"
 #include "StringTokenizer.h"
-#include "ResourceManager.h"
 
 #ifndef WIN32
 #include <sys/socket.h>
@@ -117,6 +116,6 @@ string Util::getLocalIp() {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.13 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.14 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

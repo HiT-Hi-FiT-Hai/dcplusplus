@@ -29,7 +29,6 @@
 #include "../client/Util.h"
 #include "../client/UploadManager.h"
 #include "../client/StringTokenizer.h"
-#include "../client/ResourceManager.h"
 #include "../client/HubManager.h"
 #include "../client/LogManager.h"
 
@@ -657,6 +656,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

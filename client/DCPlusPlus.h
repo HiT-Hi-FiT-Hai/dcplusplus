@@ -71,6 +71,8 @@ typedef StringList::const_iterator StringIterC;
 typedef HASH_MAP<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
+#include "Singleton.h"
+#include "ResourceManager.h"
 #include "SettingsManager.h"
 #include "version.h"
 
@@ -92,6 +94,6 @@ void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.21 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.22 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

@@ -26,6 +26,12 @@
 * Removed the public hublist multi-select feature (high abuse factor...)
 * Added a file type column to the directory listing
 * Fixed some errors in the up/download log
+* Updated the queue frame
+* Yet more internationalization, everything except the settings dialogs should be translatable now
+* Improved the formatting of the output XML file
+* Improved XML loading speed a lot
+* Added a chevron menu to the tab bar at the bottom that shows invisible windows
+* Added current search string to the title of the search window
 
  -- 0.163 2002-04-04 --
 * More internationalization

@@ -41,10 +41,6 @@ public:
 		COLUMN_SIZE
 	};
 	
-	enum {
-		IMAGE_DIRECTORY = 0,
-		IMAGE_FILE = 2
-	};
 	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) : user(aUser) { 
 
 		File f(aFile, File::READ, File::OPEN);
@@ -63,9 +59,7 @@ public:
 		dl->load(tmp);
 	};
 
-	~DirectoryListingFrame() {
-		ctrlImages.Destroy();
-	}
+	~DirectoryListingFrame() { }
 
 	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_DIRECTORY)
 
@@ -141,8 +135,6 @@ public:
 	}
 	
 private:
-	CImageList ctrlImages;
-	
 	CMenu targetMenu;
 	CMenu fileMenu;
 	CMenu directoryMenu;
@@ -165,5 +157,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */

@@ -334,6 +334,10 @@ SOURCE=.\client\SimpleXML.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Singleton.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Socket.h
 # End Source File
 # Begin Source File

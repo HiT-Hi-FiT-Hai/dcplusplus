@@ -22,7 +22,6 @@
 #include "UploadManager.h"
 #include "ConnectionManager.h"
 #include "LogManager.h"
-#include "ResourceManager.h"
 
 UploadManager* Singleton<UploadManager>::instance = NULL;
 
@@ -211,5 +210,5 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.24 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.25 2002/04/16 16:45:54 arnetheduck Exp $
  */

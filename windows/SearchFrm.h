@@ -48,7 +48,7 @@ public:
 		COLUMN_LAST
 	};
 
-	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_SEARCH)
+	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", IDR_SEARCH, 0, COLOR_3DFACE)
 
 	SearchFrame() : 
 		searchBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
@@ -74,9 +74,7 @@ public:
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
-		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
@@ -126,8 +124,6 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onShowUI(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -145,13 +141,16 @@ public:
 		return 0;
 	}
 
-	LRESULT onEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
-		return 0; 
-	};
-
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/){
 		ctrlResults.insert(*(StringList*)wParam, 0, lParam);
 		delete (StringList*)wParam;
+		return 0;
+	}
+
+	LRESULT onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		bHandled = false;
+		showUI = (wParam == BST_CHECKED);
+		UpdateLayout(FALSE);
 		return 0;
 	}
 
@@ -231,6 +230,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

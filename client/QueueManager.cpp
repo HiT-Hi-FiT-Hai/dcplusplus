@@ -119,7 +119,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, const User::Ptr& aUse
 
 	// Check that the file doesn't already exist...
 	if( (aSize != -1) && (aSize <= File::getSize(aTarget)) )  {
-		throw FileException("A file of equal or larger size already exists at the target location");
+		throw FileException(STRING(LARGER_TARGET_FILE_EXISTS));
 	}
 	
 	// Alright, get a queue item, new or old...
@@ -167,11 +167,11 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 	} else {
 		newItem = false;
 		if(q->getSize() != aSize) {
-			throw QueueException("A file with a different size already exists in the queue");
+			throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 		}
 
 		if(aFile == USER_LIST_NAME) {
-			throw QueueException("Already getting that list");
+			throw QueueException(STRING(ALREADY_GETTING_THAT_LIST));
 		}
 	}
 
@@ -446,7 +446,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.18 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.19 2002/04/16 16:45:53 arnetheduck Exp $
  */
 
 

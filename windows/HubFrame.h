@@ -53,22 +53,21 @@ public:
 		dcassert(client == NULL);
 	}
 
-	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_HUB);
+	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUB, 0, COLOR_3DFACE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
 	}
 
 	typedef CSplitterImpl<HubFrame> splitBase;
-
+	typedef MDITabChildWindowImpl<HubFrame> baseClass;
+	
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_ACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
@@ -164,10 +163,6 @@ public:
 		return MDITabChildWindowImpl<HubFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-		
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
@@ -202,15 +197,6 @@ public:
 		if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 			addLine("*** " + aLine);
 		}
-	}
-
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
-		EndPaint(&ps);
-		return 0;
 	}
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -443,6 +429,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

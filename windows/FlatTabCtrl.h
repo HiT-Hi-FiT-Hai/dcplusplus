@@ -23,12 +23,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "../client/ResourceManager.h"
-
 /** This will be sent when the user presses a tab. WPARAM = HWND */
 #define FTN_SELECTED (WM_APP + 700)
 /** Set currently active tab to the HWND pointed by WPARAM */
 #define FTM_SETACTIVE (WM_APP + 701)
+
+#define IDC_SELECT_WINDOW 6000
 
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
@@ -83,11 +83,15 @@ public:
 	}
 
 	BEGIN_MSG_MAP(thisClass)
+		MESSAGE_HANDLER(WM_SIZE, onSize)
+		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, onWindowPosChanging)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(IDCLOSE, onClose)
+		COMMAND_ID_HANDLER(IDC_CHEVRON, onChevron)
+		COMMAND_RANGE_HANDLER(IDC_SELECT_WINDOW, IDC_SELECT_WINDOW+tabs.size(), onSelectWindow)
 	END_MSG_MAP()
 
 	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -112,13 +116,30 @@ public:
 		
 	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { return 0; };
 		
-	int getTabHeight() { return 14; };
+	int getTabHeight() { return 15; };
 	int getHeight() { return getTabHeight()+1; };
 
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
+		chevron.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+			BS_PUSHBUTTON , 0, IDC_CHEVRON);
+		chevron.SetWindowText("»");
+
+		mnu.CreatePopupMenu();
+		
+		return 0;
+	}
+
+	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) { 
+		SIZE sz = { LOWORD(lParam), HIWORD(lParam) };
+		chevron.MoveWindow(sz.cx-14, 0, 14, sz.cy);
+		return 0;
+	}
+		
 	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		int pos = 0;
 		int activepos = -1;
 		RECT rc;
+		bool fits = true;
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
 			HFONT oldfont = dc.SelectFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
@@ -135,6 +156,9 @@ public:
 			for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
 				t->update(dc, boldFont);
+				if(pos + t->getWidth() + t->getFill() > rc.right) {
+					fits = false;
+				}
 				if(pos <= rc.right && (pos + t->getWidth() + t->getFill()) >= rc.left) {
 					if(*i == active) {
 						activepos = pos;
@@ -147,7 +171,8 @@ public:
 					pos += t->getWidth();
 				}
 			}
-			
+			chevron.EnableWindow(!fits);
+
 			if(active) {
 				if(activepos != -1 && activepos <= rc.right && (activepos + active->getWidth() + active->getFill()) >= rc.left) {
 					drawTab(dc, active, activepos, true);
@@ -168,7 +193,7 @@ public:
 
 		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* t = *i;
-			if( (pt.x > w) && (pt.x < w + t->getWidth())) {
+			if( (pt.x > w) && (pt.x < w + t->getWidth() + t->getFill())) {
 				closing = t->hWnd;
 
 				CMenu mnu;
@@ -177,7 +202,7 @@ public:
 				mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 				break;
 			} else {
-				w+=t->getWidth();
+				w+=t->getWidth() + t->getFill();
 			}
 		}
 		return FALSE; 
@@ -187,8 +212,51 @@ public:
 		::SendMessage(closing, WM_CLOSE, 0, 0);
 		return 0;
 	}
+
+	LRESULT onChevron(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		while(mnu.GetMenuItemCount() > 0) {
+			mnu.RemoveMenu(0, MF_BYPOSITION);
+		}
+		int n = 0;
+		int pos = 0;
+		RECT rc;
+		GetClientRect(&rc);
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+		mi.fType = MFT_STRING;
 		
-	
+		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
+			pos += (*i)->getWidth() + (*i)->getFill();
+
+			if(pos > rc.right) {
+				mi.dwTypeData = (LPSTR)(*i)->name;
+				mi.dwItemData = (DWORD)(*i)->hWnd;
+				mi.wID = IDC_SELECT_WINDOW + n;
+				mnu.InsertMenuItem(n++, TRUE, &mi);
+			}
+		}
+
+		POINT pt;
+		chevron.GetClientRect(&rc);
+		pt.x = rc.right - rc.left;
+		pt.y = 0;
+		chevron.ClientToScreen(&pt);
+		
+		mnu.TrackPopupMenu(TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		return 0;
+	}
+
+	LRESULT onSelectWindow(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		CMenuItemInfo mi;
+		mi.fMask = MIIM_DATA;
+		
+		mnu.GetMenuItemInfo(wID, FALSE, &mi);
+		HWND hWnd = GetParent();
+		if(hWnd) {
+			SendMessage(hWnd, FTN_SELECTED, (WPARAM)mi.dwItemData, 0);
+		}
+		return 0;		
+	}
 private:
 	class TabInfo {
 	public:
@@ -234,6 +302,8 @@ private:
 
 	HFONT boldFont;
 	HWND closing;
+	CButton chevron;
+	CMenu mnu;
 	
 	TabInfo* active;
 	vector<TabInfo*> tabs;
@@ -300,13 +370,7 @@ private:
 
 class FlatTabCtrl : public FlatTabCtrlImpl<FlatTabCtrl> {
 public:
-	static CWndClassInfo& GetWndClassInfo() { 
-		static CWndClassInfo wc = { 
-			{ sizeof(WNDCLASSEX), 0, StartWindowProc, 
-		  0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_BTNFACE + 1), NULL, GetWndClassName(), NULL }, 
-		  NULL, NULL, IDC_ARROW, TRUE, 0, _T("") }; 
-		return wc; 
-	}
+	DECLARE_FRAME_WND_CLASS_EX(GetWndClassName(), IDR_QUEUE, 0, COLOR_3DFACE);
 };
 
 template <class T, class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
@@ -369,5 +433,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */

@@ -106,30 +106,6 @@ protected:
 	CriticalSection listenerCS;
 };
 
-template<typename T>
-class Singleton {
-public:
-	static T* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new T();
-	}
-	
-	static void deleteInstance() {
-		if(instance)
-			delete instance;
-		instance = NULL;
-	}
-protected:
-	static T* instance;
-};
-
 class Util  
 {
 public:
@@ -213,37 +189,20 @@ public:
 	static string formatBytes(int64_t aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
-			sprintf(buf, "%d B", (int)aBytes );
+			sprintf(buf, "%d %s", (int)aBytes, CSTRING(B));
 		} else if(aBytes < 1024*1024) {
-			sprintf(buf, "%.02f kB", (double)aBytes/(1024.0) );
+			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KB));
 		} else if(aBytes < 1024*1024*1024) {
-			sprintf(buf, "%.02f MB", (double)aBytes/(1024.0*1024.0) );
+			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
 		} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-			sprintf(buf, "%.02f GB", (double)aBytes/(1024.0*1024.0*1024.0) );
+			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
 		} else {
-			sprintf(buf, "%.02f TB", (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
+			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
 		}
 		
 		return buf;
 	}
 
-	static string formatBytesFraction(int64_t part, int64_t aBytes) {
-		char buf[64];
-		if(aBytes < 1024) {
-			sprintf(buf, "%d/%d B", (int)part, (int)aBytes );
-		} else if(aBytes < 1024*1024) {
-			sprintf(buf, "%.02f/%.02f kB", (double)part/1024.0, (double)aBytes/(1024.0) );
-		} else if(aBytes < 1024*1024*1024) {
-			sprintf(buf, "%.02f/%.02f MB", (double)part/(1024.0*1024.0), (double)aBytes/(1024.0*1024.0) );
-		} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-			sprintf(buf, "%.02f/%.02f GB", (double)part/(1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0) );
-		} else {
-			sprintf(buf, "%.02f/%.02f TB", (double)part/(1024.0*1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
-		}
-		
-		return buf;
-	}
-	
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
 #ifdef WIN32
@@ -362,6 +321,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.39 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Util.h,v 1.40 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

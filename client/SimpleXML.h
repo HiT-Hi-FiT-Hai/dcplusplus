@@ -137,7 +137,7 @@ public:
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
-	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML() : Util::emptyString; };
+	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML(0) : Util::emptyString; };
 	
 
 private:
@@ -168,8 +168,8 @@ private:
 
 		Tag(const string& aName, const string& aData, Ptr aParent) : name(aName), data(aData), parent(aParent) { };
 		
-		string toXML();
-		void fromXML(const string& aXML) throw(SimpleXMLException);
+		string toXML(int indent);
+		void fromXML(const string& aXML, string::size_type start, string::size_type end) throw(SimpleXMLException);
 		string getAttribString();
 		/** Delete all children! */
 		~Tag() {
@@ -187,7 +187,6 @@ private:
 
 	Tag::Iter currentChild;
 
-	string cleanUp(const string& aString);
 	void checkChildSelected() const throw(SimpleXMLException) {
 		dcassert(current != NULL);
 		if(currentChild == current->children.end()) {
@@ -203,6 +202,6 @@ private:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.14 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.15 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

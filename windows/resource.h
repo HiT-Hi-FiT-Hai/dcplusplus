@@ -134,6 +134,7 @@
 #define IDC_HELP_FAQ                    1069
 #define IDC_SEARCH_SPY                  1070
 #define IDC_IMPORT_QUEUE                1071
+#define IDC_CHEVRON						1072
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

@@ -125,7 +125,7 @@ void ShareManager::save(SimpleXML* aXml) {
 
 void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) {
 	if(aDirectory.size() == 0) {
-		throw ShareException("No directory specified");
+		throw ShareException(STRING(NO_DIRECTORY_SPECIFIED));
 	}
 
 	{
@@ -140,9 +140,9 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(d.find(i->first + '\\') != string::npos) {
-				throw ShareException("Directory already shared.");
+				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
 			} else if(i->first.find(d + '\\') != string::npos) {
-				throw ShareException("Remove all subdirectories before adding this one.");
+				throw ShareException(STRING(REMOVE_ALL_SUBDIRECTORIES));
 			}
 		}
 
@@ -474,6 +474,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.33 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.34 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

@@ -21,6 +21,12 @@
 
 class WinUtil {
 public:
+	enum {
+		IMAGE_DIRECTORY = 0,
+		IMAGE_FILE = 2
+	};
+	
+	static CImageList fileImages;
 	static HBRUSH bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
@@ -55,5 +61,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.2 2002/04/16 16:45:55 arnetheduck Exp $
  */

@@ -31,7 +31,7 @@ class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, private Setting
 public:
 	static NotepadFrame* frame;
 	
-	DECLARE_FRAME_WND_CLASS("NotepadFrame", IDR_NOTEPAD);
+	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
 
 	NotepadFrame() { }
 	~NotepadFrame() { }
@@ -44,9 +44,7 @@ public:
 	BEGIN_MSG_MAP(NotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
@@ -67,7 +65,6 @@ public:
 		bHandled = FALSE;
 		return FALSE;
 	};
-	
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
@@ -98,7 +95,6 @@ public:
 		ctrlPad.MoveWindow(rc);
 
 	}
-	
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		char *buf = new char[ctrlPad.GetWindowTextLength() + 1];
@@ -122,20 +118,6 @@ public:
 		return baseClass::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-		
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
-		EndPaint(&ps);
-		return 0;
-	}
-	
-
 private:
 	
 	CEdit ctrlPad;
@@ -152,13 +134,12 @@ private:
 	
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
-	
 };
 
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

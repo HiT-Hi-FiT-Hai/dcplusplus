@@ -23,13 +23,13 @@
 #include "WinUtil.h"
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
-#include "../client/ResourceManager.h"
 
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 HFONT WinUtil::font;
 CMenu WinUtil::mainMenu;
+CImageList WinUtil::fileImages;
 
 void WinUtil::decodeFont(const string& setting, LOGFONT &dest) {
 	StringTokenizer st(setting, ',');
@@ -172,5 +172,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */

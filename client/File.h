@@ -61,7 +61,7 @@ public:
 			if(mode & CREATE) {
 				m = (mode & TRUNCATE) ? CREATE_ALWAYS : CREATE_NEW;
 			} else {
-				throw FileException("Bad creation mode");
+				dcassert(0);
 			}
 		}
 		int a = 0;
@@ -130,7 +130,7 @@ public:
 			throw FileException(Util::translateError(GetLastError()));
 		}
 		if(x < len) {
-			throw FileException("Disk full?");
+			throw FileException(STRING(DISC_FULL));
 		}
 	}
 
@@ -333,6 +333,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.10 2002/04/09 18:43:27 arnetheduck Exp $
+ * $Id: File.h,v 1.11 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

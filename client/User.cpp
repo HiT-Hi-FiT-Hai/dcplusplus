@@ -33,7 +33,7 @@ void User::connect() {
 	}
 }
 
-string User::getClientNick() {
+const string& User::getClientNick() {
 	RLock l(cs);
 	if(client) {
 		return client->getNick();
@@ -56,12 +56,12 @@ void User::updated(User::Ptr& aUser) {
 	}
 }
 
-string User::getClientName() {
+const string& User::getClientName() {
 	RLock l(cs);
 	if(client) {
 		return client->getName();
 	} else {
-		return "Offline";
+		return STRING(OFFLINE);
 	}
 }
 
@@ -115,6 +115,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.13 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: User.cpp,v 1.14 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

@@ -103,9 +103,22 @@ public:
 		dcdebug("MyInfo %s...\n", aNick.c_str());
 		lastHubs = hubs;
 		lastUpdate = GET_TICK();
+		string tmp1 = ";**\x1fU9";
+		string tmp2 = "+L9";
+		string tmp3 = "+G9";
+		string tmp4 = "+R9";
+		
+		string::size_type i;
+
+		for(i = 0; i < tmp1.size(); i++) {
+			tmp1[i]++;
+		}
+		for(i = 0; i < tmp2.size(); i++) {
+			tmp2[i]++; tmp3[i]++; tmp4[i]++;
+		}
 		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
-			"<++ V:" VERSIONSTRING ",M:" + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
-			",H:" + Util::toString(lastHubs) + ",S:" + Util::toString(SETTING(SLOTS)) + 
+			tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
+			tmp3 + Util::toString(lastHubs) + tmp4 + Util::toString(SETTING(SLOTS)) + 
 			">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
 	}
 
@@ -326,6 +339,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.48 2002/04/09 18:43:27 arnetheduck Exp $
+ * $Id: Client.h,v 1.49 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

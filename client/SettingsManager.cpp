@@ -87,6 +87,8 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_MAIN_CHAT, false);
 	setDefault(STATUS_IN_CHAT, false);
 	setDefault(SHOW_JOINS, false);
+	setDefault(CONNECTION, connectionSpeeds[0]);
+	
 #ifdef WIN32
 	setDefault(BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
@@ -186,7 +188,7 @@ void SettingsManager::save(string const& aFileName) {
 	try {
 		
 		File f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>");
+		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
 		f.write(xml.toXML());
 		f.close();
 		File::deleteFile(aFileName);
@@ -198,6 +200,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.31 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.32 2002/04/16 16:45:53 arnetheduck Exp $
  */
 

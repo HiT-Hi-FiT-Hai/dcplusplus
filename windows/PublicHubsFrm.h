@@ -45,7 +45,7 @@ public:
 	virtual ~PublicHubsFrame() {
 	};
 
-	DECLARE_FRAME_WND_CLASS("PublicHubsFrame", IDR_PUBLICHUBS);
+	DECLARE_FRAME_WND_CLASS_EX("PublicHubsFrame", IDR_PUBLICHUBS, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		frame = NULL;
@@ -57,8 +57,6 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
@@ -100,23 +98,11 @@ public:
 		return FALSE;
 	};
 	
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, ::GetSysColorBrush(COLOR_BTNFACE));
-		EndPaint(&ps);
-		return 0;
-	}
-
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
 		return baseClass::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		HubManager::getInstance()->removeListener(this);
 		bHandled = FALSE;
@@ -200,6 +186,6 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

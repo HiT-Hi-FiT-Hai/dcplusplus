@@ -23,7 +23,6 @@
 #include "UsersFrame.h"
 #include "PrivateFrame.h"
 
-#include "../client/ResourceManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/QueueManager.h"
 
@@ -201,6 +200,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file UsersFrame.cpp
- * $Id: UsersFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

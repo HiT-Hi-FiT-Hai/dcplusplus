@@ -24,7 +24,6 @@
 #include "User.h"
 #include "QueueManager.h"
 #include "LogManager.h"
-#include "ResourceManager.h"
 
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
@@ -307,5 +306,5 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.56 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.57 2002/04/16 16:45:53 arnetheduck Exp $
  */

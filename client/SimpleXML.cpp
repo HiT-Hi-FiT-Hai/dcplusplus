@@ -78,45 +78,94 @@ string SimpleXML::Tag::getAttribString() {
 	for(StringMapIter i = attribs.begin(); i!= attribs.end(); ++i) {
 		tmp = tmp + i->first + "=\"" + escape(i->second, true) + "\" ";
 	}
+	if(tmp.size() > 0) {
+		tmp.erase(tmp.size() - 1);
+	}
 	return tmp;
 }
-string SimpleXML::Tag::toXML() {
+
+string SimpleXML::Tag::toXML(int indent) {
 	if(children.empty()) {
 		if(data.empty()) {
-			return "<" + name + " " + getAttribString() + "/>";
+			if(attribs.empty()) {
+				return string(indent, '\t') + "<" + name + "/>\r\n";
+			} else {
+				return string(indent, '\t') + "<" + name + " " + getAttribString() + "/>\r\n";
+			}
 		} else {
-			string tmp = escape(data, false);
-			string attrib = getAttribString();
-			char* buf = new char[name.length()*2 + tmp.length() + attrib.length() + 8];
-			sprintf(buf, "<%s %s>%s</%s>", name.c_str(), attrib.c_str(), tmp.c_str(), name.c_str());
-			tmp = buf;
-			delete[] buf;
-			return tmp;
+			if(attribs.empty()) {
+				string tmp = escape(data, false);
+				char* buf = new char[indent + name.length()*2 + tmp.length() + 10];
+				sprintf(buf, "%s<%s>%s</%s>\r\n", string(indent, '\t').c_str(), name.c_str(), tmp.c_str(), name.c_str());
+				tmp = buf;
+				delete[] buf;
+				return tmp;
+			} else {
+				string tmp = escape(data, false);
+				string attrib = getAttribString();
+				char* buf = new char[indent + name.length()*2 + tmp.length() + attrib.length() + 10];
+				sprintf(buf, "%s<%s %s>%s</%s>\r\n", string(indent, '\t').c_str(), name.c_str(), attrib.c_str(), tmp.c_str(), name.c_str());
+				tmp = buf;
+				delete[] buf;
+				return tmp;
+			}
 		}
-	} else {
-		string tmp =  "<" + name + " " + getAttribString() + ">";
+	} else if(attribs.empty()) {
+		string tmp =  string(indent, '\t') + "<" + name + ">\r\n";
 		for(Iter i = children.begin(); i!=children.end(); ++i) {
-			tmp += (*i)->toXML();
+			tmp += (*i)->toXML(indent + 1);
 		}
-		return tmp + "</" + name + ">";
+		return tmp + string(indent, '\t') + "</" + name + ">\r\n";
+	} else {		
+		string tmp =  string(indent, '\t') + "<" + name + " " + getAttribString() + ">\r\n";
+		for(Iter i = children.begin(); i!=children.end(); ++i) {
+			tmp += (*i)->toXML(indent + 1);
+		}
+		return tmp + string(indent, '\t') + "</" + name + ">\r\n";
 	}
 
-	dcassert(0);
 }
 
-void SimpleXML::Tag::fromXML(const string& tmp) throw(SimpleXMLException) {
-	string::size_type i = 0;
+void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string::size_type end) throw(SimpleXMLException) {
+	string::size_type i = start;
 	string::size_type j;
 
 	dcassert(tmp.size() > 0);
-	while( i < tmp.size() && tmp[i] == '<' ) {
+
+	
+	while( (j = tmp.find('<', i)) != string::npos ) {
+		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
+		if((j + 3) > tmp.size()) {
+			throw SimpleXMLException("Too few characters after <");
+		}
+
+		if( (j+3) > end)
+			break;
+
 		Ptr child = NULL;
 
-		i += 1;
-		j = tmp.find_first_of(" >", i);
-		if(j == string::npos) {
-			throw SimpleXMLException("Missing '>'");
+		i = j + 1;
+
+		if(tmp[i] == '?') {
+			// <? processing instruction ?>, ignore...
+			i = tmp.find("?>", i);
+			if(i == string::npos) {
+				throw SimpleXMLException("Missing ?> tag");
+			}
+			continue;
 		}
+		
+		if(tmp[i] == '!' && tmp[i+1] == '-' && tmp[i+2] == '-') {
+			// <!-- comment -->, ignore...
+			i = tmp.find("-->", i);
+			if(i == string::npos) {
+				throw SimpleXMLException("Missing --> tag");
+			}
+			continue;
+		}
+
+		// Alright, we have a real tag for sure...
+		j = tmp.find_first_of(" >", i);
 
 		string name;
 		string tag;
@@ -167,8 +216,10 @@ void SimpleXML::Tag::fromXML(const string& tmp) throw(SimpleXMLException) {
 		if(!simpleTag) {
 			string endTag = "</" + name + ">";
 			j = tmp.find(endTag, i);
-			if(tmp[i] == '<') {
-				child->fromXML(tmp.substr(i, j-i));
+			string::size_type dataPos = tmp.find('<', i);
+
+			if(dataPos != string::npos && dataPos < j) {
+				child->fromXML(tmp, i, j);
 			} else {
 				child->data = escape(tmp.substr(i, j-i), false, true);
 			}
@@ -210,78 +261,13 @@ void SimpleXML::addChildAttrib(const string& aName, const string& aData) throw(S
 	(*currentChild)->attribs[aName] = aData;
 }
 
-string SimpleXML::cleanUp(const string& tmp) {
-	string::size_type i = 0;
-	string::size_type j;
-
-	string ret;
-	ret.reserve(tmp.size());
-
-	while( (j = tmp.find('<', i)) != string::npos) {
-		if(j + 1 >= tmp.size()) {
-			break;
-		} else if(tmp[j+1] == '?') {
-			// Directive, skip
-			i = tmp.find("?>", j);
-			if(i == string::npos)
-				break;
-			i += 2;
-			continue;
-		} else if(tmp.substr(0, 4) == "<!--") {
-			// Comment, skip
-			i = tmp.find("-->", j);
-			if(i == string::npos)
-				break;
-			i += 3;
-			continue;
-		} 
-
-		// Find the end of this tag...
-		i = tmp.find('>', j);
-		if(i == string::npos)
-			break;
-		if(tmp[i-1] == '/') {
-			// Simple tag, ok...
-			i++;
-			ret += tmp.substr(j, i-j);
-		} else {
-			// Normal tag with end tag...find it
-			string name = tmp.substr(j + 1, tmp.find_first_of(" >", j)-1-j);
-			string endTag = "</" + name + ">";
-			
-			// Add start tag
-			i++;
-			ret += tmp.substr(j, i-j);
-			j = i;
-			i = tmp.find(endTag, j);
-			if(i == string::npos) {
-				// No end tag...add it and return...
-				ret += endTag;
-				break;
-			}
-			
-			string::size_type x = tmp.find('<', j);
-
-			if( (x != string::npos) && x < i ) {
-				ret += cleanUp(tmp.substr(j, i-j));
-			} else {
-				ret += tmp.substr(j, i-j);
-			}
-
-			i += endTag.length();
-			ret += endTag;
-		}
-	}
-	return ret;
-}
-
 void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 	if(root) {
 		delete root;
 	}
 	root = new Tag("BOGUSROOT", Util::emptyString, NULL);
 
-	root->fromXML(cleanUp(aXML));
+	root->fromXML(aXML, 0, aXML.size());
 	
 	if(root->children.size() != 1) {
 		throw SimpleXMLException("Invalid XML file, missing or multiple root tags");
@@ -293,6 +279,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.14 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.15 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

@@ -23,8 +23,6 @@
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 
-#include "../client/ResourceManager.h"
-
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->getName().c_str(), I_IMAGECALLBACK, I_IMAGECALLBACK, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
@@ -62,7 +60,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 			l.push_back(d->getName());
 			l.push_back(Util::emptyString);
 			l.push_back(Util::formatBytes(d->getTotalSize()));
-			ctrlList.insert(l, IMAGE_DIRECTORY, (LPARAM)d);
+			ctrlList.insert(l, WinUtil::IMAGE_DIRECTORY, (LPARAM)d);
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 			string::size_type k = (*j)->getName().rfind('.');
@@ -71,7 +69,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 			l.push_back((*j)->getName());
 			l.push_back(suffix);
 			l.push_back(Util::formatBytes((*j)->getSize()));
-			ctrlList.insert(l, IMAGE_FILE, (LPARAM)*j);
+			ctrlList.insert(l, WinUtil::IMAGE_FILE, (LPARAM)*j);
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
@@ -93,7 +91,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 		ctrlList.GetItem(&lvi);
 
-		if(lvi.iImage == IMAGE_FILE) {
+		if(lvi.iImage == WinUtil::IMAGE_FILE) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 			try {
 				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->getName());
@@ -166,7 +164,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 			target = aTarget;
 		}
 		try {
-			if(lvi.iImage == IMAGE_FILE) {
+			if(lvi.iImage == WinUtil::IMAGE_FILE) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 				dl->download(file, user, target + file->getName());
 			} else {
@@ -193,7 +191,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		ctrlList.GetItem(&lvi);
 
 		try {
-			if(lvi.iImage == IMAGE_FILE) {
+			if(lvi.iImage == WinUtil::IMAGE_FILE) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 				string target = file->getName();
 				if(WinUtil::browseFile(target, m_hWnd))
@@ -247,9 +245,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
 	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	
-	ctrlImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	ctrlTree.SetImageList(ctrlImages, TVSIL_NORMAL);
-	ctrlList.SetImageList(ctrlImages, LVSIL_SMALL);
+	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
+	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
 	m_nProportionalPos = 2500;
@@ -296,7 +293,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
 
-		if(ctrlList.GetSelectedCount() == 1 && lvi.iImage == IMAGE_FILE) {
+		if(ctrlList.GetSelectedCount() == 1 && lvi.iImage == WinUtil::IMAGE_FILE) {
 
 			int pos = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 			dcassert(pos != -1);
@@ -340,7 +337,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 	if(ctrlList.GetSelectedCount() == 1) {
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		dcassert(i != -1);
-		if(ctrlList.getItemImage(i) == IMAGE_FILE) {
+		if(ctrlList.getItemImage(i) == WinUtil::IMAGE_FILE) {
 			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
 			dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
 
@@ -364,21 +361,21 @@ int DirectoryListingFrame::sortFile(LPARAM a, LPARAM b) {
 	LVITEM* c = (LVITEM*)a;
 	LVITEM* d = (LVITEM*)b;
 	
-	if(c->iImage == IMAGE_DIRECTORY) {
-		if(d->iImage == IMAGE_FILE) {
+	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == IMAGE_DIRECTORY);
+		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
 		
 		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
 		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
 		
 		return stricmp(e->getName().c_str(), f->getName().c_str());
 	} else {
-		if(d->iImage == IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == IMAGE_FILE);
+		dcassert(c->iImage == WinUtil::IMAGE_FILE);
 		
 		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
 		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
@@ -391,11 +388,11 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 	LVITEM* c = (LVITEM*)a;
 	LVITEM* d = (LVITEM*)b;
 	
-	if(c->iImage == IMAGE_DIRECTORY) {
-		if(d->iImage == IMAGE_FILE) {
+	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == IMAGE_DIRECTORY);
+		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
 		
 		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
 		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
@@ -407,10 +404,10 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 		
 		return stricmp(suffix1.c_str(), suffix2.c_str());
 	} else {
-		if(d->iImage == IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == IMAGE_FILE);
+		dcassert(c->iImage == WinUtil::IMAGE_FILE);
 		
 		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
 		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
@@ -423,11 +420,11 @@ int DirectoryListingFrame::sortSize(LPARAM a, LPARAM b) {
 	LVITEM* c = (LVITEM*)a;
 	LVITEM* d = (LVITEM*)b;
 	
-	if(c->iImage == IMAGE_DIRECTORY) {
-		if(d->iImage == IMAGE_FILE) {
+	if(c->iImage == WinUtil::IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_FILE) {
 			return -1;
 		}
-		dcassert(c->iImage == IMAGE_DIRECTORY);
+		dcassert(c->iImage == WinUtil::IMAGE_DIRECTORY);
 		
 		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
 		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
@@ -436,10 +433,10 @@ int DirectoryListingFrame::sortSize(LPARAM a, LPARAM b) {
 		
 		return (g < h) ? -1 : ((g == h) ? 0 : 1);
 	} else {
-		if(d->iImage == IMAGE_DIRECTORY) {
+		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
 			return 1;
 		}
-		dcassert(c->iImage == IMAGE_FILE);
+		dcassert(c->iImage == WinUtil::IMAGE_FILE);
 		
 		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
 		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
@@ -475,5 +472,5 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */

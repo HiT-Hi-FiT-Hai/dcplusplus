@@ -35,7 +35,7 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>
 {
 public:
 
-	DECLARE_FRAME_WND_CLASS("PrivateFrame", IDR_PRIVATE);
+	DECLARE_FRAME_WND_CLASS_EX("PrivateFrame", IDR_PRIVATE, 0, COLOR_3DFACE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -44,9 +44,7 @@ public:
 	BEGIN_MSG_MAP(PrivateFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -57,6 +55,14 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
+	void addLine(const string& aLine);
+	void onEnter();
+	void UpdateLayout(BOOL bResizeBars = TRUE);	
+	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
+	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
+	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		Lock l(cs);
 		frames.erase(user);
@@ -76,56 +82,16 @@ public:
 		return FALSE;
 	};
 
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-
-		CRect rc = rect;
-		rc.bottom -=28;
-		ctrlClient.MoveWindow(rc);
-		
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-		rc.left +=2;
-		rc.right -=2;
-		ctrlMessage.MoveWindow(rc);
-
-	}
-	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
 	}
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		
 		return MDITabChildWindowImpl<PrivateFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-		
-	void addLine(const string& aLine);
 	void addClientLine(const string& aLine) {
 		if(!created) {
 			CreateEx(parent);
@@ -133,16 +99,7 @@ public:
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
 	}
-	
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
-		EndPaint(&ps);
-		return 0;
-	}
+
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		switch(wParam) {
 		case VK_RETURN:
@@ -161,8 +118,6 @@ public:
 		}
 		return 0;
 	}
-
-	void onEnter();
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const string& msg) {
@@ -172,8 +127,6 @@ public:
 			addLine(Util::validateMessage(s));
 		}
 	}
-	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
-	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
 	
 	User::Ptr& getUser() { return user; };
 private:
@@ -202,6 +155,6 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

@@ -25,7 +25,6 @@
 #include "FavHubProperties.h"
 
 #include "../client/ClientManager.h"
-#include "../client/ResourceManager.h"
 #include "../client/StringTokenizer.h"
 
 FavoriteHubsFrame* FavoriteHubsFrame::frame = NULL;
@@ -222,6 +221,6 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

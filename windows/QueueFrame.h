@@ -29,7 +29,7 @@
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
 
-class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManagerListener
+class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManagerListener, public CSplitterImpl<QueueFrame>
 {
 public:
 	enum {
@@ -49,7 +49,7 @@ public:
 		
 	};
 
-	DECLARE_FRAME_WND_CLASS("QueueFrame", IDR_QUEUE);
+	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
 
 	static QueueFrame* frame;
 
@@ -68,24 +68,26 @@ public:
 		delete this;
 	}
 
+	typedef MDITabChildWindowImpl<QueueFrame> baseClass;
+	typedef CSplitterImpl<QueueFrame> splitBase;
+
 	BEGIN_MSG_MAP(QueueFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemChanged)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGH, onPriority)
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
-		
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<QueueFrame>)
+		CHAIN_MSG_MAP(splitBase);
+		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -93,6 +95,7 @@ public:
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -118,16 +121,7 @@ public:
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			string tmp;
-			{
-				Lock l(cs);
-				QueueIter j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
-				if(j == queue.end())
-					continue;
-				
-				tmp = j->second->getTarget();
-			}
-			QueueManager::getInstance()->remove(tmp);
+			QueueManager::getInstance()->remove(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget());
 		}
 	}
 	
@@ -159,22 +153,8 @@ public:
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		return MDITabChildWindowImpl<QueueFrame>::PreTranslateMessage(pMsg);
+		return baseClass::PreTranslateMessage(pMsg);
 	}
-	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-		
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
-		EndPaint(&ps);
-		return 0;
-	}
-	
 	
 private:
 
@@ -212,8 +192,15 @@ private:
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
 	
+	typedef HASH_MULTIMAP<string, QueueItem*> DirectoryMap;
+	typedef DirectoryMap::iterator DirectoryIter;
+	DirectoryMap directories;
+	string curDir;
+	
 	CriticalSection cs;
 	ExListViewCtrl ctrlQueue;
+	ExListViewCtrl ctrlDirectories;
+	
 	CStatusBarCtrl ctrlStatus;
 	
 	LONGLONG queueSize;
@@ -225,6 +212,23 @@ private:
 	void updateStatus() {
 		ctrlStatus.SetText(1, ("Items: " + Util::toString(queueItems)).c_str());
 		ctrlStatus.SetText(2, ("Size: " + Util::formatBytes(queueSize)).c_str());
+	}
+
+	string getDirectory(const string& aTarget) {
+		string::size_type i, j, k;
+		if( (i = aTarget.rfind('\\')) == string::npos) {
+			return "\\";
+		}
+		if( (j = aTarget.rfind('\\', i-1)) == string::npos) {
+			return aTarget.substr(0, i+1);
+		}
+		if( (k = aTarget.rfind('\\', j-1)) == string::npos) {
+			return aTarget.substr(0, i+1);
+		}
+		if(k > 3)
+			return aTarget.substr(k+1, i-k);
+		else
+			return aTarget.substr(0, i+1);
 	}
 
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
@@ -248,6 +252,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
  */
 

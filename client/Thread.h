@@ -44,7 +44,7 @@ public:
 	
 	void start() throw(ThreadException) {
 		if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
-			throw ThreadException("Unable to create thread");
+			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
 	}
 
@@ -103,6 +103,6 @@ private:
 
 /**
  * @file Thread.h
- * $Id: Thread.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Thread.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
  */
 

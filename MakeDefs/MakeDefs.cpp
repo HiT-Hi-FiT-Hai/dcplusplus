@@ -10,8 +10,19 @@
 #include "../client/StringTokenizer.h"
 
 string Util::emptyString;
+/*
+int __cdecl main(int argc, char* argv[]) {
+	File src(argv[1], File::READ, File::OPEN);
+	string x = src.read();
 
-int main(int argc, char* argv[])
+	DWORD y = GetTickCount();
+	SimpleXML xml;
+	xml.fromXML(x);
+	printf("%d\n", GetTickCount() - y);
+	return 0;
+}
+*/
+int __cdecl main(int argc, char* argv[])
 {
 	if(argc < 3) {
 		return 0;
