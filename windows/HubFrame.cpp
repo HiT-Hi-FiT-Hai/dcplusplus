@@ -707,6 +707,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	if(doMenu) {
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
+		checkAdcItems(userMenu);
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
 		return TRUE;
@@ -1139,5 +1140,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.98 2005/01/12 01:16:48 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.99 2005/03/14 14:04:46 arnetheduck Exp $
  */

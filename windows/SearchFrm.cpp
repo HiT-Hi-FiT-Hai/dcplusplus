@@ -457,6 +457,14 @@ void SearchFrame::SearchInfo::getList() {
 	}
 }
 
+void SearchFrame::SearchInfo::browseList() {
+	try {
+		QueueManager::getInstance()->addPfs(sr->getUser(), Text::fromT(getPath()));
+	} catch(const Exception&) {
+		// Ignore for now...
+	}
+}
+
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	if(!si->getTTH().empty()) {
 		if(firstTTH) {
@@ -1000,6 +1008,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
+		checkAdcItems(resultsMenu);
 		resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(resultsMenu);
 		return TRUE; 
@@ -1078,6 +1087,11 @@ LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT SearchFrame::onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ctrlResults.forEachSelected(&SearchInfo::browseList);
+	return 0;
+}
+
 LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 	NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
@@ -1103,5 +1117,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.86 2005/03/12 16:45:37 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.87 2005/03/14 14:04:46 arnetheduck Exp $
  */

@@ -89,7 +89,7 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false, bool aComplete = true) 
+		Directory(Directory* aParent, const string& aName, bool _adls, bool aComplete) 
 			: name(aName), parent(aParent), adls(_adls), complete(aComplete) { };
 		
 		virtual ~Directory() {
@@ -122,12 +122,12 @@ public:
 
 	class AdlDirectory : public Directory {
 	public:
-		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true), fullPath(aFullPath) { };
+		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true, true), fullPath(aFullPath) { };
 
 		GETSET(string, fullPath, FullPath);
 	};
 
-	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory()) {
+	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory(NULL, Util::emptyString, false, false)) {
 	};
 	
 	~DirectoryListing() {
@@ -137,7 +137,7 @@ public:
 	void loadFile(const string& name);
 
 	void load(const string& i);
-	void loadXML(const string& xml, bool updating);
+	string loadXML(const string& xml, bool updating);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);
@@ -173,5 +173,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.40 2005/03/12 13:36:33 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.41 2005/03/14 14:04:31 arnetheduck Exp $
  */

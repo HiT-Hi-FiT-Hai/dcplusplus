@@ -179,11 +179,13 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	User::List passiveUsers;
 	ConnectionQueueItem::List removed;
+	UserConnection::List added;
+
+	bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
+	bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
+
 	{
 		Lock l(cs);
-
-		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
-		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
 
 		int attempts = 0;
 
@@ -199,7 +201,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 					dcassert(cqi->getConnection()->getCQI() == cqi);
 					cqi->setState(ConnectionQueueItem::ACTIVE);
 					cqi->getConnection()->removeListener(this);
-					DownloadManager::getInstance()->addConnection(cqi->getConnection());
+					added.push_back(cqi->getConnection());
 
 					pendingAdd.erase(it);
 				}
@@ -220,11 +222,10 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 				if( ((cqi->getLastAttempt() + 60*1000) < aTick) && (attempts < 2) ) {
 					cqi->setLastAttempt(aTick);
 
-				if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-					removed.push_back(cqi);
-					continue;
-				}
-
+					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+						removed.push_back(cqi);
+						continue;
+					}
 
 					// Always start high-priority downloads unless we have 3 more than maxdownslots already...
 					bool startDown = !tooMany && !tooFast;
@@ -268,15 +269,18 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
 	}
+
+	for(UserConnection::Iter i = added.begin(); i != added.end(); ++i) {
+		DownloadManager::getInstance()->addConnection(*i);
+	}
 }
 
 void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
 	Lock l(cs);
-	{
-		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-			if(((*j)->getLastActivity() + 180*1000) < aTick) {
-				(*j)->disconnect();
-			}
+
+	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+		if(((*j)->getLastActivity() + 180*1000) < aTick) {
+			(*j)->disconnect();
 		}
 	}
 }
@@ -681,5 +685,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.93 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.94 2005/03/14 14:04:31 arnetheduck Exp $
  */

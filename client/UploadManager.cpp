@@ -380,7 +380,31 @@ void UploadManager::on(AdcCommand::GET, UserConnection* aSource, const AdcComman
 
 /** @todo fixme */
 void UploadManager::on(AdcCommand::GFI, UserConnection* aSource, const AdcCommand& c) throw() {
+	if(c.getParameters().size() < 2) {
+		aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Missing parameters");
+		return;
+	}
 
+	const string& type = c.getParam(0);
+	const string& ident = c.getParam(1);
+
+	if(type == "file") {
+		SearchResult::List l;
+		StringList sl;
+
+		if(ident.compare(0, 4, "TTH/") != 0) {
+			aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_PROTOCOL_GENERIC, "Invalid identifier");
+			return;
+		}
+		sl.push_back("TH" + ident.substr(4));
+		ShareManager::getInstance()->search(l, sl, 1);
+		if(l.empty()) {
+			aSource->sta(AdcCommand::SEV_RECOVERABLE, AdcCommand::ERROR_FILE_NOT_AVAILABLE, "Not found");
+		} else {
+			aSource->send(l[0]->toRES(AdcCommand::TYPE_CLIENT));
+			l[0]->decRef();
+		}
+	}
 }
 
 // TimerManagerListener
@@ -419,5 +443,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.91 2005/03/14 10:37:23 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.92 2005/03/14 14:04:30 arnetheduck Exp $
  */

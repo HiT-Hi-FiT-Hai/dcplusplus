@@ -85,6 +85,7 @@ LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	if (ctrlUsers.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
 	{ 
 		ctrlUsers.ClientToScreen(&pt);
+		checkAdcItems(usersMenu);
 		usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		return TRUE; 
@@ -201,6 +202,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.28 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.29 2005/03/14 14:04:45 arnetheduck Exp $
  */
 

@@ -77,6 +77,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_BROWSELIST, onBrowseList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
 		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
@@ -138,6 +139,8 @@ public:
 	LRESULT onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
@@ -159,8 +162,6 @@ public:
 		ctrlResults.forEachSelected(&SearchInfo::view);
 		return 0;
 	}
-
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onDownloadWhole(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
@@ -247,6 +248,8 @@ private:
 		};
 
 		void getList();
+		void browseList();
+
 		void view();
 		struct Download {
 			Download(const tstring& aTarget) : tgt(aTarget) { };
@@ -484,6 +487,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.53 2005/02/19 12:44:30 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.54 2005/03/14 14:04:46 arnetheduck Exp $
  */
 

@@ -131,8 +131,11 @@ public:
 	void runUserCommand(UserCommand& uc);
 	void loadFile(const tstring& name);
 	void loadXML(const string& txt);
-	void refreshTree();
-	
+	void refreshTree(const tstring& root);
+
+	HTREEITEM findItem(HTREEITEM ht, const tstring& name);
+	void selectItem(const tstring& name);
+
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
 		return 0;
@@ -210,7 +213,6 @@ private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
-	void GoToDirectory(HTREEITEM hItem, TStringList::iterator& iPath, const TStringList::iterator& iPathEnd);
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -308,8 +310,6 @@ private:
 	tstring error;
 	string size;
 
-	tstring start;
-
 	int skipHits;
 
 	size_t files;
@@ -334,5 +334,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.49 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.50 2005/03/14 14:04:46 arnetheduck Exp $
  */

@@ -120,6 +120,7 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 			transferMenu.AppendMenu(MF_SEPARATOR);
 		}
 
+		checkAdcItems(transferMenu);
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		if ( bCustomMenu ) {
@@ -599,5 +600,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.43 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.44 2005/03/14 14:04:46 arnetheduck Exp $
  */

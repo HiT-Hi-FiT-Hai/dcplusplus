@@ -73,7 +73,7 @@ void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt
 
 DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser)))
+		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false)
 {
 	tstring tmp;
 
@@ -86,7 +86,7 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 	try {
 		dl->loadFile(Text::fromT(name));
 		ADLSearchManager::getInstance()->matchListing(dl);
-		refreshTree();
+		refreshTree(Text::toT(WinUtil::getInitialDir(dl->getUser())));
 	} catch(const Exception& e) {
 		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
@@ -94,8 +94,7 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 
 void DirectoryListingFrame::loadXML(const string& txt) {
 	try {
-		dl->loadXML(txt, true);
-		refreshTree();
+		refreshTree(Text::toT(Util::toNmdcFile(dl->loadXML(txt, true))));
 	} catch(const Exception& e) {
 		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
@@ -207,30 +206,31 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 		updateTree(*i, ht);
 	}
 }
-void DirectoryListingFrame::refreshTree() {
+void DirectoryListingFrame::refreshTree(const tstring& root) {
 	
 	ctrlTree.SetRedraw(FALSE);
-	HTREEITEM next = ctrlTree.GetSelectedItem();
-	if(next != treeRoot && next != NULL) {
-		DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlTree.GetItemData(next);
-		start = Text::toT(dl->getPath(d));
+
+	HTREEITEM ht = findItem(treeRoot, root);
+	if(ht == NULL) {
+		ht = treeRoot;
 	}
 
-	while((next = ctrlTree.GetChildItem(treeRoot)) != NULL) {
+	DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlTree.GetItemData(ht);
+
+	HTREEITEM next = NULL;
+	while((next = ctrlTree.GetChildItem(ht)) != NULL) {
 		ctrlTree.DeleteItem(next);
 	}
 
-	updateTree(dl->getRoot(), treeRoot);
-	ctrlTree.SetRedraw(TRUE);
+	updateTree(d, ht);
 
-	if(!start.empty()) {
-		StringTokenizer<tstring> tok(start, _T('\\'));
-		TStringIter i = tok.getTokens().begin();
-		GoToDirectory(treeRoot, i, tok.getTokens().end());
-	} else {
-		ctrlTree.SelectItem(treeRoot);
-	}
-	start.clear();
+	int index = d->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
+	ctrlTree.SetItemImage(ht, index, index);
+
+	ctrlTree.SelectItem(NULL);
+	selectItem(root);
+
+	ctrlTree.SetRedraw(TRUE);
 }
 
 void DirectoryListingFrame::updateStatus() {
@@ -478,56 +478,34 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 		fullPath = Text::toT(((DirectoryListing::AdlDirectory*)ii->dir)->getFullPath());
 	}
 
-	// Break full path
-	TStringList brokenPath;
-	while(1) {
-		if(fullPath.size() == 0 || fullPath[0] != '\\') 
-			break;
-		fullPath.erase(0, 1);
-		tstring subPath = fullPath.substr(0, fullPath.find_first_of('\\'));
-		fullPath.erase(0, subPath.size());
-		brokenPath.push_back(subPath);
-	}
-	
-	// Go to directory (recursive)
-	TStringList::iterator iPath = brokenPath.begin();
-	GoToDirectory(ctrlTree.GetRootItem(), iPath, brokenPath.end());
+	selectItem(fullPath);
 	
 	return 0;
 }
 
-
-void DirectoryListingFrame::GoToDirectory(
-	HTREEITEM hItem, 
-	TStringList::iterator& iPath, 
-	const TStringList::iterator& iPathEnd)
-{
-	if(iPath == iPathEnd)
-		return;	// unexpected
-	if(!ctrlTree.ItemHasChildren(hItem))
-		return; // unexpected
-
-	// Check on tree children
-	HTREEITEM hChild = ctrlTree.GetChildItem(hItem);
-	TCHAR itemText[256];
-	while(hChild != NULL) {
-		if(!ctrlTree.GetItemText(hChild, itemText, 255))
-			return; // unexpected
-		if(Util::stricmp(*iPath, itemText) == 0) {
-			++iPath;
-			if(iPath == iPathEnd) {
-				ctrlTree.SelectItem(hChild);
-				ctrlTree.EnsureVisible(hChild);
-				return;
-			}
-			GoToDirectory(hChild, iPath, iPathEnd);
-			return;
+HTREEITEM DirectoryListingFrame::findItem(HTREEITEM ht, const tstring& name) {
+	string::size_type i = name.find('\\');
+	if(i == string::npos)
+		return ht;
+	
+	for(HTREEITEM child = ctrlTree.GetChildItem(ht); child != NULL; child = ctrlTree.GetNextSiblingItem(child)) {
+		DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlTree.GetItemData(child);
+		if(Text::toT(d->getName()) == name.substr(0, i)) {
+			return findItem(child, name.substr(i+1));
 		}
-		hChild = ctrlTree.GetNextItem(hChild, TVGN_NEXT);
+	}
+	return NULL;
+}
+
+void DirectoryListingFrame::selectItem(const tstring& name) {
+	HTREEITEM ht = findItem(treeRoot, name);
+	if(ht != NULL) {
+		ctrlTree.EnsureVisible(ht);
+		ctrlTree.SelectItem(ht);
 	}
 }
 
-LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
@@ -1013,5 +991,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.55 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.56 2005/03/14 14:04:46 arnetheduck Exp $
  */
