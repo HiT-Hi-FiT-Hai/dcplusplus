@@ -268,6 +268,7 @@ public:
 			ctrlClient.SetRedraw(FALSE);
 			ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
 			ctrlClient.ReplaceSel("");
+			ctrlClient.SetRedraw(TRUE);
 		}
 		ctrlClient.AppendText(aLine.c_str());
 		ctrlClient.AppendText("\r\n");
@@ -449,9 +450,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.34 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.35 2002/01/14 01:56:33 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.35  2002/01/14 01:56:33  arnetheduck
+ * All done for 0.12
+ *
  * Revision 1.34  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

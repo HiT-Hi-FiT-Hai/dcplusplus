@@ -1,4 +1,4 @@
- -- 0.12 --
+ -- 0.12 2002-01-14 --
 * Improved search efficiency a tiny bit
 * Changed default option in the search window to 'At Least'. All files are at least 0 bytes long anyway...
 * Added file extension field in the search frame
@@ -7,13 +7,24 @@
 * Huge performance increase in the user list (most noticeable when connecting to the hub and getting the initial list...)
 * More general ui performance fixes, it should now be a lot more responsive even when the cpu load is significant
 * Fixed empty search fields bug (I hope...)
-* Fixed some of the random crashes (major code rewrite, so I might have introduced some new ones...we'll see=)
-* Changed background color to white, don't worry though, soon you'll be able to choose it yourselves...
+* Fixed some of the random crashes (major code rewrite, so I might have introduced some new ones...we'll see...=)
+* Changed background color to white (or whatever you have as window color), don't worry though, soon you'll be able to choose it yourselves...
 * Fixed case of connection type strings
 * The bots are now visible in the user list (Seems like they don't answer to getinfo requests...)
 * Added user connection type to search frame
-* New icons and colors for the user interface
-* Fixed menu bug for NT4, hopefully it works in W95 as well now...
+* New icons and colors for the user interface (Thanx mongomaster...)
+* Fixed menu bug in NT4, hopefully it works in W95 as well now...btw, I'm considering removing the menu...
+* Fixed multiple connections per user bug
+* Fixed remove last source bug
+* Added list of favorite hubs
+* Added right-button menu to Public Hubs
+* Added auto-connect feature for favorites
+* Added automatic password for favorites
+* Added option to use different user names for different hubs (unknown stability, might work, might not...)
+* Added a new developer, peli...
+* Changed some of the keyboard shortcuts
+* Limited the buffer for the chat windows to 20000 characters, after that it will start removing lines from the top (untested...)
+* Added a graphics fellow/developer, mongomaster
 
  -- 0.11 2002-01-08 --
 * Fixed annoying reconnect bug

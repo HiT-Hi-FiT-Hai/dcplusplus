@@ -129,8 +129,10 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->accept(socket);
 		uc->flags |= UserConnection::FLAG_INCOMING;
 		uc->state = UserConnection::LOGIN;
-
-		
+		// Send something to wake the other fellow up...
+		uc->send("|");
+//		uc->myNick(SETTING(NICK));
+//		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -141,6 +143,7 @@ void ConnectionManager::onIncomingConnection() throw() {
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
+	dcdebug("ConnectionManager::onMyNick %s\n", aNick.c_str());
 	cs.enter();
 
 	for(map<User::Ptr, DWORD>::iterator i = pendingDown.begin(); i != pendingDown.end(); ++i) {
@@ -161,7 +164,9 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 		aSource->flags |= UserConnection::FLAG_DOWNLOAD;
 		
 		downloaders.push_back(aSource);
-		pendingDown.erase(i);
+		if(i != pendingDown.end()) {
+			pendingDown.erase(i);
+		}
 
 	} else {
 		// We didn't order it so it must be an uploading connection...
@@ -191,7 +196,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	try {
 		if(aLock == CryptoManager::getInstance()->getLock()) {
 			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
-			if(aPk.find("DCPLUSPLUS") != string::npos) {
+			if(aPk.find("DCPLUSPLUS") != string::npos && aSource->getUser()) {
 				aSource->getUser()->setFlag(User::DCPLUSPLUS);
 
 				if(aSource->getUser()->getClient()) {
@@ -215,6 +220,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 	aSource->state = UserConnection::BUSY;
 	
 	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
+		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 		DownloadManager::getInstance()->addConnection(aSource);
 	} else {
 		dcassert(aSource->flags & UserConnection::FLAG_UPLOAD);
@@ -264,9 +270,12 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) 
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.18 2002/01/13 22:50:47 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.19 2002/01/14 01:56:33 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.19  2002/01/14 01:56:33  arnetheduck
+ * All done for 0.12
+ *
  * Revision 1.18  2002/01/13 22:50:47  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *
