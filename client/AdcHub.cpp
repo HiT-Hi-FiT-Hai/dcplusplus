@@ -337,6 +337,13 @@ void AdcHub::on(Connected) throw() {
 	fire(ClientListener::Connected(), this);
 }
 
+void AdcHub::on(Line, const string& aLine) throw() { 
+	if(BOOLSETTING(ADC_DEBUG)) {
+		fire(ClientListener::Message(), this, "<ADC>" + aLine + "</ADC>");
+	}
+	dispatch(aLine); 
+}
+
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	if(getMe())
 		ClientManager::getInstance()->putUserOffline(getMe());
@@ -346,5 +353,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.36 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.37 2005/01/18 15:53:30 arnetheduck Exp $
  */

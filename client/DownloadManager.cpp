@@ -44,12 +44,12 @@ static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download() throw() : file(NULL),
-crcCalc(NULL), treeValid(false), tth(NULL) { 
+crcCalc(NULL), tth(NULL), treeValid(false) { 
 }
 
 Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
-	crcCalc(NULL), treeValid(false), tth(qi->getTTH()) { 
+	crcCalc(NULL), tth(qi->getTTH()), treeValid(false) { 
 	
 	setSize(qi->getSize());
 	if(qi->isSet(QueueItem::FLAG_USER_LIST))
@@ -360,7 +360,7 @@ public:
 		f->read(buf, n);
 		f->movePos(-((int64_t)bytes));
 	}
-	virtual ~RollbackOutputStream() { delete[] buf; if(managed) delete s; };
+	virtual ~RollbackOutputStream() throw() { delete[] buf; if(managed) delete s; };
 
 	virtual size_t flush() throw(FileException) {
 		return s->flush();
@@ -877,5 +877,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.143 2005/01/16 00:26:46 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.144 2005/01/18 15:53:32 arnetheduck Exp $
  */

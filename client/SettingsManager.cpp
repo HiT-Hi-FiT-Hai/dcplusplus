@@ -61,7 +61,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume",
+	"AdvancedResume", "AdcDebug",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -191,6 +191,7 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_LAST_LINES_LOG, 0);
 	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 	setDefault(ADVANCED_RESUME, true);
+	setDefault(ADC_DEBUG, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -336,6 +337,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.111 2005/01/13 15:07:59 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.112 2005/01/18 15:53:31 arnetheduck Exp $
  */
 

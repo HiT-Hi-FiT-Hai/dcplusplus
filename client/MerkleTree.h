@@ -65,7 +65,7 @@ public:
 	}
 
 	/** Initialise a single root tree */
-	MerkleTree(int64_t aFileSize, int64_t aBlockSize, const MerkleValue& aRoot) : fileSize(aFileSize), blockSize(aBlockSize), root(aRoot) {
+	MerkleTree(int64_t aFileSize, int64_t aBlockSize, const MerkleValue& aRoot) : root(aRoot), fileSize(aFileSize), blockSize(aBlockSize) {
 		leaves.push_back(root);
 	}
 
@@ -174,7 +174,7 @@ private:
 	MerkleValue getHash(int64_t start, int64_t length) {
 		dcassert((start % blockSize) == 0);
 		if(length <= blockSize) {
-			dcassert((start / blockSize) < leaves.size());
+			dcassert((start / blockSize) < (int64_t)leaves.size());
 			return leaves[(u_int32_t)(start / blockSize)];
 		} else {
 			int64_t l = blockSize;
@@ -229,5 +229,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.23 2005/01/13 15:07:57 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.24 2005/01/18 15:53:34 arnetheduck Exp $
  */

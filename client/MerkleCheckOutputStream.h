@@ -31,7 +31,7 @@ public:
 		cur.getLeaves().insert(cur.getLeaves().begin(), aTree.getLeaves().begin(), aTree.getLeaves().begin() + (size_t)(start / aTree.getBlockSize()));
 	}
 
-	virtual ~MerkleCheckOutputStream() { if(managed) delete s; };
+	virtual ~MerkleCheckOutputStream() throw() { if(managed) delete s; };
 
 	virtual size_t flush() throw(FileException) {
 		if (bufPos != 0)
@@ -104,5 +104,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleCheckOutputStream.h,v 1.1 2005/01/13 15:08:00 arnetheduck Exp $
+ * $Id: MerkleCheckOutputStream.h,v 1.2 2005/01/18 15:53:34 arnetheduck Exp $
  */

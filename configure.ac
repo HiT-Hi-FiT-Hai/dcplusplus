@@ -9,6 +9,7 @@ dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
+AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -23,14 +24,13 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS(fcntl.h limits.h malloc.h sys/ioctl.h sys/time.h unistd.h asm/atomic.h pthread.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 AC_CHECK_TYPES([long long])
 AC_CHECK_DECLS([PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP],[],[],[#include <pthread.h>])
 AC_C_BIGENDIAN
+AC_CHECK_SIZEOF(long)
 
 dnl check for stlport
 AX_LIB_STLPORT

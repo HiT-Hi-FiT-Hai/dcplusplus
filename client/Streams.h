@@ -96,7 +96,7 @@ class LimitedInputStream : public InputStream {
 public:
 	LimitedInputStream(InputStream* is, int64_t aMaxBytes) : s(is), maxBytes(aMaxBytes) {
 	}
-	virtual ~LimitedInputStream() { if(managed) delete s; }
+	virtual ~LimitedInputStream() throw() { if(managed) delete s; }
 
 	size_t read(void* buf, size_t& len) throw(FileException) {
 		dcassert(maxBytes >= 0);
@@ -167,6 +167,7 @@ private:
 
 class StringOutputStream : public OutputStream {
 public:
+	virtual ~StringOutputStream() throw() { }
 	using OutputStream::write;
 
 	virtual size_t flush() throw(Exception) { return 0; }
@@ -184,5 +185,5 @@ private:
 
 /**
 * @file
-* $Id: Streams.h,v 1.2 2005/01/13 18:10:55 arnetheduck Exp $
+* $Id: Streams.h,v 1.3 2005/01/18 15:53:30 arnetheduck Exp $
 */

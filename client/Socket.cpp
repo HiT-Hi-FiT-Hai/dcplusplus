@@ -33,7 +33,7 @@ short Socket::udpPort;
 
 #ifdef _DEBUG
 
-SocketException::SocketException(int aError) {
+SocketException::SocketException(int aError) throw() {
 	error = "SocketException: " + errorToString(aError);
 	dcdebug("Thrown: %s\n", error.c_str());
 }
@@ -571,5 +571,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.62 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.63 2005/01/18 15:53:31 arnetheduck Exp $
  */
