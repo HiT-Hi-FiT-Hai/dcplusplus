@@ -58,6 +58,35 @@ void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
 		fire(DownloadManagerListener::TICK, tickList);
 }
 
+void DownloadManager::FileMover::moveFile(const string& source, const string& target) {
+	Lock l(cs);
+	files.push_back(make_pair(source, target));
+	if(!active) {
+		active = true;
+		start();
+	}
+}
+
+int DownloadManager::FileMover::run() {
+	for(;;) {
+		FilePair next;
+		{
+			Lock l(cs);
+			if(files.empty()) {
+				active = false;
+				return 0;
+			}
+			next = files.back();
+			files.pop_back();
+		}
+		try {
+			File::renameFile(next.first, next.second);
+		} catch(const FileException&) {
+			// Too bad...
+		}
+	}
+}
+
 void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
 	dcassert(aConn->getDownload() == NULL);
 	aConn->removeListener(this);
@@ -444,7 +473,11 @@ noCRC:
 	if( !d->getTempTarget().empty() && (Util::stricmp(d->getTarget().c_str(), d->getTempTarget().c_str()) != 0) ) {
 		try {
 			Util::ensureDirectory(d->getTarget());
-			File::renameFile(d->getTempTarget(), d->getTarget());
+			if(File::getSize(d->getTempTarget()) > MOVER_LIMIT) {
+				mover.moveFile(d->getTempTarget(), d->getTarget());
+			} else {
+				File::renameFile(d->getTempTarget(), d->getTarget());
+			}
 			d->setTempTarget(Util::emptyString);
 		} catch(const FileException&) {
 			// Huh??? Now what??? Oh well...let it be...
@@ -620,5 +653,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.72 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.73 2003/05/21 12:08:43 arnetheduck Exp $
  */

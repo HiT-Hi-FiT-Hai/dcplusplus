@@ -1046,20 +1046,8 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		delete c;
 		c = NULL;
 	}
-
-	DWORD id;
-	if(stopperThread) {
-		if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-
-			// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-			Thread::yield();
-			PostMessage(WM_CLOSE);
-			return 0;
-		}
-		CloseHandle(stopperThread);
-		stopperThread = NULL;
-		bHandled = FALSE;
-	} else {
+	
+	if(!closing) {
 		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), APPNAME " " VERSIONSTRING, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) ) {
 			string tmp1;
 			string tmp2;
@@ -1083,12 +1071,25 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 				SettingsManager::MAINFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
 			ShowWindow(SW_HIDE);
-			
+
 			SearchManager::getInstance()->disconnect();
 			ConnectionManager::getInstance()->disconnect();
 
+			DWORD id;
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+			closing = true;
 		}
+		bHandled = TRUE;
+	} else {
+		// This should end immideately, as it only should be the stopper that sends another WM_CLOSE
+		WaitForSingleObject(stopperThread, 60*1000);
+		CloseHandle(stopperThread);
+		stopperThread = NULL;
+		bHandled = FALSE;
+	}
+
+	if(stopperThread) {
+	} else {
 	}
 	return 0;
 }
@@ -1404,6 +1405,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.24 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.25 2003/05/21 12:08:43 arnetheduck Exp $
  */
 

@@ -136,6 +136,25 @@ public:
 		return downloads.size();
 	}
 private:
+
+	enum { MOVER_LIMIT = 10*1024*1024 };
+	class FileMover : public Thread {
+	public:
+		FileMover() : active(false) { };
+		virtual ~FileMover() { join(); };
+
+		void moveFile(const string& source, const string& target);
+		virtual int run();
+	private:
+		typedef pair<string, string> FilePair;
+		typedef vector<FilePair> FileList;
+		typedef FileList::iterator FileIter;
+
+		bool active;
+
+		FileList files;
+		CriticalSection cs;
+	} mover;
 	
 	CriticalSection cs;
 	Download::List downloads;
@@ -190,5 +209,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.51 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.52 2003/05/21 12:08:43 arnetheduck Exp $
  */

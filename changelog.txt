@@ -1,4 +1,4 @@
- -- 0.243 --
+ -- 0.25 2003-05-20 --
 Major:
 * Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 
   the Boyer-Moore)
@@ -7,7 +7,7 @@ Major:
 * Fixed slow favorites opening / excessive saving (thanks todd pederzani)
 * Large speedup in file listing search (QuickSearch + unnecessary processing added earlier removed)
 * Added selection size info to queue frame (same as file listing)
-* Fixed some crashes when closing windows
+* Fixed some crashes when closing windows (and perhaps added some new ones...)
 
 ADLSearch: (by Henrik Engström)
   * Keyboard shortcuts.
@@ -36,7 +36,8 @@ Minor:
 * Directories are no longer returned for "at least" searches with bytes > 0 (i e directory size is assumed 0)
 * Fixed another issue with accesses to invalid drive letters (thanks sarf)
 * Holding shift during startup (when the main window shows) will disable autoconnecting to hubs
-
+* Fixed user description saving and updating (thanks todd)
+* Large files are now moved in a separate thread to avoid losing connection while moving (if using temporary download dir)
 
  -- 0.242 2003-04-19 --
 * Updated compile.txt with some notes on submitting patches

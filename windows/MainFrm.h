@@ -46,7 +46,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 {
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
-		oldshutdown(false), stopperThread(NULL), c(NULL) { 
+		oldshutdown(false), stopperThread(NULL), c(NULL), closing(false) { 
 		c = new HttpConnection();
 		memset(statusSizes, 0, sizeof(statusSizes));
 	};
@@ -422,6 +422,8 @@ private:
 	u_int32_t lastUpdate;
 	bool oldshutdown;
 
+	bool closing;
+
 	int lastUpload;
 	static int columnIndexes[];
 	static int columnSizes[];
@@ -480,7 +482,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.16 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.17 2003/05/21 12:08:43 arnetheduck Exp $
  */
 
  

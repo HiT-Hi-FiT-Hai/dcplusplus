@@ -588,8 +588,9 @@ static int textUnderCursor(POINT p, CEdit& ctrl, string& x) {
 	return max(start, start2);
 }
 
-LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
+	bHandled = false;
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		string x;
@@ -599,6 +600,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
 			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) )	{
 
+			bHandled = true;
 			// Web links...
 			string::size_type end = x.find(' ', start + 7);
 			if(end == string::npos) {
@@ -610,6 +612,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 			ShellExecute(NULL, NULL, x.substr(start, end-start).c_str(), NULL, NULL, SW_SHOWNORMAL);
 		} else if(Util::strnicmp(x.c_str() + start, "dchub://", 8) == 0) {
+			bHandled = true;
 			string server, file;
 			short port = 411;
 			Util::decodeUrl((x.c_str() + start), server, port, file);
@@ -623,6 +626,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			// Nickname click, let's see if we can find one like it in the name list...
 			int pos = ctrlUsers.find(x.substr(start + 1, end - start - 1));
 			if(pos != -1) {
+				bHandled = true;
 				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
 					PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(pos))->user, m_hWndMDIClient, getTab());
 				} else if (wParam & MK_SHIFT) {
@@ -1010,5 +1014,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.25 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.26 2003/05/21 12:08:43 arnetheduck Exp $
  */

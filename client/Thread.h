@@ -50,6 +50,7 @@ public:
 	};
 	
 	void start() throw(ThreadException) {
+		join();
 		if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
 			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
@@ -88,6 +89,7 @@ public:
 		}
 	};
 	void start() throw(ThreadException) { 
+		join();
 		if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
 			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
@@ -140,6 +142,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.7 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: Thread.h,v 1.8 2003/05/21 12:08:43 arnetheduck Exp $
  */
 
