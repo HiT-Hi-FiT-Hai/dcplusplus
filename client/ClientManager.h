@@ -38,10 +38,10 @@ public:
 	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
-	int getUserCount() {
+	size_t getUserCount() {
 		Lock l(cs);
 
-		int c = 0;
+		size_t c = 0;
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 			c+=(*i)->getUserCount();
 		}
@@ -174,6 +174,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.49 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.50 2004/09/09 09:27:35 arnetheduck Exp $
  */
 

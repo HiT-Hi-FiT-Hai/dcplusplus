@@ -240,7 +240,10 @@ private:
 
 	BloomFilter<5> bloom;
 	
+	/** Find virtual name from real name */
 	StringPairIter findVirtual(const string& name);
+	/** Find real name from virtual name */
+	StringPairIter lookupVirtual(const string& name);
 
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
@@ -280,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.54 2004/09/06 16:27:34 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.55 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

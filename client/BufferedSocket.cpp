@@ -355,10 +355,10 @@ void BufferedSocket::threadRead() {
 	}
 }
 
-void BufferedSocket::write(const char* aBuf, int aLen) throw() {
+void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 	{
 		Lock l(cs);
-		int newSize = outbufSize[curBuf];
+		size_t newSize = outbufSize[curBuf];
 		
 		while(newSize < (aLen + outbufPos[curBuf])) {
 			newSize *= 2;
@@ -448,5 +448,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.74 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.75 2004/09/09 09:27:35 arnetheduck Exp $
  */

@@ -206,7 +206,7 @@ public:
 		STATE_TREE,
 	};
 
-	int getNumber() { return (((u_int32_t)this)>>2) & 0x7fff; };
+	short getNumber() { return (short)((((size_t)this)>>2) & 0x7fff); };
 
 	void myNick(const string& aNick) { send("$MyNick " + aNick + '|'); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
@@ -344,6 +344,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.77 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.78 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

@@ -92,7 +92,7 @@ public:
 	virtual void password(const string& pwd) = 0;
 	virtual void info() = 0;
     
-	virtual int getUserCount() const = 0;
+	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
 	virtual const string& getName() const = 0;
 	virtual bool getOp() const = 0;
@@ -189,5 +189,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.85 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: Client.h,v 1.86 2004/09/09 09:27:35 arnetheduck Exp $
  */

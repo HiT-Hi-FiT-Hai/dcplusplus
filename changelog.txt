@@ -1475,7 +1475,7 @@ Minor:
 * Some thread work, but more needed to be done, current model really sucks...
 
  -- 0.02 2001-11-22 --
-* Settings dialog, to set user name and connection info.s
+* Settings dialog, to set user name and connection info.
 * Search command recognised.
 * New buttons.
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1136,6 +1136,6 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.64 2004/09/07 01:36:53 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.65 2004/09/09 09:27:36 arnetheduck Exp $
  */
    

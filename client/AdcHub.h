@@ -40,7 +40,7 @@ public:
 	virtual void password(const string& pwd);
 	virtual void info();
 
-	virtual int getUserCount() const { return 0;};
+	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
 	virtual const string& getName() const { return (hub ? hub->getNick() : getAddressPort()); };
 	virtual bool getOp() const { return getMe() ? getMe()->isSet(User::OP) : false; };
@@ -85,5 +85,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.8 2004/09/07 01:36:51 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.9 2004/09/09 09:27:35 arnetheduck Exp $
  */

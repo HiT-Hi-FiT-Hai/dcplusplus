@@ -106,7 +106,7 @@ private:
 
 	int width;
 	int height;
-	int timerId;
+	UINT_PTR timerId;
 	int twidth;
 
 	u_int32_t lastTick;
@@ -124,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.6 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.7 2004/09/09 09:27:36 arnetheduck Exp $
  */

@@ -137,7 +137,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	targetDirMenu.CreatePopupMenu();
 	
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CTSTRING(DOWNLOAD));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
+	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	fileMenu.AppendMenu(MF_SEPARATOR);
 	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
@@ -146,7 +146,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CTSTRING(DOWNLOAD));
-	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_TO));
+	directoryMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_TO));
 	
 	setWindowTitle();
 
@@ -815,5 +815,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.38 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.39 2004/09/09 09:27:36 arnetheduck Exp $
  */

@@ -164,7 +164,7 @@ int SearchManager::run() {
 	return 0;
 }
 
-void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address) {
+void SearchManager::onData(const u_int8_t* buf, size_t aLen, const string& address) {
 	string x((char*)buf, aLen);
 	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;
@@ -289,6 +289,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.41 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.42 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

@@ -197,7 +197,7 @@ public:
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
 
-	int getUserCount() const {
+	size_t getUserCount() const {
 		Lock l(cs);
 		return users.size();
 	}
@@ -294,6 +294,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.7 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.8 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

@@ -39,7 +39,7 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 
 	// We assume that the files aren't compressed more than 2:1...if they are it'll work anyway,
 	// but we'll have to do multiple passes...
-	int bufsize = 2*sz;
+	size_t bufsize = 2*sz;
 	AutoArray<char> buf(bufsize);
 	
 	bs.avail_in = sz;
@@ -72,12 +72,12 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 	}
 }
 
-string CryptoManager::keySubst(const u_int8_t* aKey, int len, int n) {
+string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
 	u_int8_t* temp = new u_int8_t[len + n * 10];
 	
-	int j=0;
+	size_t j=0;
 	
-	for(int i = 0; i<len; i++) {
+	for(size_t i = 0; i<len; i++) {
 		if(isExtra(aKey[i])) {
 			temp[j++] = '/'; temp[j++] = '%'; temp[j++] = 'D';
 			temp[j++] = 'C'; temp[j++] = 'N';
@@ -105,7 +105,7 @@ string CryptoManager::makeKey(const string& aLock) {
 
     u_int8_t* temp = new u_int8_t[aLock.length()];
 	u_int8_t v1;
-	int extra=0;
+	size_t extra=0;
 	
 	v1 = (u_int8_t)(aLock[0]^5);
 	v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
@@ -395,5 +395,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.46 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.47 2004/09/09 09:27:36 arnetheduck Exp $
  */

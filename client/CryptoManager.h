@@ -117,7 +117,7 @@ private:
 	void recurseLookup(vector<u_int8_t>* b, Node* node, vector<u_int8_t>& bytes);
 	void buildLookup(vector<u_int8_t>* b, Node* root);
 	
-	string keySubst(const u_int8_t* aKey, int len, int n);
+	string keySubst(const u_int8_t* aKey, size_t len, size_t n);
 	bool isExtra(u_int8_t b) {
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
 	}
@@ -127,5 +127,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.37 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.38 2004/09/09 09:27:36 arnetheduck Exp $
  */

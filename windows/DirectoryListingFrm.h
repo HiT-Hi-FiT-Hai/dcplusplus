@@ -288,7 +288,7 @@ private:
 
 	int skipHits;
 
-	int files;
+	size_t files;
 
 	bool updating;
 	bool searching;
@@ -302,5 +302,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.39 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.40 2004/09/09 09:27:36 arnetheduck Exp $
  */

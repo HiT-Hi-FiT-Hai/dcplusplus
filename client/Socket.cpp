@@ -232,7 +232,7 @@ int Socket::readFull(void* aBuffer, int aBufLen) throw(SocketException) {
  * @param aLen Data length
  * @throw SocketExcpetion Send failed.
  */
-void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
+void Socket::write(const char* aBuffer, size_t aLen) throw(SocketException) {
 	checkconnected();
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
         
@@ -240,13 +240,13 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
                 return;
         }
 
-	int pos = 0;
-	int sendSize = min(aLen, 64 * 1024);
+	size_t pos = 0;
+	size_t sendSize = min(aLen, (size_t)64 * 1024);
 
 	bool blockAgain = false;
 
 	while(pos < aLen) {
-		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
+		int i = ::send(sock, aBuffer+pos, (int)min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
 				if(blockAgain) {
@@ -289,7 +289,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 * @param aLen Data length
 * @throw SocketExcpetion Send failed.
 */
-void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen) throw(SocketException) {
+void Socket::writeTo(const string& ip, short port, const char* aBuffer, size_t aLen) throw(SocketException) {
 	if(sock == INVALID_SOCKET) {
 		create(TYPE_UDP);
 	}
@@ -345,7 +345,7 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 
 		memcpy(((u_int8_t*)connStr) + connLen, aBuffer, aLen);
 
-		int i = ::sendto(sock, (char*)(u_int8_t*)connStr, connLen + aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		int i = ::sendto(sock, (char*)(u_int8_t*)connStr, connLen + (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 		checksockerr(i);
 		
 		stats.totalUp += i;
@@ -363,7 +363,7 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 			serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
 		}
 		
-		int i = ::sendto(sock, aBuffer, aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		int i = ::sendto(sock, aBuffer, (int)aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
 		checksockerr(i);
 		
 		stats.totalUp += i;
@@ -392,7 +392,7 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 
 		FD_SET(sock, &wfd);
 		FD_SET(sock, &efd);
-		checksockerr(select(sock+1, NULL, &wfd, &efd, &tv));
+		checksockerr(select((int)sock+1, NULL, &wfd, &efd, &tv));
 
 		if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
 			int y = 0;
@@ -420,7 +420,7 @@ int Socket::wait(u_int32_t millis, int waitFor) throw(SocketException) {
 		FD_SET(sock, wfdp);
 	}
 	waitFor = WAIT_NONE;
-	checksockerr(select(sock+1, rfdp, wfdp, NULL, &tv));
+	checksockerr(select((int)sock+1, rfdp, wfdp, NULL, &tv));
 
 	if(rfdp && FD_ISSET(sock, rfdp)) {
 		waitFor |= WAIT_READ;
@@ -549,6 +549,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.57 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.58 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

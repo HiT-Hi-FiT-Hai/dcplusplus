@@ -207,7 +207,7 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_APP_EXIT, CTSTRING(MENU_EXIT));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)file, CTSTRING(MENU_FILE));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)file, CTSTRING(MENU_FILE));
 
 	CMenuHandle view;
 	view.CreatePopupMenu();
@@ -229,7 +229,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CTSTRING(MENU_STATUS_BAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CTSTRING(MENU_TRANSFER_VIEW));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CTSTRING(MENU_VIEW));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)view, CTSTRING(MENU_VIEW));
 
 	CMenuHandle window;
 	window.CreatePopupMenu();
@@ -242,7 +242,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CTSTRING(MENU_CLOSE_DISCONNECTED));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CTSTRING(MENU_WINDOW));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)window, CTSTRING(MENU_WINDOW));
 
 	CMenuHandle help;
 	help.CreatePopupMenu();
@@ -261,7 +261,7 @@ void WinUtil::init(HWND hWnd) {
 	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CTSTRING(MENU_REPORT_BUG));
 	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CTSTRING(MENU_DONATE));
 
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)help, CTSTRING(MENU_HELP));
+	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)help, CTSTRING(MENU_HELP));
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
@@ -886,5 +886,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.53 2004/09/08 11:00:52 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.54 2004/09/09 09:27:36 arnetheduck Exp $
  */

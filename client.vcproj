@@ -38,6 +38,7 @@
 				PrecompiledHeaderFile="$(IntDir)/client.pch"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				CompileAs="0"/>
@@ -236,6 +237,9 @@
 			</File>
 			<File
 				RelativePath=".\client\StringTokenizer.cpp">
+			</File>
+			<File
+				RelativePath=".\client\Text.cpp">
 			</File>
 			<File
 				RelativePath=".\client\Thread.cpp">
@@ -442,6 +446,9 @@
 			</File>
 			<File
 				RelativePath=".\client\StringTokenizer.h">
+			</File>
+			<File
+				RelativePath=".\client\Text.h">
 			</File>
 			<File
 				RelativePath=".\client\Thread.h">

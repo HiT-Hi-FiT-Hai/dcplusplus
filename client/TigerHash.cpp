@@ -112,12 +112,12 @@ void TigerHash::tigerCompress(const u_int64_t *str, u_int64_t state[3]) {
 	tiger_compress_macro(((const u_int64_t*)str), ((u_int64_t*)state));
 }
 
-void TigerHash::update(const void* data, u_int32_t length) {
-	u_int32_t tmppos = (u_int32_t)(pos & BLOCK_SIZE-1);
+void TigerHash::update(const void* data, size_t length) {
+	size_t tmppos = (u_int32_t)(pos & BLOCK_SIZE-1);
 	const u_int8_t* str = (const u_int8_t*)data;
 	// First empty tmp buffer if possible
 	if(tmppos > 0) {
-		u_int32_t n = min(length, BLOCK_SIZE-tmppos);
+		size_t n = min(length, BLOCK_SIZE-tmppos);
 		memcpy(tmp + tmppos, str, n);
 		str += n;
 		pos += n;
@@ -146,7 +146,7 @@ void TigerHash::update(const void* data, u_int32_t length) {
 }
 
 u_int8_t* TigerHash::finalize() {
-	u_int32_t tmppos = (u_int32_t)(pos & BLOCK_SIZE-1);
+	size_t tmppos = (size_t)(pos & BLOCK_SIZE-1);
 	// Tmp buffer always has at least one pos, otherwise it would have
 	// been processed in update()
 
@@ -682,5 +682,5 @@ u_int64_t TigerHash::table[4*256] = {
 
 /**
  * @file
- * $Id: TigerHash.cpp,v 1.4 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: TigerHash.cpp,v 1.5 2004/09/09 09:27:36 arnetheduck Exp $
  */

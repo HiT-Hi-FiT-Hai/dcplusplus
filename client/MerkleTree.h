@@ -87,7 +87,7 @@ public:
 	 * @param len Length of data, must be a multiple of baseBlockSize, unless it's
 	 *            the last block.
 	 */
-	void update(const void* data, u_int32_t len) {
+	void update(const void* data, size_t len) {
 		u_int8_t* buf = (u_int8_t*)data;
 		u_int8_t zero = 0;
 		size_t i = 0;
@@ -97,7 +97,7 @@ public:
 			return;
 		
 		do {
-			size_t n = min(baseBlockSize, (size_t)len-i);
+			size_t n = min(baseBlockSize, len-i);
 			Hasher h;
 			h.update(&zero, 1);
 			h.update(buf + i, n);
@@ -255,5 +255,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.15 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.16 2004/09/09 09:27:36 arnetheduck Exp $
  */

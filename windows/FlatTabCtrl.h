@@ -402,7 +402,7 @@ public:
 			TabInfo* ti = *i;
 			if(ti->row == -1) {
 				mi.dwTypeData = (LPTSTR)ti->name;
-				mi.dwItemData = (DWORD)ti->hWnd;
+				mi.dwItemData = (ULONG_PTR)ti->hWnd;
 				mi.fState = MFS_ENABLED | (ti->dirty ? MFS_CHECKED : 0);
 				mi.wID = IDC_SELECT_WINDOW + n;
 				mnu.InsertMenuItem(n++, TRUE, &mi);
@@ -451,7 +451,7 @@ private:
 		HWND hWnd;
 		CPen pen;
 		TCHAR name[MAX_LENGTH];
-		int len;
+		size_t len;
 		SIZE size;
 		SIZE boldSize;
 		int xpos;
@@ -460,7 +460,7 @@ private:
 
 		bool update() {
 			TCHAR name2[MAX_LENGTH];
-			len = ::GetWindowTextLength(hWnd);
+			len = (size_t)::GetWindowTextLength(hWnd);
 			if(len >= MAX_LENGTH) {
 				::GetWindowText(hWnd, name2, MAX_LENGTH - 3);
 				name2[MAX_LENGTH - 4] = _T('.');
@@ -815,5 +815,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.34 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.35 2004/09/09 09:27:36 arnetheduck Exp $
  */

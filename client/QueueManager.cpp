@@ -142,7 +142,7 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 
 QueueItem* QueueManager::FileQueue::findAutoSearch(StringList& recent) {
 	// We pick a start position at random, hoping that we will find something to search for...
-	QueueItem::StringMap::size_type start = (QueueItem::StringMap::size_type)Util::rand(queue.size());
+	QueueItem::StringMap::size_type start = (QueueItem::StringMap::size_type)Util::rand((u_int32_t)queue.size());
 
 	QueueItem::StringIter i = queue.begin();
 	advance(i, start);
@@ -1274,5 +1274,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.96 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.97 2004/09/09 09:27:36 arnetheduck Exp $
  */

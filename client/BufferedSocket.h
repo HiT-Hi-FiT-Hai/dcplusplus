@@ -135,7 +135,7 @@ public:
 	}
 	
 	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
-	virtual void write(const char* aBuf, int aLen) throw();
+	virtual void write(const char* aBuf, size_t aLen) throw();
 
 	/**
 	 * Send the file f over this socket.
@@ -174,8 +174,8 @@ private:
 	size_t inbufSize;
 	enum {BUFFERS = 2};
 	u_int8_t* outbuf[BUFFERS];
-	int outbufSize[BUFFERS];
-	int outbufPos[BUFFERS];
+	size_t outbufSize[BUFFERS];
+	size_t outbufPos[BUFFERS];
 	int curBuf;
 
 	InputStream* file;
@@ -216,5 +216,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.61 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.62 2004/09/09 09:27:35 arnetheduck Exp $
  */

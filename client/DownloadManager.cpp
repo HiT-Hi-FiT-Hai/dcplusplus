@@ -148,11 +148,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d == NULL) {
 		firstTry = true;
 
-		bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= SETTING(DOWNLOAD_SLOTS));
+		bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= (size_t)SETTING(DOWNLOAD_SLOTS));
 		bool speedFull = (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
 
 		if( slotsFull || speedFull ) {
-			bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= (SETTING(DOWNLOAD_SLOTS)+3));
+			bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= (size_t)(SETTING(DOWNLOAD_SLOTS)+3));
 			if(extraFull || !QueueManager::getInstance()->hasDownload(aConn->getUser(), QueueItem::HIGHEST)) {
 				removeConnection(aConn);
 				return;
@@ -910,5 +910,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.114 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.115 2004/09/09 09:27:36 arnetheduck Exp $
  */

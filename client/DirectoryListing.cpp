@@ -47,7 +47,7 @@ void DirectoryListing::loadFile(const string& name, bool doAdl) {
 		FilteredInputStream<UnBZFilter, false> f(&ff);
 		const size_t BUF_SIZE = 64*1024;
 		char buf[BUF_SIZE];
-		u_int32_t len;
+		size_t len;
 		for(;;) {
 			size_t n = BUF_SIZE;
 			len = f.read(buf, n);
@@ -320,8 +320,8 @@ int64_t DirectoryListing::Directory::getTotalSize(bool adl) {
 	return x;
 }
 
-int DirectoryListing::Directory::getTotalFileCount(bool adl) {
-	int x = getFileCount();
+size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
+	size_t x = getFileCount();
 	for(Iter i = directories.begin(); i != directories.end(); ++i) {
 		if(!(adl && (*i)->getAdls()))
 			x += (*i)->getTotalFileCount(adls);
@@ -331,5 +331,5 @@ int DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.32 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.33 2004/09/09 09:27:36 arnetheduck Exp $
  */

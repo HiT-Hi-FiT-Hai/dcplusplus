@@ -116,28 +116,31 @@ public:
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
 		TCHAR buf[128];
 		TCHAR buf2[128];
+
+		int na = (int)lParam1;
+		int nb = (int)lParam2;
 		// This is a trick, so that if fun() returns something bigger than one, use the
 		// internal default sort functions
 		int result = p->sortType;
 		if(result == SORT_FUNC) {
-			result = p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
+			result = p->fun(p->GetItemData(na), p->GetItemData(nb));
 		} 
 
 		if(result == SORT_STRING) {
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = _tcscmp(buf, buf2);			
 		} else if(result == SORT_STRING_NOCASE) {
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = Util::stricmp(buf, buf2);			
 		} else if(result == SORT_INT) {
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = compare(_tstoi(buf), _tstoi(buf2));
 		} else if(result == SORT_FLOAT) {
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			p->GetItemText(na, p->sortColumn, buf, 128);
+			p->GetItemText(nb, p->sortColumn, buf2, 128);
 			result = compare(_tstof(buf), _tstof(buf2));
 		}
 		if(!p->ascending)
@@ -158,6 +161,6 @@ public:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.12 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.13 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

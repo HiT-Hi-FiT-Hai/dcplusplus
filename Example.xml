@@ -113,7 +113,6 @@
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>
-		<String Name="ForbiddenDollarDirectory">Directory with '$' cannot be downloaded and will not be shared: </String>
 		<String Name="ForbiddenDollarFile">File with '$' cannot be downloaded and will not be shared: </String>
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GiB</String>

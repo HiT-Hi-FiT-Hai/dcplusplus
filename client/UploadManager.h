@@ -73,7 +73,7 @@ class UploadManager : private ClientManagerListener, private UserConnectionListe
 {
 public:
 	
-	int getUploads() { Lock l(cs); return uploads.size(); };
+	size_t getUploads() { Lock l(cs); return uploads.size(); };
 	int getAverageSpeed() {
 		Lock l(cs);
 		int avg = 0;
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.67 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.68 2004/09/09 09:27:36 arnetheduck Exp $
  */

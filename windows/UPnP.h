@@ -15,7 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#if !defined(UPNP_H)
+#define UPNP_H
+
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
+
 #include <natupnp.h>
 
 class UPnP
@@ -25,19 +32,21 @@ public:
 	~UPnP();
 	HRESULT OpenPorts();
 	HRESULT ClosePorts();
-	string UPnP::GetExternalIP();
+	string GetExternalIP();
 private:
-	int PortNumber; // The Port number required to be opened
-	BSTR bstrInternalClient; // Local IP Address
-	BSTR bstrDescription;  // name shown in UPnP interfece details
-	BSTR bstrProtocol; // protocol (TCP or UDP)
-	BSTR bstrExternalIP; // external IP address
-	IUPnPNAT* pUN;  // pointer to the UPnPNAT interface
+	int PortNumber;				// The Port number required to be opened
+	BSTR bstrInternalClient;	// Local IP Address
+	BSTR bstrDescription;		// name shown in UPnP interface details
+	BSTR bstrProtocol;			// protocol (TCP or UDP)
+	BSTR bstrExternalIP;		// external IP address
+	IUPnPNAT* pUN;				// pointer to the UPnPNAT interface
 	IStaticPortMappingCollection* pSPMC; // pointer to the collection
-	IStaticPortMapping * pSPM; // pointer to the port map
+	IStaticPortMapping * pSPM;	// pointer to the port map
 };
+
+#endif // UPNP_H
 
 /**
  * @file
- * $Id: UPnP.h,v 1.1 2004/09/08 14:27:14 arnetheduck Exp $
+ * $Id: UPnP.h,v 1.2 2004/09/09 09:27:36 arnetheduck Exp $
  */

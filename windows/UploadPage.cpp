@@ -157,7 +157,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	// Save the checkbox state so that ShareManager knows to include/disclude hidden files
+	// Save the checkbox state so that ShareManager knows to include/exclude hidden files
 	Item i = items[1]; // The checkbox. Explicit index used - bad!
 	if(::IsDlgButtonChecked((HWND)* this, i.itemID) == BST_CHECKED){
 		settings->set((SettingsManager::IntSetting)i.setting, true);
@@ -197,6 +197,6 @@ void UploadPage::addDirectory(tstring path){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.20 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.21 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

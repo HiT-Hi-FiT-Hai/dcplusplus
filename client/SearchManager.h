@@ -177,12 +177,12 @@ private:
 		}
 	};
 
-	void onData(const u_int8_t* buf, int aLen, const string& address);
+	void onData(const u_int8_t* buf, size_t aLen, const string& address);
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.42 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.43 2004/09/09 09:27:36 arnetheduck Exp $
  */

@@ -190,7 +190,7 @@ public:
 	
 	virtual size_t read(void* buf, size_t& len) throw(Exception) {
 		DWORD x;
-		if(!::ReadFile(h, buf, len, &x, NULL)) {
+		if(!::ReadFile(h, buf, (DWORD)len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
 		}
 		len = x;
@@ -199,7 +199,7 @@ public:
 
 	virtual size_t write(const void* buf, size_t len) throw(Exception) {
 		DWORD x;
-		if(!::WriteFile(h, buf, len, &x, NULL)) {
+		if(!::WriteFile(h, buf, (DWORD)len, &x, NULL)) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
 		dcassert(x == len);
@@ -477,6 +477,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.39 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: File.h,v 1.40 2004/09/09 09:27:36 arnetheduck Exp $
  */
 

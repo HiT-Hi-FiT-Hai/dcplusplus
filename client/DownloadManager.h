@@ -159,7 +159,7 @@ public:
 		}
 		return avg;
 	}
-	int getDownloads() {
+	size_t getDownloads() {
 		Lock l(cs);
 		return downloads.size();
 	}
@@ -230,5 +230,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.68 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.69 2004/09/09 09:27:36 arnetheduck Exp $
  */

@@ -80,7 +80,7 @@ private:
 			}
 		} 
 	}
-	size_t getPos(const string& s, int i, int l) { return (HashFunc()(&s[i], l) % table.size()); }
+	size_t getPos(const string& s, size_t i, size_t l) { return (HashFunc()(&s[i], l) % table.size()); }
 	
 	vector<bool> table;
 };
@@ -89,5 +89,5 @@ private:
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.6 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.7 2004/09/09 09:27:35 arnetheduck Exp $
  */

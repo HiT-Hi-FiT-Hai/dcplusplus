@@ -22,6 +22,7 @@
 #include <ole2.h>
 #include "UPnP.h"
 #include <atlconv.h>
+#include "../client/Util.h"
 
 UPnP::UPnP( const string theIPAddress, const string theProtocol, const string theDescription, const short thePort )
 {
@@ -43,36 +44,29 @@ UPnP::UPnP( const string theIPAddress, const string theProtocol, const string th
 HRESULT UPnP::OpenPorts()
 {
 	CoInitialize(NULL);
-    HRESULT hr = CoCreateInstance (__uuidof(UPnPNAT),
-                                   NULL,
-                                   CLSCTX_INPROC_SERVER,
-                                   __uuidof(IUPnPNAT),
-                                   (void**)&pUN);
-    if (SUCCEEDED(hr)) 
-	{
-        IStaticPortMappingCollection * pSPMC = NULL;
-        hr = pUN->get_StaticPortMappingCollection (&pSPMC);
-        if (SUCCEEDED(hr) && pSPMC) 
-		{ // see comment in "else"
+	HRESULT hr = CoCreateInstance (__uuidof(UPnPNAT),
+		NULL,
+		CLSCTX_INPROC_SERVER,
+		__uuidof(IUPnPNAT),
+		(void**)&pUN);
+	if(SUCCEEDED(hr)) {
+		IStaticPortMappingCollection * pSPMC = NULL;
+		hr = pUN->get_StaticPortMappingCollection (&pSPMC);
+		if(SUCCEEDED(hr) && pSPMC) { // see comment in "else"
 
-            if (bstrProtocol && bstrInternalClient && bstrDescription    )
-			{
+			if(bstrProtocol && bstrInternalClient && bstrDescription) {
 				IStaticPortMapping * pSPM = NULL;
 				hr = pSPMC->Add (PortNumber,bstrProtocol,PortNumber,bstrInternalClient,
-                                 VARIANT_TRUE,bstrDescription,&pSPM );
-            } 
-			else 
-			{
-                hr = E_OUTOFMEMORY;
-            }
-        } 
-		else 
-		{
-            hr = E_FAIL;    // work around a known bug here:  in some error 
-			                // conditions, get_SPMC NULLs out the pointer, but incorrectly returns a success code.
-        }
-    }
-    return hr;
+					VARIANT_TRUE,bstrDescription,&pSPM );
+			} else {
+				hr = E_OUTOFMEMORY;
+			}
+		} else {
+			hr = E_FAIL;    // work around a known bug here:  in some error 
+			// conditions, get_SPMC NULLs out the pointer, but incorrectly returns a success code.
+		}
+	}
+	return hr;
 }
 
 // Closes the UPnP ports defined when the object was created
@@ -81,12 +75,10 @@ HRESULT UPnP::ClosePorts()
 	HRESULT hr = E_FAIL;
 	HRESULT hr2 = E_FAIL;
 
-	if (bstrProtocol && bstrInternalClient && bstrDescription )
-	{
+	if(bstrProtocol && bstrInternalClient && bstrDescription ) {
 		IStaticPortMappingCollection * pSPMC = NULL;
 		hr2 = pUN->get_StaticPortMappingCollection (&pSPMC);
-		if (SUCCEEDED(hr2) && pSPMC) 
-		{
+		if(SUCCEEDED(hr2) && pSPMC) {
 			hr = pSPMC->Remove (PortNumber,bstrProtocol);
 			pSPMC->Release();
 		}
@@ -111,10 +103,9 @@ string UPnP::GetExternalIP()
 	hResult=CoCreateInstance( CLSID_UPnPNAT,NULL,CLSCTX_INPROC_SERVER, IID_IUPnPNAT, (void **) &pIUN); 
 	IStaticPortMappingCollection *pIMaps=NULL;
 	hResult=pIUN->get_StaticPortMappingCollection(&pIMaps);
-	  
-	if (!pIMaps)
-	{
-		return "";
+
+	if(!pIMaps) {
+		return Util::emptyString;
 	}
 
 	IUnknown *pUnk=NULL;
@@ -126,7 +117,7 @@ string UPnP::GetExternalIP()
 	VARIANT varCurMapping;
 	VariantInit(&varCurMapping);
 	pEnumVar->Reset();
-    // were are only interested in the 1st map... (as going round in a while loop can take ages)
+	// we are only interested in the 1st map... (as going round in a while loop can take ages)
 	BSTR bStrExt = NULL;
 	pEnumVar->Next(1,&varCurMapping,NULL);
 	IStaticPortMapping *pITheMap=NULL;
@@ -141,13 +132,10 @@ string UPnP::GetExternalIP()
 	pUnk->Release();
 	pIMaps->Release();
 
-	if (bStrExt!=NULL)
-	{
+	if(bStrExt != NULL) {
 		return OLE2A(bStrExt);
-	}
-	else
-	{	
-		return "";
+	} else {
+		return Util::emptyString;
 	}
 }
 
@@ -157,5 +145,5 @@ UPnP::~UPnP()
 
 /**
  * @file
- * $Id: UPnP.cpp,v 1.1 2004/09/08 14:27:14 arnetheduck Exp $
+ * $Id: UPnP.cpp,v 1.2 2004/09/09 09:27:36 arnetheduck Exp $
  */
