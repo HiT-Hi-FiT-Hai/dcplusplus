@@ -47,6 +47,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
+	DownloadManager::getInstance()->addListener(this);
 	/* Common search words used to make search more efficient, should be more dynamic */
 	words.push_back("avi");
 	words.push_back("mp3");
@@ -74,6 +75,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 ShareManager::~ShareManager() {
 	SettingsManager::getInstance()->removeListener(this);
 	TimerManager::getInstance()->removeListener(this);
+	DownloadManager::getInstance()->removeListener(this);
 
 	join();
 
@@ -268,6 +270,36 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 		}
 	}
 	dirty = true;
+}
+
+void ShareManager::addFinishedFile(Directory* aParent, const string& aName, int64_t aSize) {
+	// add file and tth to share (file list will only be updated by the next refresh)
+	string::size_type l = aName.find(PATH_SEPARATOR);
+	
+	if(l != string::npos) {
+		Directory::MapIter i = aParent->directories.find(aName.substr(0, l-1));
+		if(i != aParent->directories.end())
+			addFinishedFile(i->second, aName.substr(l+1), aSize);
+		else {
+			Directory* dir = new Directory(aName.substr(0, l-1));
+			dir->addType(SearchManager::TYPE_DIRECTORY);
+			dir->addSearchType(getMask(dir->getName()));
+			bloom.add(Util::toLower(dir->getName()));
+
+			aParent->directories[dir->getName()] = dir;
+			addFinishedFile(dir, aName.substr(l+1), aSize);
+		}
+	} else {
+		aParent->addSearchType(getMask(aName));
+		aParent->addType(getType(aName));
+
+		Directory::File::Iter file = aParent->files.insert(aParent->files.begin(), 
+			Directory::File(aName, aSize, aParent, NULL));
+
+		aParent->size+=aSize;
+					
+		bloom.add(Util::toLower(aName));
+	}
 }
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
@@ -987,6 +1019,28 @@ ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 	return NULL;
 }
 
+void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
+	if(BOOLSETTING(ADD_FINISHED_INSTANTLY)) {
+		// Check if finished download is supposed to be shared
+		WLock l(cs);
+		const string& n = d->getTarget();
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); i++) {
+			if(strnicmp(i->first.c_str(), n.c_str(), i->first.size()) == 0 && n[i->first.size()] == PATH_SEPARATOR) {
+				string s = n.substr(i->first.size()+1);
+				try {
+					addFinishedFile(i->second, s, d->getSize());
+					// Schedule for hashing
+					HashManager::getInstance()->getTTH(n, d->getSize(), 0);
+					setDirty();
+				} catch(const Exception&) {
+					// Not a vital feature...
+				}
+				break;
+			}
+		}
+	}
+}
+
 void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw() {
 	WLock l(cs);
 	Directory* d = getDirectory(fname);
@@ -1020,6 +1074,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.91 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.92 2004/08/02 15:29:19 arnetheduck Exp $
  */
 

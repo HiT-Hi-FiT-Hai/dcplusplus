@@ -37,6 +37,7 @@
 #include "FinishedULFrame.h"
 #include "TextFrame.h"
 #include "StatsFrame.h"
+#include "LineDlg.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -996,6 +997,25 @@ LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
 	return 0;
 }
 
+LRESULT MainFrame::onQuickConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
+	LineDlg dlg;
+	dlg.description = STRING(HUB_ADDRESS);
+	dlg.title = STRING(QUICK_CONNECT);
+	if(dlg.DoModal(m_hWnd) == IDOK){
+		if(SETTING(NICK).empty())
+			return 0;
+
+		string tmp = dlg.line;
+		// Strip out all the spaces
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos)
+			tmp.erase(i, 1);
+
+		HubFrame::openWindow(tmp);
+	}
+	return 0;
+}
+
 void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 	int64_t updiff = Socket::getTotalUp() - lastUp;
@@ -1040,5 +1060,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.60 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.61 2004/08/02 15:29:19 arnetheduck Exp $
  */

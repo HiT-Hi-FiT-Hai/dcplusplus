@@ -5,6 +5,7 @@
 		<String Name="ActiveSearchString">Enabled / Search String</String>
 		<String Name="Add">&amp;Add</String>
 		<String Name="Added">Added</String>
+		<String Name="AddFinishedInstantly">Add finished files to share instantly (if shared)</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
 		<String Name="AddressNotAvailable">Address not available</String>
@@ -76,6 +77,7 @@
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
 		<String Name="Downloads">Downloads</String>
 		<String Name="DuplicateFileNotShared">Duplicate file will not be shared: </String>
+		<String Name="DuplicateMatch">Dupe matched against: </String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
 		<String Name="Email">E-Mail</String>
@@ -178,6 +180,7 @@
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenFileList">Open file list...</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
+		<String Name="MenuQuickConnect">&amp;Quick Connect ...	Ctrl+Q</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
 		<String Name="MenuRefreshFileList">Refresh file list	Ctrl+E</String>
 		<String Name="MenuShow">Show</String>
@@ -256,6 +259,7 @@
 		<String Name="PrivateMessageFrom">Private message from </String>
 		<String Name="Properties">&amp;Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
+		<String Name="QuickConnect">Quick Connect</String>
 		<String Name="Ratio">Ratio</String>
 		<String Name="ReaddSource">Re-add source</String>
 		<String Name="ReallyExit">Really exit?</String>
@@ -380,6 +384,7 @@
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
+		<String Name="SettingsTabDirty">Set hub/PM tab bold when contents change</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory (empty = download directly to target)</String>
 		<String Name="SettingsUploads">Sharing</String>

@@ -287,6 +287,7 @@
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
 #define ID_FILE_SEARCH                  32776
+#define ID_FILE_QUICK_CONNECT           32777
 #define IDC_DOWNLOAD                    32780
 #define IDC_DOWNLOADTO                  32781
 #define IDC_FAVORITES                   32783

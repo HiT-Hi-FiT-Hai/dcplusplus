@@ -199,6 +199,7 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CSTRING(MENU_OPEN_DOWNLOADS_DIR));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	file.AppendMenu(MF_STRING, ID_FILE_QUICK_CONNECT, CSTRING(MENU_QUICK_CONNECT));
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -356,7 +357,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
 	bi.lpszTitle = CSTRING(CHOOSE_FOLDER);
-	bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
 	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
@@ -883,5 +884,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.48 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.49 2004/08/02 15:29:19 arnetheduck Exp $
  */

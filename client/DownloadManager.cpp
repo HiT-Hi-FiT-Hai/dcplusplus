@@ -722,6 +722,7 @@ noCRC:
 			// Huh??? Now what??? Oh well...let it be...
 		}
 	}
+
 	fire(DownloadManagerListener::Complete(), d);
 	
 	aSource->setDownload(NULL);
@@ -880,5 +881,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.110 2004/08/02 14:20:16 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.111 2004/08/02 15:29:19 arnetheduck Exp $
  */

@@ -41,6 +41,14 @@
 * Added (limited support for) magnet link handling (thanks garg)
 * Uninstaller now removes the one registry key DC++ creates (thanks garg)
 * Fixed a few link click bugs (thanks garg)
+* Added quick connect (thanks tpo)
+* + and - in the queue change priority (thanks tpo)
+* Network stat colors are now the same as in the transfer window (thanks tpo)
+* Fixed a rare automatch crash (thanks farcry)
+* Allowed sharing of network folders (thanks garg)
+* Added option to automatically add finished files to share without refresh (thanks farcry)
+
+
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug

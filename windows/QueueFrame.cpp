@@ -1112,6 +1112,33 @@ void QueueFrame::removeDir(HTREEITEM ht) {
 	}
 }
 
+/*
+ * @param inc True = increase, False = decrease
+ */
+void QueueFrame::changePriority(bool inc){
+	int i = -1;
+	while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1){
+		QueueItem::Priority p = ctrlQueue.getItemData(i)->getPriority();
+
+		if ((inc && p == QueueItem::HIGHEST) || (!inc && p == QueueItem::PAUSED)){
+			// Trying to go higher than HIGHEST or lower than PAUSED
+			// so do nothing
+			return;
+		}
+
+		switch(p){
+			case QueueItem::HIGHEST: p = QueueItem::HIGH; break;
+			case QueueItem::HIGH:    p = inc ? QueueItem::HIGHEST : QueueItem::NORMAL; break;
+			case QueueItem::NORMAL:  p = inc ? QueueItem::HIGH    : QueueItem::LOW; break;
+			case QueueItem::LOW:     p = inc ? QueueItem::NORMAL  : QueueItem::LOWEST; break;
+			case QueueItem::LOWEST:  p = inc ? QueueItem::LOW     : QueueItem::PAUSED; break;
+			case QueueItem::PAUSED:  p = QueueItem::LOWEST; break;
+		}
+
+		QueueManager::getInstance()->setPriority(ctrlQueue.getItemData(i)->getTarget(), p);
+	}
+}
+
 void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
 	if(ht == NULL)
 		return;
@@ -1316,7 +1343,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.57 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.58 2004/08/02 15:29:19 arnetheduck Exp $
  */
 
 

@@ -1226,8 +1226,11 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 	}
 
 	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
-		addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
-
+		try {
+			addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
+		} catch(const Exception&) {
+			// ...
+		}
 }
 
 // ClientManagerListener
@@ -1258,5 +1261,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.92 2004/08/02 14:20:16 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.93 2004/08/02 15:29:19 arnetheduck Exp $
  */

@@ -27,6 +27,7 @@
 #include "SearchManager.h"
 #include "SettingsManager.h"
 #include "HashManager.h"
+#include "DownloadManager.h"
 
 #include "Exception.h"
 #include "CriticalSection.h"
@@ -44,7 +45,7 @@ class File;
 class OutputStream;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
-	private HashManagerListener
+	private HashManagerListener, private DownloadManagerListener
 {
 public:
 	StringList getDirectories();
@@ -53,7 +54,7 @@ public:
 	string translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { dirty = true; };
-	
+
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
 
@@ -295,9 +296,14 @@ private:
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
 
+	void addFinishedFile(Directory* aParent, const string& aName, int64_t aSize);
+
 	Directory* getDirectory(const string& fname);
 
 	virtual int run();
+
+	// DownloadManagerListener
+	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 
 	// HashManagerListener
 	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
@@ -321,6 +327,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.51 2004/06/26 18:16:54 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.52 2004/08/02 15:29:19 arnetheduck Exp $
  */
 

@@ -49,13 +49,13 @@ void startup(void (*f)(void*, const string&), void* p) {
 	LogManager::newInstance();
 	TimerManager::newInstance();
 	HashManager::newInstance();
-	ShareManager::newInstance();
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
 	ClientManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
+	ShareManager::newInstance();
 	HubManager::newInstance();
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
@@ -150,6 +150,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.30 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.31 2004/08/02 15:29:19 arnetheduck Exp $
  */
 

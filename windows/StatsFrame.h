@@ -35,8 +35,8 @@ public:
 		lastUp(Socket::getTotalUp()), lastDown(Socket::getTotalDown()), max(0) 
 	{ 
 		black.CreateSolidBrush(RGB(0, 0, 0));
-		red.CreatePen(PS_SOLID, 0, RGB(255, 0, 0));
-		green.CreatePen(PS_SOLID, 0, RGB(0, 255, 0));
+		upload.CreatePen(PS_SOLID, 0, SETTING(UPLOAD_BAR_COLOR));
+		download.CreatePen(PS_SOLID, 0, SETTING(DOWNLOAD_BAR_COLOR));
 		grey.CreatePen(PS_SOLID, 0, RGB(127, 127, 127));
 	}
 
@@ -84,8 +84,8 @@ private:
 	enum { AVG_SIZE = 5 };
 
 	CBrush black;
-	CPen red;
-	CPen green;
+	CPen upload;
+	CPen download;
 	CPen grey;
 
 	struct Stat {
@@ -124,5 +124,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.4 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.5 2004/08/02 15:29:19 arnetheduck Exp $
  */

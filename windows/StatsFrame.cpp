@@ -118,10 +118,10 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			dc.TextOut(1, 1, txt.c_str());
 		}
 
-		dc.SelectPen(red);
+		dc.SelectPen(upload);
 		drawLine(dc, up.begin(), up.end(), rc, clientRC);
 
-		dc.SelectPen(green);
+		dc.SelectPen(download);
 		drawLine(dc, down.begin(), down.end(), rc, clientRC);
 
 	}
@@ -212,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.8 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.9 2004/08/02 15:29:19 arnetheduck Exp $
  */
