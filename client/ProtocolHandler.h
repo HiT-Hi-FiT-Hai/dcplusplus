@@ -24,66 +24,87 @@
 #endif // _MSC_VER > 1000
 
 #include "ClientListener.h"
-#include "DCClient.h"
+#include "Client.h"
 #include "CryptoManager.h"
 #include "UserConnection.h"
-#include "IncomingManager.h"
+#include "ConnectionManager.h"
 
 /**
  * This is it, this is the class that controls what is sent when.
- * Add it to any DCClient created, or nothing will ever be sent to the
+ * Add it to any Client created, or nothing will ever be sent to the
  * hub.
  */
 class ProtocolHandler : public ClientListener
 {
 public:
-	virtual void onLock(const string& aLock, const string& aPk)  {
-		client->key(CryptoManager::getInstance()->makeKey(aLock));
-		client->validateNick(Settings::getNick());
+	virtual void onClientLock(Client* aClient, const string& aLock, const string& aPk)  {
+		aClient->key(CryptoManager::getInstance()->makeKey(aLock));
+		aClient->validateNick(Settings::getNick());
 	}
-	virtual void onHello(const string& aNick) {
-		if(aNick.compare(Settings::getNick()) == 0) {
-			client->version("1,0091");
-			client->getNickList();
-			client->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "10000");
+	virtual void onClientHello(Client* aClient, User* aUser) {
+		if(aUser->getNick() == Settings::getNick()) {
+			aClient->version("1,0091");
+			aClient->getNickList();
+			aClient->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "100000000");
 		} else {
-			client->getInfo(aNick);
+			aClient->getInfo(aUser);
 		}
 	}
-	virtual void onNickList(StringList& aNicks) {
+	virtual void onClientNickList(Client* aClient, StringList& aNicks) {
 		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
-			client->getInfo(*i);
+			aClient->getInfo(*i);
 		}
 	}
 
-	virtual void onOpList(StringList& aNicks) {
+	virtual void onClientOpList(Client* aClient, StringList& aNicks) {
 		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
-			client->getInfo(*i);
+			aClient->getInfo(*i);
 		}
 	}
 
-	virtual void onConnectToMe(const string& aServer, const string& aPort) {
-		IncomingManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
+	virtual void onClientConnectToMe(Client* aClient, const string& aServer, const string& aPort) {
+		ConnectionManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
 	}
 	
-	virtual void onRevConnectoToMe(const string& aNick) {
-		client->connectToMe(aNick);
+	virtual void onClientRevConnectoToMe(Client* aClient, User* aUser) {
+		aClient->connectToMe(aUser);
 	}
 	
-	ProtocolHandler(DCClient::Ptr aClient) : client(aClient) { client->addListener(this); };
-	virtual ~ProtocolHandler() { client->removeListener(this); };
+	static ProtocolHandler* getInstance() {
+		dcassert(instance);
+		return instance;
+	}
+	static void newInstance() {
+		if(instance)
+			delete instance;
+		
+		instance = new ProtocolHandler();
+	}
+	static void deleteInstance() {
+		delete instance;
+		instance = NULL;
+	}
+	
 
 private:
-	DCClient::Ptr client;
+	ProtocolHandler() { Client::addStaticListener(this); };
+	virtual ~ProtocolHandler() { Client::removeStaticListener(this); };
+	
+	static ProtocolHandler* instance;
 };
 
 #endif // !defined(AFX_PROTOCOLHANDLER_H__1F906161_663A_4D66_BF9E_A571E67DB0F1__INCLUDED_)
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.6  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.5  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

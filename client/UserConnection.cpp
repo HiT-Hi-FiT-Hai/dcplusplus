@@ -40,7 +40,7 @@ void UserConnection::onLine(const string& aLine) {
 	if(aLine.length() == 0) {
 		// Do nothing
 	} else if(aLine.find("$MyNick") != string::npos) {
-		nick = aLine.substr(8);
+		string nick = aLine.substr(8);
 		fireMyNick(nick);
 	} else if(aLine.find("$Direction") != string::npos) {
 		string tmp = aLine.substr(11);
@@ -79,9 +79,14 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.3  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -23,16 +23,20 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include "User.h"
+
 #include "AtlCmdBar2.h"
 
 #include "DirectoryListing.h"
 #include "ExListViewCtrl.h"
 
+class User;
+
 class DirectoryListingFrame : public CMDIChildWindowImpl2<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
 
-	DirectoryListingFrame(DirectoryListing* aList, const string& aName) : dl(aList), name(aName) { };
+	DirectoryListingFrame(DirectoryListing* aList, User* aUser) : dl(aList), user(aUser) { };
 
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDIDIRECTORY)
 
@@ -47,6 +51,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_GETDISPINFO, onGetDispInfoDirectories)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<DirectoryListingFrame>)
@@ -58,9 +63,10 @@ public:
 	}
 	
 	void setWindowTitle() {
-		SetWindowText(name.c_str());
+		SetWindowText(user->getNick().c_str());
 	}
 
+	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	
@@ -85,7 +91,7 @@ public:
 	
 private:
 	CImageList ctrlImages;
-	string name;
+	User* user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
 
@@ -101,9 +107,14 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

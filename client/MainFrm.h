@@ -26,11 +26,12 @@
 #include "AtlCmdBar2.h"
 
 #include "DownloadManager.h"
+#include "ExListViewCtrl.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public DownloadManagerListener
+		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>
 {
 public:
 	virtual ~MainFrame();
@@ -38,8 +39,12 @@ public:
 
 	CCommandBarCtrl2 m_CmdBar;
 
-	virtual void onDownloadComplete(Download::Ptr p);
-	virtual void onDownloadFailed(Download::Ptr p, const string& aReason);
+	virtual void onDownloadAdded(Download* aDownload);
+	virtual void onDownloadComplete(Download* aDownload);
+	virtual void onDownloadConnecting(Download* aDownload);
+	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
+	virtual void onDownloadStarting(Download* aDownload);
+	virtual void onDownloadTick(Download* aDownload);
 	
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -58,10 +63,11 @@ public:
 		UIUpdateToolBar();
 		return FALSE;
 	}
-
+	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -73,21 +79,47 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
+		CHAIN_MSG_MAP(splitterBase);
 	END_MSG_MAP()
 
-	BEGIN_UPDATE_UI_MAP(CMainFrame)
+	BEGIN_UPDATE_UI_MAP(MainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
 	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		return 0;
+	}
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
 
+	/**
+	 * This is called from CMDIFrameWindowImpl, and is a copy of what I found in CFrameWindowImplBase,
+	 * plus a few additions of my own...
+	 */
+	void UpdateLayout(BOOL bResizeBars = TRUE)
+	{
+		RECT rect;
+		GetClientRect(&rect);
+		
+		// position bars and offset their dimensions
+		UpdateBarsPosition(rect, bResizeBars);
+		
+		// resize client window
+/*		if(m_hWndClient != NULL)
+			::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
+			rect.right - rect.left, rect.bottom - rect.top,
+			SWP_NOZORDER | SWP_NOACTIVATE);*/
+
+		SetSplitterRect(&rect);
+	}
+	
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
@@ -132,7 +164,7 @@ public:
 		return 0;
 	}
 protected:
-	CSplitterWindow splitter;
+	ExListViewCtrl ctrlDownloads;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -144,9 +176,14 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.5 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.5  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.4  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

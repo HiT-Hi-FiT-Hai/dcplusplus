@@ -23,6 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+class User;
+class Client;
+
 class ClientListener  
 {
 public:
@@ -30,66 +33,74 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	virtual void onConnecting(const string& aServer) { };
+	/**
+	 * Connecting to a hub.
+	 */
+	virtual void onClientConnecting(Client* aClient) { };
 	/**
 	 * Hubname received.
 	 * @param aHubName The hubname...
 	 */
-	virtual void onHubName(const string& aHubName) { };
+	virtual void onClientHubName(Client* aClient) { };
 	/**
 	 * Lock message received, suggested action: key(makeKey(aLock)); validateNick(aNick);
 	 * @param aLock Lock string
 	 * @param aPk PK part of the lock
 	 */
-	virtual void onLock(const string& aLock, const string& aPk) { };
+	virtual void onClientLock(Client* aClient, const string& aLock, const string& aPk) { };
 	/**
 	 * Suggestion to move to aHub received.
 	 * @param aHub Suggested hub.
 	 */
-	virtual void onForceMove(const string& aHub) { };
+	virtual void onClientForceMove(Client* aClient, const string& aHub) { };
 	/**
 	 * Connection denied, hub is full.
 	 */
-	virtual void onHubFull() { };
+	virtual void onClientHubFull(Client* aClient) { };
 	/**
 	 * Nick validation denied
 	 */
-	virtual void onValidateDenied() { };
+	virtual void onClientValidateDenied(Client* aClient) { };
 	/**
 	 * New user arrived. If this is the user's nick, send myinfo.
-	 * @param aNick Nick of the new user.
+	 * @param aUser User that connected (Only the nick is valid so far...)
 	 */
-	virtual void onHello(const string& aNick) { };
+	virtual void onClientHello(Client* aClient, User* aUser) { };
 	/**
 	 * Another user disconnected.
-	 * @param aNick Nick of the user.
+	 * @param aUser User disconnected.
 	 */
-	virtual void onQuit(const string& aNick) { };
+	virtual void onClientQuit(Client* aClient, User* aUser) { };
 	/**
-	 * Detailed information about a user.
+	 * Detailed information about a user received/updated.
+	 * @param aUser Full info about the user.
 	 */
-	virtual void onMyInfo(const string& aNick, const string& aDescription, const string& aSpeed, 
-		const string& aEmail, const string& aBytesShared) { };
-	virtual void onMessage(const string& aMessage) { };
-	virtual void onUnknown(const string& aCommand) { };
-	virtual void onNickList(StringList& aNicks) { };
-	virtual void onConnected() { };
-	virtual void onError(const string& aReason) { };
-	virtual void onOpList(StringList& aOps) { };
-	virtual void onPrivateMessage(const string& aFrom, const string& aMessage) { };
-	virtual void onSearch(const string& aSeeker, int aSearchType, const string& aSize, 
+	virtual void onClientMyInfo(Client* aClient, User* aUser) { };
+	virtual void onClientMessage(Client* aClient, const string& aMessage) { };
+	virtual void onClientUnknown(Client* aClient, const string& aCommand) { };
+	virtual void onClientNickList(Client* aClient, StringList& aNicks) { };
+	virtual void onClientConnected(Client* aClient) { };
+	virtual void onClientError(Client* aClient, const string& aReason) { };
+	virtual void onClientOpList(Client* aClient, StringList& aOps) { };
+	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) { };
+	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
-	virtual void onConnectToMe(const string& aServer, const string& aPort) { };
-	virtual void onRevConnectToMe(const string& aNick) { };
+	virtual void onClientConnectToMe(Client* aClient, const string& aServer, const string& aPort) { };
+	virtual void onClientRevConnectToMe(Client* aClient, const string& aNick) { };
 };
 
 #endif // !defined(AFX_CLIENTLISTENER_H__607F5375_97B0_47CD_B53B_D230ABF23E7E__INCLUDED_)
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.4 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.4  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

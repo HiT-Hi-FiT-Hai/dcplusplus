@@ -20,17 +20,21 @@
 #include "DCPlusPlus.h"
 
 #include "Socket.h"
-#include "DCClient.h"
+#include "Client.h"
+#include "CriticalSection.h"
 
-DCClient::List DCClient::clientList;
+Client::List Client::clientList;
 
-void DCClient::connect(const string& aServer, short aPort) {
+ClientListener::List Client::staticListeners;
+CriticalSection Client::staticListenersCS;
+
+void Client::connect(const string& aServer, short aPort) {
 	if(socket.isConnected()) {
 		disconnect();
 	}
-	fireConnecting(aServer);
 	server = aServer;
 	port = aPort;
+	fireConnecting();
 	socket.addListener(this);
 	socket.connect(aServer, aPort);
 }
@@ -38,12 +42,12 @@ void DCClient::connect(const string& aServer, short aPort) {
 /**
  * Reader thread. Read data from socket and calls getLine whenever there's data to be read.
  * Finishes whenever p->stopEvent is signaled
- * @param p Pointer to the DCClientent that started the thread
+ * @param p Pointer to the Clientent that started the thread
  */
 
-void DCClient::onLine(const string& aLine) {
+void Client::onLine(const string& aLine) {
 	if(aLine.length() == 0) {
-//		dcassert(0); // should never happen
+//		dcassert(0); // should never happen...but it does...
 	} else if(aLine.find("$Search") != string::npos) {
 		string tmp = aLine.substr(8);
 		string seeker = tmp.substr(0, tmp.find(' '));
@@ -63,7 +67,8 @@ void DCClient::onLine(const string& aLine) {
 		tmp = tmp.substr(tmp.find('?')+1);
 		fireSearch(seeker, a, size, type, tmp);
 	} else if(aLine.find("$HubName") != string::npos) {
-		fireHubName(aLine.substr(9));
+		name = aLine.substr(9);
+		fireHubName();
 	} else if(aLine.find("$Lock")!=string::npos) {
 	
 		string lock = aLine.substr(6);
@@ -73,37 +78,42 @@ void DCClient::onLine(const string& aLine) {
 	} else if(aLine.find("$Hello") != string::npos) {
 		string nick = aLine.substr(7);
 		User* u = new User(nick);
+		u->setClient(this);
+		dcassert(users.find(nick) == users.end());
 		users[nick] = u;
-		fireHello(nick);
+		fireHello(u);
 	} else if(aLine.find("$ForceMove") != string::npos) {
 		fireForceMove(aLine.substr(11));
 	} else if(aLine.find("$HubIsFull") != string::npos) {
 		fireHubFull();
 	} else if(aLine.find("$MyINFO $ALL") != string::npos) {
-		string nick, description, speed, email, bytes;
+		string nick;
 
 		string tmp = aLine.substr(13);
 		nick = tmp.substr(0, tmp.find(' '));
 		tmp = tmp.substr(tmp.find(' ')+1);
-		description = tmp.substr(0, tmp.find('$'));
+		dcassert(users.find(nick) != users.end());
+		User* u = users[nick];
+
+		u->setDescription(tmp.substr(0, tmp.find('$')));
 		tmp = tmp.substr(tmp.find('$')+3);
-		speed = tmp.substr(0, tmp.find('$')-1);
+		u->setConnection(tmp.substr(0, tmp.find('$')-1));
 		tmp = tmp.substr(tmp.find('$')+1);
-		email = tmp.substr(0, tmp.find('$'));
+		u->setEmail(tmp.substr(0, tmp.find('$')));
 		tmp = tmp.substr(tmp.find('$')+1);
-		bytes = tmp.substr(0, tmp.find('$'));
+		u->setBytesShared(tmp.substr(0, tmp.find('$')));
 		
-		fireMyInfo(nick, description, speed, email, bytes);
+		fireMyInfo(u);
 		
 	} else if(aLine.find("$Quit") != string::npos) {
 		string nick = aLine.substr(6);
-		fireQuit(nick);
-		for(StringIter i = users.begin(); i != users.end(); ++i) {
-			if(*i == nick) {
-				users.erase(i);
-				break;
-			}
-		}
+		dcassert(users.find(nick) != users.end());
+		User* u = users[nick];
+
+		fireQuit(u);
+		delete u;
+		users.erase(nick);
+		
 	} else if(aLine.find("$ValidateDenide") != string::npos) {
 		fireValidateDenied();
 	} else if(aLine.find("$NickList") != string::npos) {
@@ -111,10 +121,18 @@ void DCClient::onLine(const string& aLine) {
 		int j;
 		string tmp = aLine.substr(10);
 		while( (j=tmp.find("$$")) != string::npos) {
-			v.push_back(tmp.substr(0, j));
+			string nick = tmp.substr(0, j);
+			
+			if(users.find(nick) == users.end()) {
+				User* u = new User(nick);
+				u->setClient(this);
+				users[nick] = u;
+			}
+
+			v.push_back(nick);
 			tmp = tmp.substr(j+2);
 		}
-		users.insert(users.end(), v.begin(), v.end());
+		
 		fireNickList(v);
 		
 	} else if(aLine.find("$OpList") != string::npos) {
@@ -122,10 +140,15 @@ void DCClient::onLine(const string& aLine) {
 		int j;
 		string tmp = aLine.substr(8);
 		while( (j=tmp.find("$$")) != string::npos) {
-			v.push_back(tmp.substr(0, j));
+			string nick = tmp.substr(0, j);
+			dcassert(users.find(nick) == users.end());
+			User* u = new User(nick, User::FLAG_OP);
+			u->setClient(this);
+			users[nick] = u;
+
+			v.push_back(nick);
 			tmp = tmp.substr(j+2);
 		}
-		users.insert(users.end(), v.begin(), v.end());
 		fireOpList(v);
 	} else if(aLine.find("$To") != string::npos) {
 		string tmp = aLine.substr(aLine.find("From:") + 6);
@@ -149,10 +172,15 @@ void DCClient::onLine(const string& aLine) {
 
 
 /**
- * @file DCClient.cpp
- * $Id: Client.cpp,v 1.1 2001/11/27 22:10:08 arnetheduck Exp $
+ * @file Client.cpp
+ * $Id: Client.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/27 22:10:08  arnetheduck
  * Renamed DCClient* to Client*
  *

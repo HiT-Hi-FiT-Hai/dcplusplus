@@ -25,6 +25,8 @@ static const int BUFSIZE = 4096;
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
 	Socket::accept(aSocket);
+	connected = true;
+	dcdebug("Socket %x accepted\n", sock);
 	startReader();
 }
 
@@ -39,8 +41,10 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	h[0] = bs->stopEvent;
 	
 	try {
-		if(!bs->isConnected())
+		if(!bs->isConnected()) {
 			bs->Socket::connect(bs->server, bs->port);
+			bs->fireConnected();
+		}
 		h[1] = bs->getReadEvent();
 	} catch (SocketException e) {
 		bs->fireError(e.getError());
@@ -50,8 +54,6 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	string line = "";
 	BYTE buf[BUFSIZE];
 
-	bs->fireConnected();
-	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
 		try {
 			dcdebug("Available bytes: %d\n", bs->getAvailable());
@@ -108,9 +110,14 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.3 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.4 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.4  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.3  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

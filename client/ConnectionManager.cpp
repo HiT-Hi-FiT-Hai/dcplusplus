@@ -19,44 +19,110 @@
 #include "stdafx.h"
 #include "DCPlusPlus.h"
 
-#include "IncomingManager.h"
+#include "ConnectionManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
 
 #include "UserConnection.h"
 #include "CryptoManager.h"
+#include "Client.h"
 
-IncomingManager* IncomingManager::instance = NULL;
+ConnectionManager* ConnectionManager::instance = NULL;
 
-void IncomingManager::onIncomingConnection() {
+/**
+ * Request a connection for downloading.
+ * DownloadConnection::addConnection will be called as soon as the connection is ready
+ * for downloading.
+ * @param aUser The user to connect to.
+ * @return The state of the connection sequence (see UserConnection)
+ */
+int ConnectionManager::getDownloadConnection(User* aUser) {
+	UserConnection::NickIter i = downloaders.find(aUser->getNick());
+	if(i != downloaders.end()) {
+		if(i->second->state == UserConnection::FREE) {
+			DownloadManager::getInstance()->addConnection(i->second);
+		}
+		return i->second->state;
+	}
+
+	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		aUser->getClient()->connectToMe(aUser);
+	} else {
+		aUser->getClient()->revConnectToMe(aUser);
+	}
+
+	pendingDown[aUser->getNick()] = aUser;
+	return UserConnection::CONNECTING;
+}
+
+/**
+ * Someone's connecting, accept the connection and wait for identification...
+ */
+void ConnectionManager::onIncomingConnection() {
 	UserConnection::Ptr uc = new UserConnection();
-	try { uc->accept(socket);
+	try { 
+		uc->accept(socket);
 		uc->addListener(this);
-		uc->myNick(Settings::getNick());
-		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
 		dcdebug("Error creating connection\n");
 		delete uc;
 	}
 }
 
+void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
+	User::NickIter i = pendingDown.find(aNick);
 
-void IncomingManager::onMyNick(UserConnection* aSource, const string& aNick) {
-	removeConnection(aSource);
-	
-	if(DownloadManager::getInstance()->isExpected(aNick)) {
-		DownloadManager::getInstance()->addConnection(aSource);
+	if(i != pendingDown.end()) {
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			// We sent a CTM and got an answer, now the other fellow sent his nick.
+			// Record it, send own nick and wait for the lock...
+			aSource->myNick(Settings::getNick());
+			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+		} 	
+		// In a passive connection, we sent our nick first, and then waited for the
+		// other fellow to send his...
+
+		aSource->user = i->second;
+		downloaders[aNick] = aSource;
+		pendingDown.erase(i);
+		aSource->direction("Download", "666");
 	} else {
-		UploadManager::getInstance()->addConnection(aSource);
+		if( (i = pendingUp.find(aNick)) != pendingUp.end()) {
+			aSource->user = i->second;
+			aSource->direction("Upload", "666");
+			pendingUp.erase(i);
+			uploaders[aNick] = aSource;
+		} else {
+			// We have an unknown connection...disconnect and destroy...
+			aSource->disconnect();
+			aSource->flags |= UserConnection::FLAG_DELETE;
+		}
 	}
 }
 
-void IncomingManager::onConnected(UserConnection* aSource) {
-//	aSource->myNick(Settings::getNick());
-//	aSource->lock(CryptoManager::getLock(), CryptoManager::getPk());
+void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
+	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
+
+	if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
+		// We're done, send this connection to the downloadmanager.
+		DownloadManager::getInstance()->addConnection(aSource);
+	}
 }
 
-void IncomingManager::connect(const string& aServer, short aPort) {
+void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) {
+	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		// We're done, send this connection to the downloadmanager.
+		DownloadManager::getInstance()->addConnection(aSource);
+	}
+}
+
+void ConnectionManager::onConnected(UserConnection* aSource) {
+	
+	aSource->myNick(Settings::getNick());
+	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+}
+
+void ConnectionManager::connect(const string& aServer, short aPort) {
 	UserConnection* c = new UserConnection();
 	addConnection(c);
 	c->connect(aServer, aPort);
@@ -64,11 +130,16 @@ void IncomingManager::connect(const string& aServer, short aPort) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.1 2001/11/27 20:29:37 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/27 20:29:37  arnetheduck
- * Renamed from IncomingManager
+ * Renamed from ConnectionManager
  *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is

@@ -48,7 +48,7 @@ public:
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
-	int insertItem(StringList& aList, int iImage = 0) {
+	int insert(StringList& aList, int iImage = 0) {
 
 		int loc;
 		if(sortColumn == -1) {
@@ -82,7 +82,27 @@ public:
 		}
 		return loc;
 	}
-	
+	int insert(int nItem, const string& aString, LPARAM lParam = NULL) {
+		return InsertItem(LVIF_PARAM | LVIF_TEXT, nItem, aString.c_str(), 0, 0, 0, lParam);
+	}
+
+	int find(LPARAM lParam, int aStart = -1) {
+		LV_FINDINFO fi;
+		fi.flags = LVFI_PARAM;
+		fi.lParam = lParam;
+		return FindItem(&fi, aStart);
+	}
+
+	int find(const string& aText, int aStart = -1, bool aPartial = false) {
+		LV_FINDINFO fi;
+		if(aPartial) {
+			fi.flags = LVFI_PARTIAL;
+		} else {
+			fi.flags = LVFI_STRING;
+		}
+		fi.psz = aText.c_str();
+		return FindItem(&fi, aStart);
+	}
 	void deleteItem(const string& aItem, int col = 0) {
 		for(int i = 0; i < GetItemCount(); i++) {
 			char buf[1024];
@@ -98,11 +118,11 @@ public:
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
 		
-		char buf[1024];
+		char buf[512];
 		string a, b;
-		p->GetItemText(lParam1, p->sortColumn, buf, 1024);
+		p->GetItemText(lParam1, p->sortColumn, buf, 512);
 		a = buf;
-		p->GetItemText(lParam2, p->sortColumn, buf, 1024);
+		p->GetItemText(lParam2, p->sortColumn, buf, 512);
 		b = buf;
 
 		switch(p->sortType) {
@@ -144,9 +164,14 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.3  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_INCOMINGMANAGER_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
-#define AFX_INCOMINGMANAGER_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_
+#if !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
+#define AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,17 +25,18 @@
 
 #include "ServerSocket.h"
 #include "UserConnection.h"
+#include "User.h"
 
-class IncomingManager : public UserConnectionListener, ServerSocketListener
+class ConnectionManager : public UserConnectionListener, ServerSocketListener
 {
 public:
 	static void newInstance() {
 		if(instance)
 			delete instance;
 
-		instance = new IncomingManager();
+		instance = new ConnectionManager();
 	}
-	static IncomingManager* getInstance() {
+	static ConnectionManager* getInstance() {
 		dcassert(instance);
 		return instance;
 	}
@@ -44,6 +45,14 @@ public:
 			delete instance;
 		instance = NULL;
 	}
+
+	int getDownloadConnection(User* aUser);
+	void putDownloadConnection(UserConnection* aSource) {
+		aSource->disconnect();
+		downloaders.erase(downloaders.find(aSource->user->getNick()));
+		//delete aSource;
+	}
+
 	void connect(const string& aServer, short aPort);
 
 	void setPort(short aPort) {
@@ -53,10 +62,15 @@ public:
 
 	virtual void onIncomingConnection();
 	virtual void onMyNick(UserConnection* aSource, const string& aNick);
-
+	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk);
 	virtual void onConnected(UserConnection* aSource);
+	virtual void onKey(UserConnection* aSource, const string& aKey);
 private:
-
+	User::NickMap pendingDown;
+	User::NickMap pendingUp;
+	UserConnection::NickMap downloaders;
+	UserConnection::NickMap uploaders;
+	
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		connections.push_back(conn);
@@ -78,13 +92,13 @@ private:
 	}
 
 	UserConnection::List connections;
-	static IncomingManager* instance;
-	IncomingManager() {
+	static ConnectionManager* instance;
+	ConnectionManager() {
 		socket.addListener(this);
 		socket.waitForConnections(atoi(Settings::getPort().c_str()));
 	};
 
-	~IncomingManager() {
+	~ConnectionManager() {
 		socket.removeListener(this);
 		removeConnections();
 	}
@@ -92,15 +106,20 @@ private:
 	ServerSocket socket;
 };
 
-#endif // !defined(AFX_INCOMINGMANAGER_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
+#endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.1 2001/11/27 20:29:37 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/27 20:29:37  arnetheduck
- * Renamed from IncomingManager
+ * Renamed from ConnectionManager
  *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is

@@ -27,6 +27,7 @@
 #include "CriticalSection.h"
 
 class UserConnection;
+class User;
 
 class UserConnectionListener {
 public:
@@ -57,12 +58,27 @@ class ServerSocket;
 class UserConnection : public BufferedSocketListener
 {
 public:
+	friend class ConnectionManager;
+	
 	typedef UserConnection* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-
+	typedef map<string, Ptr> NickMap;
+	typedef NickMap::iterator NickIter;
+	
 	enum {	MODE_COMMAND = BufferedSocket::MODE_LINE,
 		MODE_DATA = BufferedSocket::MODE_DATA
+	};
+
+	enum {
+		CONNECTING,
+		LOGIN,
+		BUSY,
+		FREE
+	};
+
+	enum {
+		FLAG_DELETE = 0x01
 	};
 
 	void addListener(UserConnectionListener::Ptr aListener) {
@@ -94,8 +110,8 @@ public:
 	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
 	virtual void onData(BYTE *aBuf, int aLen) { fireData(aBuf, aLen); };
 
-	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); sentNick = true; }
-	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); sentLock = true; }
+	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
+	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
 	
@@ -110,15 +126,10 @@ public:
 	void error(const string& aError) { send("$Error " + aError + "|"); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
 	void maxedOut() { send("$MaxedOut|"); };
-	bool hasSentNick() { return sentNick; };
-	bool hasSentLock() { return sentLock; };
-	UserConnection() : socket('|'), sentNick(false), sentLock(false) { 
-		socket.addListener(this);
-	};
-	
-	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
-	const string& getNick() { return nick; };
+	User* getUser() { return user; };
+
+	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
 	void connect(const string& aServer, short aPort = 412);
 	void accept(const ServerSocket& aSocket);
@@ -128,20 +139,31 @@ public:
 		socket.disconnect();
 		fireDisconnected();
 	}
+
+	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0) { 
+		socket.addListener(this);
+	};
 	virtual ~UserConnection() {
 	};
 
 private:
-	bool sentNick;
-	bool sentLock;
 	string server;
 	short port;
 	BufferedSocket socket;
-	string nick;
+	User* user;
+	int state;
+	int flags;
 	
 	UserConnectionListener::List listeners;
 	CriticalSection listenerCS;
 
+	void checkFlags() {
+		if(flags && FLAG_DELETE) {
+			// Oh no! We're dying!!!
+			delete this;
+		}
+	}
+	
 	void send(const string& aString) {
 		socket.write(aString);
 	}
@@ -153,6 +175,7 @@ private:
 			(*i)->onConnected(this);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireConnecting(const string& aServer) {
 		listenerCS.enter();
@@ -162,6 +185,7 @@ private:
 			(*i)->onConnecting(this, aServer);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireConnectionError(const string& aError) {
 		listenerCS.enter();
@@ -171,6 +195,7 @@ private:
 			(*i)->onConnectionError(this, aError);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireData(BYTE* aData, int aLen) {
 		listenerCS.enter();
@@ -180,6 +205,7 @@ private:
 			(*i)->onData(this, aData, aLen);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireDirection(const string& aDirection, const string& aNumber) {
 		listenerCS.enter();
@@ -189,6 +215,7 @@ private:
 			(*i)->onDirection(this, aDirection, aNumber);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireDisconnected() {
 		listenerCS.enter();
@@ -198,6 +225,7 @@ private:
 			(*i)->onDisconnected(this);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireError(const string& aError) {
 		listenerCS.enter();
@@ -207,6 +235,7 @@ private:
 			(*i)->onError(this, aError);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireFileLength(const string& aLength) {
 		listenerCS.enter();
@@ -216,6 +245,7 @@ private:
 			(*i)->onFileLength(this, aLength);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireGet(const string& aFile, LONGLONG aResume) {
 		listenerCS.enter();
@@ -225,6 +255,7 @@ private:
 			(*i)->onGet(this, aFile, aResume);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireKey(const string& aKey) {
 		listenerCS.enter();
@@ -234,6 +265,7 @@ private:
 			(*i)->onKey(this, aKey);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireGetListLen() {
 		listenerCS.enter();
@@ -243,6 +275,7 @@ private:
 			(*i)->onGetListLen(this);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireLock(const string& aLock, const string& aPk) {
 		listenerCS.enter();
@@ -252,6 +285,7 @@ private:
 			(*i)->onLock(this, aLock, aPk);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireMaxedOut() {
 		listenerCS.enter();
@@ -261,6 +295,7 @@ private:
 			(*i)->onMaxedOut(this);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
@@ -270,6 +305,7 @@ private:
 			(*i)->onModeChange(this, aNewMode);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireMyNick(const string& aNick) {
 		listenerCS.enter();
@@ -279,6 +315,7 @@ private:
 			(*i)->onMyNick(this, aNick);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 	void fireSend() {
 		listenerCS.enter();
@@ -288,6 +325,7 @@ private:
 			(*i)->onSend(this);
 		}
 		listenerCS.leave();
+		checkFlags();
 	}
 };
 
@@ -295,9 +333,14 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.3  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.2  2001/11/26 23:40:37  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

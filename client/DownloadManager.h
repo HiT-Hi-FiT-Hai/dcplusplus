@@ -27,6 +27,8 @@
 #include "CryptoManager.h"
 #include "CriticalSection.h"
 
+class User;
+
 class Download {
 public:
 	typedef Download* Ptr;
@@ -40,11 +42,13 @@ public:
 	string fileName;
 	LONGLONG size;
 	LONGLONG pos;
-	string destination;
+	string targetFileName;
+	User* user;
+	bool resume;
 	
 	HANDLE hFile;
 	
-	string lastUser;
+	string lastNick;
 	string lastPath;
 };
 
@@ -54,10 +58,12 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	virtual void onDownloadComplete(Download::Ptr aDownload) { };
-	virtual void onDownloadFailed(Download::Ptr aDownload, const string& aReason) { };
-	virtual void onDownloadStarting(Download::Ptr aDownload) { };
-	virtual void onDownloadTick(Download::Ptr aDownload) { }
+	virtual void onDownloadAdded(Download* aDownload) { };
+	virtual void onDownloadComplete(Download* aDownload) { };
+	virtual void onDownloadConnecting(Download* aDownload) { };
+	virtual void onDownloadFailed(Download* aDownload, const string& aReason) { };
+	virtual void onDownloadStarting(Download* aDownload) { };
+	virtual void onDownloadTick(Download* aDownload) { };
 };
 
 class DownloadManager : public UserConnectionListener
@@ -68,18 +74,16 @@ public:
 		removeConnection(aSource);
 	}
 	
-	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk);
-	virtual void onKey(UserConnection* aSource, const string& aKey);
 	virtual void onData(UserConnection* aSource, BYTE* aData, int aLen);
 	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
-	virtual void onMaxedOut(UserConnection* aSource) { aSource->disconnect(); fireDownloadFailed(running[aSource], "No slots available"); };
+	virtual void onMaxedOut(UserConnection* aSource);
 	virtual void onModeChange(UserConnection* aSource, int aNewMode);
 
 	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) {
 		dcassert(aDirection == "Upload");
 	}
 	
-	void download(const string& aFile, const string& aUser, const string& aDestination);
+	void download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume = true);
 	void checkDownloads(UserConnection* aConn);
 
 	static DownloadManager* getInstance() {
@@ -103,7 +107,6 @@ public:
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		connections.push_back(conn);
-		removeNick(conn->getNick());
 		checkDownloads(conn);
 	}
 	
@@ -147,31 +150,6 @@ public:
 		listenerCS.leave();
 	}
 
-	bool isExpected(const string& aNick) {
-		for(StringIter i = expectedNicks.begin(); i != expectedNicks.end(); i++) {
-			if(*i == aNick)
-				return true;
-		}
-		return false;
-	}
-
-	void addNick(const string& aNick) {
-		for(StringIter i = expectedNicks.begin(); i != expectedNicks.end(); ++i) {
-			if(*i == aNick) {
-				return;
-			}
-		}
-		expectedNicks.push_back(aNick);
-	}
-	
-	void removeNick(const string& aNick) {
-		for(StringIter i = expectedNicks.begin(); i != expectedNicks.end(); ++i) {
-			if(*i == aNick) {
-				expectedNicks.erase(i);
-				return;
-			}
-		}
-	}
 private:
 
 	Download::List queue;
@@ -184,8 +162,17 @@ private:
 	CriticalSection listenerCS;
 	
 	UserConnection::List connections;
-
-	void fireDownloadComplete(Download::Ptr aPtr) {
+	
+	void fireAdded(Download::Ptr aPtr) {
+		listenerCS.enter();
+		DownloadManagerListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onDownloadAdded(aPtr);
+		}
+		listenerCS.leave();
+	}
+	void fireComplete(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
@@ -194,7 +181,16 @@ private:
 		}
 		listenerCS.leave();
 	}
-	void fireDownloadFailed(Download::Ptr aPtr, const string& aReason) {
+	void fireConnecting(Download::Ptr aPtr) {
+		listenerCS.enter();
+		DownloadManagerListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onDownloadConnecting(aPtr);
+		}
+		listenerCS.leave();
+	}
+	void fireFailed(Download::Ptr aPtr, const string& aReason) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
@@ -203,7 +199,7 @@ private:
 		}
 		listenerCS.leave();
 	}
-	void fireDownloadStarting(Download::Ptr aPtr) {
+	void fireStarting(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
@@ -212,7 +208,7 @@ private:
 		}
 		listenerCS.leave();
 	}
-	void fireDownloadTick(Download::Ptr aPtr) {
+	void fireTick(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
@@ -232,9 +228,14 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.3 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.3  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -24,7 +24,7 @@
 #endif // _MSC_VER >= 1000
 
 #include "ClientListener.h"
-#include "DCClient.h"
+#include "Client.h"
 #include "ProtocolHandler.h"
 #include "ExListViewCtrl.h"
 #include "DownloadManager.h"
@@ -36,25 +36,29 @@
 class HubFrame : public CMDIChildWindowImpl2<HubFrame>, public ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
-	virtual void onConnecting(const string& aServer) {
-		addClientLine("Connecting to " + aServer + "...");
-		SetWindowText(aServer.c_str());
+	virtual void onClientConnecting(Client* aClient) {
+		addClientLine("Connecting to " + aClient->getServer() + "...");
+		SetWindowText(aClient->getServer().c_str());
 	}
-	virtual void onMessage(const string& aMessage) {
+	virtual void onClientMessage(Client* aClient, const string& aMessage) {
 		addLine(aMessage);
 	}
 	
-	virtual void onUnknown(const string& aCommand) {
+	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
 		addClientLine("Unknown: " + aCommand);
 	}
-	virtual void onQuit(const string& aNick) {
+	virtual void onClientQuit(Client* aClient, const string& aNick) {
 		ctrlUsers.deleteItem(aNick);
 	}
-	virtual void onHubName(const string& aHubName) {
+	virtual void onClientHubName(Client* aClient, const string& aHubName) {
 		SetWindowText(aHubName.c_str());
 	}
-	virtual void onError(const string& aReason) {
+	virtual void onClientError(Client* aClient, const string& aReason) {
 		addClientLine("Connection failed: " + aReason);
+	}
+	virtual void onClientValidateDenied(Client* aClient) {
+		addClientLine("Your nick was already taken, please change to something else!");
+		client->disconnect();
 	}
 
 	string convertBytes(const string& aString) {
@@ -74,37 +78,25 @@ protected:
 
 		return buf;
 	}
-	virtual void onMyInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail,
-		const string& aBytesShared) {
+	virtual void onClientMyInfo(Client* aClient, User* aUser) {
 		
 		LV_FINDINFO fi;
 		fi.flags = LVFI_STRING;
-		fi.psz = aNick.c_str();
+		fi.psz = aUser->getNick().c_str();
 		int i = ctrlUsers.FindItem(&fi, -1);
 		if(i == -1) {
-			i = ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), aNick.c_str());
+			i = ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), aUser->getNick().c_str());
 		}
-		ctrlUsers.SetItemText(i, 1, convertBytes(aBytesShared).c_str());
-		ctrlUsers.SetItemText(i, 2, aDescription.c_str());
-		ctrlUsers.SetItemText(i, 3, aSpeed.c_str());
-		ctrlUsers.SetItemText(i, 4, aEmail.c_str());
+		ctrlUsers.SetItemText(i, 1, convertBytes(aUser->getBytesSharedString()).c_str());
+		ctrlUsers.SetItemText(i, 2, aUser->getDescription().c_str());
+		ctrlUsers.SetItemText(i, 3, aUser->getConnection().c_str());
+		ctrlUsers.SetItemText(i, 4, aUser->getEmail().c_str());
 	}
-	virtual void onNickList(StringList& aList) {
-		for(StringIter i = aList.begin(); i != aList.end(); ++i) {
-			ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), i->c_str());
-		}
-	}
-	virtual void onOpList(StringList& aList) {
-		for(StringIter i = aList.begin(); i != aList.end(); ++i) {
-			ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), i->c_str());
-		}
-	}
-	virtual void onPrivateMessage(const string& aFrom, const string& aMessage) {
+	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) {
 		addLine("Private message from " + aFrom + ":\r\n" + aMessage);
 	}
-	
 
-	DCClient::Ptr client;
+	Client::Ptr client;
 	ProtocolHandler::Ptr ph;
 	string server;
 	CContainedWindow ctrlMessageContainer;
@@ -112,9 +104,8 @@ protected:
 public:
 
 	HubFrame(const string& aServer) : ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
-		client = new DCClient();
+		client = new Client();
 		client->addListener(this);
-		ph = new ProtocolHandler(client);
 	}
 
 	~HubFrame() {
@@ -161,10 +152,10 @@ public:
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 		string user;
 		char buf[1024];
-		ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
-		user = buf;
-		DownloadManager::getInstance()->download("MyList.DcLst", user, Settings::getAppPath() + user + ".DcLst");
-
+		if(item->iItem != -1) {
+			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
+			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(buf), Settings::getAppPath() + user + ".DcLst");
+		}
 		return 0;
 	}
 		
@@ -229,9 +220,14 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.6  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.5  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -52,11 +52,27 @@ void DirectoryListing::load(string& in) {
 		}
 	}
 }
+
+string DirectoryListing::getPath(Directory* d) {
+	string dir = d->name+"\\";
+	Directory* cur = d->parent;
+	while(cur!=root) {
+		dir = cur->name +"\\" + dir;
+		cur = cur->parent;
+	}
+	return dir;
+}
+
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

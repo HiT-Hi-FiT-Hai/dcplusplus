@@ -21,13 +21,20 @@
 
 #include "ProtocolHandler.h"
 
+ProtocolHandler* ProtocolHandler::instance;
+
 /**
  * @file ProtocolHandler.cpp
- * $Id: ProtocolHandler.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: ProtocolHandler.cpp,v 1.2 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /FAs /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /G6 /Gr /MT /W3 /GX /O1 /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /FAs /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
@@ -100,7 +100,15 @@ SOURCE=.\client\BufferedSocket.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Client.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ClientListener.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\ConnectionManager.cpp
 # End Source File
 # Begin Source File
 
@@ -109,10 +117,6 @@ SOURCE=.\client\CriticalSection.cpp
 # Begin Source File
 
 SOURCE=.\client\CryptoManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DCClient.cpp
 # End Source File
 # Begin Source File
 
@@ -153,10 +157,6 @@ SOURCE=.\client\HubFrame.cpp
 # Begin Source File
 
 SOURCE=.\client\HubManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\IncomingManager.cpp
 # End Source File
 # Begin Source File
 
@@ -205,6 +205,10 @@ SOURCE=.\client\UploadManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\User.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\UserConnection.cpp
 # End Source File
 # End Group
@@ -229,7 +233,15 @@ SOURCE=.\client\BufferedSocket.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Client.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ClientListener.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\ConnectionManager.h
 # End Source File
 # Begin Source File
 
@@ -238,10 +250,6 @@ SOURCE=.\client\CriticalSection.h
 # Begin Source File
 
 SOURCE=.\client\CryptoManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DCClient.h
 # End Source File
 # Begin Source File
 
@@ -278,10 +286,6 @@ SOURCE=.\client\HubFrame.h
 # Begin Source File
 
 SOURCE=.\client\HubManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\IncomingManager.h
 # End Source File
 # Begin Source File
 
@@ -330,6 +334,10 @@ SOURCE=.\client\StringTokenizer.h
 # Begin Source File
 
 SOURCE=.\client\UploadManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\User.h
 # End Source File
 # Begin Source File
 

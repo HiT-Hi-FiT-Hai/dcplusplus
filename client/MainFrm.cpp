@@ -25,7 +25,7 @@
 #include "PublicHubsDlg.h"
 #include "SettingsDlg.h"
 
-#include "IncomingManager.h"
+#include "ConnectionManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "CryptoManager.h"
@@ -33,27 +33,30 @@
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
 
-#include <fstream>
-#include <strstream>
-
 MainFrame::~MainFrame() {
+	ProtocolHandler::deleteInstance();
 	DownloadManager::getInstance()->removeListener(this);
 	CryptoManager::deleteInstance();
-	IncomingManager::deleteInstance();
+	ConnectionManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
 	HubManager::deleteInstance();
 }
 
-void MainFrame::onDownloadFailed(Download::Ptr p, const string& aReason) {
-	MessageBox(aReason.c_str(), "Download failed", MB_OK | MB_ICONERROR);
+void MainFrame::onDownloadAdded(Download::Ptr p) {
+	int i = ctrlDownloads.insert(ctrlDownloads.GetItemCount(), p->fileName.c_str(), (LPARAM)p);
+	char buf[24];
+	ctrlDownloads.SetItemText(i, 2, _i64toa(p->size, buf, 10));
 }
 
+void MainFrame::onDownloadConnecting(Download* aDownload) {
+	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->user->getNick()).c_str());
+}
 void MainFrame::onDownloadComplete(Download::Ptr p) {
-	if(p->fileName.find(".DcLst")) {
+	if(p->fileName.find(".DcLst")!=string::npos) {
 		// We have a new DC listing, show it...
 		DirectoryListing* dl = new DirectoryListing();
-		HANDLE h = CreateFile(p->destination.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		HANDLE h = CreateFile(p->targetFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		if(h==NULL) {
 			return;
 		}
@@ -67,20 +70,37 @@ void MainFrame::onDownloadComplete(Download::Ptr p) {
 		CryptoManager::getInstance()->decodeHuffman(code, tmp);
 		dl->load(tmp);
 		
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->lastUser);
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->user);
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
-	} else {
-		MessageBox(("Download of " + p->fileName + " complete!").c_str());
 	}
+
+	ctrlDownloads.DeleteItem(ctrlDownloads.find((LPARAM)p));
+//	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)p), 1, "Download finished");
+	
 }
+
+void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason) {
+	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, aReason.c_str());
+}
+void MainFrame::onDownloadStarting(Download* aDownload) {
+	char buf[24];
+	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 2, _i64toa(aDownload->size, buf, 10));
+	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 3, aDownload->user->getNick().c_str());
+}
+void MainFrame::onDownloadTick(Download* aDownload) {
+	char buf[1024];
+	sprintf(buf, "Downloaded %I64d bytes(%.01f%%)", aDownload->pos, (double)aDownload->pos*100.0/(double)aDownload->size);
+	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, buf);
+}
+
 LRESULT MainFrame::OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	DirectoryListingFrame* dlg = (DirectoryListingFrame*)wParam;
 	dlg->CreateEx(m_hWndClient);
 	dlg->setWindowTitle();
 	return 0;
 }
-LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		
 	// Set window name
 	SetWindowText(APPNAME " " VERSIONSTRING);
@@ -103,6 +123,18 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	
+	ctrlDownloads.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
+	
+	ctrlDownloads.InsertColumn(0, "File", LVCFMT_LEFT, 300, 0);
+	ctrlDownloads.InsertColumn(1, "Status", LVCFMT_LEFT, 400, 1);
+	ctrlDownloads.InsertColumn(2, "Size", LVCFMT_LEFT, 300, 2);
+	ctrlDownloads.InsertColumn(3, "Downloading from", LVCFMT_LEFT, 100, 3);
+
+	SetSplitterPanes(m_hWndClient, ctrlDownloads.m_hWnd);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	m_nProportionalPos = 8000;
+	
 	UIAddToolBar(hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
@@ -116,12 +148,15 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	Settings::load();	
 	
 	CryptoManager::newInstance();
-	IncomingManager::newInstance();
+	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	HubManager::newInstance();
-	
+	ProtocolHandler::newInstance();
 	DownloadManager::getInstance()->addListener(this);
+
+	// We want to pass this one on to the splitter...hope it get's there...
+	bHandled = FALSE;
 	
 	return 0;
 }
@@ -167,16 +202,21 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setConnectionType(dlg.connectionType);
 		Settings::save();
 
-		IncomingManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
+		ConnectionManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
 	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.6  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.5  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -49,7 +49,6 @@ public:
 		File::List files;
 
 		Directory* parent;
-
 		Directory(Directory* aParent = NULL, const string& aName = "") : parent(aParent), name(aName) { };
 		
 		~Directory() {
@@ -64,6 +63,7 @@ public:
 	};
 
 	void load(string& i);
+	string getPath(Directory* d);
 	Directory* getRoot() { return root; };
 	DirectoryListing() {
 		root = new Directory();
@@ -82,9 +82,14 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

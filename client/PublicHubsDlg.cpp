@@ -27,7 +27,7 @@ void PublicHubsDlg::onHub(const string& aName, const string& aServer, const stri
 	l.push_back(aDescription);
 	l.push_back(aUsers);
 	l.push_back(aServer);
-	ctrlHubs.insertItem(l);
+	ctrlHubs.insert(l);
 }
 
 LRESULT PublicHubsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -89,9 +89,14 @@ DWORD WINAPI PublicHubsDlg::stopper(void* p) {
 }
 /**
  * @file PublicHubsDlg.cpp
- * $Id: PublicHubsDlg.cpp,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: PublicHubsDlg.cpp,v 1.4 2001/11/29 19:10:55 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.cpp,v $
+ * Revision 1.4  2001/11/29 19:10:55  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

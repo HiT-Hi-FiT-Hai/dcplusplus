@@ -21,6 +21,7 @@
 
 #include "DirectoryListingFrm.h"
 #include "DirectoryListing.h"
+#include "DownloadManager.h"
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
@@ -45,7 +46,7 @@ LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh
 	} 
 	return 0;
 }
-	
+
 LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 	NMTREEVIEW* p = (NMTREEVIEW*) pnmh;
 
@@ -59,8 +60,49 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			StringList l;
 			l.push_back((*i)->name);
 			l.push_back(buf);
-			ctrlList.insertItem(l, 2);
+			ctrlList.insert(l, 2);
 		}
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t != NULL) {
+		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
+		
+		char buf[MAX_PATH];
+		ctrlList.GetItemText(item->iItem, 0, buf, MAX_PATH);
+
+		OPENFILENAME ofn;       // common dialog box structure
+		char szFile[260];       // buffer for file name
+
+		szFile[0] = 0;
+		strcpy(szFile, buf);
+
+		// Initialize OPENFILENAME
+		ZeroMemory(&ofn, sizeof(OPENFILENAME));
+		ofn.lStructSize = sizeof(OPENFILENAME);
+		ofn.hwndOwner = m_hWnd;
+		ofn.lpstrFile = szFile;
+		ofn.nMaxFile = sizeof(szFile);
+		ofn.lpstrFilter = NULL;
+		ofn.nFilterIndex = 0;
+		ofn.lpstrFileTitle = NULL;
+		ofn.nMaxFileTitle = 0;
+		ofn.lpstrInitialDir = NULL;
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+		
+		// Display the Open dialog box. 
+		
+		if (GetSaveFileName(&ofn)==TRUE) {
+			char size[24];
+			ctrlList.GetItemText(item->iItem, 1, size, 24);
+			DownloadManager::getInstance()->download(dl->getPath(dir) + buf, size, user, ofn.lpstrFile);
+		}
+		DWORD x = CommDlgExtendedError();
 	}
 	return 0;
 }
@@ -87,9 +129,14 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.2  2001/11/29 19:10:54  arnetheduck
+ * Refactored down/uploading and some other things completely.
+ * Also added download indicators and download resuming, along
+ * with some other stuff.
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
