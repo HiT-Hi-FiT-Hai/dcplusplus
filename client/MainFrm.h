@@ -36,7 +36,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener
 {
 public:
-	MainFrame() : stopperThread(NULL) { };
+	MainFrame() : stopperThread(NULL), menuItems(0) { };
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
@@ -104,9 +104,9 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		CHAIN_MDI_CHILD_COMMANDS()
 		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + menuItems), onTransferItem)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
-		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
@@ -156,83 +156,7 @@ public:
 		cs.leave();
 	}
 
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		// Get the bounding rectangle of the client area. 
-		ctrlTransfers.GetClientRect(&rc);
-		ctrlTransfers.ScreenToClient(&pt); 
-		cs.enter();
-		if (PtInRect(&rc, pt)) 
-		{ 
-			// Remove all old items
-			while(transferMenu.GetMenuItemCount() > 0) {
-				transferMenu.DeleteMenu(0, MF_BYPOSITION);
-			}
-
-			int n = 0;
-			CMenuItemInfo mi;
-			
-			mi.fMask = MIIM_ID | MIIM_STRING;
-			mi.dwTypeData = "Remove Transfer";
-			mi.wID = IDC_REMOVE;
-			transferMenu.InsertMenuItem(n++, TRUE, &mi);
-
-			if(ctrlTransfers.GetSelectedCount() == 1) {
-
-				mi.fMask = MIIM_TYPE;
-				mi.fType = MFT_SEPARATOR;
-				transferMenu.InsertMenuItem(n++, TRUE, &mi);
-				
-				
-				LVITEM lvi;
-				lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
-				lvi.iSubItem = 0;
-				lvi.mask = LVIF_IMAGE | LVIF_PARAM;
-
-				ctrlTransfers.GetItem(&lvi);
-
-				if(lvi.iImage == IMAGE_DOWNLOAD) {
-					Download* d = (Download*)lvi.lParam;
-					menuItems = 0;
-					for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
-						string str = "Browse " + (*i)->getNick() + "'s files";
-						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
-						mi.dwTypeData = (LPSTR)str.c_str();
-						mi.dwItemData = (DWORD)*i;
-						mi.wID = IDC_TRANSFERITEM + menuItems++;
-						transferMenu.InsertMenuItem(n++, TRUE, &mi);
-
-						str = "Remove " + (*i)->getNick() + " from this transfer";
-						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
-						mi.dwTypeData = (LPSTR)str.c_str();
-						mi.dwItemData = (DWORD)*i;
-						mi.wID = IDC_TRANSFERITEM + menuItems++;
-						transferMenu.InsertMenuItem(n++, TRUE, &mi);
-						
-						str = "Send Message To " + (*i)->getNick();
-						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
-						mi.dwTypeData = (LPSTR)str.c_str();
-						mi.dwItemData = (DWORD)*i;
-						mi.wID = IDC_TRANSFERITEM + menuItems++;
-						transferMenu.InsertMenuItem(n++, TRUE, &mi);
-					}
-				}
-			}
-			
-			
-			
-			ctrlTransfers.ClientToScreen(&pt);
-
-			transferMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
-		}
-		cs.leave();
-		return FALSE; 
-	}
-	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
@@ -420,9 +344,13 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.24 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.25 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.25  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.24  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

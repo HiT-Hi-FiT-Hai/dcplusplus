@@ -289,6 +289,7 @@ public:
 			CMenuItemInfo mii;
 			mii.cch = pT->_nMaxMenuItemTextLength;
 			mii.fMask = MIIM_CHECKMARKS | MIIM_DATA | MIIM_ID | MIIM_STATE | MIIM_SUBMENU | MIIM_TYPE;
+			mii.fType = MFT_STRING;
 			mii.dwTypeData = szString;
 			bRet = sysMenu.GetMenuItemInfo(i, TRUE, &mii);
 			ATLASSERT(bRet);

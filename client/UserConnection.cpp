@@ -69,7 +69,7 @@ void UserConnection::onLine(const string& aLine) {
 	} else if(aLine.find("$Lock") != string::npos) {
 		string tmp = aLine.substr(6);
 		string lock = tmp.substr(0, tmp.find(" Pk="));
-		tmp = tmp.substr(tmp.find(" Pk=") + 5);
+		tmp = tmp.substr(tmp.find(" Pk=") + 4);
 		fireLock(lock, tmp);
 	} else if(aLine.find("$MyNick") != string::npos) {
 		fireMyNick(aLine.substr(8));
@@ -87,9 +87,13 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.6 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.7 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.7  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.6  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -21,6 +21,7 @@
 
 #include "HubFrame.h"
 #include "DownloadManager.h"
+#include "LineDlg.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -61,29 +62,34 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	if(!images) {
 		images = new CImageList();
-		images->CreateFromImage(IDB_USERS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
+		images->CreateFromImage(IDB_USERS, 16, 4, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
 	}
 	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
 
 	CMenuItemInfo mi;
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 13;
 	mi.dwTypeData = "Get File List";
 	mi.wID = IDC_GETLIST;
 	userMenu.InsertMenuItem(0, TRUE, &mi);
 	opMenu.InsertMenuItem(0, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 15;
 	mi.dwTypeData = "Private Message";
 	mi.wID = IDC_PRIVATEMESSAGE;
 	userMenu.InsertMenuItem(1, TRUE, &mi);
 	opMenu.InsertMenuItem(1, TRUE, &mi);
 	
-	mi.fMask = MIIM_TYPE;
 	mi.fType = MFT_SEPARATOR;
 	userMenu.InsertMenuItem(2, TRUE, &mi);
 	opMenu.InsertMenuItem(2, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 17;
 	mi.dwTypeData = "Refresh User List";
 	mi.wID = IDC_REFRESH;
 	userMenu.InsertMenuItem(3, TRUE, &mi);
@@ -93,12 +99,16 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mi.fType = MFT_SEPARATOR;
 	opMenu.InsertMenuItem(4, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 9;
 	mi.dwTypeData = "Kick User";
 	mi.wID = IDC_KICK;
 	opMenu.InsertMenuItem(5, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 8;
 	mi.dwTypeData = "Redirect";
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(6, TRUE, &mi);
@@ -168,6 +178,52 @@ LRESULT HubFrame::onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 	return 0;
 }
 
+LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LineDlg dlg;
+	dlg.title = "Kick user(s)";
+	dlg.description = "Please enter a reason";
+	if(dlg.DoModal() == IDOK) {
+		int i = -1;
+		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			char buf[256];
+			ctrlUsers.GetItemText(i, 0, buf, 256);
+			string user = buf;
+			User::Ptr& u = client->getUser(user);
+			if(u) {
+				client->sendMessage(Settings::getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
+				client->privateMessage(u, "You are being kicked because: " + dlg.line);
+				client->kick(u);
+			}
+		}
+	}
+	
+	return 0; 
+};
+
+LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LineDlg dlg1, dlg2;
+	dlg1.title = "Redirect user(s)";
+	dlg1.description = "Please enter a reason";
+	if(dlg1.DoModal() == IDOK) {
+		dlg2.title = "Redirect user(s)";
+		dlg2.description = "Please enter destination server";
+		if(dlg2.DoModal() == IDOK) {
+			int i = -1;
+			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				char buf[256];
+				ctrlUsers.GetItemText(i, 0, buf, 256);
+				string user = buf;
+				User::Ptr& u = client->getUser(user);
+				if(u) {
+					client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+				}
+			}
+		}
+	}
+	
+	return 0; 
+};
+
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	cs.enter();
 	// First some specials to handle those messages that have to initialize variables...
@@ -189,9 +245,18 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			l.push_back(u->getDescription());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
-			ctrlUsers.insert(l, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, (LPARAM)ui);
+			int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
+			
+			if(u->isSet(User::DCPLUSPLUS))
+				image+=2;
+
+			ctrlUsers.insert(l, image, (LPARAM)ui);
 		} else {
-			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, 0, 0, NULL);
+			int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
+			if(u->isSet(User::DCPLUSPLUS))
+				image+=2;
+
+			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, image, 0, 0, NULL);
 			ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
 			ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
 			ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
@@ -236,7 +301,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
 		PMInfo* i = (PMInfo*)lParam;
-		i->frm->Create(m_hWndMDIClient);
+		if(i->frm->m_hWnd == NULL) {
+			i->frm->setTab(getTab());
+			i->frm->Create(m_hWndMDIClient);
+		}
 		i->frm->addLine(i->msg);
 		delete i;
 	}
@@ -246,9 +314,13 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.16 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.17 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.17  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.16  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

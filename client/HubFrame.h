@@ -27,7 +27,6 @@
 #include "Client.h"
 #include "ExListViewCtrl.h"
 #include "User.h"
-#include "LineDlg.h"
 #include "CriticalSection.h"
 #include "ClientManager.h"
 #include "PrivateFrame.h"
@@ -104,7 +103,6 @@ private:
 		PMInfo* i = new PMInfo();
 
 		i->frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
-		i->frm->setTab(getTab());
 		i->msg = aMessage;
 		SendNotifyMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
 	}
@@ -198,50 +196,8 @@ public:
 		return 0;
 	}
 
-	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-		LineDlg dlg;
-		dlg.title = "Kick user(s)";
-		dlg.description = "Please enter a reason";
-		if(dlg.DoModal() == IDOK) {
-			int i = -1;
-			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				char buf[256];
-				ctrlUsers.GetItemText(i, 0, buf, 256);
-				string user = buf;
-				User::Ptr& u = client->getUser(user);
-				if(u) {
-					client->sendMessage(Settings::getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
-					client->privateMessage(u, "You are being kicked because: " + dlg.line);
-					client->kick(u);
-				}
-			}
-		}
-			
-		return 0; 
-	};
-	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-		LineDlg dlg1, dlg2;
-		dlg1.title = "Redirect user(s)";
-		dlg1.description = "Please enter a reason";
-		if(dlg1.DoModal() == IDOK) {
-			dlg2.title = "Redirect user(s)";
-			dlg2.description = "Please enter destination server";
-			if(dlg2.DoModal() == IDOK) {
-				int i = -1;
-				while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-					char buf[256];
-					ctrlUsers.GetItemText(i, 0, buf, 256);
-					string user = buf;
-					User::Ptr& u = client->getUser(user);
-					if(u) {
-						client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
-					}
-				}
-			}
-		}
-		
-		return 0; 
-	};
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		RECT rc;                    // client area of window 
@@ -338,10 +294,12 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
+		cs.enter();
 		client->disconnect();
 		ctrlUsers.DeleteAllItems();
 		client->connect(server);
+		cs.leave();
 		return 0;
 	}
 
@@ -433,9 +391,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.28 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.29 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.29  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.28  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

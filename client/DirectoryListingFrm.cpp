@@ -237,23 +237,31 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	fileMenu.CreatePopupMenu();
 	CMenuItemInfo mi;
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 8;
 	mi.dwTypeData = "Download";
 	mi.wID = IDC_DOWNLOAD;
 	fileMenu.InsertMenuItem(0, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 14;
 	mi.dwTypeData = "Download to...";
 	mi.wID = IDC_DOWNLOADTO;
 	fileMenu.InsertMenuItem(1, TRUE, &mi);
 
 	directoryMenu.CreatePopupMenu();
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 8;
 	mi.dwTypeData = "Download";
 	mi.wID = IDC_DOWNLOADDIR;
 	directoryMenu.InsertMenuItem(0, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 14;
 	mi.dwTypeData = "Download to...";
 	mi.wID = IDC_DOWNLOADDIRTO;
 	directoryMenu.InsertMenuItem(1, TRUE, &mi);
@@ -264,9 +272,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.14 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.15 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.15  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.14  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

@@ -75,17 +75,23 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.CreatePopupMenu();
 	
 	CMenuItemInfo mi;
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 13;
 	mi.dwTypeData = "Get File List";
 	mi.wID = IDC_GETLIST;
 	resultsMenu.InsertMenuItem(0, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 16;
 	mi.dwTypeData = "Download file(s)";
 	mi.wID = IDC_DOWNLOAD;
 	resultsMenu.InsertMenuItem(1, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 22;
 	mi.dwTypeData = "Download file(s) to...";
 	mi.wID = IDC_DOWNLOADTO;
 	resultsMenu.InsertMenuItem(2, TRUE, &mi);
@@ -97,9 +103,13 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.8 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.9 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.9  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.8  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

@@ -212,6 +212,7 @@ private:
 	
 	virtual void onHubFinished(HubEntry::List& aList) {
 		HubManager::getInstance()->removeListener(this);
+		ctrlStatus.SetText(0, "Done!");
 		ctrlHubs.DeleteAllItems();
 		users = 0;
 		hubs = 0;
@@ -247,9 +248,13 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.9 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.10 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.10  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.9  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

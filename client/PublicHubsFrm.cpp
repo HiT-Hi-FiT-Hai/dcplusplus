@@ -67,6 +67,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlAddress.SetWindowText("Address");
 	ctrlAddress.SetFont(ctrlHubs.GetFont());
 	
+	ctrlStatus.SetText(0, "Downloading hub list...");
+
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getPublicHubList();
 	
@@ -99,6 +101,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndC
 	ctrlHubs.DeleteAllItems();
 	users = 0;
 	hubs = 0;
+	ctrlStatus.SetText(0, "Downloading hub list...");
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getPublicHubList(true);
 
@@ -162,9 +165,13 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.10 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.11 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.11  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.10  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

@@ -37,7 +37,8 @@ class User : public PointerBase
 public:
 	enum {
 		OP = 0x01,
-		ONLINE = 0x02
+		ONLINE = 0x02,
+		DCPLUSPLUS = 0x04
 	};
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
@@ -90,9 +91,13 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.4 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: User.h,v 1.5 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.5  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.4  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

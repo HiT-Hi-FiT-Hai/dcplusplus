@@ -176,6 +176,16 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
 	try {
+		if(aLock == CryptoManager::getInstance()->getLock()) {
+			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
+			if(aPk.find("DCPLUSPLUS") != string::npos) {
+				aSource->getUser()->setFlag(User::DCPLUSPLUS);
+
+				if(aSource->getUser()->getClient()) {
+					aSource->getUser()->getClient()->getInfo(aSource->getUser());
+				}
+			}
+		}
 		aSource->direction(aSource->getDirectionString(), "666");
 		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 	} catch(SocketException e) {
@@ -240,9 +250,13 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.15 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.16 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.16  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.15  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

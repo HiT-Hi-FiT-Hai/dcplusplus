@@ -348,6 +348,89 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
+LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlTransfers.GetClientRect(&rc);
+	ctrlTransfers.ScreenToClient(&pt); 
+	cs.enter();
+	if (PtInRect(&rc, pt)) 
+	{ 
+		// Remove all old items
+		while(transferMenu.GetMenuItemCount() > 0) {
+			transferMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+		
+		int n = 0;
+		CMenuItemInfo mi;
+		
+		mi.fMask = MIIM_ID | MIIM_TYPE;
+		mi.fType = MFT_STRING;
+		mi.cch = 15;
+		mi.dwTypeData = "Remove Transfer";
+		mi.wID = IDC_REMOVE;
+		transferMenu.InsertMenuItem(n++, TRUE, &mi);
+		
+		if(ctrlTransfers.GetSelectedCount() == 1) {
+			
+			mi.fMask = MIIM_TYPE;
+			mi.fType = MFT_SEPARATOR;
+			transferMenu.InsertMenuItem(n++, TRUE, &mi);
+			
+			
+			LVITEM lvi;
+			lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+			lvi.iSubItem = 0;
+			lvi.mask = LVIF_IMAGE | LVIF_PARAM;
+			
+			ctrlTransfers.GetItem(&lvi);
+			
+			if(lvi.iImage == IMAGE_DOWNLOAD) {
+				Download* d = (Download*)lvi.lParam;
+				menuItems = 0;
+				for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
+					string str = "Browse " + (*i)->getNick() + "'s files";
+					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fType = MFT_STRING;
+					mi.cch = str.size();
+					mi.dwTypeData = (LPSTR)str.c_str();
+					mi.dwItemData = (DWORD)*i;
+					mi.wID = IDC_TRANSFERITEM + menuItems++;
+					transferMenu.InsertMenuItem(n++, TRUE, &mi);
+					
+					str = "Remove " + (*i)->getNick() + " from this transfer";
+					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fType = MFT_STRING;
+					mi.cch = str.size();
+					mi.dwTypeData = (LPSTR)str.c_str();
+					mi.dwItemData = (DWORD)*i;
+					mi.wID = IDC_TRANSFERITEM + menuItems++;
+					transferMenu.InsertMenuItem(n++, TRUE, &mi);
+					
+					str = "Send Message To " + (*i)->getNick();
+					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fType = MFT_STRING;
+					mi.cch = str.size();
+					mi.dwTypeData = (LPSTR)str.c_str();
+					mi.dwItemData = (DWORD)*i;
+					mi.wID = IDC_TRANSFERITEM + menuItems++;
+					transferMenu.InsertMenuItem(n++, TRUE, &mi);
+				}
+			}
+		}
+		
+		ctrlTransfers.ClientToScreen(&pt);
+		
+		transferMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		
+		return TRUE; 
+	}
+	cs.leave();
+	return FALSE; 
+}
+
 LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	SearchFrame* pChild = new SearchFrame();
@@ -502,9 +585,13 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.32 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.33 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.33  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.32  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

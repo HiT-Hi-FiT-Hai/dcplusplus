@@ -114,7 +114,7 @@ private:
 		}
 	};
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.09ABCABCABC") { };
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABCABC") { };
 
 	string lock;
 	string pk;
@@ -136,9 +136,13 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.7 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.8 2002/01/07 20:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.8  2002/01/07 20:17:59  arnetheduck
+ * Finally fixed the reconnect bug that's been annoying me for a whole day...
+ * Hopefully the app works better in w95 now too...
+ *
  * Revision 1.7  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *
