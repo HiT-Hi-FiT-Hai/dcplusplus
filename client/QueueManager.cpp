@@ -108,16 +108,6 @@ QueueItem* QueueManager::UserQueue::getRunning(const User::Ptr& aUser) {
 	return (i == running.end()) ? NULL : i->second;
 }
 
-void QueueManager::UserQueue::getUserList(User::List& l, QueueItem::Priority p) {
-	QueueItem::UserListIter i = userQueue[p].begin();
-	while(i != userQueue[p].end()) {
-		if(i->first->isOnline())
-			l.push_back(i->first);
-		
-		i++;
-	}
-}
-
 void QueueManager::UserQueue::remove(QueueItem* qi) {
 	if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
 		dcassert(qi->getCurrent() != NULL);
@@ -791,7 +781,7 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 			if( q->getStatus() != QueueItem::STATUS_RUNNING ) {
 				if(q->getPriority() == QueueItem::PAUSED) {
 					// Problem, we have to request connections to all these users...
-					userQueue.getUserList(ul, QueueItem::PAUSED);
+					q->getUsers(ul);
 				}
 
 				userQueue.remove(q);
@@ -804,6 +794,7 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 			fire(QueueManagerListener::STATUS_UPDATED, q);
 		}
 	}
+
 	for(User::Iter i = ul.begin(); i != ul.end(); ++i) {
 		ConnectionManager::getInstance()->getDownloadConnection(*i);
 	}
@@ -1096,5 +1087,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.43 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.44 2003/10/07 14:58:19 arnetheduck Exp $
  */

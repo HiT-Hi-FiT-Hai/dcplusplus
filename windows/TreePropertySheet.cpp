@@ -33,6 +33,7 @@ LRESULT TreePropertySheet::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	hideTab();
 	addTree();
 	fillTree();
+	CenterWindow(GetParent());
 	return 0;
 }
 

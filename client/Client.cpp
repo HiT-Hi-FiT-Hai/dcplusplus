@@ -595,8 +595,8 @@ void Client::kick(User* aUser, const string& aMsg) {
 // TimerManagerListener
 void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	if(type == TimerManagerListener::SECOND) {
-		if(socket && (lastActivity + 120 * 1000) < aTick) {
-			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
+		if(socket && (lastActivity + (120+Util::rand(0, 60)) * 1000) < aTick) {
+			// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
 			lastActivity = aTick;
 			// Try to send something for the fun of it...
 			if(isConnected()) {
@@ -655,6 +655,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.54 2003/09/22 13:17:21 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.55 2003/10/07 14:58:19 arnetheduck Exp $
  */
 

@@ -159,6 +159,12 @@ public:
 
 	Source::List& getSources() { return sources; };
 	Source::List& getBadSources() { return badSources; };
+	void getUsers(User::List& l) {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i)
+			if((*i)->getUser()->isOnline())
+				l.push_back((*i)->getUser());
+	}
+
 	string getTargetFileName() { return Util::getFileName(getTarget()); };
 
 	bool isSource(const User::Ptr& aUser) { return (getSource(aUser) != sources.end()); };
@@ -322,7 +328,6 @@ private:
 		QueueItem* getRunning(const User::Ptr& aUser);
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
-		void getUserList(User::List& l, QueueItem::Priority p);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; };
 		void remove(QueueItem* qi);
 		void remove(QueueItem* qi, const User::Ptr& aUser);
@@ -392,6 +397,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.38 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.39 2003/10/07 14:58:19 arnetheduck Exp $
  */
 

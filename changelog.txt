@@ -5,7 +5,10 @@
 * Fixed a case sensitivity bug in favorite hubs (thanks saurod)
 * Locale formatting of exact size in search (thanks saurod)
 * Fixed a bug where directories were not correctly returned (thanks saurod)
-
+* Replaced the tab control in the settings with a tree, expect many more settings soon
+* Fixed a bug when changing priorities from paused
+* Reduced transfer view flicker somewhat when sorted by status
+* Reconnect time is randomized a little to reduce stress on hub when everyone reconnects
 
  -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)

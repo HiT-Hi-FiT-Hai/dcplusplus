@@ -294,6 +294,18 @@ SOURCE=.\windows\stdafx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\windows\TextFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\TransferView.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\TreePropertySheet.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\windows\UploadPage.cpp
 # End Source File
 # Begin Source File
@@ -331,6 +343,10 @@ SOURCE=.\windows\AdvancedPage.h
 # Begin Source File
 
 SOURCE=.\windows\AppearancePage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\CommandDlg.h
 # End Source File
 # Begin Source File
 
@@ -427,6 +443,18 @@ SOURCE=.\windows\SpyFrame.h
 # Begin Source File
 
 SOURCE=.\windows\stdafx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\TextFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\TransferView.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\TreePropertySheet.h
 # End Source File
 # Begin Source File
 

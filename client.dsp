@@ -121,6 +121,10 @@ SOURCE=.\client\DownloadManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Exception.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\FinishedManager.cpp
 # End Source File
 # Begin Source File
@@ -250,6 +254,10 @@ SOURCE=.\client\ConnectionManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\ConnectionManagerListener.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\CriticalSection.h
 # End Source File
 # Begin Source File
@@ -350,11 +358,19 @@ SOURCE=.\client\Socket.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Speaker.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\stdinc.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\client\StringDefs.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\StringSearch.h
 # End Source File
 # Begin Source File
 

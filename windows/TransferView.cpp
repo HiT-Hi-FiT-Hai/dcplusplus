@@ -360,8 +360,11 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			}
 			delete l;
 		}
+
+		if(ctrlTransfers.getSortColumn() != COLUMN_USER && ctrlTransfers.getSortColumn() != COLUMN_STATUS)
+			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
-		ctrlTransfers.resort();
+		
 		delete v;
 	}
 
