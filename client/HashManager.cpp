@@ -247,5 +247,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.3 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.4 2004/01/28 20:19:20 arnetheduck Exp $
  */
