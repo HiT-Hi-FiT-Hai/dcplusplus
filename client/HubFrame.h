@@ -28,6 +28,7 @@
 #include "ExListViewCtrl.h"
 #include "DownloadManager.h"
 #include "User.h"
+#include "PasswordDlg.h"
 
 #include "AtlCmdBar2.h"
 
@@ -61,6 +62,15 @@ protected:
 	virtual void onClientValidateDenied(Client* aClient) {
 		addClientLine("Your nick was already taken, please change to something else!");
 		client->disconnect();
+	}
+
+	virtual void onClientGetPassword(Client* aClient) {
+		PasswordDlg dlg;
+		if(dlg.DoModal() == IDOK) {
+			client->password(dlg.password);
+		} else {
+			client->disconnect();
+		}
 	}
 
 	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
@@ -304,9 +314,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.17 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.18 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.18  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.17  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

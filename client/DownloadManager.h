@@ -43,7 +43,8 @@ public:
 	Download() : resume(false) { }
 	
 	enum {
-		USER_LIST = 0x01
+		USER_LIST = 0x01,
+		RUNNING = 0x02
 	};
 
 	bool getResume() { return resume; };
@@ -131,11 +132,7 @@ public:
 		conn->addListener(this);
 		
 		cs.enter();
-		Download::UserIter i = waiting.find(conn->getUser());
-		if(i!=waiting.end()) {
-			waiting.erase(i);
-		}
-
+		waiting.erase(conn->getUser());
 		connections.push_back(conn);
 		cs.leave();
 
@@ -149,7 +146,7 @@ private:
 	CriticalSection cs;
 
 	Download::List queue;
-	Download::UserMap waiting;
+	map<User::Ptr, DWORD> waiting;
 	Download::Map running;
 	
 	static DownloadManager* instance;
@@ -157,6 +154,16 @@ private:
 	UserConnection::List connections;
 	StringList userLists;
 	
+	Download* getNextDownload(const User::Ptr& aUser) {
+		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+			if((*i)->getUser() == aUser) {
+				if(!(*i)->isSet(Download::RUNNING))
+					return *i;
+			}
+		}
+		return NULL;
+	}
+
 	void checkDownloads(UserConnection* aConn);
 	
 	// UserConnectionListener
@@ -167,8 +174,9 @@ private:
 	virtual void onModeChange(UserConnection* aSource, int aNewMode);
 	
 	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick);
 	virtual void onTimerMinute(DWORD aTick);
-	
+
 	void fireAdded(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
@@ -238,9 +246,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.14 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.15 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.15  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.14  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

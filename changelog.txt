@@ -1,3 +1,9 @@
+ -- 0.07 2001-12-18 --
+* Passive searching (I hope...)
+* Reworked the download queue, it should now be a bit more stable...
+* Some ui work
+* bugfixes as usual...although, now it's starting to become fairly stable...
+
  -- 0.06 2001-12-13 --
 * A lot of UI work, the app should be at least a tiny bit more comfortable to work with
 * Automatic reconnections (to hubs and users)

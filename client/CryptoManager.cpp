@@ -94,7 +94,7 @@ void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 
-	if(is[pos] != 'H' || is[pos+1] != 'E' || !(is[pos+2] == '3' || is[pos+2] == '0')) {
+	if(is[pos] != 'H' || is[pos+1] != 'E' || is[pos+2] != '3') {
 		return;
 	}
 	pos+=5;
@@ -333,9 +333,13 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.10 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.11 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.11  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.10  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -48,7 +48,7 @@ public:
 	
 	enum { IDD = IDD_SETTINGS };
 	
-	BEGIN_MSG_MAP(CAboutDlg)
+	BEGIN_MSG_MAP(SettingsDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
@@ -129,8 +129,10 @@ public:
 		SetDlgItemText(IDC_SLOTS, itoa(slots, buf, 10));
 		SetDlgItemText(IDC_DOWNLOADDIR, directory.c_str());
 		
-		CUpDownCtrl updown(GetDlgItem(IDC_SLOTS));
-		updown.SetRange(0, 100);
+		CUpDownCtrl updown;
+		updown.Attach(GetDlgItem(IDC_SLOTS));
+		updown.SetRange(100, 0);
+		
 		if(connectionType == Settings::CONNECTION_ACTIVE) {
 			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
 		} else if(connectionType == Settings::CONNECTION_PASSIVE) {
@@ -211,9 +213,13 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.7 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.7  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.6  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

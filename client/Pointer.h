@@ -35,7 +35,7 @@ public:
 		dcassert(ref>0);
 		
 		if ( --ref == 0 ) {
-			dcdebug("Smart Object at 0x%08x deleted\n", this);
+			//dcdebug("Smart Object at 0x%08x deleted\n", this);
 			delete this;
 			return true;
 		}
@@ -149,9 +149,13 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.1 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.2 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: Pointer.h,v $
+ * Revision 1.2  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.1  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

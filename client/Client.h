@@ -135,7 +135,10 @@ public:
 		dcdebug("getNickList\n");
 		send("$GetNickList|");
 	}
-
+	void password(const string& aPass) {
+		dcdebug("password");
+		send("$MyPass " + aPass + "|");
+	}
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
 		char buf[768];
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
@@ -324,6 +327,15 @@ private:
 		}
 	}
 	
+	void fireBadPassword() {
+		dcdebug("fireBadPassword\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientBadPassword(this);
+		}
+	}
 	void fireConnected() {
 		dcdebug("fireConnected\n");
 		listenerCS.enter();
@@ -369,6 +381,15 @@ private:
 			(*i)->onClientForceMove(this, aServer);
 		}
 	}
+	void fireGetPassword() {
+		dcdebug("fireGetPassword\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientGetPassword(this);
+		}
+	}
 	void fireHello(User::Ptr aUser) {
 		//dcdebug("fireHello\n");
 		listenerCS.enter();
@@ -393,6 +414,15 @@ private:
 		ClientListener::List tmp = listeners;
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onClientHubName(this);
+		}
+		listenerCS.leave();
+	}
+	void fireLoggedIn() {
+		dcdebug("fireLoggedIn\n");
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientLoggedIn(this);
 		}
 		listenerCS.leave();
 	}
@@ -502,9 +532,13 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.11 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: Client.h,v 1.12 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.12  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.11  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

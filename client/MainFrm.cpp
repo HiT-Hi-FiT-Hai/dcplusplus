@@ -51,8 +51,8 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 			wnd2 = wnd;
 		}
 	}
+	TimerManager::getInstance()->removeListeners();
 	ShareManager::deleteInstance();
-	TimerManager::deleteInstance();
 	ProtocolHandler::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
@@ -60,6 +60,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	SearchManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	HubManager::deleteInstance();
+	TimerManager::deleteInstance();
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
@@ -324,9 +325,13 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.19 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.20 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.20  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.19  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

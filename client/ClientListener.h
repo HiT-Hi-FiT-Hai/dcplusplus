@@ -77,6 +77,9 @@ public:
 	 * Detailed information about a user received/updated.
 	 * @param aUser Full info about the user.
 	 */
+	virtual void onClientGetPassword(Client* aClient) { };
+	virtual void onClientBadPassword(Client* aClient) { };
+	virtual void onClientLoggedIn(Client* aClient) { };
 	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) { };
 	virtual void onClientMessage(Client* aClient, const string& aMessage) { };
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) { };
@@ -95,9 +98,13 @@ public:
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.7 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.8 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.8  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.7  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

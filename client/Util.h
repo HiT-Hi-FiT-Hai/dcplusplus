@@ -95,6 +95,8 @@ public:
 		if(pidl != NULL) {
 			SHGetPathFromIDList(pidl, buf);
 			target = buf;
+			target+='\\';
+
 			if(SHGetMalloc(&ma) != E_FAIL) {
 				ma->Free(pidl);
 				ma->Release();
@@ -155,9 +157,13 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.4 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: Util.h,v 1.5 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.5  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.4  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

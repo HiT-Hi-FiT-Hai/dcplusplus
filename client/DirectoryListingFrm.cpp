@@ -36,15 +36,14 @@ LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh
 	t.hItem = p->item.hItem;
 	t.mask = TVIF_STATE;
 	ctrlTree.GetItem(&t);
-	if(p->item.mask && (TVIF_IMAGE || TVIF_SELECTEDIMAGE)) {
-		if(t.state && TVIS_EXPANDED) {
-			p->item.iImage = 1;
-			p->item.iSelectedImage = 1;
-		} else {
-			p->item.iImage = 0;
-			p->item.iSelectedImage = 0;
-		}
-	} 
+	
+	if(p->item.mask & TVIF_IMAGE) {
+		p->item.iImage = (t.state & TVIS_EXPANDED) ? 1 : 0;
+	}
+	if(p->item.mask & TVIF_SELECTEDIMAGE) {
+		p->item.iSelectedImage = (t.state & TVIS_EXPANDED) ? 1 : 0;
+	}
+
 	return 0;
 }
 
@@ -107,6 +106,27 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 	return 0;
 }
 
+LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t != NULL) {
+		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
+		string target = Settings::getDownloadDirectory();
+		dl->download(dir, user, target);
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t != NULL) {
+		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
+		string target;
+		if(Util::browseDirectory(target, m_hWnd))
+			dl->download(dir, user, target);
+	}
+	return 0;
+}
+
 void DirectoryListingFrame::downloadList(const string& aTarget) {
 	int i=-1;
 	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
@@ -153,13 +173,13 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 			string target;
 			if(Util::browseDirectory(target)) {
-				dl->download(d, user, target + '\\');
+				dl->download(d, user, target);
 			}
 		} 
 	} else {
 		string target;
 		if(Util::browseDirectory(target)) {
-			downloadList(target + '\\');
+			downloadList(target);
 		}
 		
 	}
@@ -205,6 +225,17 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	mi.dwTypeData = "Download to...";
 	mi.wID = IDC_DOWNLOADTO;
 	fileMenu.InsertMenuItem(1, TRUE, &mi);
+
+	directoryMenu.CreatePopupMenu();
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download";
+	mi.wID = IDC_DOWNLOADDIR;
+	directoryMenu.InsertMenuItem(0, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download to...";
+	mi.wID = IDC_DOWNLOADDIRTO;
+	directoryMenu.InsertMenuItem(1, TRUE, &mi);
 	
 	bHandled = FALSE;
 	return 1;
@@ -212,9 +243,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.8 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.9 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.9  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.8  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

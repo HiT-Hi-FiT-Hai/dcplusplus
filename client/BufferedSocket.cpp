@@ -21,7 +21,7 @@
 
 #include "BufferedSocket.h"
 
-static const int BUFSIZE = 4096;
+static const int BUFSIZE = 8192;
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
 	Socket::accept(aSocket);
@@ -223,9 +223,13 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.16 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.17 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.17  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.16  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

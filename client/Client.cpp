@@ -196,7 +196,13 @@ void Client::onLine(const string& aLine) {
 		string nick = tmp.substr(0, tmp.find("$") - 1);
 		tmp = tmp.substr(tmp.find("$") + 1);
 		firePrivateMessage(nick, tmp);
-	} else if(cmd == "$") {
+	} else if(cmd == "$GetPass") {
+		fireGetPassword();
+	} else if(cmd == "$BadPass") {
+		fireBadPassword();
+	} else if(cmd == "$LogedIn") {
+		fireLoggedIn();
+	} else if(cmd[0] == '$') {
 		fireUnknown(aLine);
 	} else {
 		fireMessage(aLine);
@@ -206,9 +212,13 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.10 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.11 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.11  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.10  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

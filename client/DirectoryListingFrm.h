@@ -60,6 +60,8 @@ public:
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_GETDISPINFO, onGetDispInfoDirectories)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -67,6 +69,8 @@ public:
 
 
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void downloadList(const string& aTarget);
@@ -85,7 +89,21 @@ public:
 			fileMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			
 			return TRUE; 
-		} 
+		} else { 
+		
+			ctrlList.ClientToScreen(&pt);
+
+			ctrlTree.GetClientRect(&rc);
+			ctrlTree.ScreenToClient(&pt); 
+			
+			if (PtInRect(&rc, pt)) 
+			{ 
+				ctrlTree.ClientToScreen(&pt);
+				fileMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				
+				return TRUE; 
+			} 
+		}
 		
 		return FALSE; 
 	}
@@ -145,6 +163,8 @@ private:
 	CImageList ctrlImages;
 	
 	CMenu fileMenu;
+	CMenu directoryMenu;
+	
 	string user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
@@ -165,9 +185,13 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.6 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.6  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.5  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

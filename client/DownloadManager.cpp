@@ -26,62 +26,118 @@
 
 DownloadManager* DownloadManager::instance = NULL;
 
+/**
+ * Each minute we check whether any of the users in the download queue have gone offline or connected
+ */
 void DownloadManager::onTimerMinute(DWORD aTick) {
 	cs.enter();
-	
+
+	Download::List offline;
+
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		Download* d = *i;
-		User::Ptr& u = d->getUser();
-		
-		if(!u) {
-			// Let's see if the user maybe connected...
-			u = Client::findUser(d->getLastNick());
-			if(!u) {
-				continue;
-			}	
-		}
+		Download*d = *i;
 
-
-		if(waiting.find(u) != waiting.end()) {
+		if(d->isSet(Download::RUNNING)) {
 			continue;
 		}
 
-		if(u->isOnline()) {
-			if(ConnectionManager::getInstance()->getDownloadConnection(u)==UserConnection::CONNECTING) {
-				waiting[u] = d;
-				fireConnecting(d);
-			}
-		} else {
-			// We need to check if we already have a connection to this user
-			bool found = false;
-			for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-				if((*i)->getUser() == u) {
-					found = true;
-				}
+		// Check if we've got a user pointer at all
+		if(!d->getUser()) {
+			d->setUser(Client::findUser(d->getLastNick()));
+	
+			if(!d->getUser()) {
+				// Still no user, go on to the next one...
+				continue;
 			}
 
-			if(!found) {
-				d->setUser(User::nuser);
-				fireFailed(d, d->getLastNick() + " has gone offline");
-			}
+		}
+
+		// Check if the user is still online
+		if(!d->getUser()->isOnline()) {
+			// Damn, we've lost him...
+			d->setUser(User::nuser);
+			offline.push_back(d);
+			continue;
+		}
+
+		// Alright, we've made it this far, add the user to the waiting queue (unless he's there already...)
+		map<User::Ptr, DWORD>::iterator i = waiting.find(d->getUser());
+		if(i == waiting.end()) {
+			waiting[d->getUser()] = 0;
 		}
 	}
 	cs.leave();
+
+	for(Download::Iter j = offline.begin(); j != offline.end(); ++j) {
+		fireFailed(*j, "User is offline");
+	}
+
+}
+
+void DownloadManager::onTimerSecond(DWORD aTick) {
+	cs.enter();
+
+	Download::List connecting;
+	
+	map<User::Ptr, DWORD>::iterator i = waiting.begin();
+
+	// Check on the users we're waiting for...
+	while(i != waiting.end()) {
+		// Check if something's happened the last 60 seconds...
+		if(i->second + 60*1000 < aTick) {
+			// Update the timer
+			i->second = aTick;
+
+			Download* d = getNextDownload(i->first);
+			if(d) {
+				if(ConnectionManager::getInstance()->getDownloadConnection(d->getUser())==UserConnection::CONNECTING) {
+					connecting.push_back(d);
+				}
+			} else {
+				// Duuh...no downloads for this user...remove him/her from the waiting queue...
+				i = waiting.erase(i);
+				continue;
+			}
+		}
+		++i;
+	}
+
+	Download::Map tmp = running;
+
+	cs.leave();
+
+	for(Download::Iter j = connecting.begin(); j != connecting.end(); ++j) {
+		fireConnecting(*j);
+	}
+
+	for(Download::MapIter m = tmp.begin(); m != tmp.end(); ++m) {
+		fireTick(m->second);
+	}
 	
 }
 
 void DownloadManager::connectFailed(const User::Ptr& aUser) {
-	Download::UserIter i = waiting.find(aUser);
+	cs.enter();
+	map<User::Ptr, DWORD>::iterator i = waiting.find(aUser);
 	if(i != waiting.end()) {
-		if(!aUser->isOnline()) {
-			i->second->setUser(User::nuser);
-			fireFailed(i->second, "Connection timeout, user disconnected");
-		} else {
-			fireFailed(i->second, "Connection timeout, user not responding");
-		}
-		waiting.erase(i);
-	}
+		Download* d = getNextDownload(aUser);
+		if(d) {
+			if(!aUser->isOnline()) {
+				waiting.erase(i);
+				d->setUser(User::nuser);
+				cs.leave();
+				fireFailed(d, "Connection timeout, user disconnected");
 
+			} else {
+				cs.leave();
+				fireFailed(d, "Connection timeout, user not responding");
+			}
+		} else {
+			cs.leave();
+		}
+	} else {
+		cs.leave();
+	}
 }
 
 /**
@@ -105,7 +161,14 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 		// First, search the queue for the same download...
 		Download* dd = *i;
 		if(dd->getTarget() == aTarget) {
-			// Same download it seems
+			// Same download it seems, check it it's running...
+			for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
+				if(j->second == dd) {
+					// Yes, it's running, ignore it...
+					cs.leave();
+					return;
+				}
+			}
 			d = dd;
 		}
 	}
@@ -134,16 +197,17 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 		d->setResume(aResume);
 
 		queue.push_back(d);
+		cs.leave();
+
 		fireAdded(d);
-	}
+
+		cs.enter();
+	} 
 
 	if(waiting.find(aUser) == waiting.end()) {
-		int status = ConnectionManager::getInstance()->getDownloadConnection(aUser);
-		if(status == UserConnection::CONNECTING) {
-			waiting[d->getUser()] = d;
-			fireConnecting(d);
-		}
+		waiting[d->getUser()] = 0;
 	}
+	
 	cs.leave();
 	
 }
@@ -174,31 +238,31 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 		// First, search the queue for the same download...
 		Download* dd = *i;
 		if(dd->getTarget() == aTarget) {
-			// Same download it seems
-			d = dd;
+			// Same download it seems, remove it...todo: something clever
+			cs.leave();
+			return;
 		}
 	}
 
-	if(d == NULL) {
-		d = new Download();
-	
-		if(aFile.find('\\')) {
-			d->setFileName(aFile.substr(aFile.rfind('\\')+1));
-			d->setLast(aUser, aFile.substr(0, aFile.rfind('\\')+1));
-		} else {
-			d->setFileName(aFile);
-			d->setLast(aUser, "");
-		}
+	d = new Download();
 
-		d->setTarget(aTarget);
-		d->setSize(aSize);
-		d->setResume(aResume);
-
-		queue.push_back(d);
-		fireAdded(d);
-		fireFailed(d, d->getLastNick() + " has gone offline");
+	if(aFile.find('\\')) {
+		d->setFileName(aFile.substr(aFile.rfind('\\')+1));
+		d->setLast(aUser, aFile.substr(0, aFile.rfind('\\')+1));
+	} else {
+		d->setFileName(aFile);
+		d->setLast(aUser, "");
 	}
+
+	d->setTarget(aTarget);
+	d->setSize(aSize);
+	d->setResume(aResume);
+
+	queue.push_back(d);
 	cs.leave();
+
+	fireAdded(d);
+	fireFailed(d, d->getLastNick() + " has gone offline");
 }
 
 void DownloadManager::downloadList(User::Ptr& aUser) {
@@ -215,22 +279,6 @@ void DownloadManager::downloadList(const string& aUser) {
 
 void DownloadManager::removeDownload(Download* aDownload) {
 	cs.enter();
-	// First, we search the queue
-	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(*i == aDownload) {
-			// Good! It's in the queue, we can simply remove it...and check if we're waiting for a connection to the user...
-			if(aDownload->getUser()) {
-				Download::UserIter i = waiting.find(aDownload->getUser());
-				if(i != waiting.end()) {
-					waiting.erase(i);
-				}
-			}
-			queue.erase(i);
-			delete aDownload;
-			cs.leave();
-			return;
-		}
-	}
 
 	// Check the running downloads...
 	for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
@@ -239,6 +287,14 @@ void DownloadManager::removeDownload(Download* aDownload) {
 			UserConnection* conn = j->first;
 			running.erase(j);
 			removeConnection(conn);
+		}
+	}
+	
+	// Search the queue
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		if(*i == aDownload) {
+			// Good! It's in the queue, we can simply remove it...
+			queue.erase(i);
 			delete aDownload;
 			cs.leave();
 			return;
@@ -247,8 +303,8 @@ void DownloadManager::removeDownload(Download* aDownload) {
 
 	// Not found...
 	cs.leave();
-
 }
+
 void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 	cs.enter();
 	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
@@ -264,43 +320,43 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 
 void DownloadManager::removeConnections() {
 	cs.enter();
-	UserConnection::Iter i = connections.begin();
 
-	while(i != connections.end()) {
+	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 		UserConnection* c = *i;
-		i = connections.erase(i);
 		c->removeListener(this);
 		ConnectionManager::getInstance()->putDownloadConnection(c);
 	}
+	connections.clear();
 	cs.leave();
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.enter();
 	dcdebug("Checking downloads...");
-	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(aConn->getUser()->getNick() == (*i)->getLastNick()) {
-			Download* d = *i;
-			queue.erase(i);
+	Download* d = getNextDownload(aConn->getUser());
 
-			d->setUser(aConn->getUser());
-
-			running[aConn] = d;
-			
-			if(d->getResume()) {
-				LONGLONG x = Util::getFileSize(d->getTarget());
-				d->setPos( (x == -1) ? 0 : x);
-			} else {
-				d->setPos(0);
-			}
-			aConn->get(d->getLastPath()+d->getFileName(), d->getPos());
-			dcdebug("Found!\n");
-			cs.leave();
-			return;
+	if(d) {
+		running[aConn] = d;
+		
+		if(d->getResume()) {
+			LONGLONG x = Util::getFileSize(d->getTarget());
+			d->setPos( (x == -1) ? 0 : x);
+		} else {
+			d->setPos(0);
 		}
+		d->setFlag(Download::RUNNING);
+		
+		aConn->get(d->getLastPath()+d->getFileName(), d->getPos());
+		dcdebug("Found!\n");
+		cs.leave();
+		return;
 	}
 	// Connection not needed any more, return it to the ConnectionManager...
 	dcdebug("Not found!\n");
+
+	// No more downloads for this user, make sure we're not waiting for a connection...
+	waiting.erase(aConn->getUser());
+
 	removeConnection(aConn);
 	cs.leave();
 }
@@ -314,10 +370,10 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 	
 	WriteFile(d->getFile(), aData, aLen, &len, NULL);
 	d->addPos(len);
-	fireTick(d);
 }
 
 void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
 	dcassert(i != running.end());
@@ -331,12 +387,11 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	
 	if(file == INVALID_HANDLE_VALUE) {
-		running.erase(aSource);
-		queue.push_back(d);
+		d->unsetFlag(Download::RUNNING);
+		cs.leave();
+		removeConnection(aSource);
 
 		fireFailed(d, "Could not open target file");
-		removeConnection(aSource);
-		cs.leave();
 		return;
 	}
 	
@@ -345,28 +400,43 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	d->setSize(aFileLength);
 
 	if(d->getSize() == d->getPos()) {
+		for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
+			if(*j == d) {
+				queue.erase(j);
+				break;
+			}
+		}
+		cs.leave();
+		removeConnection(aSource);
+
 		// We're done...and this connection is broken...
-		running.erase(i);
 		fireComplete(d);
 		delete d;
 		
-		removeConnection(aSource);
 	} else {
+		cs.leave();
 		fireStarting(d);
 		aSource->setDataMode(d->getSize() - d->getPos());
 		aSource->startSend();
 	}
-	cs.leave();
 }
 
 /** Download finished! */
 void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 	cs.enter();
+
 	Download::MapIter i = running.find(aSource);
 	dcassert(i != running.end());
 	
 	Download::Ptr p = i->second;
 	running.erase(i);
+	for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
+		if(*j == p) {
+			queue.erase(j);
+			break;
+		}
+	}
+	
 	cs.leave();
 
 	if(p->getPos() != p->getSize())
@@ -389,41 +459,50 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 
 	Download* d = i->second;
 	
-	fireFailed(d, "No slots available");
 	running.erase(i);
+	d->unsetFlag(Download::RUNNING);
+	waiting[aSource->getUser()] = TimerManager::getTick();
 
-	removeConnection(aSource);
-	queue.insert(queue.begin(), d);
 	cs.leave();
+
+	fireFailed(d, "No slots available");
+	removeConnection(aSource);
 }
 
 void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
 	
-	dcassert(i != running.end());
+	if(i == running.end()) {
+		cs.leave();
+		removeConnection(aSource);
+		return;
+	}
 
 	Download* d = i->second;
-
+	running.erase(i);
+	d->unsetFlag(Download::RUNNING);
+	cs.leave();
+	
 	if(d->getFile()) {
 		CloseHandle(d->getFile());
 		d->setFile(NULL);
 	}
 	fireFailed(d, aError);
 	
-	running.erase(i);
-	
 	removeConnection(aSource);
-	queue.insert(queue.begin(), d);
-	cs.leave();
 }
 
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.14 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.15 2001/12/19 23:07:59 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.15  2001/12/19 23:07:59  arnetheduck
+ * Added directory downloading from the directory tree (although it hasn't been
+ * tested at all) and password support.
+ *
  * Revision 1.14  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

@@ -14,6 +14,7 @@
 #define IDD_SETTINGS                    201
 #define IDB_FOLDERS                     206
 #define IDB_ARROWS                      208
+#define IDD_PASSWORD                    209
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -33,7 +34,9 @@
 #define IDC_DOWNLOADDIR                 1017
 #define IDC_CONNECT                     1018
 #define IDC_BROWSEDIR                   1018
-#define IDC_RESULTS						1019
+#define IDC_RESULTS                     1019
+#define IDC_PASSWORD                    1019
+#define IDC_DOWNLOADDIRTO               1020
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -45,9 +48,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        209
+#define _APS_NEXT_RESOURCE_VALUE        210
 #define _APS_NEXT_COMMAND_VALUE         32782
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
