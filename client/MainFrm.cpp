@@ -116,10 +116,14 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 
 void MainFrame::onUploadTick(Upload* aUpload) {
 	char buf[256];
-	LONGLONG avg = aUpload->getTotal() * 1000 / (TimerManager::getTick() - aUpload->getStart());
+	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aUpload->getStart());
 	int seconds = 0;
-	if(avg > 0) {
-		seconds = (aUpload->getSize() - aUpload->getPos()) / avg;
+	LONGLONG avg = 0;
+	if(dif > 0) {
+		avg = aUpload->getTotal() * (LONGLONG)1000 / dif;
+		if(avg > 0) {
+			seconds = (aUpload->getSize() - aUpload->getPos()) / avg;
+		}
 	}
 
 	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aUpload->getPos()).c_str(), 
@@ -200,10 +204,14 @@ void MainFrame::onDownloadStarting(Download* aDownload) {
 
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[256];
-	LONGLONG avg = aDownload->getTotal() * 1000 / (TimerManager::getTick()-aDownload->getStart());
+	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aDownload->getStart());
 	int seconds = 0;
-	if(avg > 0) {
-		seconds = (aDownload->getSize() - aDownload->getPos()) / avg;
+	LONGLONG avg;
+	if(dif > 0) {
+		avg = aDownload->getTotal() * (LONGLONG)1000 / dif;
+		if(avg > 0) {
+			seconds = (aDownload->getSize() - aDownload->getPos()) / avg;
+		}
 	}
 	
 	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aDownload->getPos()).c_str(), 
@@ -397,9 +405,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.25 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.26 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.26  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.25  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

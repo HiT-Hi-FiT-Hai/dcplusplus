@@ -84,7 +84,11 @@ public:
 		char buf[768];
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-
+		string tmp = aString;
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos) {
+			tmp.replace(i, 1, 1, '$');
+		}
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
 			string server = Settings::getServer();
 			int port = Settings::getPort();
@@ -96,9 +100,9 @@ public:
 				port = 412;
 			}
 			
-			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, aString.c_str());
+			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, tmp.c_str());
 		} else {
-			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", Settings::getNick().c_str(), c1, c2, aSize, aFileType+1, aString.c_str());
+			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", Settings::getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
 		}
 		send(buf);
 	}
@@ -471,9 +475,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.16 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: Client.h,v 1.17 2001/12/30 15:03:44 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.17  2001/12/30 15:03:44  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.16  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

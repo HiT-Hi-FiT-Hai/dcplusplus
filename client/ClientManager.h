@@ -140,13 +140,38 @@ private:
 	}
 	
 	virtual void onClientConnectToMe(Client::Ptr aClient, const string& aServer, const string& aPort) {
-		ConnectionManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
+		ConnectionManager::getInstance()->connect(aServer, Util::toInt(aPort));
 	}
 	
 	virtual void onClientRevConnectToMe(Client::Ptr aClient, User::Ptr& aUser) {
 		aClient->cs.enter();
 		aClient->connectToMe(aUser);
 		aClient->cs.leave();
+	}
+
+	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+		int aFileType, const string& aString) {
+
+		bool search = false;
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			if(aSeeker.find(Settings::getServer().empty() ? Util::getLocalIp() : Settings::getServer()) == string::npos) {
+				search = true;
+			}
+		} else {
+			if(aSeeker.find(Settings::getNick()) == string::npos) {
+				search = true;
+			}
+		}
+
+		if(search) {
+			StringList l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType);
+			dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
+#ifdef _DEBUG
+			for(StringIter i = l.begin(); i != l.end(); ++i) {
+				dcdebug("%s\n", i->c_str());
+			}
+#endif _DEBUG
+		}
 	}
 	
 	
@@ -156,9 +181,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.1 2001/12/21 18:46:18 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.2 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.2  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.1  2001/12/21 18:46:18  arnetheduck
  * Replaces ProtocolHandler with enhanced functionality
  *

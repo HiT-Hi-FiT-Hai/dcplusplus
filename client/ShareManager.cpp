@@ -22,9 +22,13 @@
 #include "ShareManager.h"
 #include "CryptoManager.h"
 #include "SimpleXML.h"
+#include "StringTokenizer.h"
 
 ShareManager* ShareManager::instance = NULL;
 
+enum {
+	MAX_RESULTS = 5
+};
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	if(aFile == "MyList.DcLst") {
 		return getListFile();
@@ -199,11 +203,62 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 	return tmp;
 }
 
+void ShareManager::Directory::search(StringList& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType) {
+	bool found = true;
+	for(StringIter k = aStrings.begin(); (k != aStrings.end()); ++k) {
+		if(Util::findSubString(name, *k) == -1) {
+			found = false;
+			break;
+		}
+	}
+
+	if(found) {
+		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end() && (aResults.size() < MAX_RESULTS); ++i) {
+			aResults.push_back(name + '\\' + i->first);
+		}	
+	} else {
+		
+		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end(); ++i) {
+			bool found = true;
+			for(StringIter j = aStrings.begin(); (j != aStrings.end()); ++j) {
+				if(Util::findSubString(i->first, *j) == -1) {
+					found = false;
+					break;
+				}
+			}
+			
+			if(found) {
+				aResults.push_back(name + '\\' + i->first);
+				if(aResults.size() >= MAX_RESULTS) {
+					break;
+				}
+			}
+		}
+	}
+
+	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < MAX_RESULTS); ++l) {
+		l->second->search(aResults, aStrings, aSearchType, aSize, aFileType);
+	}
+}
+StringList ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType) {
+	StringTokenizer t(aString, '$');
+	StringList& l = t.getTokens();
+	StringList results;
+
+	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
+		i->second->search(results, l, aSearchType, aSize, aFileType);
+	}
+	return results;
+}
+
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.5 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.6 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.6  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.5  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

@@ -80,7 +80,7 @@ public:
 	};
 	void addPos(LONGLONG aPos) { pos += aPos; last+=aPos; total+=aPos; };
 	
-	DWORD getTotal() { return total; };
+	LONGLONG getTotal() { return total; };
 
 	DWORD getStart() { return start; };
 	void setStart(DWORD aStart) { start = aStart; };
@@ -99,7 +99,7 @@ public:
 private:
 	DWORD start;
 	DWORD last;
-	DWORD total;
+	LONGLONG total;
 	
 	User::Ptr user;
 	string fileName;
@@ -390,9 +390,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.18 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.19 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.19  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.18  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

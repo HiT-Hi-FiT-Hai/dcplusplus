@@ -91,12 +91,12 @@ class DownloadManager : public Speaker<DownloadManagerListener>, private UserCon
 {
 public:
 	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) {
-		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
+		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true);
 
 	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) {
-		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
+		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true);
 	void downloadList(User::Ptr& aUser);
@@ -246,9 +246,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.17 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.18 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.18  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.17  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

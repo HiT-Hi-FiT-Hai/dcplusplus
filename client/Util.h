@@ -156,15 +156,64 @@ public:
 		sprintf(buf, "%01d:%02d:%02d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
 		return buf;
 	}
+
+	static LONGLONG toInt64(const string& aString) {
+		return _atoi64(aString.c_str());
+	}
+
+	static int toInt(const string& aString) {
+		return atoi(aString.c_str());
+	}
+
+	static string toString(LONGLONG val) {
+		char buf[32];
+		return _i64toa(val, buf, 10);
+	}
+
+	static string toString(int val) {
+		char buf[16];
+		return itoa(val, buf, 10);
+	}
+	static string getLocalIp() {
+		char buf[256];
+		gethostname(buf, 256);
+		hostent* he = gethostbyname(buf);
+		sockaddr_in dest;
+        memcpy(&(dest.sin_addr), he->h_addr_list[0], he->h_length);
+		return inet_ntoa(dest.sin_addr);
+	}
+	/**
+	 * Case insensitive substring search.
+	 * @return First position found or string::npos
+	 */
+	static string::size_type findSubString(const string& aString, const string& aSubString) {
+		
+		string::size_type alen = aString.size();
+		string::size_type blen = aSubString.size();
+		
+		if(alen >= blen) {
+			const char* a = aString.c_str();
+			const char* b = aSubString.c_str();
+			
+			for(string::size_type pos = 0; pos < alen - blen + 1; pos++) {
+				if(strnicmp(a+pos, b, blen) == 0)
+					return pos;
+			}
+		}
+		return string::npos;
+	}
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: Util.h,v 1.7 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.7  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.6  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

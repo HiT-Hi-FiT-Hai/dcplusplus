@@ -71,7 +71,7 @@ void Client::onLine(const string& aLine) {
 		param=param.substr(4);
 		string size = param.substr(0, param.find('?'));
 		param = param.substr(param.find('?')+1);
-		int type = atoi(param.substr(0, param.find('?')).c_str());
+		int type = Util::toInt(param.substr(0, param.find('?')));
 		param = param.substr(param.find('?')+1);
 		fireSearch(seeker, a, size, type, param);
 	} else if(cmd == "$ConnectToMe") {
@@ -209,9 +209,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.12 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.13 2001/12/30 15:03:44 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.13  2001/12/30 15:03:44  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.12  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

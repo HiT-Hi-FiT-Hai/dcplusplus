@@ -74,12 +74,21 @@ public:
 	 */
 	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) { };
 	/**
+	 * Password requested.
+	 */
+	virtual void onClientGetPassword(Client* aClient) { };
+	/**
+	 * The user supplied a bad password.
+	 */
+	virtual void onClientBadPassword(Client* aClient) { };
+	/**
+	 * Successfully logged in (after sending password).
+	 */
+	virtual void onClientLoggedIn(Client* aClient) { };
+	/**
 	 * Detailed information about a user received/updated.
 	 * @param aUser Full info about the user.
 	 */
-	virtual void onClientGetPassword(Client* aClient) { };
-	virtual void onClientBadPassword(Client* aClient) { };
-	virtual void onClientLoggedIn(Client* aClient) { };
 	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) { };
 	virtual void onClientMessage(Client* aClient, const string& aMessage) { };
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) { };
@@ -98,9 +107,12 @@ public:
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.9 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.10 2001/12/30 15:03:44 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.10  2001/12/30 15:03:44  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.9  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

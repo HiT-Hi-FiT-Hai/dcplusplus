@@ -42,7 +42,7 @@ void DirectoryListing::load(string& in) {
 			// this must be a file...
 			tok = tok.substr(j);
 			j = tok.find('|');
-			cur->files.push_back(new File(cur, tok.substr(0, j), _atoi64(tok.substr(j+1).c_str())));
+			cur->files.push_back(new File(cur, tok.substr(0, j), Util::toInt64(tok.substr(j+1))));
 		} else {
 			// A directory
 			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
@@ -66,9 +66,12 @@ string DirectoryListing::getPath(Directory* d) {
 
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.4 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.4  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.3  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -144,7 +144,10 @@ public:
 		if(m_fNotifyCmdBar == true && (lpWndPos->flags & SWP_NOSIZE) == 0)
 		{
 			// Inform the command bar about the size change
-			TWinTraits::m_bMaximized = (::SendMessage(m_hWndMDIClient, WM_MDICHILDSIZED, 0, (LPARAM)m_hWnd) != 0);
+			bool b = (::SendMessage(m_hWndMDIClient, WM_MDICHILDSIZED, 0, (LPARAM)m_hWnd) != 0);
+			if( !(lpWndPos->flags & SWP_NOACTIVATE)) {
+				TWinTraits::m_bMaximized = b;
+			}
 		}
 		bHandled = FALSE;
 		return 1;

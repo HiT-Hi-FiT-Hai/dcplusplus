@@ -41,6 +41,12 @@ public:
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
 	void refresh() throw(ShareException);
+
+	StringList search(const string& aString, int aSearchType, const string& aSize, int aFileType) {
+		return search(aString, aSearchType, Util::toInt64(aSize), aFileType);
+	}
+	StringList search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType);
+
 	LONGLONG getShareSize() {
 		LONGLONG tmp = 0;
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
@@ -119,6 +125,8 @@ private:
 			return tmp;
 		}
 
+		void search(StringList& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType);
+		
 		Map directories;
 		map<string, LONGLONG> files;
 
@@ -139,6 +147,8 @@ private:
 
 	CriticalSection cs;
 	HANDLE refreshThread;
+
+	StringList files;
 
 	static DWORD WINAPI refresher(void* p);
 
@@ -168,9 +178,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.6 2001/12/30 15:03:45 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.6  2001/12/30 15:03:45  arnetheduck
+ * Added framework to handle incoming searches
+ *
  * Revision 1.5  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *
