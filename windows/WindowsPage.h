@@ -55,12 +55,13 @@ protected:
 
 	static Item items[];
 	static ListItem listItems[];
+	static ListItem optionItems[];
 };
 
 #endif //ADVANCEDPAGE_H
 
 /**
  * @file
- * $Id: WindowsPage.h,v 1.1 2005/03/19 13:00:53 arnetheduck Exp $
+ * $Id: WindowsPage.h,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
  */
 

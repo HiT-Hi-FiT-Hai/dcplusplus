@@ -40,9 +40,19 @@ WindowsPage::ListItem WindowsPage::listItems[] = {
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
+WindowsPage::ListItem WindowsPage::optionItems[] = {
+	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_POPUP_PMS },
+	{ SettingsManager::POPUP_OFFLINE, ResourceManager::SETTINGS_POPUP_OFFLINE },
+	{ SettingsManager::POPUNDER_FILELIST, ResourceManager::SETTINGS_POPUNDER_FILELIST },
+	{ SettingsManager::POPUNDER_PM, ResourceManager::SETTINGS_POPUNDER_PM },
+	{ SettingsManager::SETTINGS_OPEN_NEW_WINDOW, ResourceManager::SETTINGS_OPEN_NEW_WINDOW },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 LRESULT WindowsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_WINDOWS_STARTUP));
+	PropPage::read((HWND)*this, items, optionItems, GetDlgItem(IDC_WINDOWS_OPTIONS));
 
 	// Do specialized reading here
 	return TRUE;
@@ -50,6 +60,7 @@ LRESULT WindowsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 void WindowsPage::write() {
 	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_WINDOWS_STARTUP));
+	PropPage::write((HWND)*this, items, optionItems, GetDlgItem(IDC_WINDOWS_OPTIONS));
 }
 
 LRESULT WindowsPage::onHelpInfo(LPNMHDR /*pnmh*/) {
@@ -64,6 +75,6 @@ LRESULT WindowsPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: WindowsPage.cpp,v 1.1 2005/03/19 13:00:53 arnetheduck Exp $
+ * $Id: WindowsPage.cpp,v 1.2 2005/03/19 13:38:12 arnetheduck Exp $
  */
 

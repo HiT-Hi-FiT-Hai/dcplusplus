@@ -339,6 +339,9 @@
 #define IDC_SETTINGS_BIND_ADDRESS       1287
 #define IDC_WINDOWS_STARTUP             1288
 #define IDC_SETTINGS_AUTO_OPEN          1289
+#define IDC_WINDOW_OPTIONS              1290
+#define IDC_WINDOWS_OPTIONS             1290
+#define IDC_SETTINGS_WINDOWS_OPTIONS    1291
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -378,7 +381,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        245
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1290
+#define _APS_NEXT_CONTROL_VALUE         1292
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

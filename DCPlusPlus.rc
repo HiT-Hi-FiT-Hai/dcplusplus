@@ -570,9 +570,15 @@ BEGIN
     CONTROL         "",IDC_WINDOWS_STARTUP,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,13,18,249,194
+                    WS_TABSTOP,13,18,249,94
     GROUPBOX        "Auto-open at startup",IDC_SETTINGS_AUTO_OPEN,7,7,261,
-                    211
+                    111
+    GROUPBOX        "Window options",IDC_SETTINGS_WINDOWS_OPTIONS,7,120,261,
+                    98
+    CONTROL         "",IDC_WINDOWS_OPTIONS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,13,130,248,82
 END
 
 
@@ -759,6 +765,8 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
+        VERTGUIDE, 13
+        VERTGUIDE, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
