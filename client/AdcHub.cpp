@@ -150,7 +150,7 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		if(!pm)
 			return;
 
-		if(pmFrom == getMe()) {
+		if(pm == getMe()) {
 			return;
 		}
 		string msg = '<' + p->getNick() + "> " + c.getParam(0);
@@ -428,5 +428,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.44 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.45 2005/03/19 13:00:47 arnetheduck Exp $
  */

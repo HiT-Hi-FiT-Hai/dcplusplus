@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="DCPlusPlus"
+	RootNamespace="DCPlusPlus"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -382,6 +383,9 @@
 				RelativePath=".\windows\UsersFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\WindowsPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\WinUtil.cpp">
 			</File>
 		</Filter>
@@ -534,6 +538,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\UsersFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\WindowsPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\WinUtil.h">

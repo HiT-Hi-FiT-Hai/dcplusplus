@@ -50,6 +50,7 @@
 #define IDD_HUB_LIST                    241
 #define IDD_APPEARANCE2PAGE             242
 #define IDD_ADVANCED3PAGE               243
+#define IDD_WINDOWSPAGE                 244
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -336,6 +337,8 @@
 #define IDC_SETTINGS_KB2                1285
 #define IDC_BIND_ADDRESS                1286
 #define IDC_SETTINGS_BIND_ADDRESS       1287
+#define IDC_WINDOWS_STARTUP             1288
+#define IDC_SETTINGS_AUTO_OPEN          1289
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -373,9 +376,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        242
+#define _APS_NEXT_RESOURCE_VALUE        245
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1288
+#define _APS_NEXT_CONTROL_VALUE         1290
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

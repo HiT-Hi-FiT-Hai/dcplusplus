@@ -18,8 +18,10 @@
 * Basic ADC pms now work
 * Basic ADC transfers now work
 * Added option to specify bind address for sockets (thanks sed)
-
-
+* Made the connection flood trigger slighly less sensitive
+* [bug 58] Fixed strange user list behaviour
+* [bug 83] Consolidated auto-open window options
+* 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue

@@ -71,7 +71,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, _T("+/-"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUsers.SetFont(WinUtil::systemFont);
-	ctrlShowUsers.SetCheck(BOOLSETTING(GET_USER_INFO) ? BST_CHECKED : BST_UNCHECKED);
+	ctrlShowUsers.SetCheck(showUsers ? BST_CHECKED : BST_UNCHECKED);
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
@@ -209,7 +209,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("close")) == 0) {
 				PostMessage(WM_CLOSE);
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
-				ctrlShowUsers.SetCheck(SETTING(GET_USER_INFO) ? BST_UNCHECKED : BST_CHECKED);
+				ctrlShowUsers.SetCheck(showUsers ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
 				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
@@ -489,7 +489,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
-	if(!BOOLSETTING(GET_USER_INFO)) {
+	if(!showUsers) {
 		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	} else {
@@ -516,7 +516,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
 		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		userMap.clear();
@@ -944,7 +944,6 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
 		showUsers = true;
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, true);
 		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
 		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
@@ -955,9 +954,10 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		ctrlUsers.resort();
 	} else {
 		showUsers = false;
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, false);
 		clearUserList();
 	}
+
+	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, showUsers);
 
 	UpdateLayout(FALSE);
 	return 0;
@@ -1140,5 +1140,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.99 2005/03/14 14:04:46 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.100 2005/03/19 13:00:53 arnetheduck Exp $
  */

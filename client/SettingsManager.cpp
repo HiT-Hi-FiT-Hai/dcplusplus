@@ -46,7 +46,7 @@ const string SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
@@ -54,7 +54,7 @@ const string SettingsManager::settingTags[] =
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "QueueDirty", "TabDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
+	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", 
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
@@ -62,6 +62,8 @@ const string SettingsManager::settingTags[] =
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "UrlMagnet",
+	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
+	"OpenFinishedUploads", "OpenSearchSpy", "OpenNotepad",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -97,8 +99,6 @@ SettingsManager::SettingsManager()
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, false);
-	setDefault(OPEN_PUBLIC, false);
-	setDefault(OPEN_QUEUE, false);
 	setDefault(AUTO_SEARCH, false);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, false);
@@ -162,8 +162,6 @@ SettingsManager::SettingsManager()
 	setDefault(SKIP_ZERO_BYTE, false);
 	setDefault(ADLS_BREAK_ON_FIRST, false);
 	setDefault(TAB_COMPLETION, true);
-	setDefault(OPEN_FAVORITE_HUBS, false);
-	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
@@ -197,6 +195,14 @@ SettingsManager::SettingsManager()
 	setDefault(SEARCH_HISTORY, 10);
 	setDefault(SET_MINISLOT_SIZE, 64);
 	setDefault(URL_MAGNET, false);
+	setDefault(OPEN_PUBLIC, false);
+	setDefault(OPEN_FAVORITE_HUBS, false);
+	setDefault(OPEN_FAVORITE_USERS, false);
+	setDefault(OPEN_QUEUE, false);
+	setDefault(OPEN_FINISHED_DOWNLOADS, false);
+	setDefault(OPEN_FINISHED_UPLOADS, false);
+	setDefault(OPEN_SEARCH_SPY, false);
+	setDefault(OPEN_NOTEPAD, false);
 	
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -345,6 +351,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.117 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.118 2005/03/19 13:00:47 arnetheduck Exp $
  */
 

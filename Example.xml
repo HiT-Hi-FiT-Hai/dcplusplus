@@ -353,6 +353,7 @@
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
+		<String Name="SettingsAutoOpen">Auto-open at startup</String>
 		<String Name="SettingsBindAddress">Bind address</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
@@ -373,10 +374,10 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate ï¿½ï¿½ï¿½:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate â‚¬â‚¬â‚¬:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
-		<String Name="SettingsFavoriteDirsPage">Downloads\\Download to</String>
-		<String Name="SettingsFavoriteDirs">Favorite download to directories</String>
+		<String Name="SettingsFavoriteDirsPage">Downloads\\Favorites</String>
+		<String Name="SettingsFavoriteDirs">Favorite download directories</String>
 		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
@@ -407,11 +408,7 @@
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
-		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
-		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
-		<String Name="SettingsOpenPublic">Open the public hubs window at startup</String>
-		<String Name="SettingsOpenQueue">Open the download queue window at startup</String>
 		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
 		<String Name="SettingsPassive">Passive</String>
@@ -469,6 +466,7 @@
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUseUpnp">Use UPnP Control</String>
 		<String Name="SettingsUserCommands">Advanced\\User Commands</String>
+		<String Name="SettingsWindows">Windows / Startup</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

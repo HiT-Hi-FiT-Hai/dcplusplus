@@ -25,7 +25,6 @@
 
 #include <atlcrack.h>
 #include "PropPage.h"
-#include "ExListViewCtrl.h"
 
 class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 {
@@ -62,6 +61,6 @@ protected:
 
 /**
  * @file
- * $Id: AdvancedPage.h,v 1.12 2005/01/05 19:30:20 arnetheduck Exp $
+ * $Id: AdvancedPage.h,v 1.13 2005/03/19 13:00:53 arnetheduck Exp $
  */
 

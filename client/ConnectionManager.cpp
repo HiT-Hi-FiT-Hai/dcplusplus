@@ -180,6 +180,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 	User::List passiveUsers;
 	ConnectionQueueItem::List removed;
 	UserConnection::List added;
+	UserConnection::List penDel;
 
 	bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
 	bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
@@ -261,10 +262,12 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 			putCQI(*m);
 		}
 
-		for_each(pendingDelete.begin(), pendingDelete.end(), DeleteFunction<UserConnection*>());
+		penDel = pendingDelete;
 		pendingDelete.clear();
 
 	}
+
+	for_each(penDel.begin(), penDel.end(), DeleteFunction<UserConnection*>());
 
 	for(User::Iter ui = passiveUsers.begin(); ui != passiveUsers.end(); ++ui) {
 		QueueManager::getInstance()->removeSources(*ui, QueueItem::Source::FLAG_PASSIVE);
@@ -285,7 +288,7 @@ void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw(
 	}
 }
 
-static const u_int32_t FLOOD_TRIGGER = 10000;
+static const u_int32_t FLOOD_TRIGGER = 20000;
 static const u_int32_t FLOOD_ADD = 2000;
 
 /**
@@ -688,5 +691,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.95 2005/03/16 14:12:00 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.96 2005/03/19 13:00:47 arnetheduck Exp $
  */

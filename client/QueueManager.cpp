@@ -1316,12 +1316,13 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 		}
 	}
 
-	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH)) {
 		try {
 			addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 		} catch(const Exception&) {
 			// ...
 		}
+	}
 	if(added && sr->getUser()->isOnline() && wantConnection)
 		ConnectionManager::getInstance()->getDownloadConnection(sr->getUser());
 
@@ -1359,5 +1360,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.125 2005/03/14 10:37:23 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.126 2005/03/19 13:00:45 arnetheduck Exp $
  */

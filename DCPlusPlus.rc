@@ -561,6 +561,20 @@ BEGIN
                     WS_TABSTOP,14,115,244,10
 END
 
+IDD_WINDOWSPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+EXSTYLE WS_EX_STATICEDGE
+CAPTION "Windows"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_WINDOWS_STARTUP,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,13,18,249,194
+    GROUPBOX        "Auto-open at startup",IDC_SETTINGS_AUTO_OPEN,7,7,261,
+                    211
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -739,6 +753,14 @@ BEGIN
         VERTGUIDE, 150
         TOPMARGIN, 7
         BOTTOMMARGIN, 178
+    END
+
+    IDD_WINDOWSPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -33,20 +33,23 @@
 #include "Appearance2Page.h"
 #include "Advanced3Page.h"
 #include "NetworkPage.h"
+#include "WindowsPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
-	pages[0] = new GeneralPage(s);
-	pages[1] = new NetworkPage(s);
-	pages[2] = new DownloadPage(s);
-	pages[3] = new UploadPage(s);
-	pages[4] = new AppearancePage(s);
-	pages[5] = new Appearance2Page(s);
-	pages[6] = new LogPage(s);
-	pages[7] = new AdvancedPage(s);
-	pages[8] = new Advanced3Page(s);
-	pages[9] = new UCPage(s);
-	pages[10] = new FavoriteDirsPage(s);
+	int n = 0;
+	pages[n++] = new GeneralPage(s);
+	pages[n++] = new NetworkPage(s);
+	pages[n++] = new DownloadPage(s);
+	pages[n++] = new UploadPage(s);
+	pages[n++] = new AppearancePage(s);
+	pages[n++] = new Appearance2Page(s);
+	pages[n++] = new WindowsPage(s);
+	pages[n++] = new LogPage(s);
+	pages[n++] = new AdvancedPage(s);
+	pages[n++] = new Advanced3Page(s);
+	pages[n++] = new UCPage(s);
+	pages[n++] = new FavoriteDirsPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());
@@ -85,6 +88,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.15 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.16 2005/03/19 13:00:53 arnetheduck Exp $
  */
 

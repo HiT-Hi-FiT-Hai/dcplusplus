@@ -16,42 +16,51 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
-#define AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_
+#ifndef WINDOWSPAGE_H
+#define WINDOWSPAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <atlcrack.h>
 #include "PropPage.h"
-#include "TreePropertySheet.h"
 
-class PropertiesDlg : public TreePropertySheet
+class WindowsPage : public CPropertyPage<IDD_WINDOWSPAGE>, public PropPage
 {
 public:
-	enum { numPages = 12 };
+	WindowsPage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CTSTRING(SETTINGS_WINDOWS));
+		m_psp.dwFlags |= PSP_HASHELP;
+	};
 
-	BEGIN_MSG_MAP(PropertiesDlg)
-		COMMAND_ID_HANDLER(IDOK, onOK)
-		CHAIN_MSG_MAP(TreePropertySheet)
-	ALT_MSG_MAP(TreePropertySheet::TAB_MESSAGE_MAP)
-		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
+	virtual ~WindowsPage() { 
+	};
+
+	BEGIN_MSG_MAP(WindowsPage)
+		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 	END_MSG_MAP()
 
-	PropertiesDlg(SettingsManager *s);
-	virtual ~PropertiesDlg();
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
-	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+	// Common PropPage interface
+	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
+	virtual void write();
+	
 protected:
-	void write();
 
-	PropPage *pages[numPages];
+	static Item items[];
+	static ListItem listItems[];
 };
 
-#endif // !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
+#endif //ADVANCEDPAGE_H
 
 /**
  * @file
- * $Id: PropertiesDlg.h,v 1.14 2005/03/19 13:00:53 arnetheduck Exp $
+ * $Id: WindowsPage.h,v 1.1 2005/03/19 13:00:53 arnetheduck Exp $
  */
+

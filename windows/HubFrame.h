@@ -236,15 +236,14 @@ private:
 
 	HubFrame(const tstring& aServer) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
-		updateUsers(false), curCommandPosition(0),
+		showUsers(BOOLSETTING(GET_USER_INFO)), updateUsers(false), 
+		curCommandPosition(0), timeStamps(BOOLSETTING(TIME_STAMPS)),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP)
 	{
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
 		client->addListener(this);
-		timeStamps = BOOLSETTING(TIME_STAMPS);
-		showUsers = BOOLSETTING(GET_USER_INFO);
 	}
 
 	~HubFrame() {
@@ -388,6 +387,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.57 2005/01/06 20:21:08 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.58 2005/03/19 13:00:53 arnetheduck Exp $
  */
 
