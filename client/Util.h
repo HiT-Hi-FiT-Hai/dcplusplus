@@ -233,7 +233,7 @@ public:
 	}
 	
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
-	static string validateFileName(const string& aFile);
+	static string validateFileName(string aFile);
 	
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
@@ -520,5 +520,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.70 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: Util.h,v 1.71 2003/11/21 01:56:59 arnetheduck Exp $
  */

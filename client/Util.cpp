@@ -208,27 +208,20 @@ static const char badChars[] = {
  * Replaces all strange characters in a file with '_'
  * @todo Check for invalid names such as nul and aux...
  */
-string Util::validateFileName(const string& aFile) {
-
-	if(aFile.empty())
-		return aFile;
-	
-	string tmp = aFile;
-	string::size_type i;
+string Util::validateFileName(string tmp) {
+	string::size_type i = 0;
 
 	// First, eliminate forbidden chars
-	i=0;
 	while( (i = tmp.find_first_of(badChars, i)) != string::npos) {
 		tmp[i] = '_';
 		i++;
 	}
 
-	i = tmp.length() - 1;
 	// Then, eliminate all ':' that are not the second letter ("c:\...")
-	for(;;) {
-		i = tmp.rfind(':', i);
-		if(i == 1 || i == string::npos)
-			break;
+	i = 0;
+	while( (i = tmp.find(':', i)) != string::npos) {
+		if(i == 1)
+			continue;
 		
 		tmp[i] = '_';	
 	}
@@ -549,6 +542,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.36 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.37 2003/11/21 01:56:59 arnetheduck Exp $
  */
 

@@ -248,6 +248,7 @@ string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type s
 			if(i == string::npos) {
 				throw SimpleXMLException("Missing '?>' in " + name);
 			}
+			i += 2;
 			continue;
 		}
 
@@ -360,11 +361,11 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 	}
 	
 	current = root;
-	currentChild = current->children.begin();
+	resetCurrentChild();
 }
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.20 2003/11/07 16:38:22 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.21 2003/11/21 01:56:59 arnetheduck Exp $
  */
 
