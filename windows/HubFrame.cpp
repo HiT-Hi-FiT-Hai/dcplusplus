@@ -109,11 +109,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlLastLines.AddTool(&ti);
 
 	userMenu.CreatePopupMenu();
-	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
-	userMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
-	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
@@ -161,17 +157,18 @@ void HubFrame::onEnter() {
 
 		// Special command
 		if(s[0] == '/') {
+			string cmd = s;
 			string param;
 			string message;
 			string status;
-			if(WinUtil::checkCommand(s, param, message, status)) {
+			if(WinUtil::checkCommand(cmd, param, message, status)) {
 				if(!message.empty()) {
 					client->sendMessage(message);
 				}
 				if(!status.empty()) {
 					addClientLine(status);
 				}
-			} else if(Util::stricmp(s.c_str(), "join")==0) {
+			} else if(Util::stricmp(cmd.c_str(), "join")==0) {
 				if(!param.empty()) {
 					redirect = param;
 					BOOL whatever = FALSE;
@@ -179,37 +176,37 @@ void HubFrame::onEnter() {
 				} else {
 					addClientLine(STRING(SPECIFY_SERVER));
 				}
-			} else if(Util::stricmp(s.c_str(), "clear") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
-			} else if(Util::stricmp(s.c_str(), "ts") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "ts") == 0) {
 				timeStamps = !timeStamps;
 				if(timeStamps) {
 					addClientLine(STRING(TIMESTAMPS_ENABLED));
 				} else {
 					addClientLine(STRING(TIMESTAMPS_DISABLED));
 				}
-			} else if( (Util::stricmp(s.c_str(), "password") == 0) && waitingForPW ) {
+			} else if( (Util::stricmp(cmd.c_str(), "password") == 0) && waitingForPW ) {
 				client->setPassword(param);
 				client->password(param);
 				waitingForPW = false;
-			} else if( Util::stricmp(s.c_str(), "showjoins") == 0 ) {
+			} else if( Util::stricmp(cmd.c_str(), "showjoins") == 0 ) {
 				showJoins = !showJoins;
 				if(showJoins) {
 					addClientLine(STRING(JOIN_SHOWING_ON));
 				} else {
 					addClientLine(STRING(JOIN_SHOWING_OFF));
 				}
-			} else if(Util::stricmp(s.c_str(), "close") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
-			} else if(Util::stricmp(s.c_str(), "userlist") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "userlist") == 0) {
 				ctrlShowUsers.SetCheck(client->getUserInfo() ? BST_UNCHECKED : BST_CHECKED);
-			} else if(Util::stricmp(s.c_str(), "connection") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "connection") == 0) {
 				addClientLine((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT))));
-			} else if((Util::stricmp(s.c_str(), "favorite") == 0) || (Util::stricmp(s.c_str(), "fav") == 0)) {
+			} else if((Util::stricmp(cmd.c_str(), "favorite") == 0) || (Util::stricmp(cmd.c_str(), "fav") == 0)) {
 				addAsFavorite();
-			} else if(Util::stricmp(s.c_str(), "help") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "help") == 0) {
 				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
-			} else if(Util::stricmp(s.c_str(), "pm") == 0) {
+			} else if(Util::stricmp(cmd.c_str(), "pm") == 0) {
 				string::size_type j = param.find(' ');
 				if(j != string::npos) {
 					string nick = param.substr(0, j);
@@ -1105,5 +1102,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.42 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.43 2003/11/12 21:45:00 arnetheduck Exp $
  */

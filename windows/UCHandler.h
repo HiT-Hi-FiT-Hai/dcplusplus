@@ -30,8 +30,6 @@ class UCHandler {
 public:
 	UCHandler() : menuPos(0) { };
 
-	enum { IDC_USER_COMMAND = 6000 };
-	
 	typedef UCHandler<T> thisClass;
 	BEGIN_MSG_MAP(thisClass)
 		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + userCommands.size(), onUserCommand)
@@ -91,5 +89,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.1 2003/10/21 17:12:21 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.2 2003/11/12 21:45:00 arnetheduck Exp $
 */

@@ -25,6 +25,7 @@
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
 #include "../client/Client.h"
@@ -38,7 +39,8 @@
 #define SHOWUI_MESSAGE_MAP 7
 
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
-	private SearchManagerListener, private ClientListener, private ClientManagerListener, public UCHandler<SearchFrame>
+	private SearchManagerListener, private ClientListener, private ClientManagerListener, 
+	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
@@ -47,6 +49,7 @@ public:
 
 	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
 	typedef UCHandler<SearchFrame> ucBase;
+	typedef UserInfoBaseHandler<SearchFrame> uicBase;
 
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -58,7 +61,6 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
-		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_HUB, LVN_ITEMCHANGED, onItemChangedHub)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
@@ -66,17 +68,15 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadWholeTo)
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
-		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
-		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
+		CHAIN_COMMANDS(uicBase)
 		CHAIN_MSG_MAP(baseClass)
+		REFLECT_NOTIFICATIONS()
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -109,7 +109,6 @@ public:
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onCtlColor(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -118,49 +117,31 @@ public:
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
 
-	static int sortSize(LPARAM a, LPARAM b) {
-		SearchResult* c = (SearchResult*)a;
-		SearchResult* d = (SearchResult*)b;
-		return compare(c->getSize(), d->getSize());
-	}
-	static int sortSlots(LPARAM a, LPARAM b) {
-		SearchResult* c = (SearchResult*)a;
-		SearchResult* d = (SearchResult*)b;
-		if(c->getFreeSlots() == d->getFreeSlots())
-			return compare(c->getSlots(), d->getSlots());
-		else
-			return compare(c->getFreeSlots(), d->getFreeSlots());
-	}
-
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlResults.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			((SearchResult*)ctrlResults.GetItemData(i))->decRef();
+			delete ctrlResults.getItemData(i);
 			ctrlResults.DeleteItem(i);
 		}
 	}
 	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		downloadSelected(SETTING(DOWNLOAD_DIRECTORY));
+		ctrlResults.forEachSelectedT(SearchInfo::Download(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
 	}
 
 	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		downloadSelected(Util::getTempPath(), true);
+		ctrlResults.forEachSelected(&SearchInfo::view);
 		return 0;
 	}
 
 	LRESULT onDownloadWhole(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		downloadWholeSelected(SETTING(DOWNLOAD_DIRECTORY));
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
 	}
 	
@@ -206,6 +187,11 @@ public:
 	}
 	
 private:
+	class SearchInfo;
+public:
+	TypedListViewCtrl<SearchInfo, IDC_RESULTS>& getUserList() { return ctrlResults; };
+
+private:
 	enum {
 		COLUMN_FIRST,
 		COLUMN_NICK = COLUMN_FIRST,
@@ -227,10 +213,110 @@ private:
 		IMAGE_FAST
 	};
 
-	enum {
-		IDC_DOWNLOAD_TARGET = 5000,
-		IDC_DOWNLOAD_WHOLE_TARGET = 5500,
-		IDC_USER_COMMAND = 6000
+	class SearchInfo : public UserInfoBase {
+	public:
+		SearchResult* sr;
+
+		SearchInfo(SearchResult* aSR) : UserInfoBase(aSR->getUser()), sr(aSR) { 
+			sr->incRef(); update();
+		};
+		~SearchInfo() { 
+			sr->decRef(); 
+		};
+
+		void view();
+		struct Download {
+			Download(const string& aTarget) : tgt(aTarget) { };
+			void operator()(SearchInfo* si);
+			const string& tgt;
+		};
+		struct DownloadWhole {
+			DownloadWhole(const string& aTarget) : tgt(aTarget) { };
+			void operator()(SearchInfo* si);
+			const string& tgt;
+		};
+		struct DownloadTarget {
+			DownloadTarget(const string& aTarget) : tgt(aTarget) { };
+			void operator()(SearchInfo* si);
+			const string& tgt;
+		};
+		struct CheckSize {
+			CheckSize() : size(-1), op(true), oneHub(true) { };
+			void operator()(SearchInfo* si);
+			string ext;
+			int64_t size;
+			bool oneHub;
+			string hub;
+			bool op;
+		};
+
+		const string& getText(int col) const {
+			switch(col) {
+				case COLUMN_NICK: return sr->getUser()->getNick();
+				case COLUMN_FILENAME: return fileName;
+				case COLUMN_TYPE: return type;
+				case COLUMN_SIZE: return size;
+				case COLUMN_PATH: return path;
+				case COLUMN_SLOTS: return slots;
+				case COLUMN_CONNECTION: return sr->getUser()->getConnection();
+				case COLUMN_HUB: return sr->getHubName();
+				case COLUMN_EXACT_SIZE: return exactSize;
+				default: return Util::emptyString;
+			}
+		}
+
+		static int compareItems(SearchInfo* a, SearchInfo* b, int col) {
+
+			switch(col) {
+				case COLUMN_NICK: return Util::stricmp(a->sr->getUser()->getNick(), b->sr->getUser()->getNick());
+				case COLUMN_FILENAME: return Util::stricmp(a->fileName, b->fileName);
+				case COLUMN_TYPE: 
+					if(a->sr->getType() == b->sr->getType())
+						return Util::stricmp(a->type, b->type);
+					else
+						return(a->sr->getType() == SearchResult::TYPE_DIRECTORY) ? -1 : 1;
+				case COLUMN_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
+				case COLUMN_PATH: return Util::stricmp(a->path, b->path);
+				case COLUMN_SLOTS: 
+					if(a->sr->getFreeSlots() == b->sr->getFreeSlots())
+						return compare(a->sr->getSlots(), b->sr->getSlots());
+					else
+						return compare(a->sr->getFreeSlots(), b->sr->getFreeSlots());
+				case COLUMN_CONNECTION: return Util::stricmp(a->sr->getUser()->getConnection(), b->sr->getUser()->getConnection());
+				case COLUMN_HUB: return Util::stricmp(a->sr->getHubName(), b->sr->getHubName());
+				case COLUMN_EXACT_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
+				default: return 0;
+			}
+		}
+
+		void update() { 
+			if(sr->getType() == SearchResult::TYPE_FILE) {
+				if(sr->getFile().rfind('\\') == string::npos) {
+					fileName = sr->getFile();
+				} else {
+					fileName = Util::getFileName(sr->getFile());
+					path = Util::getFilePath(sr->getFile());
+				}
+
+				type = Util::getFileExt(fileName);
+				if(!type.empty() && type[0] == '.')
+					type.erase(0, 1);
+				size = Util::formatBytes(sr->getSize());
+				exactSize = Util::formatNumber(sr->getSize());
+			} else {
+				fileName = sr->getFileName();
+				path = sr->getFile();
+				type = STRING(DIRECTORY);
+			}
+			slots = sr->getSlotString();
+		}
+
+		GETSETREF(string, fileName, FileName);
+		GETSETREF(string, path, Path);
+		GETSETREF(string, type, Type);
+		GETSETREF(string, size, Size);
+		GETSETREF(string, slots, Slots);
+		GETSETREF(string, exactSize, ExactSize);
 	};
 
 	struct HubInfo {
@@ -241,11 +327,10 @@ private:
 
 	// WM_SPEAKER
 	enum Speakers {
+		ADD_RESULT,
 		HUB_ADDED,
 		HUB_CHANGED,
 		HUB_REMOVED,
-
-		SPEAKER_MESSAGE_COUNT
 	};
 
 	string initialString;
@@ -278,7 +363,8 @@ private:
 	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
-	ExListViewCtrl ctrlResults, ctrlHubs;
+	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
+	ExListViewCtrl ctrlHubs;
 
 	CMenu resultsMenu;
 	CMenu targetMenu;
@@ -394,6 +480,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.26 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.27 2003/11/12 21:45:00 arnetheduck Exp $
  */
 

@@ -36,16 +36,6 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<
 {
 public:
 	enum {
-		IDC_BROWSELIST = 3000,
-		IDC_REMOVE_SOURCE = 3400,
-		IDC_PM = 3600,
-		IDC_READD = 3800,
-		IDC_PRIORITY_PAUSED = 4000,
-		IDC_PRIORITY_LOWEST,
-		IDC_PRIORITY_LOW,
-		IDC_PRIORITY_NORMAL,
-		IDC_PRIORITY_HIGH,
-		IDC_PRIORITY_HIGHEST
 	};
 
 	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
@@ -372,5 +362,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.27 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.28 2003/11/12 21:45:00 arnetheduck Exp $
  */

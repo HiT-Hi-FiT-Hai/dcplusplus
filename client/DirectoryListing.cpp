@@ -27,8 +27,7 @@
 #include "StringTokenizer.h"
 #include "ADLSearch.h"
 
-void DirectoryListing::load(const string& in) 
-{
+void DirectoryListing::load(const string& in) {
 	StringTokenizer t(in);
 
 	StringList& tokens = t.getTokens();
@@ -36,9 +35,11 @@ void DirectoryListing::load(const string& in)
 
 	// Prepare ADLSearch manager
 	ADLSearchManager* pADLSearch = ADLSearchManager::getInstance();
+	ADLSearchManager::DestDirList destDirs;
+
 	StringMap params;
 	params["nick"] = getUser()->getNick();
-	pADLSearch->PrepareDestinationDirectories(root, params);
+	pADLSearch->PrepareDestinationDirectories(destDirs, root, params);
 	pADLSearch->setBreakOnFirst(BOOLSETTING(ADLS_BREAK_ON_FIRST));
 
 	Directory* cur = root;
@@ -50,23 +51,20 @@ void DirectoryListing::load(const string& in)
 	{
 		string& tok = *i;
 		string::size_type j = tok.find_first_not_of('\t');
-		if(j == string::npos)
-		{
+		if(j == string::npos) {
 			break;
 		}
 
-		while(j < ident) 
-		{
+		while(j < ident) {
 			// Wind up directory structure
 			cur = cur->getParent();
 			dcassert(cur != NULL);
 			ident--;
 			string::size_type l = fullPath.find_last_of('\\');
-			if(l != string::npos)
-			{
+			if(l != string::npos) {
 				fullPath.erase(fullPath.begin() + l, fullPath.end());
 			}
-			pADLSearch->StepUpDirectory();
+			pADLSearch->StepUpDirectory(destDirs);
 
 			lastFileIter = cur->files.begin();
 		}
@@ -77,7 +75,7 @@ void DirectoryListing::load(const string& in)
 			lastFileIter = cur->files.insert(lastFileIter, new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
 
 			// ADLSearch
-			pADLSearch->MatchesFile(*lastFileIter, fullPath);
+			pADLSearch->MatchesFile(destDirs, *lastFileIter, fullPath);
 		} else {
 			// A directory
 			string name = tok.substr(j, tok.length()-j-1);
@@ -95,12 +93,12 @@ void DirectoryListing::load(const string& in)
 			fullPath += (string)"\\" + d->getName();
 
 			// ADLSearch
-			pADLSearch->MatchesDirectory(d, fullPath);
+			pADLSearch->MatchesDirectory(destDirs, d, fullPath);
 		}
 	}
 
 	// Finalize ADLSearch manager
-	pADLSearch->FinalizeDestinationDirectories(root);
+	pADLSearch->FinalizeDestinationDirectories(destDirs, root);
 }
 
 string DirectoryListing::getPath(Directory* d) {
@@ -183,5 +181,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.21 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.22 2003/11/12 21:45:00 arnetheduck Exp $
  */

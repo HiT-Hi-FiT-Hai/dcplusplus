@@ -67,7 +67,10 @@ public:
 	int getFreeSlots() { return freeSlots; };
 
 	void incRef() { Thread::safeInc(&ref); };
-	void decRef() { if(Thread::safeDec(&ref) == 0) delete this; };
+	void decRef() { 
+		if(Thread::safeDec(&ref) == 0) 
+			delete this; 
+	};
 
 private:
 	friend class SearchManager;
@@ -168,5 +171,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.27 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.28 2003/11/12 21:45:00 arnetheduck Exp $
  */

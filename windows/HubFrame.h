@@ -174,8 +174,6 @@ public:
 	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; };
 private:
 
-	enum { IDC_USER_COMMAND = 3500 };
-
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
 		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
@@ -243,7 +241,7 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), server(aServer), closed(false), updateUsers(false),
+	waitingForPW(false), server(aServer), closed(false), updateUsers(false), curCommandPosition(0),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
@@ -379,6 +377,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.32 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.33 2003/11/12 21:45:00 arnetheduck Exp $
  */
 

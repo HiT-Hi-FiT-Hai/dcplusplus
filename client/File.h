@@ -354,12 +354,12 @@ public:
 			return;
 		}
 
-		u_int32_t pos2 = 0;
+		size_t pos2 = 0;
 		while(pos2 < len) {
-			size_t i = min((size_t)(size-pos), (size_t)(len - pos2));
+			size_t i = min(size-pos, (size_t)(len - pos2));
 			
 			memcpy(buf+pos, ((char*)aBuf)+pos2, i);
-			pos += (int)i;
+			pos += i;
 			pos2 += (u_int32_t)i;
 			dcassert(pos <= size);
 			dcassert(pos2 <= len);
@@ -382,8 +382,8 @@ public:
 
 private:
 	u_int8_t* buf;
-	u_int32_t pos;
-	u_int32_t size;
+	size_t pos;
+	size_t size;
 };
 
 class SizedFile : public BufferedFile {
@@ -406,12 +406,11 @@ public:
 			BufferedFile::close();
 		}
 	}
-private:
 };
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file
- * $Id: File.h,v 1.23 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: File.h,v 1.24 2003/11/12 21:45:00 arnetheduck Exp $
  */
 

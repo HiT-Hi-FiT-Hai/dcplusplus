@@ -84,6 +84,14 @@ public:
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::grant);
 		return 0;
 	}
+
+	void appendUserItems(CMenu& menu) {
+		menu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+		menu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
+		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	}
 };
 
 class FlatTabCtrl;
@@ -231,5 +239,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.20 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.21 2003/11/12 21:45:00 arnetheduck Exp $
  */

@@ -533,7 +533,7 @@ void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			QueueItem* qi = j->second;
 			if(Util::stricmp(df->getName(), qi->getTargetFileName()) == 0 && df->getSize() == qi->getSize()) {
 				try {
-					addSource(qi, curDl->getPath(df), curDl->getUser(), false);
+					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false);
 					matches++;
 				} catch(const Exception&) {
 				}
@@ -1198,5 +1198,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.55 2003/11/11 13:16:09 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.56 2003/11/12 21:45:00 arnetheduck Exp $
  */

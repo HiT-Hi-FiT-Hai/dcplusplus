@@ -66,11 +66,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.setSortColumn(COLUMN_STATUS);
 
 	transferMenu.CreatePopupMenu();
-	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	transferMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
-	transferMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
-	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	appendUserItems(transferMenu);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
@@ -310,8 +306,7 @@ void TransferView::onConnectionAdded(ConnectionQueueItem* aCqi) {
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) == transferItems.end());
 		transferItems.insert(make_pair(aCqi, i));
-		i->statusString = STRING(CONNECTING);
-		i->updateMask |= ItemInfo::MASK_STATUS;
+		i->columns[COLUMN_STATUS] = i->statusString = STRING(CONNECTING);
 	}
 
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
@@ -561,5 +556,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.13 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.14 2003/11/12 21:45:00 arnetheduck Exp $
  */

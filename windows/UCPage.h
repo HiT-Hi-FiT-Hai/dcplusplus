@@ -46,6 +46,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_CHANGE_MENU, onChangeMenu)
 		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
 		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
+		NOTIFY_HANDLER(IDC_MENU_ITEMS, BN_DOUBLECLICKED, onDblClick)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -55,6 +56,10 @@ public:
 	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT onDblClick(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& bHandled) {
+		return onChangeMenu(0, 0, 0, bHandled);
+	}
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -73,6 +78,6 @@ protected:
 
 /**
  * @file
- * $Id: UCPage.h,v 1.3 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: UCPage.h,v 1.4 2003/11/12 21:45:00 arnetheduck Exp $
  */
 

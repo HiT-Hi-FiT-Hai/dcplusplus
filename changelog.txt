@@ -32,6 +32,8 @@
 * Temporary downloads folder no longer shared
 * Fixed a bug where the socks5 proxy was used for http proxy connections (thanks dan fulger)
 * Added command history scrolling using ctrl-up/down/home/end (thanks cologic)
+* Fixed match queue crashes
+* Fixed sending of unknown '/'-commands to the hub (thanks sedulus)
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

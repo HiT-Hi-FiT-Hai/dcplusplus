@@ -234,16 +234,19 @@ string Util::validateFileName(const string& aFile) {
 	}
 
 	// Remove the .\ that doesn't serve any purpose
-	while( ((i = tmp.find("\\.\\"))) != string::npos) {
+	i = 0;
+	while( (i = tmp.find("\\.\\", i)) != string::npos) {
 		tmp.erase(i+1, 2);
 	}
 
 	// Remove any double \\ ...
-	while( ((i = tmp.find("\\\\"))) != string::npos) {
+	i = 0;
+	while( (i = tmp.find("\\\\", i)) != string::npos) {
 		tmp.erase(i+1, 1);
 	}
 
 	// And last, but not least, the infamous ..\! ...
+	i = 0;
 	while( ((i = tmp.find("\\..\\", i)) != string::npos) ) {
 		tmp[i + 1] = '_';
 		tmp[i + 2] = '_';
@@ -546,6 +549,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.35 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.36 2003/11/12 21:45:00 arnetheduck Exp $
  */
 

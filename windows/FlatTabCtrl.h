@@ -41,8 +41,6 @@ enum {
 
 };
 
-#define IDC_SELECT_WINDOW 6000
-
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
 public:
@@ -614,5 +612,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.20 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.21 2003/11/12 21:45:00 arnetheduck Exp $
  */

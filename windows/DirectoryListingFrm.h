@@ -42,11 +42,6 @@ public:
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 
 	enum {
-		IDC_DOWNLOAD_TARGET = 5000,
-		IDC_DOWNLOAD_TARGET_DIR = 5500
-	};
-	
-	enum {
 		COLUMN_FILENAME,
 		COLUMN_TYPE,
 		COLUMN_SIZE
@@ -261,5 +256,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.22 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.23 2003/11/12 21:45:00 arnetheduck Exp $
  */
