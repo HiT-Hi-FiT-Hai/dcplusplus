@@ -66,6 +66,8 @@ public:
 	virtual size_t flush() throw(Exception) = 0;
 
 	size_t write(const string& str) throw(Exception) { return write(str.c_str(), str.size()); };
+private:
+	OutputStream& operator=(const OutputStream&);
 };
 
 class InputStream {
@@ -559,6 +561,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.45 2004/11/29 23:21:30 arnetheduck Exp $
+ * $Id: File.h,v 1.46 2004/12/05 16:19:18 arnetheduck Exp $
  */
 

@@ -51,6 +51,7 @@ public:
 	}
 	
 private:
+	BitOutputStream& operator=(const BitOutputStream&);
 	string& is;
 	int bitPos;
 	u_int8_t next;
@@ -60,5 +61,5 @@ private:
 
 /**
  * @file
- * $Id: BitOutputStream.h,v 1.12 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.13 2004/12/05 16:19:18 arnetheduck Exp $
  */

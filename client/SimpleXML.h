@@ -56,6 +56,8 @@ public:
 				return i->second;
 			}
 		}
+	private:
+		CallBack& operator=(const CallBack&);
 	};
 
 	SimpleXMLReader(CallBack* callback) : cb(callback), utf8(true) { }
@@ -285,6 +287,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.38 2004/11/22 00:13:29 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.39 2004/12/05 16:19:18 arnetheduck Exp $
  */
 
