@@ -164,6 +164,7 @@ void DirectoryListingFrame::updateStatus() {
 		int cnt = ctrlList.GetSelectedCount();
 		int64_t total = 0;
 		if(cnt == 0) {
+			cnt = ctrlList.GetItemCount ();
 			total = ctrlList.forEachT(ItemInfo::TotalSize()).total;
 		} else {
 			total = ctrlList.forEachSelectedT(ItemInfo::TotalSize()).total;
@@ -755,5 +756,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.28 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.29 2004/03/19 09:45:28 arnetheduck Exp $
  */
