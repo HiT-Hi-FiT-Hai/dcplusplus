@@ -74,25 +74,34 @@ void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_
 }
 
 void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& tth, bool aUsed) {
-	TTHIter i = indexTTH.find(aFileName);
+	string fname = Text::toLower(Util::getFileName(aFileName));
+	string fpath = Text::toLower(Util::getFilePath(aFileName));
+			
+	DirIter i = indexTTH.find(fpath);
 	if(i == indexTTH.end()) {
+		i = indexTTH.insert(make_pair(fpath, FileInfo::List));
+	}
+	
+	FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
+	if(j == i->second.end()) {
 		try {
 			int64_t pos = addLeaves(tth.getLeaves());
 			if(pos == 0)
 				return;
-			indexTTH.insert(make_pair(aFileName, new FileInfo(tth.getRoot(), tth.getFileSize(), pos, tth.getBlockSize(), tth.getTimeStamp(), aUsed)));
+			i->second.push_back(new FileInfo(aFileName, tth.getRoot(), tth.getFileSize(), pos, tth.getBlockSize(), tth.getTimeStamp(), aUsed));
 			dirty = true;
 		} catch(const FileException&) {
 			// Oops, lost it...
 		}
 	} else {
 		try {
-			i->second->setRoot(tth.getRoot());
-			i->second->setBlockSize(tth.getBlockSize());
-			i->second->setSize(tth.getFileSize());
-			i->second->setIndex(addLeaves(tth.getLeaves()));
+			FileInfo* fi = *j;
+			fi->setRoot(tth.getRoot());
+			fi->setBlockSize(tth.getBlockSize());
+			fi->setSize(tth.getFileSize());
+			fi->setIndex(addLeaves(tth.getLeaves()));
 		} catch(const FileException&) {
-			i->second->setIndex(0);
+			fi->setIndex(0);
 		}
 		dirty = true;
 	}
@@ -552,5 +561,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.29 2004/10/21 10:27:15 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.30 2004/10/24 10:01:34 arnetheduck Exp $
  */

@@ -183,24 +183,38 @@ private:
 		void rebuild();
 
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
-			TTHIter i = indexTTH.find(aFileName);
+			string fname = Text::toLower(Util::getFileName(aFileName));
+			string fpath = Text::toLower(Util::getFilePath(aFileName));
+			DirIter i = indexTTH.find(fpath);
 			if(i != indexTTH.end()) {
-				if(i->second->getSize() != aSize || i->second->getTimeStamp() != aTimeStamp) {
-					delete i->second;
-					indexTTH.erase(i);
-					dirty = true;
-					return false;
-				}
+				FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
+				if(j != i->second.end()) {
+					FileInfo* fi = *j;
+					if(fi->getSize() != aSize || fi->getTimeStamp() != aTimeStamp) {
+						delete fi;
+						i->second.erase(j);
+						if(i->second.empty()) {
+							indexTTH.erase(i);
+						}
+						dirty = true;
+						return false;
+					}
 				return true;
 			} 
 			return false;
 		}
 
 		TTHValue* getTTH(const string& aFileName) {
-			TTHIter i = indexTTH.find(aFileName);
+			string fname = Text::toLower(Util::getFileName(aFileName));
+			string fpath = Text::toLower(Util::getFilePath(aFileName));
+			
+			DirIter i = indexTTH.find(fpath);
 			if(i != indexTTH.end()) {
-				i->second->setUsed(true);
-				return &(i->second->getRoot());
+				FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
+				if(j != i->second.end()) {
+					(*j)->setUsed(true);
+					return &((*j)->getRoot());
+				}
 			}
 			return NULL;
 		}
@@ -210,11 +224,15 @@ private:
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
 		public:
-			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed) { }
+			typedef vector<FileInfo*> List;
+			typedef List:iterator Iter;
+			
+			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), Text::toLower(Util::getFileName(aFileName)) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
+			bool operator ==(const string& aName) { return fileName == aName; };			
 		private:
 			TTHValue root;
 			GETSET(int64_t, size, Size)
@@ -222,14 +240,16 @@ private:
 			GETSET(size_t, blockSize, BlockSize);
 			GETSET(u_int32_t, timeStamp, TimeStamp);
 			GETSET(bool, used, Used);
+			GETSET(string, fileName, FileName);
 		};
 
-		typedef HASH_MAP_X(string, FileInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) TTHMap;
-		typedef TTHMap::iterator TTHIter;
-
+		
+		typedef HASH_MAP<string, FileInfo::List> DirMap;
+		typedef DirMap::iterator DirIter;
+		
 		friend class HashLoader;
 
-		TTHMap indexTTH;
+		DirMap indexTTH;
 
 		string indexFile;
 		string dataFile;
@@ -259,5 +279,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.19 2004/10/17 19:25:23 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.20 2004/10/24 10:01:34 arnetheduck Exp $
  */
