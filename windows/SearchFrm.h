@@ -100,7 +100,7 @@ public:
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false)
+		showUI(true), onlyFree(false), closed(false), isHash(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -461,6 +461,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.35 2004/03/12 08:21:04 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.36 2004/03/26 19:23:29 arnetheduck Exp $
  */
 

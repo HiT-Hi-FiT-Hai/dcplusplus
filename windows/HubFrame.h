@@ -36,6 +36,7 @@
 #include "UCHandler.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
+struct CompareItems;
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
 	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
@@ -195,10 +196,10 @@ private:
 		COLUMN_EMAIL, 
 		COLUMN_LAST
 	};
-	
+	friend struct CompareItems;
 	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
-		UserInfo(const User::Ptr& u) : UserInfoBase(u) { update(); };
+		UserInfo(const User::Ptr& u) : UserInfoBase(u), op(false) { update(); };
 
 		const string& getText(int col) const {
 			switch(col) {
@@ -212,12 +213,12 @@ private:
 			}
 		}
 
-		static int compareItems(UserInfo* a, UserInfo* b, int col) {
+		static int compareItems(const UserInfo* a, const UserInfo* b, int col) {
 			switch(col) {
 				case COLUMN_NICK:
-					if(a->user->isSet(User::OP) && !b->user->isSet(User::OP)) {
+					if(a->getOp() && !b->getOp()) {
 						return -1;
-					} else if(!a->user->isSet(User::OP) && b->user->isSet(User::OP)) {
+					} else if(!a->getOp() && b->getOp()) {
 						return 1;
 					}
 					return Util::stricmp(a->user->getNick(), b->user->getNick());	
@@ -230,9 +231,10 @@ private:
 			}
 		}
 
-		void update() { shared = Util::formatBytes(user->getBytesShared()); }
+		void update() { shared = Util::formatBytes(user->getBytesShared()); op = user->isSet(User::OP); }
 
-		GETSETREF(string, shared, Shared)
+		GETSETREF(string, shared, Shared);
+		GETSETREF(bool, op, Op);
 	};
 
 	class PMInfo {
@@ -297,7 +299,8 @@ private:
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
-	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
+	typedef TypedListViewCtrl<UserInfo, IDC_USERS> CtrlUsers;
+	CtrlUsers ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
 	bool closed;
@@ -320,7 +323,9 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	bool updateUser(const User::Ptr& u, bool sorted = false);
+	int findUser(const User::Ptr& aUser);
+
+	bool updateUser(const User::Ptr& u);
 	void addAsFavorite();
 
 	void clearUserList() {
@@ -381,6 +386,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.39 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.40 2004/03/26 19:23:28 arnetheduck Exp $
  */
 

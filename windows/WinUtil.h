@@ -51,6 +51,7 @@ public:
 	void addFav();
 	void removeAll();
 
+	User::Ptr& getUser() { return user; }
 	User::Ptr user;
 };
 
@@ -249,5 +250,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.24 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.25 2004/03/26 19:23:29 arnetheduck Exp $
  */

@@ -40,6 +40,52 @@ public:
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
+	class iterator : public ::iterator<random_access_iterator_tag, T*> {
+	public:
+		iterator() : typedList(NULL), cur(0), cnt(0) { }
+		iterator(const iterator& rhs) : typedList(rhs.typedList), cur(rhs.cur), cnt(rhs.cnt) { }
+		iterator& operator=(const iterator& rhs) { typedList = rhs.typedList; cur = rhs.cur; cnt = rhs.cnt; return *this; }
+
+		bool operator==(const iterator& rhs) const { return cur == rhs.cur; }
+		bool operator!=(const iterator& rhs) const { return !(*this == rhs); }
+		bool operator<(const iterator& rhs) const { return cur < rhs.cur; }
+
+		int operator-(const iterator& rhs) const { 
+			return cur - rhs.cur;
+		}
+
+		iterator& operator+=(int n) { cur += n; return *this; };
+		iterator& operator-=(int n) { return (cur += -n); };
+		
+		T& operator*() { return *typedList->getItemData(cur); }
+		T* operator->() { return &(*(*this)); }
+		T& operator[](int n) { return *typedList->getItemData(cur + n); }
+		
+		iterator operator++(int) {
+			iterator tmp(*this);
+			operator++();
+			return tmp;
+		}
+		iterator& operator++() {
+			++cur;
+			return *this;
+		}
+
+	private:
+		iterator(thisClass* aTypedList) : typedList(aTypedList), cur(aTypedList->GetNextItem(-1, LVNI_ALL)), cnt(aTypedList->GetItemCount()) { 
+			if(cur == -1)
+				cur = cnt;
+		}
+		iterator(thisClass* aTypedList, int first) : typedList(aTypedList), cur(first), cnt(aTypedList->GetItemCount()) { 
+			if(cur == -1)
+				cur = cnt;
+		}
+		friend class thisClass;
+		thisClass* typedList;
+		int cur;
+		int cnt;
+	};
+
 	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
@@ -84,6 +130,12 @@ public:
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return FindItem(&fi, -1);
 	}
+	struct CompFirst {
+		CompFirst() { } 
+		bool operator()(T& a, const string& b) {
+			return Util::stricmp(a.getText(0), b) == -1;
+		}
+	};
 	int findItem(const string& b, int start = -1, bool aPartial = false) {
 		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
 		return FindItem(&fi, start);
@@ -163,8 +215,11 @@ public:
 		sortColumn = aSortColumn;
 		updateArrow();
 	}
-	int getSortColumn() { return sortColumn; };
-	bool isAscending() { return sortAscending; };
+	int getSortColumn() { return sortColumn; }
+	bool isAscending() { return sortAscending; }
+
+	iterator begin() { return iterator(this); }
+	iterator end() { return iterator(this, GetItemCount()); }
 
 private:
 
@@ -182,5 +237,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.10 2004/03/11 21:12:08 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.11 2004/03/26 19:23:29 arnetheduck Exp $
 */

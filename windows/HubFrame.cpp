@@ -242,6 +242,28 @@ void HubFrame::onEnter() {
 	}
 }
 
+struct CompareItems {
+	CompareItems(int aCol) : col(aCol) { }
+	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) {
+		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
+	}
+	int col;
+};
+
+int HubFrame::findUser(const User::Ptr& aUser) {
+	if(ctrlUsers.getSortColumn() != -1) {
+		UserInfo ui(aUser);
+		pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+			equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+		for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+			if(i->getUser() == aUser)
+				return i - ctrlUsers.begin();
+		}
+		return -1;
+	}
+	return ctrlUsers.findItem(aUser->getNick());
+}
+
 void HubFrame::addAsFavorite() {
 	FavoriteHubEntry aEntry;
 	char buf[256];
@@ -282,14 +304,10 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 }
 
 
-bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
-	int i = ctrlUsers.findItem(u->getNick());
+bool HubFrame::updateUser(const User::Ptr& u) {
+	int i = findUser(u);
 	if(i == -1) {
-		if(sorted) {
-			ctrlUsers.insertItem(new UserInfo(u), getImage(u));
-		} else {
-			ctrlUsers.insertItem(ctrlUsers.GetItemCount(), new UserInfo(u), getImage(u));
-		}
+		ctrlUsers.insertItem(new UserInfo(u), getImage(u));
 		return true;
 	} else {
 		ctrlUsers.getItemData(i)->update();
@@ -302,8 +320,6 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
-		bool userAdded = false;
-		bool userUpdated = false;
 		ctrlUsers.SetRedraw(FALSE);
 		{
 			Lock l(updateCS);
@@ -311,21 +327,16 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				User::Ptr& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
-					if(updateUser(u, true)) {
+					if(updateUser(u)) {
 						if(showJoins)
 							addLine("*** " + STRING(JOINS) + u->getNick());
-					} else {
-						userUpdated = true;
 					}
 					break;
 				case UPDATE_USERS:
-					if(updateUser(u))
-						userAdded = true;
-					else
-						userUpdated = true;
+					updateUser(u);
 					break;
 				case REMOVE_USER:
-					int j = ctrlUsers.findItem(u->getNick());
+					int j = findUser(u);
 					if( j != -1 ) {
 						UserInfo* ui = ctrlUsers.getItemData(j);
 						ctrlUsers.DeleteItem(j);
@@ -339,10 +350,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
-		if(extraSort || userAdded || (userUpdated && (ctrlUsers.getSortColumn() != COLUMN_NICK)))
-			ctrlUsers.resort();
-		extraSort = false;
-
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -1092,5 +1099,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.53 2004/03/24 20:38:17 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.54 2004/03/26 19:23:28 arnetheduck Exp $
  */

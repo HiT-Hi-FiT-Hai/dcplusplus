@@ -394,8 +394,9 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
+		string* msg = (string*)lParam;
 		if(ctrlStatus.IsWindow()) {
-			string line = "[" + Util::getShortTimeString() + "] " + *((string *)lParam);
+			string line = "[" + Util::getShortTimeString() + "] " + *msg;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -406,6 +407,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 				lastLinesList.push_back(line.substr(0, line.find('\r')));
 			}
 		}
+		delete msg;
 	}
 
 	return 0;
@@ -810,7 +812,7 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
 	
-	if(ctrlStatus.IsWindow()) {
+	if(ctrlStatus.IsWindow() && ctrlLastLines.IsWindow()) {
 		CRect sr;
 		int w[8];
 		ctrlStatus.GetClientRect(sr);
@@ -974,5 +976,5 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.48 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.49 2004/03/26 19:23:28 arnetheduck Exp $
  */

@@ -246,7 +246,8 @@
 #define IDC_SETTINGS_FORMAT3            1219
 #define IDC_SETTINGS_FORMAT4            1220
 #define IDC_SETTINGS_LOG_SYSTEM         1221
-#define IDC_LOG_SYSTEM                  1221
+#define IDC_LOG_SYSTEM                  1222
+#define IDC_SEARCH_BY_TTH				1223
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

@@ -12,6 +12,8 @@
 * Hashing is now mandatory (stop whining, it was only meant to be optional in 0.307)
 * Match files now works correctly with TTH's in queue
 * Hub name more or less correct on TTH results in search frame
+* Added search by TTH to queue frame
+* Large speed improvement in user list loading when lists sorted on user name
 
  -- 0.307 2004-03-10 --
 * Experimental release, lots and lots of core code has changed => high fatal bug probability.

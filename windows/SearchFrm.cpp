@@ -203,6 +203,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Util::toString(initialSize).c_str());
 		ctrlFiletype.SetCurSel(initialType);
+		isHash = (initialType == SearchManager::TYPE_HASH);
 		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
 		SetWindowText((STRING(SEARCH) + " - " + initialString).c_str());
@@ -895,5 +896,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.48 2004/03/12 08:21:04 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.49 2004/03/26 19:23:29 arnetheduck Exp $
  */

@@ -38,7 +38,8 @@ enum {
 	FTM_SETACTIVE,
 	/** Display context menu and return TRUE, or return FALSE for the default one */
 	FTM_CONTEXTMENU,
-
+	/** Close window with postmessage... */
+	WM_REALLY_CLOSE
 };
 
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
@@ -574,12 +575,14 @@ public:
  	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, onMDIActivate)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SETTEXT, onSetText)
+		MESSAGE_HANDLER(WM_REALLY_CLOSE, onReallyClose)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 	
@@ -688,6 +691,16 @@ public:
 		return 0;
 	}
 
+	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		MDIDestroy(m_hWnd);
+		return 0;
+	}
+
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		PostMessage(WM_REALLY_CLOSE);
+		return 0;
+	}
+
 	LRESULT onSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		bHandled = FALSE;
 		dcassert(getTab());
@@ -731,5 +744,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.25 2004/03/10 11:35:58 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.26 2004/03/26 19:23:28 arnetheduck Exp $
  */

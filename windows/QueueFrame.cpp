@@ -99,6 +99,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.CreatePopupMenu();
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CSTRING(SEARCH_FOR_ALTERNATES));
+	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_STRING, CSTRING(ENTER_SEARCH_STRING));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
@@ -961,6 +962,19 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	return 0;
 }
 
+LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlQueue.GetSelectedCount() == 1) {
+		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
+		QueueItemInfo* ii = ctrlQueue.getItemData(i);
+
+		if(ii->getTTH() != NULL) {
+			SearchFrame::openWindow(ii->getTTH()->toBase32(), 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_HASH);
+		}
+	} 
+
+	return 0;
+}
+
 LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	if(ctrlQueue.GetSelectedCount() == 1) {
@@ -1289,7 +1303,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.46 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.47 2004/03/26 19:23:28 arnetheduck Exp $
  */
 
 

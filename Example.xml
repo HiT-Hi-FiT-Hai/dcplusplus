@@ -250,6 +250,7 @@
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
 		<String Name="Search">Search</String>
+		<String Name="SearchByTth">Search by TTH</String>
 		<String Name="SearchFor">Search for</String>
 		<String Name="SearchForAlternates">Search for alternates</String>
 		<String Name="SearchForFile">Search for file</String>
