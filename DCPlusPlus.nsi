@@ -1,4 +1,4 @@
-SetCompressor "bzip2"
+SetCompressor "lzma"
 
 ; The name of the installer
 Name "DC++"

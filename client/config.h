@@ -60,7 +60,6 @@
 //#define _STLP_DEBUG 1
 #endif
 #endif
-
 #define BZ_NO_STDIO
 
 // User maps instead of hash_maps if they're not available...(even if there's
@@ -109,5 +108,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.18 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: config.h,v 1.19 2004/01/07 14:14:52 arnetheduck Exp $
  */

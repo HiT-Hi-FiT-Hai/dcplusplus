@@ -44,7 +44,6 @@ template<class T>
 struct FastAlloc : private FastAllocBase {
 	// Custom new & delete that (hopefully) use the node allocator
 	static void* operator new(size_t s) {
-		dcassert(sizeof(T) <= _MAX_BYTES);	// This should really be a boost type static assert
 		if(s != sizeof(T))
 			return ::operator new(s);
 		return alloc.allocate(s);
@@ -557,5 +556,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.76 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Util.h,v 1.77 2004/01/07 14:14:52 arnetheduck Exp $
  */

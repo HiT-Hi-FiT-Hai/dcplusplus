@@ -20,6 +20,9 @@
 * Fixed share sizes not being updated with the "share hidden" box (thanks theparanoidone)
 * Directories with '$' in the name are no longer shared (they can't be downloaded)
 * Favorite users can now have descriptions
+* Added filesize and filesizeshort to search frame %[...] macros (thanks gadget)
+* Added option not to log filelist transfers
+* Fixed some issues with being / not being op
 
  -- 0.305 2003-12-04 --
 * Fixed disappearing queue items bug

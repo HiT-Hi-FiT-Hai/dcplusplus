@@ -35,16 +35,18 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 	switch(type) {
 	case DownloadManagerListener::COMPLETE:
 		{
-			FinishedItem *item = new FinishedItem(
-				d->getTarget(), d->getUserConnection()->getUser()->getNick(),
-				d->getUserConnection()->getUser()->getLastHubName(),
-				d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
-			{
-				Lock l(cs);
-				downloads.push_back(item);
+			if(!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS)) {
+				FinishedItem *item = new FinishedItem(
+					d->getTarget(), d->getUserConnection()->getUser()->getNick(),
+					d->getUserConnection()->getUser()->getLastHubName(),
+					d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
+				{
+					Lock l(cs);
+					downloads.push_back(item);
+				}
+
+				fire(FinishedManagerListener::ADDED_DL, item);
 			}
-			
-			fire(FinishedManagerListener::ADDED_DL, item);
 		}
 		break;
 		
@@ -58,16 +60,18 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 	switch(type) {
 	case UploadManagerListener::COMPLETE:
 		{
-			FinishedItem *item = new FinishedItem(
-				u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
-				u->getUserConnection()->getUser()->getLastHubName(),
-				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
-			{
-				Lock l(cs);
-				uploads.push_back(item);
+			if(!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS)) {
+				FinishedItem *item = new FinishedItem(
+					u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
+					u->getUserConnection()->getUser()->getLastHubName(),
+					u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
+				{
+					Lock l(cs);
+					uploads.push_back(item);
+				}
+				
+				fire(FinishedManagerListener::ADDED_UL, item);
 			}
-			
-			fire(FinishedManagerListener::ADDED_UL, item);
 		}
 		break;
 		
@@ -78,5 +82,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.13 2003/12/03 22:09:21 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.14 2004/01/07 14:14:52 arnetheduck Exp $
  */

@@ -248,7 +248,7 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	aSource->setUpload(NULL);
 	aSource->setState(UserConnection::STATE_GET);
 
-	if(BOOLSETTING(LOG_UPLOADS)) {
+	if(BOOLSETTING(LOG_UPLOADS)  && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		StringMap params;
 		params["source"] = u->getFileName();
 		params["user"] = aSource->getUser()->getNick();
@@ -385,5 +385,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.48 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.49 2004/01/07 14:14:52 arnetheduck Exp $
  */

@@ -210,7 +210,7 @@ public:
 		if(!SETTING(SERVER).empty()) {
 			return Socket::resolve(SETTING(SERVER));
 		}
-		if(!me->getIp().empty())
+		if(me && !me->getIp().empty())
 			return me->getIp();
 
 		if(socket == NULL)
@@ -224,12 +224,10 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
-	const string& getNick() { return me->getNick(); };
-	void setNick(const string& aNick);
-
-	bool getOp() { return me->isSet(User::OP); };
+	bool getOp() { return me ? me->isSet(User::OP) : false; };
 
 	GETSETREF(User::Ptr, me, Me);
+	GETSETREF(string, nick, Nick);
 	GETSETREF(string, defpassword, Password);
 	GETSET(int, supportFlags, SupportFlags);
 	GETSET(bool, userInfo, UserInfo);
@@ -312,6 +310,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.75 2003/12/14 20:41:37 arnetheduck Exp $
+ * $Id: Client.h,v 1.76 2004/01/07 14:14:52 arnetheduck Exp $
  */
 

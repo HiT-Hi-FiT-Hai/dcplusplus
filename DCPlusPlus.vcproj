@@ -482,7 +482,7 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Documenation"
+			Name="Documentation"
 			Filter="txt">
 			<File
 				RelativePath=".\changelog.txt">

@@ -478,7 +478,7 @@ noCRC:
 	delete d->getFile();
 	d->setFile(NULL);
 	
-	if(BOOLSETTING(LOG_DOWNLOADS)) {
+	if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST))) {
 		StringMap params;
 		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
@@ -678,5 +678,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.86 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.87 2004/01/07 14:14:52 arnetheduck Exp $
  */

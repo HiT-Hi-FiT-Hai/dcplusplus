@@ -27,15 +27,16 @@
 #include "../client/SimpleXML.h"
 
 static const char thanks[] = "Big thanks to all donators and people who have contributed with ideas "
-"and code! Thanks go out to sourceforge for hosting the project. This application uses libbzip2, "
+"and code! Thanks go out to sourceforge for hosting the project. This application uses libzip2, "
 "thanks to Julian R Seward and team for providing it. This application uses STLPort "
-"(www.stlport.org), a most excellent STL package. The following people have contributed code to "
+"(www.stlport.org), a most excellent STL package. zlib is also used in this application. "
+"The following people have contributed code to "
 "DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n"
 "geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, "
 "patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
 "sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, "
-"distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber. "
-"Keep it coming!";
+"distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, "
+"theparanoidone, gadget. Keep it coming!";
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
@@ -133,6 +134,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.20 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.21 2004/01/07 14:14:52 arnetheduck Exp $
  */
 

@@ -53,13 +53,6 @@ Client::~Client() throw() {
 	socket = NULL;
 };
 
-void Client::setNick(const string& aNick) {
-	dcassert(state == STATE_CONNECT);
-
-	me = ClientManager::getInstance()->getUser(aNick, this, false);
-	users[aNick] = me;
-}
-
 void Client::updateCounts(bool aRemove) {
 	// We always remove the count and then add the correct one if requested...
 
@@ -445,10 +438,8 @@ void Client::onLine(const string& aLine) throw() {
 				users[param] = u;
 			}
 
-			if((u != getMe()) && (u->getNick() == getMe()->getNick())) {
-				ClientManager::getInstance()->putUserOffline(me);
+			if(getNick() == param)
 				setMe(u);
-			}
 			
 			if(u == getMe()) {
 				if(state == STATE_HELLO) {
@@ -728,6 +719,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.67 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.68 2004/01/07 14:14:51 arnetheduck Exp $
  */
 
