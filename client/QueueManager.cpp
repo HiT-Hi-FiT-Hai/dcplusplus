@@ -278,7 +278,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(false), nextSearch(0) { 
+QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queue.xml"), dirty(true), nextSearch(0) { 
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -1246,5 +1246,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.105 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.106 2004/10/03 20:49:44 arnetheduck Exp $
  */
