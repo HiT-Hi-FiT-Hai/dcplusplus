@@ -95,6 +95,7 @@ SectionEnd
 Section "Debug Information (recommended, helps finding bugs)"
   SetOutPath $INSTDIR
   File "/oname=DCPlusPlus.pdb" "App\DCPlusPlus.pdb"
+  File "Unicows.pdb"
   File "dbghelp.dll"
 SectionEnd
 
@@ -122,6 +123,7 @@ Section "un.Uninstall"
   Delete "$INSTDIR\DCPlusPlus.chm"
   Delete "$INSTDIR\dbghelp.dll"
   Delete "$INSTDIR\DCPlusPlus.pdb"
+  Delete "$INSTDIR\Unicows.pdb"
   Delete "License-GeoIP.txt"
   Delete "$INSTDIR\License.txt"
   Delete "$INSTDIR\ChangeLog.txt"

@@ -41,6 +41,7 @@ enum Strings { // @DontAdd
 	AWAY_MODE_ON, // "Away mode on: "
 	B, // "B"
 	BAN_USER, // "Ban user(s)"
+	BOOL, // "0/1"
 	BOTH_USERS_OFFLINE, // "Both users offline"
 	BROWSE, // "Browse..."
 	BROWSE_ACCEL, // "&Browse..."
@@ -428,6 +429,7 @@ enum Strings { // @DontAdd
 	SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, // "HTTP Proxy (for hublist only)"
 	SETTINGS_PUBLIC_HUB_LIST_URL, // "Public Hubs list URL"
 	SETTINGS_QUEUE_DIRTY, // "Set Download Queue tab bold when contents change"
+	SETTINGS_QUEUE, // "Downloads\\Queue"
 	SETTINGS_RENAME_FOLDER, // "Rename"
 	SETTINGS_REQUIRES_RESTART, // "Note; most of these options require that you restart DC++"
 	SETTINGS_ROLLBACK, // "Rollback"
@@ -455,6 +457,11 @@ enum Strings { // @DontAdd
 	SETTINGS_TAB_DIRTY, // "Set hub/PM/Search tab bold when contents change"
 	SETTINGS_TCP_PORT, // "TCP Port"
 	SETTINGS_TEXT_MINISLOT, // "Mini slot size"
+	SETTINGS_PRIO_HIGHEST, // "Highest prio size", 
+	SETTINGS_PRIO_HIGH, // "High prio size", 
+	SETTINGS_PRIO_NORMAL, // "Normal prio size", 
+	SETTINGS_PRIO_LOW, // "Low prio size", 
+	SETTINGS_PRIO_LOWEST, // "Lowest prio enabled", 
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
 	SETTINGS_TIME_STAMPS_FORMAT, // "Set timestamps"
 	SETTINGS_TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"

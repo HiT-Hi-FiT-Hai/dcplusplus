@@ -61,7 +61,8 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", "UrlMagnet",
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
+	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
 	"OpenFinishedUploads", "OpenSearchSpy", "OpenNotepad",
 	"SENTRY",
@@ -194,7 +195,11 @@ SettingsManager::SettingsManager()
 	setDefault(TOGGLE_ACTIVE_WINDOW, true);
 	setDefault(SEARCH_HISTORY, 10);
 	setDefault(SET_MINISLOT_SIZE, 64);
-	setDefault(URL_MAGNET, false);
+	setDefault(PRIO_HIGHEST_SIZE, 64);
+	setDefault(PRIO_HIGH_SIZE, 0);
+	setDefault(PRIO_NORMAL_SIZE, 0);
+	setDefault(PRIO_LOW_SIZE, 0);
+	setDefault(PRIO_LOWEST, 0);
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FAVORITE_USERS, false);
@@ -276,6 +281,18 @@ void SettingsManager::load(string const& aFileName)
 
 		if(SETTING(SET_MINISLOT_SIZE) < 64)
 			set(SET_MINISLOT_SIZE, 64);
+		if(SETTING(PRIO_HIGHEST_SIZE) < 16)
+			set(PRIO_HIGHEST_SIZE, 16);
+		if(SETTING(PRIO_HIGH_SIZE) < 0)
+			set(PRIO_HIGH_SIZE, 0);
+		if(SETTING(PRIO_NORMAL_SIZE) < 0)
+			set(PRIO_NORMAL_SIZE, 0);
+		if(SETTING(PRIO_LOW_SIZE) < 0)
+			set(PRIO_LOW_SIZE, 0);
+		if(SETTING(PRIO_LOWEST) < 0)
+			set(PRIO_LOWEST, 0);
+		if(SETTING(PRIO_LOWEST) > 1)
+			set(PRIO_LOWEST, 1);
 
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());
@@ -351,6 +368,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.118 2005/03/19 13:00:47 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.119 2005/03/22 18:54:07 arnetheduck Exp $
  */
 

@@ -289,10 +289,15 @@ public:
 	static void registerDchubHandler();
 	static void registerADChubHandler();
 	static void registerMagnetHandler();
+	static void unRegisterDchubHandler();
+	static void unRegisterADChubHandler();
+	static void unRegisterMagnetHandler();
 	static void parseDchubUrl(const tstring& /*aUrl*/);
 	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 	static bool parseDBLClick(const tstring& /*aString*/, string::size_type start, string::size_type end);
+	static bool urlDcADCRegistered;
+	static bool urlMagnetRegistered;
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
 	static void openFile(const tstring& file) {
@@ -335,5 +340,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.44 2005/03/14 14:04:46 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.45 2005/03/22 18:54:36 arnetheduck Exp $
  */

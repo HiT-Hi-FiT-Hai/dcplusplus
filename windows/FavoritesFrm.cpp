@@ -136,7 +136,7 @@ LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 			ctrlHubs.ClientToScreen(&pt);
 		}
 
-		int status = ctrlHubs.GetSelectedCount() > 0;
+		int status = ctrlHubs.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_DISABLED;
 		hubsMenu.EnableMenuItem(IDC_CONNECT, status);
 		hubsMenu.EnableMenuItem(IDC_EDIT, status);
 		hubsMenu.EnableMenuItem(IDC_MOVE_UP, status);
@@ -318,6 +318,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.32 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.33 2005/03/22 18:54:23 arnetheduck Exp $
  */
 

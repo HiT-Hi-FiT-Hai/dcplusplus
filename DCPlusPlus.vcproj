@@ -338,6 +338,9 @@
 				RelativePath=".\windows\QueueFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\QueuePage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\SearchFrm.cpp">
 			</File>
 			<File
@@ -493,6 +496,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\QueueFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\QueuePage.h">
 			</File>
 			<File
 				RelativePath=".\windows\resource.h">

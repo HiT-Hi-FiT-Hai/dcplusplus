@@ -67,6 +67,8 @@ HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
 StringPairList WinUtil::initialDirs;
 DWORD WinUtil::helpCookie = 0;
+bool WinUtil::urlDcADCRegistered = false;
+bool WinUtil::urlMagnetRegistered = false;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -329,9 +331,12 @@ void WinUtil::init(HWND hWnd) {
 	if(BOOLSETTING(URL_HANDLER)) {
 		registerDchubHandler();
 		registerADChubHandler();
-	}
-	if(BOOLSETTING(URL_MAGNET))
+		urlDcADCRegistered = true;
+	} 
+	if(BOOLSETTING(MAGNET_REGISTER)) {
 		registerMagnetHandler();
+		urlMagnetRegistered = true; 
+	}
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 
@@ -701,6 +706,10 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	}
 }
 
+ void WinUtil::unRegisterDchubHandler() {
+	SHDeleteKey(HKEY_CLASSES_ROOT, _T("dchub"));
+ }
+
  void WinUtil::registerADChubHandler() {
 	 HKEY hk;
 	 TCHAR Buf[512];
@@ -730,6 +739,10 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		 ::RegCloseKey(hk);
 	 }
+ }
+
+ void WinUtil::unRegisterADChubHandler() {
+	SHDeleteKey(HKEY_CLASSES_ROOT, _T("adc"));
  }
 
  void WinUtil::registerMagnetHandler() {
@@ -814,6 +827,11 @@ void WinUtil::bitziLink(const TTHValue* aHash) {
 	::RegSetValueEx(hk, _T("urn:tree:tiger/"), NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegSetValueEx(hk, _T("urn:tree:tiger/1024"), NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegCloseKey(hk);
+}
+
+void WinUtil::unRegisterMagnetHandler() {
+	SHDeleteKey(HKEY_CLASSES_ROOT, _T("magnet"));
+	SHDeleteKey(HKEY_LOCAL_MACHINE, _T("magnet"));
 }
 
 void WinUtil::openLink(const tstring& url) {
@@ -1089,5 +1107,5 @@ int WinUtil::getOsMinor()
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.78 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.79 2005/03/22 18:54:36 arnetheduck Exp $
  */

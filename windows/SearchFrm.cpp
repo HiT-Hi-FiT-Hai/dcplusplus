@@ -287,7 +287,8 @@ void SearchFrame::onEnter() {
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
 	{
-		int i = SETTING(SEARCH_HISTORY)-1;
+		int i = max(SETTING(SEARCH_HISTORY)-1, 0);
+
 		if(ctrlSearchBox.GetCount() > i) 
 			ctrlSearchBox.DeleteString(i);
 		ctrlSearchBox.InsertString(0, s.c_str());
@@ -1114,5 +1115,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.89 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.90 2005/03/22 18:54:36 arnetheduck Exp $
  */

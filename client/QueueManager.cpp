@@ -98,9 +98,21 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize,
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
 						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
-	if(p == QueueItem::DEFAULT)
-		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
-
+	if(p == QueueItem::DEFAULT) {
+		p = QueueItem::NORMAL;
+		if(aSize <= SETTING(PRIO_HIGHEST_SIZE)*1024) {
+			p = QueueItem::HIGHEST;
+		} else if(aSize <= SETTING(PRIO_HIGH_SIZE)*1024) {
+			p = QueueItem::HIGH;
+		} else if(aSize <= SETTING(PRIO_NORMAL_SIZE)*1024) {
+			p = QueueItem::NORMAL;
+		} else if(aSize <= SETTING(PRIO_LOW_SIZE)*1024) {
+			p = QueueItem::LOW;
+		} else if(SETTING(PRIO_LOWEST)) {
+			p = QueueItem::LOWEST;
+		}
+	}
+	
 	QueueItem* qi = new QueueItem(aTarget, aSize, p, aFlags, aDownloadedBytes, aAdded, root);
 
 	if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -1360,5 +1372,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.127 2005/03/20 15:35:35 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.128 2005/03/22 18:53:52 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.671" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.672" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -37,6 +37,7 @@
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
 		<String Name="BanUser">Ban user(s)</String>
+		<String Name="Bool">0/1</String>
 		<String Name="BothUsersOffline">Both users offline</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
@@ -424,6 +425,7 @@
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
 		<String Name="SettingsQueueDirty">Set Download Queue tab bold when contents change</String>
+		<String Name="SettingsQueue">Downloads\\Queue</String>
 		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
@@ -451,6 +453,11 @@
 		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTextMinislot">Mini slot size</String>
+		<String Name="SettingsPrioHighest">Highest prio size</String>
+		<String Name="SettingsPrioHigh">High prio size</String>
+		<String Name="SettingsPrioNormal">Normal prio size</String>
+		<String Name="SettingsPrioLow">Low prio size</String>
+		<String Name="SettingsPrioLowest">Lowest prio enabled</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>

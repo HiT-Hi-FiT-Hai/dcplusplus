@@ -1,6 +1,15 @@
-﻿-- 0.672 2005-03-20 --
+﻿-- 0.673 --
+* Added auto-prio by file size settings (thanks paka)
+* Fixed yet another context menu fix (in case anyone wondered, it should now
+  be possible to use the context menu key for all context menus)
+* Fixed a search crash with search history set at 0
+* Updated unicows W95 unicode support
+* Updated to latest WTL
+* Fixed directory listing total sizes (thanks trem)
+
+-- 0.672 2005-03-20 --
 * Fixed an issue when loading pre-671 file lists
-* Fixed the hub frame context menu fix
+* Fixed the context menu fix
 
 -- 0.671 2005-03-19 --
 * Added possibility to set minislot size (thanks ullner)
@@ -15,7 +24,7 @@
 * Fixed a prio setting bug (thanks tpo)
 * Fixed some font settings (thanks tpo)
 * Fixed ADC password sending
-* Magnet registration fix (thanks ullner)
+* Magnet registration fix (thanks ullner and farcry)
 * Finished partial file lists for ADC
 * Fixed some ADC crashes
 * Basic ADC searches now work

@@ -213,6 +213,7 @@ private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
+	void initStatus();
 
 	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
@@ -334,5 +335,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.50 2005/03/14 14:04:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.51 2005/03/22 18:54:36 arnetheduck Exp $
  */

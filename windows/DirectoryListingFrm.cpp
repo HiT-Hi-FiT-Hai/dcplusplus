@@ -90,6 +90,8 @@ void DirectoryListingFrame::loadFile(const tstring& name) {
 	} catch(const Exception& e) {
 		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
+
+	initStatus();
 }
 
 void DirectoryListingFrame::loadXML(const string& txt) {
@@ -98,6 +100,8 @@ void DirectoryListingFrame::loadXML(const string& txt) {
 	} catch(const Exception& e) {
 		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
+
+	initStatus();
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -152,21 +156,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
-	files = dl->getTotalFileCount();
-	size = Util::formatBytes(dl->getTotalSize());
-
 	memset(statusSizes, 0, sizeof(statusSizes));
-	tstring tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true)));
-	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true)));
-	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
-	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
 	statusSizes[4] = WinUtil::getTextWidth(TSTRING(MATCH_QUEUE), m_hWnd) + 8;
 	statusSizes[5] = WinUtil::getTextWidth(TSTRING(FIND), m_hWnd) + 8;
 	statusSizes[6] = WinUtil::getTextWidth(TSTRING(NEXT), m_hWnd) + 8;
 
 	ctrlStatus.SetParts(8, statusSizes);
-	ctrlStatus.SetText(3, tmp1.c_str());
-	ctrlStatus.SetText(4, tmp2.c_str());
 
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
@@ -266,6 +261,22 @@ void DirectoryListingFrame::updateStatus() {
 		if(u)
 			UpdateLayout(TRUE);
 	}
+}
+
+void DirectoryListingFrame::initStatus() {
+	files = dl->getTotalFileCount();
+	size = Util::formatBytes(dl->getTotalSize());
+
+	tstring tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true)));
+	tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true)));
+	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
+	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
+
+	ctrlStatus.SetParts(8, statusSizes);
+	ctrlStatus.SetText(3, tmp1.c_str());
+	ctrlStatus.SetText(4, tmp2.c_str());
+
+	UpdateLayout(FALSE);
 }
 
 LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -992,5 +1003,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.59 2005/03/20 15:35:21 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.60 2005/03/22 18:54:36 arnetheduck Exp $
  */
