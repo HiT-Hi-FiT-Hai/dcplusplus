@@ -73,6 +73,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_COMMANDS(ucBase)
@@ -140,6 +141,8 @@ public:
 		ctrlResults.forEachSelected(&SearchInfo::view);
 		return 0;
 	}
+
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onDownloadWhole(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(SETTING(DOWNLOAD_DIRECTORY)));
@@ -481,6 +484,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.29 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.30 2003/12/26 11:16:28 arnetheduck Exp $
  */
 

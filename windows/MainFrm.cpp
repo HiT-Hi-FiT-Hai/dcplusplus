@@ -181,6 +181,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	startSocket();
 
 	if(SETTING(NICK).empty()) {
+		PostMessage(WM_COMMAND, IDC_HELP_README);
 		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
 	}
 
@@ -356,7 +357,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		
 	if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
-		DirectoryListingFrame::openWindow(i->file, i->user);
+		DirectoryListingFrame::openWindow(i->file, i->user, i->start);
 		delete i;
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
 		string* file = (string*)lParam;
@@ -913,6 +914,8 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 					i->file = qi->getTarget();
 				}
 				i->user = qi->getCurrent()->getUser();
+				i->start = qi->getSearchString();
+
 				PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 			} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
 				PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new string(qi->getTarget()));
@@ -923,6 +926,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.40 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.41 2003/12/26 11:16:28 arnetheduck Exp $
  */
 

@@ -47,7 +47,7 @@ public:
 
 	enum { FT_EXTRA_SPACE = 18 };
 
-	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL) { 
+	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 	};
 	~FlatTabCtrlImpl() { }
@@ -61,6 +61,8 @@ public:
 		TabInfo* i = new TabInfo(hWnd, color);
 		dcassert(getTabInfo(hWnd) == NULL);
 		tabs.push_back(i);
+		viewOrder.push_back(hWnd);
+		nextTab = --viewOrder.end();
 		active = i;
 		calcRows(false);
 		Invalidate();		
@@ -79,17 +81,64 @@ public:
 			active = NULL;
 		delete ti;
 		tabs.erase(i);
+		dcassert(find(viewOrder.begin(), viewOrder.end(), aWnd) != viewOrder.end());
+		viewOrder.erase(find(viewOrder.begin(), viewOrder.end(), aWnd));
+		nextTab = viewOrder.end();
+		if(!viewOrder.empty())
+			--nextTab;
+
 		calcRows(false);
 		Invalidate();
 	}
 
+	void startSwitch() {
+		nextTab = --viewOrder.end();
+		inTab = true;
+	}
+
+	void endSwitch() {
+		inTab = false;
+		if(active) 
+		setTop(active->hWnd);
+	}
+
+	HWND getNext() {
+		if(viewOrder.empty())
+			return NULL;
+		if(nextTab == viewOrder.begin()) {
+			nextTab = --viewOrder.end();
+		} else {
+			--nextTab;
+		}
+		return *nextTab;
+	}
+	HWND getPrev() {
+		if(viewOrder.empty())
+			return NULL;
+		nextTab++;
+		if(nextTab == viewOrder.end()) {
+			nextTab = viewOrder.begin();
+		}
+		return *nextTab;
+	}
+
 	void setActive(HWND aWnd) {
+		if(!inTab)
+			setTop(aWnd);
+
 		TabInfo* ti = getTabInfo(aWnd);
 		dcassert(ti != NULL);
 		active = ti;
 		ti->dirty = false;
 		calcRows(false);
 		Invalidate();
+	}
+
+	void setTop(HWND aWnd) {
+		dcassert(find(viewOrder.begin(), viewOrder.end(), aWnd) != viewOrder.end());
+		viewOrder.erase(find(viewOrder.begin(), viewOrder.end(), aWnd));
+		viewOrder.push_back(aWnd);
+		nextTab = --viewOrder.end();
 	}
 
 	void setDirty(HWND aWnd) {
@@ -343,6 +392,7 @@ public:
 		}
 		return 0;		
 	}
+
 private:
 	class TabInfo {
 	public:
@@ -435,6 +485,14 @@ private:
 	TabInfo::List tabs;
 	CPen black;
 
+	typedef list<HWND> WindowList;
+	typedef WindowList::iterator WindowIter;
+
+	WindowList viewOrder;
+	WindowIter nextTab;
+
+	bool inTab;
+
 	TabInfo* getTabInfo(HWND aWnd) {
 		for(TabInfo::ListIter i	= tabs.begin(); i != tabs.end(); ++i) {
 			if((*i)->hWnd == aWnd)
@@ -515,6 +573,7 @@ public:
  	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
+		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, onMDIActivate)
@@ -581,6 +640,24 @@ public:
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
+	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		if(wParam == SC_NEXTWINDOW) {
+			HWND next = getTab()->getNext();
+			if(next != NULL) {
+				MDIActivate(next);
+				return 0;
+			}
+		} else if(wParam == SC_PREVWINDOW) {
+			HWND next = getTab()->getPrev();
+			if(next != NULL) {
+				MDIActivate(next);
+				return 0;
+			}
+		}
+		bHandled = FALSE;
+		return 0;
+	}
+
 	LRESULT onCreate(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		dcassert(getTab());
@@ -619,6 +696,23 @@ public:
 		return 0;
 	}
 
+	LRESULT onKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		if(wParam == VK_CONTROL && LOWORD(lParam) == 1) {
+			getTab()->startSwitch();
+		}
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT onKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		if(wParam == VK_CONTROL) {
+			getTab()->endSwitch();
+		}
+		bHandled = FALSE;
+		return 0;
+		
+	}
+
 	void setDirty() {
 		dcassert(getTab());
 		getTab()->setDirty(m_hWnd);
@@ -636,5 +730,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.23 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.24 2003/12/26 11:16:28 arnetheduck Exp $
  */

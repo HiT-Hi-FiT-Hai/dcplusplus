@@ -140,6 +140,7 @@ public:
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
 	static string commands;
+	static HHOOK hook;
 
 	static void init(HWND hWnd);
 	static void uninit();
@@ -239,5 +240,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.21 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.22 2003/12/26 11:16:28 arnetheduck Exp $
  */

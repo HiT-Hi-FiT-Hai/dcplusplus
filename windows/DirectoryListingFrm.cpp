@@ -22,6 +22,7 @@
 #include "../client/CryptoManager.h"
 #include "../client/File.h"
 #include "../client/QueueManager.h"
+#include "../client/StringTokenizer.h"
 
 #include "Resource.h"
 
@@ -29,14 +30,14 @@
 #include "WinUtil.h"
 #include "LineDlg.h"
 
-void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser) {
-	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
+void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
+	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
 	frame->CreateEx(WinUtil::mdiClient);
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
+DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser, const string& s) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-	treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false)
+	treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(s)
 {
 	string tmp;
 	if(aFile.size() < 4) {
@@ -137,7 +138,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.SetText(3, tmp1.c_str());
 	ctrlStatus.SetText(4, tmp2.c_str());
 
-	ctrlTree.SelectItem(treeRoot);
+	if(!start.empty()) {
+		StringTokenizer tok(start, '\\');
+		StringIter i = tok.getTokens().begin();
+		GoToDirectory(treeRoot, i, tok.getTokens().end());
+	} else {
+		ctrlTree.SelectItem(treeRoot);
+	}
 	
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
@@ -432,6 +439,7 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 	
 	return 0;
 }
+
 
 void DirectoryListingFrame::GoToDirectory(
 	HTREEITEM hItem, 
@@ -864,5 +872,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.24 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.25 2003/12/26 11:16:28 arnetheduck Exp $
  */

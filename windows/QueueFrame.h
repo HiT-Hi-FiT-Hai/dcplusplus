@@ -189,8 +189,27 @@ private:
 	class QueueItemInfo;
 	friend class QueueItemInfo;
 	
-	class QueueItemInfo : public FastAlloc<QueueItemInfo> {
+	class QueueItemInfo : public Flags, public FastAlloc<QueueItemInfo> {
 	public:
+
+		struct SourceInfo : public Flags {
+			explicit SourceInfo(const QueueItem::Source& s) : Flags(s), user(s.getUser()) { };
+
+			SourceInfo& operator=(const QueueItem::Source& s) {
+				*((Flags*)this) = s;
+				user = s.getUser();
+			}
+			User::Ptr& getUser() { return user; };
+
+			User::Ptr user;
+		};
+		struct Display : public FastAlloc<Display> {
+			string columns[COLUMN_LAST];
+		};
+
+		typedef vector<SourceInfo> SourceList;
+		typedef SourceList::iterator SourceIter;
+
 		enum {
 			MASK_TARGET = 1 << COLUMN_TARGET,
 			MASK_STATUS = 1 << COLUMN_STATUS,
@@ -204,40 +223,88 @@ private:
 			MASK_ADDED = 1 << COLUMN_ADDED
 		};
 
-		QueueItemInfo(const QueueItem& aQi) : qi(new QueueItem(aQi)), updateMask((u_int32_t)-1) { 
-			update(); 
+		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(aQI->getTarget()),
+			searchString(aQI->getSearchString()), path(Util::getFilePath(aQI->getTarget())),
+			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
+			added(aQI->getAdded()), priority(aQI->getPriority()), status(aQI->getStatus()),
+			updateMask((u_int32_t)-1), display(NULL)
+		{ 
+			for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
+				sources.push_back(SourceInfo(*(*i)));
+			}
+			for(QueueItem::Source::Iter i = aQI->getBadSources().begin(); i != aQI->getBadSources().end(); ++i) {
+				badSources.push_back(SourceInfo(*(*i)));
+			}
 		};
-		~QueueItemInfo() { delete qi; };
 
-		string columns[COLUMN_LAST];
-		u_int32_t updateMask;
+		~QueueItemInfo() { delete display; };
+
 		void update();
 
-		void remove() { QueueManager::getInstance()->remove(qi->getTarget()); }
+		void remove() { QueueManager::getInstance()->remove(getTarget()); }
 
 		// TypedListViewCtrl functions
-		const string& getText(int col) const {
-			return columns[col];
+		const string& getText(int col) {
+			return getDisplay()->columns[col];
 		}
 		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
 			switch(col) {
-				case COLUMN_SIZE: return compare(a->qi->getSize(), b->qi->getSize());
-				case COLUMN_PRIORITY: return compare((int)a->qi->getPriority(), (int)b->qi->getPriority());
-				case COLUMN_DOWNLOADED: return compare(a->qi->getDownloadedBytes(), b->qi->getDownloadedBytes());
-				default: return Util::stricmp(a->columns[col], b->columns[col]);
+				case COLUMN_SIZE: return compare(a->getSize(), b->getSize());
+				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
+				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
+				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
+				default: return Util::stricmp(a->getDisplay()->columns[col], b->getDisplay()->columns[col]);
 			}
 		}
 
-		const string& getPath() const { return columns[COLUMN_PATH]; }
-		const string& getTargetFileName() const { return columns[COLUMN_PATH]; }
-		const string& getTarget() const { return qi->getTarget(); }
-		int64_t getSize() const { return qi->getSize(); }
-		const string& getSearchString() const { return qi->getSearchString(); }
+		const string& getTargetFileName() { return getDisplay()->columns[COLUMN_TARGET]; }
 
-		QueueItem* qi;
+		SourceList& getSources() { return sources; };
+		SourceList& getBadSources() { return badSources; };
+
+		Display* getDisplay() {
+			if(display == NULL) {
+				display = new Display;
+				update();
+			}
+			return display;
+		}
+
+		bool isSource(const User::Ptr& u) {
+			for(SourceIter i = sources.begin(); i != sources.end(); ++i) {
+				if(i->getUser() == u)
+					return true;
+			}
+			return false;
+		}
+		bool isBadSource(const User::Ptr& u) {
+			for(SourceIter i = badSources.begin(); i != badSources.end(); ++i) {
+				if(i->getUser() == u)
+					return true;
+			}
+			return false;
+		}
+		
+		GETSETREF(string, target, Target);
+		GETSETREF(string, searchString, SearchString);
+		GETSETREF(string, path, Path);
+		GETSET(int64_t, size, Size);
+		GETSET(int64_t, downloadedBytes, DownloadedBytes);
+		GETSET(u_int32_t, added, Added);
+		GETSET(QueueItem::Priority, priority, Priority);
+		GETSET(QueueItem::Status, status, Status);
+		u_int32_t updateMask;
+	
 	private:
+
+		Display* display;
+
 		QueueItemInfo(const QueueItemInfo&);
 		QueueItemInfo& operator=(const QueueItemInfo&);
+		
+		SourceList sources;
+		SourceList badSources;
+
 	};
 
 	typedef pair<Tasks, void*> Task;
@@ -372,5 +439,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.31 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.32 2003/12/26 11:16:28 arnetheduck Exp $
  */

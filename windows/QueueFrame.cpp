@@ -143,121 +143,121 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 void QueueFrame::QueueItemInfo::update() {
-	int colMask = updateMask;
-	updateMask = 0;
+	if(display != NULL) {
+		int colMask = updateMask;
+		updateMask = 0;
 
-	if(colMask & MASK_TARGET) {
-        columns[COLUMN_TARGET] = qi->getTargetFileName();
-	}
-	int online = 0;
-	if(colMask & MASK_USERS || colMask & MASK_STATUS) {
-		string tmp;
-
-		QueueItem::Source::Iter j;
-		for(j = qi->getSources().begin(); j != qi->getSources().end(); ++j) {
-			if(tmp.size() > 0)
-				tmp += ", ";
-
-			QueueItem::Source::Ptr sr = *j;
-			if(sr->getUser()->isOnline())
-				online++;
-
-			tmp += sr->getUser()->getFullNick();
+		if(colMask & MASK_TARGET) {
+			display->columns[COLUMN_TARGET] = Util::getFileName(getTarget());
 		}
-		columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
-	}
-	if(colMask & MASK_STATUS) {
-		if(qi->getStatus() == QueueItem::STATUS_WAITING) {
+		int online = 0;
+		if(colMask & MASK_USERS || colMask & MASK_STATUS) {
+			string tmp;
 
-			char buf[64];
-			if(online > 0) {
-				if(qi->getSources().size() == 1) {
-					columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
-				} else {
-					sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, qi->getSources().size());
-					columns[COLUMN_STATUS] = buf;
-				}
-			} else {
-				if(qi->getSources().size() == 0) {
-					columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD_FROM);
-				} else if(qi->getSources().size() == 1) {
-					columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
-				} else if(qi->getSources().size() == 2) {
-					columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
-				} else if(qi->getSources().size() == 3) {
-					columns[COLUMN_STATUS] = STRING(ALL_3_USERS_OFFLINE);
-				} else if(qi->getSources().size() == 4) {
-					columns[COLUMN_STATUS] = STRING(ALL_4_USERS_OFFLINE);
-				} else {
-					sprintf(buf, CSTRING(ALL_USERS_OFFLINE), qi->getSources().size());
-					columns[COLUMN_STATUS] = buf;
-				}
-			}
-		} else if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
-			columns[COLUMN_STATUS] = STRING(RUNNING);
-		} 
-	}
-	if(colMask & MASK_SIZE) {
-		columns[COLUMN_SIZE] = (qi->getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(qi->getSize());
-	}
-	if(colMask & MASK_DOWNLOADED) {
-		if(qi->getSize() > 0)
-			columns[COLUMN_DOWNLOADED] = Util::formatBytes(qi->getDownloadedBytes()) + " (" + Util::toString((double)qi->getDownloadedBytes()*100.0/(double)qi->getSize()) + "%)";
-		else
-			columns[COLUMN_DOWNLOADED].clear();
-	}
-	if(colMask & MASK_PRIORITY) {
-		switch(qi->getPriority()) {
-		case QueueItem::PAUSED: columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
-		case QueueItem::LOWEST: columns[COLUMN_PRIORITY] = STRING(LOWEST); break;
-		case QueueItem::LOW: columns[COLUMN_PRIORITY] = STRING(LOW); break;
-		case QueueItem::NORMAL: columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
-		case QueueItem::HIGH: columns[COLUMN_PRIORITY] = STRING(HIGH); break;
-		case QueueItem::HIGHEST: columns[COLUMN_PRIORITY] = STRING(HIGHEST); break;
-		default: dcasserta(0); break;
-		}
-	}
-
-	if(colMask & MASK_PATH) {
-		columns[COLUMN_PATH] = Util::getFilePath(qi->getTarget());
-	}
-
-	if(colMask & MASK_ERRORS) {
-		string tmp;
-		QueueItem::Source::Iter j;
-		for(j = qi->getBadSources().begin(); j != qi->getBadSources().end(); ++j) {
-			QueueItem::Source::Ptr sr = *j;
-			if(!sr->isSet(QueueItem::Source::FLAG_REMOVED)) {
+			SourceIter j;
+			for(j = getSources().begin(); j != getSources().end(); ++j) {
 				if(tmp.size() > 0)
 					tmp += ", ";
-				tmp += sr->getUser()->getNick();
-				tmp += " (";
-				if(sr->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
-					tmp += STRING(FILE_NOT_AVAILABLE);
-				} else if(sr->isSet(QueueItem::Source::FLAG_PASSIVE)) {
-					tmp += STRING(PASSIVE_USER);
-				} else if(sr->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
-					tmp += STRING(ROLLBACK_INCONSISTENCY);
-				} else if(sr->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
-					tmp += STRING(SFV_INCONSISTENCY);
+
+				if(j->getUser()->isOnline())
+					online++;
+
+				tmp += j->getUser()->getFullNick();
+			}
+			display->columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
+		}
+		if(colMask & MASK_STATUS) {
+			if(getStatus() == QueueItem::STATUS_WAITING) {
+
+				char buf[64];
+				if(online > 0) {
+					if(getSources().size() == 1) {
+						display->columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
+					} else {
+						sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, getSources().size());
+						display->columns[COLUMN_STATUS] = buf;
+					}
+				} else {
+					if(getSources().size() == 0) {
+						display->columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD_FROM);
+					} else if(getSources().size() == 1) {
+						display->columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
+					} else if(getSources().size() == 2) {
+						display->columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
+					} else if(getSources().size() == 3) {
+						display->columns[COLUMN_STATUS] = STRING(ALL_3_USERS_OFFLINE);
+					} else if(getSources().size() == 4) {
+						display->columns[COLUMN_STATUS] = STRING(ALL_4_USERS_OFFLINE);
+					} else {
+						sprintf(buf, CSTRING(ALL_USERS_OFFLINE), getSources().size());
+						display->columns[COLUMN_STATUS] = buf;
+					}
 				}
-				tmp += ')';
+			} else if(getStatus() == QueueItem::STATUS_RUNNING) {
+				display->columns[COLUMN_STATUS] = STRING(RUNNING);
+			} 
+		}
+		if(colMask & MASK_SIZE) {
+			display->columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
+		}
+		if(colMask & MASK_DOWNLOADED) {
+			if(getSize() > 0)
+				display->columns[COLUMN_DOWNLOADED] = Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)";
+			else
+				display->columns[COLUMN_DOWNLOADED].clear();
+		}
+		if(colMask & MASK_PRIORITY) {
+			switch(getPriority()) {
+		case QueueItem::PAUSED: display->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
+		case QueueItem::LOWEST: display->columns[COLUMN_PRIORITY] = STRING(LOWEST); break;
+		case QueueItem::LOW: display->columns[COLUMN_PRIORITY] = STRING(LOW); break;
+		case QueueItem::NORMAL: display->columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
+		case QueueItem::HIGH: display->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
+		case QueueItem::HIGHEST: display->columns[COLUMN_PRIORITY] = STRING(HIGHEST); break;
+		default: dcasserta(0); break;
 			}
 		}
-		columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
-	}
-	
-	if(colMask & MASK_SEARCHSTRING) {
-		columns[COLUMN_SEARCHSTRING] = qi->getSearchString();
-	}
 
-	if(colMask & MASK_ADDED) {
-		columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", qi->getAdded());
+		if(colMask & MASK_PATH) {
+			display->columns[COLUMN_PATH] = Util::getFilePath(getTarget());
+		}
+
+		if(colMask & MASK_ERRORS) {
+			string tmp;
+			SourceIter j;
+			for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
+					if(tmp.size() > 0)
+						tmp += ", ";
+					tmp += j->getUser()->getNick();
+					tmp += " (";
+					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
+						tmp += STRING(FILE_NOT_AVAILABLE);
+					} else if(j->isSet(QueueItem::Source::FLAG_PASSIVE)) {
+						tmp += STRING(PASSIVE_USER);
+					} else if(j->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
+						tmp += STRING(ROLLBACK_INCONSISTENCY);
+					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
+						tmp += STRING(SFV_INCONSISTENCY);
+					}
+					tmp += ')';
+				}
+			}
+			display->columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
+		}
+
+		if(colMask & MASK_SEARCHSTRING) {
+			display->columns[COLUMN_SEARCHSTRING] = getSearchString();
+		}
+
+		if(colMask & MASK_ADDED) {
+			display->columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
+		}
 	}
 }
 
 void QueueFrame::onQueueAdded(QueueItem* aQI) {
-	QueueItemInfo* ii = new QueueItemInfo(*aQI);
+	QueueItemInfo* ii = new QueueItemInfo(aQI);
 	{
 		Lock l(cs);
 		dcassert(queue.find(aQI) == queue.end());
@@ -268,8 +268,8 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 }
 
 void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
-	if(!ii->qi->isSet(QueueItem::FLAG_USER_LIST)) {
-		queueSize+=ii->qi->getSize();
+	if(!ii->isSet(QueueItem::FLAG_USER_LIST)) {
+		queueSize+=ii->getSize();
 	}
 	queueItems++;
 	dirty = true;
@@ -280,14 +280,14 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	directories.insert(make_pair(dir, ii));
 	
 	if(updateDir) {
-		addDirectory(dir, ii->qi->isSet(QueueItem::FLAG_USER_LIST));
+		addDirectory(dir, ii->isSet(QueueItem::FLAG_USER_LIST));
 	} 
 	if(!showTree || isCurDir(dir)) {
 		ii->update();
 		if(noSort)
-			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->qi->getTarget()));
+			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->getTarget()));
 		else
-			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(ii->qi->getTarget()));
+			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(ii->getTarget()));
 	}
 }
 
@@ -296,7 +296,7 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.SetRedraw(FALSE);
 	for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
 		QueueItem* aQI = j->second;
-		QueueItemInfo* ii = new QueueItemInfo(*aQI);
+		QueueItemInfo* ii = new QueueItemInfo(aQI);
 		dcassert(queue.find(aQI) == queue.end());
 		queue[aQI] = ii;
 		addQueueItem(ii, true);
@@ -526,7 +526,7 @@ void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 
 void QueueFrame::onQueueMoved(QueueItem* aQI) {
 	QueueItemInfo* qi = NULL;
-	QueueItemInfo* qi2 = new QueueItemInfo(*aQI);
+	QueueItemInfo* qi2 = new QueueItemInfo(aQI);
 	{
 		Lock l(cs);
 		dcassert(queue.find(aQI) != queue.end());
@@ -546,37 +546,35 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		dcassert(queue.find(aQI) != queue.end());
 		ii = queue[aQI];
 
-		ii->qi->setPriority(aQI->getPriority());
-		ii->qi->setStatus(aQI->getStatus());
-		ii->qi->setDownloadedBytes(aQI->getDownloadedBytes());
+		ii->setPriority(aQI->getPriority());
+		ii->setStatus(aQI->getStatus());
+		ii->setDownloadedBytes(aQI->getDownloadedBytes());
 
 		{
-			for(QueueItem::Source::Iter i = ii->qi->getSources().begin(); i != ii->qi->getSources().end(); ) {
-				if(!aQI->isSource((*i)->getUser())) {
-					delete *i;
-					i = ii->qi->getSources().erase(i);
+			for(QueueItemInfo::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
+				if(!aQI->isSource(i->getUser())) {
+					i = ii->getSources().erase(i);
 				} else {
 					++i;
 				}
 			}
 			for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-				if(!ii->qi->isSource((*j)->getUser())) {
-					ii->qi->getSources().push_back(new QueueItem::Source(*(*j)));
+				if(!ii->isSource((*j)->getUser())) {
+					ii->getSources().push_back(QueueItemInfo::SourceInfo(*(*j)));
 				}
 			}
 		}
 		{
-			for(QueueItem::Source::Iter i = ii->qi->getBadSources().begin(); i != ii->qi->getBadSources().end(); ) {
-				if(!aQI->isBadSource((*i)->getUser())) {
-					delete *i;
-					i = ii->qi->getBadSources().erase(i);
+			for(QueueItemInfo::SourceIter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ) {
+				if(!aQI->isBadSource(i->getUser())) {
+					i = ii->getBadSources().erase(i);
 				} else {
 					++i;
 				}
 			}
 			for(QueueItem::Source::Iter j = aQI->getBadSources().begin(); j != aQI->getBadSources().end(); ++j) {
-				if(!ii->qi->isBadSource((*j)->getUser())) {
-					ii->qi->getBadSources().push_back(new QueueItem::Source(*(*j)));
+				if(!ii->isBadSource((*j)->getUser())) {
+					ii->getBadSources().push_back(QueueItemInfo::SourceInfo(*(*j)));
 				}
 			}
 		}
@@ -593,7 +591,7 @@ void QueueFrame::onQueueSearchStringUpdated(QueueItem* aQI) {
 		QueueIter i = queue.find(aQI);
 		dcassert(i != queue.end());
 		ii = i->second;
-		ii->qi->setSearchString(aQI->getSearchString());
+		ii->setSearchString(aQI->getSearchString());
 		ii->updateMask |= QueueItemInfo::MASK_SEARCHSTRING;
 	}
 
@@ -627,7 +625,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			dcassert(j != i.second);
 			directories.erase(j);
 			if(directories.count(ii->getPath()) == 0) {
-				removeDirectory(ii->getPath(), ii->qi->isSet(QueueItem::FLAG_USER_LIST));
+				removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
 				if(isCurDir(ii->getPath()))
 					curDir = Util::emptyString;
 			}
@@ -853,29 +851,29 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		if(ctrlQueue.GetSelectedCount() == 1) {
 			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 			menuItems = 0;
-			QueueItem::Source::Iter i;
-			for(i = ii->qi->getSources().begin(); i != ii->qi->getSources().end(); ++i) {
+			QueueItemInfo::SourceIter i;
+			for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
 
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPSTR)(*i)->getUser()->getNick().c_str();
-				mi.dwItemData = (DWORD)*i;
+				mi.dwTypeData = (LPSTR)i->getUser()->getNick().c_str();
+				mi.dwItemData = (DWORD)&(*i);
 				mi.wID = IDC_BROWSELIST + menuItems;
 				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				mi.wID = IDC_REMOVE_SOURCE + menuItems;
 				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				if((*i)->getUser()->isOnline()) {
+				if(i->getUser()->isOnline()) {
 					mi.wID = IDC_PM + menuItems;
 					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				}
 				menuItems++;
 			}
 			readdItems = 0;
-			for(i = ii->qi->getBadSources().begin(); i != ii->qi->getBadSources().end(); ++i) {
+			for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
-				mi.dwTypeData = (LPSTR)(*i)->getUser()->getNick().c_str();
-				mi.dwItemData = (DWORD)*i;
+				mi.dwTypeData = (LPSTR)i->getUser()->getNick().c_str();
+				mi.dwItemData = (DWORD)&(*i);
 				mi.wID = IDC_READD + readdItems;
 				readdMenu.InsertMenuItem(readdItems, TRUE, &mi);
 				readdItems++;
@@ -956,7 +954,7 @@ LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		mi.fMask = MIIM_DATA;
 		
 		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		try {
 			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
@@ -975,9 +973,9 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		mi.fMask = MIIM_DATA;
 		
 		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->add(s->getPath(), ii->getSize(), s->getUser(), ii->getTarget(), ii->getSearchString());
+			QueueManager::getInstance()->readd(ii->getTarget(), s->getUser());
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
@@ -994,7 +992,7 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		mi.fMask = MIIM_DATA;
 		
 		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		QueueManager::getInstance()->removeSource(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	}
 	return 0;
@@ -1006,7 +1004,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		mi.fMask = MIIM_DATA;
 		
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
+		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		PrivateFrame::openWindow(s->getUser());
 	}
 	return 0;
@@ -1268,7 +1266,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.41 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.42 2003/12/26 11:16:28 arnetheduck Exp $
  */
 
 

@@ -55,6 +55,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
@@ -114,6 +115,12 @@ public:
 		CRect rc = rect;
 		ctrlUsers.MoveWindow(rc);
 	}
+
+	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ctrlUsers.SetFocus();
+		return 0;
+	}
+
 private:
 	class UserInfo;
 public:
@@ -199,6 +206,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.12 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.13 2003/12/26 11:16:28 arnetheduck Exp $
  */
 

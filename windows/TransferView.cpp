@@ -422,7 +422,11 @@ void TransferView::onDownloadFailed(Download* aDownload, const string& aReason) 
 		i->pos = 0;
 
 		i->statusString = aReason;
-		i->updateMask |= ItemInfo::MASK_STATUS;
+		i->size = aDownload->getSize();
+		i->file = Util::getFileName(aDownload->getTarget());
+		i->path = Util::getFilePath(aDownload->getTarget());
+		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_SIZE | ItemInfo::MASK_FILE |
+		ItemInfo::MASK_PATH;
 	}
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
@@ -560,5 +564,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.19 2003/12/14 20:41:39 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.20 2003/12/26 11:16:28 arnetheduck Exp $
  */

@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/HubManager.h"
+#include "../client/StringTokenizer.h"
 
 template<class T>
 class UCHandler {
@@ -55,17 +56,42 @@ public:
 		menuPos = menu.GetMenuItemCount();
 		if(!userCommands.empty()) {
 			menu.AppendMenu(MF_SEPARATOR);
+			CMenuHandle cur = menu.m_hMenu;
 			for(UserCommand::Iter ui = userCommands.begin(); ui != userCommands.end(); ++ui) {
 				UserCommand& uc = *ui;
 				if(uc.getType() == UserCommand::TYPE_SEPARATOR) {
 					// Avoid double separators...
-					if( (menu.GetMenuItemCount() >= 1) && 
-						!(menu.GetMenuState(menu.GetMenuItemCount()-1, MF_BYPOSITION) & MF_SEPARATOR))
+					if( (cur.GetMenuItemCount() >= 1) && 
+						!(cur.GetMenuState(cur.GetMenuItemCount()-1, MF_BYPOSITION) & MF_SEPARATOR))
 					{
-						menu.AppendMenu(MF_SEPARATOR);
+						cur.AppendMenu(MF_SEPARATOR);
 					}
 				} else if(uc.getType() == UserCommand::TYPE_RAW || uc.getType() == UserCommand::TYPE_RAW_ONCE) {
-					menu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
+					cur = menu.m_hMenu;
+					StringTokenizer t(uc.getName(), '\\');
+					for(StringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
+						if(i+1 == t.getTokens().end()) {
+							cur.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
+						} else {
+							bool found = false;
+							char buf[1024];
+							// Let's see if we find an existing item...
+							for(int k = 0; k < cur.GetMenuItemCount(); k++) {
+								if(cur.GetMenuState(k, MF_BYPOSITION) & MF_POPUP) {
+									cur.GetMenuString(k, buf, 1024, MF_BYPOSITION);
+									if(Util::stricmp(buf, i->c_str()) == 0) {
+										found = true;
+										cur = (HMENU)cur.GetSubMenu(k);
+									}
+								}
+							}
+							if(!found) {
+								HMENU m = CreatePopupMenu();
+								cur.AppendMenu(MF_POPUP, (UINT_PTR)m, i->c_str());
+								cur = m;
+							}
+						}
+					}
 				} else {
 					dcasserta(0);
 				}
@@ -89,5 +115,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.3 2003/11/19 15:07:58 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.4 2003/12/26 11:16:28 arnetheduck Exp $
 */

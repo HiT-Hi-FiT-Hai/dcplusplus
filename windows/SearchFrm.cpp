@@ -845,6 +845,15 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
 }
 
+LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while((i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		SearchInfo* ii = ctrlResults.getItemData(i);
+		QueueManager::getInstance()->addList(ii->user, QueueItem::FLAG_CLIENT_VIEW, ii->getPath());
+	}
+	return 0;
+}
+
 LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 	NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
@@ -864,5 +873,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.40 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.41 2003/12/26 11:16:28 arnetheduck Exp $
  */

@@ -53,6 +53,7 @@ StringList WinUtil::lastDirs;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
+HHOOK WinUtil::hook = NULL;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -150,6 +151,20 @@ void UserInfoBase::pm() {
 void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
+
+static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
+	if(code == HC_ACTION) {
+		if(wParam == VK_CONTROL && LOWORD(lParam) == 1) {
+			if(lParam & 0x80000000) {
+				WinUtil::tabCtrl->endSwitch();
+			} else {
+				WinUtil::tabCtrl->startSwitch();
+			}
+		}
+	}
+	return CallNextHookEx(WinUtil::hook, code, wParam, lParam);
+}
+
 
 void WinUtil::init(HWND hWnd) {
 	mainWnd = hWnd;
@@ -258,6 +273,8 @@ void WinUtil::init(HWND hWnd) {
 	boldFont = ::CreateFontIndirect(&lf);
 	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
+
+	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 }
 
 void WinUtil::uninit() {
@@ -269,6 +286,8 @@ void WinUtil::uninit() {
 	::DeleteObject(monoFont);
 
 	mainMenu.DestroyMenu();
+
+	UnhookWindowsHookEx(hook);
 
 }
 
@@ -575,5 +594,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.33 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.34 2003/12/26 11:16:28 arnetheduck Exp $
  */
