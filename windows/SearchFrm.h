@@ -77,7 +77,6 @@ public:
 	}
 
 	virtual ~SearchFrame() {
-		SearchManager::getInstance()->removeListener(this);
 		images.Destroy();
 	}
 
@@ -276,6 +275,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.8 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.9 2002/05/23 21:48:24 arnetheduck Exp $
  */
 

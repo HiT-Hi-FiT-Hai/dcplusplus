@@ -174,9 +174,9 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 		}
 	}
 
+	// Try to find an online user, higher probablility that it's one of these...
 	for(i = p.first; i != p.second; ++i) {
-		if(i->second->getLastHubIp().empty()) {
-			i->second->setLastHubIp(aHint);
+		if(i->second->isOnline()) {
 			return i->second;
 		}
 	}
@@ -213,9 +213,9 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		}
 	}
 
-	// Check for an offline user that was not on another hub
+	// Check for any offline user
 	for(i = p.first; i != p.second; ++i) {
-		if( (!i->second->isOnline()) && i->second->getLastHubIp().empty() ) {
+		if( (!i->second->isOnline()) ) {
 			if(putOnline) {
 				i->second->setClient(aClient);
 				fire(ClientManagerListener::USER_UPDATED, i->second);
@@ -252,11 +252,10 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 			}
 		}
 	}
-	
 }
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.24 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.25 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

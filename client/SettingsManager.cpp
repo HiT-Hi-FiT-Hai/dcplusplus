@@ -41,7 +41,7 @@ const string SettingsManager::settingTags[] =
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed",
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -72,7 +72,7 @@ SettingsManager::SettingsManager()
 	setDefault(CLIENTVERSION, "1,0091");
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
-	setDefault(FULL_ROW_SELECT, false);
+	setDefault(FULL_ROW_SELECT, true);
 	setDefault(REMOVE_NOT_AVAILABLE, true);
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(FILTER_KICKMSGS, false);
@@ -106,6 +106,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
 	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(GET_USER_INFO, true);
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -231,6 +232,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.40 2002/05/18 13:47:53 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.41 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

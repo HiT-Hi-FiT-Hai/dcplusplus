@@ -33,6 +33,8 @@
 #include "StringTokenizer.h"
 
 void startup() {
+	Util::initialize();
+
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 
@@ -106,6 +108,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.16 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.17 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

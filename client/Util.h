@@ -110,7 +110,9 @@ class Util
 {
 public:
 	static string emptyString;
-			
+
+	static void initialize();
+
 	static void ensureDirectory(const string& aFile)
 	{
 #ifdef WIN32
@@ -276,15 +278,23 @@ public:
 		if(blen == 0)
 			return 0;
 		string::size_type alen = aString.size();
-		
+
 		if(alen >= blen) {
 			const char* a = aString.c_str();
 			const char* b = aSubString.c_str();
-			char bl = (char)tolower(b[0]);
-			char bu = (char)toupper(b[0]);
+			char bl = lower[b[0]];
+			char bu = upper[b[0]];
 			for(string::size_type pos = 0; pos < alen - blen + 1; pos++) {
+				// First, a special case for the first letter to make sure we
+				// dont do a lot of unneccesary table lookups
 				if( (a[pos] == bl) || (a[pos] == bu) ) {
-					if(strnicmp(a+pos+1, b+1, blen-1) == 0)
+					// First letter matches, keep looking...
+					string::size_type i;
+					for(i = 1; i < blen; i++) {
+						if( (a[pos+i] != lower[b[i]]) && (a[pos+i] != upper[b[i]]) )
+							break;
+					}
+					if(i == blen)
 						return pos;
 				}
 			}
@@ -319,12 +329,14 @@ private:
 	static bool away;
 	static string awayMsg;
 	static const string defaultMsg;	
+	static char upper[];
+	static char lower[];
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.42 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: Util.h,v 1.43 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

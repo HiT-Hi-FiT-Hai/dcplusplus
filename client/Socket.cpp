@@ -179,7 +179,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
 	int pos = 0;
-	int sendSize = min(aLen, 8192);
+	int sendSize = min(aLen, 16384);
 
 	bool blockAgain = false;
 
@@ -199,17 +199,9 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				} else {
 					blockAgain = true;
 				}
+				int waitFor = WAIT_WRITE;
+				wait(2000, waitFor);
 
-				timeval t;
-
-				// 2 seconds...
-				t.tv_sec = 2;
-				t.tv_usec = 0;
-				fd_set wfd;
-				FD_ZERO(&wfd);
-				FD_SET(sock, &wfd);
-				// Wait until something happens with the socket...
-				checksockerr(select(sock+1, NULL, &wfd, NULL, &t));
 			} else if(errno == ENOBUFS) {
 				if(sendSize > 32) {
 					sendSize /= 2;
@@ -232,59 +224,69 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 }
 
 /**
- * Blocks until timeout is reached or data is available on the socket
- * @return True if there's data, false if there was a timeout
- * @throw SocketException Select fails
- */
-bool Socket::waitForData(u_int32_t millis) throw(SocketException) {
-	timeval tv;
-	fd_set fd;
-
-	tv.tv_sec = millis/1000;
-	tv.tv_usec = (millis%1000)*1000; 
-
-	FD_ZERO(&fd);
-	FD_SET(sock, &fd);
-	int x = select(sock+1, &fd, NULL, NULL, &tv);
-	checksockerr(x);
-	return FD_ISSET(sock, &fd) > 0;
-}
-
-/**
- * Blocks until timeout is reached or data is available on the socket
- * @return True if the socket connected successfully, false if there was a timeout
+ * Blocks until timeout is reached one of the specified conditions have been fulfilled
+ * @param waitFor WAIT_*** flags that set what we're waiting for, set to the combination of flags that
+ *				  triggered the wait stop on return (==WAIT_NONE on timeout)
+ * @return True if the socket false if there was a timeout, true otherwise
  * @throw SocketException Select or the connection attempt failed
  */
-bool Socket::waitForConnect(u_int32_t millis) throw(SocketException) {
+bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
 	timeval tv;
-	fd_set wfd, efd;
-
+	fd_set rfd, wfd, efd;
+	fd_set *rfdp = NULL, *wfdp = NULL, *efdp = NULL;
 	tv.tv_sec = millis/1000;
 	tv.tv_usec = (millis%1000)*1000; 
 
-	FD_ZERO(&wfd);
-	FD_ZERO(&efd);
+	if(waitFor & WAIT_CONNECT) {
+		dcassert(!(waitFor & WAIT_READ) && !(waitFor & WAIT_WRITE));
 
-	FD_SET(sock, &wfd);
-	FD_SET(sock, &efd);
-	int x = select(sock+1, NULL, &wfd, &efd, &tv);
-	checksockerr(x);
+		FD_ZERO(&wfd);
+		FD_ZERO(&efd);
 
-	if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
-		int y = 0;
-		socklen_t z = sizeof(y);
-		x = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z);
-		checksockerr(x);
-		if(y != 0)
-			throw SocketException(y);
-		// No errors! We're connected (?)...
-		return true;
+		FD_SET(sock, &wfd);
+		FD_SET(sock, &efd);
+		checksockerr(select(sock+1, NULL, &wfd, &efd, &tv));
+
+		if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
+			int y = 0;
+			socklen_t z = sizeof(y);
+			checksockerr(getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z));
+
+			if(y != 0)
+				throw SocketException(y);
+			// No errors! We're connected (?)...
+			return true;
+		}
+		return false;
 	}
-	return false;
+
+	if(waitFor & WAIT_READ) {
+		dcassert(!(waitFor & WAIT_CONNECT));
+		rfdp = &rfd;
+		FD_ZERO(rfdp);
+		FD_SET(sock, rfdp);
+	}
+	if(waitFor & WAIT_WRITE) {
+		dcassert(!(waitFor & WAIT_CONNECT));
+		wfdp = &wfd;
+		FD_ZERO(wfdp);
+		FD_SET(sock, wfdp);
+	}
+	waitFor = WAIT_NONE;
+	checksockerr(select(sock+1, rfdp, wfdp, efdp, &tv));
+
+	if(rfdp && FD_ISSET(sock, rfdp)) {
+		waitFor |= WAIT_READ;
+	}
+	if(wfdp && FD_ISSET(sock, wfdp)) {
+		waitFor |= WAIT_WRITE;
+	}
+
+	return waitFor != WAIT_NONE;
 }
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.38 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.39 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

@@ -336,6 +336,7 @@ private:
 		switch(type) {
 		case ClientManagerListener::USER_UPDATED:
 			{
+				Lock l(cs);
 				QueueItem::UserPair up = userQueue.equal_range(aUser);
 				bool hasDown = false;
 				for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
@@ -358,6 +359,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.22 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.23 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

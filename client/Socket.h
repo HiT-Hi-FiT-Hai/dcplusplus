@@ -116,6 +116,13 @@ class ServerSocket;
 class Socket
 {
 public:
+	enum {
+		WAIT_NONE = 0x00,
+		WAIT_CONNECT = 0x01,
+		WAIT_READ = 0x02,
+		WAIT_WRITE = 0x04
+	};
+
 	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
 	
 	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
@@ -139,6 +146,7 @@ public:
 	
 	virtual void disconnect() {
 		if(sock != INVALID_SOCKET) {
+			::shutdown(sock, SD_SEND); // Make sure we send FIN
 			closesocket(sock);
 		}
 		connected = false;
@@ -150,7 +158,7 @@ public:
 		TYPE_UDP = 1
 	};
 
-	void create(int aType = TYPE_TCP) throw(SocketException) {
+	virtual void create(int aType = TYPE_TCP) throw(SocketException) {
 		if(sock != INVALID_SOCKET)
 			Socket::disconnect();
 
@@ -181,8 +189,7 @@ public:
 
 	bool isConnected() { return connected; };
 
-	bool waitForData(u_int32_t millis) throw(SocketException);
-	bool waitForConnect(u_int32_t millis) throw(SocketException);
+	bool wait(u_int32_t millis, int& waitFor) throw(SocketException);
 
 #ifdef WIN32
 	void setBlocking(bool block) throw(SocketException) {
@@ -257,6 +264,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.35 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: Socket.h,v 1.36 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

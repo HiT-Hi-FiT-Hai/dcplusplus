@@ -39,7 +39,6 @@
 #define IDR_USERS                       224
 #define IDD_ADVANCED2PAGE               224
 #define IDB_SPEEDS                      225
-#define IDI_ICON1                       226
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -156,6 +155,8 @@
 #define IDC_MAIN_CHAT                   1081
 #define IDC_NEXT                        1082
 #define IDC_PRIVATE_CHAT                1082
+#define IDC_CHECK1                      1083
+#define IDC_GET_USER_LIST               1083
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -173,7 +174,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        227
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1083
+#define _APS_NEXT_CONTROL_VALUE         1084
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

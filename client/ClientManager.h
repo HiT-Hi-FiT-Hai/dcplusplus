@@ -107,6 +107,9 @@ public:
 	void ClientManager::putUserOffline(User::Ptr& aUser) {
 		{
 			Lock l(cs);
+			aUser->unsetFlag(User::PASSIVE);
+			aUser->unsetFlag(User::OP);
+			aUser->unsetFlag(User::DCPLUSPLUS);
 			aUser->setClient(NULL);
 		}
 		fire(ClientManagerListener::USER_UPDATED, aUser);
@@ -198,6 +201,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.24 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.25 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

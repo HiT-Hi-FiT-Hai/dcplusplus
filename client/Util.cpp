@@ -34,6 +34,15 @@ string Util::emptyString;
 bool Util::away = false;
 string Util::awayMsg;
 const string Util::defaultMsg = "I'm away. I might answer later if you're lucky. <DC++ v" VERSIONSTRING ">";
+char Util::upper[256];
+char Util::lower[256];
+
+void Util::initialize() {
+	for(int i = 0; i < 256; ++i) {
+		upper[i] = (char)toupper(i);
+		lower[i] = (char)tolower(i);
+	}
+}
 
 /**
  * Decodes a URL the best it can...
@@ -41,7 +50,6 @@ const string Util::defaultMsg = "I'm away. I might answer later if you're lucky.
  * http:// -> port 80
  * dchub:// -> port 411
  */
-
 void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
@@ -135,10 +143,11 @@ string Util::formatParams(const string& msg, StringMap& params) {
 		StringMapIter smi = params.find(name);
 		if(smi == params.end()) {
 			result.erase(j, k-j);
+			i = j;
 		} else {
 			result.replace(j, k-j + 1, smi->second);
+			i = j + smi->second.size();
 		}
-		i = j + smi->second.size();
 	}
 
 	int bufsize = result.size() + 64;
@@ -158,6 +167,6 @@ string Util::formatParams(const string& msg, StringMap& params) {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.17 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.18 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

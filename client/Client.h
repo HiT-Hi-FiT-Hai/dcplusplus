@@ -82,8 +82,9 @@ public:
 	typedef List::iterator Iter;
 
 	bool isConnected() { if(!socket) return false; else return socket->isConnected(); };
-
 	void disconnect() throw();
+
+	void refreshUserList();
 
 #define checkstate() if(state != STATE_CONNECTED) return
 
@@ -92,8 +93,8 @@ public:
 	void version(const string& aVersion) { send("$Version " + aVersion + "|"); };
 	void getNickList() { checkstate(); send("$GetNickList|"); };
 	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
-	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
-	void getInfo(User* aUser) {  checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+	void getInfo(User::Ptr aUser) { checkstate(); if(getUserInfo()) send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+	void getInfo(User* aUser) {  checkstate(); if(getUserInfo())send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
 	void sendMessage(const string& aMessage) { checkstate(); send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
 
 	void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
@@ -239,6 +240,7 @@ public:
 		return socket->getIp();
 	}
 	
+	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
 	GETSETREF(string, defpassword, Password);
@@ -270,7 +272,7 @@ private:
 	FloodMap seekers;
 	FloodMap flooders;
 
-	Client() : op(false), registered(false), state(STATE_CONNECT), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
+	Client() : userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
@@ -278,6 +280,8 @@ private:
 	Client(const Client&) { dcassert(0); };
 	virtual ~Client() throw();
 	void connect();
+
+	void clearUsers();
 
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
@@ -316,6 +320,10 @@ private:
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
 		case BufferedSocketListener::FAILED:
+			{
+				Lock l(cs);
+				clearUsers();
+			}
 			state = STATE_CONNECT;
 			fire(ClientListener::FAILED, this, aLine); break;
 		default:
@@ -344,6 +352,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.54 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: Client.h,v 1.55 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

@@ -43,6 +43,7 @@ public:
 	  waitingForPW(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 	  clientContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), needSort(false) {
 		client = ClientManager::getInstance()->getClient();
+		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
 		client->setNick(aNick);
 		client->setPassword(aPassword);
 		client->addListener(this);
@@ -140,7 +141,7 @@ public:
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
 			clearUserList();
-			client->getNickList();
+			client->refreshUserList();
 		}
 		return 0;
 	}
@@ -397,6 +398,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.10 2002/05/23 21:48:24 arnetheduck Exp $
  */
 

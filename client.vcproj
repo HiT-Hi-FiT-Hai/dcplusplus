@@ -95,6 +95,7 @@
 				ProgramDataBaseFileName=".\Release/client/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
 				CallingConvention="1"/>
 			<Tool

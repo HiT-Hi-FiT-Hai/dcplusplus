@@ -467,11 +467,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 		delete ui;
 	} else if(wParam == REMOVE_USERS) {
-		int j = ctrlUsers.GetItemCount();
-		for(int i = 0; i < j; i++) {
-			delete (UserInfo*)ctrlUsers.GetItemData(i);
-		}
-		ctrlUsers.DeleteAllItems();
+		clearUserList();
 	} else if(wParam == ADD_CHAT_LINE) {
 		string* x = (string*)lParam;
 		addLine(*x);
@@ -587,8 +583,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 }
 
 void HubFrame::addLine(const string& aLine) {
-	if(ctrlClient.GetWindowTextLength() > 30000) {
-		// We want to limit the buffer to 30000 characters...after that, w95 becomes sad...
+	if(ctrlClient.GetWindowTextLength() > 25000) {
+		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
 		ctrlClient.SetRedraw(FALSE);
 		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
 		ctrlClient.ReplaceSel("");
@@ -679,6 +675,6 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.8 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.9 2002/05/23 21:48:24 arnetheduck Exp $
  */
 

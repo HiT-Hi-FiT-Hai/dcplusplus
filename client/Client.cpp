@@ -36,9 +36,7 @@ Client::~Client() throw() {
 		socket = NULL;
 	}
 
-	for(User::NickIter i = users.begin(); i != users.end(); ++i) {
-		ClientManager::getInstance()->putUserOffline(i->second);
-	}
+	clearUsers();
 
 	if(counted)
 		Thread::safeDec(&hubs);
@@ -70,6 +68,18 @@ void Client::connect() {
 	socket->connect(server, port);
 }
 
+void Client::refreshUserList() {
+	Lock l(cs);
+	clearUsers();
+	getNickList();
+}
+
+void Client::clearUsers() {
+	for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+		ClientManager::getInstance()->putUserOffline(i->second);		
+	}
+	users.clear();
+}
 void Client::onLine(const string& aLine) throw() {
 	lastActivity = GET_TICK();
 
@@ -328,25 +338,24 @@ void Client::onLine(const string& aLine) throw() {
 			}
 			
 			if(u->getNick() == getNick()) {
-				if(state != STATE_HELLO) {
-					return;
-				}
-				state = STATE_CONNECTED;
-				if(registered) {
-					if(counted) {
-						Thread::safeDec(&hubs);
-						counted = false;
+				if(state == STATE_HELLO) {
+					state = STATE_CONNECTED;
+					if(registered) {
+						if(counted) {
+							Thread::safeDec(&hubs);
+							counted = false;
+						}
+					} else {
+						if(!counted) {
+							Thread::safeInc(&hubs);
+							counted = true;
+						}
 					}
-				} else {
-					if(!counted) {
-						Thread::safeInc(&hubs);
-						counted = true;
-					}
-				}
 
-				u->setFlag(User::DCPLUSPLUS);
-				if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
-					u->setFlag(User::PASSIVE);
+					u->setFlag(User::DCPLUSPLUS);
+					if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+						u->setFlag(User::PASSIVE);
+				}
 			}
 			
 			fire(ClientListener::HELLO, this, u);
@@ -357,6 +366,7 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HUB_FULL, this);
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
+		disconnect();
 		fire(ClientListener::VALIDATE_DENIED, this);
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
@@ -467,6 +477,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.45 2002/05/18 13:47:53 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.46 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

@@ -1,3 +1,13 @@
+ -- 0.176 --
+* Various optimizations of search handling and list sorting for better perfomance
+* Fixed a small bug in the search frame
+* Made "Full row select" default
+* Fixed some serious random crash bugs
+* Fixed a w95/98 bug that sometimes caused text not to be displayed
+* Fixed some socket issues with worthless tcp implementations (read: win95/98/me) that don't provide a decent buffer
+* Worked some more on the socket handling in general
+* Fixed a crash when trying to use an invalid %[...] log message
+
  -- 0.175 2002-05-18 --
 * Fixed a 100% cpu bug (thanks zc...stoopid nmdc hub, sending strange things...)
 * Fixed dupe search filter

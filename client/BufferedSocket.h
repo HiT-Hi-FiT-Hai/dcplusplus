@@ -56,11 +56,9 @@ public:
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
 {
 public:
-
 	enum {	
 		MODE_LINE,
-		MODE_DATA,
-		MODE_DGRAM
+		MODE_DATA
 	};
 
 	enum Tasks {
@@ -68,8 +66,7 @@ public:
 		DISCONNECT,
 		SEND_DATA,
 		SEND_FILE,
-		SHUTDOWN,
-		BIND
+		SHUTDOWN
 	};
 
 	/**
@@ -84,6 +81,8 @@ public:
 	
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
+		
+		Lock l(aSock->cs);
 		aSock->addTask(SHUTDOWN); 
 	};
 
@@ -102,13 +101,6 @@ public:
 
 	int getMode() { return mode; };
 	
-	virtual void bind(short aPort) throw(SocketException) {
-		Lock l(cs);
-		mode = MODE_DGRAM;
-		port = aPort;
-		addTask(BIND);
-	}
-
 	/**
 	 * Connect to aServer / aPort
 	 * Note; this one doesn't actually throw, but it overrides one that does...
@@ -139,7 +131,7 @@ public:
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(8192), curBuf(0), file(NULL) {
+		dataBytes(0), inbufSize(16384), curBuf(0), file(NULL) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -190,21 +182,21 @@ private:
 	int outbufSize[BUFFERS];
 	int outbufPos[BUFFERS];
 	int curBuf;
-	
+	CriticalSection bufCS[BUFFERS];
+
 	File* file;
 
-	// We don't want people accepting BufferedSockets this way...
-	virtual void accept(const ServerSocket& ) throw(SocketException) { };
-	
+	virtual void accept(const ServerSocket& ) throw(SocketException) { }; // We don't want people accepting BufferedSockets this way...
+	virtual void create(int) throw(SocketException) { dcassert(0); }; // Sockets are created implicitly
+	virtual void bind(short) throw(SocketException) { dcassert(0); }; // Binding / UDP not supported...
+
 	// From Thread
 	virtual int run() { threadRun(); return 0; };
 
 	void threadRun();
-	bool threadBind();
 	void threadConnect();
-
 	void threadRead();
-	void threadSendFile();
+	bool threadSendFile();
 	void threadSendData();
 	void threadDisconnect();
 	
@@ -233,5 +225,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.38 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.39 2002/05/23 21:48:23 arnetheduck Exp $
  */

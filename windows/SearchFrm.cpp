@@ -469,6 +469,8 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	SearchManager::getInstance()->removeListener(this);
+
 	for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
 		delete (SearchResult*)ctrlResults.GetItemData(i);
 	}
@@ -846,5 +848,5 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 }
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.10 2002/05/23 21:48:24 arnetheduck Exp $
  */

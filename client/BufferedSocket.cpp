@@ -39,63 +39,20 @@ BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* 
 }
 
 /**
- * Write a file to the socket, stops reading from the socket until the transfer's finished.
- * @return True if everythings ok and the thread should continue reading, false on error
+ * Send a chunk of a file
+ * @return True if file is finished, false if there's more data to send
  */
-void BufferedSocket::threadSendFile() {
+bool BufferedSocket::threadSendFile() {
 	u_int32_t len;
 	dcassert(file != NULL);
-	
-	if(!isConnected()) {
-		fire(BufferedSocketListener::FAILED, STRING(NOT_CONNECTED));
-		return;
-	}
 
-	try{
-		while(!taskSem.wait(0)) {
-
-			if( (len = file->read(inbuf, inbufSize)) == 0) {
-				fire(BufferedSocketListener::TRANSMIT_DONE);
-				return;
-			}
-			Socket::write((char*)inbuf, len);
-			fire(BufferedSocketListener::BYTES_SENT, len);
-		}
-	} catch(Exception e) {
-		dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
-		fire(BufferedSocketListener::FAILED, e.getError());
-		return;
+	if( (len = file->read(inbuf, inbufSize)) == 0) {
+		fire(BufferedSocketListener::TRANSMIT_DONE);
+		return true;
 	}
-		
-	// Signal the task again since we don't handle it here...
-	taskSem.signal();
-#ifdef _DEBUG
-	{
-		Lock l(cs);
-		
-		// Check the task queue that we don't have a pending shutdown / disconnect...
-		for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-			if(*i != SHUTDOWN && *i != DISCONNECT) {
-				// Should never happen...
-				dcdebug("Bad tasks in BufferedSocket in threadSendFile, %d\n", *i);
-				dcassert(0);
-			} 
-		}
-	}
-#endif
-	
-}
-
-bool BufferedSocket::threadBind() {
-	try {
-		Socket::create(TYPE_UDP);
-		Socket::bind(port);
-	} catch(SocketException e) {
-		dcdebug("BufferedSocket::threadBind caught: %s\n", e.getError().c_str());
-		fail(e.getError());
-		return false;
-	}
-	return true;
+	Socket::write((char*)inbuf, len);
+	fire(BufferedSocketListener::BYTES_SENT, len);
+	return false;
 }
 
 void BufferedSocket::threadConnect() {
@@ -114,8 +71,10 @@ void BufferedSocket::threadConnect() {
 		setBlocking(false);
 		Socket::create();
 		Socket::connect(s, p);
+		
+		int waitFor = WAIT_CONNECT;
 
-		while(!waitForConnect(200)) {
+		while(!wait(200, waitFor)) {
 			if(taskSem.wait(0)) {
 				// We don't want to handle tasks here, push it back and return...
 				taskSem.signal();
@@ -149,7 +108,8 @@ void BufferedSocket::threadConnect() {
 
 void BufferedSocket::threadRead() {
 	try {
-		while(waitForData(0)) {
+		int waitFor = WAIT_READ;
+		while(wait(0, waitFor)) {
 			int i = read(inbuf, inbufSize);
 			if(i == -1) {
 				// EWOULDBLOCK, no data recived...
@@ -200,9 +160,6 @@ void BufferedSocket::threadRead() {
 							mode = MODE_LINE;
 						}
 					}
-				} else if(mode == MODE_DGRAM) {
-					fire(BufferedSocketListener::DATA, inbuf, i);
-					i = 0;
 				}
 			}
 		}
@@ -214,50 +171,41 @@ void BufferedSocket::threadRead() {
 	}
 }
 
-void BufferedSocket::threadSendData() {
-
-	if(outbufPos[curBuf] == 0)
-		return;
-	
-	try {
-		u_int8_t* buf;
-		int len;
-		{
-			Lock l(cs);
-			buf = outbuf[curBuf];
-			len = outbufPos[curBuf];
-			outbufPos[curBuf] = 0;
-			curBuf = (curBuf + 1) % BUFFERS;
-		}
-		
-		Socket::write((char*)buf, len);
-	} catch(SocketException e) {
-		dcdebug("BufferedSocket::threadSendData caught: %s\n", e.getError().c_str());
-		// Ouch...
-		fail(e.getError());
-	}
-}
-
 void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 
 	{
 		Lock l(cs);
-		int mybuf = curBuf;
 		
-		while(outbufSize[mybuf] < (aLen + outbufPos[mybuf])) {
+		while(outbufSize[curBuf] < (aLen + outbufPos[curBuf])) {
 			// Need to grow...
-			outbufSize[mybuf]*=2;
-			dcdebug("Growing outbuf[%d] to %d bytes\n", mybuf, outbufSize[mybuf]);
-			u_int8_t* tmp = new u_int8_t[outbufSize[mybuf]];
-			memcpy(tmp, outbuf[mybuf], outbufPos[mybuf]);
-			delete[] outbuf[mybuf];
-			outbuf[mybuf] = tmp;
+			outbufSize[curBuf]*=2;
+			dcdebug("Growing outbuf[%d] to %d bytes\n", curBuf, outbufSize[curBuf]);
+			u_int8_t* tmp = new u_int8_t[outbufSize[curBuf]];
+			memcpy(tmp, outbuf[curBuf], outbufPos[curBuf]);
+			delete[] outbuf[curBuf];
+			outbuf[curBuf] = tmp;
 		}
 
-		memcpy(outbuf[mybuf] + outbufPos[mybuf], aBuf, aLen);
-		outbufPos[mybuf] += aLen;
+		memcpy(outbuf[curBuf] + outbufPos[curBuf], aBuf, aLen);
+		outbufPos[curBuf] += aLen;
 		addTask(SEND_DATA);
 	}
+}
+
+void BufferedSocket::threadSendData() {
+	int myBuf;
+
+	{
+		Lock l(cs);
+		myBuf = curBuf;
+		curBuf = (curBuf + 1) % BUFFERS;
+	}
+
+	if(outbufPos[myBuf] == 0)
+		return;
+
+	Socket::write((char*)outbuf[myBuf], outbufPos[myBuf]);
+	outbufPos[myBuf] = 0;
 }
 
 /**
@@ -265,45 +213,50 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
  * @todo Fix the polling...
  */
 void BufferedSocket::threadRun() {
+	bool sendingFile = false;
 
 	while(true) {
-		while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
-			Tasks t;
-			{
-				Lock l(cs);
-				if(tasks.size() > 0) {
+		try {
+
+			while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
+				Tasks t;
+				{
+					Lock l(cs);
+					dcassert(tasks.size() > 0);
 					t = tasks.front();
 					tasks.erase(tasks.begin());
-				} else {
+				}
+
+				switch(t) {
+				case SHUTDOWN: threadShutDown(); return;
+				case DISCONNECT:
+					if(isConnected()) {
+						Socket::disconnect(); 
+						fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
+					}
 					break;
+
+				case SEND_FILE: if(isConnected()) sendingFile = true; break;
+				case SEND_DATA: dcassert(!sendingFile); if(isConnected()) threadSendData(); break;
+				case CONNECT: threadConnect(); sendingFile = false; break;
+
+				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
 			}
+			// Now check if there's any activity on the socket
 
-			switch(t) {
-			case SHUTDOWN: threadShutDown(); return;
-			case DISCONNECT:
-				if(isConnected()) {
-					Socket::disconnect(); 
-					fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
-
-					for(int k = 0; k < BUFFERS; k++) {
-						outbufPos[k] = 0;
+			if(isConnected()) {
+				int waitFor = sendingFile ? WAIT_READ | WAIT_WRITE : WAIT_READ;
+				if(wait(200, waitFor)) {
+					if(waitFor & WAIT_WRITE) {
+						dcassert(sendingFile);
+						if(threadSendFile())
+							sendingFile = false;
+					}
+					if(waitFor & WAIT_READ) {
+						threadRead();
 					}
 				}
-				break;
-
-			case SEND_FILE: if(isConnected()) threadSendFile(); break;
-			case SEND_DATA: if(isConnected()) threadSendData(); break;
-			case CONNECT: threadConnect(); break;
-			case BIND: threadBind(); break;
-
-			default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
-			}
-		}
-		// Now check if there's any activity on the socket
-		try {
-			if(isConnected() && waitForData(200)) {
-				threadRead();
 			}
 		} catch(SocketException e) {
 			fail(e.getError());
@@ -313,5 +266,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.40 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.41 2002/05/23 21:48:22 arnetheduck Exp $
  */

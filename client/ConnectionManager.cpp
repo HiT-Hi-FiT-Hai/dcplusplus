@@ -80,18 +80,6 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	}
 }
 
-void ConnectionManager::abortDownloadConnection(const User::Ptr& aUser) {
-	Lock l(cs);
-
-	for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-		if(i->first->getUser() == aUser) {
-			pendingDown.erase(i);
-			fire(ConnectionManagerListener::REMOVED, i->first);
-			break;
-		}
-	}
-}
-
 void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
 	// Pool it for later usage...
 	if(reuse) {
@@ -498,5 +486,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.45 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.46 2002/05/23 21:48:23 arnetheduck Exp $
  */

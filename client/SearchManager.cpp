@@ -42,7 +42,7 @@ void SearchManager::setPort(short aPort) throw(SocketException) {
 }
 
 int SearchManager::run() {
-	static const int bufsize = 4096;
+	static const int bufsize = 8192;
 
 	u_int8_t* buf = new u_int8_t[bufsize];
 	int len;
@@ -113,6 +113,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.20 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.21 2002/05/23 21:48:23 arnetheduck Exp $
  */
 

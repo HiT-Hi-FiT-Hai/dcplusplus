@@ -101,15 +101,12 @@ public:
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
 		char buf[128];
 		char buf2[128];
-		string a, b;
 
 		switch(p->sortType) {
 		case SORT_STRING:
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			a = buf;
-			p->GetItemText(lParam2, p->sortColumn, buf, 128);
-			b = buf;
-			return p->ascending ? compare(a, b) : -compare(a, b);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			return p->ascending ? strcmp(buf, buf2) : -strcmp(buf, buf2);
 		case SORT_STRING_NOCASE:
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
@@ -158,6 +155,6 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.3 2002/05/23 21:48:24 arnetheduck Exp $
  */
 

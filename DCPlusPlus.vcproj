@@ -83,6 +83,7 @@
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
+			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			WholeProgramOptimization="FALSE">
 			<Tool
@@ -93,7 +94,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="FALSE"
+				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
@@ -111,22 +112,23 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
 				CallingConvention="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
+				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib Release/client/client.lib Release/bzip/bzip2.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
-				Version="0.171"
+				Version="0.176"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
 				GenerateMapFile="TRUE"
-				MapFileName=".\Release/DCPlusPlus.map"
+				MapFileName=".\App\DCPlusPlus.map"
 				SubSystem="2"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -159,10 +161,10 @@
 				RelativePath=".\res\DCPlusPlus.Manifest">
 			</File>
 			<File
-				RelativePath=".\client\res\DCPlusPlus.ico">
+				RelativePath=".\res\DCPlusPlus.ico">
 			</File>
 			<File
-				RelativePath=".\res\DCPlusPlus.ico">
+				RelativePath=".\client\res\DCPlusPlus.ico">
 			</File>
 			<File
 				RelativePath=".\DCPlusPlus.rc">
