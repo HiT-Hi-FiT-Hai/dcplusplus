@@ -481,8 +481,10 @@ public:
 #endif
 	}
 
-	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
-	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	//static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
+	//static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	static int stricmp(const string& a, const string& b) { return stricmp(utf8ToWide(a), utf8ToWide(b)); };
+	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(utf8ToWide(a), utf8ToWide(b), n); };
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const wstring& a, const wstring& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	
@@ -561,7 +563,7 @@ struct noCaseStringHash {
 		return x;
 	}
 	bool operator()(const wstring& a, const wstring& b) const {
-		return Util::stricmp(a, b) == -1;
+		return Util::stricmp(a, b) < 0;
 	}
 };
 
@@ -578,10 +580,10 @@ struct noCaseStringEq {
 /** Case insensitive string ordering */
 struct noCaseStringLess {
 	bool operator()(const string& a, const string& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) == -1;
+		return Util::stricmp(a.c_str(), b.c_str()) < 0;
 	}
 	bool operator()(const wstring& a, const wstring& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) == -1;
+		return Util::stricmp(a.c_str(), b.c_str()) < 0;
 	}
 };
 
@@ -590,5 +592,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.94 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: Util.h,v 1.95 2004/09/06 16:27:34 arnetheduck Exp $
  */

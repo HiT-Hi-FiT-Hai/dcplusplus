@@ -48,6 +48,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
+	HashManager::getInstance()->addListener(this);
 	/* Common search words used to make search more efficient, should be more dynamic */
 	words.push_back("avi");
 	words.push_back("mp3");
@@ -208,8 +209,15 @@ void ShareManager::load(SimpleXML* aXml) {
 		aXml->stepIn();
 		while(aXml->findChild("Directory")) {
 			const string& virt = aXml->getChildAttrib("Virtual");
-			if(!virt.empty())
-				loadDirs.push_back(make_pair(virt, aXml->getChildData()));
+			if(!virt.empty()) {
+				string d(aXml->getChildData());
+
+				if(d[d.length() - 1] != PATH_SEPARATOR)
+					d += PATH_SEPARATOR;
+				Directory* dp = new Directory(virt);
+				directories[d] = dp;
+				virtualMap.push_back(make_pair(virt, d));
+			}
 		}
 		aXml->stepOut();
 	}
@@ -299,11 +307,7 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 int64_t ShareManager::getShareSize(const string& aDir) throw() {
 	RLock l(cs);
 	dcassert(aDir.size()>0);
-	Directory::MapIter i;
-	if(aDir[aDir.size()-1] =='\\')
-		i = directories.find(aDir.substr(0, aDir.size()-1));
-	else
-		i = directories.find(aDir);
+	Directory::MapIter i = directories.find(aDir);
 
 	if(i != directories.end()) {
 		return i->second->getSize();
@@ -476,33 +480,37 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 
 		// We're not changing anything cruical...
 		Directory::File& f = const_cast<Directory::File&>(f2);
-		string fileName = fullName + PATH_SEPARATOR + f.getName();
+		string fileName = fullName + f.getName();
 
-		f.setTTH(HashManager::getInstance()->getTTH(fullName + PATH_SEPARATOR + f.getName()));
+		f.setTTH(HashManager::getInstance()->getTTH(fullName + f.getName()));
 
 		if(f.getTTH() != NULL) {
-			HashFileIter j = tthIndex.find(f.getTTH());
-			if(j == tthIndex.end()) {
-				dir->size+=f.getSize();
-			} else {
-				if(!SETTING(LIST_DUPES)) {
-					LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
-					dir->files.erase(i++);
-					continue;
-				}
-			}
-
-			dir->addSearchType(getMask(f.getName()));
-			dir->addType(getType(f.getName()));
-
-			tthIndex.insert(make_pair(f.getTTH(), i));
-
-			bloom.add(Util::toLower(f.getName()));
-			++i;
+			addFile(dir, i++);
 		} else {
 			dir->files.erase(i++);
 		}
 	}
+}
+
+void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
+	const Directory::File& f = *i;
+
+	HashFileIter j = tthIndex.find(f.getTTH());
+	if(j == tthIndex.end()) {
+		dir->size+=f.getSize();
+	} else {
+		if(!SETTING(LIST_DUPES)) {
+			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + dir->getFullName() + f.getName() + " (" + STRING(SIZE) + ": " + Util::toString(f.getSize()) + " " + STRING(B) + ") " + STRING(DUPLICATE_MATCH) + j->second->getParent()->getFullName() + j->second->getName() );
+			dir->files.erase(i);
+			return;
+		}
+	}
+
+	dir->addSearchType(getMask(f.getName()));
+	dir->addType(getType(f.getName()));
+
+	tthIndex.insert(make_pair(f.getTTH(), i));
+	bloom.add(Util::toLower(f.getName()));
 }
 
 void ShareManager::removeTTH(TTHValue* tth, const Directory::File::Iter& iter) {
@@ -1129,11 +1137,11 @@ void ShareManager::search(SearchResult::List& results, const StringList& params,
 
 ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 	for(Directory::MapIter mi = directories.begin(); mi != directories.end(); ++mi) {
-		if(Util::strnicmp(fname, mi->first, mi->first.length()) == 0 && fname[mi->first.length()] == PATH_SEPARATOR) {
+		if(Util::strnicmp(fname, mi->first, mi->first.length()) == 0) {
 			Directory* d = mi->second;
 
 			string::size_type i;
-			string::size_type j = mi->first.length() + 1;
+			string::size_type j = mi->first.length();
 			while( (i = fname.find(PATH_SEPARATOR, j)) != string::npos) {
 				mi = d->directories.find(fname.substr(j, i-j));
 				j = i + 1;
@@ -1157,7 +1165,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 				string s = n.substr(i->first.size()+1);
 				try {
 					// Schedule for hashing, it'll be added automatically later on...
-					HashManager::getInstance()->getTTH(n);
+					HashManager::getInstance()->checkTTH(n, d->getSize(), 0);
 				} catch(const Exception&) {
 					// Not a vital feature...
 				}
@@ -1173,7 +1181,8 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 	if(d != NULL) {
 		Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
 		if(i != d->files.end()) {
-			if(i->getTTH() != NULL) {
+			if(i->getTTH() != NULL) { // TTH of file updated?
+				removeTTH(i->getTTH(), i);
 				dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
 				tthIndex.erase(i->getTTH());
 			}
@@ -1183,16 +1192,9 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			tthIndex.insert(make_pair(root, i));
 		} else {
 			string name = Util::getFileName(fname);
-			d->addSearchType(getMask(name));
-			d->addType(getType(name));
 			int64_t size = File::getSize(fname);
 			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
-
-			tthIndex.insert(make_pair(root, it));
-
-			d->size+=size;
-
-			bloom.add(Util::toLower(name));
+			addFile(d, it);
 		}
 	}
 }
@@ -1210,6 +1212,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.94 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.95 2004/09/06 16:27:34 arnetheduck Exp $
  */
 

@@ -48,10 +48,6 @@ public:
 		string tmp;
 		startTime = GET_TICK();
 		HashManager::getInstance()->getStats(tmp, startBytes, startFiles);
-		if(startBytes == 0)
-			startBytes = 1;
-		if(startFiles == 0)
-			startFiles = 1;
 
 		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
 		progress.SetRange(0, 10000);
@@ -78,36 +74,50 @@ public:
 		u_int32_t tick = GET_TICK();
 
 		HashManager::getInstance()->getStats(file, bytes, files);
+		if(bytes > startBytes)
+			bytes = startBytes;
+
+		if(files > startFiles)
+			files = startFiles;
 
 		if(autoClose && files == 0) {
 			PostMessage(WM_CLOSE);
 			return;
 		}
 		double diff = tick - startTime;
-		if(diff == 0)
-			diff = 1;
-
-		double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
-		double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
-		
-		SetDlgItemText(IDC_FILES_PER_HOUR, WinUtil::toT(Util::toString(filestat) + " " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
-		SetDlgItemText(IDC_HASH_SPEED, WinUtil::toT(Util::formatBytes((int64_t)speedStat) + "/s, " + Util::formatBytes(bytes) + STRING(LEFT)).c_str());
-
-		if(filestat == 0 || speedStat == 0) {
+		if(diff < 1000 || files == 0 || bytes == 0) {
+			SetDlgItemText(IDC_FILES_PER_HOUR, WinUtil::toT("-.-- " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
+			SetDlgItemText(IDC_HASH_SPEED, WinUtil::toT("-.-- B/s, " + Util::formatBytes(bytes) + " " + STRING(LEFT)).c_str());
 			SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT("-:--:-- " + STRING(LEFT)).c_str());
+			progress.SetPos(0);
 		} else {
-			double fs = files * 60 * 60 / filestat;
-			double ss = bytes / speedStat;
+			double filestat = (((double)(startFiles - files)) * 60 * 60 * 1000) / diff;
+			double speedStat = (((double)(startBytes - bytes)) * 1000) / diff;
 
-			SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT(Util::formatSeconds((int64_t)(fs + ss) / 2) + " " + STRING(LEFT)).c_str());
+			SetDlgItemText(IDC_FILES_PER_HOUR, WinUtil::toT(Util::toString(filestat) + " " + STRING(FILES_PER_HOUR) + ", " + Util::toString((u_int32_t)files) + " " + STRING(FILES_LEFT)).c_str());
+			SetDlgItemText(IDC_HASH_SPEED, WinUtil::toT(Util::formatBytes((int64_t)speedStat) + "/s, " + Util::formatBytes(bytes) + " " + STRING(LEFT)).c_str());
+
+			if(filestat == 0 || speedStat == 0) {
+				SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT("-:--:-- " + STRING(LEFT)).c_str());
+			} else {
+				double fs = files * 60 * 60 / filestat;
+				double ss = bytes / speedStat;
+
+				SetDlgItemText(IDC_TIME_LEFT, WinUtil::toT(Util::formatSeconds((int64_t)(fs + ss) / 2) + " " + STRING(LEFT)).c_str());
+			}
 		}
+
 		if(files == 0) {
 			SetDlgItemText(IDC_CURRENT_FILE, CTSTRING(DONE));
 		} else {
 			SetDlgItemText(IDC_CURRENT_FILE, WinUtil::toT(file).c_str());
 		}
 
-		progress.SetPos((int)(10000 * ((0.5 * (startFiles - files)/startFiles) + 0.5 * (startBytes - bytes) / startBytes)));
+		if(startFiles == 0 || startBytes == 0) {
+			progress.SetPos(0);
+		} else {
+			progress.SetPos((int)(10000 * ((0.5 * (startFiles - files)/startFiles) + 0.5 * (startBytes - bytes) / startBytes)));
+		}
 	}
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -130,6 +140,6 @@ private:
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.1 2004/09/06 12:33:26 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.2 2004/09/06 16:27:36 arnetheduck Exp $
  */
 

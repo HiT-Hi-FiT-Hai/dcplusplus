@@ -173,8 +173,6 @@ private:
 	
 	virtual ~ShareManager();
 	
-	StringPairList loadDirs;
-
 	struct AdcSearch {
 		AdcSearch(const StringList& params);
 
@@ -247,6 +245,7 @@ private:
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
 	void addTree(const string& aName, Directory* aDirectory);
+	void addFile(Directory* dir, Directory::File::Iter i);
 	void generateNmdcList();
 	void generateXmlList();
 
@@ -281,6 +280,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.53 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.54 2004/09/06 16:27:34 arnetheduck Exp $
  */
 
