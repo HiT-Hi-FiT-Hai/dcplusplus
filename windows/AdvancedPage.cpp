@@ -77,6 +77,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_SKIP_ZERO_BYTE },
 	{ SettingsManager::ADLS_BREAK_ON_FIRST, ResourceManager::SETTINGS_ADLS_BREAK_ON_FIRST },
 	{ SettingsManager::TAB_COMPLETION, ResourceManager::SETTINGS_TAB_COMPLETION },
+	{ SettingsManager::COMPRESS_TRANSFERS, ResourceManager::SETTINGS_COMPRESS_TRANSFERS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -95,6 +96,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.19 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.20 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

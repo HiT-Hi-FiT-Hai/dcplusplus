@@ -80,7 +80,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 
 	if( (!aSource->isSet(UserConnection::FLAG_HASSLOT)) && 
 		(getFreeSlots()<=0) && 
-		(ui == reservedSlots.end()) ) 
+		(ui == reservedSlots.end()) &&
+		(!aSource->getUser()->getFavoriteGrantSlot())) 
 	{
 		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()).c_str());
 		if( ((getLastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
@@ -174,15 +175,17 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 }
 
 void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
-	if(prepareFile(aSource, aFile, aResume)) {
-		Upload* u = aSource->getUpload();
-		dcassert(u != NULL);
-		
-		u->setStart(GET_TICK());
-		aSource->sending();
-		aSource->setState(UserConnection::STATE_DONE);
-		aSource->transmitFile(u->getFile(), aBytes, true);
-		fire(UploadManagerListener::STARTING, u);
+	if(BOOLSETTING(COMPRESS_TRANSFERS)) {
+		if(prepareFile(aSource, aFile, aResume)) {
+			Upload* u = aSource->getUpload();
+			dcassert(u != NULL);
+
+			u->setStart(GET_TICK());
+			aSource->sending();
+			aSource->setState(UserConnection::STATE_DONE);
+			aSource->transmitFile(u->getFile(), aBytes, true);
+			fire(UploadManagerListener::STARTING, u);
+		}
 	}
 }
 
@@ -365,5 +368,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.41 2003/10/07 15:46:26 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.42 2003/11/07 00:42:41 arnetheduck Exp $
  */

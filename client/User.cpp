@@ -21,6 +21,12 @@
 
 #include "User.h"
 #include "Client.h"
+#include "FavoriteUser.h"
+
+User::~User() throw()
+{
+	delete favoriteUser;
+}
 
 void User::connect() {
 	RLock l(cs);
@@ -139,8 +145,40 @@ void User::setClient(Client* aClient) {
 	}
 };
 
+// favorite uesr stuff
+void User::setFavoriteUser(FavoriteUser* aUser)
+{
+	WLock l(cs);
+	delete favoriteUser;
+	favoriteUser = aUser;
+}
+
+bool User::isFavoriteUser() const
+{
+	RLock l(cs);
+	return (favoriteUser != NULL);
+}
+
+bool User::getFavoriteGrantSlot() const
+{
+	RLock l(cs);
+	return (favoriteUser != NULL && favoriteUser->isSet(FavoriteUser::FLAG_GRANTSLOT));
+}
+
+void User::setFavoriteGrantSlot(bool grant)
+{
+	WLock l(cs);
+	if (favoriteUser == NULL)
+		return;
+
+	if (grant)
+		favoriteUser->setFlag(FavoriteUser::FLAG_GRANTSLOT);
+	else
+		favoriteUser->unsetFlag(FavoriteUser::FLAG_GRANTSLOT);
+}
+
 /**
  * @file
- * $Id: User.cpp,v 1.23 2003/11/04 20:18:12 arnetheduck Exp $
+ * $Id: User.cpp,v 1.24 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

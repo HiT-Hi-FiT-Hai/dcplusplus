@@ -81,7 +81,11 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
-
+#if 0
+	ItemInfo* ii = new ItemInfo(ClientManager::getInstance()->getUser("test"), 
+		ItemInfo::TYPE_DOWNLOAD, ItemInfo::STATUS_RUNNING, 75, 100, 25, 50);
+	ctrlTransfers.insert(0, string("Test"), 0, (LPARAM)ii);
+#endif
 	return 0;
 }
 
@@ -282,33 +286,71 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 		if(cd->iSubItem == COLUMN_STATUS) {
 			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
-				// draw something nice...
+				// draw something nice...	
 				char buf[256];
+				COLORREF barBase = ::GetSysColor(COLOR_HIGHLIGHT);
+				COLORREF bgBase = WinUtil::bgColor;
+				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -40 : 40;
+				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -mod, 50), barBase, HLS_TRANSFORM(barBase, mod, -30) };
+				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
+
 				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
 				buf[255] = 0;
 
 				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
 				CRect rc2 = rc;
 				rc2.left += 6;
-				//::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
-				//rc.DeflateRect(1, 1, 1, 1);
+				
+				// draw background
+				HGDIOBJ oldpen = ::SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,bgPal[0]));
+				HGDIOBJ oldbr = ::SelectObject(cd->nmcd.hdc, CreateSolidBrush(bgPal[1]));
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);			
+				rc.DeflateRect(1, 1, 1, 1);
+
+				LONG left = rc.left;
+				int64_t w = rc.Width();
+				// draw start part
 				if(ii->size == 0)
 					ii->size = 1;
-				rc.right = rc.left + (int) (((int64_t)rc.Width()) * ii->pos / ii->size);
-				bool altColor = (ctrlTransfers.m_hWnd == ::GetFocus()) && (ctrlTransfers.GetItemState((int)cd->nmcd.dwItemSpec, LVIS_SELECTED) & LVIS_SELECTED);
-				int color =  altColor ? COLOR_BTNFACE : COLOR_HIGHLIGHT;
-				HGDIOBJ old = ::SelectObject(cd->nmcd.hdc, GetSysColorBrush(color));
-				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, 
-					rc.right, rc.bottom);
-				::SelectObject(cd->nmcd.hdc, old);
-				COLORREF oldcol = ::SetTextColor(cd->nmcd.hdc, cd->clrText);
+				rc.right = left + (int) (w * ii->start / ii->size);
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[0])));
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,barPal[0])));
+				
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
+				
+				// Draw actual part
+				rc.left = rc.right;
+				rc.right = left + (int) (w * ii->actual / ii->size);
+				DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[1])));
+
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
+
+				// And the effective part...
+				if(ii->pos > ii->actual) {
+					rc.left = rc.right - 1;
+					rc.right = left + (int) (w * ii->pos / ii->size);
+					DeleteObject(SelectObject(cd->nmcd.hdc, CreateSolidBrush(barPal[2])));
+
+					::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
+
+				}
+				rc.left = left;
+				// draw progressbar highlight
+				if(rc.Width()>2) {
+					DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,1,barPal[2])));
+
+					rc.top += (int)rc.Height()*0.33;
+					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
+					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
+				};
+				
+				// draw status text
+				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
+				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
+
+				SetTextColor(cd->nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
 				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
-				color = altColor ? COLOR_BTNTEXT : COLOR_HIGHLIGHTTEXT;
-				::SetTextColor(cd->nmcd.hdc, GetSysColor(color));
-				rc2.right = rc.right;
-				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
-				::SelectObject(cd->nmcd.hdc, old);
-				::SetTextColor(cd->nmcd.hdc, oldcol);
+
 				return CDRF_SKIPDEFAULT;
 			}
 		}
@@ -450,6 +492,7 @@ void TransferView::onDownloadStarting(Download* aDownload) {
 	}
 	ii->status = ItemInfo::STATUS_RUNNING;
 	ii->pos = 0;
+	ii->start = aDownload->getPos();
 	ii->size = aDownload->getSize();
 
 	StringListInfo* i = new StringListInfo((LPARAM)ii);
@@ -477,7 +520,8 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 
 			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
 			ItemInfo* ii = transferItems[aCqi];
-			ii->pos = d->getPos();
+			ii->actual = ii->start + d->getActual();
+			ii->pos = ii->start + d->getTotal();
 			ii->timeLeft = d->getSecondsLeft();
 			ii->speed = d->getRunningAverage();
 
@@ -519,6 +563,7 @@ void TransferView::onUploadStarting(Upload* aUpload) {
 		ii = transferItems[aCqi];		
 	}
 	ii->pos = 0;
+	ii->start = aUpload->getPos();
 	ii->size = aUpload->getSize();
 	ii->status = ItemInfo::STATUS_RUNNING;
 	ii->speed = 0;
@@ -546,8 +591,9 @@ void TransferView::onUploadTick(const Upload::List& ul) {
 			Upload* u = *j;
 
 			ConnectionQueueItem* aCqi = u->getUserConnection()->getCQI();
-			ItemInfo* ii = transferItems[aCqi];		
-			ii->pos = u->getPos();
+			ItemInfo* ii = transferItems[aCqi];	
+			ii->actual = ii->start + u->getActual();
+			ii->pos = ii->start + u->getTotal();
 			ii->timeLeft = u->getSecondsLeft();
 			ii->speed = u->getRunningAverage();
 
@@ -642,5 +688,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.7 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.8 2003/11/07 00:42:41 arnetheduck Exp $
  */

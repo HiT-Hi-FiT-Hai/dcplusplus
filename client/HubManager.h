@@ -28,6 +28,7 @@
 #include "User.h"
 #include "SettingsManager.h"
 #include "UserCommand.h"
+#include "FavoriteUser.h"
 
 class HubEntry {
 public:
@@ -110,26 +111,30 @@ public:
 
 	User::List& getFavoriteUsers() { return users; };
 	
-	void addFavoriteUser(const User::Ptr& aUser) { 
+	void addFavoriteUser(User::Ptr& aUser) { 
 		if(find(users.begin(), users.end(), aUser) == users.end()) {
 			users.push_back(aUser);
+			aUser->setFavoriteUser(new FavoriteUser());
 			fire(HubManagerListener::USER_ADDED, aUser);
 			save();
 		}
 	}
 
-	void removeFavoriteUser(const User::Ptr& aUser) {
+	void removeFavoriteUser(User::Ptr& aUser) {
 		User::Iter i = find(users.begin(), users.end(), aUser);
 		if(i != users.end()) {
+			aUser->setFavoriteUser(NULL);
 			fire(HubManagerListener::USER_REMOVED, aUser);
 			users.erase(i);
 			save();
 		}
 	}
 
+/* user holds this information now
 	bool isFavoriteUser(const User::Ptr& aUser) {
 		return (find(users.begin(), users.end(), aUser) != users.end());
 	}
+/**/
 	
 	//void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
 	void addFavorite(const FavoriteHubEntry& aEntry) {
@@ -317,6 +322,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.44 2003/10/24 23:35:41 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.45 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

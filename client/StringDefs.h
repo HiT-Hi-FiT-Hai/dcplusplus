@@ -266,6 +266,7 @@ enum Strings { // @DontAdd
 	SETTINGS_CLEAR_SEARCH, // "Clear search box after each search"
 	SETTINGS_CLIENT_VER, // "Client version"
 	SETTINGS_COLORS, // "Colors"
+	SETTINGS_COMPRESS_TRANSFERS, // "Enable safe and compressed transfers"
 	SETTINGS_COMMAND, // "Command"
 	SETTINGS_CONFIRM_EXIT, // "Confirm application exit"
 	SETTINGS_CONNECTION_SETTINGS, // "Connection Settings (see the readme / newbie help if unsure)"

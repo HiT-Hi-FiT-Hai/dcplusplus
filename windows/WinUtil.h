@@ -26,6 +26,20 @@
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
 
+// Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
+// article on WTL OfficeXP Menus
+typedef DWORD HLSCOLOR;
+#define HLS(h,l,s) ((HLSCOLOR)(((BYTE)(h)|((WORD)((BYTE)(l))<<8))|(((DWORD)(BYTE)(s))<<16)))
+#define HLS_H(hls) ((BYTE)(hls))
+#define HLS_L(hls) ((BYTE)(((WORD)(hls)) >> 8))
+#define HLS_S(hls) ((BYTE)((hls)>>16))
+
+HLSCOLOR RGB2HLS (COLORREF rgb);
+COLORREF HLS2RGB (HLSCOLOR hls);
+
+COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
+
+
 class FlatTabCtrl;
 class UserCommand;
 
@@ -171,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.18 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.19 2003/11/07 00:42:41 arnetheduck Exp $
  */

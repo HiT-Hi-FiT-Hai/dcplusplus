@@ -30,19 +30,12 @@
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
-//#define WITH_GETZBLOCK 1
-
 ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
 	features.push_back("BZList");
-
-#ifdef WITH_GETZBLOCK
-	features.push_back("GetZBlock");
-#endif
 };
-
 
 /**
  * Request a connection for downloading.
@@ -401,7 +394,11 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
 			User::updated(aSource->getUser());
 		}
-		aSource->supports(features);
+		StringList defFeatures = features;
+		if(BOOLSETTING(COMPRESS_TRANSFERS))
+			defFeatures.push_back("GetTestZBlock");
+
+		aSource->supports(defFeatures);
 	}
 
 	aSource->setState(UserConnection::STATE_DIRECTION);
@@ -606,10 +603,8 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 			for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 				if(*i == "BZList")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
-#ifdef WITH_GETZBLOCK
-				else if(*i == "GetZBlock")
+				else if(*i == "GetTestZBlock")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-#endif
 			}
 		}
 		break;
@@ -628,5 +623,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.62 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.63 2003/11/07 00:42:41 arnetheduck Exp $
  */

@@ -133,12 +133,14 @@ private:
 		};
 
 		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
-			int64_t p = 0, int64_t sz = 0) : user(u), type(t), status(s), pos(p), size(sz), speed(0), timeLeft(0) { };
+			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : user(u), type(t), status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0) { };
 		User::Ptr user;
 		Types type;
 		Status status;
 		int64_t pos;
 		int64_t size;
+		int64_t start;
+		int64_t actual;
 		int64_t speed;
 		int64_t timeLeft;
 	};
@@ -198,5 +200,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.3 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.4 2003/11/07 00:42:41 arnetheduck Exp $
  */

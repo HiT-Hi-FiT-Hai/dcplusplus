@@ -26,9 +26,9 @@
 #include "../client/StringTokenizer.h"
 #include "../client/QueueManager.h"
 
-int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB };
-int UsersFrame::columnSizes[] = { 200, 150, 300 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::STATUS, ResourceManager::LAST_HUB };
+int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_GRANT_SLOT };
+int UsersFrame::columnSizes[] = { 200, 150, 300, 100 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::GRANT_EXTRA_SLOT };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -61,6 +61,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	usersMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	usersMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 
 	HubManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -98,6 +99,7 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 	} else {
 		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubAddress() + ")");
 	}
+	l.push_back(aUser->getFavoriteGrantSlot() ? STRING(YES) : STRING(NO));
 	ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
 }
 
@@ -107,6 +109,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
 	ctrlUsers.SetItemText(i, 1, aUser->isOnline() ? CSTRING(ONLINE) : CSTRING(OFFLINE) );
 	ctrlUsers.SetItemText(i, 2, (aUser->getLastHubName() + " (" + aUser->getLastHubAddress() + ")").c_str());
+	ctrlUsers.SetItemText(i, 3, aUser->getFavoriteGrantSlot() ? CSTRING(YES) : CSTRING(NO));
 }
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
@@ -115,6 +118,25 @@ void UsersFrame::removeUser(const User::Ptr& aUser) {
 	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
 	delete (UserInfo*)ctrlUsers.GetItemData(i);
 	ctrlUsers.DeleteItem(i);
+}
+
+LRESULT UsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	//char buf[256];
+	
+	bool needToSave = false;
+
+	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
+		ui->user->setFavoriteGrantSlot(!ui->user->getFavoriteGrantSlot());
+		updateUser(ui->user);
+		needToSave = true;
+	}
+
+	if (needToSave)
+		HubManager::getInstance()->save();
+
+	return 0;
 }
 
 LRESULT UsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -164,6 +186,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.14 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.15 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

@@ -102,6 +102,7 @@ void HubManager::save() {
 			xml.addChildAttrib("Nick", (*j)->getNick());
 			xml.addChildAttrib("LastHubAddress", (*j)->getLastHubAddress());
 			xml.addChildAttrib("LastHubName", (*j)->getLastHubName());
+			xml.addChildAttrib("GrantSlot", (*j)->getFavoriteGrantSlot());
 		}
 		xml.stepOut();
 		xml.addTag("UserCommands");
@@ -227,6 +228,7 @@ void HubManager::load(SimpleXML* aXml) {
 				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
 			}
 			addFavoriteUser(u);
+			u->setFavoriteGrantSlot(aXml->getBoolChildAttrib("GrantSlot"));
 		}
 		aXml->stepOut();
 	}
@@ -331,5 +333,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.35 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.36 2003/11/07 00:42:41 arnetheduck Exp $
  */

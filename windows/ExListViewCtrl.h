@@ -36,7 +36,7 @@ class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CContro
 
 public:
 	enum {	
-		SORT_FUNC,
+		SORT_FUNC = 2,
  		SORT_STRING,
 		SORT_STRING_NOCASE,
 		SORT_INT,
@@ -186,6 +186,6 @@ protected:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.9 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.10 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

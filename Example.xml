@@ -263,6 +263,7 @@
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
 		<String Name="SettingsClientVer">Client version</String>
 		<String Name="SettingsColors">Colors</String>
+		<String Name="SettingsCompressTransfers">Enable safe and compressed transfers</String>
 		<String Name="SettingsCommand">Command</String>
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
 		<String Name="SettingsConnectionSettings">Connection Settings (see the readme / newbie help if unsure)</String>

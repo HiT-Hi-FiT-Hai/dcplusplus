@@ -34,7 +34,7 @@ static const char thanks[] = "Big thanks to all donators and people who have con
 "geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, "
 "patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
 "sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, "
-"distiller. Keep it coming!";
+"distiller, citruz. Keep it coming!";
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
@@ -132,6 +132,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.14 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.15 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

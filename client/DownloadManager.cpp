@@ -118,31 +118,31 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 		
 		if(d->isSet(Download::FLAG_RESUME)) {
-			int64_t size=0;
-			if( BOOLSETTING(ANTI_FRAG) ) {
-				const string& target = (d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
+			dcassert(d->getSize() != -1);
+
+			const string& target = (d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
+			int64_t start = File::getSize(target);
+
+			// Only use antifrag if we don't have a previous non-antifrag part
+			if( BOOLSETTING(ANTI_FRAG) && (start == -1) ) {
 				string atarget = target + ANTI_FRAG_EXT;
+				int64_t aSize = File::getSize(target + ANTI_FRAG_EXT);
 
-				size = d->getPos();
+				if(aSize == -1 || aSize == d->getSize())
+					start = d->getPos();
+				else
+					start = 0;
 
-				int64_t sizeTarget = File::getSize(target);
-				int64_t sizeaTarget = File::getSize(atarget);
-				if( (sizeTarget < size) && (sizeaTarget < size) ) { //Just make sure we have a file big enough already
-					size = 0;
-				}
-			}
-			else {
-				size = File::getSize(d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget()); 
+				d->setFlag(Download::FLAG_ANTI_FRAG);
 			}
 			
 			int rollback = SETTING(ROLLBACK);
 			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
-
-			// dcassert(d->getSize() != -1);
-			if( (rollback + cutoff) > min(size, d->getSize()) ) {
+			
+			if( (rollback + cutoff) > start) {
 				d->setPos(0);
 			} else {
-				d->setPos(size - rollback - cutoff);
+				d->setPos(start - rollback - cutoff);
 				d->setRollbackBuffer(rollback);
 				d->setFlag(Download::FLAG_ROLLBACK);
 			}
@@ -182,12 +182,34 @@ void DownloadManager::onSending(UserConnection* aSource) {
 	}
 }
 
+void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+
+	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
+		dcdebug("DM::onFileLength Bad state, ignoring\n");
+		return;
+	}
+
+	int64_t fileLength = Util::toInt64(aFileLength);
+	if(prepareFile(aSource, fileLength)) {
+		aSource->setDataMode(aSource->getDownload()->getSize() - aSource->getDownload()->getPos());
+		aSource->startSend();
+	}
+}
+
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = -1 */) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
 	if(newSize != -1)
 		d->setSize(newSize);
+
+	// Strange...bail out...
+	if(d->getSize() <= d->getPos()) {
+		aSource->setDownload(NULL);
+		removeDownload(d, true);
+		removeConnection(aSource);
+		return false;
+	}
 
 	dcassert(d->getSize() != -1);
 
@@ -202,17 +224,14 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
 		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 		
-		if(BOOLSETTING(ANTI_FRAG) && !d->isSet(Download::FLAG_USER_LIST)) {
+		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 			// Anti-frag file... Continue on the previous .antifrag-file
-			string atarget = target + ANTI_FRAG_EXT;
-			file = new SizedFile(d->getSize(), atarget, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
-			d->setFlag(Download::FLAG_ANTI_FRAG);
+			file = new SizedFile(d->getSize(), target + ANTI_FRAG_EXT, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
 		} else {
 			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);			
 		}
 
 		file->setPos(d->getPos());
-		
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
@@ -224,35 +243,15 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	dcassert(d->getPos() != -1);
 	d->setFile(file);
 	
-	if(d->getSize() <= d->getPos()) {
-		aSource->setDownload(NULL);
-		removeDownload(d, true);
-		removeConnection(aSource);
-		return false;
-	} else {
+	{
 		d->setStart(GET_TICK());
 		aSource->setState(UserConnection::STATE_DONE);
 		
 		fire(DownloadManagerListener::STARTING, d);
-		
 	}
 	
 	return true;
 }	
-
-void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
-
-	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
-		dcdebug("DM::onFileLength Bad state, ignoring\n");
-		return;
-	}
-
-	int64_t fileLength = Util::toInt64(aFileLength);
-	if(prepareFile(aSource, fileLength)) {
-		aSource->setDataMode(aSource->getDownload()->getSize() - aSource->getDownload()->getPos());
-		aSource->startSend();
-	}
-}
 
 bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen) throw(FileException) {
 	dcassert(d->getRollbackBuffer());
@@ -302,6 +301,7 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 					break;
 				d->bytesLeft -= b;
 				if(d->bytesLeft == 0) {
+					d->addActual(aLen - l);
 					aSource->setLineMode();
 					handleEndData(aSource);
 					if(l != 0) {
@@ -317,7 +317,10 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 				// as it might be bad all of it...
 				try {
 					d->getFile()->movePos(-d->getTotal());
-					d->getFile()->setEOF();
+					d->setPos(d->getFile()->getPos());
+
+					if(!d->isSet(Download::FLAG_ANTI_FRAG))
+						d->getFile()->setEOF();
 				} catch(const FileException&) {
 					// Ignore...
 				}
@@ -330,8 +333,10 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 				return;
 			}
 		}
+		d->addActual(aLen - l);
 	} else {
-		handleData(aSource, aData, aLen);
+		if(handleData(aSource, aData, aLen))
+			d->addActual(aLen);
 	}
 }
 
@@ -407,7 +412,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	}
 	
 	dcassert(d->getPos() == d->getSize());
-	dcdebug("Download finished: %s, size %I64d\n", d->getTarget().c_str(), d->getSize());
+	dcdebug("Download finished: %s, size %I64d, downloaded %I64d\n", d->getTarget().c_str(), d->getSize(), d->getTotal());
 
 	// Check if we have some crc:s...
 	dcassert(d->getFile() != NULL);
@@ -659,5 +664,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.77 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.78 2003/11/07 00:42:41 arnetheduck Exp $
  */

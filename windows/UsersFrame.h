@@ -52,6 +52,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickHublist)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -61,6 +62,7 @@ public:
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onPrivateMessage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onGrantSlot(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_UPDATED) {
@@ -131,6 +133,7 @@ private:
 		COLUMN_NICK = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_HUB,
+		COLUMN_GRANT_SLOT,
 		COLUMN_LAST
 	};
 
@@ -165,7 +168,7 @@ private:
 	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
 		switch(type) {
 		case ClientManagerListener::USER_UPDATED:
-			if(HubManager::getInstance()->isFavoriteUser(aUser)) {
+			if(aUser->isFavoriteUser()) {
 				PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfo(aUser));
 			}
 		}
@@ -180,6 +183,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.8 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.9 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

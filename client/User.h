@@ -28,6 +28,7 @@
 #include "CriticalSection.h"
 
 class Client;
+class FavoriteUser;
 
 /**
  * A user connected to a hubs.
@@ -64,8 +65,8 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
 	};
 
-	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
-	virtual ~User() throw() { };
+	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { };
+	virtual ~User() throw();
 
 	void setClient(Client* aClient);
 	void connect();
@@ -94,6 +95,12 @@ public:
 	bool isOnline() const { return isSet(ONLINE); };
 	bool isClient(Client* aClient) const { return client == aClient; };
 	
+	// favorite user stuff
+	void setFavoriteUser(FavoriteUser* aUser);
+	bool isFavoriteUser() const;
+	bool getFavoriteGrantSlot() const;
+	void setFavoriteGrantSlot(bool grant);
+
 	static void updated(User::Ptr& aUser);
 	
 	GETSETREF(string, connection, Connection);
@@ -109,12 +116,13 @@ private:
 	mutable RWLock cs;
 	
 	Client* client;
+	FavoriteUser* favoriteUser;
 };
 
 #endif // !defined(AFX_USER_H__26AA222C_500B_4AD2_A5AA_A594E1A6D639__INCLUDED_)
 
 /**
  * @file
- * $Id: User.h,v 1.32 2003/11/04 20:18:12 arnetheduck Exp $
+ * $Id: User.h,v 1.33 2003/11/07 00:42:41 arnetheduck Exp $
  */
 

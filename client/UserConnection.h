@@ -74,7 +74,7 @@ class ConnectionQueueItem;
 class Transfer {
 public:
 	Transfer() : file(NULL), userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
-		last(0), total(0), pos(-1), size(-1) { };
+		last(0), total(0), actual(0), pos(-1), size(-1) { };
 	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
 	
 	int64_t getPos() { return pos; };
@@ -86,15 +86,14 @@ public:
 		}
 	};
 
-	void addPos(int64_t aPos) {
-		pos += aPos; total+=aPos; 
-	};
-	
+	void addPos(int64_t aBytes) { pos += aBytes; total+=aBytes; };
+	void addActual(int64_t aBytes) { actual += aBytes; };
+
 	enum { AVG_PERIOD = 30000 };
 	void updateRunningAverage();
 
 	int64_t getTotal() { return total; };
-	void resetTotal() { total = 0; };
+	int64_t getActual() { return actual; };
 	
 	int64_t getSize() { return size; };
 	void setSize(int64_t aSize) { size = aSize; };
@@ -117,9 +116,15 @@ public:
 	GETSET(u_int32_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
 private:
+	/** Bytes on last avg update */
 	int64_t last;
+	/** Total effective bytes transfered this session */
 	int64_t total;
+	/** Total actual bytes transfered this session (compression?) */
+	int64_t actual;
+	/** Write position in file */
 	int64_t pos;
+	/** Target size of this transfer */
 	int64_t size;
 
 };
@@ -272,6 +277,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.56 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.57 2003/11/07 00:42:41 arnetheduck Exp $
  */
 
