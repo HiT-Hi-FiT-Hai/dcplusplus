@@ -222,10 +222,14 @@ void HubFrame::onEnter() {
 					}
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+				StringMap params;
+				params["hub"] = client->getName();
+				params["hubaddr"] = client->getAddressPort();
+				params["mynick"] = client->getNick(); 
 				if(param.empty()) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params))));
 				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
-					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + "_Status.log")));
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_STATUS), params))));
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>"));
@@ -615,7 +619,10 @@ void HubFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_MAIN_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		LOG(client->getAddressPort(), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
+		params["hub"] = client->getName();
+		params["hubaddr"] = client->getAddressPort();
+		params["mynick"] = client->getNick(); 
+		LOG(Util::formatParams(SETTING(LOG_FILE_MAIN_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
 	}
 	if(timeStamps) {
 		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
@@ -1017,7 +1024,10 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 		addLine(_T("*** ") + aLine);
 	}
 	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
-		LOGDT(client->getAddressPort() + "_Status", Text::fromT(aLine));
+		StringMap params;
+		params["hub"] = client->getName();
+		params["hubaddr"] = client->getAddressPort();
+		LOGDT(Util::formatParams(SETTING(LOG_FILE_STATUS), params), Text::fromT(aLine));
 	}
 }
 
@@ -1120,5 +1130,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.91 2004/11/29 23:21:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.92 2004/12/05 15:51:03 arnetheduck Exp $
  */

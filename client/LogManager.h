@@ -42,7 +42,9 @@ public:
 	void log(const string& area, const string& msg) throw() {
 		Lock l(cs);
 		try {
-			File f(Util::validateFileName(SETTING(LOG_DIRECTORY) + area + ".log"), File::WRITE, File::OPEN | File::CREATE);
+			string aArea = Util::validateFileName(SETTING(LOG_DIRECTORY) + area);
+			File::ensureDirectory(aArea);
+			File f(aArea, File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
 			f.write(msg + "\r\n");
 		} catch (const FileException&) {
@@ -56,7 +58,7 @@ public:
 
 	void message(const string& msg) {
 		if(BOOLSETTING(LOG_SYSTEM)) {
-			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
+			log("system.log", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
 		}
 		fire(LogManagerListener::Message(), msg);
 	}
@@ -77,5 +79,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.12 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.13 2004/12/05 15:51:05 arnetheduck Exp $
  */

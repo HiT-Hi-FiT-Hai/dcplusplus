@@ -1,12 +1,12 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by d:\Direct Connect Nerladdningar\DC++ källa\Cvs\69\dcplusplus\DCPlusPlus.rc
+// Used by e:\src\code\DCplusplus_local\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
 #define IDC_COPY_HUB                    104
-#define ID_VIEW_TRANSFER_VIEW           104
+#define ID_VIEW_TRANSFER_VIEW           105
 #define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_HUB                         129
@@ -266,7 +266,7 @@
 #define IDC_SETTINGS_MAX_HASH_SPEED     1215
 #define IDC_SETTINGS_MBS                1216
 #define IDC_SETTINGS_GET_USER_COUNTRY   1217
-#define IDC_SETTINGS_LOG_STATUS_MESSAGES 1218
+#define IDC_LOG_STATUS_MESSAGES         1218
 #define IDC_TTH                         1219
 #define IDC_BITZI_LOOKUP                1220
 #define IDC_COPY_MAGNET                 1221
@@ -316,6 +316,15 @@
 #define IDC_OPEN_OWN_LIST               1265
 #define IDC_UDP_PORT                    1266
 #define IDC_SETTINGS_UDP_PORT           1267
+#define IDC_DOWNLOAD_FILE               1268
+#define IDC_UPLOAD_FILE                 1269
+#define IDC_PRIVATE_CHAT_FILE           1270
+#define IDC_STATUS_FILE                 1271
+#define IDC_MAIN_CHAT_FILE              1272
+#define IDC_SETTINGS_FILE_NAME1         1273
+#define IDC_SETTINGS_FILE_NAME2         1274
+#define IDC_SETTINGS_FILE_NAME3         1275
+#define IDC_SETTINGS_FILE_NAME4         1276
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -354,7 +363,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1268
+#define _APS_NEXT_CONTROL_VALUE         1277
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

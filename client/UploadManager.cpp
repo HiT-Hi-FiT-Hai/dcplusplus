@@ -285,7 +285,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 			} catch(const HashException&) {
 			}
 		}
-		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
+		LOG(Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)), Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 
 	fire(UploadManagerListener::Complete(), u);
@@ -397,5 +397,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.75 2004/11/09 20:29:25 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.76 2004/12/05 15:51:05 arnetheduck Exp $
  */

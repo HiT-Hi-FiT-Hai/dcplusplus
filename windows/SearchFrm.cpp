@@ -261,7 +261,7 @@ void SearchFrame::onEnter() {
 	//strip out terms beginning with -
 	s.clear();
 	for (TStringList::const_iterator si = search.begin(); si != search.end(); ++si)
-		if ((*si)[0] != _T('-') || si->size() != 1) s += *si + _T(' ');	//Shouldn't get 0-length tokens, so safely assume at least a first char.
+		if ((*si)[0] != _T('-') && si->size() != 1) s += *si + _T(' ');	//Shouldn't get 0-length tokens, so safely assume at least a first char.
 	s = s.substr(0, max(s.size(), static_cast<tstring::size_type>(1)) - 1);
 
 	SearchManager::SizeModes mode((SearchManager::SizeModes)ctrlMode.GetCurSel());
@@ -1025,5 +1025,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.75 2004/11/30 15:46:19 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.76 2004/12/05 15:51:03 arnetheduck Exp $
  */

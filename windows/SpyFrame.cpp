@@ -43,6 +43,11 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextColor(WinUtil::textColor);
 
+	ctrlIgnoretth.Create(ctrlStatus.m_hWnd, rcDefault, _T("Ignore TTH searches"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	ctrlIgnoretth.SetButtonStyle(BS_AUTOCHECKBOX, false);
+	ctrlIgnoretth.SetCheck(0);
+	ignoretthContainer.SubclassWindow(ctrlIgnoretth.m_hWnd);
+
 	WinUtil::splitTokens(columnIndexes, SETTING(SPYFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(SPYFRAME_WIDTHS), COLUMN_LAST);
 	for(int j=0; j<COLUMN_LAST; j++) {
@@ -112,6 +117,9 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		w[4] = w[0] + (tmp-16)*4/4;
 
 		ctrlStatus.SetParts(5, w);
+
+		ctrlStatus.GetRect(0, sr);
+		ctrlIgnoretth.MoveWindow(sr);
 	}
 
 	ctrlSearches.MoveWindow(&rect);
@@ -198,6 +206,8 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 };
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
+	if(ignoretth && s.compare(0, 4, "TTH:") == 0)
+		return;
 	tstring* x = new tstring(Text::toT(s));
 	tstring::size_type i = 0;
 	while( (i=x->find(_T('$'))) != string::npos) {
@@ -219,5 +229,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.28 2004/11/15 13:53:43 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.29 2004/12/05 15:51:03 arnetheduck Exp $
  */

@@ -187,7 +187,14 @@ void PrivateFrame::onEnter()
 				BOOL bTmp;
 				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + user->getNick() + ".log")));
+				StringMap params;
+				params["user"] = user->getNick();
+				params["hub"] = user->getClientName();
+				params["mynick"] = user->getClientNick(); 
+				params["mycid"] = user->getClientCID().toBase32(); 
+				params["cid"] = user->getCID().toBase32(); 
+				params["hubaddr"] = user->getClientAddressPort();
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params))));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
@@ -238,7 +245,13 @@ void PrivateFrame::addLine(const tstring& aLine) {
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
 		params["message"] = Text::fromT(aLine);
-		LOG(user->getNick(), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
+		params["user"] = user->getNick();
+		params["hub"] = user->getClientName();
+		params["hubaddr"] = user->getClientAddressPort();
+		params["mynick"] = user->getClientNick(); 
+		params["mycid"] = user->getClientCID().toBase32(); 
+		params["cid"] = user->getCID().toBase32(); 
+		LOG(Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
 	}
 
 	if(BOOLSETTING(TIME_STAMPS)) {
@@ -360,7 +373,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.39 2004/10/31 22:33:25 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.40 2004/12/05 15:51:03 arnetheduck Exp $
  */
 
 

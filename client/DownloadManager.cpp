@@ -754,7 +754,7 @@ noCRC:
 		if(hash != NULL) {
 			params["tth"] = d->getTTH()->toBase32();
 		}
-		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
+		LOG(Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)), Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
 	}
 
 	// Check if we need to move the file
@@ -944,5 +944,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.127 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.128 2004/12/05 15:51:05 arnetheduck Exp $
  */

@@ -335,6 +335,7 @@
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
+		<String Name="SettingsAppearance2">Colors and sounds</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
@@ -363,6 +364,7 @@
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFavoriteDirsPage">Downloads\\Download to</String>
 		<String Name="SettingsFavoriteDirs">Favorite download to directories</String>
+		<String Name="SettingsFileName">Filename</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
@@ -382,7 +384,7 @@
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogUploads">Log uploads</String>
 		<String Name="SettingsLogging">Logging</String>
-		<String Name="SettingsLogs">Logs and Sound</String>
+		<String Name="SettingsLogs">Logs</String>
 		<String Name="SettingsMagnetAsk">Ask what to do when a magnet link is detected.</String>
 		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>

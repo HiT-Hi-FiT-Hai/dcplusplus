@@ -564,9 +564,9 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(Util::stricmp(param.c_str(), _T("system")) == 0) {
 			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "system.log")));
 		} else if(Util::stricmp(param.c_str(), _T("downloads")) == 0) {
-			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "Downloads.log")));
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_DOWNLOAD), time(NULL)))));
 		} else if(Util::stricmp(param.c_str(), _T("uploads")) == 0) {
-			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + "Uploads.log")));
+			WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + Util::formatTime(SETTING(LOG_FILE_UPLOAD), time(NULL)))));
 		} else {
 			return false;
 		}
@@ -997,5 +997,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.68 2004/11/30 14:49:35 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.69 2004/12/05 15:51:03 arnetheduck Exp $
  */

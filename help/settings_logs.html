@@ -114,6 +114,25 @@ as first day of week (00 - 53)<br>
     <strong>%z</strong>, <strong>%Z</strong> - Either the time-zone
 name or time zone abbreviation, depending on registry settings; no
 characters if time zone is unknown</dd>
+  <dt>File Name Format</dt>
+  <dd>This enables you to name and rotate your logs. The following
+parameters can be used for Main / Private chat:<br>
+%[hub] - Name of hub (not known untill connected)<br>
+%[hubaddr] - Address (and port if non standard) of hub<br>
+%[user] - Users nick (only Private chat)<br>
+%[cid] - Users CID (only Private chat)<br>
+%[mycid] - Your own CID (only Private chat)<br>
+%[mynick] - Your own nick<br>
+<br>
+These can be used for all files:<br>
+All general time format variables<br>
+<br>
+Ex: Main chat: %[hubaddr]\%Y-%m.log - would result in this:
+example.no-ip.org\2004-12.log (if you are in the hub example.no-ip.org
+and it's december 2004)<br>
+Default: Main chat - %[hubaddr].log, Private message - %[user].log, 
+Download - Downloads.log and Upload -
+Uploads.log</dd>
 </dl>
 </body>
 </html>

@@ -2,6 +2,10 @@
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)
+* Fixed an issue with negative search terms (thanks naga)
+* Added option to filter TTH results in search spy (thanks joakim tosteberg)
+* Updated log functionality to allow users to customize log filenames (thanks naga)
+
 
 
 -- 0.668 2004-11-30 --
