@@ -21,6 +21,7 @@
 
 #include "DownloadManager.h"
 
+#include "ResourceManager.h"
 #include "ConnectionManager.h"
 #include "QueueManager.h"
 #include "CryptoManager.h"
@@ -887,5 +888,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.145 2005/02/01 16:41:35 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.146 2005/02/04 17:17:23 arnetheduck Exp $
  */

@@ -25,9 +25,10 @@
 #include "SearchManager.h"
 #include "ClientManager.h"
 #include "DownloadManager.h"
-#include "CryptoManager.h"
 #include "ShareManager.h"
 #include "LogManager.h"
+#include "ResourceManager.h"
+#include "version.h"
 
 #include "UserConnection.h"
 #include "SimpleXML.h"
@@ -1315,5 +1316,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.120 2005/02/04 14:40:57 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.121 2005/02/04 17:17:11 arnetheduck Exp $
  */

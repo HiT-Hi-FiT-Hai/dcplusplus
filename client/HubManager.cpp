@@ -22,6 +22,7 @@
 #include "HubManager.h"
 
 #include "ClientManager.h"
+#include "ResourceManager.h"
 #include "CryptoManager.h"
 
 #include "HttpConnection.h"
@@ -599,5 +600,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.60 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.61 2005/02/04 17:17:14 arnetheduck Exp $
  */

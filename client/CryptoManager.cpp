@@ -23,6 +23,7 @@
 
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
+#include "ResourceManager.h"
 
 #ifdef _WIN32
 #include "../bzip2/bzlib.h"
@@ -400,5 +401,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.52 2005/01/13 15:07:57 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.53 2005/02/04 17:17:11 arnetheduck Exp $
  */

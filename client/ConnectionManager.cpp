@@ -21,6 +21,7 @@
 
 #include "ConnectionManager.h"
 
+#include "ResourceManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "CryptoManager.h"
@@ -718,5 +719,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.90 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.91 2005/02/04 17:17:26 arnetheduck Exp $
  */

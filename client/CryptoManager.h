@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 
 #include "Exception.h"
 #include "Singleton.h"
@@ -128,5 +127,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.41 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.42 2005/02/04 17:17:10 arnetheduck Exp $
  */

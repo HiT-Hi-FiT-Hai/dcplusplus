@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Exception.h"
+#include "ResourceManager.h"
 
 STANDARD_EXCEPTION(BitStreamException);
 
@@ -65,5 +66,5 @@ private:
 
 /**
  * @file
- * $Id: BitInputStream.h,v 1.14 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.15 2005/02/04 17:17:10 arnetheduck Exp $
  */

@@ -1,4 +1,4 @@
-﻿-- 0.669 2005-01-20 --
+﻿-- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)

@@ -66,7 +66,7 @@ public:
 	typedef X<24> Search;
 	typedef X<25> Unknown;
 	typedef X<26> ValidateDenied;
-	typedef X<26> Quit;
+	typedef X<27> Quit;
 
 	virtual void on(Connecting, NmdcHub*) throw() { }
 	virtual void on(Connected, NmdcHub*) throw() { }
@@ -264,6 +264,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.19 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.20 2005/02/04 17:17:08 arnetheduck Exp $
  */
 

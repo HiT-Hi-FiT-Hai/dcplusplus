@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "ShareManager.h"
+#include "ResourceManager.h"
 
 #include "CryptoManager.h"
 #include "ClientManager.h"
@@ -1459,6 +1460,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.127 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.128 2005/02/04 17:17:09 arnetheduck Exp $
  */
 

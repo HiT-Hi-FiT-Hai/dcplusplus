@@ -21,8 +21,9 @@
 
 #include "BufferedSocket.h"
 
+#include "ResourceManager.h"
 #include "TimerManager.h"
-#include "CryptoManager.h"
+#include "SettingsManager.h"
 
 #include "Streams.h"
 
@@ -458,5 +459,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.79 2005/01/13 15:07:58 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.80 2005/02/04 17:17:25 arnetheduck Exp $
  */

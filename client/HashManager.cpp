@@ -20,7 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "HashManager.h"
-#include "CryptoManager.h"
+#include "ResourceManager.h"
 #include "SimpleXML.h"
 #include "LogManager.h"
 #include "File.h"
@@ -673,5 +673,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.44 2005/01/14 19:55:41 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.45 2005/02/04 17:17:10 arnetheduck Exp $
  */
