@@ -297,9 +297,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 				::ShowWindow(hOther, SW_RESTORE);
 			}
 			sendCmdLine(hOther, lpstrCmdLine);
+			return FALSE;
 		}
-
-		return FALSE;
 	}
 	
 	HRESULT hRes = ::CoInitialize(NULL);
@@ -350,5 +349,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.30 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: main.cpp,v 1.31 2004/09/11 06:50:48 arnetheduck Exp $
  */

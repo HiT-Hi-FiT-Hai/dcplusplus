@@ -46,7 +46,7 @@ void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 
 void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 {
-	if(!u->isSet(Upload::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS)) {
+	if(!u->isSet(Upload::FLAG_TTH_LEAVES) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !u->isSet(Upload::FLAG_USER_LIST))) {
 		FinishedItem *item = new FinishedItem(
 			u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
 			u->getUserConnection()->getUser()->getLastHubName(),
@@ -62,5 +62,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.17 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.18 2004/09/11 06:50:48 arnetheduck Exp $
  */

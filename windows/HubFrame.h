@@ -212,7 +212,7 @@ private:
 		void update() { 
 			columns[COLUMN_NICK] = Text::toT(user->getNick());
 			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(user->getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription());
+			columns[COLUMN_DESCRIPTION] = Text::toT(user->getDescription());
 			columns[COLUMN_TAG] = Text::toT(user->getTag());
 			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
 			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
@@ -389,6 +389,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.50 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.51 2004/09/11 06:50:48 arnetheduck Exp $
  */
 

@@ -21,6 +21,8 @@
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
 * Added virtual directory names to shares
+* TTH Leaf uploads no longer logged (thanks garg)
+
 
 
  -- 0.4032 2004-08-08 --

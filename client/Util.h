@@ -376,8 +376,8 @@ public:
 		return buf;
 	}
 	static string toHexEscape(char val) {
-		char buf[sizeof(int)*2+1];
-		sprintf(buf, "%%%X", val);
+		char buf[sizeof(int)*2+1+1];
+		sprintf(buf, "%%%X", val&0x0FF);
 		return buf;
 	}
 	static char fromHexEscape(const string aString) {
@@ -540,5 +540,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.99 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: Util.h,v 1.100 2004/09/11 06:50:48 arnetheduck Exp $
  */
