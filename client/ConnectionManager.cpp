@@ -87,37 +87,34 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 		pendingDown.erase(i);
 		aSource->direction("Download", "666");
 	} else {
-		if( (i = pendingUp.find(aNick)) != pendingUp.end()) {
+		// We didn't order it so it must be an uploading connection...
 			aSource->user = i->second;
 			aSource->direction("Upload", "666");
-			pendingUp.erase(i);
+			aSource->flags |= UserConnection::FLAG_UPLOAD;
 			uploaders[aNick] = aSource;
-		} else {
-			// We have an unknown connection...disconnect and destroy...
-			aSource->disconnect();
-			aSource->flags |= UserConnection::FLAG_DELETE;
-		}
-	}
+	} 
 }
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
 	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 
-	if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
+	if(aSource->flags & UserConnection::FLAG_UPLOAD) {
+		// Pass it to the UploadManager
+		UploadManager::getInstance()->addConnection(aSource);
+	} else if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
 		// We're done, send this connection to the downloadmanager.
 		DownloadManager::getInstance()->addConnection(aSource);
 	}
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) {
-	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+	if(!(aSource->flags & UserConnection::FLAG_UPLOAD) && Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
 		// We're done, send this connection to the downloadmanager.
 		DownloadManager::getInstance()->addConnection(aSource);
 	}
 }
 
 void ConnectionManager::onConnected(UserConnection* aSource) {
-	
 	aSource->myNick(Settings::getNick());
 	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 }
@@ -130,9 +127,12 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.3  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

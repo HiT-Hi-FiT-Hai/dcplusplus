@@ -44,7 +44,7 @@ MainFrame::~MainFrame() {
 }
 
 void MainFrame::onDownloadAdded(Download::Ptr p) {
-	int i = ctrlDownloads.insert(ctrlDownloads.GetItemCount(), p->fileName.c_str(), (LPARAM)p);
+	int i = ctrlDownloads.insert(ctrlDownloads.GetItemCount(), p->fileName.c_str(), 0, (LPARAM)p);
 	char buf[24];
 	ctrlDownloads.SetItemText(i, 2, _i64toa(p->size, buf, 10));
 }
@@ -52,6 +52,7 @@ void MainFrame::onDownloadAdded(Download::Ptr p) {
 void MainFrame::onDownloadConnecting(Download* aDownload) {
 	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->user->getNick()).c_str());
 }
+
 void MainFrame::onDownloadComplete(Download::Ptr p) {
 	if(p->fileName.find(".DcLst")!=string::npos) {
 		// We have a new DC listing, show it...
@@ -209,9 +210,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.7 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.7  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.6  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

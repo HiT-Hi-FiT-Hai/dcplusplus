@@ -23,6 +23,47 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+class Node {
+public:
+	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
+	// CryptoManager along with the greater specialization, it generates a ICE on the greater class. The typedefs
+	// had to be removed in order to avoid template instatiation.
+//	typedef Node* Ptr;
+//	typedef list<Ptr> List;
+//	typedef List::iterator Iter;
+	int weight;
+	
+	int chr;
+	Node* left;
+	Node* right;
+	
+	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { };
+	Node(Node* aLeft, Node* aRight) : left(aLeft), right(aRight), weight(aLeft->weight + aRight->weight), chr(-1) { };
+	~Node() {
+		delete left;
+		delete right;
+	}
+	bool operator <(const Node& rhs) const {
+		return weight<rhs.weight;
+	}
+	bool operator >(const Node& rhs) const {
+		return weight>rhs.weight;
+	}
+	bool operator <=(const Node& rhs) const {
+		return weight<=rhs.weight;
+	}
+	bool operator >=(const Node& rhs) const {
+		return weight>rhs.weight;
+	}
+};
+
+struct std::greater<Node*> { 
+	bool operator() (const Node*& a, const Node*& b) const { 
+		return *a < *b; 
+	}; 
+};
+
+
 class CryptoManager  
 {
 public:
@@ -31,7 +72,8 @@ public:
 	string getPk() { return pk; };
 
 	void decodeHuffman(const string& is, string& os);
-
+	void encodeHuffman(const string& is, string& os);
+	
 	static CryptoManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -46,44 +88,16 @@ public:
 		delete instance;
 		instance = NULL;
 	}
-	
-	
+
 private:
 	static CryptoManager* instance;
 
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.01ABCABCABC") { };
-
-	string lock;
-	string pk;
-	
-	string keySubst(string aKey, int n);
-	boolean isExtra(BYTE b) {
-		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
-	}
-	
 	class Leaf {
 	public:
 		int len;
 		int chr;
 		Leaf(int aChr, int aLen) : chr(aChr), len(aLen) { };
 		Leaf() : chr(-1), len(-1) { };
-	};
-	
-	class Node {
-	public:
-		int weight;
-
-		int chr;
-		Node* left;
-		Node* right;
-		
-		Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { };
-		Node(Node* aLeft, Node* aRight) : left(aLeft), right(aRight), weight(aLeft->weight + aRight->weight) { };
-		~Node() {
-			delete left;
-			delete right;
-		}
-
 	};
 	
 	class DecNode {
@@ -100,6 +114,21 @@ private:
 		}
 	};
 	
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.01ABCABCABC") { };
+
+	string lock;
+	string pk;
+	
+	int countChars(const string& aString, int* c, BYTE& csum);
+	void walkTree(list<Node*>& aTree);
+	void recurseLookup(vector<bool>* b, Node* node, vector<bool>& bytes);
+	void buildLookup(vector<bool>* b, Node* root);
+	
+	string keySubst(string aKey, int n);
+	boolean isExtra(BYTE b) {
+		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
+	}
+	
 	
 };
 
@@ -107,9 +136,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.3  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

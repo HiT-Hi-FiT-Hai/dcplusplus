@@ -55,18 +55,21 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			queue.erase(i);
 			running[aConn] = d;
 			
-			WIN32_FIND_DATA fd;
-			HANDLE hFind;
-			
-			hFind = FindFirstFile(d->targetFileName.c_str(), &fd);
-			
-			if (hFind == INVALID_HANDLE_VALUE) {
+			if(d->fileName == "MyList.DcLst") {
 				d->pos = 0;
 			} else {
-				d->pos = fd.nFileSizeHigh << 32 | fd.nFileSizeLow;
-				FindClose(hFind);
+				WIN32_FIND_DATA fd;
+				HANDLE hFind;
+				
+				hFind = FindFirstFile(d->targetFileName.c_str(), &fd);
+				
+				if (hFind == INVALID_HANDLE_VALUE) {
+					d->pos = 0;
+				} else {
+					d->pos = fd.nFileSizeHigh << 32 | fd.nFileSizeLow;
+					FindClose(hFind);
+				}
 			}
-			
 			aConn->get(d->lastPath+d->fileName, d->pos);
 			return;
 		}
@@ -92,10 +95,15 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	dcassert(i != running.end());
 	Download* d = i->second;
 
-	d->hFile = CreateFile(d->targetFileName.c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	if(d->fileName == "MyList.DcList")
+		d->hFile = CreateFile(d->targetFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	else
+		d->hFile = CreateFile(d->targetFileName.c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	
 	if(d->hFile == NULL) {
 		fireFailed(d, "Could not open target file");
 	}
+	
 	SetFilePointer(d->hFile, 0, NULL, FILE_END);
 	DWORD high;
 	d->pos = GetFileSize(d->hFile, &high);
@@ -145,9 +153,12 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.3 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.4  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.3  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -48,7 +48,7 @@ public:
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
-	int insert(StringList& aList, int iImage = 0) {
+	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL) {
 
 		int loc;
 		if(sortColumn == -1) {
@@ -75,14 +75,14 @@ public:
 					break;
 			}
 		}
-		int i = InsertItem(loc, aList[0].c_str(), iImage);
+		int i = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, loc, aList[0].c_str(), 0, 0, iImage, lParam);
 		int k = 0;
 		for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 			SetItemText(i, k, j->c_str());
 		}
 		return loc;
 	}
-	int insert(int nItem, const string& aString, LPARAM lParam = NULL) {
+	int insert(int nItem, const string& aString, int iImage = 0, LPARAM lParam = NULL) {
 		return InsertItem(LVIF_PARAM | LVIF_TEXT, nItem, aString.c_str(), 0, 0, 0, lParam);
 	}
 
@@ -164,9 +164,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.4  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.3  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -96,6 +96,10 @@ SOURCE=.\client\BitInputStream.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\BitOutputStream.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\BufferedSocket.cpp
 # End Source File
 # Begin Source File
@@ -226,6 +230,10 @@ SOURCE=.\client\AtlCmdBar2.h
 # Begin Source File
 
 SOURCE=.\client\BitInputStream.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\BitOutputStream.h
 # End Source File
 # Begin Source File
 

@@ -92,8 +92,13 @@ void Client::onLine(const string& aLine) {
 		string tmp = aLine.substr(13);
 		nick = tmp.substr(0, tmp.find(' '));
 		tmp = tmp.substr(tmp.find(' ')+1);
-		dcassert(users.find(nick) != users.end());
-		User* u = users[nick];
+		User* u;
+		if(users.find(nick) == users.end()) {
+			u = new User(nick);
+			users[nick] = u;
+		} else {
+			u = users[nick];
+		}
 
 		u->setDescription(tmp.substr(0, tmp.find('$')));
 		tmp = tmp.substr(tmp.find('$')+3);
@@ -107,12 +112,13 @@ void Client::onLine(const string& aLine) {
 		
 	} else if(aLine.find("$Quit") != string::npos) {
 		string nick = aLine.substr(6);
-		dcassert(users.find(nick) != users.end());
-		User* u = users[nick];
-
-		fireQuit(u);
-		delete u;
-		users.erase(nick);
+		if(users.find(nick) != users.end()) {
+			User* u = users[nick];
+			
+			fireQuit(u);
+			delete u;
+			users.erase(nick);
+		}
 		
 	} else if(aLine.find("$ValidateDenide") != string::npos) {
 		fireValidateDenied();
@@ -141,11 +147,11 @@ void Client::onLine(const string& aLine) {
 		string tmp = aLine.substr(8);
 		while( (j=tmp.find("$$")) != string::npos) {
 			string nick = tmp.substr(0, j);
-			dcassert(users.find(nick) == users.end());
-			User* u = new User(nick, User::FLAG_OP);
-			u->setClient(this);
-			users[nick] = u;
-
+			if(users.find(nick) == users.end()) {
+				User* u = new User(nick, User::FLAG_OP);
+				users[nick] = u;
+			}
+			users[nick]->setFlag(User::FLAG_OP);
 			v.push_back(nick);
 			tmp = tmp.substr(j+2);
 		}
@@ -173,9 +179,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.3  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

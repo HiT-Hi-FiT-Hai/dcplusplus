@@ -78,7 +78,8 @@ public:
 	};
 
 	enum {
-		FLAG_DELETE = 0x01
+		FLAG_UPLOAD = 0x01,
+		FLAG_DELETE = 0x02
 	};
 
 	void addListener(UserConnectionListener::Ptr aListener) {
@@ -160,7 +161,7 @@ private:
 	void checkFlags() {
 		if(flags && FLAG_DELETE) {
 			// Oh no! We're dying!!!
-			delete this;
+//			delete this;
 		}
 	}
 	
@@ -333,9 +334,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.4  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.3  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

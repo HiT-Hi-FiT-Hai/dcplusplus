@@ -24,7 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
-#include "CryptoManager.h"
+#include "ConnectionManager.h"
 
 class UploadManager : public UserConnectionListener
 {
@@ -33,10 +33,6 @@ public:
 		removeConnection(aSource);
 	}
 
-	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) {
-		dcassert(aDirection == "Download");
-	}
-	
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 		aSource->maxedOut();
 	}
@@ -54,16 +50,16 @@ public:
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			if(*i == aConn) {
 				aConn->removeListener(this);
+				ConnectionManager::getInstance()->putDownloadConnection(aConn);
 				connections.erase(i);
-				delete aConn;
-				return;
 			}
 		}
 	}
 	void removeConnections() {
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			(*i)->removeListener(this);
-			connections.erase(i);
+			ConnectionManager::getInstance()->putDownloadConnection(*i);
+			i = connections.erase(i);
 		}
 	}
 	
@@ -99,9 +95,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.3 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.4  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.3  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

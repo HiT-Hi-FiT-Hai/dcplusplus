@@ -20,10 +20,9 @@
 #include "DCPlusPlus.h"
 
 #include "BitInputStream.h"
+#include "BitOutputStream.h"
 
 #include "CryptoManager.h"
-#include <streambuf>
-#include <iterator>
 
 CryptoManager* CryptoManager::instance;
 
@@ -142,7 +141,7 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 		}
 		node->chr = leaves[i]->chr;
 	}
-
+	
 	bis.skipToByte();
 
 	os.reserve(size+1);
@@ -156,10 +155,11 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 			}
 
 			if(node == NULL) {
+				dcdebug("Bad node found!!!\n");
 				return;
 			}
 		}
-		os+= (char)node->chr;
+		os+= (BYTE)node->chr;
 	}
 	os[i] = 0;
 
@@ -167,138 +167,161 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 	delete root;
 }
 
-	/**
-	 * Counts the occurances of each characters, and adds the total number of
-	 * different characters to the end of the array.
-	 */
-/*	private static int[] countChars(byte[] aData) {
-		int count[] = new int[256 + 1];
+/**
+ * Counts the occurances of each characters, and adds the total number of
+ * different characters to the end of the array.
+ */
+int CryptoManager::countChars(const string& aString, int* c, BYTE& csum) {
+	int chars = 0;
 
-		for(int i=0; i<aData.length-1; i++) {
-			int j = (aData[i]<0) ? 256-aData[i] : aData[i];
+	for(int i=0; i<aString.length(); i++) {
 
-			if(count[j] == 0)
-				count[count.length-1]++;
+		if(c[(BYTE)aString[i]] == 0)
+			chars++;
 
-			count[j]++;
-		}
-		return count;
+		c[(BYTE)aString[i]]++;
+		csum^=(BYTE)aString[i];
 	}
-*/
-/*	private static void walkTree(LinkedList aTree) {
-		while(aTree.size() > 1) {
-			// Merge the first two nodes
-			Node node = new Node((Node)aTree.removeFirst(), (Node)aTree.removeFirst());
+	return chars;
+}
 
-			boolean done = false;
-			for(ListIterator i=aTree.listIterator(); i.hasNext(); ) {
-				Node n = (Node)i.next();
-				if(node.weight <= n.weight) {
-					i.add(node);
-					done = true;
-					break;
-				}
-			}
+void CryptoManager::walkTree(list<Node*>& aTree) {
+	while(aTree.size() > 1) {
+		// Merge the first two nodes
+		Node* node = new Node(aTree.front(), *(++aTree.begin()));
+		aTree.pop_front();
+		aTree.pop_front();
 
-			if(!done)
-				aTree.addLast(node);
-		}
-	}
-*/
-	/**
-	 * @todo Make more effective in terms of memory allocations and copies...
-	 */
-/*	private static void recurseHash(byte[][] table, Node node, byte[] bytes) {
-		if(node.chr == -1) {
-			table[node.chr] = bytes;
-			return;
-		}
-
-		byte[] left = new byte[bytes.length+1];
-		byte[] right = new byte[bytes.length+1];
-
-		for(int i=0; i<bytes.length; i++) {
-			left[i] = right[i] = bytes[i];
-		}
-
-		left[bytes.length] = 0;
-		right[bytes.length] = 1;
-
-		recurseHash(table, node.left, left);
-		recurseHash(table, node.right, right);
-	}
-*/
-	/**
-	 * Builds a hash table over the characters available (for fast lookup).
-	 * Stores each character as a set of bytes with values {0, 1}.
-	 */
-/*	private static byte[][] buildLookup(Node aRoot) {
-		byte right[] = new byte[0];
-		byte left[] = new byte[1];
-		left[0] = 0;
-		right[0] = 1;
-		byte table[][] = new byte[256][];
-		recurseHash(table, aRoot.left, left);
-		recurseHash(table, aRoot.right, right);
-
-		return table;
-	}
-*/
-	/**
-	 * Encodes a set of data with DC's version of huffman encoding..
-	 * Uses a byte[] in structure to avoid those strange iostreams where available() doesn't return the whole data set,
-	 * as we'll be passing multiple times over the data...
-	 */
-/*	public static void encode(byte[] aData, OutputStream os) throws IOException {
-
-		// First, we count all characters
-		int count[] = countChars(aData);
-
-		// Next, we create a set of nodes and add it to a list, removing all characters that never occur.
-
-		Node[] nodeArray = new Node[count[count.length-1]];
-
-		for(int i=0, j=0; i<count.length-1; i++) {
-			if(count[i] > 0) {
-				nodeArray[j++] = new Node(i, count[i]);
+		bool done = false;
+		for(list<Node*>::iterator i=aTree.begin(); i != aTree.end(); ++i) {
+			if(*node <= *(*i)) {
+				aTree.insert(i, node);
+				done = true;
+				break;
 			}
 		}
 
-		// Now sort the data
-		Arrays.sort(nodeArray, new Comparator() {
-			public int compare(Object o1, Object o2) {
-				Node n1 = (Node) o1; Node n2 = (Node) o2;
-				if(n1.weight < n2.weight) return -1;
-				else if(n1.weight == n2.weight) return 0;
-				else return 1;
-			}
-		});
-
-		LinkedList nodes = new LinkedList(Arrays.asList(nodeArray));
-
-		walkTree(nodes);
-
-		Node root = (Node) nodes.removeFirst();
-
-		// Build a hash table for fast character lookups
-		byte chars[][] = buildLookup(root);
-
-		// Alright, start writing...
-		os.write('H'); os.write('E'); os.write('3'); os.write(0x0d);
-
-		// This should be a checksum...
-		os.write(0);
-
-
+		if(!done)
+			aTree.push_back(node);
 
 	}
-*/
+}
+
+/**
+ * @todo Make more effective in terms of memory allocations and copies...
+ */
+void CryptoManager::recurseLookup(vector<bool>* table, Node* node, vector<bool>& bytes) {
+	if(node->chr != -1) {
+		table[node->chr] = bytes;
+		return;
+	}
+
+	vector<bool> left = bytes;
+	vector<bool> right = bytes;
+	
+	left.push_back(false);
+	right.push_back(true);
+
+	recurseLookup(table, node->left, left);
+	recurseLookup(table, node->right, right);
+}
+
+/**
+ * Builds a hash table over the characters available (for fast lookup).
+ * Stores each character as a set of bytes with values {0, 1}.
+ */
+void CryptoManager::buildLookup(vector<bool>* table, Node* aRoot) {
+	vector<bool> left;
+	vector<bool> right;
+
+	left.push_back(false);
+	right.push_back(true);
+
+	recurseLookup(table, aRoot->left, left);
+	recurseLookup(table, aRoot->right, right);
+}
+
+/**
+ * Encodes a set of data with DC's version of huffman encoding..
+ * Uses a byte[] in structure to avoid those strange iostreams where available() doesn't return the whole data set,
+ * as we'll be passing multiple times over the data...
+ * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
+ */
+
+void CryptoManager::encodeHuffman(const string& is, string& os) {
+
+	// First, we count all characters
+	BYTE csum = 0;
+	int count[256];
+	memset(count, 0, sizeof(count));
+	int chars = countChars(is, count, csum);
+
+	// Next, we create a set of nodes and add it to a list, removing all characters that never occur.
+	
+	list<Node*> nodes;
+
+	for(int i=0; i<256; i++) {
+		if(count[i] > 0) {
+			nodes.push_back(new Node(i, count[i]));
+		}
+	}
+
+	nodes.sort(greater<Node*>());
+	dcdebug("\n");
+	for(list<Node*>::iterator it = nodes.begin(); it != nodes.end(); ++it) dcdebug("%.02x:%d, ", (*it)->chr, (*it)->weight);
+	walkTree(nodes);
+	dcassert(nodes.size() == 1);
+
+	Node* root = nodes.front();
+	vector<bool> lookup[256];
+	
+	// Build a lookup table for fast character lookups
+	buildLookup(lookup, root);
+	delete root;
+
+	os.append("HE3\x0d");
+
+	// Checksum
+	os.append(1, csum);
+	string::size_type sz = is.size();
+	os.append((char*)&sz, 4);
+
+	// Character count
+	os.append((char*)&chars, 2);
+
+	// The characters and their bitlengths
+	for(i=0; i<256; i++) {
+		if(count[i] > 0) {
+			os.append(1, (BYTE)i);
+			os.append(1, (BYTE)lookup[i].size());
+		}
+	}
+	
+	BitOutputStream bos(os);
+	// The tree itself, ie the bits of each character
+	for(i=0; i<256; i++) {
+		if(count[i] > 0) {
+			bos.put(lookup[i]);
+		}
+	}
+	
+	dcdebug("\nBytes: %d", os.size());
+	bos.skipToByte();
+
+	for(i=0; i<is.size(); i++) {
+		dcassert(lookup[(BYTE)is[i]].size != 0);
+		bos.put(lookup[(BYTE)is[i]]);
+	}
+}
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.3  2001/12/01 17:15:03  arnetheduck
+ * Added a crappy version of huffman encoding, and some other minor changes...
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
