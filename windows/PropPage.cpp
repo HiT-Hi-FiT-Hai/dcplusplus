@@ -84,7 +84,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 {
 	dcassert(page != NULL);
 
-	TCHAR *buf = new TCHAR[SETTING_STR_MAXLEN];
+	AutoArray<TCHAR> buf(SETTING_STR_MAXLEN);
 	for(Item const* i = items; i->type != T_END; i++)
 	{
 		switch(i->type)
@@ -92,14 +92,14 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 		case T_STR:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(buf));
+				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(tstring(buf)));
 
 				break;
 			}
 		case T_INT:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(buf));
+				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(tstring(buf)));
 				break;
 			}
 		case T_BOOL:
@@ -111,7 +111,6 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 			}
 		}
 	}
-	delete[] buf;
 
 	if(listItems != NULL) {
 		CListViewCtrl ctrl;
@@ -138,6 +137,6 @@ void PropPage::translate(HWND page, TextItem* textItems)
 
 /**
  * @file
- * $Id: PropPage.cpp,v 1.10 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.11 2004/10/31 22:33:26 arnetheduck Exp $
  */
 

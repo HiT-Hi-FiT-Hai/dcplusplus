@@ -912,10 +912,9 @@ int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
 		return 0;
 	}
 
-	TCHAR* buf = new TCHAR[len];
+	AutoArray<TCHAR> buf(len);
 	ctrl.GetLine(line, buf, len);
 	x = tstring(buf, len-1);
-	delete[] buf;
 
 	string::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
 	if(start == string::npos)
@@ -991,5 +990,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.63 2004/10/17 12:51:31 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.64 2004/10/31 22:33:26 arnetheduck Exp $
  */

@@ -2,20 +2,20 @@ import re
 import codecs
 import xml.sax.saxutils
 
-def makename(n):
-	newname = "";
+def makename(oldname):
+	name = "";
 	nextBig = True;
-	for x in n:
+	for x in oldname:
 		if x == '_':
 			nextBig = True;
 		else:
 			if nextBig:
-				newname += x.upper();
+				name += x.upper();
 				nextBig = False;
 			else:
-				newname += x.lower();
+				name += x.lower();
 				
-	return newname;
+	return name;
 
 	
 version = re.search("VERSIONSTRING (\S+)", file("client/version.h").read()).group(1)
@@ -36,7 +36,7 @@ lre = re.compile('\s*(\w+),\s*//\s*\"(.+)\"\s*')
 decoder = codecs.getdecoder('cp1252')
 encoder = codecs.getencoder('utf8')
 recodeattr = lambda s: encoder(decoder(xml.sax.saxutils.quoteattr(s))[0])[0]
-recodeval = lambda s: encoder(decoder(xml.sax.saxutils.escape(s,{"\\t" : "\t"}))[0])[0]
+recodeval = lambda s: encoder(decoder(xml.sax.saxutils.escape(s, {"\\t" : "\t"}))[0])[0]
 
 for x in file("client/StringDefs.h", "r"):
     if x.startswith("// @Strings: "):

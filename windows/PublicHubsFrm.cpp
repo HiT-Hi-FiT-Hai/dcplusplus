@@ -208,11 +208,10 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		return 0;
 
 	if(ctrlHub.GetWindowTextLength() > 0) {
-		TCHAR* hub = new TCHAR[ctrlHub.GetWindowTextLength()+1];
+		AutoArray<TCHAR> hub(ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.SetWindowText(_T(""));
 		tstring tmp = hub;
-		delete[] hub;
 		string::size_type i;
 		while((i = tmp.find(' ')) != string::npos)
 			tmp.erase(i, 1);
@@ -263,13 +262,12 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 			return 0;
 		}
 		
-		TCHAR *hub = new TCHAR[ctrlHub.GetWindowTextLength()+1];
+		AutoArray<TCHAR> hub(ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.SetWindowText(_T(""));
 		tstring tmp = hub;
-		delete hub;
-		string::size_type i;
-		while((i = tmp.find(' ')) != string::npos)
+		tstring::size_type i;
+		while((i = tmp.find(' ')) != tstring::npos)
 			tmp.erase(i, 1);
 		
 		HubFrame::openWindow(tmp);
@@ -427,13 +425,10 @@ LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 }
 
 LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	TCHAR* str;
-	
 	if(wParam == VK_RETURN) {
-		str = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
+		AutoArray<TCHAR> str(ctrlFilter.GetWindowTextLength()+1);
 		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
 		filter = Text::fromT(tstring(str, ctrlFilter.GetWindowTextLength()));
-		delete[] str;
 		updateList();
 	} else {
 		bHandled = FALSE;
@@ -474,6 +469,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.28 2004/10/29 15:53:41 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.29 2004/10/31 22:33:26 arnetheduck Exp $
  */
 

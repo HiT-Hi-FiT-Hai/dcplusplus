@@ -73,10 +73,9 @@ public:
 	{
 		if(wID == IDOK) {
 			int len = ctrlLine.GetWindowTextLength() + 1;
-			TCHAR* buf = new TCHAR[len];
+			AutoArray<TCHAR> buf(len);
 			GetDlgItemText(IDC_LINE, buf, len);
 			line = buf;
-			delete[] buf;
 		}
 		EndDialog(wID);
 		return 0;
@@ -88,5 +87,5 @@ public:
 
 /**
  * @file
- * $Id: LineDlg.h,v 1.7 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.8 2004/10/31 22:33:26 arnetheduck Exp $
  */

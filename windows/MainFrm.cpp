@@ -293,10 +293,9 @@ void MainFrame::startSocket() {
 				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
 					// Changing default didn't change port, a fixed port must be in use...(or we
 					// tried all ports
-					TCHAR* buf = new TCHAR[STRING(PORT_IS_BUSY).size() + 8];
+					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
 					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
 					MessageBox(buf, _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
-					delete[] buf;
 					break;
 				}
 				lastPort = newPort;
@@ -1147,5 +1146,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.70 2004/10/24 11:25:42 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.71 2004/10/31 22:33:26 arnetheduck Exp $
  */

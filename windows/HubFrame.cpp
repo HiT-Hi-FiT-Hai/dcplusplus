@@ -141,13 +141,10 @@ void HubFrame::openWindow(const tstring& aServer) {
 }
 
 void HubFrame::onEnter() {
-	TCHAR* message;
-	
 	if(ctrlMessage.GetWindowTextLength() > 0) {
-		message = new TCHAR[ctrlMessage.GetWindowTextLength()+1];
-		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-		tstring s(message, ctrlMessage.GetWindowTextLength());
-		delete[] message;
+		AutoArray<TCHAR> msg(ctrlMessage.GetWindowTextLength()+1);
+		ctrlMessage.GetWindowText(msg, ctrlMessage.GetWindowTextLength()+1);
+		tstring s(msg, ctrlMessage.GetWindowTextLength());
 
 		// save command in history, reset current buffer pointer to the newest command
 		curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
@@ -1111,5 +1108,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.82 2004/10/26 13:53:59 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.83 2004/10/31 22:33:25 arnetheduck Exp $
  */

@@ -73,7 +73,7 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 }
 
 string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
-	u_int8_t* temp = new u_int8_t[len + n * 10];
+	AutoArray<u_int8_t> temp(len + n * 10);
 	
 	size_t j=0;
 	
@@ -94,16 +94,14 @@ string CryptoManager::keySubst(const u_int8_t* aKey, size_t len, size_t n) {
 			temp[j++] = aKey[i];
 		}
 	}
-	string tmp((char*)temp, j);
-	delete[] temp;
-	return tmp;
+	return string((char*)(u_int8_t*)temp, j);
 }
 
 string CryptoManager::makeKey(const string& aLock) {
 	if(aLock.size() < 3)
 		return Util::emptyString;
 
-    u_int8_t* temp = new u_int8_t[aLock.length()];
+    AutoArray<u_int8_t> temp(aLock.length());
 	u_int8_t v1;
 	size_t extra=0;
 	
@@ -127,9 +125,7 @@ string CryptoManager::makeKey(const string& aLock) {
 		extra++;
 	}
 	
-	string tmp = keySubst(temp, aLock.length(), extra);
-	delete[] temp;
-	return tmp;
+	return keySubst(temp, aLock.length(), extra);
 }
 
 void CryptoManager::decodeHuffman(const u_int8_t* is, string& os, const size_t len) throw(CryptoException) {
@@ -405,5 +401,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.48 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.49 2004/10/31 22:33:27 arnetheduck Exp $
  */

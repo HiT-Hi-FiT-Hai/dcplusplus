@@ -154,14 +154,12 @@ LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 
 void PrivateFrame::onEnter()
 {
-	TCHAR* message = NULL;
 	bool resetText = true;
 
 	if(ctrlMessage.GetWindowTextLength() > 0) {
-		message = new TCHAR[ctrlMessage.GetWindowTextLength()+1];
-		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-		tstring s(message, ctrlMessage.GetWindowTextLength());
-		delete[] message;
+		AutoArray<TCHAR> msg(ctrlMessage.GetWindowTextLength()+1);
+		ctrlMessage.GetWindowText(msg, ctrlMessage.GetWindowTextLength()+1);
+		tstring s(msg, ctrlMessage.GetWindowTextLength());
 
 		// Process special commands
 		if(s[0] == '/') {
@@ -362,7 +360,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.38 2004/10/26 13:53:59 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.39 2004/10/31 22:33:25 arnetheduck Exp $
  */
 
 

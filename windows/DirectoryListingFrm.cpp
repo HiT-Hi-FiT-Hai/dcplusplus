@@ -382,10 +382,9 @@ LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int x = QueueManager::getInstance()->matchListing(dl);
-	TCHAR* buf = new TCHAR[STRING(MATCHED_FILES).length() + 32];
+	AutoArray<TCHAR> buf(STRING(MATCHED_FILES).length() + 32);
 	_stprintf(buf, CTSTRING(MATCHED_FILES), x);
 	ctrlStatus.SetText(0, buf);
-	delete[] buf;
 	return 0;
 }
 
@@ -813,5 +812,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.42 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.43 2004/10/31 22:33:26 arnetheduck Exp $
  */
