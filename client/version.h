@@ -17,14 +17,17 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.06"
-#define VERSIONINT 6
+#define VERSIONSTRING "0.07"
+#define VERSIONINT 7
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: version.h,v 1.6 2001/12/18 12:34:47 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.6  2001/12/18 12:34:47  arnetheduck
+ * Time for 0.07
+ *
  * Revision 1.5  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...
