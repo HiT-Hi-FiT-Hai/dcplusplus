@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "windows\resource.h"
 
@@ -27,12 +27,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE MOVEABLE PURE 
+1 TEXTINCLUDE 
 BEGIN
     "windows\\resource.h\0"
 END
 
-2 TEXTINCLUDE MOVEABLE PURE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
     "\0"
@@ -46,12 +46,11 @@ END
 // Bitmap
 //
 
-IDB_FOLDERS             BITMAP  MOVEABLE PURE   "res\\folders.bmp"
-IDB_ARROWS              BITMAP  MOVEABLE PURE   "res\\arrows.bmp"
-IDB_USERS               BITMAP  MOVEABLE PURE   "res\\users.bmp"
-IDB_TOOLBAR             BITMAP  MOVEABLE PURE   "res\\toolbar.bmp"
-IDB_TOOLBAR20           BITMAP  MOVEABLE PURE   "res\\toolbar20.bmp"
-IDB_SPEEDS              BITMAP  MOVEABLE PURE   "res\\Speeds.bmp"
+IDB_FOLDERS             BITMAP                  "res\\folders.bmp"
+IDB_ARROWS              BITMAP                  "res\\arrows.bmp"
+IDB_USERS               BITMAP                  "res\\users.bmp"
+IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
+IDB_TOOLBAR20           BITMAP                  "res\\toolbar20.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -60,23 +59,25 @@ IDB_SPEEDS              BITMAP  MOVEABLE PURE   "res\\Speeds.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\DCPlusPlus.ico"
-IDR_PUBLICHUBS          ICON    DISCARDABLE     "res\\PublicHubs.ico"
-IDR_SEARCH              ICON    DISCARDABLE     "res\\search.ico"
-IDR_FAVORITES           ICON    DISCARDABLE     "res\\Favorites.ico"
-IDR_PRIVATE             ICON    DISCARDABLE     "res\\User.ico"
-IDR_DIRECTORY           ICON    DISCARDABLE     "res\\Directory.ico"
-IDR_HUB                 ICON    DISCARDABLE     "res\\Hub.ico"
-IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
-IDR_QUEUE               ICON    DISCARDABLE     "res\\queue.ico"
+IDR_MAINFRAME           ICON                    "res\\DCPlusPlus.ico"
+IDR_PUBLICHUBS          ICON                    "res\\PublicHubs.ico"
+IDR_SEARCH              ICON                    "res\\search.ico"
+IDR_FAVORITES           ICON                    "res\\Favorites.ico"
+IDR_PRIVATE             ICON                    "res\\User.ico"
+IDR_DIRECTORY           ICON                    "res\\Directory.ico"
+IDR_HUB                 ICON                    "res\\Hub.ico"
+IDR_NOTEPAD             ICON                    "res\\notepad.ico"
+IDR_QUEUE               ICON                    "res\\queue.ico"
+IDR_FINISHED_DL         ICON                    "res\\FinishedDL.ico"
+IDR_ADLSEARCH           ICON                    "res\\ADLSearch.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 205, 271
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG  0, 0, 205, 271
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -96,7 +97,7 @@ BEGIN
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Title"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -106,8 +107,8 @@ BEGIN
     GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
 END
 
-IDD_GENERALPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_GENERALPAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -146,62 +147,38 @@ BEGIN
     LTEXT           "Password",IDC_STATIC,106,173,71,8
 END
 
-IDD_ADVANCEDPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_ROLLBACK,62,17,50,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_BUFFERSIZE,190,17,50,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_CLVERSION,62,36,50,14
-    CONTROL         "Follow redirects automatically",IDC_AUTOFOLLOW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,67,243,10
-    CONTROL         "Clear search box after each search",IDC_CLEARSEARCH,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,78,243,10
-    CONTROL         "Automatically search for alternative download locations",
-                    IDC_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    89,243,10
-    CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,100,243,10
-    CONTROL         "Open the download queue window at startup",
-                    IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    111,243,10
-    CONTROL         "Popup private messages",IDC_POPUP_PMS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,122,243,10
-    CONTROL         "Ignore messages from users that are not online (effective agains bots)",
-                    IDC_IGNOREOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,133,243,10
-    CONTROL         "Popup messages from users that are not online (if not ignoring)",
-                    IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,144,243,10
-    CONTROL         "Remove dupes completely (instead of just subtracting their size)",
-                    IDC_REMOVEDUPES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    155,243,10
-    RTEXT           "Rollback",IDC_STATIC,15,20,43,8
-    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
-    RTEXT           "Client version",IDC_STATIC,15,39,43,8
+    CONTROL         "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,14,55,247,84
+    CONTROL         "",IDC_MENU_ITEMS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | 
+                    LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,14,161,191,50
+    PUSHBUTTON      "&Add",IDC_ADD_MENU,211,161,50,14
+    PUSHBUTTON      "Chang&e",IDC_CHANGE_MENU,211,179,50,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE_MENU,211,197,50,14
+    RTEXT           "Rollback",IDC_STATIC,14,20,44,8
+    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,139
+    RTEXT           "Client version",IDC_STATIC,14,39,44,8
     RTEXT           "Write buffer size",IDC_STATIC,122,20,65,8
     LTEXT           "B",IDC_STATIC,113,20,8,8
     LTEXT           "kB",IDC_STATIC,241,20,10,8
-    CONTROL         "Install URL handler on startup (dchub://)",
-                    IDC_URL_HANDLER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    166,243,10
-    CONTROL         "Auto-away mode on minimize (and back on restore)",
-                    IDC_AUTO_AWAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    177,243,10
-    CONTROL         "Use small send buffer (enable if uploads slow downloads a lot)",
-                    IDC_SMALL_SEND_BUFFER,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,188,243,10
-    CONTROL         "Don't delete user file lists when exiting DC++",
-                    IDC_KEEP_LISTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    200,243,10
-    CONTROL         "Automatically disconnect uploads to users that leave the hub",
-                    IDC_AUTO_KICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    56,243,10
+    GROUPBOX        "User Menu Items",IDC_STATIC,7,149,261,69
+    EDITTEXT        IDC_MAX_TAB_ROWS,190,36,40,14,ES_AUTOHSCROLL
+    LTEXT           "Max tab rows",IDC_STATIC,144,39,43,8
 END
 
-IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 226
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_DOWNLOADPAGE DIALOG  0, 0, 275, 226
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -235,8 +212,8 @@ BEGIN
     LTEXT           "Public Hubs list URL",IDC_STATIC,14,155,247,8
 END
 
-IDD_UPLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_UPLOADPAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sharing"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -264,71 +241,79 @@ BEGIN
     LTEXT           "kB/s",IDC_STATIC,252,192,16,8
 END
 
-IDD_APPEARANCEPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_APPEARANCEPAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Appearance"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     PUSHBUTTON      "Select window color",IDC_SELWINCOLOR,16,17,68,14
     PUSHBUTTON      "Select text style",IDC_SELTEXT,16,35,68,14
-    CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,73,244,10
-    CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,85,244,10
-    CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,96,244,10
-    CONTROL         "Automatically enable timestamps in chat windows",
-                    IDC_TIMESTAMPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,
-                    107,244,10
-    CONTROL         "Confirm application exit",IDC_CONFIRMEXIT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,119,244,10
-    CONTROL         "View status messages in main chat",IDC_STATUS_IN_CHAT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,130,244,10
-    CONTROL         "Show joins / parts in main chat",IDC_SHOW_JOINS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,141,244,10
-    CONTROL         "Use system icons when browsing files (slows browsing down a bit)",
-                    IDC_USE_SYSTEM_ICONS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,16,153,244,10
-    EDITTEXT        IDC_LANGUAGE,16,183,188,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BROWSE,210,183,50,14
+    CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,16,68,244,57
+    EDITTEXT        IDC_DEFAULT_AWAY_MESSAGE,16,145,244,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LANGUAGE,16,180,188,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSE,210,180,50,14
     GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
     LTEXT           "Donate $$$:s! (well, €€€ preferably =) (see help menu)",
                     IDC_COLOREXAMPLE,92,17,168,32,SS_NOPREFIX | SS_SUNKEN | 
                     WS_BORDER | NOT WS_GROUP
-    GROUPBOX        "Options",IDC_STATIC,7,60,261,109
-    GROUPBOX        "Language file",IDC_STATIC,7,172,261,32
+    GROUPBOX        "Options",IDC_STATIC,7,57,261,75
+    GROUPBOX        "Language file",IDC_STATIC,7,169,261,32
     LTEXT           "Note; most of these options require that you restart DC++",
                     IDC_STATIC,7,210,253,8
+    GROUPBOX        "Default away message",IDC_STATIC,7,135,261,32
 END
 
-IDD_ADVANCED2PAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_ADVANCED2PAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Logs and Sound"
 FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_LOG_DIRECTORY,15,27,194,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BROWSE_LOG,211,27,50,14
     CONTROL         "Log main chat",IDC_LOG_MAIN_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,47,246,10
-    EDITTEXT        IDC_MAIN_CHAT,15,58,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,43,246,10
+    EDITTEXT        IDC_MAIN_CHAT,15,52,246,14,ES_AUTOHSCROLL
     CONTROL         "Log private chat",IDC_LOG_PRIVATE_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,76,246,10
-    EDITTEXT        IDC_PRIVATE_CHAT,15,87,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,69,246,10
+    EDITTEXT        IDC_PRIVATE_CHAT,15,78,246,14,ES_AUTOHSCROLL
     CONTROL         "Log downloads",IDC_LOG_DOWNLOADS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,106,246,10
-    EDITTEXT        IDC_POST_DOWNLOAD,15,117,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,95,246,10
+    EDITTEXT        IDC_POST_DOWNLOAD,15,104,246,14,ES_AUTOHSCROLL
     CONTROL         "Log uploads",IDC_LOG_UPLOADS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,135,246,10
-    EDITTEXT        IDC_POST_UPLOAD,15,146,246,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,15,121,246,10
+    EDITTEXT        IDC_POST_UPLOAD,15,130,246,14,ES_AUTOHSCROLL
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,15,189,246,10
     CONTROL         "Make an annoying sound when a private message window is opened",
                     IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,15,199,246,10
-    GROUPBOX        "Logging",IDC_STATIC,7,7,261,161
+    GROUPBOX        "Logging",IDC_STATIC,7,7,261,168
     LTEXT           "Log directory",IDC_STATIC,15,17,194,8
     GROUPBOX        "Sounds",IDC_STATIC,7,178,261,40
+END
+
+IDD_USER_COMMAND DIALOGEX 0, 0, 419, 122
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
+CAPTION "Create / Modify User Command"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,362,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,362,24,50,14
+    LTEXT           "Name",IDC_STATIC,7,7,19,8
+    LTEXT           "Command",IDC_STATIC,7,35,32,8
+    LTEXT           "Hub IP / DNS (empty = all hubs, ""op"" = only when op)",
+                    IDC_STATIC,7,62,173,8
+    EDITTEXT        IDC_NAME,7,17,181,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_COMMAND,7,44,181,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUB,7,72,181,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_NICK,7,101,181,14,ES_AUTOHSCROLL
+    LTEXT           "PM To (empty to send in main chat)",IDC_STATIC,7,91,114,
+                    8
+    LTEXT           "blablabla",IDC_COMMAND_DESCRIPTION,195,42,217,73
 END
 
 
@@ -338,7 +323,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO MOVEABLE PURE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -375,13 +360,15 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
-        VERTGUIDE, 15
+        VERTGUIDE, 14
         VERTGUIDE, 58
         VERTGUIDE, 62
         VERTGUIDE, 113
-        VERTGUIDE, 258
+        VERTGUIDE, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
+        HORZGUIDE, 161
+        HORZGUIDE, 211
     END
 
     IDD_DOWNLOADPAGE, DIALOG
@@ -433,19 +420,27 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
+
+    IDD_USER_COMMAND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 412
+        VERTGUIDE, 188
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,0,1
- PRODUCTVERSION 0,2,0,1
+ FILEVERSION 0,2,4,0
+ PRODUCTVERSION 0,2,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -460,14 +455,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://dcplusplus.sourceforge.net\0"
-            VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "0, 2, 0, 1\0"
-            VALUE "InternalName", "DC++\0"
-            VALUE "LegalCopyright", "Copyright 2001-2002 Jacek Sieka\0"
-            VALUE "OriginalFilename", "DCPlusPlus.exe\0"
-            VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "0, 2, 0, 1\0"
+            VALUE "Comments", "http://dcplusplus.sourceforge.net"
+            VALUE "FileDescription", "DC++"
+            VALUE "FileVersion", "0, 2, 4, 0"
+            VALUE "InternalName", "DC++"
+            VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
+            VALUE "OriginalFilename", "DCPlusPlus.exe"
+            VALUE "ProductName", "DC++"
+            VALUE "ProductVersion", "0, 2, 4, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -476,15 +471,13 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS 
 BEGIN
     "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
@@ -500,10 +493,10 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// 24
+// RT_MANIFEST
 //
 
-1                       24      MOVEABLE PURE   "res\\DCPlusPlus.Manifest"
+1                       RT_MANIFEST             "res\\DCPlusPlus.Manifest"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -523,7 +516,7 @@ LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-3 TEXTINCLUDE MOVEABLE PURE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -537,8 +530,8 @@ END
 // Dialog
 //
 
-IDD_FAVORITEHUB DIALOG DISCARDABLE  0, 0, 201, 148
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+IDD_FAVORITEHUB DIALOG  0, 0, 201, 163
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Favorite Hub Properties"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -547,16 +540,18 @@ BEGIN
     EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_HUBNICK,56,87,131,12
     EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
-    DEFPUSHBUTTON   "OK",IDOK,90,127,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,144,127,50,14
+    EDITTEXT        IDC_HUBUSERDESCR,56,117,131,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,90,142,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,142,50,14
     GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
     GROUPBOX        "Identification (leave blank for defaults)",IDC_STATIC,7,
-                    74,187,48
+                    74,187,63
     RTEXT           "Nick",IDC_STATIC,12,89,40,8
     RTEXT           "Password",IDC_STATIC,12,104,40,8
     RTEXT           "Name",IDC_STATIC,12,21,40,8
     RTEXT           "Description",IDC_STATIC,12,51,40,8
     RTEXT           "Address",IDC_STATIC,12,36,40,8
+    LTEXT           "Description",IDC_STATIC,16,119,36,8
 END
 
 
@@ -566,7 +561,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO MOVEABLE PURE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_FAVORITEHUB, DIALOG
     BEGIN
@@ -576,7 +571,7 @@ BEGIN
         VERTGUIDE, 52
         VERTGUIDE, 56
         TOPMARGIN, 7
-        BOTTOMMARGIN, 141
+        BOTTOMMARGIN, 156
     END
 END
 #endif    // APSTUDIO_INVOKED

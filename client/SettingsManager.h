@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public:
 		SAVE
 	};
 	
-	virtual void onAction(Types, SimpleXML*) { };
+	virtual void onAction(Types, SimpleXML*) throw() = 0;
 };
 
 class SettingsManager : public Singleton<SettingsManager>, public Speaker<SettingsManagerListener>
@@ -51,18 +51,20 @@ public:
 		USERSFRAME_ORDER, USERSFRAME_WIDTHS, HTTP_PROXY, LOG_DIRECTORY, NOTEPAD_TEXT, LOG_FORMAT_POST_DOWNLOAD, 
 		LOG_FORMAT_POST_UPLOAD, LOG_FORMAT_MAIN_CHAT, LOG_FORMAT_PRIVATE_CHAT, FINISHED_ORDER, FINISHED_WIDTHS, 
 		TEMP_DOWNLOAD_DIRECTORY, SOCKS_SERVER, SOCKS_USER, SOCKS_PASSWORD, CONFIG_VERSION,
+		DEFAULT_AWAY_MESSAGE, ADLSEARCHFRAME_ORDER, ADLSEARCHFRAME_WIDTHS, 
 		STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, IN_PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT, 
-		BACKGROUND_COLOR, TEXT_COLOR, SHARE_HIDDEN, FILTER_KICKMSGS, MINIMIZE_TRAY,
+		BACKGROUND_COLOR, TEXT_COLOR, SHARE_HIDDEN, FILTER_MESSAGES, MINIMIZE_TRAY,
 		OPEN_PUBLIC, OPEN_QUEUE, AUTO_SEARCH, TIME_STAMPS, CONFIRM_EXIT, IGNORE_OFFLINE, POPUP_OFFLINE,
 		REMOVE_DUPES, BUFFER_SIZE, DOWNLOAD_SLOTS, MAX_DOWNLOAD_SPEED, LOG_MAIN_CHAT, LOG_PRIVATE_CHAT,
 		LOG_DOWNLOADS, LOG_UPLOADS, STATUS_IN_CHAT, SHOW_JOINS, PRIVATE_MESSAGE_BEEP, PRIVATE_MESSAGE_BEEP_OPEN,
 		USE_SYSTEM_ICONS, POPUP_PMS, MIN_UPLOAD_SPEED, GET_USER_INFO, URL_HANDLER, MAIN_WINDOW_STATE,
 		MAIN_WINDOW_SIZE_X, MAIN_WINDOW_SIZE_Y, MAIN_WINDOW_POS_X, MAIN_WINDOW_POS_Y, AUTO_AWAY,
 		SMALL_SEND_BUFFER, SOCKS_PORT, SOCKS_RESOLVE, KEEP_LISTS, AUTO_KICK, QUEUEFRAME_SHOW_TREE,
-		COMPRESS_TRANSFERS,
+		COMPRESS_TRANSFERS, SHOW_PROGRESS_BARS, SFV_CHECK, MAX_TAB_ROWS, AUTO_UPDATE_LIST,
+		MAX_COMPRESSION,
 		INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
@@ -143,7 +145,7 @@ public:
 		int64Defaults[key - INT64_FIRST] = value;
 	}
 
-	bool isDefault(int set) { return !isSet[set]; };
+	bool isDefault(int aSet) { return !isSet[aSet]; };
 
 	void load() {
 		load(Util::getAppPath() + "DCPlusPlus.xml");
@@ -178,6 +180,6 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.39 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.40 2003/03/13 13:31:31 arnetheduck Exp $
  */
 

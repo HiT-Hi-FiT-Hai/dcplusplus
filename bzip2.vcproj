@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release\bzip"
-			IntermediateDirectory=".\Release\bzip"
+			OutputDirectory=".\vc7\Release\bzip"
+			IntermediateDirectory=".\vc7\Release\bzip"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -32,17 +32,14 @@
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
-				ExceptionHandling="FALSE"
+				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="FALSE"
+				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Release\bzip/bzip2.pch"
+				ForceConformanceInForLoopScope="TRUE"
+				UsePrecompiledHeader="0"
 				AssemblerOutput="4"
-				AssemblerListingLocation=".\Release\bzip/"
-				ObjectFile=".\Release\bzip/"
-				ProgramDataBaseFileName=".\Release\bzip/"
-				WarningLevel="4"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CallingConvention="1"
@@ -51,7 +48,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Release\bzip\bzip2.lib"
+				OutputFile=".\vc7\Release\bzip\bzip2.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -70,8 +67,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug\bzip"
-			IntermediateDirectory=".\Debug\bzip"
+			OutputDirectory=".\vc7\Debug\bzip"
+			IntermediateDirectory=".\vc7\Debug\bzip"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -85,19 +82,15 @@
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
-				ExceptionHandling="FALSE"
+				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
-				SmallerTypeCheck="TRUE"
+				SmallerTypeCheck="FALSE"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\Debug\bzip/bzip2.pch"
-				AssemblerListingLocation=".\Debug\bzip/"
-				ObjectFile=".\Debug\bzip/"
-				ProgramDataBaseFileName=".\Debug\bzip/"
-				WarningLevel="4"
+				UsePrecompiledHeader="0"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -107,7 +100,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Debug\bzip\bzip2.lib"
+				OutputFile="$(OutDir)/bzip2.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>

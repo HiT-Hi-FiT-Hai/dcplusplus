@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,9 @@ public:
 		SECOND,
 		MINUTE
 	};
-	
-	virtual void onAction(Types, u_int32_t) throw() { };
+
+	// We expect everyone to implement this...
+	virtual void onAction(Types, u_int32_t) throw() = 0;
 };
 
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
@@ -85,6 +86,6 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.15 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.16 2003/03/13 13:31:36 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,16 +64,16 @@ public:
 		SEARCH_FLOOD
 	};
 	
-	virtual void onAction(Types, Client*) { };
-	virtual void onAction(Types, Client*, const string&) { };
-	virtual void onAction(Types, Client*, const string&, const string&) { };
-	virtual void onAction(Types, Client*, const User::Ptr&) { };
-	virtual void onAction(Types, Client*, const User::List&) { };
-	virtual void onAction(Types, Client*, const User::Ptr&, const string&) { };
-	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) { };
+	virtual void onAction(Types, Client*) throw() { };
+	virtual void onAction(Types, Client*, const string&) throw() { };
+	virtual void onAction(Types, Client*, const string&, const string&) throw() { };
+	virtual void onAction(Types, Client*, const User::Ptr&) throw() { };
+	virtual void onAction(Types, Client*, const User::List&) throw() { };
+	virtual void onAction(Types, Client*, const User::Ptr&, const string&) throw() { };
+	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) throw() { };
 };
 
-class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener
+class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener, private Flags
 {
 	friend class ClientManager;
 public:
@@ -86,7 +86,7 @@ public:
 
 	bool isConnected() { if(!socket) return false; else return socket->isConnected(); };
 	void disconnect() throw();
-	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared);
+	void myInfo();
 	
 	void refreshUserList(bool unknownOnly = false);
 
@@ -99,7 +99,7 @@ public:
 	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
 	void getInfo(User::Ptr aUser) { checkstate(); if(getUserInfo()) send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
 	void getInfo(User* aUser) {  checkstate(); if(getUserInfo())send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
-	void sendMessage(const string& aMessage) { checkstate(); send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
+	void sendMessage(const string& aMessage) { checkstate(); send("<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|"); }
 
 	void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	void searchResults(const string& aResults) { send(aResults); };
@@ -107,20 +107,22 @@ public:
 	void connectToMe(const User::Ptr& aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(IN_PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
 	}
 	void connectToMe(User* aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(IN_PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
-		checkstate(); 
-		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
+		privateMessage(aUser->getNick(), aMessage);
 	}
 	void privateMessage(User* aUser, const string& aMessage) {
+		privateMessage(aUser->getNick(), aMessage);
+	}
+	void privateMessage(const string& aNick, const string& aMessage) {
 		checkstate(); 
-		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
+		send("$To: " + aNick + " From: " + getNick() + " $" + Util::validateMessage(aMessage, false) + "|");
 	}
 	void revConnectToMe(const User::Ptr& aUser) {
 		checkstate(); 
@@ -166,12 +168,23 @@ public:
 	}
 
 	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
-	
+	string getLocalIp() { 
+		if(!SETTING(SERVER).empty()) {
+			return Socket::resolve(SETTING(SERVER));
+		}
+		if(socket == NULL)
+			return Util::getLocalIp();
+		string tmp = socket->getLocalIp();
+		if(tmp.empty())
+			return Util::getLocalIp();
+		return tmp;
+	}
 	GETSETREF(string, nick, Nick);
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
 	GETSETREF(string, defpassword, Password);
+	GETSETREF(string, description, Description);
 private:
 	enum States {
 		STATE_CONNECT,
@@ -179,6 +192,13 @@ private:
 		STATE_HELLO,
 		STATE_CONNECTED
 	} state;
+
+	enum {
+		COUNT_UNCOUNTED,
+		COUNT_NORMAL,
+		COUNT_REGISTERED,
+		COUNT_OP
+	};
 
 	string server;
 	short port;
@@ -189,10 +209,20 @@ private:
 	CriticalSection cs;
 
 	User::NickMap users;
-	static long hubs;
 
-	int lastHubs;
-	bool counted;
+	struct Counts {
+		long normal;
+		long registered;
+		long op;
+		bool operator !=(const Counts& rhs) { return normal != rhs.normal || registered != rhs.registered || op != rhs.op; };
+	};
+
+	static Counts counts;
+
+	Counts lastCounts;
+
+	int countType;
+	bool reconnect;
 	u_int32_t lastUpdate;
 	
 	typedef deque<pair<string, u_int32_t> > FloodMap;
@@ -200,13 +230,13 @@ private:
 	FloodMap seekers;
 	FloodMap flooders;
 
-	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), 
-		lastActivity(GET_TICK()), lastHubs(0), counted(false), lastUpdate(0) {
+	void updateCounts(bool aRemove);
+
+	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), description(SETTING(DESCRIPTION)), state(STATE_CONNECT), socket(NULL), 
+		lastActivity(GET_TICK()), countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
-	// No copying...
-	Client(const Client&) { dcassert(0); };
 	virtual ~Client() throw();
 	void connect();
 
@@ -217,13 +247,17 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine);
-	virtual void onAction(BufferedSocketListener::Types type);
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
+	virtual void onAction(BufferedSocketListener::Types type) throw();
 
 	void send(const string& a) throw() {
 		lastActivity = GET_TICK();
 		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
 		socket->write(a);
+	}
+	void send(const char* aBuf, int aLen) throw() {
+		lastActivity = GET_TICK();
+		socket->write(aBuf, aLen);
 	}
 };
 
@@ -231,6 +265,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.61 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: Client.h,v 1.62 2003/03/13 13:31:14 arnetheduck Exp $
  */
 

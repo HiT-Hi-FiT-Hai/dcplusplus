@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -454,7 +454,7 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
 			} else {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
-				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY));
+				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + Util::getLastDir(sr->getFile()));
 			}
 		} catch(Exception e) {
 			ctrlStatus.SetText(1, e.getError().c_str());
@@ -852,13 +852,13 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 					if(ext.empty()) {
 						ext = Util::getExtension(sr->getFile());
 					}
-					if(ext == Util::getExtension(sr->getFile())) {
+					if(Util::stricmp(ext, Util::getExtension(sr->getFile())) == 0) {
 						cmpSize = sr->getSize();
 					} else {
 						cmpSize = 0;
 						break;
 					}
-				} else if(cmpSize != sr->getSize() || ext != Util::getExtension(sr->getFile())) {
+				} else if(cmpSize != sr->getSize() || Util::stricmp(ext, Util::getExtension(sr->getFile())) != 0) {
 					cmpSize = 0;
 					break;
 				}
@@ -947,5 +947,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.13 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.14 2003/03/13 13:32:02 arnetheduck Exp $
  */

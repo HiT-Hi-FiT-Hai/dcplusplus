@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
+#define IDC_USER_COMMAND 3500
+
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
@@ -71,6 +73,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
+		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands.size(), onUserCommand)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(baseClass)
@@ -100,6 +103,7 @@ public:
 	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onUserCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
@@ -107,9 +111,10 @@ public:
 	void onEnter();
 	void onTab();
 
-	static void openWindow(HWND aParent, FlatTabCtrl* aTab, const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString);
-
-	LRESULT onSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	static void openWindow(HWND aParent, FlatTabCtrl* aTab, const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
+	static void closeDisconnected();
+	
+	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
 	}
@@ -217,7 +222,7 @@ private:
 		string msg;
 	};
 
-	HubFrame(const string& aServer, const string& aNick, const string& aPassword) : 
+	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
 	waitingForPW(false), server(aServer), needSort(false),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
@@ -228,7 +233,8 @@ private:
 		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
 		if(!aNick.empty())
 			client->setNick(aNick);
-
+		if (!aDescription.empty())
+			client->setDescription(aDescription);
 		client->setPassword(aPassword);
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
@@ -262,7 +268,8 @@ private:
 
 	CMenu userMenu;
 	CMenu opMenu;
-	
+	StringList commands;
+
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
@@ -303,11 +310,11 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) throw();
 
 	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client);
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line);
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user);
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList);
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line);
+	virtual void onAction(ClientListener::Types type, Client* client) throw();
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line) throw();
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw();
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) throw();
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
@@ -325,6 +332,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.16 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.17 2003/03/13 13:31:52 arnetheduck Exp $
  */
 

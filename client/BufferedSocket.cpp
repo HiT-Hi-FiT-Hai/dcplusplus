@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@
 #include "BufferedSocket.h"
 #include "File.h"
 #include "CryptoManager.h"
+
+#define SMALL_BUFFER_SIZE 1024
+
+// Polling is used for tasks...should be fixed...
+#define POLL_TIMEOUT 250
 
 BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* = '\n' */, BufferedSocketListener* l /* = NULL */) throw(SocketException) {
 	BufferedSocket* b = getSocket(sep);
@@ -52,7 +57,7 @@ bool BufferedSocket::threadSendFile() {
 			if(comp == NULL) {
 				comp = new ZCompressor(*file, size);
 			}
-			u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? 1024 : inbufSize;
+			u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize;
 			u_int32_t bytes;
 			while(true) {
 				{
@@ -60,15 +65,29 @@ bool BufferedSocket::threadSendFile() {
 					if(!tasks.empty())
 						return false;
 				}
-				bytes = comp->compress(inbuf, s);
-				if(bytes == 0) {
-					// Finished!
-					delete comp;
-					comp = NULL;
-					fire(BufferedSocketListener::TRANSMIT_DONE);
-					return true;
-				} else {
-					Socket::write((char*) inbuf, bytes);
+				int waitFor = WAIT_READ | WAIT_WRITE;
+				wait(POLL_TIMEOUT, waitFor);
+				if(waitFor & WAIT_READ)
+					return false;
+
+				if(waitFor & WAIT_WRITE) {
+					u_int32_t br = 0;
+					bytes = comp->compress(inbuf, s, br);
+					if(bytes == 0) {
+						// Finished!
+						delete comp;
+						comp = NULL;
+						dcassert(size == 0);
+						fire(BufferedSocketListener::TRANSMIT_DONE);
+						return true;
+					} else {
+						Socket::write((char*) inbuf, bytes);
+						if(br > 0) {
+							fire(BufferedSocketListener::BYTES_SENT, br);
+							size -= br;
+							dcassert(size >= 0);
+						}
+					}
 				}
 			}
 		} else {
@@ -78,21 +97,26 @@ bool BufferedSocket::threadSendFile() {
 					if(!tasks.empty())
 						return false;
 				}
-				int waitFor = WAIT_READ;
-				if(wait(0, waitFor))
+
+				int waitFor = WAIT_READ | WAIT_WRITE;
+				wait(POLL_TIMEOUT, waitFor);
+				if(waitFor & WAIT_READ)
 					return false;
-				dcassert(inbufSize >= 1024);
-				u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? (u_int32_t)min((int64_t)1024, size) : (u_int32_t)min((int64_t)inbufSize, size);
-				
-				if( (len = file->read(inbuf, s)) == 0) {
-					// We don't want this to happen really...disconnect!
-					dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
-					disconnect();
-					return true;
+
+				if(waitFor & WAIT_WRITE) {
+					dcassert(inbufSize >= 1024);
+					u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? (u_int32_t)min((int64_t)1024, size) : (u_int32_t)min((int64_t)inbufSize, size);
+
+					if( (len = file->read(inbuf, s)) == 0) {
+						// Premature EOF?
+						dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
+						disconnect();
+						return true;
+					}
+					Socket::write((char*)inbuf, len);
+					fire(BufferedSocketListener::BYTES_SENT, len);
+					size -= len;
 				}
-				Socket::write((char*)inbuf, len);
-				fire(BufferedSocketListener::BYTES_SENT, len);
-				size -= len;
 			}
 		}
 	} catch(Exception e) {
@@ -116,7 +140,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 
 	while(bytesIn < bufLen) {
 		int waitFor = WAIT_READ;
-		while(!wait(200, waitFor)) {
+		while(!wait(POLL_TIMEOUT, waitFor)) {
 			waitFor = WAIT_READ;
 			{
 				Lock l(cs);
@@ -171,7 +195,7 @@ void BufferedSocket::threadConnect() {
 		
 		int waitFor = WAIT_CONNECT;
 
-		while(!wait(200, waitFor)) {
+		while(!wait(POLL_TIMEOUT, waitFor)) {
 			waitFor = WAIT_CONNECT;
 			{
 				Lock l(cs);
@@ -209,7 +233,7 @@ void BufferedSocket::threadConnect() {
 			} else {
 				// We try the username and password auth type (no, we don't support gssapi)
 				u_int8_t ulen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
-				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
+				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_PASSWORD).length() & 0xff);
 				AutoArray<u_int8_t> connStr(3 + ulen + plen);
 
 				connStr[0] = 5;			// SOCKSv5
@@ -281,9 +305,7 @@ void BufferedSocket::threadConnect() {
 		for(int k = 0; k < BUFFERS; k++) {
 			outbufPos[k] = 0;
 		}
-		// Update the default local ip...this one should in any case be better than 
-		// whatever we might have guessed from the beginning...
-		SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
+		line.clear();
 		fire(BufferedSocketListener::CONNECTED);
 
 		setBlocking(true);
@@ -311,7 +333,6 @@ void BufferedSocket::threadRead() {
 
 		int bufpos = 0;
 		string l;
-
 		while(i > 0) {
 			if(mode == MODE_LINE) {
 				string::size_type pos;
@@ -430,11 +451,11 @@ void BufferedSocket::threadRun() {
 				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
 			}
-			// Now check if there's any activity on the socket
 
+			// Now check if there's any activity on the socket
 			if(isConnected()) {
 				int waitFor = sendingFile ? WAIT_READ | WAIT_WRITE : WAIT_READ;
-				if(wait(200, waitFor)) {
+				if(wait(POLL_TIMEOUT, waitFor)) {
 					if(waitFor & WAIT_WRITE) {
 						dcassert(sendingFile);
 						if(threadSendFile())
@@ -453,5 +474,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.45 2002/12/28 01:31:48 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.46 2003/03/13 13:31:12 arnetheduck Exp $
  */

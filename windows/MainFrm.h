@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,9 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 #include "SingleInstance.h"
+
+#define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
+
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener,
@@ -45,6 +48,7 @@ public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 		oldshutdown(false), stopperThread(NULL), c(NULL) { 
 		c = new HttpConnection();
+		memset(statusSizes, 0, sizeof(statusSizes));
 	};
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
@@ -92,6 +96,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
+		MESSAGE_HANDLER(FTN_ROWS_CHANGED, onRowsChanged)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
@@ -100,6 +105,7 @@ public:
 		MESSAGE_HANDLER(trayMessage, onTray)
 		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
+		MESSAGE_HANDLER(SERVER_SOCKET_MESSAGE, onServerSocket)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -119,6 +125,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
+		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onFileADLSearch)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
@@ -133,6 +140,9 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
+		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
+		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
+		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
@@ -163,6 +173,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -176,13 +187,21 @@ public:
 	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-		
+	LRESULT onCloseDisconnected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const string& cmdLine);
 
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
+	}
+
+	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ConnectionManager::getInstance()->getServerSocket().incoming();
+		return 0;
 	}
 
 	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
@@ -234,6 +253,12 @@ public:
 				break;
 			}
 		}
+		return 0;
+	}
+
+	LRESULT onRowsChanged(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		UpdateLayout();
+		Invalidate();
 		return 0;
 	}
 
@@ -319,7 +344,7 @@ public:
 			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
 		}
 		return 0;
-	}
+	}	
 
 private:
 	enum {
@@ -353,13 +378,6 @@ private:
 		Status status;
 		int64_t pos;
 		int64_t size;
-	};
-
-	class StringInfo {
-	public:
-		StringInfo(LPARAM lp = NULL, const string& s = Util::emptyString) : lParam(lp), str(s) { };
-		string str;
-		LPARAM lParam;
 	};
 
 	class StringListInfo;
@@ -404,6 +422,8 @@ private:
 	int lastUpload;
 	static int columnIndexes[];
 	static int columnSizes[];
+
+	int statusSizes[5];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -416,24 +436,24 @@ private:
 
 	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
-	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload);
-	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul);
+	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) throw();
+	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul) throw();
 	void onUploadStarting(Upload* aUpload);
 	void onUploadTick(const Upload::List& aUpload);
 	void onUploadComplete(Upload* aUpload);
 	
 	// DownloadManagerListener
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload);
-	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl);
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason);
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload) throw();
+	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl) throw();
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) throw();
 	void onDownloadComplete(Download* aDownload);
 	void onDownloadFailed(Download* aDownload, const string& aReason);
 	void onDownloadStarting(Download* aDownload);
 	void onDownloadTick(const Download::List& aDownload);
 
 	// ConnectionManagerListener
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi);
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine);	
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) throw();
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) throw();	
 	void onConnectionAdded(ConnectionQueueItem* aCqi);
 	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
 	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
@@ -444,19 +464,19 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn);
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len);	
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) throw();
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) throw();	
 	void onHttpComplete(HttpConnection* aConn);
 
 	// QueueManagerListener
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* qi);
+	virtual void onAction(QueueManagerListener::Types type, QueueItem* qi) throw();
 };
 
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.12 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.13 2003/03/13 13:31:55 arnetheduck Exp $
  */
 
  

@@ -64,7 +64,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "vc6\Debug\client"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /GZ /c
-# ADD CPP /nologo /G6 /Gd /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdinc.h" /FD /c
+# ADD CPP /nologo /G6 /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdinc.h" /FD /c
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
 # ADD RSC /l 0x41d /d "_DEBUG"
 BSC32=bscmake.exe
@@ -150,6 +150,10 @@ SOURCE=.\client\ServerSocket.cpp
 # Begin Source File
 
 SOURCE=.\client\SettingsManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SFVReader.cpp
 # End Source File
 # Begin Source File
 
@@ -315,6 +319,10 @@ SOURCE=.\client\ServerSocket.h
 # Begin Source File
 
 SOURCE=.\client\SettingsManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SFVReader.h
 # End Source File
 # Begin Source File
 

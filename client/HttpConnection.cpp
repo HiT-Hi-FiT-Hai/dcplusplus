@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,13 +51,20 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	socket->connect(server, port);
 }
 
-void HttpConnection::onConnected() {
-	dcassert(socket);
-	socket->write("GET " + file + " HTTP/1.1\r\n");
-	socket->write("User-Agent: DC++ v" VERSIONSTRING "\r\n");
-	socket->write("Host: " + server + "\r\n");
-	socket->write("Cache-Control: no-cache\r\n\r\n");
-}
+void HttpConnection::onConnected() { 
+	dcassert(socket); 
+	socket->write("GET " + file + " HTTP/1.1\r\n"); 
+	socket->write("User-Agent: DC++ v" VERSIONSTRING "\r\n"); 
+
+	string sRemoteServer = server; 
+	if(!SETTING(HTTP_PROXY).empty()) 
+	{ 
+		string tfile;short tport; 
+		Util::decodeUrl(file, sRemoteServer, tport, tfile); 
+	} 
+	socket->write("Host: " + sRemoteServer + "\r\n"); 
+	socket->write("Cache-Control: no-cache\r\n\r\n"); 
+} 
 
 void HttpConnection::onLine(const string& aLine) {
 	if(!ok) {
@@ -75,7 +82,7 @@ void HttpConnection::onLine(const string& aLine) {
 }
 
 // BufferedSocketListener
-void HttpConnection::onAction(BufferedSocketListener::Types type) {
+void HttpConnection::onAction(BufferedSocketListener::Types type) throw() {
 	switch(type) {
 	case BufferedSocketListener::CONNECTED:
 		onConnected(); break;
@@ -83,7 +90,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type) {
 		break;
 	}
 }
-void HttpConnection::onAction(BufferedSocketListener::Types type, const string& aLine) {
+void HttpConnection::onAction(BufferedSocketListener::Types type, const string& aLine) throw() {
 	switch(type) {
 	case BufferedSocketListener::LINE:
 		onLine(aLine); break;
@@ -94,7 +101,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const string& 
 		break;
 	}
 }
-void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) {
+void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) throw() {
 	switch(type) {
 	case BufferedSocketListener::MODE_CHANGE:
 		socket->removeListener(this);
@@ -105,7 +112,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) 
 		dcasserta(0);
 	}
 }
-void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
+void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) throw() {
 	switch(type) {
 	case BufferedSocketListener::DATA:
 		fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
@@ -116,6 +123,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.13 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.14 2003/03/13 13:31:22 arnetheduck Exp $
  */
 

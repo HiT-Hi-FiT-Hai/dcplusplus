@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,12 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.211"
-#define VERSIONFLOAT 0.211
+#define VERSIONSTRING "0.24"
+#define VERSIONFLOAT 0.24
+
+/* Update the .rc file as well... */
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.36 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: version.h,v 1.37 2003/03/13 13:31:41 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,6 @@
 #include "WinUtil.h"
 
 #include "../client/DirectoryListing.h"
-#include "../client/CryptoManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 
@@ -67,6 +66,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
+		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
@@ -103,6 +103,11 @@ public:
 	void findFile(bool findNext);
 	
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 0;
+	}
+
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+		updateStatus();
 		return 0;
 	}
 
@@ -178,6 +183,7 @@ public:
 private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(string const& str, HTREEITEM root, int &foundFile, int &skipHits);
+	void updateStatus();
 
 	class ItemInfo {
 	public:
@@ -217,6 +223,10 @@ private:
 
 	int files;
 	string size;
+
+	bool updating;
+
+	int statusSizes[7];
 	
 	DirectoryListing* dl;
 };
@@ -225,5 +235,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.12 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.13 2003/03/13 13:31:47 arnetheduck Exp $
  */

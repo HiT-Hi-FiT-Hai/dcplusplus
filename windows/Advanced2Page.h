@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #ifndef ADVANCED2PAGE_H
 #define ADVANCED2PAGE_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "PropPage.h"
 
@@ -47,6 +51,8 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
+	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+
 
 protected:
 	static Item items[];
@@ -56,6 +62,6 @@ protected:
 
 /**
  * @file Advanced2Page.h
- * $Id: Advanced2Page.h,v 1.2 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.3 2003/03/13 13:31:45 arnetheduck Exp $
  */
 

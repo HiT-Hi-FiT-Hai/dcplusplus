@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,9 @@ public:
 		FLAG_USER_LIST = 0x01,
 		FLAG_RESUME = 0x02,
 		FLAG_ROLLBACK = 0x04,
-		FLAG_ZDOWNLOAD = 0x08
+		FLAG_ZDOWNLOAD = 0x08,
+		FLAG_CALC_CRC32 = 0x10,
+		FLAG_CRC32_OK = 0x20
 	};
 
 	Download(QueueItem* qi) throw();
@@ -105,9 +107,9 @@ public:
 		TICK
 	};
 
-	virtual void onAction(Types, Download*) { };
-	virtual void onAction(Types, Download*, const string&) { };
-	virtual void onAction(Types, const Download::List&) { };
+	virtual void onAction(Types, Download*) throw() { };
+	virtual void onAction(Types, Download*, const string&) throw() { };
+	virtual void onAction(Types, const Download::List&) throw() { };
 };
 
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
@@ -164,10 +166,10 @@ private:
 	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) throw();
 	
 	void onFileNotAvailable(UserConnection* aSource) throw();
 	void onFailed(UserConnection* aSource, const string& aError);
@@ -188,5 +190,5 @@ private:
 
 /**
  * @file DownloadManager.h
- * $Id: DownloadManager.h,v 1.47 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.48 2003/03/13 13:31:20 arnetheduck Exp $
  */

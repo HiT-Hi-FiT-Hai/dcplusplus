@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -126,5 +126,5 @@ private:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.12 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.13 2003/03/13 13:31:16 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@
 
 FavoriteHubsFrame* FavoriteHubsFrame::frame = NULL;
 
-int FavoriteHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER };
-int FavoriteHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100 };
+int FavoriteHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_NICK, COLUMN_PASSWORD, COLUMN_SERVER, COLUMN_USERDESCRIPTION };
+int FavoriteHubsFrame::columnSizes[] = { 200, 290, 125, 100, 100, 125 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT, ResourceManager::DESCRIPTION, 
-	ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER
+ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
 };
 
 LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -103,7 +103,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword());
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 
 	return 0;
@@ -116,7 +116,7 @@ LRESULT FavoriteHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword());
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 	return 0;
 }
@@ -143,6 +143,7 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			ctrlHubs.SetItemText(i, COLUMN_SERVER, e->getServer().c_str());
 			ctrlHubs.SetItemText(i, COLUMN_NICK, e->getNick(false).c_str());
 			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, string(e->getPassword().size(), '*').c_str());
+			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, e->getUserDescription().c_str());
 		}
 	}
 	return 0;
@@ -188,7 +189,44 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
-void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) {
+void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+{
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+
+		ctrlStatus.SetParts(3, w);
+	}
+
+	CRect rc = rect;
+	rc.bottom -=28;
+	ctrlHubs.MoveWindow(rc);
+
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+
+	rc.left = rc.right - 96;
+	rc.right -= 2;
+	ctrlConnect.MoveWindow(rc);
+
+	rc.left = rc.left - 96;
+	rc.right -= 98;
+	ctrlNew.MoveWindow(rc);
+}
+
+void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) throw() {
 	switch(type) {
 		case HubManagerListener::FAVORITE_ADDED: addEntry(entry); break;
 		case HubManagerListener::FAVORITE_REMOVED: ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)entry)); break;
@@ -197,6 +235,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file FavoritesFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.7 2003/03/13 13:31:49 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #if !defined(AFX_CLIENTMANAGERLISTENER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 #define AFX_CLIENTMANAGERLISTENER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 class ClientManagerListener {
 public:

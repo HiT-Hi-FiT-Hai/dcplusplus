@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -172,7 +172,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 	}
 }
 
-void UploadManager::onGetBZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
+void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
 	if(prepareFile(aSource, aFile, aResume)) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
@@ -305,7 +305,8 @@ void UploadManager::onAction(ClientManagerListener::Types type, const User::Ptr&
 				// Oops...adios...
 				u->getUserConnection()->disconnect();
 				// But let's grant him/her a free slot just in case...
-				reserveSlot(aUser);
+				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
+					reserveSlot(aUser);
 			}
 		}
 	}
@@ -313,7 +314,7 @@ void UploadManager::onAction(ClientManagerListener::Types type, const User::Ptr&
 
 
 // UserConnectionListener
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) throw() {
 	switch(type) {
 	case UserConnectionListener::TRANSMIT_DONE:
 		onTransmitDone(conn); break;
@@ -321,35 +322,45 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 		onSend(conn); break;
 	case UserConnectionListener::GET_LIST_LENGTH:
 		conn->listLen(ShareManager::getInstance()->getListLenString()); break;
+	default: 
+		break;
 	}
 }
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) throw() {
 	switch(type) {
 	case UserConnectionListener::BYTES_SENT:
 		onBytesSent(conn, bytes); break;
+	default: 
+		break;
 	}
 }
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw() {
 	switch(type) {
 	case UserConnectionListener::FAILED:
 		onFailed(conn, line); break;
+	default: 
+		break;
 	}
 }
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) throw() {
 	switch(type) {
 	case UserConnectionListener::GET:
 		onGet(conn, line, resume); break;
+	default: 
+		break;
 	}
 }
 
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() {
 	switch(type) {
-	case UserConnectionListener::GET_BZ_BLOCK:
-		onGetBZBlock(conn, line, resume, bytes); break;
+	case UserConnectionListener::GET_ZBLOCK:
+		onGetZBlock(conn, line, resume, bytes); break;
+	default: 
+		break;
 	}
 }
 
 /**
  * @file UploadManager.cpp
- * $Id: UploadManager.cpp,v 1.35 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.36 2003/03/13 13:31:36 arnetheduck Exp $
  */

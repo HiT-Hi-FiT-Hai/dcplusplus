@@ -12,8 +12,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\..\Release\MakeDefs"
-			IntermediateDirectory=".\..\Release\MakeDefs"
+			OutputDirectory="..\vc7\Release\MakeDefs"
+			IntermediateDirectory="..\vc7\Release\MakeDefs"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE">
@@ -26,14 +26,18 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
+				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32,NDEBUG,_CONSOLE"
+				StringPooling="TRUE"
+				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\..\Release\MakeDefs/MakeDefs.pch"
-				AssemblerListingLocation=".\..\Release\MakeDefs/"
-				ObjectFile=".\..\Release\MakeDefs/"
-				ProgramDataBaseFileName=".\..\Release\MakeDefs/"
-				WarningLevel="3"
+				AssemblerOutput="4"
+				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
 				CallingConvention="1"/>
@@ -42,14 +46,14 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile=".\..\Release\MakeDefs/MakeDefs.exe"
+				AdditionalDependencies="ws2_32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				ProgramDatabaseFile=".\..\Release\MakeDefs/MakeDefs.pdb"
+				GenerateDebugInformation="TRUE"
 				GenerateMapFile="TRUE"
-				MapFileName=".\..\Release\MakeDefs/MakeDefs.map"
-				SubSystem="1"/>
+				SubSystem="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\..\Release\MakeDefs/MakeDefs.tlb"/>
@@ -70,39 +74,43 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\..\Debug\MakeDefs"
-			IntermediateDirectory=".\..\Debug\MakeDefs"
+			OutputDirectory="..\vc7\Debug\MakeDefs"
+			IntermediateDirectory="..\vc7\Debug\MakeDefs"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="2"
+				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32,_DEBUG,_CONSOLE"
+				StringPooling="TRUE"
+				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
+				SmallerTypeCheck="FALSE"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
+				EnableFunctionLevelLinking="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="2"
-				PrecompiledHeaderFile=".\..\Debug\MakeDefs/MakeDefs.pch"
-				AssemblerListingLocation=".\..\Debug\MakeDefs/"
-				ObjectFile=".\..\Debug\MakeDefs/"
-				ProgramDataBaseFileName=".\..\Debug\MakeDefs/"
-				WarningLevel="3"
+				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="1"/>
+				CallingConvention="0"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile=".\..\Debug\MakeDefs/MakeDefs.exe"
+				AdditionalDependencies="ws2_32.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\..\Debug\MakeDefs/MakeDefs.pdb"
+				ProgramDatabaseFile="$(OutDir)/$(ProjectName).pdb"
 				SubSystem="1"/>
 			<Tool
 				Name="VCMIDLTool"
@@ -144,6 +152,9 @@
 			</File>
 			<File
 				RelativePath="..\client\StringTokenizer.cpp">
+			</File>
+			<File
+				RelativePath="..\client\Util.cpp">
 			</File>
 		</Filter>
 		<Filter

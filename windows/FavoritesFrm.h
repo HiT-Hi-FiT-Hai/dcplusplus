@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,16 +72,18 @@ public:
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 		
-		// Get the bounding rectangle of the client area. 
-		ctrlHubs.GetClientRect(&rc);
-		ctrlHubs.ScreenToClient(&pt); 
-		
-		if (PtInRect(&rc, pt)) 
-		{ 
-			ctrlHubs.ClientToScreen(&pt);
-			hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
+		if(ctrlHubs.GetSelectedCount() > 0) {
+			// Get the bounding rectangle of the client area. 
+			ctrlHubs.GetClientRect(&rc);
+			ctrlHubs.ScreenToClient(&pt); 
+
+			if (PtInRect(&rc, pt)) 
+			{ 
+				ctrlHubs.ClientToScreen(&pt);
+				hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+				return TRUE; 
+			}
 		}
 		
 		return FALSE; 
@@ -111,43 +113,8 @@ public:
 		return 0;
 	}
 	
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-		
-		CRect rc = rect;
-		rc.bottom -=28;
-		ctrlHubs.MoveWindow(rc);
-		
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 
-		rc.left = rc.right - 96;
-		rc.right -= 2;
-		ctrlConnect.MoveWindow(rc);
-
-		rc.left = rc.left - 96;
-		rc.right -= 98;
-		ctrlNew.MoveWindow(rc);
-	}
-	
 	static FavoriteHubsFrame* frame;
 	
 private:
@@ -158,6 +125,7 @@ private:
 		COLUMN_NICK,
 		COLUMN_PASSWORD,
 		COLUMN_SERVER,
+		COLUMN_USERDESCRIPTION,
 		COLUMN_LAST
 	};
 	
@@ -189,18 +157,19 @@ private:
 		l.push_back(entry->getNick(false));
 		l.push_back(string(entry->getPassword().size(), '*'));
 		l.push_back(entry->getServer());
+		l.push_back(entry->getUserDescription(false));
 		bool b = entry->getConnect();
 		int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
 		ctrlHubs.SetCheckState(i, b);
 	}
 	
-	virtual void onAction(HubManagerListener::Types type, FavoriteHubEntry* entry);
+	virtual void onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) throw();
 };
 
 #endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file FavoritesFrm.h
- * $Id: FavoritesFrm.h,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.7 2003/03/13 13:31:49 arnetheduck Exp $
  */
 

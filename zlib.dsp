@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "vc6\Release\zlib"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W3 /Gm /Zi /Og /Oi /Os /Oy /Ob2 /Gf /Gy /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "ZLIB_COMPILE" /FAs /Fa"vc6\Release\zlib" /YX /FD /c
+# ADD CPP /nologo /G6 /Gr /MT /W3 /Gm /Zi /Og /Oi /Os /Oy /Ob2 /Gf /Gy /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D "ZLIB_COMPILE" /FAs /YX /FD /c
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
 # ADD RSC /l 0x41d /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,8 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "vc6\Debug\zlib"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /G6 /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "ZLIB_COMPILE" /YX /FD /GZ /c
+# ADD CPP /nologo /G6 /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D "ZLIB_COMPILE" /FD /GZ /c
+# SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -118,10 +119,6 @@ SOURCE=.\zlib\inftrees.c
 # Begin Source File
 
 SOURCE=.\zlib\infutil.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\zlib\maketree.c
 # End Source File
 # Begin Source File
 

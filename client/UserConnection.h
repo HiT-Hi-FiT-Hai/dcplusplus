@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public:
 		KEY,
 		DIRECTION,
 		GET,
-		GET_BZ_BLOCK,
+		GET_ZBLOCK,
 		SENDING,
 		FILE_LENGTH,
 		SEND,
@@ -59,15 +59,15 @@ public:
 		FILE_NOT_AVAILABLE
 	};
 
-	virtual void onAction(Types, UserConnection*) { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
-	virtual void onAction(Types, UserConnection*, u_int32_t) { };				// BYTES_SENT
-	virtual void onAction(Types, UserConnection*, const string&) { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
-	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) { };	// DATA
-	virtual void onAction(Types, UserConnection*, const string&, const string&) { };	// DIRECTION, LOCK
-	virtual void onAction(Types, UserConnection*, const string&, int64_t) { };	// GET
-	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) { };	// GET_BZ_BLOCK
-	virtual void onAction(Types, UserConnection*, int) { };						// MODE_CHANGE
-	virtual void onAction(Types, UserConnection*, const StringList&) { };		// SUPPORTS
+	virtual void onAction(Types, UserConnection*) throw() { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
+	virtual void onAction(Types, UserConnection*, u_int32_t) throw() { };				// BYTES_SENT
+	virtual void onAction(Types, UserConnection*, const string&) throw() { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
+	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) throw() { };	// DATA
+	virtual void onAction(Types, UserConnection*, const string&, const string&) throw() { };	// DIRECTION, LOCK
+	virtual void onAction(Types, UserConnection*, const string&, int64_t) throw() { };	// GET
+	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) throw() { };	// GET_BZ_BLOCK
+	virtual void onAction(Types, UserConnection*, int) throw() { };						// MODE_CHANGE
+	virtual void onAction(Types, UserConnection*, const StringList&) throw() { };		// SUPPORTS
 };
 
 class ConnectionQueueItem;
@@ -190,7 +190,7 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
-	void getBZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$GetBZBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
+	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$GetZBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
 	void sending() { send("$Sending|"); };
@@ -260,7 +260,6 @@ private:
 
 	// We only want ConnectionManager to create this...
 	UserConnection() : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL) { };
-	UserConnection(const UserConnection&) { dcassert(0); };
 
 	virtual ~UserConnection() {
 		if(socket != NULL) {
@@ -283,11 +282,11 @@ private:
 	}
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type);
-	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes);
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine);
-	virtual void onAction(BufferedSocketListener::Types type, int mode);
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len);
+	virtual void onAction(BufferedSocketListener::Types type) throw();
+	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes) throw();
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
+	virtual void onAction(BufferedSocketListener::Types type, int mode) throw();
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) throw();
 
 };
 
@@ -295,6 +294,6 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.52 2003/03/13 13:31:40 arnetheduck Exp $
  */
 

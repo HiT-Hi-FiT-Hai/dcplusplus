@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ STANDARD_EXCEPTION(ShareException);
 
 class SimpleXML;
 class Client;
+class File;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener
 {
@@ -57,6 +58,7 @@ public:
 		}
 		return tmp;
 	}
+
 	int64_t getShareSize(const string& aDir) {
 		RLock l(cs);
 		dcassert(aDir.size()>0);
@@ -72,6 +74,7 @@ public:
 		
 		return -1;
 	}
+
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
@@ -80,20 +83,13 @@ public:
 	int64_t getBZListLen() { return bzListLen; };
 	string getBZListLenString() { return Util::toString(getBZListLen()); };
 	
-	const string& getListFile() {
-		if(listFile.empty())
-			listFile = Util::getAppPath() + "\\MyList.DcLst";
-
-		return listFile;
-	}
-	const string& getBZListFile() {
-		if(bzListFile.empty())
-			bzListFile = Util::getAppPath() + "\\MyList.bz2";
-		
-		return bzListFile;
-	}
-
+	SearchManager::TypeModes getType(const string& fileName);
+	u_int32_t getMask(const string& fileName);
+	u_int32_t getMask(StringList& l);
+	
 	GETSET(u_int32_t, hits, Hits);
+	GETSET(string, listFile, ListFile);
+	GETSET(string, bzListFile, BZListFile);
 private:
 	class Directory {
 	public:
@@ -108,16 +104,42 @@ private:
 		int64_t size;
 		Map directories;
 		FileMap files;
-		
-		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : size(0), name(aName), parent(aParent) { 
+
+		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
+			size(0), name(aName), parent(aParent), fileTypes(0), searchTypes(0) { 
 		};
 
 		~Directory() {
-			for(MapIter i = directories.begin(); i!= directories.end(); ++i) {
+			for(MapIter i = directories.begin(); i != directories.end(); ++i)
 				delete i->second;
+		}
+
+		bool hasType(u_int32_t type) throw() {
+			return ( (type == SearchManager::TYPE_ANY) || (fileTypes & (1 << type)) );
+		}
+		void addType(u_int32_t type) throw() {
+			Directory* cur = this;
+			while(cur && !cur->hasType(type)) {
+				cur->fileTypes |= (1 << type);
+				cur = cur->getParent();
 			}
 		}
-		string getFullName() {
+
+		bool hasSearchType(u_int32_t mask) throw() {
+			return (searchTypes & mask) == mask;
+		}
+		void addSearchType(u_int32_t mask) throw() {
+			Directory* cur = this;
+			if(cur && !cur->hasSearchType(mask)) {
+				searchTypes |= mask;
+				cur = cur->getParent();
+			}
+		}
+		u_int32_t getSearchTypes() throw() {
+			return searchTypes;
+		} 
+
+		string getFullName() throw() {
 			Directory* x = this;
 			string str;
 			while(x) {
@@ -126,11 +148,6 @@ private:
 			}
 			return str;
 		}
-		const string& getName() { return name; };
-		void setName(const string& aName) { name = aName; };
-
-		Directory* getParent() { return parent; };
-		void setParent(Directory* aParent) { parent = aParent; };
 
 		int64_t getSize() {
 			int64_t tmp = size;
@@ -140,30 +157,23 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
+		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
 		
 		void toString(string& tmp, DupeMap& dupes, int ident = 0);
+		
+		GETSETREF(string, name, Name);
+		GETSET(Directory*, parent, Parent);
 	private:
-		string name; 
-		Directory* parent;
+		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
+		u_int32_t fileTypes;
+		/** Set of flags that say which common search phrases a directory contains */
+		u_int32_t searchTypes;
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(false), update(false), lastUpdate(GET_TICK()) { 
-		SettingsManager::getInstance()->addListener(this);
-		TimerManager::getInstance()->addListener(this);
-	};
+	ShareManager();
 	
-	virtual ~ShareManager() {
-		SettingsManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this);
-		
-		join();
-
-		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			delete i->second;
-		}
-	}
+	virtual ~ShareManager();
 	
 	int64_t listLen;
 	int64_t bzListLen;
@@ -171,9 +181,15 @@ private:
 	bool refreshDirs;
 	bool update;
 	
-	string listFile;
-	string bzListFile;
+	int listN;
+
+	File* lFile;
+	File* bFile;
+
 	u_int32_t lastUpdate;
+
+	/** Words that are commonly searched for. */	 
+	StringList words;
 
 	RWLock cs;
 
@@ -186,7 +202,7 @@ private:
 	virtual int run();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();
 	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
@@ -199,6 +215,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.31 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.32 2003/03/13 13:31:31 arnetheduck Exp $
  */
 

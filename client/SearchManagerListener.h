@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 #if !defined(AFX_SEARCHMANAGERLISTENER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 #define AFX_SEARCHMANAGERLISTENER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 class SearchResult;
 
 class SearchManagerListener {
@@ -29,7 +33,7 @@ public:
 	enum Types {
 		SEARCH_RESULT
 	};
-	virtual void onAction(Types, SearchResult*) throw() { }
+	virtual void onAction(Types, SearchResult*) throw() = 0;
 };
 
 #endif

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #ifndef DOWNLOADPAGE_H
 #define DOWNLOADPAGE_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "PropPage.h"
 
@@ -40,7 +44,8 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-
+	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+	
 protected:
 	static Item items[];
 };
@@ -49,5 +54,5 @@ protected:
 
 /**
  * @file DownloadPage.h
- * $Id: DownloadPage.h,v 1.3 2002/06/13 18:47:01 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.4 2003/03/13 13:31:47 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 #ifndef PROPPAGE_H
 #define PROPPAGE_H
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #define SETTINGS_BUF_LEN 1024
 
 class SettingsManager;
@@ -31,25 +35,32 @@ public:
 
 	virtual PROPSHEETPAGE *getPSP() = 0;
 	virtual void write() = 0;
+	virtual void setTitle(const string& t) = 0;
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
+
 	struct Item
 	{
 		WORD itemID;
 		int setting;
 		Type type;
 	};
+	struct ListItem {
+		int setting;
+		ResourceManager::Strings desc;
+	};
 
 protected:
+
 	SettingsManager *settings;
-	void read(HWND page, Item const* items);
-	void write(HWND page, Item const* items);
+	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
+	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 };
 
 #endif // PROPPAGE_H
 
 /**
  * @file PropPage.h
- * $Id: PropPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.3 2003/03/13 13:31:57 arnetheduck Exp $
  */
 

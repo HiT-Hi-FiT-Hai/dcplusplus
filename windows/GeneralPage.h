@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #ifndef GENERALPAGE_H
 #define GENERALPAGE_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "PropPage.h"
 #include "atldlgs.h"
@@ -45,7 +49,8 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-
+	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+	
 private:
 	static Item items[];
 	CComboBox ctrlConnection;
@@ -58,6 +63,6 @@ private:
 
 /**
  * @file GeneralPage.h
- * $Id: GeneralPage.h,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.4 2003/03/13 13:31:51 arnetheduck Exp $
  */
 

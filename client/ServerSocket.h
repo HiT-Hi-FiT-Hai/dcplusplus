@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,13 @@ public:
 	enum Types {
 		INCOMING_CONNECTION
 	};
-	virtual void onAction(Types) { };
+	virtual void onAction(Types) throw() = 0;
 };
 
-class ServerSocket : public Speaker<ServerSocketListener>, public Thread
-{
+class ServerSocket : public Speaker<ServerSocketListener> {
 public:
 	void waitForConnections(short aPort) throw(SocketException);
-	ServerSocket() : stop(false), sock(INVALID_SOCKET) { };
+	ServerSocket() : sock(INVALID_SOCKET) { };
 
 	virtual ~ServerSocket() {
 		disconnect();
@@ -50,26 +49,26 @@ public:
 	
 	void disconnect() {
 		if(sock != INVALID_SOCKET) {
-			stop = true;
 			closesocket(sock);
 			sock = INVALID_SOCKET;
-			join();
-			stop = false;
 		}
 	}
 
-	virtual int run();
 	SOCKET getSocket() const { return sock; }
+
+	/** This is called by windows whenever an "FD_ACCEPT" is sent...doesn't work with unix... */
+	void incoming() {
+		fire(ServerSocketListener::INCOMING_CONNECTION);
+	}
 	
 private:
-	bool stop;	
 	SOCKET sock;
 };
-
+ 
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.15 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.16 2003/03/13 13:31:30 arnetheduck Exp $
  */
 

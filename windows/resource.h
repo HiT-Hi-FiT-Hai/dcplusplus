@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by C:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Microsoft Visual C++ generated include file.
+// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_PROPPAGE_1                  107
@@ -38,7 +38,9 @@
 #define IDD_FAVORITEHUB                 223
 #define IDR_USERS                       224
 #define IDD_ADVANCED2PAGE               224
-#define IDB_SPEEDS                      225
+#define IDD_USER_COMMAND                230
+#define IDR_FINISHED_DL                 231
+#define IDR_ADLSEARCH                   233
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -174,8 +176,28 @@
 #define IDC_KEEP_LISTS                  1094
 #define IDC_AUTO_KICK                   1095
 #define IDC_COPY_NICK                   1096
-#define IDC_SHOW_UI						1097
-#define IDC_MOVE						1098
+#define IDC_ADVANCED_BOOLEANS           1096
+#define IDC_SHOW_UI                     1097
+#define IDC_ADD_MENU                    1097
+#define IDC_MOVE                        1098
+#define IDC_REMOVE_MENU                 1098
+#define IDC_MENU_ITEMS                  1099
+#define IDC_CHANGE_MENU                 1100
+#define IDC_NAME                        1101
+#define IDC_COMMAND                     1102
+#define IDC_HUB                         1103
+#define IDC_COMMAND_DESCRIPTION         1105
+#define IDC_APPEARANCE_BOOLEANS         1106
+#define IDC_DEFAULT_AWAY_MESSAGE        1107
+#define IDC_MAX_TAB_ROWS                1107
+#define IDC_CLOSE_DISCONNECTED          1108
+#define IDC_OPEN_FOLDER                 1109
+#define IDC_OPEN_FILE                   1110
+#define IDC_FILE_ADL_SEARCH             1111
+#define IDC_ADLLIST                     1113
+#define IDC_MOVE_UP                     1114
+#define IDC_MOVE_DOWN                   1115
+#define IDC_HUBUSERDESCR				1116
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -193,9 +215,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        230
+#define _APS_NEXT_RESOURCE_VALUE        234
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1096
+#define _APS_NEXT_CONTROL_VALUE         1116
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

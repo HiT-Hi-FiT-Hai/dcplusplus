@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,8 +34,8 @@ char buf[DEBUG_BUFSIZE];
 
 #ifndef _DEBUG
 
-FARPROC WINAPI FailHook(unsigned dliNotify, PDelayLoadInfo  pdli) {
-	MessageBox(NULL, "DC++ just encountered an unhandled exception, and can do nothing about it as your Operating System is too old and doesn't have the functionality needed to write a crash report. Please don't report this bug as there's nothing I can do about it (it'll be ignored/removed).", "Unhandled Exception", MB_OK | MB_ICONERROR);
+FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
+	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "Unhandled Exception", MB_OK | MB_ICONERROR);
 	exit(-1);
 	return 0;
 }
@@ -59,30 +59,28 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
 
 #endif
+
 	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
 
-	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\n", exceptionCode ) ;
+	sprintf(buf, "\r\nUnhandled Exception\r\n  Code: %x\r\nVersion: %s\r\nOs: %s\r\n", 
+		exceptionCode, VERSIONSTRING, Util::getOsVersion().c_str() );
 
 	f.write(buf);
+
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
 	f.close();
-#ifndef _DEBUG
 
+#ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 	
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and has written some information about it to a file called exceptioninfo.txt. If you choose to report this crash as a bug, please include that file in the bug report, otherwise it'll be ignored.", "Unhandled Exception", MB_OK | MB_ICONERROR);
+	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "Unhandled Exception", MB_OK | MB_ICONERROR);
 	exit(-1);
 #endif
 
 	return EXCEPTION_CONTINUE_SEARCH;
-}
-
-void callBack(void* x, const string& a) {
-	::SetWindowText((HWND)x, (STRING(LOADING) + "(" + a + ")").c_str());
-	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
 static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
@@ -145,7 +143,7 @@ static void installUrlHandler() {
 
 static void checkCommonControls() {
 #define PACKVERSION(major,minor) MAKELONG(minor,major)
-	
+
 	HINSTANCE hinstDll;
 	DWORD dwVersion = 0;
 	
@@ -181,6 +179,11 @@ static void checkCommonControls() {
 	}
 }
 
+void callBack(void* x, const string& a) {
+	::SetWindowText((HWND)x, (STRING(LOADING) + "(" + a + ")").c_str());
+	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
+}
+
 static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 
@@ -190,31 +193,38 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	_Module.AddMessageLoop(&theLoop);
 	
 	MainFrame wndMain;
+
+	CEdit dummy;
 	CEdit splash;
+	
 	CRect rc;
 	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
-	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
-	rc.left = (rc.right / 2) - 150;
-	rc.right = (rc.right / 2) + 150;
-	rc.top = (rc.bottom / 2) - 12;
-	rc.bottom = (rc.bottom / 2) + 12;
+	rc.top = (rc.bottom / 2) - 20;
 
-	splash.Create(NULL, splash.rcDefault, APPNAME " " VERSIONSTRING, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE | WS_EX_TOPMOST);
+	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
+	rc.left = rc.right / 2 - 150;
+	rc.right = rc.left + 300;
+
+	dummy.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
+	splash.Create(NULL, rc, APPNAME " " VERSIONSTRING, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
 	HDC dc = splash.GetDC();
-	rc.bottom = rc.top + WinUtil::getFontHeight(dc, splash.GetFont()) + 4;
+	rc.bottom = rc.top + WinUtil::getTextHeight(dc, splash.GetFont()) + 4;
 	splash.ReleaseDC(dc);
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
 	splash.SetWindowText("Loading DC++, please wait...");
+	splash.SetFocus();
 	splash.RedrawWindow();
 
 	startup(callBack, (void*)splash.m_hWnd);
 
 	splash.DestroyWindow();
-	
+	dummy.DestroyWindow();
+
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	
@@ -254,6 +264,8 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
+
+#ifndef _DEBUG
 	SingleInstance dcapp("{DCPLUSPLUS-AEE8350A-B49A-4753-AB4B-E55479A48351}");
 
 	if(dcapp.IsAnotherInstanceRunning()) {
@@ -273,6 +285,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
+#endif
+	
 	HRESULT hRes = ::CoInitialize(NULL);
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
@@ -304,5 +318,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.9 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: main.cpp,v 1.10 2003/03/13 13:32:09 arnetheduck Exp $
  */

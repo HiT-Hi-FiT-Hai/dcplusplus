@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -88,10 +88,11 @@ class ZCompressor {
 public:
 	/**
 	 * @param maxBytes The maximum number of bytes to read from f, -1 = until EOF.
-	 * @param strength BZip compression block size, more = better, slower (0 < strength < 10)
+	 * @param strength Zip compression strength, more = better, slower (0 <= strength <= 9)
 	 */
-	ZCompressor(File& file, int64_t maxBytes = -1, int strength = Z_DEFAULT_COMPRESSION) throw(CryptoException);
-	~ZCompressor() {
+	ZCompressor(File& file, int64_t maxBytes = -1, int aStrength = SETTING(MAX_COMPRESSION)) throw(CryptoException);
+	~ZCompressor() throw() {
+		dcdebug("Compression ending, %d/%d = %.02f", zs.total_out, zs.total_in, (float)zs.total_out / (float)max(zs.total_in, (u_int32_t)1)); 
 		deflateEnd(&zs);
 		delete inbuf;
 	};
@@ -103,7 +104,8 @@ public:
 	 * @return The final number of bytes used for the compression. When this equals 0,
 	 * the compression is finished.
 	 */
-	u_int32_t compress(void* buf, u_int32_t bufLen) throw(CryptoException);
+	u_int32_t compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(CryptoException);
+
 private:
 	enum {
 		STATE_RUNNING,
@@ -117,6 +119,10 @@ private:
 	
 	File& f;
 	int64_t maxBytes;
+
+	int level;
+
+	void setStrength(int str) throw(CryptoException);
 };
 
 class CryptoManager : public Singleton<CryptoManager>
@@ -182,5 +188,5 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.18 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.19 2003/03/13 13:31:16 arnetheduck Exp $
  */

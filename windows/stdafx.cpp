@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,6 @@
 
 /**
  * @file stdafx.cpp
- * $Id: stdafx.cpp,v 1.4 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.5 2003/03/13 13:32:11 arnetheduck Exp $
  */
 

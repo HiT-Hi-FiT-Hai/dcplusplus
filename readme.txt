@@ -49,22 +49,22 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
 
 4 Available commands (type in main chat or pm)
 ----------------------------------------
-  /grant				grants a slot to the user of the pm window you type in
-  /close				close current window
-  /help				short help message
-  /refresh               Refreshes list of shared files :)
-  /away <message>        Specifies a message to auto-respond in PM's while
-                          you're AFK (there's a default message so you don't
-                          need to specify one)
-  /back                  Turn away message off
-  /slots <#>             Changes number of slots to <#>
-  /clear                 Clears the main chat windows
-  /ts                    Switches timestamps in chat windows on and off
-  /showjoins			Toggles joins/parts messages for the current hub
-  /search <string>       Searches for <string>
-  /join <hub>            Joins <hub>
-  /dc++                  Gives a comment about DC++ and shows the URL where
-                          you can get it
+  /grant		grants a slot to the user of the pm window you type in
+  /close		close current window
+  /help			short help message
+  /refresh              Refreshes list of shared files :)
+  /away <message>       Specifies a message to auto-respond in PM's while
+                        you're AFK (there's a default message so you don't
+                        need to specify one)
+  /back                 Turn away message off
+  /slots <#>            Changes number of slots to <#>
+  /clear                Clears the main chat windows
+  /ts                   Switches timestamps in chat windows on and off
+  /showjoins		Toggles joins/parts messages for the current hub
+  /search <string>      Searches for <string>
+  /join <hub>           Joins <hub>
+  /dc++                 Gives a comment about DC++ and shows the URL where
+                        you can get it
 
 5 What do those Icons mean ??
 -----------------------------
@@ -103,6 +103,20 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
    Logs and Sound:
     Log Downloads:       You can use this feature to see what downloads
                           completed while you were AFK :)
+    Parameters for the logging (the things in %[xxx]):
+	target		target filename
+	user		nick
+	hub		hub name
+	hubip		hub ip
+	size		size of the file
+	sizeshort	size in b/kB/MB/GB (short version)
+	chunksize	size downloaded this session (if resuming, otherwise the same as size)
+	chunksizeshort	...
+	speed		speed of download
+	time		time to download (hh:mm:ss format)
+	sfv		1 if the file was sfv/crc32 checked, 0 otherwise
+
+
    Advanced:
     Rollback:            Size of bytes to rollback when resuming a file to
                           ensure it contains no errors.
@@ -123,6 +137,12 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
     Use small send buffer:	If uploads slow down your downloads A LOT you may
     					try this option, but beware it increases HD usage and
     					slows down upload, so it's not suggested.
+    Enable SFV checking:	Many downloads on DC contain an sfv file to check the integrity of
+					a download. DC++ can on-the-fly calculate CRC-32 values for
+					a file and compare it agains the sfv file. If the check fails, 
+					the file is automatically downloaded once more from the same user
+					and if that fails, the user is removed as a source. For this to work,
+					the .sfv file must be in the same target directory as the download goes.
 
 7 Other things you might want to know about
 --------------------------------------------

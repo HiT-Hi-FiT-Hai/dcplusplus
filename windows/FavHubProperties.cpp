@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,13 +31,19 @@ LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_HUBADDR, entry->getServer().c_str());
 	SetDlgItemText(IDC_HUBNICK, entry->getNick(false).c_str());
 	SetDlgItemText(IDC_HUBPASS, entry->getPassword().c_str());
+	SetDlgItemText(IDC_HUBUSERDESCR, entry->getUserDescription(false).c_str());
 
 	CEdit tmp;
 	tmp.Attach(GetDlgItem(IDC_HUBNAME));
 	tmp.SetFocus();
 	tmp.SetSel(0,-1);
 	tmp.Detach();
-
+	tmp.Attach(GetDlgItem(IDC_HUBNICK));
+	tmp.LimitText(35);
+	tmp.Detach();
+	tmp.Attach(GetDlgItem(IDC_HUBUSERDESCR));
+	tmp.LimitText(35);
+	tmp.Detach();
 	CenterWindow(GetParent());
 	return FALSE;
 }
@@ -53,10 +59,12 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setDescription(buf);
 		GetDlgItemText(IDC_HUBADDR, buf, 256);
 		entry->setServer(buf);
-		GetDlgItemText(IDC_HUBNICK, buf, 256);
+		GetDlgItemText(IDC_HUBNICK, buf, 35);
 		entry->setNick(buf);
 		GetDlgItemText(IDC_HUBPASS, buf, 256);
 		entry->setPassword(buf);
+		GetDlgItemText(IDC_HUBUSERDESCR, buf, 35);
+		entry->setUserDescription(buf);
 	}
 	EndDialog(wID);
 	return 0;
@@ -73,7 +81,7 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 	char *b = buf, *f = buf, c;
 	while( (c = *b++) != 0 )
 	{
-		if(c != '$' && c != '|' && c != ' ')
+		if(c != '$' && c != '|' && (wID == IDC_HUBUSERDESCR || c != ' '))
 			*f++ = c;
 	}
 
@@ -98,5 +106,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file FavHubProperties.cpp
- * $Id: FavHubProperties.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.3 2003/03/13 13:31:48 arnetheduck Exp $
  */

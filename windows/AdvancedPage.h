@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,12 @@
 #ifndef ADVANCEDPAGE_H
 #define ADVANCEDPAGE_H
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #include "PropPage.h"
+#include "ExListViewCtrl.h"
 
 class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 {
@@ -29,22 +34,39 @@ public:
 
 	BEGIN_MSG_MAP(PropPage1)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		COMMAND_ID_HANDLER(IDC_ADD_MENU, onAddMenu)
+		COMMAND_ID_HANDLER(IDC_REMOVE_MENU, onRemoveMenu)
+		COMMAND_ID_HANDLER(IDC_CHANGE_MENU, onChangeMenu)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 
+	LRESULT onAddMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onChangeMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		if(ctrlCommands.GetSelectedCount() == 1) {
+			ctrlCommands.DeleteItem(ctrlCommands.GetNextItem(-1, LVNI_SELECTED));
+		}
+		return 0;
+	}
+
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-
+	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+	
 protected:
+	ExListViewCtrl ctrlCommands;
+
 	static Item items[];
+	static ListItem listItems[];
 };
 
 #endif //ADVANCEDPAGE_H
 
 /**
  * @file AdvancedPage.h
- * $Id: AdvancedPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: AdvancedPage.h,v 1.3 2003/03/13 13:31:45 arnetheduck Exp $
  */
 

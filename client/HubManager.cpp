@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@
 #include "CryptoManager.h"
 
 HubManager* Singleton<HubManager>::instance = NULL;
+
+#define FAVORITES_FILE "Favorites.xml"
 
 void HubManager::onHttpFinished() throw() {
 	string::size_type i, j;
@@ -67,35 +69,84 @@ void HubManager::onHttpFinished() throw() {
 	downloadBuf = Util::emptyString;
 }
 
-void HubManager::save(SimpleXML* aXml) {
+void HubManager::save(SimpleXML*) {
 	Lock l(cs);
-	aXml->addTag("Favorites");
-	aXml->stepIn();
-	
-	for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
-		aXml->addTag("Favorite");
-		aXml->addChildAttrib("Name", (*i)->getName());
-		aXml->addChildAttrib("Connect", (*i)->getConnect());
-		aXml->addChildAttrib("Description", (*i)->getDescription());
-		aXml->addChildAttrib("Nick", (*i)->getNick(false));
-		aXml->addChildAttrib("Password", (*i)->getPassword());
-		aXml->addChildAttrib("Server", (*i)->getServer());
-	}
-	aXml->stepOut();
-	aXml->addTag("Users");
-	aXml->stepIn();
-	for(User::Iter j = users.begin(); j != users.end(); ++j) {
-		aXml->addTag("User");
-		aXml->addChildAttrib("Nick", (*j)->getNick());
-		aXml->addChildAttrib("LastHubIp", (*j)->getLastHubIp());
-		aXml->addChildAttrib("LastHubName", (*j)->getLastHubName());
-	}
 
-	aXml->stepOut();
+	try {
+		SimpleXML xml(8);
+
+		xml.addTag("Favorites");
+		xml.stepIn();
+
+		xml.addTag("Hubs");
+		xml.stepIn();
+
+		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+			xml.addTag("Hub");
+			xml.addChildAttrib("Name", (*i)->getName());
+			xml.addChildAttrib("Connect", (*i)->getConnect());
+			xml.addChildAttrib("Description", (*i)->getDescription());
+			xml.addChildAttrib("Nick", (*i)->getNick(false));
+			xml.addChildAttrib("Password", (*i)->getPassword());
+			xml.addChildAttrib("Server", (*i)->getServer());
+			xml.addChildAttrib("UserDescription", (*i)->getUserDescription(false));
+		}
+		xml.stepOut();
+		xml.addTag("Users");
+		xml.stepIn();
+		for(User::Iter j = users.begin(); j != users.end(); ++j) {
+			xml.addTag("User");
+			xml.addChildAttrib("Nick", (*j)->getNick());
+			xml.addChildAttrib("LastHubIp", (*j)->getLastHubIp());
+			xml.addChildAttrib("LastHubName", (*j)->getLastHubName());
+		}
+		xml.stepOut();
+		xml.addTag("Commands");
+		xml.stepIn();
+		for(UserCommand::Iter k = userCommands.begin(); k != userCommands.end(); ++k) {
+			xml.addTag("Command");
+			xml.addChildAttrib("Name", k->getName());
+			xml.addChildAttrib("Command", k->getCommand());
+			xml.addChildAttrib("Hub", k->getHub());
+			xml.addChildAttrib("Nick", k->getNick());
+		}
+		xml.stepOut();
+
+		xml.stepOut();
+
+		string fname = Util::getAppPath() + FAVORITES_FILE;
+
+		BufferedFile f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
+		xml.toXML(&f);
+		f.close();
+		File::deleteFile(fname);
+		File::renameFile(fname + ".tmp", fname);
+
+	} catch(Exception e) {
+		dcdebug("HubManager::save: %s\n", e.getError().c_str());
+	}
+}
+
+void HubManager::load() {
+	try {
+		SimpleXML xml(8);
+		xml.fromXML(File(Util::getAppPath() + FAVORITES_FILE, File::READ, File::OPEN).read());
+		
+		if(xml.findChild("Favorites")) {
+			xml.stepIn();
+			load(&xml);
+			xml.stepOut();
+		}
+	} catch(Exception e) {
+		dcdebug("HubManager::load: %s\n", e.getError().c_str());
+	}
 }
 
 void HubManager::load(SimpleXML* aXml) {
 	Lock l(cs);
+	
+	// Old names...load for compatibility.
 	aXml->resetCurrentChild();
 	if(aXml->findChild("Favorites")) {
 		aXml->stepIn();
@@ -107,6 +158,25 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setNick(aXml->getChildAttrib("Nick"));
 			e->setPassword(aXml->getChildAttrib("Password"));
 			e->setServer(aXml->getChildAttrib("Server"));
+			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
+			favoriteHubs.push_back(e);
+		}
+		aXml->stepOut();
+	}
+	// End old names
+
+	aXml->resetCurrentChild();
+	if(aXml->findChild("Hubs")) {
+		aXml->stepIn();
+		while(aXml->findChild("Hub")) {
+			FavoriteHubEntry* e = new FavoriteHubEntry();
+			e->setName(aXml->getChildAttrib("Name"));
+			e->setConnect(aXml->getBoolChildAttrib("Connect"));
+			e->setDescription(aXml->getChildAttrib("Description"));
+			e->setNick(aXml->getChildAttrib("Nick"));
+			e->setPassword(aXml->getChildAttrib("Password"));
+			e->setServer(aXml->getChildAttrib("Server"));
+			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
 			favoriteHubs.push_back(e);
 		}
 		aXml->stepOut();
@@ -121,6 +191,16 @@ void HubManager::load(SimpleXML* aXml) {
 				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
 			}
 			addFavoriteUser(u);
+		}
+		aXml->stepOut();
+	}
+	aXml->resetCurrentChild();
+	if(aXml->findChild("Commands")) {
+		aXml->stepIn();
+		while(aXml->findChild("Command")) {
+			userCommands.push_back(UserCommand(aXml->getChildAttrib("Name"),
+				aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"),
+				aXml->getChildAttrib("Nick")));
 		}
 		aXml->stepOut();
 	}
@@ -154,7 +234,7 @@ void HubManager::refresh() {
 }
 
 // HttpConnectionListener
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) {
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
 	switch(type) {
 	case HttpConnectionListener::DATA:
 		downloadBuf.append((char*)buf, len); break;
@@ -162,7 +242,7 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 		dcassert(0);
 	}
 }
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
 	switch(type) {
 	case HttpConnectionListener::FAILED:
 		dcassert(c);
@@ -172,7 +252,7 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 		running = false;
 	}
 }
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
 	switch(type) {
 	case HttpConnectionListener::COMPLETE:
 		dcassert(c);
@@ -183,23 +263,14 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 	}
 }
 
-// TimerManagerListener
-void HubManager::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
-	if(type == TimerManagerListener::MINUTE) {
-		if(publicHubs.empty() && !running)
-			refresh();
-	}
-}
-
-void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
 	switch(type) {
-	case SettingsManagerListener::LOAD: load(xml); break;
+	case SettingsManagerListener::LOAD: load(xml); load(); break;
 	case SettingsManagerListener::SAVE: save(xml); break;
 	}
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.26 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.27 2003/03/13 13:31:23 arnetheduck Exp $
  */
-

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,14 +21,21 @@
 #include "Resource.h"
 
 #include "WinUtil.h"
+#include "SearchFrm.h"
+
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
+#include "../client/ShareManager.h"
+#include "../client/ClientManager.h"
+#include "../client/TimerManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 HFONT WinUtil::font = NULL;
+int WinUtil::fontHeight = 0;
+HFONT WinUtil::boldFont = NULL;
 CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
 int WinUtil::dirIconIndex = 0;
@@ -36,6 +43,8 @@ StringList WinUtil::lastDirs;
 string WinUtil::lastKick;
 string WinUtil::lastRedirect;
 string WinUtil::lastServer;
+HWND WinUtil::mainWnd = NULL;
+FlatTabCtrl* WinUtil::tabCtrl = NULL;
 
 void WinUtil::decodeFont(const string& setting, LOGFONT &dest) {
 	StringTokenizer st(setting, ',');
@@ -135,6 +144,7 @@ void WinUtil::buildMenu() {
 	file.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_FILE_SEARCH));
 	file.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_FILE_NOTEPAD));
 	file.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_FILE_SEARCH_SPY));
+	file.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CSTRING(MENU_FILE_ADL_SEARCH));
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(MENU_FILE_OPEN_FILE_LIST));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FILE_FOLLOW_REDIRECT));
@@ -162,6 +172,8 @@ void WinUtil::buildMenu() {
 	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_WINDOW_TILE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CSTRING(MENU_WINDOW_ARRANGE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CSTRING(MENU_WINDOW_MINIMIZE_ALL));
+	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CSTRING(MENU_WINDOW_CLOSE_DISCONNECTED));
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
 	
@@ -196,7 +208,84 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 	}
 }
 
+
+#define LINE2 "-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LINE2,
+"\r\n-- Neo-...what? Nope...never heard of it...\r\n" LINE2,
+"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n" LINE2,
+"\r\n-- I share, therefore I am.\r\n" LINE2,
+"\r\n-- I came, I searched, I found...\r\n" LINE2,
+"\r\n-- I came, I shared, I sent...\r\n" LINE2,
+"\r\n-- I can set away mode, can't you?\r\n" LINE2,
+"\r\n-- I don't have to see any ads, do you?\r\n" LINE2,
+"\r\n-- I don't have to see those annoying kick messages, do you?\r\n" LINE2,
+"\r\n-- I can resume my files to a different filename, can you?\r\n" LINE2,
+"\r\n-- I can share huge amounts of files, can you?\r\n" LINE2,
+"\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n" LINE2,
+"\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n" LINE2,
+"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2
+};
+
+#define MSGS 14
+
+string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back";
+
+bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& message, string& status) {
+	int i = cmd.find(' ');
+	if(i != string::npos) {
+		param = cmd.substr(i+1);
+		cmd = cmd.substr(1, i - 1);
+	} else {
+		cmd = cmd.substr(1);
+	}
+
+	if(Util::stricmp(cmd.c_str(), "refresh")==0) {
+		try {
+			ShareManager::getInstance()->setDirty();
+			ShareManager::getInstance()->refresh(true);
+			status = STRING(FILE_LIST_REFRESHED);
+		} catch(ShareException e) {
+			status = e.getError();
+		}
+	} else if(Util::stricmp(cmd.c_str(), "slots")==0) {
+		int j = Util::toInt(param);
+		if(j > 0) {
+			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
+			status = STRING(SLOTS_SET);
+			ClientManager::getInstance()->infoUpdated();
+		} else {
+			status = STRING(INVALID_NUMBER_OF_SLOTS);
+		}
+	} else if(Util::stricmp(cmd.c_str(), "search") == 0) {
+		if(!param.empty()) {
+			SearchFrame* pChild = new SearchFrame();
+			pChild->setTab(tabCtrl);
+			pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST);
+			pChild->CreateEx(mdiClient);
+		} else {
+			status = STRING(SPECIFY_SEARCH_STRING);
+		}
+	} else if(Util::stricmp(cmd.c_str(), "dc++") == 0) {
+		message = msgs[GET_TICK() % MSGS];
+	} else if(Util::stricmp(cmd.c_str(), "away") == 0) {
+		if(Util::getAway() && param.empty()) {
+			Util::setAway(false);
+			status = STRING(AWAY_MODE_OFF);
+		} else {
+			Util::setAway(true);
+			Util::setAwayMessage(param);
+			status = STRING(AWAY_MODE_ON) + Util::getAwayMessage();
+		}
+	} else if(Util::stricmp(cmd.c_str(), "back") == 0) {
+		Util::setAway(false);
+		status = STRING(AWAY_MODE_OFF);
+	} else {
+		return false;
+	}
+
+	return true;
+}
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.9 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.10 2003/03/13 13:32:09 arnetheduck Exp $
  */

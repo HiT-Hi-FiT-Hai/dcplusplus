@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,5 +38,5 @@ public:
 
 /**
  * @file StringTokenizer.h
- * $Id: StringTokenizer.h,v 1.3 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: StringTokenizer.h,v 1.4 2003/03/13 13:31:35 arnetheduck Exp $
  */

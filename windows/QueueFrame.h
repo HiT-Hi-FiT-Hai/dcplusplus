@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -238,7 +238,7 @@ private:
 
 	StringList searchFilter;
 
-	typedef map<QueueItem*, QueueItem*> QueueMap;
+	typedef hash_map<QueueItem*, QueueItem*, PointerHash<QueueItem> > QueueMap;
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
 	
@@ -310,7 +310,7 @@ private:
 		}
 	}
 
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI);
+	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) throw();
 
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueMoved(QueueItem* aQI);
@@ -323,6 +323,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.13 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.14 2003/03/13 13:32:02 arnetheduck Exp $
  */
 

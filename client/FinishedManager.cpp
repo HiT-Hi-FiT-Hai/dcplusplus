@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,7 @@ FinishedManager::~FinishedManager()
 	for_each(list.begin(), list.end(), DeleteFunction<FinishedItem*>());
 }
 
-void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
-{
+void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d) throw() {
 	switch(type) {
 	case DownloadManagerListener::COMPLETE:
 		{
@@ -43,7 +42,8 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 			
 			FinishedItem *item = new FinishedItem(
 				d->getTarget(), d->getUserConnection()->getUser()->getNick(),
-				d->getSize(), (GET_TICK() - d->getStart()), buf);
+				d->getUserConnection()->getUser()->getLastHubName(),
+				d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), buf, d->isSet(Download::FLAG_CRC32_OK));
 			{
 				dcdebug("Adding finished: \"%s\" - \"%s\" (user: \"%s\")", item->getTime().c_str(), 
 					item->getTarget().c_str(), item->getUser().c_str());

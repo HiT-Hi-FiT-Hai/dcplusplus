@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,15 +185,13 @@ void SimpleXML::Tag::toXML(int indent, File* f) {
 				f->write("/>\r\n", 4);
 				return;
 			} else {
-				string attr = getAttribString();
-				string tmp(indent, '\t');
 				for(int i = 0; i < indent; i++)
 					f->write("\t", 1);
 
 				f->write("<", 1);
 				f->write(name);
 				f->write(" ", 1);
-				f->write(attr);
+				f->write(getAttribString());
 				f->write("/>\r\n", 4);
 				return;
 			}
@@ -283,7 +281,6 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 	string::size_type j;
 
 	dcassert(tmp.size() > 0);
-
 	
 	while( (j = tmp.find('<', i)) != string::npos ) {
 		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
@@ -302,7 +299,7 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 			// <? processing instruction ?>, ignore...
 			i = tmp.find("?>", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing ?> tag");
+				throw SimpleXMLException("Missing '?>'");
 			}
 			continue;
 		}
@@ -311,13 +308,16 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 			// <!-- comment -->, ignore...
 			i = tmp.find("-->", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing --> tag");
+				throw SimpleXMLException("Missing '-->'");
 			}
 			continue;
 		}
 
 		// Alright, we have a real tag for sure...
 		j = tmp.find_first_of(" >", i);
+		if(j == string::npos) {
+			throw("Missing '>'");
+		}
 
 		string name;
 		string::size_type tagStart = 0;
@@ -325,10 +325,13 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 		bool simpleTag = false;
 		if(tmp[j] == ' ') {
 			name = tmp.substr(i, j-i);
+			if(name.empty()) {
+				throw SimpleXMLException("Tag without name");
+			}
 			i = j+1;
-			j = tmp.find(">", i);
+			j = tmp.find('>', i);
 			if(j == string::npos) {
-				throw SimpleXMLException("Missing '>'");
+				throw SimpleXMLException("Missing '>' around " + name);
 			}
 			tagStart = i;
 			if(tmp[j-1] == '/') {
@@ -358,7 +361,7 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 			string::size_type x2 = y + 2;
 			string::size_type y2 = tmp.find('"', x2);
 			if(y2 == string::npos || y2 > tagEnd) {
-				throw SimpleXMLException("Missing '\"'");
+				throw SimpleXMLException("Missing '\"' around " + name);
 			}
 			child->attribs.push_back(make_pair(tmp.substr(x, y-x), tmp.substr(x2, y2-x2)));
 			if(needsEscape(child->attribs.back().second, true, true))
@@ -369,6 +372,9 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 		if(!simpleTag) {
 			string endTag = "</" + name + ">";
 			j = tmp.find(endTag, i);
+			if(j == string::npos) {
+				throw SimpleXMLException("Missing end tag around " + name);
+			}
 			string::size_type dataPos = tmp.find('<', i);
 
 			if(dataPos != string::npos && dataPos < j) {
@@ -434,6 +440,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.17 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.18 2003/03/13 13:31:32 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,7 @@ private:
 	string searchString;
 	
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const string& s);
+	virtual void onAction(ClientManagerListener::Types type, const string& s) throw();
 	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw();
@@ -126,6 +126,6 @@ private:
 
 /**
  * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.7 2003/03/13 13:32:07 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,5 +20,5 @@
 
 /**
  * @file stdinc.cpp
- * $Id: stdinc.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: stdinc.cpp,v 1.2 2003/03/13 13:31:41 arnetheduck Exp $
  */

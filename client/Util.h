@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,10 @@ template<class T>
 struct PointerHash {
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
 };
+template<>
+struct PointerHash<void> {
+	size_t operator()(const void* a) const { return ((size_t)a)>>2; };
+};
 
 /** 
  * Compares two values
@@ -61,7 +65,7 @@ class Flags {
 	public:
 		Flags() : flags(0) { };
 		Flags(const Flags& rhs) : flags(rhs.flags) { };
-		bool isSet(int aFlag) const { return (flags & aFlag) > 0; };
+		bool isSet(int aFlag) const { return (flags & aFlag) == aFlag; };
 		void setFlag(int aFlag) { flags |= aFlag; };
 		void unsetFlag(int aFlag) { flags &= ~aFlag; };
 
@@ -177,6 +181,8 @@ protected:
 class Util  
 {
 public:
+	static u_int32_t crcTable[];
+
 	static string emptyString;
 
 	static void initialize();
@@ -254,7 +260,14 @@ public:
 		string::size_type i = path.rfind('.');
 		return (i != string::npos) ? path.substr(i) : Util::emptyString;
 	}
-
+	static string getLastDir(const string& path) {
+		string::size_type i = path.rfind('\\');
+		if(i == string::npos)
+			return Util::emptyString;
+		string::size_type j = path.rfind('\\', i-1);
+		return (j != string::npos) ? path.substr(j+1, j-i-1) : path;
+	}
+	
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
 	static string filterFileName(const string& aFile);
 	
@@ -309,14 +322,16 @@ public:
 
 	static string formatParams(const string& msg, StringMap& params);
 
-	static string toLower(const string& aString) {
-		string tmp = aString;
-		for(string::size_type i = 0; i < tmp.size(); i++) {
-			tmp[i] = (char)tolower(tmp[i]);
+	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
+	static string toLower(const char* aString, int len = -1) {
+		string tmp;
+		tmp.resize((len == -1) ? strlen(aString) : len);
+		for(string::size_type i = 0; aString[i]; i++) {
+			tmp[i] = toLower(aString[i]);
 		}
 		return tmp;
 	}
-	static char toLower(char c) { return lower[c]; };
+	static char toLower(char c) { return lower[(u_int8_t)c]; };
 	static int64_t toInt64(const string& aString) {
 #ifdef WIN32
 		return _atoi64(aString.c_str());
@@ -337,7 +352,7 @@ public:
 		return (float)atof(aString.c_str());
 	}
 
-	static string toString(int64_t val) {
+	static string toString(const int64_t& val) {
 		char buf[32];
 #ifdef WIN32
 		return _i64toa(val, buf, 10);
@@ -347,18 +362,22 @@ public:
 #endif
 	}
 
-	static string toString(u_int32_t val) {
+	static string toString(const u_int32_t& val) {
 		char buf[16];
 		sprintf(buf, "%u", val);
 		return buf;
 	}
-	static string toString(int val) {
+	static string toString(const int& val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;
 	}
-
-	static string toString(double val) {
+	static string toString(const long& val) {
+		char buf[16];
+		sprintf(buf, "%ld", val);
+		return buf;
+	}
+	static string toString(const double& val) {
 		char buf[16];
 		sprintf(buf, "%.2f", val);
 		return buf;
@@ -369,8 +388,10 @@ public:
 	 * Case insensitive substring search.
 	 * @return First position found or string::npos
 	 */
-	static string::size_type findSubString(const string& aString, const string& aSubString) {
-		
+	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) {
+		if(start >= aString.size())
+			return (string::size_type)string::npos;
+
 		string::size_type blen = aSubString.size();
 		if(blen == 0)
 			return 0;
@@ -379,7 +400,7 @@ public:
 		if(alen >= blen) {
 			const char* a = aString.c_str();
 			const char* b = aSubString.c_str();
-			for(string::size_type pos = 0; pos < alen - blen + 1; pos++) {
+			for(string::size_type pos = start; pos < alen - blen + 1; pos++) {
 				if(strnicmp(a+pos, b, blen) == 0)
 					return pos;
 			}
@@ -390,17 +411,17 @@ public:
 	/* Table-driven versions of strnicmp and stricmp */
 	static int stricmp(const char* a, const char* b) {
 		// return ::stricmp(a, b);
-		while(*a && (lower[*a] == lower[*b])) {
+		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			a++; b++;
 		}
-		return compare(lower[*a], lower[*b]);
+		return cmpi[*a][*b];
 	}
 	static int strnicmp(const char* a, const char* b, int n) {
 		// return ::strnicmp(a, b, n);
-		while(n && *a && (lower[*a] == lower[*b])) {
+		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			n--; a++; b++;
 		}
-		return (n == 0) ? 0 : compare(lower[*a], lower[*b]);
+		return (n == 0) ? 0 : cmpi[(u_int8_t)*a][(u_int8_t)*b];
 	}
 	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
@@ -413,19 +434,14 @@ public:
 		return tmp;
 	}
 
-	static string validateMessage(string tmp) {
-		string::size_type i;
-		while( (i = tmp.find_first_of("|$")) != string::npos) {
-			tmp[i]='_';
-		}
-		return tmp;
-	}
+	static string validateMessage(string tmp, bool reverse);
+
+	static string getOsVersion();
 
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) { away = aAway; };
-	static const string& getAwayMessage() { 
-		return awayMsg.empty() ? defaultMsg : awayMsg;
-	};
+	static string getAwayMessage();
+
 	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
 
 	static u_int32_t rand();
@@ -436,9 +452,10 @@ public:
 private:
 	static bool away;
 	static string awayMsg;
-	static const string defaultMsg;	
 	static char upper[];
 	static char lower[];
+	static int8_t cmp[256][256];
+	static int8_t cmpi[256][256];
 };
 
 /** Case insensitive hash function for strings */
@@ -473,6 +490,6 @@ struct noCaseStringLess {
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: Util.h,v 1.52 2003/03/13 13:31:41 arnetheduck Exp $
  */
 

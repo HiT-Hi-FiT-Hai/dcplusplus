@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,21 @@
 #include "QueueManager.h"
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
+
+#define WITH_GETZBLOCK 1
+
+
+ConnectionManager::ConnectionManager() : shuttingDown(false) {
+	TimerManager::getInstance()->addListener(this);
+	socket.addListener(this);
+
+	features.push_back("BZList");
+
+#ifdef WITH_GETZBLOCK
+	features.push_back("GetZBlock");
+#endif
+};
+
 
 /**
  * Request a connection for downloading.
@@ -150,6 +165,7 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
 	ConnectionQueueItem::List removed;
+	User::List getDown;
 	{
 		Lock l(cs);
 		{
@@ -157,7 +173,7 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 				ConnectionQueueItem::Iter i = find(downPool.begin(), downPool.end(), *k);
 				if(i == downPool.end()) {
 					// Hm, connection must have failed before it could be collected...
-					getDownloadConnection(*k);
+					getDown.push_back(*k);
 				} else {
 					ConnectionQueueItem* cqi = *i;
 					downPool.erase(i);
@@ -206,6 +222,10 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					continue;
 				}
 
+				// Always start high-priority downloads...
+				if(!startDown) {
+					startDown = QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
+				}
 				if(cqi->getState() == ConnectionQueueItem::WAITING) {
 					if(startDown) {
 						cqi->setState(ConnectionQueueItem::CONNECTING);
@@ -236,6 +256,9 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 		QueueManager::getInstance()->removeSources((*m)->getUser(), QueueItem::Source::FLAG_PASSIVE);
 		fire(ConnectionManagerListener::REMOVED, *m);
 		delete *m;
+	}
+	for(User::Iter n = getDown.begin(); n != getDown.end(); ++n) {
+		getDownloadConnection(*n);
 	}
 }
 
@@ -508,7 +531,7 @@ void ConnectionManager::shutdown() {
 }		
 
 // ServerSocketListener
-void ConnectionManager::onAction(ServerSocketListener::Types type) {
+void ConnectionManager::onAction(ServerSocketListener::Types type) throw() {
 	switch(type) {
 	case ServerSocketListener::INCOMING_CONNECTION:
 		onIncomingConnection();
@@ -516,13 +539,15 @@ void ConnectionManager::onAction(ServerSocketListener::Types type) {
 }
 
 // UserConnectionListener
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn) throw() {
 	switch(type) {
 	case UserConnectionListener::CONNECTED:
 		onConnected(conn); break;
+	default:
+		break;
 	}
 }
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw() {
 	switch(type) {
 	case UserConnectionListener::MY_NICK:
 		onMyNick(conn, line); break;
@@ -530,28 +555,36 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 		onKey(conn, line); break;
 	case UserConnectionListener::FAILED:
 		onFailed(conn, line); break;
+	default:
+		break;
 	}
 }
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) {
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) throw() {
 	switch(type) {
 	case UserConnectionListener::C_LOCK:
 		onLock(conn, line1, line2); break;
 	case UserConnectionListener::DIRECTION:
 		onDirection(conn, line1, line2); break;
+	default:
+		break;
 	}
 }
 // UserConnectionListener
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) {
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) throw() {
 	switch(type) {
 	case UserConnectionListener::SUPPORTS:
 		{
 			for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 				if(*i == "BZList")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
+#ifdef WITH_GETZBLOCK
 				else if(*i == "GetZBlock")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
+#endif
 			}
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -566,5 +599,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManager.cpp
- * $Id: ConnectionManager.cpp,v 1.57 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.58 2003/03/13 13:31:15 arnetheduck Exp $
  */

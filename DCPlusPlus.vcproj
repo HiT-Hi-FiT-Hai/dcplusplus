@@ -12,11 +12,12 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\App"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory=".\vc7\Debug\windows\"
+			IntermediateDirectory=".\vc7\Debug\windows\"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm200 "
@@ -26,30 +27,27 @@
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
-				SmallerTypeCheck="TRUE"
+				SmallerTypeCheck="FALSE"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="FALSE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Debug/DCPlusPlus.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="0"/>
+				CallingConvention="0"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib odbc32.lib odbccp32.lib Debug/client/client.lib Debug/bzip/bzip2.lib debug/zlib/zlib.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib vc7/Debug/client/client.lib vc7/Debug/bzip/bzip2.lib vc7/debug/zlib/zlib.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
-				Version="0.171"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
@@ -79,8 +77,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\App"
-			IntermediateDirectory=".\Release"
+			OutputDirectory=".\vc7\Release\windows"
+			IntermediateDirectory=".\vc7\Release\windows"
 			ConfigurationType="1"
 			UseOfMFC="0"
 			UseOfATL="1"
@@ -100,16 +98,13 @@
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="FALSE"
+				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\Release/DCPlusPlus.pch"
 				AssemblerOutput="4"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="FALSE"
@@ -120,16 +115,16 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib shlwapi.lib delayimp.lib Release/client/client.lib Release/bzip/bzip2.lib"
-				OutputFile=".\App/DCPlusPlus.exe"
-				Version="0.20"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib vc7/Release/client/client.lib vc7/Release/bzip/bzip2.lib vc7/Release/zlib/zlib.lib"
+				OutputFile="./App/DCPlusPlus.exe"
+				Version=""
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				DelayLoadDLLs="comdlg32.dll;imagehlp.dll"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
+				ProgramDatabaseFile="./App/DCPlusPlus.pdb"
 				GenerateMapFile="TRUE"
-				MapFileName=".\App\DCPlusPlus.map"
+				MapFileName=""
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -163,6 +158,9 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
+				RelativePath="res\ADLSearch.ico">
+			</File>
+			<File
 				RelativePath=".\res\DCPlusPlus.Manifest">
 			</File>
 			<File
@@ -178,6 +176,9 @@
 				RelativePath=".\res\Favorites.ico">
 			</File>
 			<File
+				RelativePath="res\FinishedDL.ico">
+			</File>
+			<File
 				RelativePath=".\res\Hub.ico">
 			</File>
 			<File
@@ -185,9 +186,6 @@
 			</File>
 			<File
 				RelativePath=".\res\Search.ico">
-			</File>
-			<File
-				RelativePath="res\Speeds.bmp">
 			</File>
 			<File
 				RelativePath=".\res\User.ico">
@@ -217,6 +215,9 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			<File
+				RelativePath="windows\ADLSearchFrame.cpp">
+			</File>
 			<File
 				RelativePath=".\windows\Advanced2Page.cpp">
 			</File>
@@ -322,6 +323,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\AppearancePage.h">
+			</File>
+			<File
+				RelativePath="windows\CommandDlg.h">
 			</File>
 			<File
 				RelativePath=".\windows\DirectoryListingFrm.h">

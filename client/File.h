@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +32,25 @@
 
 STANDARD_EXCEPTION(FileException);
 
+#include "Util.h"
+
+class CRC32 {
+public:
+	CRC32() : value(0xffffffffL) { };
+	void update(u_int8_t b) { value = (value >> 8) ^ Util::crcTable[(value & 0xff) ^ b]; };
+	u_int32_t getValue() { return ~(value); };
+private:
+	u_int32_t value;
+};
+
+
 class File  
 {
 public:
 	enum {
 		READ = 0x01,
-		WRITE = 0x02
+		WRITE = 0x02,
+		RW = READ | WRITE
 	};
 	
 	enum {
@@ -47,7 +60,7 @@ public:
 	};
 
 #ifdef WIN32
-	File(const string& aFileName, int access = WRITE, int mode = OPEN) throw(FileException) {
+	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 
 		int m = 0;
@@ -121,6 +134,11 @@ public:
 		if(!::ReadFile(h, buf, len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
 		}
+		if(calcCRC) {
+			for(DWORD i = 0; i < x; ++i) {
+				crc32.update(((u_int8_t*)buf)[i]);
+			}
+		}
 		return x;
 	}
 
@@ -132,6 +150,11 @@ public:
 		if(x < len) {
 			throw FileException(STRING(DISC_FULL));
 		}
+		if(calcCRC) {
+			for(DWORD i = 0; i < x; ++i) {
+				crc32.update(((u_int8_t*)buf)[i]);
+			}
+		}
 	}
 	virtual void setEOF() throw(FileException) {
 		dcassert(h != NULL);
@@ -140,7 +163,7 @@ public:
 		}
 	}
 
-	static void deleteFile(const string& aFileName) { ::DeleteFile(aFileName.c_str()); };
+	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw(FileException) { 
 		if(!::MoveFile(source.c_str(), target.c_str())) {
 			// Can't move, try copy/delete...
@@ -167,7 +190,7 @@ public:
 	
 #else // WIN32
 	
-	File(const string& aFileName, int access = WRITE, int mode = OPEN) throw(FileException) {
+	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 		
 		int m = 0;
@@ -216,16 +239,28 @@ public:
 		ssize_t x = ::read(h, buf, (size_t)len);
 		if(x == -1)
 			throw("Read error");
+		
+		if(calcCRC) {
+			for(ssize_t i = 0; i < x; ++i) {
+				crc32.update(((u_int8_t*)buf)[i]);
+			}
+		}
+
 		return (u_int32_t)x;
 	}
 	
 	virtual void write(const void* buf, u_int32_t len) throw(FileException) {
-		ssize_t x;
-		x = ::write(h, buf, len);
+		ssize_t x = ::write(h, buf, len);
 		if(x == -1)
 			throw FileException("Write error");
 		if(x < (ssize_t)len)
 			throw FileException("Disk full(?)");
+
+		if(calcCRC) {
+			for(ssize_t i = 0; i < x; ++i) {
+				crc32.update(((u_int8_t*)buf)[i]);
+			}
+		}
 	}
 
 	/**
@@ -234,8 +269,8 @@ public:
 	virtual void setEOF() throw(FileException) {
 	}
 
-	static void deleteFile(const string& aFileName) { ::unlink(aFileName.c_str()); };
-	static void renameFile(const string& source, const string& target) { ::rename(source.c_str(), target.c_str()); };
+	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
+	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
 
 	static int64_t getSize(const string& aFileName) {
 		struct stat s;
@@ -265,20 +300,25 @@ public:
 	}
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
-			
+
+	bool hasCRC32() { return calcCRC; };
+	u_int32_t getCRC32() { return crc32.getValue(); };
+
 private:
 #ifdef WIN32
 	HANDLE h;
 #else
 	int h;
 #endif
+	CRC32 crc32;
+	bool calcCRC;
 
 };
 
 class BufferedFile : public File {
 public:
-	BufferedFile(const string& aFileName, int access = WRITE, int mode = OPEN, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
-		File(aFileName, access, mode), pos(0), size(bufSize*1024) {
+	BufferedFile(const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
+		File(aFileName, access, mode, aCrc32), pos(0), size(bufSize*1024) {
 		
 		buf = new u_int8_t[size];
 	}
@@ -289,7 +329,6 @@ public:
 	}
 
 	void flush() throw(FileException) {
-		dcassert(pos >= 0);
 		if(pos > 0) {
 			try {
 				File::write(buf, (u_int32_t)pos);
@@ -302,8 +341,6 @@ public:
 	}
 
 	virtual void write(const void* aBuf, u_int32_t len) throw(FileException) {
-		dcassert(pos >= 0);
-
 		if( (size == 0) || ((pos == 0) && (len > size)) ) {
 			File::write(aBuf, len);
 			return;
@@ -329,9 +366,9 @@ public:
 	virtual void close() { flush(); File::close(); };
 	virtual int64_t getSize() { flush(); return File::getSize(); };
 	virtual int64_t getPos() { flush(); return File::getPos(); };
-	virtual void setPos(int64_t pos) { flush(); File::setPos(pos); };
-	virtual void setEndPos(int64_t pos) { flush(); File::setEndPos(pos); };
-	virtual void movePos(int64_t pos) { flush(); File::movePos(pos); };
+	virtual void setPos(int64_t aPos) { flush(); File::setPos(aPos); };
+	virtual void setEndPos(int64_t aPos) { flush(); File::setEndPos(aPos); };
+	virtual void movePos(int64_t aPos) { flush(); File::movePos(aPos); };
 	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
 	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
 
@@ -345,6 +382,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.16 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: File.h,v 1.17 2003/03/13 13:31:21 arnetheduck Exp $
  */
 

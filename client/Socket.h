@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #ifndef _SOCKET_H
 #define _SOCKET_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "Exception.h"
 
@@ -129,18 +133,18 @@ public:
 	};
 
 	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(ip, port); };
-	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(ip, port); };
+	Socket::Socket(const string& aIp, const string& aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
+	Socket::Socket(const string& aIp, short aPort) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
 	virtual ~Socket() { Socket::disconnect(); };
 
 	virtual void bind(short aPort) throw(SocketException);
-	virtual void connect(const string& ip, short port) throw(SocketException);
-	virtual void connect(const string& ip, const string& port) throw(SocketException) { connect(ip, (short)Util::toInt(port)); };
+	virtual void connect(const string& aIp, short aPort) throw(SocketException);
+	virtual void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
 	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
 	virtual void write(const char* buffer, int len) throw(SocketException);
 	virtual void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
-	virtual void writeTo(const string& ip, short port, const char* buffer, int len) throw(SocketException);
-	virtual void writeTo(const string& ip, short port, const string& aData) throw(SocketException) { writeTo(ip, port, aData.data(), aData.length()); };
+	virtual void writeTo(const string& aIp, short aPort, const char* buffer, int len) throw(SocketException);
+	virtual void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
 
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
 	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
@@ -198,7 +202,10 @@ public:
 	}
 #endif
 	
-	string getLocalIp() {
+	string getLocalIp() throw() {
+		if(sock == INVALID_SOCKET)
+			return Util::emptyString;
+
 		sockaddr_in sock_addr;
 		socklen_t len = sizeof(sock_addr);
 		if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
@@ -238,6 +245,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.39 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: Socket.h,v 1.40 2003/03/13 13:31:34 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@
 
 FinishedFrame* FinishedFrame::frame = NULL;
 
-int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED };
-int FinishedFrame::columnSizes[] = { 110, 390, 125, 80, 80 };
+int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
+int FinishedFrame::columnSizes[] = { 110, 390, 125, 80, 80, 80 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::PATH, 
-	ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED
+ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
 };
 
 LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -76,8 +76,10 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	FinishedManager::getInstance()->unlockList();
 	
 	ctxMenu.CreatePopupMenu();
+	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FILE, CSTRING(OPEN));
+	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CSTRING(OPEN_FOLDER));
+	ctxMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-	ctxMenu.AppendMenu(MF_STRING, IDC_OPENPUBLIC, CSTRING(OPEN));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 
 	bHandled = FALSE;
@@ -95,12 +97,22 @@ LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	return 0;
 }
 
-LRESULT FinishedFrame::onOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
 		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+	return 0;
+}
+
+LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i;
+	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
+		ShellExecute(NULL, NULL, Util::getFilePath(entry->getTarget()).c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
 	return 0;
 }
@@ -145,7 +157,7 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 0;
 }
 
-void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry) {
+void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw() {
 	switch(type) {
 		case FinishedManagerListener::ADDED: addEntry(entry); updateStatus();
 			break;
@@ -158,7 +170,25 @@ void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* 
 	}
 };
 
+void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
+	StringList l;
+	l.push_back(entry->getTime());
+	l.push_back(entry->getTarget());
+	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
+	l.push_back(Util::formatBytes(entry->getSize()));
+	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
+	l.push_back(entry->getCrc32Checked() ? STRING(YES) : STRING(NO));
+	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
+	ctrlList.EnsureVisible(loc, FALSE);
+
+	totalBytes += entry->getChunkSize();
+	totalTime += entry->getMilliSeconds();
+	if(dirty)
+		setDirty();
+}
+
+
 /**
  * @file FinishedFrame.cpp
- * $Id: FinishedFrame.cpp,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.4 2003/03/13 13:31:50 arnetheduck Exp $
  */

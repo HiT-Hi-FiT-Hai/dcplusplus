@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,17 @@
 
 CryptoManager* Singleton<CryptoManager>::instance;
 
-ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int strength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
-inbuf(NULL), inbufLen(0), state(STATE_RUNNING), f(file), maxBytes(aMaxBytes) {
+ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
+	state(STATE_RUNNING), inbuf(NULL), inbufLen(0), f(file), maxBytes(aMaxBytes), level(aStrength) {
+	
 	memset(&zs, 0, sizeof(zs));
 	
-	if(deflateInit(&zs, strength) != Z_OK) {
+	if(deflateInit(&zs, level) != Z_OK) {
 		throw CryptoException(STRING(COMPRESSION_ERROR));
 	}
 }
 
-u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen) throw(CryptoException) {
+u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(CryptoException) {
 	dcassert(buf);
 	dcassert(bufLen > 0); 
 
@@ -50,8 +51,18 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen) throw(CryptoExcepti
 		inbufLen = bufLen << 2;
 		inbuf = new u_int8_t[inbufLen];
 	}
+
 	zs.avail_out = bufLen;
 	zs.next_out = (u_int8_t*) buf;
+	bytesRead = 0;
+
+	// Check if we're compressing at all...if not; set level to 0 to just compute
+	// the adler32...we want at least 5% compression, a completely arbitrary value.
+	// The 64kb probe zone is also taken out of the air...
+	if( (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
+		dcdebug("Disabling compression for 0x%x (%d/%d = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
+		setStrength(0);
+	}
 	
 	while(true) {
 		if( (zs.avail_in == 0) && (state == STATE_RUNNING) ) {
@@ -62,7 +73,13 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen) throw(CryptoExcepti
 				state = STATE_FINISHING;;
 			} else {
 				u_int32_t readBytes = f.read(inbuf, bytes);
+				bytesRead += readBytes;
 				if(readBytes == 0) {
+					if(maxBytes != -1 && maxBytes != 0) {
+						// This is an error, we didn't read as many bytes as requested
+						throw CryptoException(STRING(COMPRESSION_ERROR));
+					}
+
 					// Read all we can...
 					state = STATE_FINISHING;;
 				} else {
@@ -103,6 +120,21 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen) throw(CryptoExcepti
 	}
 }
 
+void ZCompressor::setStrength(int str) throw(CryptoException) {
+	if(level != str) {
+		u_int32_t x = zs.avail_in;
+		zs.avail_in = 0;
+		int err = ::deflateParams(&zs, str, Z_DEFAULT_STRATEGY);
+		zs.avail_in = x;
+		dcassert(err != Z_BUF_ERROR);
+
+		if(err != Z_OK) {
+			throw CryptoException(STRING(COMPRESSION_ERROR));
+		}
+		level = str;
+	}
+}
+
 ZDecompressor::ZDecompressor() throw(CryptoException) {
 	memset(&zs, 0, sizeof(zs));
 
@@ -114,7 +146,7 @@ ZDecompressor::ZDecompressor() throw(CryptoException) {
 	
 }
 
-u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) {
+u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(CryptoException) {
 	zs.avail_in = inbytes;
 	zs.avail_out = outbufSize;
 	zs.next_in = (u_int8_t*)const_cast<void*>(inbuf);
@@ -153,11 +185,15 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) throw (Cry
 
 	os.clear();
 	
-	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) {
-		os.append(buf, bufsize-bs.avail_out);
-		bs.avail_out = bufsize;
-		bs.next_out = buf;
-	}
+	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) { 
+		if (bs.avail_in == 0 && bs.avail_out > 0) { // error: BZ_UNEXPECTED_EOF 
+			BZ2_bzDecompressEnd(&bs); 
+			throw CryptoException(STRING(DECOMPRESSION_ERROR)); 
+		} 
+		os.append(buf, bufsize-bs.avail_out); 
+		bs.avail_out = bufsize; 
+		bs.next_out = buf; 
+	} 
 
 	if(err == BZ_STREAM_END)
 		os.append(buf, bufsize-bs.avail_out);
@@ -227,35 +263,35 @@ string CryptoManager::keySubst(const u_int8_t* aKey, int len, int n) {
 	return tmp;
 }
 
-string CryptoManager::makeKey(const string& lock) {
-	if(lock.size() < 3)
+string CryptoManager::makeKey(const string& aLock) {
+	if(aLock.size() < 3)
 		return Util::emptyString;
 
-	u_int8_t* temp = new u_int8_t[lock.length()];
+    u_int8_t* temp = new u_int8_t[aLock.length()];
 	u_int8_t v1;
 	int extra=0;
 	
-	v1 = (u_int8_t)(lock[0]^5);
+	v1 = (u_int8_t)(aLock[0]^5);
 	v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4)) & 0xff);
 	temp[0] = v1;
 	
 	string::size_type i;
 
-	for(i = 1; i<lock.length(); i++) {
-		v1 = (u_int8_t)(lock[i]^lock[i-1]);
+	for(i = 1; i<aLock.length(); i++) {
+		v1 = (u_int8_t)(aLock[i]^aLock[i-1]);
 		v1 = (u_int8_t)(((v1 >> 4) | (v1 << 4))&0xff);
 		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
 	}
 	
-	temp[0] = (u_int8_t)(temp[0] ^ temp[lock.length()-1]);
+	temp[0] = (u_int8_t)(temp[0] ^ temp[aLock.length()-1]);
 	
 	if(isExtra(temp[0])) {
 		extra++;
 	}
 	
-	string tmp = keySubst(temp, lock.length(), extra);
+	string tmp = keySubst(temp, aLock.length(), extra);
 	delete[] temp;
 	return tmp;
 }
@@ -524,5 +560,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.27 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.28 2003/03/13 13:31:16 arnetheduck Exp $
  */

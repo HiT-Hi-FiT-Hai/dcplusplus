@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetFont(WinUtil::font);
 	string tmp;
 	try {
-		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ).read();
+		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();
 	} catch(FileException) {
 		// ...
 	}
@@ -76,7 +76,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 }
 
-void NotepadFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 {
 	CRect rc;
 
@@ -92,7 +92,7 @@ void NotepadFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.6 2003/03/13 13:31:56 arnetheduck Exp $
  */
 
 

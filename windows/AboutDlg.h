@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #if !defined(AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_)
 #define AFX_ABOUTDLG_H__D12815FA_21C0_4C20_9718_892C9F8CD196__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "../client/HttpConnection.h"
 #include "../client/SimpleXML.h"
@@ -73,7 +77,7 @@ private:
 
 	CAboutDlg(const CAboutDlg&) { dcassert(0); };
 	
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
 		switch(type) {
 		case HttpConnectionListener::DATA:
 			downBuf.append((char*)buf, len); break;
@@ -82,7 +86,7 @@ private:
 		}
 	}
 
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
 		switch(type) {
 		case HttpConnectionListener::FAILED: 
 			c.removeListener(this);
@@ -93,7 +97,7 @@ private:
 		}
 	}
 
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
 		switch(type) {
 		case HttpConnectionListener::COMPLETE:
 			c.removeListener(this);
@@ -118,6 +122,6 @@ private:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.7 2003/03/13 13:31:44 arnetheduck Exp $
  */
 

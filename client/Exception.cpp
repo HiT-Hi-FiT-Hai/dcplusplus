@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,6 @@
 
 /**
  * @file Exception.cpp
- * $Id: Exception.cpp,v 1.6 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: Exception.cpp,v 1.7 2003/03/13 13:31:21 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,15 @@
 #include "AdvancedPage.h"
 #include "Advanced2Page.h"
 
+ResourceManager::Strings titles[] = {
+	ResourceManager::SETTINGS_GENERAL,
+	ResourceManager::SETTINGS_DOWNLOADS,
+	ResourceManager::SETTINGS_UPLOADS,
+	ResourceManager::SETTINGS_APPEARANCE,
+	ResourceManager::SETTINGS_LOGS,
+	ResourceManager::SETTINGS_ADVANCED
+};
+
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 {
 	pages[0] = new GeneralPage(s);
@@ -38,9 +47,11 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 	pages[4] = new Advanced2Page(s);
 	pages[5] = new AdvancedPage(s);
 
-	for(int i=0; i<numPages; i++)
+	for(int i=0; i<numPages; i++) {
+		pages[i]->setTitle(ResourceManager::getInstance()->getString(titles[i]));
 		AddPage(pages[i]->getPSP());
-	
+	}
+
 	// Hide "Apply" button
 	m_psh.dwFlags |= PSH_NOAPPLYNOW | PSH_NOCONTEXTHELP;
 	m_psh.dwFlags &= ~PSH_HASHELP;
@@ -74,6 +85,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file PropertiesDlg.cpp
- * $Id: PropertiesDlg.cpp,v 1.3 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.4 2003/03/13 13:31:58 arnetheduck Exp $
  */
 

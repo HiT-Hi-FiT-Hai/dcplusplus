@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 #include "Exception.h"
 #include "Util.h"
+
 #include "File.h"
 
 STANDARD_EXCEPTION(SimpleXMLException);
@@ -47,24 +48,21 @@ public:
 		addTag(aName, Util::toString(aData));
 	}
 
+	template<typename T>
+	void addAttrib(const string& aName, const T& aData) throw(SimpleXMLException) {
+		addAttrib(aName, Util::toString(aData));
+	}
+
 	void addAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-	void addAttrib(const string& aName, int aData) throw(SimpleXMLException) {
-		addAttrib(aName, Util::toString(aData));
-	}
-	void addAttrib(const string& aName, int64_t aData) throw(SimpleXMLException) {	
-		addAttrib(aName, Util::toString(aData));
-	}
 	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
 		addAttrib(aName, string(aData ? "1" : "0"));
 	}
 	
+	template <typename T>
+    void addChildAttrib(const string& aName, const T& aData) throw(SimpleXMLException) {	
+		addChildAttrib(aName, Util::toString(aData));
+	}
 	void addChildAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-	void addChildAttrib(const string& aName, int aData) throw(SimpleXMLException) {	
-		addChildAttrib(aName, Util::toString(aData));
-	}
-	void addChildAttrib(const string& aName, int64_t aData) throw(SimpleXMLException) {	
-		addChildAttrib(aName, Util::toString(aData));
-	}
 	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
 		addChildAttrib(aName, string(aData ? "1" : "0"));
 	}
@@ -213,6 +211,6 @@ private:
 
 /**
  * @file SimpleXML.h
- * $Id: SimpleXML.h,v 1.18 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.19 2003/03/13 13:31:32 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2002 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ void DownloadPage::write()
 	}
 	const string& t = SETTING(TEMP_DOWNLOAD_DIRECTORY);
 	if(t.length() > 0 && t[t.length() - 1] != '\\') {
-		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, t + '\\');
+		SettingsManager::getInstance()->set(SettingsManager::TEMP_DOWNLOAD_DIRECTORY, t + '\\');
 	}
 	
 }
@@ -101,5 +101,5 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 /**
  * @file DownloadPage.cpp
- * $Id: DownloadPage.cpp,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.6 2003/03/13 13:31:47 arnetheduck Exp $
  */

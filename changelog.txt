@@ -1,3 +1,183 @@
+ -- 0.241 --
+* Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
+
+
+ -- 0.24 2002-03-11 --
+* The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)
+* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engström.
+* Local ip handling improved, so that a per-hub ip is used if nothing is entered in the active field (good for
+  people who connect to local hubs or through different network cards)
+* You can now use $ and | in the chat. DC++ uses the HTML standard &#36; and &#124; to replace them...some people
+  might not like this because it's different than the escape sequence used in the lock, but I prefer a standard way
+  of escaping that's not limited to numbers below 999...later on, perhaps I'll add full &-escaping support so that
+  people will be able to send all kinds of strange characters. The same escpace sequences are used in the description
+  and email.
+* Incoming connections are now handled in a completely different, more effective way (one thread less...). This could
+  perhaps help with the multicpu/hyperthreading issue, but I doubt it...
+* Fixed a crash-at-exit in the debug build
+* Fixed a bug causing missing search results (thanks opera)
+* Another go at the case insensitive string comp bug (tried with a queue file that was reported not to work so...)
+* Added custom per-hub user description to favorite hubs (thanks todd pederzani)
+* Some code cleanup and minor fixes
+* Updated H: tag. It now looks like H:x/y/z where x, y, and z are normal, registered and op hubs respectively. It
+  is updated roughly once a minute, but if you're disconnected, the count won't go down until the window is closed
+  (i e hubs you're trying to reconnect to count as well, to avoid too many updates being sent to the hub). Also,
+  note that there's a problem with the op count. All op's will first be counted as registered users, and then,
+  when they're fully logged in the count will be updated. This is a protocol limitation and there's not much to
+  do about it (although, most of the time you shouldn't notice, if the hub sends the op list fast enough...). This
+  release also fixes a bug where the count was not correctly updated across all hubs.
+* To avoid confusion when receiving text pasted from the chat, "- " is inserted whenever a line starts with '<' or 
+  '[' in the main and private chat (so that it won't look like somebody else is writing a message)
+* I think you can now use %-shortcuts in the nick when specifying user commands (%[line:] does not work tho...)
+* Doubled interval between autosearches (2 minutes now, and 60 between each research of the same file), this to 
+  ease the bandwidth load on busy hubs
+* Favorites, users and user commands are now saved to a separate file. The old ones will still be loaded for a 
+  few versions...
+* Added info about current directory/selection to the file listing browser
+
+
+ -- 0.233 2002-02-24 --
+* Back to normal...
+* Fixed a small bug with disappearing tray icon (thanks vladimir marko)
+* Fixed a major bug in the case insensitive string compares resulting in 100% cpu/crashes in certain cases 
+  (specially with filenames that contain international characters). This should also fix sort problems
+  and perhaps some search problems as well...
+* Fixed some problems with file lists not refreshing correctly when they were being downloaded at the same time.
+* Added option to disable the hourly automatic share refresher
+* Fixed another Finished Files crash -- now it *should* work, I actually tested it once this time...
+* Fixed a "dc++ would not shutdown" bug (thanks todd pederzani)
+* Fixed another thing with hub lists being unnecessarily downloaded (thanks todd pederzani)
+* Fixed a bug with opening faulty .bz2 file lists (thanks who)
+* Fixed a bug with whole descriptions not being visible in the settings
+
+ -- 0.232 2003-02-14 --
+* Fixed a bug when temp download directory was missing '\' in the end
+* Fixed another crash when disk full bug
+* Files containing $'s are no longer added to share (can't be downloaded later on...) (this is a protocol limitation)
+* Changed the "download whole directory" back to the old way of working (see 0.23 notes), it turned out that i didn't
+  like it and neither did anyone at the forum seem to do...maybe I'll think of something better later on...
+* Fixed the move file thing (properly this time, I hope)
+* Fixed edit boxes being enabled when option was not in logs&sound settings (thanks todd pederzani)
+* Fixed "add shared directory" modality (thanks todd pederzani)
+* Fixed finished files crash
+* Added an icon for the finished downloads to the toolbar (thanks todd pederzani)
+* The main icon now contains a 48x48 icon as well (thanks todd pederzani)
+* I hope the owner of the picture doesn't sue me / mind =)...
+
+ -- 0.231 2003-02-04 --
+* Minor speedup in the string tokenizer (silly...)
+* Fixed missing search results when searching without type (fix also provides a tiny speedup when being searched)
+* Fixed a silly assertion fault in the debug build
+* Fixed the single file move crash (together with "wrong file moved", same bug)
+* Fixed so that a user won't be granted a slot when using a "free" slot if disconnected because of the 
+  autodisconnect feature (thanks Todd Pederzani)
+* The tab control now supports more than one row
+* In the tab chevron menu, those windows that have updated (that would have been bold) now have a dot
+* The download queue tab now goes bold if something about the queue has updated (download finished/added/failed/etc)
+* The message edit box in the hub and pm windows now uses the font selected in the settings
+* The finished files frame now goes bold when new items are finished
+* Fixed some of the problems when not viewing the directory tree in the queue. There might be some bugs left tho, 
+  haven't tested...
+
+ -- 0.23 2003-01-30 --
+* New release policy, I'll wait a few days with the "new version" nag, just to see if a release is ok (doesn't have
+  any fatal bugs in it). If you want to be on the bleeding edge, either subscribe to the release notification on
+  sourceforge or check it every now and then. The same goes for the link on http://dcplusplus.sf.net (i e the download 
+  will only be available from http://www.sf.net/projects/dcplusplus in the files section).
+* Removed the -Debug zip file. The debug information is now included in all public releases of DC++, this to rid
+  the debug forums of crash reports with missing debug information. There are no performance penalties from having
+  the debug symbols, they are loaded on demand (and if you're really deperate for disk space, you can remove the .pdb
+  file). This of course makes the distribution download a bit bigger, an unfortunate side-effect...
+* Fixed a bug in the uninstaller (it didn't remove DCPlusPlus.pdb if installed)
+* Fixed a bug with the user commands (PM didn't work)
+* Some fixes to queue moving (moving to targets that already exist in queue now adds the sources of the old file
+  to the existing target instead of just ignoring them...)
+* Changed the way "download whole directory" works. It now downloads the files directly to the directory you've 
+  chosen, i e if you download the directory "mp3" to "x:\down" all files from "mp3" will end up in "x:\down"
+  instead of "x:\down\mp3". This makes it easier to add files when somebody's changed the directory name but not the
+  filenames (common with rar/ace sets). If you download to the default download directory, the directory is created 
+  (i e "default\mp3" in the example). Now I only have to decide whether I like this change or not...
+* Cleanup of the VC7 Project files
+* The number of uploads slots is now shown as negative if it exceeds the specified number of slots (because of auto-
+  open or granting). We'll see how long it takes until someone reports this as a bug...
+* Added ability to set default away message (hm...perhaps this should use the last message set?)
+* Redesigned the appearance dialog a bit (like the advanced options now)
+* If DC++ receives "banned" during the login phase, it'll stop automatically reconnecting (nöjd nu, nev? =)
+* The splash screen no longer shows on the task bar (avoids flicker when loading is fast) and is not topmost (use
+  alt-esc instead of alt-tab to switch to it if you lose it...and it can't be an option because it's shown prior to
+  any settings being loaded).
+* Hublist is no longer loaded in the background by default when starting the application.
+* Fixed some proxy connection problems for the hublist (thanks Ondrea (or is it Ondra or Ondrej? =))
+* Disabled automatic opening of the hublist. You can reenable it in the settings (this is to save some 
+  bandwidth on the hub list servers).
+* The hublist http://dcplusplus.sourceforge.net/PublicHubList.config has been replaced by 
+  http://dcplusplus.sourceforge.net/PublicHubList.config.bz2 (the same, but bzipped, sourceforge didn't like
+  the load on their servers...)
+* Fixed a bug when returning compressed file search results
+* Changed the way string compares are done, this should fix the sorting and searching problems with different
+  charsets. All string compares are now done based on the user's locale, so searching users that use a different charset
+  might yield unexpected results.
+* Automatic search now searches with type if possible (to ease the load on clients)
+* Fixed a disk full crash
+* Added "Close all disconnected hubs" to the Window menu (thanks Kenneth Skovhede)
+* Added /favorite to pm window to add user as a favorite user (/fav also works) (thanks Kenneth Skovhede)
+* Added /favorite to hub window to add hub to favorite hubs (/fav also works) (thanks Kenneth Skovhede)
+* Added "Grant slot" to transfers right-click menu (thanks Kenneth Skovhede)
+* Added "Add to favorites" to transfers right-click menu (thanks Kenneth Skovhede)
+* Added "Open folder" to finished downloads frame (thanks Kenneth Skovhede)
+* Performance increase in search 1: When somebody searches with a type (document, video, etc), directories that
+  don't contain the specified type are not searched. If people use search types a lot, this should be a significant
+  improvement. To make this work out good, keep different file types in different directories, and smaller parts of
+  your share will be searched. This will work better when more people have updated their clients so that autosearch 
+  uses types as well. 
+* Performance increase in search 2: Words frequently searched for are filtered out earlier in the search, so that
+  only directories that contain a specific word are searched. This is based on the observation that a lot of the 
+  contain either their suffix (mp3 or avi for example), or some other frequently searched words. By only searching
+  directories that for sure contain one of these words, we eliminate a lot of useless searching. In this first
+  implementation, the list of words is static, but later on I'll add dynamic adaption, so that it's really only the
+  most frequently words that make it to the list (thanks to Vladimir Marko for idea and research, to find out more
+  see his post on http://dcplusplus.sf.net/forum in Protocol Alley (perfincrease 1 is based on the same kind of thinking))
+* Fixed the hourly automatic share refresher (this is done with a low priority thread)
+* Highest priority downloads are now always started (even if the exceed the speed & max downloads limits), this way
+  important files, file lists and small files always get downloaded...(uhm, this might have the side effect that a 
+  list download might disconnect another slot if a file change for the other one occurs during the list transfer...
+  if this becomes a problem, I'll look into it "later" =) (completely untested...hope it doesn't break downloading =)
+
+
+ -- 0.22 2003-01-05 --
+* The forums are up again! On a new address though, http://dcplusplus.sf.net/forum...
+* Added nice installer. It's big because it comes with the debug info, if you just want a zip as in the old versions,
+  you can find it on http://sf.net/projects/dcplusplus.
+* Fixed a bug with files being added to the queue without target directory. This caused quite a lot of strange
+  behaviour ranging from hang at startup to empty queues and crashing deletes. Hopefully, I fixed it proper,
+  but rereport the bugs if you still have problems... 
+  *WARNING - WARNING - WARNING* if you upgrade to 0.22, all old queue items that are missing a directory in the
+  target file-name will be removed. Don't upgrade if your queue is precious to you, and you didn't have anything
+  in the default download directory box in the settings (finish it with version 0.181
+  or edit your queue.xml file and add a directory to all targets without...). (thanks fusbar for finding it)
+* Added so that only files with the same extension are visible in the download to menus (this was actually done in 0.21
+  but I forgot to write it down...=)
+* Fixed a bug where dc++ would stop listening to incoming connections, causing connection timeouts in active mode
+* Right-click menu now works for all nicks (even outside < and >)
+* Fixed width of some status bars when font size differs from mine (I think...why would anyone want to change anyway? =)
+* Fixed height of edit controls when font size differs from mine
+* Added the hub the user was last connected to to the finished downloads.
+* Added hub to the logging (see readme for available parameters)
+* Fixed a bug in speed calculation in the finished downloads frame (for resumed downloads)
+* Last known hub is now shown in pm window when user goes offline
+* Progress bars can now be disabled in the advanced settings
+* Added user-customizable right-click menu commands to the hub windows (to send commands to hub bots)
+* Advanced settings dialog remade a bit
+* Fixed missing default setting for default download directory, making a lot of queue items miss a target directory =)
+* Fixed case sensitivity in search right-click menu
+* Fixed crash when opening file lists
+* Added on-the-fly SFV checking, enable it in the advanced settings. Failed files are removed and requeued.
+* Added sfv parameter to the logging (for full list, see readme.txt) and finished files frame
+* Fixed startup crash when settings file was incorrectly saved (unfortunately, this makes you lose your settings tho)
+* Fixed vc6 project file (zlib wasn't in the dependencies...come on guys, this much you should be able to figure out)
+* If you're translating and find any untranslated string or have problems because something can't be done in your
+  language (strange plurals?), add it to the bug report...(settings excluded)
+
  -- 0.211 2002-12-26 --
 * Oops, forgot to remove the transfer slowdown code when I was testing the progress bars...=)
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,9 +59,9 @@ public:
 		TICK
 	};
 
-	virtual void onAction(Types, Upload*) { };
-	virtual void onAction(Types, const Upload::List&) { };
-	virtual void onAction(Types, Upload*, const string&) { };
+	virtual void onAction(Types, Upload*) throw() { };
+	virtual void onAction(Types, const Upload::List&) throw() { };
+	virtual void onAction(Types, Upload*, const string&) throw() { };
 
 };
 
@@ -131,17 +131,17 @@ private:
 	void onTimerMinute(u_int32_t aTick);
 
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw();
 	
 	void onBytesSent(UserConnection* aSource, u_int32_t aBytes);
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onTransmitDone(UserConnection* aSource);
 	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
-	void onGetBZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
+	void onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 	void onSend(UserConnection* aSource);
 
 	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume);
@@ -151,5 +151,5 @@ private:
 
 /**
  * @file UploadManager.h
- * $Id: UploadManager.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.52 2003/03/13 13:31:36 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
-	} else if(cmd == "$GetBZBlock") {
+	} else if(cmd == "$GetZBlock") {
 		string::size_type i = param.find(' ');
 		if(i == string::npos)
 			return;
@@ -78,7 +78,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(j == string::npos)
 			return;
 		int64_t bytes = Util::toInt64(param.substr(i, j-i));
-		fire(UserConnectionListener::GET_BZ_BLOCK, this, param.substr(j+1), start, bytes);
+		fire(UserConnectionListener::GET_ZBLOCK, this, param.substr(j+1), start, bytes);
 		
 	} else if(cmd == "$Key") {
 		if(!param.empty())
@@ -115,7 +115,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 }
 
 // BufferedSocketListener
-void UserConnection::onAction(BufferedSocketListener::Types type) {
+void UserConnection::onAction(BufferedSocketListener::Types type) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::CONNECTED:
@@ -125,7 +125,7 @@ void UserConnection::onAction(BufferedSocketListener::Types type) {
 		fire(UserConnectionListener::TRANSMIT_DONE, this); break;
 	}
 }
-void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t bytes) {
+void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t bytes) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::BYTES_SENT:
@@ -134,7 +134,7 @@ void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t byte
 		dcassert(0);
 	}
 }
-void UserConnection::onAction(BufferedSocketListener::Types type, const string& aLine) {
+void UserConnection::onAction(BufferedSocketListener::Types type, const string& aLine) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::LINE:
@@ -146,7 +146,7 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const string& 
 		dcassert(0);
 	}
 }
-void UserConnection::onAction(BufferedSocketListener::Types type, int mode) {
+void UserConnection::onAction(BufferedSocketListener::Types type, int mode) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::MODE_CHANGE:
@@ -155,7 +155,7 @@ void UserConnection::onAction(BufferedSocketListener::Types type, int mode) {
 		dcassert(0);
 	}
 }
-void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) {
+void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::DATA:
@@ -167,5 +167,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.24 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.25 2003/03/13 13:31:40 arnetheduck Exp $
  */

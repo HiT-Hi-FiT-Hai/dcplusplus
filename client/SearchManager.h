@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,17 +117,16 @@ private:
 	
 	Socket* socket;
 	short port;
-
+	bool stop;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL) {  };
-	// We won't be copying it anyway...
-	SearchManager(const SearchManager&) { dcassert(0); };
+	SearchManager() : socket(NULL), port(0), stop(false) {  };
 
 	virtual int run();
 
 	virtual ~SearchManager() { 
 		if(socket) {
+			stop = true;
 			socket->disconnect();
 			join();
 			delete socket;
@@ -141,5 +140,5 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.22 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.23 2003/03/13 13:31:30 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -161,14 +161,14 @@ private:
 	static int columnSizes[];
 	
 	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type) {
+	virtual void onAction(HubManagerListener::Types type) throw() {
 		switch(type) {
 		case HubManagerListener::DOWNLOAD_FINISHED:
 			PostMessage(WM_SPEAKER, FINISHED); break;
 		}
 	}
 
-	virtual void onAction(HubManagerListener::Types type, const string& line) {
+	virtual void onAction(HubManagerListener::Types type, const string& line) throw() {
 		string* x = new string(line);
 		switch(type) {
 		case HubManagerListener::DOWNLOAD_STARTING:
@@ -186,5 +186,5 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.4 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.5 2003/03/13 13:32:01 arnetheduck Exp $
  */

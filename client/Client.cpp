@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,9 @@
 #include "Client.h"
 #include "ClientManager.h"
 #include "SearchManager.h"
+#include "ShareManager.h"
 
-long Client::hubs = 0;
+Client::Counts Client::counts = { 0, 0, 0 };
 
 Client::~Client() throw() {
 	TimerManager::getInstance()->removeListener(this);
@@ -37,10 +38,34 @@ Client::~Client() throw() {
 	}
 
 	clearUsers();
-
-	if(counted)
-		Thread::safeDec(&hubs);
+	updateCounts(true);
 };
+
+void Client::updateCounts(bool aRemove) {
+	// We always remove the count and then add the correct one if requested...
+
+	if(countType == COUNT_NORMAL) {
+		Thread::safeDec(&counts.normal);
+	} else if(countType == COUNT_REGISTERED) {
+		Thread::safeDec(&counts.registered);
+	} else if(countType == COUNT_OP) {
+		Thread::safeDec(&counts.op);
+	}
+	countType = COUNT_UNCOUNTED;
+
+	if(!aRemove) {
+		if(op) {
+			Thread::safeInc(&counts.op);
+			countType = COUNT_OP;
+		} else if(registered) {
+			Thread::safeInc(&counts.registered);
+			countType = COUNT_REGISTERED;
+		} else {
+			Thread::safeInc(&counts.normal);
+			countType = COUNT_NORMAL;
+		}
+	}
+}
 
 void Client::connect(const string& aServer) {
 	string tmp;
@@ -51,7 +76,9 @@ void Client::connect(const string& aServer) {
 }
 
 void Client::connect() {
+	op = false;
 	registered = false;
+	reconnect = true;
 
 	if(!socket) {
 		socket = BufferedSocket::getSocket('|');
@@ -96,7 +123,13 @@ void Client::onLine(const string& aLine) throw() {
 		return;
 	
 	if(aLine[0] != '$') {
-		fire(ClientListener::MESSAGE, this, aLine);
+		// Check if we're being banned...
+		if(state != STATE_CONNECTED) {
+			if(Util::findSubString(aLine, "banned") != string::npos) {
+				reconnect = false;
+			}
+		}
+		fire(ClientListener::MESSAGE, this, Util::validateMessage(aLine, true));
 		return;
 	}
 
@@ -129,16 +162,16 @@ void Client::onLine(const string& aLine) throw() {
 			seekers.push_back(make_pair(seeker, tick));
 
 			// First, check if it's a flooder
-			FloodIter i;
-			for(i = flooders.begin(); i != flooders.end(); ++i) {
-				if(i->first == seeker) {
+			FloodIter fi;
+			for(fi = flooders.begin(); fi != flooders.end(); ++fi) {
+				if(fi->first == seeker) {
 					return;
 				}
 			}
 
 			int count = 0;
-			for(i = seekers.begin(); i != seekers.end(); ++i) {
-				if(i->first == seeker)
+			for(fi = seekers.begin(); fi != seekers.end(); ++fi) {
+				if(fi->first == seeker)
 					count++;
 
 				if(count > 7) {
@@ -181,9 +214,9 @@ void Client::onLine(const string& aLine) throw() {
 				User::Ptr u;
 				{
 					Lock l(cs);
-					User::NickIter i = users.find(seeker.substr(4));
-					if(i != users.end() && !i->second->isSet(User::PASSIVE)) {
-						u = i->second;
+					User::NickIter ni = users.find(seeker.substr(4));
+					if(ni != users.end() && !ni->second->isSet(User::PASSIVE)) {
+						u = ni->second;
 						u->setFlag(User::PASSIVE);
 					}
 				}
@@ -218,7 +251,7 @@ void Client::onLine(const string& aLine) throw() {
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
-		u->setDescription(param.substr(i, j-i));
+		u->setDescription(Util::validateMessage(param.substr(i, j-i), true));
 		i = j + 3;
 		j = param.find('$', i);
 		if(j == string::npos)
@@ -228,7 +261,7 @@ void Client::onLine(const string& aLine) throw() {
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
-		u->setEmail(param.substr(i, j-i));
+		u->setEmail(Util::validateMessage(param.substr(i, j-i), true));
 		i = j + 1;
 		j = param.find('$', i);
 		if(j == string::npos)
@@ -349,17 +382,7 @@ void Client::onLine(const string& aLine) throw() {
 			if(u->getNick() == getNick()) {
 				if(state == STATE_HELLO) {
 					state = STATE_CONNECTED;
-					if(registered) {
-						if(counted) {
-							Thread::safeDec(&hubs);
-							counted = false;
-						}
-					} else {
-						if(!counted) {
-							Thread::safeInc(&hubs);
-							counted = true;
-						}
-					}
+					updateCounts(false);
 
 					u->setFlag(User::DCPLUSPLUS);
 					if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
@@ -423,6 +446,12 @@ void Client::onLine(const string& aLine) throw() {
 				}
 			}
 			fire(ClientListener::OP_LIST, this, v);
+			updateCounts(false);
+			// Special...to avoid op's complaining that their count is not correctly
+			// updated when they log in (they'll be counted as registered first...)
+			if(lastCounts != counts) {
+				myInfo();
+			}
 		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
@@ -432,7 +461,7 @@ void Client::onLine(const string& aLine) throw() {
 			if(j != string::npos) {
 				string from = param.substr(i, j - 1 - i);
 				if(from.size() > 0 && param.size() > (j + 1)) {
-					fire(ClientListener::PRIVATE_MESSAGE, this, ClientManager::getInstance()->getUser(from, this, false), param.substr(j + 1));
+					fire(ClientListener::PRIVATE_MESSAGE, this, ClientManager::getInstance()->getUser(from, this, false), Util::validateMessage(param.substr(j + 1), true));
 				}
 			}
 		}
@@ -449,12 +478,12 @@ void Client::onLine(const string& aLine) throw() {
 	} 
 }
 
-void Client::myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
+void Client::myInfo() {
 	checkstate();
 	
-	dcdebug("MyInfo %s...\n", aNick.c_str());
-	lastHubs = hubs;
-	lastUpdate = GET_TICK();
+	dcdebug("MyInfo %s...\n", getNick().c_str());
+	lastCounts = counts;
+	
 	string tmp1 = ";**\x1fU9";
 	string tmp2 = "+L9";
 	string tmp3 = "+G9";
@@ -477,10 +506,12 @@ void Client::myInfo(const string& aNick, const string& aDescription, const strin
 		modeChar = '5';
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
-	send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
+	send("$MyINFO $ALL " + Util::validateNick(getNick()) + " " + Util::validateMessage(getDescription(), false) + 
 		tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
-		tmp3 + Util::toString(lastHubs) + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
+		tmp3 + Util::toString(counts.normal) + '/' + Util::toString(counts.registered) +
+		'/' + Util::toString(counts.op) + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
+		">$ $" + SETTING(CONNECTION) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
+		ShareManager::getInstance()->getShareSizeString() + "$|");
 }
 
 void Client::disconnect() throw() {	
@@ -506,15 +537,16 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 	while((i = tmp.find(' ')) != string::npos) {
 		tmp[i] = '$';
 	}
+	int chars = 0;
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		string x = Socket::resolve(SETTING(SERVER));
+		string x = getLocalIp();
 		buf = new char[x.length() + aString.length() + 64];
-		sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(IN_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(IN_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getNick().length() + aString.length() + 64];
-		sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
-	send(buf);
+	send(buf, chars);
 	delete[] buf;
 }
 
@@ -523,7 +555,7 @@ void Client::kick(const User::Ptr& aUser, const string& aMsg) {
 	dcdebug("Client::kick\n");
 	static const char str[] = 
 		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = Util::validateMessage(aMsg);
+	string msg2 = Util::validateMessage(aMsg, false);
 	
 	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
 	const char* u = aUser->getNick().c_str();
@@ -534,7 +566,7 @@ void Client::kick(const User::Ptr& aUser, const string& aMsg) {
 	delete[] tmp;
 	
 	// Short, short break to allow the message to reach the client...
-	Thread::sleep(100);
+	Thread::sleep(200);
 	send("$Kick " + aUser->getNick() + "|");
 }
 
@@ -544,7 +576,7 @@ void Client::kick(User* aUser, const string& aMsg) {
 	
 	static const char str[] = 
 		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = Util::validateMessage(aMsg);
+	string msg2 = Util::validateMessage(aMsg, false);
 	
 	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
 	const char* u = aUser->getNick().c_str();
@@ -571,7 +603,7 @@ void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw()
 				socket->write("|", 1);
 			} else {
 				// Try to reconnect...
-				if(!server.empty())
+				if(reconnect && !server.empty())
 					connect();
 			}
 		}
@@ -590,7 +622,7 @@ void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw()
 }
 
 // BufferedSocketListener
-void Client::onAction(BufferedSocketListener::Types type, const string& aLine) {
+void Client::onAction(BufferedSocketListener::Types type, const string& aLine) throw() {
 	switch(type) {
 	case BufferedSocketListener::LINE:
 		onLine(aLine); break;
@@ -607,7 +639,7 @@ void Client::onAction(BufferedSocketListener::Types type, const string& aLine) {
 	}
 }
 
-void Client::onAction(BufferedSocketListener::Types type) {
+void Client::onAction(BufferedSocketListener::Types type) throw() {
 	switch(type) {
 	case BufferedSocketListener::CONNECTED:
 		lastActivity = GET_TICK();
@@ -620,6 +652,6 @@ void Client::onAction(BufferedSocketListener::Types type) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.49 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.50 2003/03/13 13:31:13 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ public:
 	typedef ConnectionQueueItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef map<Ptr, u_int32_t> TimeMap;
+	typedef hash_map<Ptr, u_int32_t, PointerHash<ConnectionQueueItem> > TimeMap;
 	typedef TimeMap::iterator TimeIter;
 	
 	enum State {
@@ -71,8 +71,8 @@ public:
 		FAILED,
 		STATUS_CHANGED
 	};
-	virtual void onAction(Types, ConnectionQueueItem*) { };
-	virtual void onAction(Types, ConnectionQueueItem*, const string&) { };
+	virtual void onAction(Types, ConnectionQueueItem*) throw() { };
+	virtual void onAction(Types, ConnectionQueueItem*, const string&) throw() { };
 };
 
 class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
@@ -90,6 +90,11 @@ public:
 	 */
 	void setPort(short aPort) throw(SocketException) {
 		socket.waitForConnections(aPort);
+	}
+
+	// Ugly trick to use windows messages...
+	ServerSocket& getServerSocket() {
+		return socket;
 	}
 
 private:
@@ -114,14 +119,7 @@ private:
 	bool shuttingDown;
 
 	friend class Singleton<ConnectionManager>;
-	ConnectionManager() : shuttingDown(false) {
-		TimerManager::getInstance()->addListener(this);
-		socket.addListener(this);
-
-		features.push_back("BZList");
-		// This is disabled for now, as it's not finished yet...
-		//		features.push_back("GetZBlock");
-	};
+	ConnectionManager();
 	
 	virtual ~ConnectionManager() { shutdown(); };
 	
@@ -137,14 +135,14 @@ private:
 	void putConnection(UserConnection* aConn);
 
 	// ServerSocketListener
-	virtual void onAction(ServerSocketListener::Types type);
+	virtual void onAction(ServerSocketListener::Types type) throw();
 	void onIncomingConnection() throw();
 
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2);
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat);	
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw() ;
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) throw();	
 	void onMyNick(UserConnection* aSource, const string& aNick) throw();
 	void onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw();
 	void onDirection(UserConnection* aSource, const string& dir, const string& num) throw();
@@ -163,5 +161,5 @@ private:
 
 /**
  * @file ConnectionManager.h
- * $Id: ConnectionManager.h,v 1.46 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.47 2003/03/13 13:31:15 arnetheduck Exp $
  */

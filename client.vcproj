@@ -12,11 +12,12 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug\client"
-			IntermediateDirectory=".\Debug\client"
+			OutputDirectory=".\vc7\Debug\client"
+			IntermediateDirectory=".\vc7\Debug\client"
 			ConfigurationType="4"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -25,27 +26,26 @@
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
-				SmallerTypeCheck="TRUE"
+				SmallerTypeCheck="FALSE"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdinc.h"
-				PrecompiledHeaderFile=".\Debug\client/client.pch"
-				AssemblerListingLocation=".\Debug\client/"
-				ObjectFile=".\Debug\client/"
-				ProgramDataBaseFileName=".\Debug\client/"
+				PrecompiledHeaderFile="$(IntDir)/client.pch"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="0"/>
+				CallingConvention="0"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Debug\client\client.lib"
+				OutputFile="$(OutDir)/client.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -64,8 +64,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release/client"
-			IntermediateDirectory=".\Release/client"
+			OutputDirectory=".\vc7/Release/client"
+			IntermediateDirectory=".\vc7/Release/client"
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
@@ -83,16 +83,15 @@
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="TRUE"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="FALSE"
+				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
+				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdinc.h"
-				PrecompiledHeaderFile=".\Release/client/client.pch"
+				PrecompiledHeaderFile="$(IntDir)/client.pch"
 				AssemblerOutput="4"
-				AssemblerListingLocation=".\Release/client/"
-				ObjectFile=".\Release/client/"
-				ProgramDataBaseFileName=".\Release/client/"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="FALSE"
@@ -102,7 +101,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile=".\Release/client\client.lib"
+				OutputFile=".\$(OutDir)\client.lib"
 				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -124,6 +123,9 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			<File
+				RelativePath="client\ADLSearch.cpp">
+			</File>
 			<File
 				RelativePath=".\client\BufferedSocket.cpp">
 			</File>
@@ -165,6 +167,9 @@
 			</File>
 			<File
 				RelativePath=".\client\ResourceManager.cpp">
+			</File>
+			<File
+				RelativePath="client\SFVReader.cpp">
 			</File>
 			<File
 				RelativePath=".\client\SearchManager.cpp">
@@ -227,6 +232,9 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
+			<File
+				RelativePath="client\ADLSearch.h">
+			</File>
 			<File
 				RelativePath=".\client\BitInputStream.h">
 			</File>
@@ -292,6 +300,9 @@
 			</File>
 			<File
 				RelativePath=".\client\ResourceManager.h">
+			</File>
+			<File
+				RelativePath="client\SFVReader.h">
 			</File>
 			<File
 				RelativePath=".\client\SearchManager.h">

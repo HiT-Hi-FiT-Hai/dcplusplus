@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 {
 	PropPage::read((HWND)*this, items);
 
+	updateEdits();
 	// Do specialized reading here
 	return TRUE;
 }
@@ -93,6 +94,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file Advanced2Page.cpp
- * $Id: Advanced2Page.cpp,v 1.4 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.5 2003/03/13 13:31:44 arnetheduck Exp $
  */
 

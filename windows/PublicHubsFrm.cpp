@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -111,6 +111,9 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
 
 	hubs = HubManager::getInstance()->getPublicHubs();
+	if(hubs.empty())
+		HubManager::getInstance()->refresh();
+
 	updateList();
 	
 	hubsMenu.CreatePopupMenu();
@@ -359,15 +362,17 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
 	// Get the bounding rectangle of the client area. 
-	ctrlHubs.GetClientRect(&rc);
-	ctrlHubs.ScreenToClient(&pt); 
-	
-	if (PtInRect(&rc, pt)) 
-	{ 
-		ctrlHubs.ClientToScreen(&pt);
-		hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		
-		return TRUE; 
+	if(ctrlHubs.GetSelectedCount() == 1) {
+		ctrlHubs.GetClientRect(&rc);
+		ctrlHubs.ScreenToClient(&pt); 
+
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlHubs.ClientToScreen(&pt);
+			hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+			return TRUE; 
+		}
 	}
 	
 	return FALSE; 
@@ -375,6 +380,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.8 2003/03/13 13:32:00 arnetheduck Exp $
  */
 

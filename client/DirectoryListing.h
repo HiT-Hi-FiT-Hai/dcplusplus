@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,15 +52,17 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString) : name(aName), parent(aParent) { };
+		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _symbolic = false) 
+			: name(aName), parent(aParent), symbolic(_symbolic) { };
 		
 		~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
-			for_each(files.begin(), files.end(), DeleteFunction<File*>());
+			if(!symbolic) // Condition added for ADLSearch
+				for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
 
-		int getTotalFileCount();		
-		int64_t getTotalSize();
+		int getTotalFileCount(bool nosymbolic = false);		
+		int64_t getTotalSize(bool nosymbolic = false);
 		
 		int getFileCount() { return files.size(); };
 		
@@ -74,6 +76,7 @@ public:
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
+		GETSET(bool, symbolic, Symbolic);		
 	};
 
 	DirectoryListing() {
@@ -84,18 +87,18 @@ public:
 		delete root;
 	};
 
-	void download(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT);
-	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT);
+	void download(const string& aDir, const User::Ptr& aUser, const string& aTarget);
+	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget);
 	void load(const string& i);
 	string getPath(Directory* d);
 	
 	string getPath(File* f) { return getPath(f->getParent()); };
-	int64_t getTotalSize() { return root->getTotalSize(); };
-	int getTotalFileCount() { return root->getTotalFileCount(); };
+	int64_t getTotalSize(bool nosymbolic = false) { return root->getTotalSize(nosymbolic); };
+	int getTotalFileCount(bool nosymbolic = false) { return root->getTotalFileCount(nosymbolic); };
 	Directory* getRoot() { return root; };
 	
-	void download(File* aFile, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) {
-		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget, true, p);
+	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
+		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
 
 private:
@@ -109,5 +112,5 @@ private:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.13 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.14 2003/03/13 13:31:19 arnetheduck Exp $
  */

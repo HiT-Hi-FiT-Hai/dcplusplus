@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+
+#include "../client/CryptoManager.h"
+
 #include "Resource.h"
 
 #include "DirectoryListingFrm.h"
@@ -26,7 +29,7 @@
 
 DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-	user(aUser), treeRoot(NULL), skipHits(0)
+	user(aUser), treeRoot(NULL), skipHits(0), updating(false)
 {
 	string tmp;
 	if(aFile.size() < 4) {
@@ -35,10 +38,10 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 	}
 
 	bool isBZ2 = (Util::stricmp(aFile.c_str() + aFile.length() - 4, ".bz2") == 0);
-
+	dl = new DirectoryListing();
+	
 	try {
 		File f(aFile, File::READ, File::OPEN);
-		dl = new DirectoryListing();
 		DWORD size = (DWORD)f.getSize();
 
 		if(size > 16) {
@@ -105,13 +108,20 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, user->getNick().c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
 	updateTree(dl->getRoot(), treeRoot);
-	files = dl->getTotalFileCount();
-	size = Util::formatBytes(dl->getTotalSize());
+	files = dl->getTotalFileCount(true);
+	size = Util::formatBytes(dl->getTotalSize(true));
 
-	int w[5] = { 0, 1, 2, 3, 4 };
-	ctrlStatus.SetParts(5, w);
-	ctrlStatus.SetText(1, (STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount())).c_str());
-	ctrlStatus.SetText(2, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
+	memset(statusSizes, 0, sizeof(statusSizes));
+	string tmp1 = STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount(true));
+	string tmp2 = STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize(true));
+	statusSizes[2] = WinUtil::getTextWidth(tmp1, m_hWnd);
+	statusSizes[3] = WinUtil::getTextWidth(tmp2, m_hWnd);
+	statusSizes[4] = WinUtil::getTextWidth(STRING(FIND), m_hWnd) + 8;
+	statusSizes[5] = WinUtil::getTextWidth(STRING(NEXT), m_hWnd) + 8;
+
+	ctrlStatus.SetParts(7, statusSizes);
+	ctrlStatus.SetText(3, tmp1.c_str());
+	ctrlStatus.SetText(4, tmp2.c_str());
 	
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
@@ -135,6 +145,57 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 
+void DirectoryListingFrame::updateStatus() {
+	if(!updating && ctrlStatus.IsWindow()) {
+		int cnt = ctrlList.GetSelectedCount();
+		int64_t total = 0;
+		if(cnt == 0) {
+			cnt = ctrlList.GetItemCount();
+			for(int i = 0; i < cnt; ++i) {
+				ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
+				if(ii->type == ItemInfo::FILE) {
+					total += ii->file->getSize();
+				} else {
+					dcassert(ii->type == ItemInfo::DIRECTORY);
+					total += ii->dir->getTotalSize();
+				}
+			}
+		} else {
+			int i = -1;
+			while((i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
+				if(ii->type == ItemInfo::FILE) {
+					total += ii->file->getSize();
+				} else {
+					dcassert(ii->type == ItemInfo::DIRECTORY);
+					total += ii->dir->getTotalSize();
+				}
+			}
+		}
+
+		string tmp1 = STRING(ITEMS) + ": " + Util::toString(cnt);
+		string tmp2 = STRING(SIZE) + ": " + Util::formatBytes(total);
+		bool u = false;
+
+		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
+		if(statusSizes[0] < w) {
+			statusSizes[0] = w;
+			u = true;
+		}
+		ctrlStatus.SetText(1, tmp1.c_str());
+		w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
+		if(statusSizes[1] < w) {
+			statusSizes[1] = w;
+			u = true;
+		}
+		ctrlStatus.SetText(2, tmp2.c_str());
+
+		if(u)
+			UpdateLayout(TRUE);
+	}
+
+}
+
 LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMTREEVIEW* p = (NMTREEVIEW*) pnmh;
 
@@ -148,6 +209,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw)
 {
 	ctrlList.SetRedraw(FALSE);
+	updating = true;
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
@@ -170,6 +232,8 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	}
 	ctrlList.SetRedraw(enableRedraw);
 	ctrlList.resort();
+	updating = false;
+	updateStatus();
 }
 
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -205,9 +269,8 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
-			dl->download(dir, user, target);
+			dl->download(dir, user, SETTING(DOWNLOAD_DIRECTORY));
 		} catch(Exception e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
@@ -478,25 +541,21 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[5];
+		int w[7];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 516 ? 416 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		w[6] = sr.right - 16;
+#define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
+		setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)*3/8;
-		w[2] = w[0] + (tmp-16)*6/8;
-		w[3] = w[0] + (tmp-16)*7/8;
-		w[4] = w[0] + (tmp-16)*8/8;
+		ctrlStatus.SetParts(7, w);
 
-		ctrlStatus.SetParts(5, w);
-
-		ctrlStatus.GetRect(3, sr);
-		sr.left = w[2];
-		sr.right = w[3];
+		ctrlStatus.GetRect(5, sr);
+		sr.left = w[4];
+		sr.right = w[5];
 		ctrlFind.MoveWindow(sr);
 
-		sr.left = w[3];
-		sr.right = w[4];
+		sr.left = w[5];
+		sr.right = w[6];
 		ctrlFindNext.MoveWindow(sr);
 	}
 
@@ -649,5 +708,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.12 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.13 2003/03/13 13:31:46 arnetheduck Exp $
  */

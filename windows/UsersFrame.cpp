@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,11 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 	StringList l;
 	l.push_back(aUser->getNick());
 	l.push_back(aUser->isOnline() ? STRING(ONLINE) : STRING(OFFLINE));
-	l.push_back(aUser->getLastHubName() + " (" + aUser->getLastHubIp() + ")");
+	if(aUser->getLastHubIp().empty()) {
+		l.push_back(aUser->getClientName());
+	} else {
+		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubIp() + ")");
+	}
 	ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
 }
 
@@ -173,6 +177,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file UsersFrame.cpp
- * $Id: UsersFrame.cpp,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.7 2003/03/13 13:32:08 arnetheduck Exp $
  */
 

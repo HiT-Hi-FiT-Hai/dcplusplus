@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include "QueueManager.h"
 #include "LogManager.h"
 #include "CryptoManager.h"
+#include "SFVReader.h"
 
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
@@ -67,8 +68,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if( ((SETTING(DOWNLOAD_SLOTS) != 0) && getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
 		((SETTING(MAX_DOWNLOAD_SPEED) != 0 && getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) ) ) {
 		
-		removeConnection(aConn);
-		return;
+		if(!QueueManager::getInstance()->hasDownload(aConn->getUser(), QueueItem::HIGHEST)) {
+			removeConnection(aConn);
+			return;
+		}
 	}
 	
 	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser());
@@ -111,7 +114,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
 			d->setComp(new ZDecompressor());
-			aConn->getBZBlock(d->getSource(), d->getPos(), d->bytesLeft);
+			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft);
 		} else {
 			aConn->get(d->getSource(), d->getPos());
 		}
@@ -144,7 +147,17 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 	File* file;
 	try {
-		file = new BufferedFile(target, File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE));
+		// Let's check if we can find this file in a any .SFV...
+		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
+		if( BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC()) ) {
+			dcdebug("DownloadManager: Found sfv file for %s\n", d->getTarget().c_str());
+			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, true);
+		} else {
+			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, false);			
+		}
+
+		file->setPos(d->getPos());
+		
 	} catch(FileException e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
@@ -154,9 +167,8 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 
 	dcassert(d->getPos() != -1);
-	file->setPos(d->getPos());
 	d->setFile(file);
-
+	
 	if(newSize != -1)
 		d->setSize(newSize);
 	
@@ -296,24 +308,86 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
+	// First, finish writing the file (flushing the buffers and closing the file...)
+	try {
+		d->getFile()->close();
+	} catch(FileException e) {
+		fire(DownloadManagerListener::FAILED, d, e.getError());
+		
+		aSource->setDownload(NULL);
+		removeDownload(d);
+		removeConnection(aSource);
+		return;
+	}
+	
 	dcassert(d->getPos() == d->getSize());
 	dcdebug("Download finished: %s, size %I64d\n", d->getTarget().c_str(), d->getSize());
 
-	if(d->getFile()) {
-		delete d->getFile();
-		d->setFile(NULL);
+	// Check if we have some crc:s...
+	dcassert(d->getFile() != NULL);
+
+	if(BOOLSETTING(SFV_CHECK)) {
+		d->getFile()->close();
+		SFVReader sfv(d->getTarget());
+		if(sfv.hasCRC()) {
+			bool crcMatch;
+			const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+			if(d->getFile()->hasCRC32()) {
+				crcMatch = (d->getFile()->getCRC32() == sfv.getCRC());
+			} else {
+				// More complicated, we have to reread the file
+				try {
+					
+					File f(tgt, File::READ, File::OPEN, true);
+					const u_int32_t BUF_SIZE = 16 * 65536;
+					AutoArray<u_int8_t> b(BUF_SIZE);
+					while(f.read((u_int8_t*)b, BUF_SIZE) > 0)
+						;		// Keep on looping...
+
+					crcMatch = (f.getCRC32() == sfv.getCRC());
+				} catch (FileException) {
+					// Nope; read failed...
+					goto noCRC;
+				}
+			}
+
+			if(!crcMatch) {
+				File::deleteFile(tgt);
+				dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getTarget().c_str());
+				fire(DownloadManagerListener::FAILED, d, STRING(SFV_INCONSISTENCY));
+				
+				string target = d->getTarget();
+				
+				aSource->setDownload(NULL);
+				removeDownload(d);				
+				
+				QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_CRC_WARN, false);
+				checkDownloads(aSource);
+				return;
+			} 
+
+			d->setFlag(Download::FLAG_CRC32_OK);
+			
+			dcdebug("DownloadManager: CRC32 match for %s\n", d->getTarget().c_str());
+		}
 	}
+noCRC:
+	delete d->getFile();
+	d->setFile(NULL);
 	
 	if(BOOLSETTING(LOG_DOWNLOADS)) {
 		StringMap params;
 		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
+		params["hub"] = aSource->getUser()->getLastHubName();
+		params["hubip"] = aSource->getUser()->getLastHubIp();
 		params["size"] = Util::toString(d->getSize());
 		params["sizeshort"] = Util::formatBytes(d->getSize());
 		params["chunksize"] = Util::toString(d->getTotal());
 		params["chunksizeshort"] = Util::formatBytes(d->getTotal());
 		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
+		params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
 		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
 	}
 
@@ -373,6 +447,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 	if(d->getFile()) {
+		try {
+			d->getFile()->close();
+		} catch(FileException e) {
+			if(finished)
+				finished = false;
+		}
 		delete d->getFile();
 		d->setFile(NULL);
 	}
@@ -399,7 +479,6 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 		}
 	}
 	QueueManager::getInstance()->putDownload(d, finished);
-	
 }
 
 void DownloadManager::abortDownload(const string& aTarget) {
@@ -435,7 +514,7 @@ void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
 }
 
 // UserConnectionListener
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) throw() {
 	switch(type) {
 	case UserConnectionListener::MAXED_OUT: onMaxedOut(conn); break;
 	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailable(conn); break;
@@ -443,7 +522,7 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 	default: break;
 	}
 }
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw() {
 	switch(type) {
 	case UserConnectionListener::FILE_LENGTH:
 		onFileLength(conn, line); break;
@@ -453,7 +532,7 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 		break;
 	}
 }
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) {
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw() {
 	switch(type) {
 	case UserConnectionListener::DATA:
 		onData(conn, data, len); break;
@@ -462,7 +541,7 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 	}
 }
 
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) {
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) throw() {
 	switch(type) {
 	case UserConnectionListener::MODE_CHANGE:
 		onModeChange(conn, mode); break;
@@ -483,5 +562,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManager.cpp
- * $Id: DownloadManager.cpp,v 1.69 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.70 2003/03/13 13:31:19 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,12 @@
 #ifndef __WINUTIL_H
 #define __WINUTIL_H
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+class FlatTabCtrl;
+
 class WinUtil {
 public:
 	static CImageList fileImages;
@@ -29,16 +35,63 @@ public:
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static HFONT font;
+	static int fontHeight;
+	static HFONT boldFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
 	static StringList lastDirs;
 	static string lastKick;
 	static string lastRedirect;
 	static string lastServer;
-	
+	static HWND mainWnd;
+	static FlatTabCtrl* tabCtrl;
+	static string commands;
+
 	static void buildMenu();
 	static void decodeFont(const string& setting, LOGFONT &dest);
-	
+
+	/**
+	 * Check if this is a common /-command.
+	 * @param cmd The whole text string, will be updated to contain only the command.
+	 * @param param Set to any parameters.
+	 * @param message Message that should be sent to the chat.
+	 * @param status Message that should be shown in the status line.
+	 * @return True if the command was processed, false otherwise.
+	 */
+	static bool checkCommand(HWND mdiClient, string& cmd, string& param, string& message, string& status);
+
+	static int getTextWidth(const string& str, HWND hWnd) {
+		HDC dc = ::GetDC(hWnd);
+		int sz = getTextWidth(str, dc);
+		::ReleaseDC(mainWnd, dc);
+		return sz;
+	}
+	static int getTextWidth(const string& str, HDC dc) {
+		SIZE sz = { 0, 0 };
+		::GetTextExtentPoint32(dc, str.c_str(), str.length(), &sz);
+		return sz.cx;		
+	}
+
+	static int getTextHeight(HWND wnd, HFONT fnt) {
+		HDC dc = ::GetDC(wnd);
+		int h = getTextHeight(dc, fnt);
+		::ReleaseDC(wnd, dc);
+		return h;
+	}
+
+	static int getTextHeight(HDC dc, HFONT fnt) {
+		HGDIOBJ old = ::SelectObject(dc, fnt);
+		int h = getTextHeight(dc);
+		::SelectObject(dc, old);
+		return h;
+	}
+
+	static int getTextHeight(HDC dc) {
+		TEXTMETRIC tm;
+		::GetTextMetrics(dc, &tm);
+		return tm.tmHeight;
+	}
+
 	static void addLastDir(const string& dir) {
 		if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
 			return;
@@ -87,14 +140,6 @@ public:
 			return 2;
 		}
 	}
-	
-	static int getFontHeight(HDC dc, HFONT h) {
-		TEXTMETRIC tm;
-		HFONT old = (HFONT)SelectObject(dc, h);
-		GetTextMetrics(dc, &tm);      // Get the metrics for the new font.
-		SelectObject(dc, old);
-		return tm.tmHeight;
-	}
 
 	static int getDirIconIndex() {
 		return dirIconIndex;
@@ -111,5 +156,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.8 2003/03/13 13:32:09 arnetheduck Exp $
  */

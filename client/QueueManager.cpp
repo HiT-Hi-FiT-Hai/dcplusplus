@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "StringTokenizer.h"
 #include "DirectoryListing.h"
 #include "CryptoManager.h"
+#include "ShareManager.h"
 
 QueueManager* Singleton<QueueManager>::instance = NULL;
 
@@ -54,7 +55,7 @@ void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser, bool in
 	}
 }
 
-QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, bool paused /* = false */) {
+QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, QueueItem::Priority minPrio) {
 	int p = QueueItem::LAST - 1;
 
 	do {
@@ -64,7 +65,7 @@ QueueItem* QueueManager::UserQueue::getNext(const User::Ptr& aUser, bool paused 
 			return i->second.front();
 		}
 		p--;
-	} while(paused ? (p >= 0) : (p > 0));
+	} while(p >= minPrio);
 
 	return NULL;
 }
@@ -150,7 +151,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : dirty(false), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
+QueueManager::QueueManager() : dirty(false), searched(false), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -198,19 +199,23 @@ QueueManager::~QueueManager() {
 
 void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	if(BOOLSETTING(AUTO_SEARCH)) {
+		if(searched) {
+			searched = false;
+			return;
+		}
 
-		// We keep max 30 recent searches...
+		// We keep max 30 recent searches...this way we get an hour between
+		// each duplicate search.
 		while(recent.size() > 30) {
 			recent.erase(recent.begin());
 		}
 
 		string fn;
-		int64_t sz;
+		int64_t sz = 0;
 
 		{
 			Lock l(cs);
 			if(queue.size() > 0) {
-				bool searched = false;
 				// We pick a start position at random, hoping that we will find something to search for...
 				QueueItem::StringMap::size_type start = (QueueItem::StringMap::size_type)Util::rand(queue.size());
 
@@ -224,16 +229,17 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 						(q->getStatus() == QueueItem::STATUS_RUNNING) ||
 						(q->getPriority() == QueueItem::PAUSED) ||
 						(q->hasOnlineUsers()) ||
-						(find(recent.begin(), recent.end(), q->getTarget()) != recent.end())
+						(find(recent.begin(), recent.end(), q->getTargetFileName()) != recent.end())
 					  ) {
 						continue;
 					}
 					searched = true;
 					fn = q->getTargetFileName();
 					sz = q->getSize() - 1;
-					recent.push_back(q->getTarget());
+					recent.push_back(q->getTargetFileName());
 					break;
 				}
+
 				if(!searched) {
 					for(j = queue.begin(); j != i; ++j) {
 						QueueItem* q = j->second;
@@ -242,14 +248,15 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 							(q->getStatus() == QueueItem::STATUS_RUNNING) ||
 							(q->getPriority() == QueueItem::PAUSED) ||
 							(q->hasOnlineUsers()) ||
-							(find(recent.begin(), recent.end(), q->getTarget()) != recent.end())
+							(find(recent.begin(), recent.end(), q->getTargetFileName()) != recent.end())
 							) {
 								continue;
 						}
 
 						fn = q->getTargetFileName();
 						sz = q->getSize() - 1;
-						recent.push_back(q->getTarget());
+						recent.push_back(q->getTargetFileName());
+						searched = true;
 						break;
 					}
 				}
@@ -257,7 +264,7 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 		}
 
 		if(!fn.empty())
-			SearchManager::getInstance()->search(SearchManager::clean(fn), sz, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
+			SearchManager::getInstance()->search(SearchManager::clean(fn), sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
 	}
 }
 
@@ -281,7 +288,6 @@ string QueueManager::getTempName(const string& aFileName) {
 	return tmp;
 }
 
-
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
 					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */, 
@@ -299,6 +305,11 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
 	}
 #endif
+
+	// Check that target contains at least one directory...we don't want headless files...
+	if(aTarget.find('\\') == string::npos) {
+		throw QueueException(STRING(INVALID_TARGET_FILE));
+	}
 
 	string target = Util::filterFileName(aTarget);
 	// Check that the file doesn't already exist...
@@ -490,7 +501,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 		for(QueueItem::Source::Iter i = copy->getSources().begin(); i != copy->getSources().end(); ++i) {
 			try {
 				QueueItem::Source* s = *i;
-				add(s->getPath(), copy->getSize(), s->getUser(), copy->getTarget());
+				add(s->getPath(), copy->getSize(), s->getUser(), aTarget);
 			} catch(Exception e) {
 				// Blah, ignore...
 			}
@@ -570,8 +581,9 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 					File::deleteFile(fname);
 				}
 			}
+		} else if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
+			File::deleteFile(aDownload->getTempTarget());
 		}
-
 		aDownload->setUserConnection(NULL);
 		delete aDownload;
 	}
@@ -634,6 +646,8 @@ void QueueManager::remove(const string& aTarget) throw() {
 			lastInsert = queue.end();
 			if(q->getStatus() == QueueItem::STATUS_RUNNING) {
 				x = q->getTarget();
+			} else if(!q->getTempTarget().empty() && q->getTempTarget() != q->getTarget()) {
+				File::deleteFile(q->getTempTarget());
 			}
 
 			userQueue.remove(q);
@@ -657,6 +671,15 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
 			remove(q->getTarget());
 			return;
+		}
+		if(reason == QueueItem::Source::FLAG_CRC_WARN) {
+			// Already flagged?
+			if((*q->getSource(aUser))->isSet(QueueItem::Source::FLAG_CRC_WARN)) {
+				reason = QueueItem::Source::FLAG_CRC_FAILED;
+			} else {
+				q->setFlag(reason);
+				return;
+			}
 		}
 		if((q->getStatus() == QueueItem::STATUS_RUNNING) && q->getCurrent()->getUser() == aUser) {
 			if(removeConn)
@@ -682,7 +705,7 @@ void QueueManager::removeSources(User::Ptr& aUser, int reason) throw() {
 	{
 		Lock l(cs);
 		QueueItem* qi = NULL;
-		while( (qi = userQueue.getNext(aUser, true)) != NULL) {
+		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL) {
 			userQueue.remove(qi, aUser);
 			qi->removeSource(aUser, reason);
 			fire(QueueManagerListener::SOURCES_UPDATED, qi);
@@ -1028,5 +1051,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.35 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.36 2003/03/13 13:31:27 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -176,8 +176,8 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* qi) {
 				tmp += STRING(PASSIVE_USER);
 			} else if(sr->isSet(QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY)) {
 				tmp += STRING(ROLLBACK_INCONSISTENCY);
-			} else {
-				dcassert(0 == "Unkown error?");
+			} else if(sr->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
+				tmp += STRING(SFV_INCONSISTENCY);
 			}
 			tmp += ')';
 		}
@@ -248,7 +248,8 @@ void QueueFrame::addQueueItem(QueueItem* qi) {
 	
 	if(updateDir) {
 		addDirectory(dir, qi->isSet(QueueItem::FLAG_USER_LIST));
-	} else if(curDir == dir) {
+	} 
+	if(!showTree || (curDir == dir)) {
 		StringListInfo sli(qi);
 		StringList l;
 		
@@ -275,6 +276,7 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.SetRedraw(TRUE);
 	ctrlDirs.Invalidate();
 }
+
 void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, string* s /* = NULL*/ ) {
 	TV_INSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_SORT;
@@ -394,6 +396,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 	delete (string*)ctrlDirs.GetItemData(ht);
 	ctrlDirs.DeleteItem(ht);
 }
+
 void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 	QueueItem* qi = NULL;
 	{
@@ -462,7 +465,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 	speak(SET_TEXT, qi);
 }
 
-LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	Lock l(cs);
 	spoken = false;
 
@@ -476,7 +479,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			QueueItem* qi = (QueueItem*)ti->second;
 			string dir = Util::getFilePath(qi->getTarget());
 			
-			if(dir == curDir) {
+			if(!showTree || (dir == curDir)) {
 				dcassert(ctrlQueue.find((LPARAM)qi) != -1);
 				ctrlQueue.DeleteItem(ctrlQueue.find((LPARAM)qi));
 				updateStatus();
@@ -503,7 +506,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			QueueItem* qi = (QueueItem*)ti->second;
 			
 			string dir = Util::getFilePath(qi->getTarget());
-			if(dir == curDir) {
+			if(!showTree || (dir == curDir) ) {
 				StringListInfo sli(qi);
 				int n = ctrlQueue.find((LPARAM)qi);
 				dcassert(n != -1);
@@ -517,7 +520,10 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			}
 		}
 	}
-	tasks.clear();
+	if(tasks.size() > 0) {
+		setDirty();
+		tasks.clear();
+	}
 
 	return 0;
 }
@@ -527,7 +533,7 @@ void QueueFrame::moveSelected() {
 	int n = ctrlQueue.GetSelectedCount();
 	if(n == 1) {
 		// Single file, get the full filename and move...
-		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(n);
+		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 		string name = qi->getTarget();
 		if(WinUtil::browseFile(name, m_hWnd, true, Util::getFilePath(name))) {
 			QueueManager::getInstance()->move(qi->getTarget(), name);
@@ -566,12 +572,13 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 		moveDir(next, target);
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
-	
 	string* s = (string*)ctrlDirs.GetItemData(ht);
+	string name = target + s->substr(curDir.length());
+	
 	DirectoryPair p = directories.equal_range(*s);
+	
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
 		QueueItem* qi = i->second;
-		string name = target + s->substr(curDir.length());
 		QueueManager::getInstance()->move(qi->getTarget(), name + qi->getTargetFileName());
 	}			
 }
@@ -803,7 +810,7 @@ void QueueFrame::removeDir(HTREEITEM ht) {
 		removeDir(child);
 		child = ctrlDirs.GetNextSiblingItem(child);
 	}
-	string name = getDir(ht);
+	const string& name = getDir(ht);
 	DirectoryPair dp = directories.equal_range(name);
 	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
 		QueueManager::getInstance()->remove(i->second->getTarget());
@@ -932,7 +939,7 @@ void QueueFrame::updateQueue() {
 	curDir = getSelectedDir();
 }
 
-void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
+void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) throw() { 
 	switch(type) {
 	case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
 	case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); onQueueUpdated(aQI); break;
@@ -946,7 +953,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) {
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.16 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.17 2003/03/13 13:32:01 arnetheduck Exp $
  */
 
 

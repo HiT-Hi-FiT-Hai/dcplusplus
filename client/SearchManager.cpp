@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,9 +43,12 @@ string SearchResult::getFileName() {
 };
 
 void SearchManager::setPort(short aPort) throw(SocketException) {
+	port = aPort;
 	if(socket != NULL) {
+		stop = true;
 		socket->disconnect();
 		join();
+		stop = false;
 	} else {
 		socket = new Socket();
 	}
@@ -60,13 +63,29 @@ int SearchManager::run() {
 	
 	AutoArray<u_int8_t> buf(BUFSIZE);
 	int len;
-	try {
-		while( (len = socket->read((u_int8_t*)buf, BUFSIZE)) != 0) {
-			onData(buf, len);
+
+	while(true) {
+
+		try {
+			while( (len = socket->read((u_int8_t*)buf, BUFSIZE)) != 0) {
+				onData(buf, len);
+			}
+		} catch(SocketException e) {
+			dcdebug("SearchManager::run Error: %s\n", e.getError().c_str());
 		}
-	} catch(SocketException e) {
-		dcdebug("SearchManager::run Stopped listening: %s\n", e.getError().c_str());
-		return 1;
+		if(stop) {
+			return 0;
+		}
+
+		try {
+			socket->disconnect();
+			socket->create(Socket::TYPE_UDP);
+			socket->bind(port);
+		} catch(SocketException e) {
+			// Oops, fatal this time...
+			dcdebug("SearchManager::run Stopped listening: %s\n", e.getError().c_str());
+			return 1;
+		}
 	}
 	
 	return 0;
@@ -149,6 +168,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.23 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.24 2003/03/13 13:31:29 arnetheduck Exp $
  */
 

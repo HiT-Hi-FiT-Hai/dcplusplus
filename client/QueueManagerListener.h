@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
 #if !defined(AFX_QUEUEMANAGERLISTENER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 #define AFX_QUEUEMANAGERLISTENER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 class QueueItem;
 
 class QueueManagerListener {
@@ -37,7 +41,7 @@ public:
 		QUEUE_ITEM
 	};
 
-	virtual void onAction(Types, QueueItem*) { };
+	virtual void onAction(Types, QueueItem*) throw() = 0;
 };
 
 #endif

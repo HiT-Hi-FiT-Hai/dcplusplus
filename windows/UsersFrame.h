@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,7 +156,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type, const User::Ptr& aUser) {
+	virtual void onAction(HubManagerListener::Types type, const User::Ptr& aUser) throw() {
 		switch(type) {
 		case HubManagerListener::USER_ADDED: addUser(aUser); break;
 		case HubManagerListener::USER_REMOVED: removeUser(aUser); break;
@@ -164,7 +164,7 @@ private:
 	}
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) {
+	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
 		switch(type) {
 		case ClientManagerListener::USER_UPDATED:
 			if(HubManager::getInstance()->isFavoriteUser(aUser)) {
@@ -182,6 +182,6 @@ private:
 
 /**
  * @file UsersFrame.h
- * $Id: UsersFrame.h,v 1.3 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.4 2003/03/13 13:32:09 arnetheduck Exp $
  */
 

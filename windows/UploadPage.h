@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #ifndef UPLOADPAGE_H
 #define UPLOADPAGE_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
@@ -43,7 +47,8 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-
+	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
+	
 protected:
 	static Item items[];
 	ExListViewCtrl ctrlDirectories;
@@ -54,6 +59,6 @@ protected:
 
 /**
  * @file UploadPage.h
- * $Id: UploadPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.3 2003/03/13 13:32:08 arnetheduck Exp $
  */
 

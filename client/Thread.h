@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,21 +78,21 @@ public:
 		NORMAL = 0,
 		HIGH = -1
 	};
-	Thread() throw() : t(0) { };
+	Thread() throw() : threadHandle(0) { };
 	virtual ~Thread() { 
-		if(t != 0) {
-			pthread_detach(t);
+		if(threadHandle != 0) {
+			pthread_detach(threadHandle);
 		}
 	};
 	void start() throw(ThreadException) { 
-		if(pthread_create(&t, NULL, &starter, this) != 0) {
+		if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
 			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 		}
 	};
 	void join() throw() { 
 		void* x;
-		pthread_join(t, &x);
-		t = 0;
+		pthread_join(threadHandle, &x);
+		threadHandle = 0;
 	};
 
 	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); };
@@ -124,7 +124,7 @@ private:
 		return 0;
 	}
 #else
-	pthread_t t;
+	pthread_t threadHandle;
 	static void* starter(void* p) {
 		Thread* t = (Thread*)p;
 		t->run();
@@ -137,6 +137,6 @@ private:
 
 /**
  * @file Thread.h
- * $Id: Thread.h,v 1.5 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: Thread.h,v 1.6 2003/03/13 13:31:36 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ void User::connect() {
 	}
 }
 
-const string& User::getClientNick() {
+const string& User::getClientNick() const {
 	RLock l(cs);
 	if(client) {
 		return client->getNick();
@@ -56,7 +56,7 @@ void User::updated(User::Ptr& aUser) {
 	}
 }
 
-const string& User::getClientName() {
+const string& User::getClientName() const {
 	RLock l(cs);
 	if(client) {
 		return client->getName();
@@ -118,6 +118,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.16 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: User.cpp,v 1.17 2003/03/13 13:31:39 arnetheduck Exp $
  */
 

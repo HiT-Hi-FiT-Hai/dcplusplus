@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "SettingsManager.h"
 #include "StringTokenizer.h"
 #include "FinishedManager.h"
+#include "ADLSearch.h"
 
 void startup(void (*f)(void*, const string&), void* p) {
 	Util::initialize();
@@ -53,6 +54,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	HubManager::newInstance();
 	QueueManager::newInstance();
 	FinishedManager::newInstance();
+	ADLSearchManager::newInstance();
 
 	SettingsManager::getInstance()->load();	
 
@@ -65,31 +67,37 @@ void startup(void (*f)(void*, const string&), void* p) {
 		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
 	}
 
-	// Update server list to use bz2 lists instead...
-	StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
-	string tmp;
-	for(StringIter j = st.getTokens().begin(); j != st.getTokens().end(); ++j) {
-		if(*j == "http://dcpp.lichlord.org/PublicHubList.config") {
-			tmp += string("http://dcpp.lichlord.org/PublicHubList.config.bz2") + ";";
-		} else if(*j == "http://dcpp.lichlord.org/FullList.config") {
-			tmp += string("http://dcpp.lichlord.org/FullList.config.bz2") + ";";
-		} else {
-			tmp += *j + ';';
+	if(Util::toDouble(SETTING(CONFIG_VERSION)) <= 0.22) {
+		// Disable automatic public hublist opening
+		SettingsManager::getInstance()->set(SettingsManager::OPEN_PUBLIC, false);
+
+		// Update server list to use bz2 lists instead...
+		StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
+		string tmp;
+		for(StringIter j = st.getTokens().begin(); j != st.getTokens().end(); ++j) {
+			if(*j == "http://dcpp.lichlord.org/PublicHubList.config") {
+				tmp += string("http://dcpp.lichlord.org/PublicHubList.config.bz2") + ";";
+			} else if(*j == "http://dcpp.lichlord.org/FullList.config") {
+				tmp += string("http://dcpp.lichlord.org/FullList.config.bz2") + ";";
+			} else if(*j == "http://dcplusplus.sourceforge.net/PublicHubList.config") {
+				tmp += string("http://dcplusplus.sourceforge.net/PublicHubList.config.bz2") + ";";
+			} else {
+				tmp += *j + ';';
+			}
 		}
+		if(!tmp.empty()) {
+			tmp.erase(tmp.size()-1);
+		}
+
+		SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
 	}
 	
-	if(!tmp.empty()) {
-		tmp.erase(tmp.size()-1);
-	}
-
-	SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
 
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
 
 	ShareManager::getInstance()->refresh(false, false, true);
-	HubManager::getInstance()->refresh();
 }
 
 void shutdown() {
@@ -98,6 +106,7 @@ void shutdown() {
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
 	
+	ADLSearchManager::deleteInstance();
 	FinishedManager::deleteInstance();
 	ShareManager::deleteInstance();
 	CryptoManager::deleteInstance();
@@ -116,6 +125,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.19 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.20 2003/03/13 13:31:17 arnetheduck Exp $
  */
 

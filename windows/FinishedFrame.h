@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ public:
 	FinishedFrame() : totalBytes(0), totalTime(0) { };
 	virtual ~FinishedFrame() { };
 
-	DECLARE_FRAME_WND_CLASS_EX("FinishedFrame", IDR_QUEUE, 0, COLOR_3DFACE);
+	DECLARE_FRAME_WND_CLASS_EX("FinishedFrame", IDR_FINISHED_DL, 0, COLOR_3DFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		frame = NULL;
@@ -50,7 +50,8 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_TOTAL, BN_CLICKED, onRemove)
-		COMMAND_HANDLER(IDC_OPENPUBLIC, BN_CLICKED, onOpen)
+		COMMAND_HANDLER(IDC_OPEN_FILE, BN_CLICKED, onOpenFile)
+		COMMAND_HANDLER(IDC_OPEN_FOLDER, BN_CLICKED, onOpenFolder)
 		NOTIFY_HANDLER(IDC_FINISHED, LVN_COLUMNCLICK, onColumnClickFinished)
 		NOTIFY_HANDLER(IDC_FINISHED, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FINISHED, NM_DBLCLK, onDoubleClick)
@@ -61,8 +62,9 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		
+	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
@@ -162,6 +164,7 @@ private:
 		COLUMN_NICK,
 		COLUMN_SIZE,
 		COLUMN_SPEED,
+		COLUMN_CRC32,
 		COLUMN_LAST
 	};
 	
@@ -184,33 +187,21 @@ private:
 	void updateList(const FinishedItem::List& fl) {
 		ctrlList.SetRedraw(FALSE);
 		for(FinishedItem::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			addEntry(*i);
+			addEntry(*i, false);
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
 		updateStatus();
 	}
 
-	void addEntry(FinishedItem* entry) {
-		StringList l;
-		l.push_back(entry->getTime());
-		l.push_back(entry->getTarget());
-		l.push_back(entry->getUser());
-		l.push_back(Util::formatBytes(entry->getSize()));
-		l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-		int loc = ctrlList.insert(l, 0, (LPARAM)entry);
-		ctrlList.EnsureVisible(loc, FALSE);
-
-		totalBytes += entry->getSize();
-		totalTime += entry->getMilliSeconds();
-	}
+	void addEntry(FinishedItem* entry, bool dirty = true);
 	
-	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry);
+	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw();
 };
 
 #endif // FINISHEDFRAME_H
 
 /**
  * @file FinishedFrame.h
- * $Id: FinishedFrame.h,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.4 2003/03/13 13:31:50 arnetheduck Exp $
  */

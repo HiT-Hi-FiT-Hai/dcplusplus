@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,12 +35,21 @@ class User : public PointerBase, public Flags
 {
 public:
 	enum {
-		OP = 0x01,
-		ONLINE = 0x02,
-		DCPLUSPLUS = 0x04,
-		PASSIVE = 0x08,
-		QUIT_HUB = 0x10
+		OP_BIT,
+		ONLINE_BIT,
+		DCPLUSPLUS_BIT,
+		PASSIVE_BIT,
+		QUIT_HUB_BIT
 	};
+
+	enum {
+		OP = 1<<OP_BIT,
+		ONLINE = 1<<ONLINE_BIT,
+		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
+		PASSIVE = 1<<PASSIVE_BIT,
+		QUIT_HUB = 1<<QUIT_HUB_BIT
+	};
+
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
@@ -56,9 +65,9 @@ public:
 
 	void setClient(Client* aClient);
 	void connect();
-	const string& getClientNick();
+	const string& getClientNick() const;
 	void update();
-	const string& getClientName();
+	const string& getClientName() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
 	void kick(const string& aMsg);
@@ -80,7 +89,8 @@ public:
 	GETSETREF(string, lastHubName, LastHubName);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
-	RWLock cs;
+
+	mutable RWLock cs;
 	
 	Client* client;
 };
@@ -89,6 +99,6 @@ private:
 
 /**
  * @file User.h
- * $Id: User.h,v 1.22 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: User.h,v 1.23 2003/03/13 13:31:39 arnetheduck Exp $
  */
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_HANDLER(IDC_HUBNICK, EN_CHANGE, OnTextChanged)
 		COMMAND_HANDLER(IDC_HUBPASS, EN_CHANGE, OnTextChanged)
+		COMMAND_HANDLER(IDC_HUBUSERDESCR, EN_CHANGE, OnTextChanged)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
@@ -53,5 +54,5 @@ protected:
 
 /**
  * @file FavHubProperties.h
- * $Id: FavHubProperties.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: FavHubProperties.h,v 1.3 2003/03/13 13:31:49 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,6 +178,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.4 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.5 2003/03/13 13:31:51 arnetheduck Exp $
  */
 

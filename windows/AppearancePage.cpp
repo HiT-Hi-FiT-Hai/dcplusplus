@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,15 +34,28 @@ static char THIS_FILE[] = __FILE__;
 
 PropPage::Item AppearancePage::items[] = {
 	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
-	{ IDC_FILTERKICK, SettingsManager::FILTER_KICKMSGS, PropPage::T_BOOL }, 
+	{ IDC_FILTERKICK, SettingsManager::FILTER_MESSAGES, PropPage::T_BOOL }, 
 	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
 	{ IDC_TIMESTAMPS, SettingsManager::TIME_STAMPS, PropPage::T_BOOL },
 	{ IDC_CONFIRMEXIT, SettingsManager::CONFIRM_EXIT, PropPage::T_BOOL },
+	{ IDC_DEFAULT_AWAY_MESSAGE, SettingsManager::DEFAULT_AWAY_MESSAGE, PropPage::T_STR },
 	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
 	{ IDC_STATUS_IN_CHAT, SettingsManager::STATUS_IN_CHAT, PropPage::T_BOOL },
 	{ IDC_SHOW_JOINS, SettingsManager::SHOW_JOINS, PropPage::T_BOOL },
 	{ IDC_USE_SYSTEM_ICONS, SettingsManager::USE_SYSTEM_ICONS, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
+};
+
+PropPage::ListItem AppearancePage::listItems[] = {
+	{ SettingsManager::FULL_ROW_SELECT, ResourceManager::SETTINGS_APPEARANCE_FULL_ROW_SELECT },
+	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_APPEARANCE_FILTER_MESSAGES },
+	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_APPEARANCE_MINIMIZE_TRAY },
+	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_APPEARANCE_TIME_STAMPS },
+	{ SettingsManager::CONFIRM_EXIT, ResourceManager::SETTINGS_APPEARANCE_CONFIRM_EXIT },
+	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_STATUS_IN_CHAT },
+	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_APPEARANCE_SHOW_JOINS },
+	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_APPEARANCE_USE_SYSTEM_ICONS },
+	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
 AppearancePage::~AppearancePage()
@@ -55,7 +68,7 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
-	PropPage::read((HWND)*this, items);
+	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
 	WinUtil::decodeFont(SETTING(TEXT_FONT), font);
 
 	// Do specialized reading here
@@ -68,7 +81,7 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 void AppearancePage::write()
 {
-	PropPage::write((HWND)*this, items);
+	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
@@ -137,5 +150,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.4 2003/03/13 13:31:45 arnetheduck Exp $
  */

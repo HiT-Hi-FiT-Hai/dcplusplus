@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include "QueueFrame.h"
 #include "SpyFrame.h"
 #include "FinishedFrame.h"
+#include "ADLSearchFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -49,6 +50,8 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 MainFrame::~MainFrame() {
 	arrows.Destroy();
 	images.Destroy();
+	m_CmdBar.m_hImageList = NULL;
+
 	largeImages.Destroy();
 
 	DeleteObject(WinUtil::bgBrush);
@@ -73,6 +76,275 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
+}
+
+LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+
+	TimerManager::getInstance()->addListener(this);
+	DownloadManager::getInstance()->addListener(this);
+	UploadManager::getInstance()->addListener(this);
+	ConnectionManager::getInstance()->addListener(this);
+	QueueManager::getInstance()->addListener(this);
+
+	// Register server socket message
+	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
+		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
+
+	WinUtil::mainWnd = m_hWnd;
+
+	LOGFONT lf;
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::encodeFont(lf));
+	WinUtil::decodeFont(SETTING(TEXT_FONT), lf);
+
+	WinUtil::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
+	WinUtil::textColor = SETTING(TEXT_COLOR);
+	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
+	WinUtil::font = ::CreateFontIndirect(&lf);
+	WinUtil::fontHeight = WinUtil::getTextHeight(m_hWnd, WinUtil::font);
+	lf.lfWeight = FW_BOLD;
+	WinUtil::boldFont = ::CreateFontIndirect(&lf);
+
+	trayMessage = RegisterWindowMessage("TaskbarCreated");
+
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		WinUtil::fileImages = CImageList::Duplicate((HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES));
+		WinUtil::fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
+		WinUtil::dirIconIndex = fi.iIcon;	
+	} else {
+		WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+		WinUtil::dirIconIndex = 0;
+	}
+
+	TimerManager::getInstance()->start();
+
+	if(!SETTING(LANGUAGE_FILE).empty()) {
+		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
+	}
+
+	// Set window name
+	SetWindowText(APPNAME " " VERSIONSTRING);
+
+	// Load images
+	// create command bar window
+	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+
+	WinUtil::buildMenu();
+	m_hMenu = WinUtil::mainMenu;
+
+	// attach menu
+	m_CmdBar.AttachMenu(WinUtil::mainMenu);
+	// load command bar images
+	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	m_CmdBar.m_hImageList = images;
+
+	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
+	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
+	m_CmdBar.m_arrCommand.Add(IDC_FINISHED); // adds icon to File menu
+	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
+	
+	// remove old menu
+	SetMenu(NULL);
+
+	HWND hWndToolBar = createToolbar();
+
+	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
+	AddSimpleReBarBand(hWndCmdBar);
+	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+	CreateSimpleStatusBar();
+
+	ctrlStatus.Attach(m_hWndStatusBar);
+	ctrlStatus.SetSimple(FALSE);
+	int w[6] = { 0, 0, 0, 0, 0, 0 };
+	ctrlStatus.SetParts(6, w);
+
+	CreateMDIClient();
+	m_CmdBar.SetMDIClient(m_hWndMDIClient);
+
+	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
+
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+	} else {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
+	}
+
+	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
+
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
+	}
+
+	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+
+	ctrlTransfers.SetBkColor(WinUtil::bgColor);
+	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
+	ctrlTransfers.SetTextColor(WinUtil::textColor);
+
+	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
+
+	ctrlTab.Create(m_hWnd, rcDefault);
+	WinUtil::tabCtrl = &ctrlTab;
+
+	SetSplitterPanes(m_hWndClient, ctrlTransfers.m_hWnd);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	m_nProportionalPos = 8000;
+
+	UIAddToolBar(hWndToolBar);
+	UISetCheck(ID_VIEW_TOOLBAR, 1);
+	UISetCheck(ID_VIEW_STATUS_BAR, 1);
+
+	// register object for message filtering and idle updates
+	CMessageLoop* pLoop = _Module.GetMessageLoop();
+	ATLASSERT(pLoop != NULL);
+	pLoop->AddMessageFilter(this);
+	pLoop->AddIdleHandler(this);
+
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+
+		short lastPort = (short)SETTING(IN_PORT);
+		short firstPort = lastPort;
+
+		while(true) {
+			try {
+				ConnectionManager::getInstance()->setPort(lastPort);
+				WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
+				SearchManager::getInstance()->setPort(lastPort);
+				break;
+			} catch(Exception e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
+				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
+					// Changing default didn't change port, a fixed port must be in use...(or we
+					// tried all ports
+					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					MessageBox(buf);
+					delete[] buf;
+					break;
+				}
+				lastPort = newPort;
+			}
+		}
+	}
+
+	transferMenu.CreatePopupMenu();
+
+	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	transferMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	transferMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	transferMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
+	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
+	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
+
+	c->addListener(this);
+	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+
+	if(BOOLSETTING(OPEN_PUBLIC))
+		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
+	if(BOOLSETTING(OPEN_QUEUE))
+		PostMessage(WM_COMMAND, IDC_QUEUE);
+
+	PostMessage(WM_SPEAKER, AUTO_CONNECT);
+	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
+
+	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
+
+	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
+
+	// We want to pass this one on to the splitter...hope it get's there...
+	bHandled = FALSE;
+	return 0;
+}
+
+HWND MainFrame::createToolbar() {
+
+	CToolBarCtrl ctrl;
+	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
+	ctrl.SetImageList(largeImages);
+
+	TBBUTTON tb[10];
+	memset(tb, 0, sizeof(tb));
+	int n = 0;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_CONNECT;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_RECONNECT;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FOLLOW;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FAVORITES;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_QUEUE;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++; // toolbar icon
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FINISHED;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_SEARCH;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_SETTINGS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_NOTEPAD;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	ctrl.SetButtonStructSize();
+	ctrl.AddButtons(10, tb);
+	ctrl.AutoSize();
+
+	return ctrl.m_hWnd;
 }
 
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -147,16 +419,24 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			// ...
 		}
 	} else if(wParam == STATS) {
-		StringList* str = (StringList*)lParam;
+		StringList& str = *(StringList*)lParam;
 		if(ctrlStatus.IsWindow()) {
-
-			ctrlStatus.SetText(1, (*str)[0].c_str());
-			ctrlStatus.SetText(2, (*str)[1].c_str());
-			ctrlStatus.SetText(3, (*str)[2].c_str());
-			ctrlStatus.SetText(4, (*str)[3].c_str());
-			ctrlStatus.SetText(5, (*str)[4].c_str());
+			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
+			bool u = false;
+			for(int i = 0; i < 5; i++) {
+				int w = WinUtil::getTextWidth(str[i], dc);
+				
+				if(statusSizes[i] < w) {
+					statusSizes[i] = w;
+					u = true;
+				}
+				ctrlStatus.SetText(i+1, str[i].c_str());
+			}
+			::ReleaseDC(ctrlStatus.m_hWnd, dc);
+			if(u)
+				UpdateLayout(TRUE);
 		}
-		delete str;
+		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
 		autoConnect(HubManager::getInstance()->lockFavoriteHubs());
 		HubManager::getInstance()->unlockFavoriteHubs();
@@ -371,245 +651,6 @@ void MainFrame::onDownloadTick(const Download::List& dl) {
 	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
 }
 
-HWND MainFrame::createToolbar() {
-	
-	CToolBarCtrl ctrl;
-	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrl.SetImageList(largeImages);
-	
-	TBBUTTON tb[8];
-	memset(tb, 0, sizeof(tb));
-	int n = 0;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = ID_FILE_CONNECT;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = ID_FILE_RECONNECT;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-	
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = IDC_FOLLOW;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = IDC_FAVORITES;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = IDC_QUEUE;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = ID_FILE_SEARCH;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-	
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = ID_FILE_SETTINGS;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = IDC_NOTEPAD;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-		
-	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(8, tb);
-	ctrl.AutoSize();
-
-	return ctrl.m_hWnd;
-}
-
-LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-
-	TimerManager::getInstance()->addListener(this);
-	DownloadManager::getInstance()->addListener(this);
-	UploadManager::getInstance()->addListener(this);
-	ConnectionManager::getInstance()->addListener(this);
-	QueueManager::getInstance()->addListener(this);
-	
-	LOGFONT lf;
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::encodeFont(lf));
-	WinUtil::decodeFont(SETTING(TEXT_FONT), lf);
-
-	WinUtil::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
-	WinUtil::textColor = SETTING(TEXT_COLOR);
-	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
-	WinUtil::font = ::CreateFontIndirect(&lf);
-
-	trayMessage = RegisterWindowMessage("DCPP_TaskbarCreated");
-
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		WinUtil::fileImages = CImageList::Duplicate((HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES));
-		WinUtil::fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
-		WinUtil::dirIconIndex = fi.iIcon;	
-	} else {
-		WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-		WinUtil::dirIconIndex = 0;
-	}
-	
-	TimerManager::getInstance()->start();
-	
-	if(!SETTING(LANGUAGE_FILE).empty()) {
-		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
-	}
-
-	// Set window name
-	SetWindowText(APPNAME " " VERSIONSTRING);
-
-	// Load images
-	// create command bar window
-	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-
-	WinUtil::buildMenu();
-	m_hMenu = WinUtil::mainMenu;
-
-	// attach menu
-	m_CmdBar.AttachMenu(WinUtil::mainMenu);
-	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	m_CmdBar.m_hImageList = images;
-	
-	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
-	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
-	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
-	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
-	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-	
-	// remove old menu
-	SetMenu(NULL);
-	
-	HWND hWndToolBar = createToolbar();
-	
-	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-	AddSimpleReBarBand(hWndCmdBar);
-	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	CreateSimpleStatusBar();
-	
-	ctrlStatus.Attach(m_hWndStatusBar);
-	ctrlStatus.SetSimple(FALSE);
-	
-	CreateMDIClient();
-	m_CmdBar.SetMDIClient(m_hWndMDIClient);
-	
-	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
-	} else {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
-	}
-
-	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
-	
-	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
-		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
-	}
-	
-	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	
-	ctrlTransfers.SetBkColor(WinUtil::bgColor);
-	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
-	ctrlTransfers.SetTextColor(WinUtil::textColor);
-	
-	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	
-	ctrlTab.Create(m_hWnd, rcDefault);
-	
-	SetSplitterPanes(m_hWndClient, ctrlTransfers.m_hWnd);
-	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	m_nProportionalPos = 8000;
-	
-	UIAddToolBar(hWndToolBar);
-	UISetCheck(ID_VIEW_TOOLBAR, 1);
-	UISetCheck(ID_VIEW_STATUS_BAR, 1);
-	
-	// register object for message filtering and idle updates
-	CMessageLoop* pLoop = _Module.GetMessageLoop();
-	ATLASSERT(pLoop != NULL);
-	pLoop->AddMessageFilter(this);
-	pLoop->AddIdleHandler(this);
-
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		
-		short lastPort = (short)SETTING(IN_PORT);
-		short firstPort = lastPort;
-		
-		while(true) {
-			try {
-				ConnectionManager::getInstance()->setPort(lastPort);
-				SearchManager::getInstance()->setPort(lastPort);
-				break;
-			} catch(Exception e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
-				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
-				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
-					// Changing default didn't change port, a fixed port must be in use...(or we
-					// tried all ports
-					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
-					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
-					MessageBox(buf);
-					delete[] buf;
-					break;
-				}
-				lastPort = newPort;
-			}
-		}
-	}
-
-	transferMenu.CreatePopupMenu();
-
-	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	transferMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
-	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
-
-	c->addListener(this);
-	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
-
-	if(BOOLSETTING(OPEN_PUBLIC))
-		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
-	if(BOOLSETTING(OPEN_QUEUE))
-		PostMessage(WM_COMMAND, IDC_QUEUE);
-	
-	PostMessage(WM_SPEAKER, AUTO_CONNECT);
-	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
-
-	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
-
-	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
-	
-	// We want to pass this one on to the splitter...hope it get's there...
-	bHandled = FALSE;
-	return 0;
-}
 
 void MainFrame::parseCommandLine(const string& cmdLine)
 {
@@ -744,6 +785,21 @@ LRESULT MainFrame::onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT MainFrame::onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
+{
+	if(ADLSearchFrame::frame == NULL) 
+	{
+		ADLSearchFrame* pChild = new ADLSearchFrame();
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+	} else 
+	{
+		MDIActivate(ADLSearchFrame::frame->m_hWnd);
+	}
+
+	return 0;
+}
+
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	CAboutDlg dlg;
 	dlg.DoModal(m_hWnd);
@@ -841,6 +897,8 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_FILE_SEARCH; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_FILE_SETTINGS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_FILE_NOTEPAD; break;
+			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_FILE_ADL_SEARCH; break;
+			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break; // tooltip
 		}
 		if(stringId != -1) {
 			strncpy(pDispInfo->lpszText, ResourceManager::getInstance()->getString((ResourceManager::Strings)stringId).c_str(), 79);
@@ -854,7 +912,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect())
-			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword());
+			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 }
 
@@ -951,7 +1009,7 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
-LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(c != NULL) {
 		c->removeListener(this);
 		delete c;
@@ -1062,8 +1120,8 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
 	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
 	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1"; break;
-	case IDC_HELP_HELP_FORUM: site = "http://dcpp.lichlord.org/forum"; break;
-	case IDC_HELP_DISCUSS: site = "http://dcpp.lichlord.org/forum"; break;
+	case IDC_HELP_HELP_FORUM: site = "http://dcplusplus.sf.net/forum"; break;
+	case IDC_HELP_DISCUSS: site = "http://dcplusplus.sf.net/forum"; break;
 	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
 	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
 	case IDC_HELP_DONATE: site = "https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DC%2B%2B&no_shipping=1&cn=DC%2B%2B+forum+nick+or+greeting"; break;
@@ -1099,15 +1157,10 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 		CRect sr;
 		int w[6];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 596 ? 496 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-		
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)*1/5;
-		w[2] = w[0] + (tmp-16)*2/5;
-		w[3] = w[0] + (tmp-16)*3/5;
-		w[4] = w[0] + (tmp-16)*4/5;
-		w[5] = w[0] + (tmp-16)*5/5;
-		
+		w[5] = sr.right - 16;
+#define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
+		setw(4); setw(3); setw(2); setw(1); setw(0);
+
 		ctrlStatus.SetParts(6, w);
 	}
 	CRect rc = rect;
@@ -1185,8 +1238,13 @@ LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-LRESULT MainFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-    CRect rc;
+LRESULT MainFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
+	if(!BOOLSETTING(SHOW_PROGRESS_BARS)) {
+		bHandled = FALSE;
+		return 0;
+	}
+
+	CRect rc;
 	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)pnmh;
 	
 	switch(cd->nmcd.dwDrawStage) {
@@ -1234,37 +1292,59 @@ LRESULT MainFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/
     }
 }
 
-void MainFrame::onAction(UploadManagerListener::Types type, Upload* aUpload) {
+LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
+	HubFrame::closeDisconnected();
+	return 0;
+}
+
+LRESULT MainFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		UploadManager::getInstance()->reserveSlot(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
+	}
+	return 0;
+}
+
+LRESULT MainFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		HubManager::getInstance()->addFavoriteUser(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
+	}
+	return 0;
+}
+
+
+void MainFrame::onAction(UploadManagerListener::Types type, Upload* aUpload) throw() {
 	switch(type) {
 		case UploadManagerListener::COMPLETE: onUploadComplete(aUpload); break;
 		case UploadManagerListener::STARTING: onUploadStarting(aUpload); break;
 		default: dcassert(0);
 	}
 }
-void MainFrame::onAction(UploadManagerListener::Types type, const Upload::List& ul) {
+void MainFrame::onAction(UploadManagerListener::Types type, const Upload::List& ul) throw() {
 	switch(type) {	
 		case UploadManagerListener::TICK: onUploadTick(ul); break;
 	}
 }
-void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload) {
+void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload) throw() {
 	switch(type) {
 	case DownloadManagerListener::COMPLETE: onDownloadComplete(aDownload); break;
 	case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
 	default: dcassert(0); break;
 	}
 }
-void MainFrame::onAction(DownloadManagerListener::Types type, const Download::List& dl) {
+void MainFrame::onAction(DownloadManagerListener::Types type, const Download::List& dl) throw() {
 	switch(type) {	
 	case DownloadManagerListener::TICK: onDownloadTick(dl); break;
 	}
 }
-void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
+void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) throw() {
 	switch(type) {
 	case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
 	default: dcassert(0); break;
 	}
 }
-void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) { 
+void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) throw() { 
 	switch(type) {
 		case ConnectionManagerListener::ADDED: onConnectionAdded(aCqi); break;
 		case ConnectionManagerListener::CONNECTED: onConnectionConnected(aCqi); break;
@@ -1273,7 +1353,7 @@ void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueI
 		default: dcassert(0); break;
 	}
 };
-void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) { 
+void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) throw() { 
 	switch(type) {
 		case ConnectionManagerListener::FAILED: onConnectionFailed(aCqi, aLine); break;
 		default: dcassert(0); break;
@@ -1285,7 +1365,7 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 
 		StringList* str = new StringList();
-		str->push_back(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
+		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
 		str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
@@ -1299,18 +1379,18 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 }
 
 // HttpConnectionListener
-void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
+void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn) throw() {
 	switch(type) {
 		case HttpConnectionListener::COMPLETE: onHttpComplete(conn); break;
 	}
 }
-void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
+void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) throw() {
 	switch(type) {
 		case HttpConnectionListener::DATA: versionInfo += string((const char*)buf, len); break;
 	}
 }
 
-void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) {
+void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw() {
 	if(type == QueueManagerListener::FINISHED) {
 		if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 			// This is a file listing, show it...
@@ -1329,6 +1409,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.18 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.19 2003/03/13 13:31:53 arnetheduck Exp $
  */
 

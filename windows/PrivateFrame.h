@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ public:
 		return 0;
 	}
 
-	LRESULT PrivateFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT PrivateFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 		updateTitle();
 		return 0;
 	}
@@ -118,7 +118,7 @@ public:
 		if(user && user->isOnline()) {
 			string s = "<" + user->getClientNick() + "> " + msg;
 			user->privateMessage(s);
-			addLine(Util::validateMessage(s));
+			addLine(s);
 		}
 	}
 	
@@ -147,7 +147,11 @@ private:
 		if(user->isOnline()) {
 			SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
 		} else {
-			SetWindowText((user->getNick() + " (" + STRING(OFFLINE) + ")").c_str());
+			if(user->getClientName() == STRING(OFFLINE)) {
+				SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+			} else {
+				SetWindowText((user->getNick() + " (" + user->getClientName() + " [" + STRING(OFFLINE) + "])").c_str());
+			}
 		}
 	}
 	
@@ -159,6 +163,6 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.8 2003/03/13 13:31:57 arnetheduck Exp $
  */
 

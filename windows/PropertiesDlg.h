@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,10 @@
 
 #if !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
 #define AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #include "PropPage.h"
 
@@ -45,5 +49,5 @@ protected:
 
 /**
  * @file PropertiesDlg.h
- * $Id: PropertiesDlg.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PropertiesDlg.h,v 1.3 2003/03/13 13:31:59 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,11 +46,11 @@ public:
 		TRANSMIT_DONE
 	};
 	
-	virtual void onAction(Types) { };
-	virtual void onAction(Types, u_int32_t) { };
-	virtual void onAction(Types, const string&) { };
-	virtual void onAction(Types, const u_int8_t*, int) { };
-	virtual void onAction(Types, int) { };
+	virtual void onAction(Types) throw() { };
+	virtual void onAction(Types, u_int32_t) throw() { };
+	virtual void onAction(Types, const string&) throw() { };
+	virtual void onAction(Types, const u_int8_t*, int) throw() { };
+	virtual void onAction(Types, int) throw() { };
 };
 
 class ZCompressor;
@@ -173,10 +173,6 @@ private:
 		}
 	}
 
-	BufferedSocket(const BufferedSocket&) {
-		// Copy still not allowed
-	}
-
 	CriticalSection cs;
 
 	Semaphore taskSem;
@@ -239,5 +235,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.43 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.44 2003/03/13 13:31:13 arnetheduck Exp $
  */

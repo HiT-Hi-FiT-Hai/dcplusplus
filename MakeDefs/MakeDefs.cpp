@@ -9,7 +9,8 @@
 #include "../client/File.h"
 #include "../client/StringTokenizer.h"
 
-string Util::emptyString;
+SettingsManager* Singleton<SettingsManager>::instance = 0;
+
 /*
 int __cdecl main(int argc, char* argv[]) {
 	File src(argv[1], File::READ, File::OPEN);

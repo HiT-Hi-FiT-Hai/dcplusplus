@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@ public:
 		COMPLETE
 	};
 
-	virtual void onAction(Types, HttpConnection*) { };	
-	virtual void onAction(Types, HttpConnection*, const string&) { };
-	virtual void onAction(Types, HttpConnection*, const u_int8_t*, int) { };
+	virtual void onAction(Types, HttpConnection*) throw() { };	
+	virtual void onAction(Types, HttpConnection*, const string&) throw() { };
+	virtual void onAction(Types, HttpConnection*, const u_int8_t*, int) throw() { };
 };
 
 class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
@@ -69,10 +69,10 @@ private:
 	BufferedSocket* socket;
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type);
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine);
-	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/);
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen);
+	virtual void onAction(BufferedSocketListener::Types type) throw();
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
+	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/) throw();
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) throw();
 
 	void onConnected(); 
 	void onLine(const string& aLine);
@@ -83,6 +83,6 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.11 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.12 2003/03/13 13:31:22 arnetheduck Exp $
  */
 

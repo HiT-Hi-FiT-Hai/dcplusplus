@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,11 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 		throw SocketException(errno);
 	}
 
+
+	// Set reuse address option...
+	int x = 1;
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&x, sizeof(x));
+
 	tcpaddr.sin_family = AF_INET;
 	tcpaddr.sin_port = htons(aPort);
 	tcpaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -42,30 +47,10 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	if(listen(sock, MAX_CONNECTIONS) == SOCKET_ERROR) {
 		throw SocketException(errno);
 	}
-	
-	start();
-}
-
-int ServerSocket::run() {
-	fd_set fd;
-	FD_ZERO(&fd);
-	FD_SET(sock, &fd);
-
-	dcdebug("Waiting for incoming connections...\n");
-	while(select(1, &fd, NULL, NULL, NULL) != -1) {
-		if(stop) {
-			return 0;
-		}
-
-		fire(ServerSocketListener::INCOMING_CONNECTION);
-	}
-	dcdebug("Stopped waiting for incoming connections...\n");
-	
-	return 0;
 }
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.11 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.12 2003/03/13 13:31:30 arnetheduck Exp $
  */
 

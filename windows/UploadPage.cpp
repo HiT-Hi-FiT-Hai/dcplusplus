@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,7 +96,7 @@ LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	string target;
-	if(WinUtil::browseDirectory(target)) {
+	if(WinUtil::browseDirectory(target, (HWND) *this)) {
 		try {
 			ShareManager::getInstance()->addDirectory(target);
 			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), target);
@@ -129,6 +129,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.4 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.5 2003/03/13 13:32:07 arnetheduck Exp $
  */
 

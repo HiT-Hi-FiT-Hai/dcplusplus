@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,21 +35,23 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FinishedItem(string const& aTarget, string const& aUser, int64_t aSize,
-		int64_t aMSeconds, string const& aTime)
-		: target(aTarget), user(aUser), size(aSize), milliSeconds(aMSeconds), time(aTime)
-	{
+	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, 
+		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, string const& aTime,
+		bool aCrc32) : 
+		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
+		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) {
 	}
 
-	int64_t getAvgSpeed() { return milliSeconds > 0 ? (size * ((int64_t)1000) / milliSeconds) : 0; };
+	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; };
 
 	GETSET(string, target, Target);
 	GETSET(string, user, User);
+	GETSET(string, hub, Hub);
 	GETSET(int64_t, size, Size);
+	GETSET(int64_t, chunkSize, ChunkSize);
 	GETSET(int64_t, milliSeconds, MilliSeconds);
 	GETSET(string, time, Time);
-
-	
+	GETSET(bool, crc32Checked, Crc32Checked)
 private:
 	friend class FinishedManager;
 
@@ -67,7 +69,7 @@ public:
 		MAJOR_CHANGES
 	};
 
-	virtual void onAction(Types, FinishedItem*) { }
+	virtual void onAction(Types, FinishedItem*) throw() = 0;
 }; 
 
 class FinishedManager : public Singleton<FinishedManager>,
@@ -110,7 +112,7 @@ private:
 	FinishedManager() { DownloadManager::getInstance()->addListener(this); }
 	virtual ~FinishedManager();
 
-	virtual void onAction(DownloadManagerListener::Types type, Download* d);
+	virtual void onAction(DownloadManagerListener::Types type, Download* d) throw();
 
 	CriticalSection cs;
 	FinishedItem::List list;
@@ -120,5 +122,5 @@ private:
 
 /**
  * @file FinishedManager.h
- * $Id: FinishedManager.h,v 1.3 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.4 2003/03/13 13:31:21 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 };
 
-void SpyFrame::onAction(ClientManagerListener::Types type, const string& s) {
+void SpyFrame::onAction(ClientManagerListener::Types type, const string& s) throw() {
 	switch(type) {
 	case ClientManagerListener::INCOMING_SEARCH:
 		{
@@ -188,5 +188,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.8 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.9 2003/03/13 13:32:06 arnetheduck Exp $
  */

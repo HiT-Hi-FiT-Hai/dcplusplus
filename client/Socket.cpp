@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ string SocketException::errorToString(int aError) {
 		return STRING(NOT_SOCKET);
 	case ENOTCONN:
 		return STRING(NOT_CONNECTED);
+	case ENETUNREACH:
+		return STRING(NETWORK_UNREACHABLE);
 	default:
 		{
 			char tmp[64];
@@ -103,7 +105,9 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
+	setBlocking(true);
 	connected = true;
+	
 }
 
 /**
@@ -510,6 +514,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.43 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.44 2003/03/13 13:31:34 arnetheduck Exp $
  */
 

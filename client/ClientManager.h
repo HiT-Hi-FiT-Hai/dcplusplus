@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -114,38 +114,36 @@ private:
 
 	Client::List clients;
 	CriticalSection cs;
-	int minutes;
-
+	
 	UserMap users;
 	Socket s;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() : minutes(0) { 
+	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
 	};
 
-	ClientManager(const ClientManager&) { dcassert(0); };	// No copying...
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2);
-	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user);
-	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList);
-	virtual void onAction(ClientListener::Types type, Client* client, const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString);
+	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw();
+	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw();
+	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList) throw();
+	virtual void onAction(ClientListener::Types type, Client* client, const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) throw();
 	
 	void onClientHello(Client* aClient, const User::Ptr& aUser) throw();
 	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
-	void onAction(TimerManagerListener::Types type, u_int8_t aTick) throw();
-	void onTimerMinute(u_int8_t aTick);
+	void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
+	void onTimerMinute(u_int32_t aTick);
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.30 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.31 2003/03/13 13:31:15 arnetheduck Exp $
  */
 

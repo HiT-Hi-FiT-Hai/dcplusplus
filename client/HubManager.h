@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 #include "Util.h"
 #include "CriticalSection.h"
 #include "HttpConnection.h"
-#include "TimerManager.h"
 #include "User.h"
 
 class HubEntry {
@@ -63,13 +62,33 @@ public:
 
 	void setNick(const string& aNick) { nick = aNick; };
 
+	const string& getUserDescription(bool useDefault = true) const {
+		return (!userdescription.empty() || !useDefault) ? userdescription : SETTING(DESCRIPTION);
+	}
+	void setUserDescription(const string& aUserDescription) { userdescription = aUserDescription; };
 	GETSETREF(string, name, Name);
 	GETSETREF(string, server, Server);
 	GETSETREF(string, description, Description);
 	GETSETREF(string, password, Password);
 	GETSET(bool, connect, Connect);
 private:
-	string nick;
+	string nick, userdescription;
+};
+
+class UserCommand {
+public:
+	typedef vector<UserCommand> List;
+	typedef List::iterator Iter;
+
+	UserCommand() { };
+	UserCommand(const string& aName, const string& aCommand, const string& aHub,
+		const string& aNick) throw() : name(aName), command(aCommand), hub(aHub), 
+		nick(aNick) { };
+
+	GETSETREF(string, name, Name);
+	GETSETREF(string, command, Command);
+	GETSETREF(string, hub, Hub);
+	GETSETREF(string, nick, Nick);
 };
 
 class HubManagerListener {
@@ -86,16 +105,17 @@ public:
 		USER_ADDED,
 		USER_REMOVED
 	};
-	virtual void onAction(Types, FavoriteHubEntry*) { };
-	virtual void onAction(Types, const string&) { };
-	virtual void onAction(Types, const User::Ptr&) { };
-	virtual void onAction(Types) { };
+
+	virtual void onAction(Types, FavoriteHubEntry*) throw() { };
+	virtual void onAction(Types, const string&) throw() { };
+	virtual void onAction(Types, const User::Ptr&) throw() { };
+	virtual void onAction(Types) throw() { };
 };
 
 class SimpleXML;
 
 class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>, 
-	private TimerManagerListener, private SettingsManagerListener
+	private SettingsManagerListener
 {
 public:
 	
@@ -164,6 +184,14 @@ public:
 		return publicHubs;
 	}
 
+	/**
+	 * Return the list of installed user commands. Not thread protected,
+	 * I assume only the window thread plays around with this...
+	 */
+	UserCommand::List& getUserCommands() {
+		return userCommands;
+	}
+
 	bool isDownloading() {
 		return running;
 	}
@@ -176,6 +204,7 @@ private:
 
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
+	UserCommand::List userCommands;
 	User::List users;
 
 	CriticalSection cs;
@@ -186,13 +215,11 @@ private:
 	friend class Singleton<HubManager>;
 	
 	HubManager() : running(false), c(NULL), lastServer(0) {
-		TimerManager::getInstance()->addListener(this);
 		SettingsManager::getInstance()->addListener(this);
 	}
 
 	virtual ~HubManager() {
 		SettingsManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
 			delete c;
@@ -216,18 +243,16 @@ private:
 		return favoriteHubs.end();
 	}
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len);
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine);
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw();
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw();
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw();
 	
  	void onHttpFinished() throw();
 
-	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw();
-	
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);	
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();	
 	void load(SimpleXML* aXml);
+	void load();
 	void save(SimpleXML* aXml);
 	
 };
@@ -236,6 +261,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.34 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.35 2003/03/13 13:31:25 arnetheduck Exp $
  */
 

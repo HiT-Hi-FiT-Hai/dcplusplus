@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifndef _DCPLUSPLUS_H
 #define _DCPLUSPLUS_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
 
 #ifdef _DEBUG
 
@@ -98,6 +101,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.29 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.30 2003/03/13 13:31:18 arnetheduck Exp $
  */
 

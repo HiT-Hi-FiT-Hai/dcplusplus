@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,17 +35,19 @@ const string SettingsManager::settingTags[] =
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
+	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
-	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
+	"BackgroundColor", "TextColor", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
-	"CompressTransfers",
+	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
+	"MaxCompression",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -69,8 +71,9 @@ SettingsManager::SettingsManager()
 		int64Settings[k] = 0;
 	}
 	
+	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads\\");
 	setDefault(SLOTS, 1);
-	setDefault(SERVER, Util::getLocalIp());
+	//setDefault(SERVER, Util::getLocalIp());
 	setDefault(IN_PORT, Util::rand(1025, 32000));
 	setDefault(ROLLBACK, 4096);
 	setDefault(CLIENTVERSION, "1,0091");
@@ -78,9 +81,9 @@ SettingsManager::SettingsManager()
 	setDefault(CLEAR_SEARCH, true);
 	setDefault(FULL_ROW_SELECT, true);
 	setDefault(SHARE_HIDDEN, false);
-	setDefault(FILTER_KICKMSGS, false);
+	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, false);
-	setDefault(OPEN_PUBLIC, true);
+	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_QUEUE, true);
 	setDefault(AUTO_SEARCH, false);
 	setDefault(TIME_STAMPS, false);
@@ -89,7 +92,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config.bz2;http://dcplusplus.sourceforge.net/PublicHubList.config");
+	setDefault(HUBLIST_SERVERS, "http://dcplusplus.sourceforge.net/PublicHubList.config.bz2");
 	setDefault(DOWNLOAD_SLOTS, 0);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
@@ -120,6 +123,12 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_KICK, false);
 	setDefault(QUEUEFRAME_SHOW_TREE, true);
 	setDefault(COMPRESS_TRANSFERS, true);
+	setDefault(SHOW_PROGRESS_BARS, true);
+	setDefault(SFV_CHECK, false);
+	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. I might answer later if you're lucky.");
+	setDefault(MAX_TAB_ROWS, 2);
+	setDefault(AUTO_UPDATE_LIST, true);
+	setDefault(MAX_COMPRESSION, 6);
 	
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -146,53 +155,57 @@ void SettingsManager::load(string const& aFileName)
 		return;
 	}
 
-	SimpleXML xml(1);
-	xml.fromXML(xmltext);
-
-	xml.resetCurrentChild();
-	
-	xml.stepIn();
-	
-	if(xml.findChild("Settings"))
-	{
-		xml.stepIn();
-
-		int i;
-		string attr;
-
-		for(i=STR_FIRST; i<STR_LAST; i++)
-		{
-			attr = settingTags[i];
-			dcassert(attr.find("SENTRY") == string::npos);
-
-			if(xml.findChild(attr))
-				set(StrSetting(i), xml.getChildData());
-			xml.resetCurrentChild();
-		}
-		for(i=INT_FIRST; i<INT_LAST; i++)
-		{
-			attr = settingTags[i];
-			dcassert(attr.find("SENTRY") == string::npos);
-
-			if(xml.findChild(attr))
-				set(IntSetting(i), Util::toInt(xml.getChildData()));
-			xml.resetCurrentChild();
-		}
-		for(i=INT64_FIRST; i<INT64_LAST; i++)
-		{
-			attr = settingTags[i];
-			dcassert(attr.find("SENTRY") == string::npos);
-
-			if(xml.findChild(attr))
-				set(Int64Setting(i), Util::toInt64(xml.getChildData()));
-			xml.resetCurrentChild();
-		}
+	try {
+		SimpleXML xml(1);
+		xml.fromXML(xmltext);
 		
-		xml.stepOut();
-	}
+		xml.resetCurrentChild();
+		
+		xml.stepIn();
+		
+		if(xml.findChild("Settings"))
+		{
+			xml.stepIn();
+			
+			int i;
+			string attr;
+			
+			for(i=STR_FIRST; i<STR_LAST; i++)
+			{
+				attr = settingTags[i];
+				dcassert(attr.find("SENTRY") == string::npos);
+				
+				if(xml.findChild(attr))
+					set(StrSetting(i), xml.getChildData());
+				xml.resetCurrentChild();
+			}
+			for(i=INT_FIRST; i<INT_LAST; i++)
+			{
+				attr = settingTags[i];
+				dcassert(attr.find("SENTRY") == string::npos);
+				
+				if(xml.findChild(attr))
+					set(IntSetting(i), Util::toInt(xml.getChildData()));
+				xml.resetCurrentChild();
+			}
+			for(i=INT64_FIRST; i<INT64_LAST; i++)
+			{
+				attr = settingTags[i];
+				dcassert(attr.find("SENTRY") == string::npos);
+				
+				if(xml.findChild(attr))
+					set(Int64Setting(i), Util::toInt64(xml.getChildData()));
+				xml.resetCurrentChild();
+			}
+			
+			xml.stepOut();
+		}
+		fire(SettingsManagerListener::LOAD, &xml);
 
-	fire(SettingsManagerListener::LOAD, &xml);
-	xml.stepOut();
+		xml.stepOut();
+	} catch(Exception e) {
+		// Oops, bad...
+	}
 }
 
 void SettingsManager::save(string const& aFileName) {
@@ -252,6 +265,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.46 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.47 2003/03/13 13:31:31 arnetheduck Exp $
  */
 

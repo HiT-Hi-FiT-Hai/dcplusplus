@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 #include "../client/LogManager.h"
 #include "../client/UploadManager.h"
 #include "../client/ShareManager.h"
+#include "../client/HubManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -49,7 +50,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
-	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
+	ctrlMessage.SetFont(WinUtil::font);
 
 	updateTitle();
 	created = true;
@@ -151,61 +152,27 @@ void PrivateFrame::onEnter()
 		// Process special commands
 		if(s[0] == '/') {
 			string param;
-			int i = s.find(' ');
-			if(i != string::npos) {
-				param = s.substr(i+1);
-				s = s.substr(1, i - 1);
-			} else {
-				s = s.substr(1);
-			}
-
-			if(Util::stricmp(s.c_str(), "refresh")==0) {
-				try {
-					ShareManager::getInstance()->setDirty();
-					ShareManager::getInstance()->refresh(true);
-					addClientLine(STRING(FILE_LIST_REFRESHED));
-				} catch(ShareException e) {
-					addClientLine(e.getError());
+			string message;
+			string status;
+			if(WinUtil::checkCommand(m_hWndMDIClient, s, param, message, status)) {
+				if(!message.empty()) {
+					sendMessage(message);
 				}
-			} else if(Util::stricmp(s.c_str(), "slots")==0) {
-				int j = Util::toInt(param);
-				if(j > 0) {
-					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-					addClientLine(STRING(SLOTS_SET));
-					ClientManager::getInstance()->infoUpdated();
-				} else {
-					addClientLine(STRING(INVALID_NUMBER_OF_SLOTS));
-				}
-			} else if(Util::stricmp(s.c_str(), "search") == 0) {
-				if(!param.empty()) {
-					SearchFrame* pChild = new SearchFrame();
-					pChild->setTab(getTab());
-					pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST);
-					pChild->CreateEx(m_hWndMDIClient);
-				} else {
-					addClientLine(STRING(SPECIFY_SEARCH_STRING));
+				if(!status.empty()) {
+					addClientLine(status);
 				}
 			} else if(Util::stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
-			} else if(Util::stricmp(s.c_str(), "away") == 0) {
-				if(Util::getAway()) {
-					Util::setAway(false);
-					addClientLine(STRING(AWAY_MODE_OFF));
-				} else {
-					Util::setAway(true);
-					Util::setAwayMessage(param);
-					addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
-				}
-			} else if(Util::stricmp(s.c_str(), "back") == 0) {
-				Util::setAway(false);
-				addClientLine(STRING(AWAY_MODE_OFF));
 			} else if(Util::stricmp(s.c_str(), "grant") == 0) {
 				UploadManager::getInstance()->reserveSlot(getUser());
 				addClientLine(STRING(SLOT_GRANTED));
 			} else if(Util::stricmp(s.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
+			} else if((Util::stricmp(s.c_str(), "favorite") == 0) || (Util::stricmp(s.c_str(), "fav") == 0)) {
+				HubManager::getInstance()->addFavoriteUser(getUser());
+				addLine(STRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
-				addLine("/refresh, /slots #, /search <string>, /clear, /away <msg>, /back, /grant, /close, /help");
+				addLine("*** " + WinUtil::commands + ", /clear, /grant, /close, /favorite");
 			}
 		} else {
 			if(user->isOnline()) {
@@ -270,13 +237,15 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		ctrlStatus.SetParts(3, w);
 	}
 	
+	int h = WinUtil::fontHeight + 4;
+
 	CRect rc = rect;
-	rc.bottom -=28;
+	rc.bottom -= h + 10;
 	ctrlClient.MoveWindow(rc);
 	
 	rc = rect;
 	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
+	rc.top = rc.bottom - h - 5;
 	rc.left +=2;
 	rc.right -=2;
 	ctrlMessage.MoveWindow(rc);
@@ -292,7 +261,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.10 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.11 2003/03/13 13:31:56 arnetheduck Exp $
  */
 
 

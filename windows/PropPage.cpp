@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 
 #define SETTING_STR_MAXLEN 1024
 
-void PropPage::read(HWND page, Item const* items)
+void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = 0 */)
 {
 	dcassert(page != NULL);
 
@@ -54,9 +54,32 @@ void PropPage::read(HWND page, Item const* items)
 				::CheckDlgButton(page, i->itemID, BST_UNCHECKED);
 		}
 	}
+
+	if(listItems != NULL) {
+		CListViewCtrl ctrl;
+
+		ctrl.Attach(list);
+		CRect rc;
+		ctrl.GetClientRect(rc);
+		ctrl.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | (BOOLSETTING(FULL_ROW_SELECT) ? LVS_EX_FULLROWSELECT : 0));
+		ctrl.InsertColumn(0, "Dummy", LVCFMT_LEFT, rc.Width(), 0);
+
+		LVITEM lvi;
+		lvi.mask = LVIF_TEXT;
+		lvi.iSubItem = 0;
+
+		for(int i = 0; listItems[i].setting != 0; i++) {
+			lvi.iItem = i;
+			lvi.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(listItems[i].desc).c_str());
+			ctrl.InsertItem(&lvi);
+			ctrl.SetCheckState(i, SettingsManager::getInstance()->getBool(SettingsManager::IntSetting(listItems[i].setting), true));
+		}
+		ctrl.SetColumnWidth(0, LVSCW_AUTOSIZE);
+		ctrl.Detach();
+	}
 }
 
-void PropPage::write(HWND page, Item const* items)
+void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL */, HWND list /* = NULL */)
 {
 	dcassert(page != NULL);
 
@@ -88,10 +111,22 @@ void PropPage::write(HWND page, Item const* items)
 		}
 	}
 	delete[] buf;
+
+	if(listItems != NULL) {
+		CListViewCtrl ctrl;
+		ctrl.Attach(list);
+
+		int i;
+		for(i = 0; listItems[i].setting != 0; i++) {
+			SettingsManager::getInstance()->set(SettingsManager::IntSetting(listItems[i].setting), ctrl.GetCheckState(i));
+		}
+
+		ctrl.Detach();
+	}
 }
 
 /**
  * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.4 2003/03/13 13:31:57 arnetheduck Exp $
  */
 

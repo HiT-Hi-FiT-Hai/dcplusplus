@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,9 @@ public:
 			FLAG_FILE_NOT_AVAILABLE = 0x01,
 			FLAG_ROLLBACK_INCONSISTENCY = 0x02,
 			FLAG_PASSIVE = 0x04,
-			FLAG_REMOVED = 0x08
+			FLAG_REMOVED = 0x08,
+			FLAG_CRC_FAILED = 0x10,
+			FLAG_CRC_WARN = 0x20,
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -283,9 +285,9 @@ public:
 	Download* getDownload(User::Ptr& aUser) throw();
 	void putDownload(Download* aDownload, bool finished = false) throw();
 
-	bool hasDownload(const User::Ptr& aUser) throw() {
+	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
 		Lock l(cs);
-		return (userQueue.getNext(aUser) != NULL);
+		return (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
 	void importNMQueue(const string& aFile) throw(FileException);
@@ -300,7 +302,7 @@ private:
 	public:
 		void add(QueueItem* qi, bool inFront = false);
 		void add(QueueItem* qi, const User::Ptr& aUser, bool inFront = false);
-		QueueItem* getNext(const User::Ptr& aUser, bool paused = false);
+		QueueItem* getNext(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
 		QueueItem* getRunning(const User::Ptr& aUser);
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
@@ -339,6 +341,9 @@ private:
 
 	/** The queue needs to be saved */
 	bool dirty;
+
+	/** Searched last minute (ugly */
+	bool searched;
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
@@ -371,6 +376,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.32 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.33 2003/03/13 13:31:27 arnetheduck Exp $
  */
 

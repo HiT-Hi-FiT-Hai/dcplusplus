@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,5 +63,5 @@ private:
 
 /**
  * @file LogManager.h
- * $Id: LogManager.h,v 1.3 2002/12/28 01:31:49 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.4 2003/03/13 13:31:25 arnetheduck Exp $
  */

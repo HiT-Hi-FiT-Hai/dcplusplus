@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ * Copyright (C) 2001-2003 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,18 @@
 #include "StringTokenizer.h"
 
 StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */) {
-	string tmp = aString;
-
 	string::size_type i = 0;
 	string::size_type j = 0;
-	while( (i=tmp.find_first_of(aToken, j)) != string::npos ) {
-		tokens.push_back(tmp.substr(j, i-j));
+	while( (i=aString.find_first_of(aToken, j)) != string::npos ) {
+		tokens.push_back(aString.substr(j, i-j));
 		j = i + 1;
 	}
-	if(j < tmp.size())
-		tokens.push_back(tmp.substr(j, tmp.size()-j));
+	if(j < aString.size())
+		tokens.push_back(aString.substr(j, aString.size()-j));
 }
 
 /**
  * @file StringTokenizer.cpp
- * $Id: StringTokenizer.cpp,v 1.6 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: StringTokenizer.cpp,v 1.7 2003/03/13 13:31:35 arnetheduck Exp $
  */
 
