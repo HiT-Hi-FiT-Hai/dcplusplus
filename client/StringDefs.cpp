@@ -335,7 +335,7 @@ string ResourceManager::strings[] = {
 "Automatically open an extra slot if speed is below (0 = disable)", 
 "Upload slots", 
 "Install URL handler on startup (to handle dchub:// links)", 
-"Use OEM monospaced font for viewing text	files", 
+"Use OEM monospaced font for viewing text files", 
 "Use system icons when browsing files (slows browsing down a bit)", 
 "User Commands", 
 "User Menu Items", 

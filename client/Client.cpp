@@ -275,7 +275,13 @@ void Client::onLine(const string& aLine) throw() {
 		if(j == string::npos)
 			return;
 		u->setBytesShared(param.substr(i, j-i));
-		
+
+// Atomic Jo BEGINS
+		if (u->getNick() == getNick()) {
+			u->setFlag(User::DCPLUSPLUS);
+		}
+// Atomic Jo ENDS		
+
 		fire(ClientListener::MY_INFO, this, u);
 	} else if(cmd == "$Quit") {
 		if(!param.empty()) {
@@ -683,6 +689,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.57 2003/10/21 17:10:40 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.58 2003/10/22 09:26:30 arnetheduck Exp $
  */
 

@@ -175,7 +175,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	resultsMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(GET_FILE_LIST));
+	resultsMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
 	resultsMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	resultsMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -922,5 +922,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.29 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.30 2003/10/22 09:26:30 arnetheduck Exp $
  */

@@ -100,7 +100,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
-	images.CreateFromImage(IDB_TOOLBAR, 16, 14, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	images.CreateFromImage(IDB_TOOLBAR, 16, 15, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
 
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
@@ -117,6 +117,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
+	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
 	
 	// remove old menu
 	SetMenu(NULL);
@@ -897,6 +898,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.34 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.35 2003/10/22 09:26:30 arnetheduck Exp $
  */
 

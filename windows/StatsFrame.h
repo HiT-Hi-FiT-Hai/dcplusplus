@@ -49,7 +49,7 @@ public:
 				sizeof(WNDCLASSEX), 0, StartWindowProc, 
 				0, 0, NULL, NULL, NULL, NULL, NULL, "StatsFrame", NULL 
 			},
-			NULL, NULL, IDC_ARROW, TRUE, 0, _T(""), IDR_NOTEPAD 
+			NULL, NULL, IDC_ARROW, TRUE, 0, _T(""), IDR_NET_STATS 
 		};
 		
 		return wc; 
@@ -124,6 +124,6 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.2 2003/10/19 15:46:34 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.3 2003/10/22 09:26:30 arnetheduck Exp $
  */
 

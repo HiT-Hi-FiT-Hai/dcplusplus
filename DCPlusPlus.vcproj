@@ -209,6 +209,9 @@
 				RelativePath=".\res\Hub.ico">
 			</File>
 			<File
+				RelativePath=".\res\netstats.ico">
+			</File>
+			<File
 				RelativePath=".\res\notepad.ico">
 			</File>
 			<File
