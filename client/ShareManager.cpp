@@ -545,8 +545,14 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	Directory::File::Iter lastFileIter = dir->files.begin();
 
 	FileFindIter end;
-	#ifdef _WIN32
-	for(FileFindIter i(aName + "*"); i != end; ++i) {
+#ifdef _WIN32
+		for(FileFindIter i(aName + "*"); i != end; ++i) {
+#else
+	//the fileiter just searches directorys for now, not sure if more 
+	//will be needed later
+	//for(FileFindIter i(aName + "*"); i != end; ++i) {
+	for(FileFindIter i(aName); i != end; ++i) {
+#endif
 		string name = i->getFileName();
 
 		if(name == "." || name == "..")
@@ -1274,6 +1280,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.111 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.112 2004/11/07 17:23:59 arnetheduck Exp $
  */
 

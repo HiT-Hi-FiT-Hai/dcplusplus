@@ -174,8 +174,9 @@ private:
 		if(socket) {
 			stop = true;
 			socket->disconnect();
-			#ifdef _WIN32
+#ifdef _WIN32
 			join();
+#endif
 			delete socket;
 		}
 	};
@@ -187,5 +188,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.45 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.46 2004/11/07 17:23:59 arnetheduck Exp $
  */
