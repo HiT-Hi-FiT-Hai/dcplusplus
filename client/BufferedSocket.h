@@ -37,6 +37,7 @@ public:
 	virtual void onError(const string& aReason) { };
 	virtual void onData(BYTE* aBuf, int aLen) { };
 	virtual void onModeChange(int newMode) { };
+	virtual void onTransmitDone() { };
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
@@ -64,11 +65,13 @@ public:
 	char getSeparator() { return separator; };
 	void setSeparator(char aSeparator) { separator = aSeparator; };
 
-	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), stopEvent(NULL), mode(MODE_LINE) {
+	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), stopEvent(NULL), mode(MODE_LINE),
+		writerEvent(NULL), writerThread(NULL) {
 
 	};
 
 	virtual ~BufferedSocket() {
+		stopWriter();
 		stopReader();
 	}
 
@@ -90,6 +93,9 @@ private:
 
 	HANDLE file;
 
+	HANDLE writerEvent;
+	HANDLE writerThread;
+	
 	HANDLE stopEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
@@ -106,9 +112,24 @@ private:
 	void startWriter() {
 		DWORD threadId;
 		
-		CreateThread(NULL, 0, &writer, this, 0, &threadId);
+		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		writerThread = CreateThread(NULL, 0, &writer, this, 0, &threadId);
 	}
 	
+	void stopWriter() {
+		if(writerThread != NULL) {
+			SetEvent(writerEvent);
+			
+			if(WaitForSingleObject(writerThread, 1000) == WAIT_TIMEOUT) {
+				MessageBox(NULL, _T("BufferedSocket: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+			}
+			
+			writerThread = NULL;
+			CloseHandle(writerEvent);
+			writerEvent = NULL;
+		}
+	}
+
 	void stopReader() {
 		if(readerThread != NULL) {
 			SetEvent(stopEvent);
@@ -168,15 +189,30 @@ private:
 			(*i)->onModeChange(aNewMode);
 		}
 	}
+	void fireTransmitDone() {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onTransmitDone();
+		}
+	}
+	
 };
 
 #endif // !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.5  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

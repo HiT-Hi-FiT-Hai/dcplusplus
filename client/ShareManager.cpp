@@ -113,18 +113,22 @@ StringList ShareManager::getDirectories() {
 
 void ShareManager::refresh() throw(ShareException) {
 	string tmp, tmp2;
-
+	DWORD d;
+	
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 		tmp = tmp + i->second->toString();
 	}
 
+	HANDLE h = CreateFile("c:\\temp\\dclst2.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	WriteFile(h, tmp.c_str(), tmp.size(),&d, NULL);
+	CloseHandle(h);
+	
 	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 
 	HANDLE hf = CreateFile((Settings::getAppPath() + "\\MyList.DcLst").c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	if(hf == INVALID_HANDLE_VALUE) {
 		throw ShareException("Could not write MyList.DcLst");
 	}
-	DWORD d;
 	WriteFile(hf, tmp2.c_str(), tmp2.length(), &d, NULL);
 	CloseHandle(hf);
 	listLen = tmp2.length();
@@ -147,9 +151,14 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.1 2001/12/02 23:51:22 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.2  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.1  2001/12/02 23:51:22  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

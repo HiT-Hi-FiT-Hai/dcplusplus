@@ -37,8 +37,20 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 	DWORD len;
 
 	while(ReadFile(bs->file, buf, sizeof(buf), &len, NULL) && len != 0) {
-		bs->write((char*)buf, len);
+		if(WaitForSingleObject(bs->writerEvent, 0) != WAIT_TIMEOUT) {
+			// Time to finish...
+			bs->fireError("Writer stopped before end of file");
+			bs->writerThread = NULL;
+			return 0;
+		}
+		try {
+			bs->write((char*)buf, len);
+		} catch(SocketException e) {
+			bs->fireError(e.getError());
+		}
 	}
+	bs->fireTransmitDone();
+	bs->writerThread = NULL;
 	return 0;
 }
 
@@ -128,9 +140,14 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.7 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.7  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.6  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

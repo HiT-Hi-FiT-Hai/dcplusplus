@@ -56,7 +56,7 @@ public:
 	}
 	void putUploadConnection(UserConnection* aSource) {
 		aSource->disconnect();
-		uploaders.erase(downloaders.find(aSource->user->getNick()));
+		uploaders.erase(uploaders.find(aSource->user->getNick()));
 
 		pool.push_back(aSource);
 	}
@@ -133,9 +133,14 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.5  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.4  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

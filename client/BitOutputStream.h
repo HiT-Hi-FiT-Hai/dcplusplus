@@ -31,7 +31,7 @@ public:
 	
 	void put(vector<bool>& b) {
 		for(int i=0; i<b.size(); i++) {
-			next |=  b[i] << bitPos++;
+			next |=  ((BYTE)b[i]) << bitPos++;
 			
 			if(bitPos > 7) {
 				bitPos-=8;
@@ -60,9 +60,14 @@ private:
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.1 2001/12/01 17:17:22 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.h,v $
+ * Revision 1.2  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.1  2001/12/01 17:17:22  arnetheduck
  * New additions to the reworked connection manager and huffman encoder
  *

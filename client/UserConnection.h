@@ -37,7 +37,6 @@ public:
 
 	virtual void onConnecting(UserConnection* aSource, const string& aServer) { };
 	virtual void onConnected(UserConnection* aSource) { };
-	virtual void onConnectionError(UserConnection* aSource, const string& aReason) { };
 	virtual void onData(UserConnection* aSource, BYTE* aBuf, int aLen) { };
 	virtual void onError(UserConnection* aSource, const string& aError) { };
 	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk) { };
@@ -51,6 +50,7 @@ public:
 	virtual void onMaxedOut(UserConnection* aSource) { };
 	virtual void onModeChange(UserConnection* aSource, int aNewMode) { };
 	virtual void onMyNick(UserConnection* aSource, const string& aNick) { };
+	virtual void onTransmitDone(UserConnection* aSource) { };
 };
 
 class ServerSocket;
@@ -84,10 +84,13 @@ public:
 
 	virtual void onConnected() { fireConnected(); };
 	virtual void onLine(const string& aLine);
-	virtual void onError(const string& aError) { fireConnectionError(aError); };
+	virtual void onError(const string& aError) { fireError(aError); };
 	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
 	virtual void onData(BYTE *aBuf, int aLen) { fireData(aBuf, aLen); };
-
+	virtual void onTransmitDone() {
+		fireTransmitDone();
+	};
+	
 	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
@@ -154,15 +157,6 @@ private:
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onConnecting(this, aServer);
-		}
-	}
-	void fireConnectionError(const string& aError) {
-		listenerCS.enter();
-		dcdebug("UserConnection::fireConnectionError %s\n", aError.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onConnectionError(this, aError);
 		}
 	}
 	void fireData(BYTE* aData, int aLen) {
@@ -282,15 +276,29 @@ private:
 			(*i)->onSend(this);
 		}
 	}
+	void fireTransmitDone() {
+		listenerCS.enter();
+		dcdebug("UserConnection::fireTransmitDone\n");
+		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
+		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onTransmitDone(this);
+		}
+	}
 };
 
 #endif // !defined(AFX_USERCONNECTION_H__52BFD1A0_9924_4C07_BAFA_FB9682884841__INCLUDED_)
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.7 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.7  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.6  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

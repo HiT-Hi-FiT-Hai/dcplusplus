@@ -29,8 +29,8 @@ public:
 	BitInputStream(const string& aStream, int aStart) : is(aStream), bitPos(aStart*8) { };
 	~BitInputStream() { };
 	
-	char get() {
-		char ret = (is[bitPos>>3] >> (bitPos&0x07)) & 0x01;
+	bool get() {
+		bool ret = (((BYTE)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
 		bitPos++;
 		return ret;
 	}
@@ -52,9 +52,14 @@ private:
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.h,v $
+ * Revision 1.2  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

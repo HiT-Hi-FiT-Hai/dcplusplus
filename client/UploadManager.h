@@ -33,6 +33,33 @@ public:
 	virtual void onDisconnected(UserConnection* aSource) {
 		removeConnection(aSource);
 	}
+	virtual void onError(UserConnection* aSource, const string& aError) {
+		Upload * u;
+		Upload::MapIter i = uploads.find(aSource);
+		if(i == uploads.end()) {
+			// Something strange happened?
+			aSource->disconnect();
+			aSource->removeListener(this);
+			ConnectionManager::getInstance()->putUploadConnection(aSource);
+		}
+		u = i->second;
+		uploads.erase(i);
+		delete u;
+	}
+
+	virtual void onTransmitDone(UserConnection* aSource) {
+		Upload * u;
+		Upload::MapIter i = uploads.find(aSource);
+		if(i == uploads.end()) {
+			// Something strange happened?
+			aSource->disconnect();
+			aSource->removeListener(this);
+			ConnectionManager::getInstance()->putUploadConnection(aSource);
+		}
+		u = i->second;
+		uploads.erase(i);
+		delete u;
+	}
 
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 		Upload* u;
@@ -168,9 +195,14 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.6 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.6  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.5  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

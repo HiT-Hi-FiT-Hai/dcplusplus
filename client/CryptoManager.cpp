@@ -319,13 +319,19 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		dcassert(lookup[(BYTE)is[i]].size != 0);
 		bos.put(lookup[(BYTE)is[i]]);
 	}
+	bos.skipToByte();
 }
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.5  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

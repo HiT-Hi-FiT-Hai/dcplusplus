@@ -72,7 +72,11 @@ void MainFrame::onDownloadComplete(Download::Ptr p) {
 		string tmp;
 		CryptoManager::getInstance()->decodeHuffman(code, tmp);
 		dl->load(tmp);
-		
+
+		h = CreateFile("c:\\temp\\dclst1.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		WriteFile(h, tmp.c_str(), tmp.size(), &size, NULL);
+		CloseHandle(h);
+
 		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->user);
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
@@ -219,9 +223,14 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.10 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.11 2001/12/03 20:52:19 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.11  2001/12/03 20:52:19  arnetheduck
+ * Blah! Finally, the listings are working...one line of code missing (of course),
+ * but more than 2 hours of search...hate that kind of bugs...=(...some other
+ * things spiffed up as well...
+ *
  * Revision 1.10  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...
