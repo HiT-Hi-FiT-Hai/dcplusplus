@@ -27,7 +27,20 @@
 #include "CriticalSection.h"
 #include "Singleton.h"
 
-class LogManager : public Singleton<LogManager>
+class LogManagerListener {
+public:
+	typedef LogManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+
+	enum Types {
+		MESSAGE			// Short message to be shown in UI
+	};
+
+	virtual void onAction(Types, const string&) throw() { };
+};
+
+class LogManager : public Singleton<LogManager>, public Speaker<LogManagerListener>
 {
 public:
 	void log(const string& area, const string& msg) throw() {
@@ -39,13 +52,17 @@ public:
 		} catch (const FileException&) {
 			// ...
 		}
-	};
+	}
 
 	void logDateTime(const string& area, const string& msg) throw() {
 		char buf[20];
 		time_t now = time(NULL);
 		strftime(buf, 20, "%Y-%m-%d %H:%M: ", localtime(&now));
 		log(area, buf + msg);
+	}
+
+	void message(const string& m) {
+		fire(LogManagerListener::MESSAGE, m);
 	}
 
 private:
@@ -64,5 +81,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.8 2004/01/25 10:37:40 arnetheduck Exp $
  */

@@ -28,6 +28,7 @@
 #include "../client/HubManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
+#include "../client/LogManager.h"
 
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
@@ -37,7 +38,8 @@
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener
+		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener,
+		private LogManagerListener
 {
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
@@ -56,7 +58,8 @@ public:
 		STATS,
 		AUTO_CONNECT,
 		PARSE_COMMAND_LINE,
-		VIEW_FILE_AND_DELETE
+		VIEW_FILE_AND_DELETE,
+		STATUS_MESSAGE
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
@@ -321,6 +324,9 @@ private:
 
 	MainFrame(const MainFrame&) { dcassert(0); };
 
+	// LogManagerListener
+	virtual void onAction(LogManagerListener::Types, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new string(m)); };
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	
@@ -337,7 +343,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.30 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.31 2004/01/25 10:37:43 arnetheduck Exp $
  */
 
  

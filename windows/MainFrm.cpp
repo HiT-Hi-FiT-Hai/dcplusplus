@@ -78,6 +78,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	TimerManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
+	LogManager::getInstance()->addListener(this);
 
 	WinUtil::init(m_hWnd);
 
@@ -388,6 +389,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		autoConnect(HubManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
+	} else if(wParam == STATUS_MESSAGE) {
+		string* s = (string*)lParam;
+		ctrlStatus.SetText(0, s->c_str());
+		delete s;
 	}
 
 	return 0;
@@ -939,6 +944,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.42 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.43 2004/01/25 10:37:41 arnetheduck Exp $
  */
 

@@ -33,6 +33,7 @@
 #include "DownloadManager.h"
 #include "CryptoManager.h"
 #include "ShareManager.h"
+#include "LogManager.h"
 
 #include "UserConnection.h"
 #include "SimpleXML.h"
@@ -788,7 +789,9 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 			}
 		}
 		if(flag & QueueItem::FLAG_MATCH_QUEUE) {
-			matchListing(&dirList);
+			AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
+			sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(&dirList));
+			LogManager::getInstance()->message(up->getNick() + ": " + string(tmp));			
 		}
 	}
 }
@@ -1287,5 +1290,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.70 2004/01/24 20:42:15 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.71 2004/01/25 10:37:40 arnetheduck Exp $
  */

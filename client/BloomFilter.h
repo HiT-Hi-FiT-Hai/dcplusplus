@@ -82,3 +82,8 @@ private:
 };
 
 #endif _BLOOM_FILTER
+
+/**
+ * @file
+ * $Id: BloomFilter.h,v 1.2 2004/01/25 10:37:39 arnetheduck Exp $
+ */

@@ -153,6 +153,8 @@ public:
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 	void encodeBZ2(const string& is, string& os, int strength = 9);
 	
+	void encodeBase32(const u_int8_t* src, size_t len, char* dst);
+	void decodeBase32(const char* src, u_int8_t* dst, size_t len);
 private:
 
 	friend class Singleton<CryptoManager>;
@@ -182,6 +184,8 @@ private:
 		}
 	};
 	
+	static const int8_t base32Table[];
+	static const char base32Alphabet[];
 
 	const string lock;
 	const string pk;
@@ -203,5 +207,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.32 2004/01/05 09:59:18 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.33 2004/01/25 10:37:40 arnetheduck Exp $
  */

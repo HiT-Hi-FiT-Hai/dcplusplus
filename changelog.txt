@@ -1,7 +1,8 @@
  -- 0.307 --
 * Fixed full name being displayed in user commands with submenus
-* Bloom filters implemented to improve search efficiency
-
+* Bloom filters dramatically improve search efficiency (if you have a large share)
+* Merkle trees and tiger hashing added
+* Auto match results shown in status bar
 
  -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")
