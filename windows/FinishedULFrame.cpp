@@ -137,24 +137,20 @@ LRESULT FinishedULFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 }
 
 LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	FinishedManager::getInstance()->removeListener(this);
-	
-	string tmp1, tmp2;
+	if(!closed){
+		FinishedManager::getInstance()->removeListener(this);
 
-	ctrlList.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlList.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_UL_ORDER, 
+			SettingsManager::FINISHED_UL_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		bHandled = FALSE;
+		return 0;
 	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::FINISHED_UL_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::FINISHED_UL_WIDTHS, tmp2);
-	
-	bHandled = FALSE;
-	return 0;
 }
 
 void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry)  throw() {
@@ -197,5 +193,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.2 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.3 2003/05/13 11:34:07 arnetheduck Exp $
  */

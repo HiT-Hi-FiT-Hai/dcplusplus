@@ -10,6 +10,8 @@
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
 		<String Name="AllDownloadSlotsTaken">All download slots taken</String>
 		<String Name="AllUsersOffline">All %d users offline</String>
+		<String Name="All3UsersOffline">All 3 users offline</String>
+		<String Name="All4UsersOffline">All 4 users offline</String>
 		<String Name="AlreadyGettingThatList">Already getting that file list</String>
 		<String Name="Any">Any</String>
 		<String Name="AtLeast">At least</String>
@@ -255,6 +257,7 @@
 		<String Name="SettingsAdvancedRemoveDupes">Remove dupes completely from your share (otherwise, only their size is subtracted, but the files can be seen by others)</String>
 		<String Name="SettingsAdvancedSfvCheck">Enable automatic SFV checking</String>
 		<String Name="SettingsAdvancedShowProgressBars">Show progress bars for transfers (uses some CPU)</String>
+		<String Name="SettingsAdvancedSkipZeroByte">Skip zero-byte files</String>
 		<String Name="SettingsAdvancedSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
 		<String Name="SettingsAdvancedUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
 		<String Name="SettingsAppearance">Appearance</String>

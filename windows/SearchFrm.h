@@ -76,7 +76,7 @@ public:
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), 
-		showUI(true), onlyFree(false)	
+		showUI(true), onlyFree(false), closed(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -89,7 +89,6 @@ public:
 	typedef MDITabChildWindowImpl<SearchFrame> baseClass;
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
@@ -197,11 +196,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		return baseClass::PreTranslateMessage((LPMSG)lParam);
-	}
-
-		
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		if(::IsWindow(ctrlSearch))
 			ctrlSearch.SetFocus();
@@ -263,6 +257,8 @@ private:
 	static StringList lastSearches;
 
 	DWORD lastSearch;
+	bool closed;
+
 	static int columnIndexes[];
 	static int columnSizes[];
 
@@ -293,6 +289,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.15 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.16 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

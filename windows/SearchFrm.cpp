@@ -509,29 +509,24 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	SearchManager::getInstance()->removeListener(this);
+	if(!closed) {
+		SearchManager::getInstance()->removeListener(this);
 
-	for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
-		delete (SearchResult*)ctrlResults.GetItemData(i);
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
+			delete (SearchResult*)ctrlResults.GetItemData(i);
+		}
+
+		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
+			SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		bHandled = FALSE;
+		return 0;
 	}
-
-	string tmp1;
-	string tmp2;
-	
-	ctrlResults.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlResults.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::SEARCHFRAME_WIDTHS, tmp2);
-
-	bHandled = FALSE;
-	return 0;
 }
 
 void SearchFrame::UpdateLayout(BOOL bResizeBars)
@@ -702,7 +697,7 @@ LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& b
 }
 
 void SearchFrame::onTab(bool shift) {
-	static HWND wnds[] = {
+	HWND wnds[] = {
 		ctrlSearch.m_hWnd, ctrlMode.m_hWnd, ctrlSize.m_hWnd, ctrlSizeMode.m_hWnd, 
 		ctrlFiletype.m_hWnd, ctrlSlots.m_hWnd, ctrlDoSearch.m_hWnd, ctrlSearch.m_hWnd, 
 		ctrlResults.m_hWnd
@@ -947,5 +942,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.16 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
  */

@@ -148,20 +148,8 @@ LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ADLSearchManager::getInstance()->Save();
 	ADLSearchFrame::frame = NULL;
 
-	string tmp1;
-	string tmp2;
-
-	ctrlList.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlList.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::ADLSEARCHFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::ADLSEARCHFRAME_WIDTHS, tmp2);
+	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
+		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
 	bHandled = FALSE;
 	return 0;
@@ -600,5 +588,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.3 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.4 2003/05/13 11:34:07 arnetheduck Exp $
  */

@@ -497,6 +497,7 @@ public:
  	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
+		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
@@ -532,6 +533,11 @@ public:
 		}
 		
 		return hWnd;
+	}
+
+	// All MDI windows must have this in wtl it seems to handle ctrl-tab and so on...
+	LRESULT onForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
 	LRESULT onCreate(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -583,5 +589,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.13 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.14 2003/05/13 11:34:07 arnetheduck Exp $
  */

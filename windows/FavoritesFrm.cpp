@@ -42,9 +42,6 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	SetWindowText(CSTRING(FAVORITE_HUBS));
 	
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
 
@@ -92,6 +89,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	hubsMenu.AppendMenu(MF_STRING, IDC_NEWFAV, CSTRING(NEW));
 	hubsMenu.AppendMenu(MF_STRING, IDC_EDIT, CSTRING(PROPERTIES));
 	hubsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+
+	startup = false;
 
 	bHandled = FALSE;
 	return TRUE;
@@ -185,7 +184,7 @@ bool FavoriteHubsFrame::checkNick() {
 
 LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
-	if(l->iItem != -1) {
+	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
 		FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
 		f->setConnect(ctrlHubs.GetCheckState(l->iItem) != FALSE);
 		HubManager::getInstance()->save();
@@ -196,21 +195,9 @@ LRESULT FavoriteHubsFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	HubManager::getInstance()->removeListener(this);
 	
-	string tmp1;
-	string tmp2;
+	WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::FAVORITESFRAME_ORDER, 
+		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-	ctrlHubs.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlHubs.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::FAVORITESFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::FAVORITESFRAME_WIDTHS, tmp2);
-	
 	bHandled = FALSE;
 	return 0;
 }
@@ -221,19 +208,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-
-	if(ctrlStatus.IsWindow()) {
-		CRect sr;
-		int w[3];
-		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)/2;
-		w[2] = w[0] + (tmp-16);
-
-		ctrlStatus.SetParts(3, w);
-	}
 
 	CRect rc = rect;
 	rc.bottom -=28;
@@ -265,6 +239,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.10 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.11 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

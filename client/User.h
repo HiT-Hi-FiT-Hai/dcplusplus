@@ -74,6 +74,14 @@ public:
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp();
+
+	string getFullNick() const { 
+		string tmp(getNick());
+		tmp += " (";
+		tmp += getClientName();
+		tmp += ")";
+		return tmp;
+	}
 	
 	void setBytesShared(const string& aSharing) { setBytesShared(Util::toInt64(aSharing)); };
 
@@ -100,6 +108,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.25 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: User.h,v 1.26 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

@@ -33,7 +33,7 @@
 class FinishedULFrame : public MDITabChildWindowImpl<FinishedULFrame>, private FinishedManagerListener
 {
 public:
-	FinishedULFrame() : totalBytes(0), totalTime(0) { };
+	FinishedULFrame() : totalBytes(0), totalTime(0), closed(false) { };
 	virtual ~FinishedULFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FinishedULFrame", IDR_FINISHED_UL, 0, COLOR_3DFACE);
@@ -45,7 +45,6 @@ public:
 
 	BEGIN_MSG_MAP(FinishedULFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
@@ -86,11 +85,6 @@ public:
 			return TRUE; 
 		}
 		return FALSE; 
-	}
-	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return CMDIChildWindowImpl<FinishedULFrame>::PreTranslateMessage(pMsg);
 	}
 	
 	static int sortSize(LPARAM a, LPARAM b) {
@@ -147,13 +141,11 @@ public:
 			CRect sr;
 			int w[3];
 			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(4, w);
+			w[2] = sr.right - 16;
+			w[1] = max(w[2] - 100, 0);
+			w[0] = max(w[1] - 100, 0);
+
+			ctrlStatus.SetParts(3, w);
 		}
 		
 		CRect rc(rect);
@@ -180,6 +172,8 @@ private:
 	
 	int64_t totalBytes;
 	int64_t totalTime;
+
+	bool closed;
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -208,5 +202,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.3 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.4 2003/05/13 11:34:07 arnetheduck Exp $
  */

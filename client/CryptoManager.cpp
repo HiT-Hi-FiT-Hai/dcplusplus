@@ -168,7 +168,7 @@ u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(Crypt
 	}
 }
 
-void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) throw (CryptoException) {
+void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
 	bz_stream bs;
 
 	memset(&bs, 0, sizeof(bs));
@@ -565,5 +565,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.31 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.32 2003/05/13 11:34:07 arnetheduck Exp $
  */

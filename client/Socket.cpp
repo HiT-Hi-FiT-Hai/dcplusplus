@@ -448,7 +448,7 @@ void Socket::socksUpdated() {
 			} else {
 				// We try the username and password auth type (no, we don't support gssapi)
 				u_int8_t ulen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
-				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
+				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_PASSWORD).length() & 0xff);
 				AutoArray<u_int8_t> connStr(3 + ulen + plen);
 				
 				connStr[0] = 5;			// SOCKSv5
@@ -518,6 +518,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.45 2003/04/15 10:13:56 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.46 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

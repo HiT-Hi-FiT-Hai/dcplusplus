@@ -35,7 +35,7 @@ public:
 
 	static SpyFrame* frame;
 	
-	SpyFrame() : total(0), cur(0) {
+	SpyFrame() : total(0), cur(0), closed(false) {
 		ZeroMemory(perSecond, sizeof(perSecond));
 		ClientManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this);
@@ -58,7 +58,6 @@ public:
 	typedef MDITabChildWindowImpl<SpyFrame> baseClass;
 	BEGIN_MSG_MAP(SpyFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
@@ -73,15 +72,18 @@ public:
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		ClientManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this);
+		if(!closed){
+			ClientManager::getInstance()->removeListener(this);
+			TimerManager::getInstance()->removeListener(this);
 
-		bHandled = FALSE;
-		return 0;
-	}
-	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		return baseClass::PreTranslateMessage((LPMSG)lParam);
+			bHandled = TRUE;
+			closed = true;
+			PostMessage(WM_CLOSE);
+			return 0;
+		} else {
+			bHandled = FALSE;
+			return 0;
+		}
 	}
 
 	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -114,6 +116,8 @@ private:
 	int perSecond[AVG_TIME];
 	int cur;
 	string searchString;
+
+	bool closed;
 	
 	// ClientManagerListener
 	virtual void onAction(ClientManagerListener::Types type, const string& s) throw();
@@ -126,6 +130,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.8 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.9 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

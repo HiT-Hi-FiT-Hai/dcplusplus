@@ -32,7 +32,7 @@
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, private HubManagerListener, private ClientManagerListener {
 public:
 	
-	UsersFrame() { };
+	UsersFrame() : closed(false) { };
 	virtual ~UsersFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("UsersFrame", IDR_USERS, 0, COLOR_3DFACE);
@@ -45,7 +45,6 @@ public:
 	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
 	BEGIN_MSG_MAP(UsersFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
@@ -87,11 +86,6 @@ public:
 		}
 		
 		return FALSE; 
-	}
-	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return baseClass::PreTranslateMessage(pMsg);
 	}
 	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -151,6 +145,8 @@ private:
 	CMenu usersMenu;
 	
 	ExListViewCtrl ctrlUsers;
+
+	bool closed;
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -182,6 +178,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.5 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.6 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

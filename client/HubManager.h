@@ -53,7 +53,7 @@ public:
 
 	FavoriteHubEntry() throw() : connect(false) { };
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false) { };
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick) { };
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), userdescription(rhs.userdescription) { };
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
@@ -62,17 +62,14 @@ public:
 
 	void setNick(const string& aNick) { nick = aNick; };
 
-	const string& getUserDescription(bool useDefault = true) const {
-		return (!userdescription.empty() || !useDefault) ? userdescription : SETTING(DESCRIPTION);
-	}
-	void setUserDescription(const string& aUserDescription) { userdescription = aUserDescription; };
+	GETSETREF(string, userdescription, UserDescription);
 	GETSETREF(string, name, Name);
 	GETSETREF(string, server, Server);
 	GETSETREF(string, description, Description);
 	GETSETREF(string, password, Password);
 	GETSET(bool, connect, Connect);
 private:
-	string nick, userdescription;
+	string nick;
 };
 
 class UserCommand {
@@ -256,6 +253,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.37 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.38 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

@@ -60,6 +60,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_UPDATE_LIST, ResourceManager::SETTINGS_ADVANCED_AUTO_UPDATE_LIST },
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ADVANCED_ANTI_FRAG },
 	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_ADVANCED_NO_AWAYMSG_TO_BOTS },
+	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_ADVANCED_SKIP_ZERO_BYTE },
 	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
@@ -162,6 +163,6 @@ void AdvancedPage::write()
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.12 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.13 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

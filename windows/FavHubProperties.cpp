@@ -31,7 +31,7 @@ LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	SetDlgItemText(IDC_HUBADDR, entry->getServer().c_str());
 	SetDlgItemText(IDC_HUBNICK, entry->getNick(false).c_str());
 	SetDlgItemText(IDC_HUBPASS, entry->getPassword().c_str());
-	SetDlgItemText(IDC_HUBUSERDESCR, entry->getUserDescription(false).c_str());
+	SetDlgItemText(IDC_HUBUSERDESCR, entry->getUserDescription().c_str());
 
 	CEdit tmp;
 	tmp.Attach(GetDlgItem(IDC_HUBNAME));
@@ -110,5 +110,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.5 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.6 2003/05/13 11:34:07 arnetheduck Exp $
  */

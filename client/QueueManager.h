@@ -236,6 +236,7 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 {
 public:
 	
+	/** Add a file to the queue. */
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, 
 		const string& aTempTarget = Util::emptyString, bool addBad = true, 
@@ -248,14 +249,20 @@ public:
 		const string& aTempTarget = Util::emptyString, bool addBad = true, 
 		bool isDirectory = false) throw(QueueException, FileException);
 	
+	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, bool isDirectory = false) throw(QueueException, FileException) {
-		string file = Util::getAppPath() + "FileLists\\" + aUser->getNick() + ".DcLst";
+		string x = aUser->getNick();
+		string::size_type i;
+		while((i = x.find('\\')) != string::npos)
+			x[i] = '_';
+		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false, QueueItem::DEFAULT, Util::emptyString, true, isDirectory);
 	}
 
+	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 	
-	int matchListing(DirectoryListing* dl, const User::Ptr& aUser) throw();
+	int matchListing(DirectoryListing* dl) throw();
 
 	/** Move the target location of a queued item. Running items are silently ignored */
 	void move(const string& aSource, const string& aTarget) throw();
@@ -349,7 +356,7 @@ private:
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
-	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
+	QueueItem* getQueueItem(const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
 	
 	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
@@ -378,6 +385,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.35 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.36 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

@@ -44,7 +44,6 @@ public:
 	BEGIN_MSG_MAP(NotepadFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
@@ -74,11 +73,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return baseClass::PreTranslateMessage(pMsg);
-	}
-	
 private:
 	
 	bool dirty;
@@ -89,6 +83,6 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.7 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.8 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

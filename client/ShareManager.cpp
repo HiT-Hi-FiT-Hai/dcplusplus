@@ -113,13 +113,11 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 	string::size_type i;
 	string::size_type j = 0;
 	while( (i = aFile.find('\\', j)) != string::npos) {
-		j = i + 1;
 		mi = d->directories.find(aFile.substr(j, i-j));
+		j = i + 1;
 		if(mi == d->directories.end())
 			return false;
 		d = mi->second;
-
-		j = i + 1;
 	}
 	if(find_if(d->files.begin(), d->files.end(), CompareFirst<string, int64_t>(aFile.substr(j))) == d->files.end())
 		return false;
@@ -596,7 +594,10 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		cur = newStr.get();
 	}
 
-	if(cur->empty() && ((aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_DIRECTORY))) {
+	bool sizeOk = (aSearchType != SearchManager::SIZE_ATMOST) || (aSize == 0);
+	if( (cur->empty()) && 
+		((aFileType == SearchManager::TYPE_ANY) && sizeOk) || 
+		(aFileType == SearchManager::TYPE_DIRECTORY) ) {
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult();
 		sr->setType(SearchResult::TYPE_DIRECTORY);
@@ -696,6 +697,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.50 2003/05/09 09:57:47 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.51 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

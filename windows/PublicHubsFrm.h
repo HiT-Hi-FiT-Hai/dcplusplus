@@ -38,7 +38,8 @@ public:
 
 	static PublicHubsFrame* frame;
 
-	PublicHubsFrame() : users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
+	PublicHubsFrame() : users(0), hubs(0), closed(false),
+		ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
 		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
 	};
 
@@ -55,7 +56,6 @@ public:
 	typedef MDITabChildWindowImpl<PublicHubsFrame> baseClass;
 	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
@@ -101,20 +101,22 @@ public:
 		return FALSE;
 	};
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return baseClass::PreTranslateMessage(pMsg);
-	}
-
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
 	}
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		HubManager::getInstance()->removeListener(this);
-		bHandled = FALSE;
-		return 0;
+		if(!closed) {
+			HubManager::getInstance()->removeListener(this);
+			bHandled = TRUE;
+			closed = true;
+			PostMessage(WM_CLOSE);
+			return 0;
+		} else {
+			bHandled = FALSE;
+			return 0;
+		}
 	}
 	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -164,6 +166,8 @@ private:
 
 	HubEntry::List hubs;
 	string filter;
+
+	bool closed;
 	
 	static int columnIndexes[];
 	static int columnSizes[];
@@ -188,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.9 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
  */

@@ -33,7 +33,7 @@
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, private HubManagerListener
 {
 public:
-	FavoriteHubsFrame() { };
+	FavoriteHubsFrame() : startup(true) { };
 	virtual ~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
@@ -45,7 +45,6 @@ public:
 
 	BEGIN_MSG_MAP(FavoriteHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
@@ -94,11 +93,6 @@ public:
 		return FALSE; 
 	}
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return CMDIChildWindowImpl<FavoriteHubsFrame>::PreTranslateMessage(pMsg);
-	}
-	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
@@ -128,7 +122,6 @@ private:
 		COLUMN_LAST
 	};
 	
-	CStatusBarCtrl ctrlStatus;
 	CButton ctrlConnect;
 	CButton ctrlRemove;
 	CButton ctrlEdit;
@@ -137,6 +130,8 @@ private:
 	CMenu hubsMenu;
 	
 	ExListViewCtrl ctrlHubs;
+
+	bool startup;
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -157,7 +152,7 @@ private:
 		l.push_back(entry->getNick(false));
 		l.push_back(string(entry->getPassword().size(), '*'));
 		l.push_back(entry->getServer());
-		l.push_back(entry->getUserDescription(false));
+		l.push_back(entry->getUserDescription());
 		bool b = entry->getConnect();
 		int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
 		ctrlHubs.SetCheckState(i, b);
@@ -170,6 +165,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.9 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

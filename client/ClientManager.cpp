@@ -40,8 +40,8 @@ Client* ClientManager::getClient() {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	aClient->removeListeners();
 	aClient->disconnect();
+	aClient->removeListeners();
 
 	{
 		Lock l(cs);
@@ -343,6 +343,6 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.33 2003/04/15 10:13:52 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.34 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

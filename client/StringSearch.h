@@ -46,7 +46,8 @@ public:
 	const string& getPattern() const { return pattern; };
 
 	/** Match a text against the pattern */
-	bool match(const string& aText) throw() {
+	bool match(const string& aText) const throw() {
+		// u_int8_t to avoid problems with signed char pointer arithmetic
 		u_int8_t *tx = (u_int8_t*)aText.c_str();
 		u_int8_t *px = (u_int8_t*)pattern.c_str();
 
@@ -56,11 +57,9 @@ public:
 			return false;
 		}
 
-		// u_int8_t to avoid problems with signed char pointer arithmetic
-
 		u_int8_t *end = tx + aText.length() - plen + 1;
 		while(tx < end) {
-			int i = 0;
+			size_t i = 0;
 			for(; px[i] && (px[i] == Util::toLower(tx[i])); ++i)
 				;		// Empty!
 			
@@ -76,7 +75,7 @@ public:
 private:
 	enum { ASIZE = 256 };
 	/** 
-	 * Delta1 shift, short because we expect all patterns to be shorter than 2^16
+	 * Delta1 shift, u_int16_t because we expect all patterns to be shorter than 2^16
 	 * chars.
 	 */
 	u_int16_t delta1[ASIZE];
@@ -96,3 +95,8 @@ private:
 		}
 	}
 };
+
+/**
+ * @file
+ * $Id: StringSearch.h,v 1.2 2003/05/13 11:34:07 arnetheduck Exp $
+ */

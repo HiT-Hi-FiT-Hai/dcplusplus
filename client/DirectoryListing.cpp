@@ -102,17 +102,17 @@ string DirectoryListing::getPath(Directory* d) {
 	return dir;
 }
 
-void DirectoryListing::download(Directory* aDir, const User::Ptr& aUser, const string& aTarget) {
+void DirectoryListing::download(Directory* aDir, const string& aTarget) {
 	string target = (aDir == getRoot()) ? aTarget : aTarget + aDir->getName() + '\\';
 	// First, recurse over the directories
 	for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
-		download(*j, aUser, target);
+		download(*j, target);
 	}
 	// Then add the files
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
-			download(file, aUser, target + file->getName());
+			download(file, target + file->getName());
 		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
 		} catch(const FileException&) {
@@ -121,12 +121,12 @@ void DirectoryListing::download(Directory* aDir, const User::Ptr& aUser, const s
 	}
 }
 
-void DirectoryListing::download(const string& aDir, const User::Ptr& aUser, const string& aTarget) {
+void DirectoryListing::download(const string& aDir, const string& aTarget) {
 	dcassert(aDir.size() > 2);
 	dcassert(aDir[aDir.size() - 1] == '\\');
 	Directory* d = find(aDir, getRoot());
 	if(d != NULL)
-		download(d, aUser, aTarget);
+		download(d, aTarget);
 }
 
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
@@ -163,11 +163,11 @@ int DirectoryListing::Directory::getTotalFileCount(bool adls) {
 	return x;
 }
 
-void DirectoryListing::download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
-	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
+void DirectoryListing::download(File* aFile, const string& aTarget) {
+	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget);
 }
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.14 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.15 2003/05/13 11:34:07 arnetheduck Exp $
  */

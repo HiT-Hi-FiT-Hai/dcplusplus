@@ -56,7 +56,6 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
@@ -153,11 +152,6 @@ public:
 		return 0;
 	}
 
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return MDITabChildWindowImpl<HubFrame>::PreTranslateMessage(pMsg);
-	}
-	
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
@@ -227,7 +221,7 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), server(aServer), needSort(false),
+	waitingForPW(false), server(aServer), needSort(false), closed(false),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
@@ -282,6 +276,8 @@ private:
 
 	/** Parameter map for user commands */
 	StringMap ucParams;
+
+	bool closed;
 	
 	static CImageList* images;
 	static int columnIndexes[COLUMN_LAST];
@@ -339,6 +335,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.20 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.21 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

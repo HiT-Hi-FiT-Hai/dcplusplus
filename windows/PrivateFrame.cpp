@@ -190,13 +190,20 @@ void PrivateFrame::onEnter()
 }
 
 LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	ClientManager::getInstance()->removeListener(this);
+	if(!closed) {
+		ClientManager::getInstance()->removeListener(this);
 
-	Lock l(cs);
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		Lock l(cs);
+		frames.erase(user);
 
-	frames.erase(user);
-	bHandled = FALSE;
-	return FALSE;
+		bHandled = FALSE;
+		return 0;
+	}
 }
 
 void PrivateFrame::addLine(const string& aLine) {
@@ -228,15 +235,12 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[3];
+		int w[1];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
 		
-		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)/2;
-		w[2] = w[0] + (tmp-16);
-		
-		ctrlStatus.SetParts(3, w);
+		w[0] = sr.right - 16;
+
+		ctrlStatus.SetParts(1, w);
 	}
 	
 	int h = WinUtil::fontHeight + 4;
@@ -263,7 +267,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.12 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.13 2003/05/13 11:34:07 arnetheduck Exp $
  */
 
 

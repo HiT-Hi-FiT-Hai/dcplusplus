@@ -49,6 +49,7 @@ const string SettingsManager::settingTags[] =
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"SkipZeroByte",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -133,6 +134,7 @@ SettingsManager::SettingsManager()
 	setDefault(FINISHED_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
+	setDefault(SKIP_ZERO_BYTE, false);
 
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -270,6 +272,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.50 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.51 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

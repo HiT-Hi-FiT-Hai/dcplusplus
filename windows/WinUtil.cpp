@@ -288,7 +288,24 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 	return true;
 }
 
+void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) {
+	string tmp1;
+	string tmp2;
+
+	ctrl.GetColumnOrderArray(n, indexes);
+	for(int j = 0; j < n; j++) {
+		sizes[j] = ctrl.GetColumnWidth(j);
+		tmp1 += Util::toString(indexes[j]) + ",";
+		tmp2 += Util::toString(sizes[j]) + ",";
+	}
+	tmp1.erase(tmp1.size()-1, 1);
+	tmp2.erase(tmp2.size()-1, 1);
+
+	SettingsManager::getInstance()->set(order, tmp1);
+	SettingsManager::getInstance()->set(widths, tmp2);
+}
+
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.13 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.14 2003/05/13 11:34:07 arnetheduck Exp $
  */

@@ -30,15 +30,18 @@
 #include "WinUtil.h"
 
 #include "../client/DirectoryListing.h"
+#include "../client/StringSearch.h"
 
 #define STATUS_MESSAGE_MAP 9
 
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
+	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
+
 	enum {
 		IDC_DOWNLOAD_TARGET = 5000,
-		IDC_DOWNLOAD_TARGET_DIR = 5100
+		IDC_DOWNLOAD_TARGET_DIR = 5500
 	};
 	
 	enum {
@@ -48,20 +51,19 @@ public:
 	};
 	
 	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser);
-	~DirectoryListingFrame() { }
+	~DirectoryListingFrame() { 
+		delete dl; 
+	}
 
 	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_DIRECTORY)
 
-	virtual void OnFinalMessage(HWND /*hWnd*/)
-	{
-		delete dl;
+	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
 	}
 
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
@@ -78,7 +80,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_GO_TO_DIRECTORY, onGoToDirectory)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
+		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
 		COMMAND_HANDLER(IDC_FIND, BN_CLICKED, onFind)
@@ -106,10 +108,6 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
 		return 0;
@@ -121,19 +119,17 @@ public:
 	}
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		ctrlTree.DeleteAllItems();
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		ctrlList.SetRedraw(TRUE);
 		bHandled = FALSE;
 		return 0;
 	}
 	
 	void setWindowTitle() {
 		if(error.empty())
-			SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+			SetWindowText(dl->getUser()->getFullNick().c_str());
 		else
-			SetWindowText(("Failed loading " + user->getNick() + "'s (" + user->getClientName() + ") file list, " + error).c_str());		
+			SetWindowText(error.c_str());		
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -166,11 +162,17 @@ public:
 	}
 
 	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		searching = true;
 		findFile(false);
+		searching = false;
+		updateStatus();
 		return 0;
 	}
 	LRESULT onNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		searching = true;
 		findFile(true);
+		searching = false;
+		updateStatus();
 		return 0;
 	}
 
@@ -196,7 +198,7 @@ public:
 	}
 private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
-	HTREEITEM findFile(string const& str, HTREEITEM root, int &foundFile, int &skipHits);
+	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
 	void updateStatus();
 	void GoToDirectory(HTREEITEM hItem, StringList::iterator& iPath, const StringList::iterator& iPathEnd);
 
@@ -224,7 +226,6 @@ private:
 
 	StringList targets;
 	
-	User::Ptr user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
 	CStatusBarCtrl ctrlStatus;
@@ -233,15 +234,16 @@ private:
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlMatchQueue;
 
-	int skipHits;
 	string findStr;
-
 	string error;
-
-	int files;
 	string size;
 
+	int skipHits;
+
+	int files;
+
 	bool updating;
+	bool searching;
 
 	int statusSizes[8];
 	
@@ -252,5 +254,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.15 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.16 2003/05/13 11:34:07 arnetheduck Exp $
  */

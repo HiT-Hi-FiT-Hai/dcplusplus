@@ -128,6 +128,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	u->setSize(f->getSize());
 	u->setPos(aResume, true);
 	u->setFileName(aFile);
+	u->setLocalFileName(file);
 
 	if(smallfile)
 		u->setFlag(Upload::SMALL_FILE);
@@ -364,5 +365,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.38 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.39 2003/05/13 11:34:07 arnetheduck Exp $
  */

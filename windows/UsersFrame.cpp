@@ -153,30 +153,25 @@ LRESULT UsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 }
 
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	HubManager::getInstance()->removeListener(this);
-	ClientManager::getInstance()->removeListener(this);
-	
-	string tmp1;
-	string tmp2;
-	
-	ctrlUsers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlUsers.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
+	if(!closed) {
+		HubManager::getInstance()->removeListener(this);
+		ClientManager::getInstance()->removeListener(this);
+
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::USERSFRAME_ORDER, 
+			SettingsManager::USERSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		bHandled = FALSE;
+		return 0;
 	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::USERSFRAME_WIDTHS, tmp2);
-	
-	bHandled = FALSE;
-	return 0;
 }
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.8 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.9 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

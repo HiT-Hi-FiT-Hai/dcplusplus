@@ -85,7 +85,7 @@ public:
 		GETSETREF(string, fullPath, FullPath);
 	};
 
-	DirectoryListing() {
+	DirectoryListing(const User::Ptr& aUser) : user(aUser) {
 		root = new Directory();
 	};
 	
@@ -93,8 +93,8 @@ public:
 		delete root;
 	};
 
-	void download(const string& aDir, const User::Ptr& aUser, const string& aTarget);
-	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget);
+	void download(const string& aDir, const string& aTarget);
+	void download(Directory* aDir, const string& aTarget);
 	void load(const string& i);
 	string getPath(Directory* d);
 	
@@ -103,7 +103,9 @@ public:
 	int getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
 	Directory* getRoot() { return root; };
 	
-	void download(File* aFile, const User::Ptr& aUser, const string& aTarget);
+	void download(File* aFile, const string& aTarget);
+
+	GETSETREF(User::Ptr, user, User);
 
 private:
 	Directory* root;
@@ -116,5 +118,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.16 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
  */

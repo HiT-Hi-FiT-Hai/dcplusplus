@@ -48,7 +48,6 @@ public:
 	BEGIN_MSG_MAP(PrivateFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
@@ -100,11 +99,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return MDITabChildWindowImpl<PrivateFrame>::PreTranslateMessage(pMsg);
-	}
-	
 	void addClientLine(const string& aLine) {
 		if(!created) {
 			CreateEx(parent);
@@ -124,7 +118,9 @@ public:
 	
 	User::Ptr& getUser() { return user; };
 private:
-	PrivateFrame(const User::Ptr& aUser, HWND aParent = NULL) : user(aUser), parent(aParent), created(false), ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
+	PrivateFrame(const User::Ptr& aUser, HWND aParent = NULL) : user(aUser), 
+		parent(aParent), created(false), closed(false), 
+		ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
@@ -143,14 +139,16 @@ private:
 	User::Ptr user;
 	CContainedWindow ctrlMessageContainer;
 
+	bool closed;
+
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+			SetWindowText(user->getFullNick().c_str());
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+				SetWindowText(user->getFullNick().c_str());
 			} else {
-				SetWindowText((user->getNick() + " (" + user->getClientName() + " [" + STRING(OFFLINE) + "])").c_str());
+				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			}
 		}
 	}
@@ -163,6 +161,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.9 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

@@ -533,35 +533,30 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 }
 
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	int i = 0;
-	
-	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
+	if(!closed) {
+		TimerManager::getInstance()->removeListener(this);
+		client->removeListener(this);
+		client->disconnect();
 
-	TimerManager::getInstance()->removeListener(this);
-	client->removeListener(this);
-	
-	while(i < ctrlUsers.GetItemCount()) {
-		delete (UserInfo*)ctrlUsers.GetItemData(i);
-		i++;
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
+
+		int i = 0;
+		while(i < ctrlUsers.GetItemCount()) {
+			delete (UserInfo*)ctrlUsers.GetItemData(i);
+			i++;
+		}
+
+		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
+			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		bHandled = FALSE;
+		return 0;
 	}
-	
-	string tmp1;
-	string tmp2;
-	
-	ctrlUsers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlUsers.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);
-				
-	bHandled = FALSE;
-	return 0;
 }
 
 static int textUnderCursor(POINT p, CEdit& ctrl, string& x) {
@@ -614,6 +609,11 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 
 			ShellExecute(NULL, NULL, x.substr(start, end-start).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		} else if(Util::strnicmp(x.c_str() + start, "dchub://", 8) == 0) {
+			string server, file;
+			short port = 411;
+			Util::decodeUrl((x.c_str() + start), server, port, file);
+			HubFrame::openWindow(m_hWndMDIClient, getTab(), server + ":" + Util::toString(port));
 		} else {
 			string::size_type end = x.find_first_of("> \t\r\n", start+1);
 			if(end == string::npos || end == start + 1) {
@@ -1029,5 +1029,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.23 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.24 2003/05/13 11:34:07 arnetheduck Exp $
  */

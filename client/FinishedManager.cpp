@@ -21,7 +21,6 @@
 
 #include <time.h>
 #include "FinishedManager.h"
-#include "ShareManager.h"
 
 FinishedManager* Singleton<FinishedManager>::instance = NULL;
 
@@ -75,7 +74,7 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
 			strftime(buf, 31, "%Y-%m-%d %H:%M:%S", _tm);
 			
 			FinishedItem *item = new FinishedItem(
-				ShareManager::getInstance()->translateFileName(u->getFileName()), u->getUserConnection()->getUser()->getNick(),
+				u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
 				u->getUserConnection()->getUser()->getLastHubName(),
 				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), buf);
 			{
@@ -96,5 +95,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.7 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.8 2003/05/13 11:34:07 arnetheduck Exp $
  */

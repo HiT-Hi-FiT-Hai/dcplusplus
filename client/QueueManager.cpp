@@ -320,7 +320,9 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {
-		File f(aTarget, File::WRITE, File::CREATE);
+		if(!BOOLSETTING(SKIP_ZERO_BYTE)) {
+			File f(aTarget, File::WRITE, File::CREATE);
+		}
 		return;
 	}
 
@@ -328,8 +330,13 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		Lock l(cs);
 		// Alright, get a queue item, new or old...
 		bool newItem = false;
-		QueueItem* q = getQueueItem(aFile, target, aSize, aResume, newItem);
+		QueueItem* q = getQueueItem(target, aSize, aResume, newItem);
 		QueueItem::Source* s = NULL;
+		
+		if(aFile == USER_LIST_NAME) {
+			q->setFlag(QueueItem::FLAG_USER_LIST);
+			q->setPriority(QueueItem::HIGHEST);
+		}
 
 		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
 			q->setFlag(isDirectory ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : QueueItem::FLAG_CLIENT_VIEW);
@@ -382,13 +389,6 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		}
 
 		if(newItem) {
-			if(lastInsert == queue.end()) {
-				lastInsert = queue.insert(make_pair(q->getTarget(), q)).first;
-			} else {
-				lastInsert = queue.insert(lastInsert, make_pair(q->getTarget(), q));
-			}
-			fire(QueueManagerListener::ADDED, q);
-
 			if(!q->isSet(QueueItem::FLAG_USER_LIST)) {
 				if(aTempTarget.empty()) {
 					if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(q->getTarget()) == -1)) {
@@ -398,6 +398,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 					q->setTempTarget(aTempTarget);
 				}
 			}
+
+			if(lastInsert == queue.end()) {
+				lastInsert = queue.insert(make_pair(q->getTarget(), q)).first;
+			} else {
+				lastInsert = queue.insert(lastInsert, make_pair(q->getTarget(), q));
+			}
+			fire(QueueManagerListener::ADDED, q);
+
 		}
 
 		fire(QueueManagerListener::SOURCES_UPDATED, q);
@@ -408,7 +416,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException) {
+QueueItem* QueueManager::getQueueItem(const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException) {
 	QueueItem* q;
 	if(lastInsert->first == aTarget) {
 		q = lastInsert->second;
@@ -421,10 +429,6 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 
 		q = new QueueItem(aTarget, aSize, (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL, aResume);
 
-		if(aFile == USER_LIST_NAME) {
-			q->setFlag(QueueItem::FLAG_USER_LIST);
-			q->setPriority(QueueItem::HIGHEST);
-		}
 	} else {
 		newItem = false;
 		if(q->getSize() != aSize) {
@@ -481,7 +485,7 @@ static void matchFile(const string& name, const int64_t& size,
 	}
 }
 
-int QueueManager::matchListing(DirectoryListing* dl, const User::Ptr& aUser) throw() {
+int QueueManager::matchListing(DirectoryListing* dl) throw() {
 	MatchList f;
 	{
 		Lock l(cs);
@@ -496,7 +500,7 @@ int QueueManager::matchListing(DirectoryListing* dl, const User::Ptr& aUser) thr
 	for(MatchIter i = f.begin(); i != f.end(); ++i) {
 		DirectoryListing::File* df = i->first;
 		try {
-			add(dl->getPath(df) + df->getName(), df->getSize(), aUser, i->second);
+			add(dl->getPath(df) + df->getName(), df->getSize(), dl->getUser(), i->second);
 		} catch(const Exception&) {
 			totalItems--;
 		}
@@ -657,12 +661,12 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 			}
 			directories.erase(up);
 		}
-		DirectoryListing dirList;
+		DirectoryListing dirList(up);
 		dirList.load(userList);
 
 		for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
 			DirectoryItem* di = *i;
-			dirList.download(di->getName(), up, di->getTarget());
+			dirList.download(di->getName(), di->getTarget());
 			delete di;
 		}
 	}
@@ -749,20 +753,28 @@ void QueueManager::removeSources(User::Ptr& aUser, int reason) throw() {
 		Lock l(cs);
 		QueueItem* qi = NULL;
 		while( (qi = userQueue.getNext(aUser, QueueItem::PAUSED)) != NULL) {
-			userQueue.remove(qi, aUser);
-			qi->removeSource(aUser, reason);
-			fire(QueueManagerListener::SOURCES_UPDATED, qi);
-			setDirty();
+			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
+				remove(qi->getTarget());
+			} else {
+				userQueue.remove(qi, aUser);
+				qi->removeSource(aUser, reason);
+				fire(QueueManagerListener::SOURCES_UPDATED, qi);
+				setDirty();
+			}
 		}
 		
 		qi = userQueue.getRunning(aUser);
 		if(qi != NULL) {
-			userQueue.setWaiting(qi);
-			userQueue.remove(qi, aUser);
-			x = qi->getTarget();
-			qi->removeSource(aUser, reason);
-			fire(QueueManagerListener::SOURCES_UPDATED, qi);
-			setDirty();
+			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
+				remove(qi->getTarget());
+			} else {
+				userQueue.setWaiting(qi);
+				userQueue.remove(qi, aUser);
+				x = qi->getTarget();
+				qi->removeSource(aUser, reason);
+				fire(QueueManagerListener::SOURCES_UPDATED, qi);
+				setDirty();
+			}
 		}
 	}
 	if(!x.empty()) {
@@ -910,14 +922,35 @@ void QueueManager::load(SimpleXML* aXml) {
 			int64_t size = aXml->getLongLongChildAttrib(sSize);
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
 			aXml->stepIn();
-			while(aXml->findChild(sSource)) {
-				const string& nick = aXml->getChildAttrib(sNick);
-				const string& path = aXml->getChildAttrib(sPath);
-				
-				try {
-					add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p, tempTarget);
-				} catch(const Exception&) {
-					// ...
+			if(aXml->findChild(sSource)) {
+				do {
+					const string& nick = aXml->getChildAttrib(sNick);
+					const string& path = aXml->getChildAttrib(sPath);
+
+					try {
+						add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p, tempTarget);
+					} catch(const Exception&) {
+						// ...
+					}
+				} while(aXml->findChild(sSource));
+			} else {
+				// Sourceless file!
+				Lock l(cs);
+				bool newItem = false;
+				if(target.find('\\') == string::npos)
+					continue;
+
+				QueueItem* qi = getQueueItem(target, size, resume, newItem);
+				if(newItem) {
+					qi->setPriority(p);
+					qi->setTempTarget(tempTarget);
+					
+					if(lastInsert == queue.end()) {
+						lastInsert = queue.insert(make_pair(qi->getTarget(), qi)).first;
+					} else {
+						lastInsert = queue.insert(lastInsert, make_pair(qi->getTarget(), qi));
+					}
+					fire(QueueManagerListener::ADDED, qi);
 				}
 			}
 			aXml->stepOut();
@@ -1065,5 +1098,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.40 2003/04/17 16:59:30 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.41 2003/05/13 11:34:07 arnetheduck Exp $
  */

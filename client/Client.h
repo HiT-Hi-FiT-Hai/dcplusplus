@@ -186,8 +186,10 @@ public:
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
 	GETSETREF(string, defpassword, Password);
-	GETSETREF(string, description, Description);
+	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
+	void setDescription(const string& aDesc) { description = aDesc; };
 private:
+	string description;
 	enum States {
 		STATE_CONNECT,
 		STATE_LOCK,
@@ -234,7 +236,7 @@ private:
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), description(SETTING(DESCRIPTION)), state(STATE_CONNECT), socket(NULL), 
+	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), 
 		lastActivity(GET_TICK()), countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
 	};
@@ -267,6 +269,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.64 2003/04/15 10:13:52 arnetheduck Exp $
+ * $Id: Client.h,v 1.65 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

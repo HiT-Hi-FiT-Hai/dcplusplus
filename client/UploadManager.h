@@ -43,6 +43,7 @@ public:
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
 	GETSETREF(string, fileName, FileName);
+	GETSETREF(string, localFileName, LocalFileName);
 };
 
 class UploadManagerListener {
@@ -150,5 +151,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.54 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.55 2003/05/13 11:34:07 arnetheduck Exp $
  */

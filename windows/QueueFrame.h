@@ -52,7 +52,7 @@ public:
 	static QueueFrame* frame;
 
 	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
-		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true),
+		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true), closed(false),
 		showTreeContainer("BUTTON", this, SHOWTREE_MESSAGE_MAP)
 	{ 
 		searchFilter.push_back("the");
@@ -72,13 +72,13 @@ public:
 
 	BEGIN_MSG_MAP(QueueFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_QUEUE, LVN_ITEMCHANGED, onItemChangedQueue)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
@@ -111,6 +111,13 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
+
+	LRESULT onItemChangedQueue(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
+		if((lv->uNewState & LVIS_SELECTED) != (lv->uOldState & LVIS_SELECTED))
+			updateStatus();
+		return 0;
+	}
 
 	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 		ctrlQueue.SetFocus();
@@ -184,11 +191,6 @@ public:
 		return 0;
 	}
 
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		LPMSG pMsg = (LPMSG)lParam;
-		return baseClass::PreTranslateMessage(pMsg);
-	}
-	
 	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		showTree = (wParam == BST_CHECKED);
@@ -256,11 +258,6 @@ private:
 	int menuItems;
 	int readdItems;
 
-	/** 
-	 * The common elements in the target directory name, for use in the smarter queue
-	 * tree display.
-	 */
-	string commonStart;
 	HTREEITEM fileLists;
 
 	StringList searchFilter;
@@ -280,9 +277,12 @@ private:
 	CTreeViewCtrl ctrlDirs;
 	
 	CStatusBarCtrl ctrlStatus;
+	int statusSizes[6];
 	
 	int64_t queueSize;
 	int queueItems;
+
+	bool closed;
 	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -294,6 +294,7 @@ private:
 	void removeDirectories(HTREEITEM ht);
 
 	void updateQueue();
+	void updateStatus();
 	
 	/**
 	 * This one is different from the others because when a lot of files are removed
@@ -328,14 +329,6 @@ private:
 	};
 	
 	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((string*)ctrlDirs.GetItemData(ht)); };
-	
-	void updateStatus() {
-		if(dirty) {
-			ctrlStatus.SetText(2, ("Items: " + Util::toString(queueItems)).c_str());
-			ctrlStatus.SetText(3, ("Size: " + Util::formatBytes(queueSize)).c_str());
-			dirty = false;
-		}
-	}
 
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) throw();
 
@@ -350,6 +343,6 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.16 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

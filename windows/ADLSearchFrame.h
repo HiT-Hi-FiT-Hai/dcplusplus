@@ -61,7 +61,6 @@ public:
 	BEGIN_MSG_MAP(ADLSearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
@@ -107,14 +106,8 @@ public:
 		return FALSE;
 	};
 
-	// Forward message
-	LRESULT onForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
-	{
-		return baseClass::PreTranslateMessage((LPMSG)lParam);
-	}
-
 	// Final message
-	virtual void onFinalMessage(HWND /*hWnd*/) 
+	virtual void OnFinalMessage(HWND /*hWnd*/) 
 	{
 		frame = NULL;
 		delete this;
@@ -162,5 +155,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.3 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.4 2003/05/13 11:34:07 arnetheduck Exp $
  */

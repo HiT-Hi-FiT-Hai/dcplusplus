@@ -473,7 +473,7 @@ void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 		transferItems.insert(make_pair(aCqi, ii));
 	}
 	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_USER] = aCqi->getUser()->getNick() + " (" + aCqi->getUser()->getClientName() + ")";
+	i->columns[COLUMN_USER] = aCqi->getUser()->getFullNick();
 	i->columns[COLUMN_STATUS] = STRING(CONNECTING);
 
 	if(aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD)) {
@@ -1009,9 +1009,6 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 		c = NULL;
 	}
 
-	string tmp1;
-	string tmp2;
-	
 	WINDOWPLACEMENT wp;
 	wp.length = sizeof(wp);
 	GetWindowPlacement(&wp);
@@ -1028,18 +1025,9 @@ LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
 		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 	
-	ctrlTransfers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int i = COLUMN_FIRST; i != COLUMN_LAST; i++) {
-		columnSizes[i] = ctrlTransfers.GetColumnWidth(i);
-		tmp1 += Util::toString(columnIndexes[i]) + ",";
-		tmp2 += Util::toString(columnSizes[i]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
-	
+	WinUtil::saveHeaderOrder(ctrlTransfers, SettingsManager::MAINFRAME_ORDER, 
+		SettingsManager::MAINFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
 	QueueManager::getInstance()->saveQueue();
 	SettingsManager::getInstance()->save();
 	
@@ -1085,17 +1073,8 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 			if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
 				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 
-			ctrlTransfers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-			for(int i = COLUMN_FIRST; i != COLUMN_LAST; i++) {
-				columnSizes[i] = ctrlTransfers.GetColumnWidth(i);
-				tmp1 += Util::toString(columnIndexes[i]) + ",";
-				tmp2 += Util::toString(columnSizes[i]) + ",";
-			}
-			tmp1.erase(tmp1.size()-1, 1);
-			tmp2.erase(tmp2.size()-1, 1);
-			
-			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, tmp1);
-			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
+			WinUtil::saveHeaderOrder(ctrlTransfers, SettingsManager::MAINFRAME_ORDER, 
+				SettingsManager::MAINFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
 			ShowWindow(SW_HIDE);
 			
@@ -1419,6 +1398,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.22 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.23 2003/05/13 11:34:07 arnetheduck Exp $
  */
 

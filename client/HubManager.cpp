@@ -90,7 +90,7 @@ void HubManager::save() {
 			xml.addChildAttrib("Nick", (*i)->getNick(false));
 			xml.addChildAttrib("Password", (*i)->getPassword());
 			xml.addChildAttrib("Server", (*i)->getServer());
-			xml.addChildAttrib("UserDescription", (*i)->getUserDescription(false));
+			xml.addChildAttrib("UserDescription", (*i)->getUserDescription());
 		}
 		xml.stepOut();
 		xml.addTag("Users");
@@ -278,5 +278,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.29 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.30 2003/05/13 11:34:07 arnetheduck Exp $
  */

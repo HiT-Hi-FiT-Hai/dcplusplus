@@ -134,7 +134,7 @@ public:
 
 	void decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
-	void decodeBZ2(const u_int8_t* is, int sz, string& os) throw(CryptoException);
+	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 	void encodeBZ2(const string& is, string& os, int strength = 9);
 	
 private:
@@ -187,5 +187,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.21 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.22 2003/05/13 11:34:07 arnetheduck Exp $
  */

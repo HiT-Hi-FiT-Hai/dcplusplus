@@ -135,8 +135,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	QueueManager::getInstance()->unlockQueue();
 	QueueManager::getInstance()->addListener(this);
 
-	int w[] = { 1, 2, 3, 4};
-	ctrlStatus.SetParts(4, w);
+	memset(statusSizes, 0, sizeof(statusSizes));
+	statusSizes[0] = 16;
+	ctrlStatus.SetParts(6, statusSizes);
 	updateStatus();
 
 	bHandled = FALSE;
@@ -159,7 +160,7 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* qi) {
 		if(sr->getUser()->isOnline())
 			online++;
 		
-		tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
+		tmp += sr->getUser()->getFullNick();
 	}
 	columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
 	tmp = Util::emptyString;
@@ -202,6 +203,10 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* qi) {
 				columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
 			} else if(qi->getSources().size() == 2) {
 				columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
+			} else if(qi->getSources().size() == 3) {
+				columns[COLUMN_STATUS] = STRING(ALL_3_USERS_OFFLINE);
+			} else if(qi->getSources().size() == 4) {
+				columns[COLUMN_STATUS] = STRING(ALL_4_USERS_OFFLINE);
 			} else {
 				sprintf(buf, CSTRING(ALL_USERS_OFFLINE), qi->getSources().size());
 				columns[COLUMN_STATUS] = buf;
@@ -832,25 +837,89 @@ void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
 	}
 }
 
+void QueueFrame::updateStatus() {
+	if(ctrlStatus.IsWindow()) {
+		int64_t total = 0;
+		int cnt = ctrlQueue.GetSelectedCount();
+		if(cnt == 0) {
+			cnt = ctrlQueue.GetItemCount();
+			if(showTree) {
+				for(int i = 0; i < cnt; ++i) {
+					QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
+					total += (qi->getSize() > 0) ? qi->getSize() : 0;
+				}
+			} else {
+				total = queueSize;
+			}
+		} else {
+			for(int i = 0; i < cnt; ++i) {
+				QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
+				total += (qi->getSize() > 0) ? qi->getSize() : 0;
+			}
+
+		}
+
+		string tmp1 = STRING(ITEMS) + ": " + Util::toString(cnt);
+		string tmp2 = STRING(SIZE) + ": " + Util::formatBytes(total);
+		bool u = false;
+
+		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
+		if(statusSizes[1] < w) {
+			statusSizes[1] = w;
+			u = true;
+		}
+		ctrlStatus.SetText(2, tmp1.c_str());
+		w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
+		if(statusSizes[2] < w) {
+			statusSizes[2] = w;
+			u = true;
+		}
+		ctrlStatus.SetText(3, tmp2.c_str());
+
+		if(dirty) {
+			tmp1 = STRING(FILES) + ": " + Util::toString(queueItems);
+			tmp2 = STRING(SIZE) + ": " + Util::formatBytes(queueSize);
+
+			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
+			if(statusSizes[3] < w) {
+				statusSizes[3] = w;
+				u = true;
+			}
+			ctrlStatus.SetText(4, tmp1.c_str());
+
+			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
+			if(statusSizes[4] < w) {
+				statusSizes[4] = w;
+				u = true;
+			}
+			ctrlStatus.SetText(5, tmp2.c_str());
+
+			dirty = false;
+		}
+
+		if(u)
+			UpdateLayout(TRUE);
+	}
+}
+
 void QueueFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	RECT rect;
 	GetClientRect(&rect);
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-	
+
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[4];
+		int w[6];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-		
-		w[0] = 15;
-		w[1] = sr.right - tmp;
-		w[2] = w[1] + (tmp-16)/2;
-		w[3] = w[1] + (tmp-16);
-		
-		ctrlStatus.SetParts(4, w);
-		// Layout showUI button in statusbar part #0
+		w[5] = sr.right - 16;
+#define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
+		setw(4); setw(3); setw(2); setw(1);
+
+		w[0] = 16;
+
+		ctrlStatus.SetParts(6, w);
+
 		ctrlStatus.GetRect(0, sr);
 		ctrlShowTree.MoveWindow(sr);
 	}
@@ -872,37 +941,32 @@ void QueueFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 }
 
 LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
-	QueueManager::getInstance()->removeListener(this);
-	QueueFrame::frame = NULL;
-	
-	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, ctrlShowTree.GetCheck() == BST_CHECKED);
-	{
-		Lock l(cs);
-		for(QueueIter i = queue.begin(); i != queue.end(); ++i) {
-			delete i->second;
+	if(!closed) {
+		QueueManager::getInstance()->removeListener(this);
+
+		bHandled = TRUE;
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		QueueFrame::frame = NULL;
+
+		SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, ctrlShowTree.GetCheck() == BST_CHECKED);
+		{
+			Lock l(cs);
+			for(QueueIter i = queue.begin(); i != queue.end(); ++i) {
+				delete i->second;
+			}
+			queue.clear();
 		}
-		queue.clear();
+		ctrlQueue.DeleteAllItems();
+
+		WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
+			SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		bHandled = FALSE;		
+		return 0;
 	}
-	ctrlQueue.DeleteAllItems();
-	
-	string tmp1;
-	string tmp2;
-	
-	ctrlQueue.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
-	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
-		columnSizes[j] = ctrlQueue.GetColumnWidth(j);
-		tmp1 += Util::toString(columnIndexes[j]) + ",";
-		tmp2 += Util::toString(columnSizes[j]) + ",";
-	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-	
-	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_WIDTHS, tmp2);
-	
-	bHandled = FALSE;		
-	return 0;
 }
 
 LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
@@ -937,6 +1001,7 @@ void QueueFrame::updateQueue() {
 	ctrlQueue.SetRedraw(TRUE);
 	ctrlQueue.resort();
 	curDir = getSelectedDir();
+	updateStatus();
 }
 
 void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) throw() { 
@@ -953,7 +1018,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.20 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.21 2003/05/13 11:34:07 arnetheduck Exp $
  */
 
 

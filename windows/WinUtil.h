@@ -149,6 +149,7 @@ public:
 	}
 	
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1);
+	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, SettingsManager::StrSetting widths, int n, int* indexes, int* sizes);
 	
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
@@ -159,5 +160,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.9 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
  */

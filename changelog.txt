@@ -8,12 +8,27 @@
   * Unified button texts to the rest of DC++.
   * Fixed bug with multiple destination directories, some search results only ended up in the first of multiples.
 * Some code cleanup
-* Memory savings for users with large shares
+* Memory savings for users with many files in share
 * Fix for buggy HTTP servers sending Content-Length with wrong case (thanks sandos)
 * Added link to change log in help menu (thanks todd)
 * Fixed link to faq (thanks todd)
 * Fixed public hub list mouse clicks and list reviewing (thanks todd)
-* Implemented a faster substring search algorithm for share searches (the QuickSearch variant of the Boyer-Moore)
+* Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 
+  the Boyer-Moore)
+* Fixed a major bug where queue items without sources were not loaded from disk on restart
+* Fixed so that "3/4 users offline" can be translated to polish
+* Fixed tabbing in search frame 
+* Added option for not downloading zero-byte files
+* Added handling for dchub:// in main chat (opens the hub)
+* Fixed a bug with strange nicks causing problems with file list opening
+* Fixed a bug with orphaned file lists
+* Fixed a bug with socks5 password length (thanks dwomac) 
+* Double-clicking text selects the word (as in old versions, thanks todd pederzani)
+* Fixed slow favorites opening / excessive saving (thanks todd pederzani)
+* Directories are no longer returned for "at least" searches with bytes > 0 (i e directory size is assumed 0)
+* Large speedup in file listing search
+* Added selection size info to queue frame (same as file listing)
+* Fixed some crashes when closing windows
 
  -- 0.242 2003-04-19 --
 * Updated compile.txt with some notes on submitting patches
