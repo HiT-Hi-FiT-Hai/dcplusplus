@@ -1,3 +1,18 @@
+ -- 0.402 --
+* Fixed transfer view crash (thanks garg)
+* Removed default sort in search frame
+* Window sizes / positions of favorite hubs saved (thanks trem)
+* Begun work on the ADC protocol (major change)
+* Fixed issue with the exceptioninfo growing indefinately (recursive behaviour)
+* Readded missing TTHSearch to hub $Supports
+* Fixed unnecessary $MyINFO being sent out
+* Removed time left and speed from waiting transfers (thanks garg)
+* Documented %[line:reason]
+* Fixed a bug with hanging queue display
+* When searching by hash, size mode set to normal (don't care)
+* Hash speed tweaks, check if it's any better.
+
+
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
 * Hopefully fixed the dupe op issue
@@ -27,7 +42,6 @@
 * Fixed random filelist crash
 * Performance improvement in background match queue
 * Dupe file check done by TTH value
-
 
  -- 0.307 2004-03-10 --
 * Experimental release, lots and lots of core code has changed => high fatal bug probability.

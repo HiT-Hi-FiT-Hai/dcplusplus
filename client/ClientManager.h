@@ -35,7 +35,7 @@ class ClientManager : public Speaker<ClientManagerListener>,
 	private TimerManagerListener
 {
 public:
-	Client* getClient();
+	Client* getClient(const string& aHubURL);
 	void putClient(Client* aClient);
 
 	int getUserCount() {
@@ -96,6 +96,7 @@ public:
 
 	void infoUpdated();
 
+	User::Ptr getUser(const CID& cid, Client* aClient = NULL, bool putOnline = true);
 	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
 	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
 	
@@ -141,26 +142,30 @@ public:
  		}
  	}
 
+	User::Ptr getAdcMe() { return adcMe; }
+
 private:
 	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	typedef pair<UserIter, UserIter> UserPair;
 
+	typedef HASH_MAP_X(CID, User::Ptr, CID::Hash, equal_to<CID>, less<CID>) AdcMap;
+	typedef AdcMap::iterator AdcIter;
+	typedef pair<AdcIter, AdcIter> AdcPair;
+
 	Client::List clients;
 	CriticalSection cs;
 	
-	StringList features;
 	UserMap users;
+	AdcMap adcUsers;
+
+	User::Ptr adcMe;
+
 	Socket s;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() { 
+	ClientManager() : adcMe(new User(CID::generate())) { 
 		TimerManager::getInstance()->addListener(this); 
-
-		features.push_back("UserCommand");
-		features.push_back("NoGetINFO");
-		features.push_back("NoHello");
-		features.push_back("UserIP2");
 	};
 
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
@@ -168,16 +173,12 @@ private:
 	// ClientListener
 	virtual void onAction(ClientListener::Types type, Client* client) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw();
 
-	void onClientHello(Client* aClient, const User::Ptr& aUser) throw();
 	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) throw();
-	void onClientLock(Client* aClient, const string& aLock) throw();
 
 	// TimerManagerListener
 	void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
@@ -188,6 +189,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.44 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.45 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

@@ -37,6 +37,7 @@ class Thread
 public:
 #ifdef _WIN32
 	enum Priority {
+		IDLE = THREAD_PRIORITY_IDLE,
 		LOW = THREAD_PRIORITY_LOWEST,
 		NORMAL = THREAD_PRIORITY_NORMAL,
 		HIGH = THREAD_PRIORITY_HIGHEST
@@ -70,6 +71,7 @@ public:
 #else
 
 	enum Priority {
+		IDLE = 1,
 		LOW = 1,
 		NORMAL = 0,
 		HIGH = -1
@@ -142,6 +144,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.13 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: Thread.h,v 1.14 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

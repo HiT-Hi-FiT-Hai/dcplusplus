@@ -306,7 +306,7 @@ string ResourceManager::strings[] = {
 "IP", 
 "Don't delete file lists when exiting", 
 "Language file", 
-"Include duplicate files in your file list (duplicates never count towards your share size)", 
+"Keep duplicate files in your file list (duplicates never count towards your share size)", 
 "Log downloads", 
 "Log filelist transfers", 
 "Log main chat", 

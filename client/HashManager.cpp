@@ -275,20 +275,113 @@ void HashManager::HashStore::createDataFile(const string& name) {
 	}
 }
 
-#define BUF_SIZE (128*1024)
-
-int HashManager::Hasher::run() {
-	setThreadPriority(Thread::LOW);
+#define BUF_SIZE (256*1024)
 
 #ifdef _WIN32
-	u_int8_t* buf = (u_int8_t*)VirtualAlloc(NULL, BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
-	if(buf == NULL)
-		return 1;
+static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
+	HANDLE h = INVALID_HANDLE_VALUE;
+	DWORD x, y;
+	if(!GetDiskFreeSpace(Util::getFilePath(fname).c_str(), &y, &x, &y, &y)) {
+		return false;
+	} else {
+		if((BUF_SIZE % x) != 0) {
+			return false;
+		} else {
+			h = ::CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING | FILE_FLAG_OVERLAPPED, NULL);
+			if(h == INVALID_HANDLE_VALUE)
+				return false;
+		}
+	}
+	DWORD hn = 0;
+	DWORD rn = 0;
+	u_int8_t* hbuf = buf + BUF_SIZE;
+	u_int8_t* rbuf = buf;
+
+	OVERLAPPED over = { 0 };
+	over.hEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	
+	bool ok = false;
+
+	if(!::ReadFile(h, hbuf, BUF_SIZE, &hn, &over)) {
+		if(GetLastError() == ERROR_HANDLE_EOF) {
+			hn = 0;
+		} else if(GetLastError() == ERROR_IO_PENDING) {
+			if(!GetOverlappedResult(h, &over, &hn, TRUE)) {
+				if(GetLastError() == ERROR_HANDLE_EOF) {
+					hn = 0;
+				} else {
+					goto cleanup;
+				}
+			}
+		} else {
+			goto cleanup;
+		}
+	}
+
+	over.Offset = hn;
+
+	BOOL res = TRUE;
+	for(;;) {
+		if(hn != 0) {
+			// Start a new overlapped read
+			ResetEvent(over.hEvent);
+			res = ReadFile(h, rbuf, BUF_SIZE, &rn, &over);
+		}
+
+		tth.update(hbuf, hn);
+
+		if(hn == 0)
+			break;
+
+		if (!res) { 
+			// deal with the error code 
+			switch (GetLastError()) { 
+			case ERROR_HANDLE_EOF: 
+				ok = true;
+				goto cleanup;
+			case ERROR_IO_PENDING: 
+				if(!GetOverlappedResult(h, &over, &rn, TRUE)) {
+					if(GetLastError() == ERROR_HANDLE_EOF) {
+						ok = true;
+						rn = 0;
+						goto cleanup;
+					} else {
+						goto cleanup;
+					}
+				}
+				break;
+			default:
+				goto cleanup;
+			}
+		}
+
+		*((u_int64_t*)&over.Offset) += rn;
+
+		swap(rbuf, hbuf);
+		swap(rn, hn);
+	}
+
+cleanup:
+	::CloseHandle(over.hEvent);
+	::CloseHandle(h);
+	return ok;
+}
+#endif
+
+int HashManager::Hasher::run() {
+	setThreadPriority(Thread::IDLE);
+
+#ifdef _WIN32
+	u_int8_t* buf = NULL;
 #else
 	u_int8_t buf[BUF_SIZE];
 #endif
 
+	bool virtualBuf = true;
+
 	string fname;
+	bool last = false;
+
 	for(;;) {
 		s.wait();
 		if(stop)
@@ -298,71 +391,64 @@ int HashManager::Hasher::run() {
 			if(!w.empty()) {
 				fname = *w.begin();
 				w.erase(w.begin());
+				last = w.empty();
 			} else {
+				last = true;
 				fname.clear();
 			}
 		}
 
 		if(!fname.empty()) {
+			if(buf == NULL) {
+				virtualBuf = true;
+				buf = (u_int8_t*)VirtualAlloc(NULL, 2*BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
+			}
+			if(buf == NULL) {
+				virtualBuf = false;
+				buf = new u_int8_t[BUF_SIZE];
+			}
 			try {
-#ifdef _WIN32
-				bool fastFile = true;
-				HANDLE h = INVALID_HANDLE_VALUE;
-				DWORD x, y;
-				if(!GetDiskFreeSpace(Util::getFilePath(fname).c_str(), &y, &x, &y, &y)) {
-					fastFile = false;
-				} else {
-					if((BUF_SIZE % x) != 0) {
-						fastFile = false;
-					} else {
-						h = ::CreateFile(fname.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
-						if(h == INVALID_HANDLE_VALUE)
-							fastFile = false;
-					}
-				}
-#endif
-
 				File f(fname, File::READ, File::OPEN);
 				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
-				TigerTree tth(bs, f.getLastModified());
+
+				TigerTree slowTTH(bs, f.getLastModified());
+				TigerTree* tth = &slowTTH;
 				size_t n = 0;
-				do {
 #ifdef _WIN32
-					if(fastFile) {
-						if(!::ReadFile(h, buf, BUF_SIZE, (DWORD*)&n, NULL)) {
-							fastFile = false;
-							n = 0;
-						}
-					} else {
+				TigerTree fastTTH(bs, f.getLastModified());
+				tth = &fastTTH;
+				if(!virtualBuf || !fastHash(fname, buf, fastTTH)) {
+					tth = &slowTTH;
 #endif
-					size_t bufSize = BUF_SIZE;
-					n = f.read(buf, bufSize);
-#ifdef _WIN32
-					}
-#endif
-					tth.update(buf, n);
-				} while (n > 0 && !stop);
-#ifdef _WIN32
-				if(h != INVALID_HANDLE_VALUE) {
-					CloseHandle(h);
-					h = INVALID_HANDLE_VALUE;
+					do {
+						size_t bufSize = BUF_SIZE;
+						n = f.read(buf, bufSize);
+						tth->update(buf, n);
+					} while (n > 0 && !stop);
 				}
-#endif
+
 				f.close();
-				tth.finalize();			
-				HashManager::getInstance()->hashDone(fname, tth);
+				tth->finalize();			
+				HashManager::getInstance()->hashDone(fname, *tth);
 			} catch(const FileException&) {
 				// Ignore, it'll be readded on the next share refresh...
 			}
 		}
-	}
 #ifdef _WIN32
-	VirtualFree(buf, 0, MEM_RELEASE);
+		if(buf != NULL && (last || stop)) {
+			if(virtualBuf) {
+				VirtualFree(buf, 0, MEM_RELEASE);
+			} else {
+				delete buf;
+			}
+			buf = NULL;
+		}
 #endif
+	}
 	return 0;
 }
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.12 2004/03/19 08:48:57 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.13 2004/04/04 12:11:51 arnetheduck Exp $
  */

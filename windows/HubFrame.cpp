@@ -75,7 +75,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUsers.SetFont(WinUtil::systemFont);
-	ctrlShowUsers.SetCheck(client->getUserInfo());
+	ctrlShowUsers.SetCheck(SETTING(GET_USER_INFO));
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
@@ -117,7 +117,20 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
-	client->connect(server);
+	client->connect();
+	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
+	if(fhe != NULL){
+		//retrieve window position
+		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
+		
+		//if we don't have any window position stored, return so we don't
+		//set window size to zero 
+		if(rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0)
+			return 1;		
+
+		MoveWindow(rc, TRUE);
+	}
+
 	return 1;
 }
 
@@ -157,7 +170,7 @@ void HubFrame::onEnter() {
 			string status;
 			if(WinUtil::checkCommand(cmd, param, message, status)) {
 				if(!message.empty()) {
-					client->sendMessage(message);
+					client->hubMessage(message);
 				}
 				if(!status.empty()) {
 					addClientLine(status);
@@ -193,7 +206,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
 			} else if(Util::stricmp(cmd.c_str(), "userlist") == 0) {
-				ctrlShowUsers.SetCheck(client->getUserInfo() ? BST_UNCHECKED : BST_CHECKED);
+				ctrlShowUsers.SetCheck(SETTING(GET_USER_INFO) ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), "connection") == 0) {
 				addClientLine((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT))));
 			} else if((Util::stricmp(cmd.c_str(), "favorite") == 0) || (Util::stricmp(cmd.c_str(), "fav") == 0)) {
@@ -228,13 +241,13 @@ void HubFrame::onEnter() {
 				}
 			} else {
 				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
-					client->sendMessage(s);
+					client->hubMessage(s);
 				} else {
 					addClientLine(STRING(UNKNOWN_COMMAND) + cmd);
 				}
 			}
 		} else {
-			client->sendMessage(s);
+			client->hubMessage(s);
 		}
 		ctrlMessage.SetWindowText("");
 	} else {
@@ -389,10 +402,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete x;
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
-		if(client->getUserInfo())
-			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
-		else
-			ctrlStatus.SetText(2, "");
+		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
 	} else if(wParam == GET_PASSWORD) {
 		if(client->getPassword().size() > 0) {
 			client->password(client->getPassword());
@@ -459,7 +469,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 	CRect rc = rect;
 	rc.bottom -= h + 10;
-	if(!client->getUserInfo()) {
+	if(ctrlShowUsers.GetCheck() != BST_CHECKED) {
 		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	} else {
@@ -486,7 +496,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
-		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
+		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
 
 		userMap.clear();
 
@@ -499,6 +509,26 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
 			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+
+		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
+		if(fhe != NULL){
+			CRect rc;
+			
+			//Get position of window
+			GetWindowRect(&rc);
+			
+			//convert the position so it's relative to main window
+			::ScreenToClient(GetParent(), &rc.TopLeft());
+			::ScreenToClient(GetParent(), &rc.BottomRight());
+			
+			//save the position
+			fhe->setBottom(rc.bottom > 0 ? rc.bottom : 0);
+			fhe->setTop(rc.top > 0 ? rc.top : 0);
+			fhe->setLeft(rc.left > 0 ? rc.left : 0);
+			fhe->setRight(rc.right > 0 ? rc.right : 0);
+
+			HubManager::getInstance()->save();
+		}
 
 		MDIDestroy(m_hWnd);
 		return 0;
@@ -909,7 +939,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
-	if((wParam == BST_CHECKED) && !client->getUserInfo()) {
+	if((wParam == BST_CHECKED)) {
 		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
 		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
@@ -919,10 +949,8 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
 
-		client->setUserInfo(true);
-		client->refreshUserList(true);		
+//		client->refreshUserList(true);		
 	} else {
-		client->setUserInfo(false);
 		clearUserList();
 	}
 
@@ -957,7 +985,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		// else keep current settings
 
 		client->addListener(this);
-		client->connect(redirect);
+		//client->connect(redirect);
 	}
 	return 0;
 }
@@ -1035,7 +1063,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 		case ClientListener::HUB_NAME:
 			speak(SET_WINDOW_TITLE, Util::validateMessage(client->getName(), true, false) + " (" + client->getAddressPort() + ")");
 			break;
-		case ClientListener::VALIDATE_DENIED:
+		case ClientListener::NICK_TAKEN:
 			speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
 			speak(DISCONNECTED);
 			break;
@@ -1082,22 +1110,19 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const st
 
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw() {
 	switch(type) {
-		case ClientListener::MY_INFO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
-		case ClientListener::QUIT: if(client->getUserInfo()) speak(REMOVE_USER, user); break;
-		case ClientListener::HELLO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
+		case ClientListener::USER_UPDATED: if(getUserInfo() && !user->isSet(User::HIDDEN)) speak(UPDATE_USER, user); break;
+		case ClientListener::USER_REMOVED: if(getUserInfo()) speak(REMOVE_USER, user); break;
 	}
 }
 
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) throw() {
 	switch(type) {
-		case ClientListener::OP_LIST: 
-			extraSort = true;
-			// Fall through
-		case ClientListener::NICK_LIST: 
+		case ClientListener::USERS_UPDATED: 
 			{
 				Lock l(updateCS);
 				updateList.reserve(aList.size());
 				for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+					if(!(*i)->isSet(User::HIDDEN))
 					updateList.push_back(make_pair(*i, UPDATE_USERS));
 				}
 				if(!updateList.empty()) {
@@ -1115,5 +1140,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.57 2004/03/28 00:22:07 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.58 2004/04/04 12:11:51 arnetheduck Exp $
  */

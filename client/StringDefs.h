@@ -309,7 +309,7 @@ enum Strings { // @DontAdd
 	SETTINGS_IP, // "IP"
 	SETTINGS_KEEP_LISTS, // "Don't delete file lists when exiting"
 	SETTINGS_LANGUAGE_FILE, // "Language file"
-	SETTINGS_LIST_DUPES, // "Include duplicate files in your file list (duplicates never count towards your share size)"
+	SETTINGS_LIST_DUPES, // "Keep duplicate files in your file list (duplicates never count towards your share size)"
 	SETTINGS_LOG_DOWNLOADS, // "Log downloads"
 	SETTINGS_LOG_FILELIST_TRANSFERS, // "Log filelist transfers"
 	SETTINGS_LOG_MAIN_CHAT, // "Log main chat"

@@ -19,7 +19,9 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
+#include "SettingsManager.h"
 #include "ResourceManager.h"
+#include "TimerManager.h"
 
 #include "User.h"
 
@@ -33,11 +35,7 @@ User::~User() throw() {
 void User::connect() {
 	RLock l(cs);
 	if(client) {
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			client->connectToMe(this);
-		} else {
-			client->revConnectToMe(this);
-		}
+		client->connect(this);
 	}
 }
 
@@ -109,21 +107,22 @@ void User::send(const string& aMsg) {
 void User::redirect(const string& aTarget, const string& aReason) {
 	RLock l(cs);
 	if(client) {
-		client->opForceMove(this, aTarget, aReason);
+		client->redirect(this, aTarget, aReason);
 	}
 }
 
 void User::clientMessage(const string& aMsg) {
 	RLock l(cs);
 	if(client) {
-		client->sendMessage(aMsg);
+		client->hubMessage(aMsg);
 	}
 }
 
 void User::clientPM(const string& aTo, const string& aMsg) {
 	RLock l(cs);
 	if(client) {
-		client->privateMessage(aTo, aMsg);
+		//client->privateMessage(aTo, aMsg);
+		dcassert(0);
 	}
 }
 
@@ -215,6 +214,6 @@ void User::setUserDescription(const string& aDescription) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.29 2004/01/24 20:43:59 arnetheduck Exp $
+ * $Id: User.cpp,v 1.30 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

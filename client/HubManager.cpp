@@ -92,6 +92,10 @@ void HubManager::save() {
 			xml.addChildAttrib("Password", (*i)->getPassword());
 			xml.addChildAttrib("Server", (*i)->getServer());
 			xml.addChildAttrib("UserDescription", (*i)->getUserDescription());
+			xml.addChildAttrib("Bottom", Util::toString((*i)->getBottom()));
+			xml.addChildAttrib("Top", Util::toString((*i)->getTop()));
+			xml.addChildAttrib("Right", Util::toString((*i)->getRight()));
+			xml.addChildAttrib("Left", Util::toString((*i)->getLeft()));
 		}
 		xml.stepOut();
 		xml.addTag("Users");
@@ -215,6 +219,10 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setPassword(aXml->getChildAttrib("Password"));
 			e->setServer(aXml->getChildAttrib("Server"));
 			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
+			e->setBottom(aXml->getIntChildAttrib("Bottom") );
+			e->setTop(aXml->getIntChildAttrib("Top"));
+			e->setRight(aXml->getIntChildAttrib("Right"));
+			e->setLeft(aXml->getIntChildAttrib("Left"));
 			favoriteHubs.push_back(e);
 		}
 		aXml->stepOut();
@@ -339,5 +347,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.46 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.47 2004/04/04 12:11:51 arnetheduck Exp $
  */

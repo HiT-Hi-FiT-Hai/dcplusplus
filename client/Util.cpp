@@ -33,6 +33,8 @@
 #include <ctype.h>
 #endif
 
+#include "CID.h"
+
 #include "FastAlloc.h"
 
 FastCriticalSection FastAllocBase::cs;
@@ -219,14 +221,19 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 
 	if( (k=url.find(':', i)) != string::npos) {
 		// Port
-		if(k < j)
+		if(j == string::npos) {
+			aPort = (short)Util::toInt(url.substr(k+1));
+		} else if(k < j) {
 			aPort = (short)Util::toInt(url.substr(k+1, j-k-1));
+		}
 	} else {
 		k = j;
 	}
 
-	// Only the server should be left now...
-	aServer = url.substr(i, k-i);
+	if(k == string::npos)
+		aServer = url;
+	else
+		aServer = url.substr(i, k-i);
 }
 
 string Util::getAwayMessage() { 
@@ -602,6 +609,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.47 2004/03/19 09:29:06 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.48 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

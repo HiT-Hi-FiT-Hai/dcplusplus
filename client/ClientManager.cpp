@@ -27,8 +27,16 @@
 #include "ConnectionManager.h"
 #include "HubManager.h"
 
-Client* ClientManager::getClient() {
-	Client* c = new Client();
+#include "AdcHub.h"
+#include "NmdcHub.h"
+
+Client* ClientManager::getClient(const string& aHubURL) {
+	Client* c;
+	if(Util::strnicmp("adc://", aHubURL.c_str(), 6) == 0) {
+		c = new AdcHub(aHubURL);
+	} else {
+		c = new NmdcHub(aHubURL);
+	}
 
 	{
 		Lock l(cs);
@@ -62,38 +70,17 @@ void ClientManager::putClient(Client* aClient) {
 	delete aClient;
 }
 
-void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
-	if(aUser == aClient->getMe() && aClient->getFirstHello()) {
-		aClient->version(SETTING(CLIENTVERSION));
-		aClient->getNickList();
-		aClient->myInfo();
-	} else {
-		//aClient->getInfo(aUser);
-	}
-}
-
 void ClientManager::infoUpdated() {
 	Lock l(cs);
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if((*i)->isConnected()) {
-			(*i)->myInfo();
+			(*i)->info();
 		}
 	}
 }
 
 void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 									int aFileType, const string& aString) throw() {
-	
-	// Filter own searches
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		if(aSeeker.find(aClient->getLocalIp()) != string::npos) {
-			return;
-		}
-	} else {
-		if(aSeeker.find(aClient->getNick()) != string::npos) {
-			return;
-		}
-	}
 	
 	string::size_type pos = aSeeker.find("Hub:");
 	// We don't wan't to answer passive searches if we're in passive mode...
@@ -120,7 +107,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 			}
 			
 			if(str.size() > 0)
-				aClient->searchResults(str);
+				aClient->send(str);
 			
 		} else {
 			try {
@@ -240,6 +227,28 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 	return i->second;
 }
 
+User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline /* = true */) {
+	Lock l(cs);
+	dcassert(!cid.isZero());
+	dcassert(aClient == NULL || find(clients.begin(), clients.end(), aClient) != clients.end());
+
+	AdcIter i = adcUsers.find(cid);
+	if(i != adcUsers.end()) {
+		if(putOnline && aClient != NULL && !i->second->isOnline()) {
+			i->second->setClient(aClient);
+			fire(ClientManagerListener::USER_UPDATED, i->second);
+		}
+		return i->second;
+	}
+
+	// Create a new user
+	i = adcUsers.insert(make_pair(cid, new User(cid))).first;
+	if(putOnline && aClient != NULL) {
+		fire(ClientManagerListener::USER_UPDATED, i->second);
+	}
+	return i->second;
+}
+
 void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 	Lock l(cs);
 
@@ -254,21 +263,8 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 	}
 
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-		if((*j)->lastCounts != Client::counts) {
-			(*j)->myInfo();
-		}
+		(*j)->info();
 	}
-}
-
-void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
-	if(CryptoManager::getInstance()->isExtended(aLock)) {
-		StringList feat = features;
-		if(BOOLSETTING(COMPRESS_TRANSFERS))
-			feat.push_back("GetZBlock");
-		client->supports(feat);
-	}
-	client->key(CryptoManager::getInstance()->makeKey(aLock));
-	client->validateNick(client->getNick());
 }
 
 // ClientListener
@@ -295,49 +291,9 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, int aTy
 	}
 }
 
-void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw() {
-	switch(type) {
-	case ClientListener::C_LOCK:
-		onClientLock(client, line1);
-		break;
-	case ClientListener::CONNECT_TO_ME:
-		ConnectionManager::getInstance()->connect(line1, (short)Util::toInt(line2), client->getNick()); break;
-	default:
-		break;
-	}
-}
-void ClientManager::onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw() {
-	switch(type) {
-	case ClientListener::HELLO:
-		onClientHello(client, user); break;
-	case ClientListener::REV_CONNECT_TO_ME:
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			client->connectToMe(user);
-		}
-		break;
-	default:
-		break;		
-	}
-}
 void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) throw() {
 	switch(type) {
-	case ClientListener::NICK_LIST:
-		if(!(client->getSupportFlags() & Client::SUPPORTS_NOGETINFO)) {
-			string tmp;
-			// Let's assume 10 characters per nick...
-			tmp.reserve(aList.size() * (11 + 10 + client->getNick().length())); 
-			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				tmp += "$GetINFO ";
-				tmp += (*i)->getNick();
-				tmp += ' ';
-				tmp += client->getNick(); 
-				tmp += '|';
-			}
-			if(!tmp.empty()) {
-				client->send(tmp);
-			}
-		} break;
-	case ClientListener::OP_LIST:
+	case ClientListener::USERS_UPDATED:
 		fire(ClientManagerListener::CLIENT_UPDATED, client);
 		break;
 	default:
@@ -366,5 +322,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.51 2004/03/19 08:48:57 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.52 2004/04/04 12:11:51 arnetheduck Exp $
  */

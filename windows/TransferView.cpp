@@ -284,8 +284,10 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 }
 
 LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-    NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-	ctrlTransfers.getItemData(item->iItem)->pm();
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+	if (item->iItem != -1 ) {
+		ctrlTransfers.getItemData(item->iItem)->pm();
+	}
 	return 0;
 }
 
@@ -337,10 +339,18 @@ void TransferView::ItemInfo::update() {
 		columns[COLUMN_STATUS] = statusString;
 	}
 	if(colMask & MASK_TIMELEFT) {
-		columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
+		if (status == STATUS_RUNNING) {
+			columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
+		} else {
+			columns[COLUMN_TIMELEFT] = Util::emptyString;
+		}
 	}
 	if(colMask & MASK_SPEED) {
-		columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
+		if (status == STATUS_RUNNING) {
+			columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
+		} else {
+			columns[COLUMN_SPEED] = Util::emptyString;
+		}
 	}
 	if(colMask & MASK_FILE) {
 		columns[COLUMN_FILE] = file;
@@ -623,5 +633,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.27 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.28 2004/04/04 12:11:51 arnetheduck Exp $
  */

@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "Pointer.h"
 #include "CriticalSection.h"
+#include "CID.h"
 
 class Client;
 class FavoriteUser;
@@ -41,7 +42,10 @@ public:
 		ONLINE_BIT,
 		DCPLUSPLUS_BIT,
 		PASSIVE_BIT,
-		QUIT_HUB_BIT
+		QUIT_HUB_BIT,
+		HIDDEN_BIT,
+		HUB_BIT,
+		BOT_BIT
 	};
 
 	enum {
@@ -49,7 +53,10 @@ public:
 		ONLINE = 1<<ONLINE_BIT,
 		DCPLUSPLUS = 1<<DCPLUSPLUS_BIT,
 		PASSIVE = 1<<PASSIVE_BIT,
-		QUIT_HUB = 1<<QUIT_HUB_BIT
+		QUIT_HUB = 1<<QUIT_HUB_BIT,
+		HIDDEN = 1<<HIDDEN_BIT,
+		HUB = 1<<HUB_BIT,
+		BOT = 1<<BOT_BIT,
 	};
 
 	typedef Pointer<User> Ptr;
@@ -65,7 +72,9 @@ public:
 		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
 	};
 
-	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { };
+	User(const CID& aCID) : cid(aCID), bytesShared(0), client(NULL), favoriteUser(NULL) { }
+	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL), favoriteUser(NULL) { }
+
 	virtual ~User() throw();
 
 	void setClient(Client* aClient);
@@ -116,6 +125,7 @@ public:
 	GETSETREF(string, lastHubAddress, LastHubAddress);
 	GETSETREF(string, lastHubName, LastHubName);
 	GETSETREF(string, ip, Ip);
+	GETSETREF(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
 	mutable RWLock cs;
@@ -131,6 +141,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.38 2004/01/24 20:44:12 arnetheduck Exp $
+ * $Id: User.h,v 1.39 2004/04/04 12:11:51 arnetheduck Exp $
  */
-

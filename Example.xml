@@ -305,7 +305,7 @@
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
-		<String Name="SettingsListDupes">Include duplicate files in your file list (duplicates never count towards your share size)</String>
+		<String Name="SettingsListDupes">Keep duplicate files in your file list (duplicates never count towards your share size)</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>

@@ -496,7 +496,9 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, strin
 
 		if(dupe) {
 			size-=f->getSize();
-			LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + f->getName() + " (" + STRING(SIZE) + ": " + Util::toString(f->getSize()) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + f->getParent()->getName() + "\")");
+			if(!(BOOLSETTING(LIST_DUPES))) {
+				LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + f->getName() + " (" + STRING(SIZE) + ": " + Util::toString(f->getSize()) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + f->getParent()->getName() + "\")");
+			}
 		}
 
 		if(dupe && !(BOOLSETTING(LIST_DUPES))) {
@@ -868,6 +870,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.82 2004/03/28 00:22:07 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.83 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

@@ -55,9 +55,10 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry() throw() : connect(false) { };
-	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false) { };
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick) { };
+	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0){ };
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0){ };
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
+		password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()){ };
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
@@ -72,6 +73,13 @@ public:
 	GETSETREF(string, description, Description);
 	GETSETREF(string, password, Password);
 	GETSET(bool, connect, Connect);
+
+	GETSET(u_int16_t, bottom, Bottom);
+	GETSET(u_int16_t, top, Top);
+	GETSET(u_int16_t, left, Left);
+	GETSET(u_int16_t, right, Right);
+
+
 private:
 	string nick;
 };
@@ -324,6 +332,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.48 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.49 2004/04/04 12:11:51 arnetheduck Exp $
  */
 

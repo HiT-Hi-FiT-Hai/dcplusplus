@@ -68,6 +68,7 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 %[shareshort]: user shared bytes (formatted) (user && search context only)\r\n\
 %[ip]: user ip (if supported by hub)\r\n\
 %[file]: filename (search context only)\r\n\
+%[line:reason]: opens up a window asking for \"reason\"\
 ");
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
@@ -149,5 +150,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.7 2004/03/27 11:16:27 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.8 2004/04/04 12:11:51 arnetheduck Exp $
 */

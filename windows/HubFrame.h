@@ -151,7 +151,7 @@ public:
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
 			clearUserList();
-			client->refreshUserList();
+			//client->refreshUserList();
 		}
 		return 0;
 	}
@@ -159,7 +159,7 @@ public:
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		clearUserList();
 		client->addListener(this);
-		client->connect(server);
+		client->connect();
 		return 0;
 	}
 
@@ -251,8 +251,7 @@ private:
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
 	{
-		client = ClientManager::getInstance()->getClient();
-		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
+		client = ClientManager::getInstance()->getClient(aServer);
 		client->setNick(aNick.empty() ? SETTING(NICK) : aNick);
 			
 		if (!aDescription.empty())
@@ -332,6 +331,8 @@ private:
 	bool updateUser(const User::Ptr& u);
 	void addAsFavorite();
 
+	bool getUserInfo() { return ctrlShowUsers.GetCheck() == BST_CHECKED; }
+
 	void clearUserList() {
 		{
 			Lock l(updateCS);
@@ -391,6 +392,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.41 2004/03/28 00:22:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.42 2004/04/04 12:11:51 arnetheduck Exp $
  */
 
