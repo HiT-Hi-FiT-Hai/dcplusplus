@@ -76,9 +76,11 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_MOVE, onMove)
@@ -109,7 +111,12 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
 	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
-	
+
+	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
+		ctrlQueue.SetFocus();
+		return 0;
+	}
+
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		usingDirMenu ? removeSelectedDir() : removeSelected();
 		return 0;
@@ -122,11 +129,31 @@ public:
 
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		
 		if(kd->wVKey == VK_DELETE) {
 			removeSelected();
-		} 
+		} else if(kd->wVKey == VK_TAB) {
+			onTab();
+		}
 		return 0;
+	}
+
+	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
+		if(kd->wVKey == VK_TAB) {
+			onTab();
+		}
+		return 0;
+	}
+
+	void onTab() {
+		if(showTree) {
+			HWND focus = ::GetFocus();
+			if(focus == ctrlDirs.m_hWnd) {
+				ctrlQueue.SetFocus();
+			} else if(focus == ctrlQueue.m_hWnd) {
+				ctrlDirs.SetFocus();
+			}
+		}
 	}
 
 	static int sortSize(LPARAM a, LPARAM b) {
@@ -323,6 +350,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.14 2003/03/13 13:32:02 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.15 2003/03/31 11:23:05 arnetheduck Exp $
  */
 

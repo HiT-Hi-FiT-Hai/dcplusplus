@@ -48,12 +48,14 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_EDIT, BN_CLICKED, onEdit)
 		COMMAND_HANDLER(IDC_NEWFAV, BN_CLICKED, onNew)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
+		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FavoriteHubsFrame>)
 	END_MSG_MAP()
@@ -61,6 +63,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onEnter(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -94,6 +97,11 @@ public:
 		return CMDIChildWindowImpl<FavoriteHubsFrame>::PreTranslateMessage(pMsg);
 	}
 	
+	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ctrlHubs.SetFocus();
+		return 0;
+	}
+
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 		if(l->iItem != -1) {
@@ -134,6 +142,7 @@ private:
 	CButton ctrlRemove;
 	CButton ctrlEdit;
 	CButton ctrlNew;
+	CButton ctrlProps;
 	CMenu hubsMenu;
 	
 	ExListViewCtrl ctrlHubs;
@@ -170,6 +179,6 @@ private:
 
 /**
  * @file FavoritesFrm.h
- * $Id: FavoritesFrm.h,v 1.7 2003/03/13 13:31:49 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.8 2003/03/31 11:22:46 arnetheduck Exp $
  */
 

@@ -58,6 +58,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SHOW_PROGRESS_BARS, ResourceManager::SETTINGS_ADVANCED_SHOW_PROGRESS_BARS },
 	{ SettingsManager::SFV_CHECK, ResourceManager::SETTINGS_ADVANCED_SFV_CHECK },
 	{ SettingsManager::AUTO_UPDATE_LIST, ResourceManager::SETTINGS_ADVANCED_AUTO_UPDATE_LIST },
+	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ADVANCED_ANTI_FRAG },
 	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
@@ -160,6 +161,6 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.10 2003/03/26 08:47:39 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.11 2003/03/31 11:22:44 arnetheduck Exp $
  */
 

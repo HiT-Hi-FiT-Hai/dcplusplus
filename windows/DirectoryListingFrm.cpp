@@ -241,7 +241,6 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
-	char buf[MAX_PATH];
 
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
@@ -256,7 +255,6 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 		} else {
 			HTREEITEM ht = ctrlTree.GetChildItem(t);
 			while(ht != NULL) {
-				ctrlTree.GetItemText(ht, buf, sizeof(buf));
 				if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == ii->dir) {
 					ctrlTree.SelectItem(ht);
 					break;
@@ -474,6 +472,40 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 			dl->download(dir, user, WinUtil::lastDirs[newId]);
 		} catch(Exception e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
+		}
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	if(kd->wVKey == VK_BACK) {
+		HTREEITEM cur = ctrlTree.GetSelectedItem();
+		if(cur != NULL)
+		{
+			HTREEITEM parent = ctrlTree.GetParentItem(cur);
+			if(parent != NULL)
+				ctrlTree.SelectItem(parent);
+		}
+	} else if(kd->wVKey == VK_TAB) {
+		onTab();
+	} else if(kd->wVKey == VK_RETURN) {
+		if(ctrlList.GetSelectedCount() == 1) {
+			ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
+			if(ii->type == ItemInfo::DIRECTORY) {
+				HTREEITEM ht = ctrlTree.GetChildItem(ctrlTree.GetSelectedItem());
+				while(ht != NULL) {
+					if((DirectoryListing::Directory*)ctrlTree.GetItemData(ht) == ii->dir) {
+						ctrlTree.SelectItem(ht);
+						break;
+					}
+					ht = ctrlTree.GetNextSiblingItem(ht);
+				}
+			} else {
+				downloadList(SETTING(DOWNLOAD_DIRECTORY));
+			}
+		} else {
+			downloadList(SETTING(DOWNLOAD_DIRECTORY));
 		}
 	}
 	return 0;
@@ -711,5 +743,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.14 2003/03/26 08:47:40 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.15 2003/03/31 11:22:45 arnetheduck Exp $
  */

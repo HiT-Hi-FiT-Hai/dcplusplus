@@ -73,6 +73,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlHubs.SetTextColor(WinUtil::textColor);
 	
 	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
+	ctrlHubs.SetFocus();
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
@@ -110,7 +111,6 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	if(HubManager::getInstance()->isDownloading()) 
 		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
 
-	hubs = HubManager::getInstance()->getPublicHubs();
 	if(hubs.empty())
 		HubManager::getInstance()->refresh();
 
@@ -134,6 +134,21 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 		char buf[256];
 		
 		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+	}
+
+	return 0;
+}
+
+LRESULT PublicHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
+	if(!checkNick())
+		return 0;
+
+	int item = ctrlHubs.GetNextItem(-1, LVNI_FOCUSED);
+	if(item != -1) {
+		char buf[256];
+
+		ctrlHubs.GetItemText(item, COLUMN_SERVER, buf, 256);
 		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
 	}
 
@@ -380,6 +395,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.9 2003/03/26 08:47:46 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.10 2003/03/31 11:23:05 arnetheduck Exp $
  */
 

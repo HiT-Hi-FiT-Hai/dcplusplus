@@ -230,6 +230,7 @@
 		<String Name="Server">Server</String>
 		<String Name="SetPriority">Set priority</String>
 		<String Name="SettingsAdvanced">Advanced</String>
+		<String Name="SettingsAdvancedAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAdvancedAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAdvancedAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAdvancedAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>

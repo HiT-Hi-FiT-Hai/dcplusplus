@@ -57,7 +57,7 @@ bool BufferedSocket::threadSendFile() {
 			if(comp == NULL) {
 				comp = new ZCompressor(*file, size);
 			}
-			u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize;
+			u_int32_t s = (u_int32_t)min(size, (int64_t) (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize));
 			u_int32_t bytes;
 			while(true) {
 				{
@@ -101,8 +101,8 @@ bool BufferedSocket::threadSendFile() {
 				if(waitFor & WAIT_READ)
 					return false;
 
-				dcassert(inbufSize >= 1024);
-				u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? (u_int32_t)min((int64_t)1024, size) : (u_int32_t)min((int64_t)inbufSize, size);
+				dcassert(inbufSize >= SMALL_BUFFER_SIZE);
+				u_int32_t s = (u_int32_t)min(size, (int64_t) (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize));
 
 				if( (len = file->read(inbuf, s)) == 0) {
 					// Premature EOF?
@@ -241,7 +241,7 @@ void BufferedSocket::threadConnect() {
 				if(connStr[1] != 2) {
 					fail(STRING(SOCKS_AUTH_UNSUPPORTED));
 					return;
-				}				
+				}
 				// Now we send the username / pw...
 				connStr[0] = 1;
 				connStr[1] = ulen;
@@ -470,5 +470,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.47 2003/03/26 08:47:10 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.48 2003/03/31 11:22:36 arnetheduck Exp $
  */

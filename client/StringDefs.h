@@ -233,6 +233,7 @@ enum Strings { // @DontAdd
 	SERVER, // "Server"
 	SET_PRIORITY, // "Set priority"
 	SETTINGS_ADVANCED, // "Advanced"
+	SETTINGS_ADVANCED_ANTI_FRAG, // "Use antifragmentation method for downloads"
 	SETTINGS_ADVANCED_AUTO_AWAY, // "Auto-away on minimize (and back on restore)"
 	SETTINGS_ADVANCED_AUTO_FOLLOW, // "Automatically follow redirects"
 	SETTINGS_ADVANCED_AUTO_KICK, // "Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)"

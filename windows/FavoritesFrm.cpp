@@ -35,9 +35,7 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_CONNECT,
 ResourceManager::NICK, ResourceManager::PASSWORD, ResourceManager::SERVER, ResourceManager::USER_DESCRIPTION
 };
 
-LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-
+LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	// Only one of this window please...
 	dcassert(frame == NULL);
 	frame = this;
@@ -74,12 +72,17 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
 	ctrlConnect.SetWindowText(CSTRING(CONNECT));
-	ctrlConnect.SetFont(ctrlHubs.GetFont());
+	ctrlConnect.SetFont(WinUtil::font);
 
 	ctrlNew.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_NEWFAV);
 	ctrlNew.SetWindowText(CSTRING(NEW));
-	ctrlNew.SetFont(ctrlHubs.GetFont());
+	ctrlNew.SetFont(WinUtil::font);
+
+	ctrlProps.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_EDIT);
+	ctrlProps.SetWindowText(CSTRING(PROPERTIES));
+	ctrlProps.SetFont(WinUtil::font);
 
 	HubManager::getInstance()->addListener(this);
 	updateList(HubManager::getInstance()->getFavoriteHubs());
@@ -102,6 +105,20 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+	}
+
+	return 0;
+}
+
+LRESULT FavoriteHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
+	if(!checkNick())
+		return 0;
+	
+	int item = ctrlHubs.GetNextItem(-1, LVNI_FOCUSED);
+
+	if(item != -1) {
+		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item);
 		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 
@@ -222,6 +239,10 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 	rc.left = rc.left - 96;
 	rc.right -= 98;
+	ctrlProps.MoveWindow(rc);
+
+	rc.left = rc.left - 96;
+	rc.right -= 98;
 	ctrlNew.MoveWindow(rc);
 }
 
@@ -234,6 +255,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file FavoritesFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.8 2003/03/26 08:47:42 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.9 2003/03/31 11:22:46 arnetheduck Exp $
  */
 

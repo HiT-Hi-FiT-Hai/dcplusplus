@@ -44,6 +44,9 @@ LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	tmp.Attach(GetDlgItem(IDC_HUBUSERDESCR));
 	tmp.LimitText(35);
 	tmp.Detach();
+	tmp.Attach(GetDlgItem(IDC_HUBPASS));
+	tmp.SetPasswordChar('*');
+	tmp.Detach();
 	CenterWindow(GetParent());
 	return FALSE;
 }
@@ -106,5 +109,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file FavHubProperties.cpp
- * $Id: FavHubProperties.cpp,v 1.3 2003/03/13 13:31:48 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.4 2003/03/31 11:22:46 arnetheduck Exp $
  */

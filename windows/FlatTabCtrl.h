@@ -509,7 +509,8 @@ public:
 		ATLASSERT(::IsWindow(hWndParent));
 		
 		BOOL bMaximized = FALSE;
-		::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized);
+		if(::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized) == NULL)
+			bMaximized = BOOLSETTING(MDI_MAXIMIZED);
 		
 		if(bMaximized == TRUE) {
 			::SendMessage(hWndParent, WM_SETREDRAW, FALSE, 0);
@@ -547,6 +548,11 @@ public:
 		bHandled = FALSE;
 		if(getTab())
 			getTab()->removeTab(m_hWnd);
+
+		BOOL bMaximized = FALSE;
+		if(::SendMessage(m_hWndMDIClient, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized) != NULL)
+			SettingsManager::getInstance()->set(SettingsManager::MDI_MAXIMIZED, (bMaximized>0));
+
 		return 0;
 	}
 
@@ -572,5 +578,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.10 2003/03/13 13:31:50 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.11 2003/03/31 11:23:03 arnetheduck Exp $
  */

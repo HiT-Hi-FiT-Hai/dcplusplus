@@ -65,6 +65,8 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRea
 	if( (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
 		dcdebug("Disabling compression for 0x%x (%d/%d = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
 		setStrength(0);
+		if(zs.avail_out == 0)
+			return bufLen;
 	}
 	
 	while(true) {
@@ -563,5 +565,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.29 2003/03/26 08:47:14 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.30 2003/03/31 11:22:37 arnetheduck Exp $
  */

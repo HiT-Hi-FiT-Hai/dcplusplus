@@ -673,10 +673,11 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 		}
 		if(reason == QueueItem::Source::FLAG_CRC_WARN) {
 			// Already flagged?
-			if((*q->getSource(aUser))->isSet(QueueItem::Source::FLAG_CRC_WARN)) {
+			QueueItem::Source* s = *q->getSource(aUser);
+			if(s->isSet(QueueItem::Source::FLAG_CRC_WARN)) {
 				reason = QueueItem::Source::FLAG_CRC_FAILED;
 			} else {
-				q->setFlag(reason);
+				s->setFlag(reason);
 				return;
 			}
 		}
@@ -1021,5 +1022,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.37 2003/03/26 08:47:22 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.38 2003/03/31 11:22:40 arnetheduck Exp $
  */

@@ -30,8 +30,7 @@
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
-#define WITH_GETZBLOCK 1
-
+//#define WITH_GETZBLOCK 1
 
 ConnectionManager::ConnectionManager() : shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
@@ -143,6 +142,7 @@ void ConnectionManager::putUploadConnection(UserConnection* aSource) {
 	}
 	putConnection(aSource);
 }
+
 void ConnectionManager::putConnection(UserConnection* aConn) {
 	aConn->removeListeners();
 	aConn->disconnect();
@@ -599,5 +599,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManager.cpp
- * $Id: ConnectionManager.cpp,v 1.58 2003/03/13 13:31:15 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.59 2003/03/31 11:22:37 arnetheduck Exp $
  */

@@ -61,11 +61,12 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, onClickedRefresh)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
-		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
+		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -77,6 +78,7 @@ public:
 	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onEnter(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -101,6 +103,11 @@ public:
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
 		return baseClass::PreTranslateMessage(pMsg);
+	}
+
+	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ctrlHubs.SetFocus();
+		return 0;
 	}
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -186,5 +193,5 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.6 2003/03/26 08:47:46 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.7 2003/03/31 11:23:05 arnetheduck Exp $
  */

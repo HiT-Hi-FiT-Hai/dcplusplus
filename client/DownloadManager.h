@@ -42,7 +42,8 @@ public:
 		FLAG_ROLLBACK = 0x04,
 		FLAG_ZDOWNLOAD = 0x08,
 		FLAG_CALC_CRC32 = 0x10,
-		FLAG_CRC32_OK = 0x20
+		FLAG_CRC32_OK = 0x20,
+		FLAG_ANTI_FRAG = 0x40
 	};
 
 	Download(QueueItem* qi) throw();
@@ -189,5 +190,5 @@ private:
 
 /**
  * @file DownloadManager.h
- * $Id: DownloadManager.h,v 1.49 2003/03/26 08:47:17 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.50 2003/03/31 11:22:38 arnetheduck Exp $
  */

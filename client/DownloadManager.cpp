@@ -29,7 +29,8 @@
 
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
-static string DOWNLOAD_AREA = "Downloads";
+static const string DOWNLOAD_AREA = "Downloads";
+static const string ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 	target(qi->getTarget()), tempTarget(qi->getTempTarget()), 
@@ -139,7 +140,12 @@ void DownloadManager::onSending(UserConnection* aSource) {
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = -1 */) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
-	
+
+	if(newSize != -1)
+		d->setSize(newSize);
+
+	dcassert(d->getSize() != -1);
+
 	string target = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
 	Util::ensureDirectory(target);
 	if(d->isSet(Download::FLAG_USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
@@ -149,11 +155,26 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	try {
 		// Let's check if we can find this file in a any .SFV...
 		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
-		if( BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC()) ) {
-			dcdebug("DownloadManager: Found sfv file for %s\n", d->getTarget().c_str());
-			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, true);
+		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
+		
+		if(BOOLSETTING(ANTI_FRAG) && !d->isSet(Download::FLAG_USER_LIST)) {
+			// Anti-frag file...First, remove any old attempt that might have existed
+			// and rename any partial file alread downloaded...
+			string atarget = target + ANTI_FRAG_EXT;
+			try {
+				File::deleteFile(atarget);
+				File::renameFile(target, atarget);
+			} catch(FileException e) {
+				dcdebug("AntiFrag: %s\n", e.getError().c_str());
+			}
+			file = new BufferedFile(atarget, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
+			// Move EOF to expected size
+			file->setPos(d->getSize());
+			file->setEOF();
+
+			d->setFlag(Download::FLAG_ANTI_FRAG);
 		} else {
-			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, false);			
+			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);			
 		}
 
 		file->setPos(d->getPos());
@@ -168,9 +189,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 	dcassert(d->getPos() != -1);
 	d->setFile(file);
-	
-	if(newSize != -1)
-		d->setSize(newSize);
 	
 	if(d->getSize() <= d->getPos()) {
 		aSource->setDownload(NULL);
@@ -311,6 +329,19 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	// First, finish writing the file (flushing the buffers and closing the file...)
 	try {
 		d->getFile()->close();
+
+		// Check if we're anti-fragging...
+		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
+			// Ok, rename the file to what we expect it to be...
+			try {
+				const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+				File::renameFile(tgt + ANTI_FRAG_EXT, tgt);
+				d->unsetFlag(Download::FLAG_ANTI_FRAG);
+			} catch(const FileException& e) {
+				dcdebug("AntiFrag: %s\n", e.getError().c_str());
+				// Now what?
+			}
+		}
 	} catch(FileException e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
 		
@@ -448,14 +479,24 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 	if(d->getFile()) {
 		try {
-			d->getFile()->close();
+			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
+				// Ok, set the pos to whereever it was last writing and hope for the best...
+				d->getFile()->setEOF();
+				d->getFile()->close();
+				const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+				File::renameFile(tgt + ANTI_FRAG_EXT, tgt);
+				d->unsetFlag(Download::FLAG_ANTI_FRAG);
+			} else {
+				d->getFile()->close();
+			}
 		} catch(FileException e) {
-			if(finished)
-				finished = false;
+			finished = false;
 		}
+
 		delete d->getFile();
 		d->setFile(NULL);
 	}
+
 	if(d->getComp()) {
 		delete d->getComp();
 		d->setComp(NULL);
@@ -562,5 +603,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManager.cpp
- * $Id: DownloadManager.cpp,v 1.70 2003/03/13 13:31:19 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.71 2003/03/31 11:22:37 arnetheduck Exp $
  */

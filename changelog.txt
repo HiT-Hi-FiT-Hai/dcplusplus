@@ -8,14 +8,22 @@
 * VC6 projects files brought up-to-date
 * Added a DLL to the installation procedure to make sure we get good debug info under older windows versions (research 
   by todd pederzani)
-* Fixed attempt to access f: (it seems that the debug info generator tries to access f: when dc++ crashes, because
-  microsoft compiled their stuff from f:)
+* Fixed attempt to access f: I think (it seems that the debug info generator tries to access f: when dc++ crashes, 
+  because microsoft compiled their stuff from f:...untested, I don't have any f: =)
 * Update to some confirmation dialog (thanks todd pederzani)
 * Partially changed back to the 0.233 code for uploads (since the new one seems to cause upload performance problems)
 * The queue is now only bolded when an file is finished.
 * Added away indicator in the main status bar (thanks todd pederzani)
 * Added finished uploads frame (thanks todd pederzani)
 * Added finished bold disable option (thanks todd pederzani)
+* Minor adjustments to the sort order
+* Added anti-fragmentation feature. When downloading, it creates a file of the expected target size with unspecified
+  content. If the download fails, the file is truncated to the size DC++ thinks it has downloaded, and
+  resume should work fine. If DC++ crashes, you'll lose the whole downloaded part + any resumed part as well, as
+  there's no way to know how much valid data there is in the file. Disabled by default.
+* Added a few keyboard shortcuts here and there
+* Fixed bug with SFV retrying (files will now properly be retried _once_ beforer a source is discarded)
+* The maximization state of the inner windows is now remebered, default to maximized first time.
 
 
  -- 0.24 2003-03-11 --
@@ -50,7 +58,6 @@
 * Favorites, users and user commands are now saved to a separate file. The old ones will still be loaded for a 
   few versions...
 * Added info about current directory/selection to the file listing browser
-
 
  -- 0.233 2003-02-24 --
 * Back to normal...
@@ -158,7 +165,6 @@
   important files, file lists and small files always get downloaded...(uhm, this might have the side effect that a 
   list download might disconnect another slot if a file change for the other one occurs during the list transfer...
   if this becomes a problem, I'll look into it "later" =) (completely untested...hope it doesn't break downloading =)
-
 
  -- 0.22 2003-01-05 --
 * The forums are up again! On a new address though, http://dcplusplus.sf.net/forum...
@@ -345,7 +351,6 @@
   turn it on unless you have to...hard disk reading performance will be worse as well with this option enabled...
 * Added paypal-donate menu option to help
 
-
  -- 0.18 2002-07-01 --
 * Added a finished downloads window
 * Added temporary download directory option
@@ -370,8 +375,6 @@
 * Removed sources are no longed automatically readded by the autosearch feature
 * Added option to readd a removed/bad source from the queue window
 * Added option to remove a user from all queued downloads from the transfer window
-
-
 
  -- 0.177 2002-06-07 --
 * Improved performance on "File not available" (connection / slot is now kept)
@@ -753,7 +756,6 @@
 * Increased the size of the toolbar icons a bit
 * Fixed another bug where users could download files that were not shared
 
-
  -- 0.132 2002-01-21 --
 * Fixed a bug when downloading tiny file lists (people with 0b share...)
 * Removed the empty line in the chat windows
@@ -772,7 +774,6 @@
 * Added automatic saves every time the download list changes (now you only have to hope it doesn't crash while saving...=)
 * Added notepad (stupid feature really, what's wrong with windows' notepad?) (only visible in menu so far...)
 * Fixed missing close button on pm window (I think...can't find a window without at least...)
-
 
  -- 0.131 2002-01-20 --
 * Fixed the lock at start bug
@@ -947,8 +948,6 @@
 * Search command recognised.
 * New buttons.
 
-
  -- 0.01 2001-11-21 --
-
 * Initial release.
 * List hubs, connect to them and chat 

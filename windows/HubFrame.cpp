@@ -835,8 +835,10 @@ void HubFrame::onTab() {
 	if(focus == ctrlClient.m_hWnd) {
 		ctrlMessage.SetFocus();
 	} else if(focus == ctrlMessage.m_hWnd) {
+		ctrlUsers.SetFocus();
+	} else if(focus == ctrlUsers.m_hWnd) {
 		ctrlClient.SetFocus();
-	}
+	} 
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -906,6 +908,19 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	}
 	return 0;
 }
+
+LRESULT HubFrame::onEnterUsers(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
+	int item = ctrlUsers.GetNextItem(-1, LVNI_FOCUSED);
+	if(client->isConnected() && (item != -1)) {
+		try {
+			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item))->user);
+		} catch(Exception e) {
+			addClientLine(e.getError());
+		}
+	}
+	return 0;
+}
+
 
 void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
 	string line = "[" + Util::getShortTimeString() + "] " + aLine;
@@ -1014,5 +1029,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.20 2003/03/26 08:47:44 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.21 2003/03/31 11:23:03 arnetheduck Exp $
  */

@@ -48,6 +48,7 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_TOTAL, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_OPEN_FILE, BN_CLICKED, onOpenFile)
@@ -65,6 +66,11 @@ public:
 	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	
+	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
+		ctrlList.SetFocus();
+		return 0;
+	}
+
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
@@ -203,5 +209,5 @@ private:
 
 /**
  * @file FinishedFrame.h
- * $Id: FinishedFrame.h,v 1.4 2003/03/13 13:31:50 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.5 2003/03/31 11:22:46 arnetheduck Exp $
  */

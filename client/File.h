@@ -36,7 +36,7 @@ class CRC32 {
 public:
 	CRC32() : value(0xffffffffL) { };
 	void update(u_int8_t b) { value = (value >> 8) ^ Util::crcTable[(value & 0xff) ^ b]; };
-	u_int32_t getValue() { return ~(value); };
+	u_int32_t getValue() const { return ~(value); };
 private:
 	u_int32_t value;
 };
@@ -89,14 +89,14 @@ public:
 
 	}
 
-	virtual void close() {
+	virtual void close() throw() {
 		if(h != INVALID_HANDLE_VALUE) {
 			CloseHandle(h);
 			h = INVALID_HANDLE_VALUE;
 		}
 	}
 	
-	virtual int64_t getSize() {
+	virtual int64_t getSize() throw() {
 		DWORD x;
 		DWORD l = ::GetFileSize(h, &x);
 		
@@ -106,23 +106,23 @@ public:
 		return (int64_t)l | ((int64_t)x)<<32;
 	}
 
-	virtual int64_t getPos() {
+	virtual int64_t getPos() throw() {
 		LONG x = 0;
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
 		
 		return (int64_t)l | ((int64_t)x)<<32;
 	}		
 
-	virtual void setPos(int64_t pos) {
+	virtual void setPos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_BEGIN);
 	}		
-	virtual void setEndPos(int64_t pos) {
+	virtual void setEndPos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_END);
 	}		
 
-	virtual void movePos(int64_t pos) {
+	virtual void movePos(int64_t pos) throw() {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 	}
@@ -172,7 +172,7 @@ public:
 		}
 	};
 
-	static int64_t getSize(const string& aFileName) {
+	static int64_t getSize(const string& aFileName) throw() {
 		WIN32_FIND_DATA fd;
 		HANDLE hFind;
 		
@@ -210,28 +210,28 @@ public:
 			throw FileException("Could not open file");
 	}		
 
-	virtual void close() {
+	virtual void close() throw() {
 		if(h != -1) {
 			::close(h);
 			h = -1;
 		}
 	}
 
-	virtual int64_t getSize() {
+	virtual int64_t getSize() throw() {
 		struct stat s;
-		if(fstat(h, &s) == -1)
+		if(::fstat(h, &s) == -1)
 			return -1;
 		
 		return (int64_t)s.st_size;
 	}
 
-	virtual int64_t getPos() {
+	virtual int64_t getPos() throw() {
 		return (int64_t) lseek(h, 0, SEEK_CUR);
 	}
 
-	virtual void setPos(int64_t pos) { lseek(h, (off_t)pos, SEEK_SET); };
-	virtual void setEndPos(int64_t pos) { lseek(h, (off_t)pos, SEEK_END); };
-	virtual void movePos(int64_t pos) { lseek(h, (off_t)pos, SEEK_CUR); };
+	virtual void setPos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_SET); };
+	virtual void setEndPos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_END); };
+	virtual void movePos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_CUR); };
 
 	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
 		ssize_t x = ::read(h, buf, (size_t)len);
@@ -280,7 +280,7 @@ public:
 	
 #endif // WIN32
 
-	virtual ~File() {
+	virtual ~File() throw() {
 		File::close();
 	}
 
@@ -299,8 +299,8 @@ public:
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
 
-	bool hasCRC32() { return calcCRC; };
-	u_int32_t getCRC32() { return crc32.getValue(); };
+	bool hasCRC32() const { return calcCRC; };
+	u_int32_t getCRC32() const { return crc32.getValue(); };
 
 private:
 #ifdef WIN32
@@ -361,12 +361,12 @@ public:
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
 	
-	virtual void close() { flush(); File::close(); };
-	virtual int64_t getSize() { flush(); return File::getSize(); };
-	virtual int64_t getPos() { flush(); return File::getPos(); };
-	virtual void setPos(int64_t aPos) { flush(); File::setPos(aPos); };
-	virtual void setEndPos(int64_t aPos) { flush(); File::setEndPos(aPos); };
-	virtual void movePos(int64_t aPos) { flush(); File::movePos(aPos); };
+	virtual void close() throw(FileException) { flush(); File::close(); };
+	virtual int64_t getSize() throw(FileException) { flush(); return File::getSize(); };
+	virtual int64_t getPos() throw(FileException) { flush(); return File::getPos(); };
+	virtual void setPos(int64_t aPos) throw(FileException) { flush(); File::setPos(aPos); };
+	virtual void setEndPos(int64_t aPos) throw(FileException) { flush(); File::setEndPos(aPos); };
+	virtual void movePos(int64_t aPos) throw(FileException) { flush(); File::movePos(aPos); };
 	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
 	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
 
@@ -380,6 +380,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.18 2003/03/26 08:47:18 arnetheduck Exp $
+ * $Id: File.h,v 1.19 2003/03/31 11:22:39 arnetheduck Exp $
  */
 

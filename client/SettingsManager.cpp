@@ -48,7 +48,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty",
+	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -131,13 +131,15 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(FINISHED_DIRTY, true);
-	
+	setDefault(ANTI_FRAG, false);
+
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_Y, CW_USEDEFAULT);
+	setDefault(MDI_MAXIMIZED, true);
 #endif
 }
 
@@ -267,6 +269,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.48 2003/03/26 08:47:24 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.49 2003/03/31 11:22:40 arnetheduck Exp $
  */
 

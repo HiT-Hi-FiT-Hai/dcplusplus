@@ -57,6 +57,7 @@ public:
 		ctrlLine.SetSelAll(TRUE);
 		if(password) {
 			ctrlLine.SetWindowLong(GWL_STYLE, ctrlLine.GetWindowLong(GWL_STYLE) | ES_PASSWORD);
+			ctrlLine.SetPasswordChar('*');
 		}
 
 		ctrlDescription.Attach(GetDlgItem(IDC_DESCRIPTION));
@@ -87,5 +88,5 @@ public:
 
 /**
  * @file LineDlg.h
- * $Id: LineDlg.h,v 1.4 2003/03/26 08:47:45 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.5 2003/03/31 11:23:04 arnetheduck Exp $
  */

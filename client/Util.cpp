@@ -118,7 +118,6 @@ void Util::initialize() {
 		upper[i] = (char)toupper(i);
 		lower[i] = (char)tolower(i);
 #endif
-
 	}
 
 	// Now initialize the compare table to the current locale (hm...hopefully we
@@ -126,7 +125,7 @@ void Util::initialize() {
 	for(i = 0; i < 256; ++i) {
 		for(int j = 0; j < 256; ++j) {
 			cmp[i][j] = (int8_t)::strncmp((char*)&i, (char*)&j, 1);
-			cmpi[i][j] = (int8_t)::strncmp((char*)&upper[i], (char*)&upper[j], 1);
+			cmpi[i][j] = (int8_t)::strncmp((char*)&lower[i], (char*)&lower[j], 1);
 		}
 	}
 
@@ -460,6 +459,6 @@ string Util::getOsVersion() {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.21 2003/03/13 13:31:40 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.22 2003/03/31 11:22:43 arnetheduck Exp $
  */
 

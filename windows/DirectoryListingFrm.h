@@ -64,6 +64,10 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
+		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
+		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
@@ -73,9 +77,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
-		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
-		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -108,6 +109,11 @@ public:
 
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
+		return 0;
+	}
+
+	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
+		ctrlList.SetFocus();
 		return 0;
 	}
 
@@ -165,21 +171,24 @@ public:
 		return 0;
 	}
 
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		
-		if(kd->wVKey == VK_BACK) {
-			HTREEITEM cur = ctrlTree.GetSelectedItem();
-			if(cur != NULL)
-			{
-				HTREEITEM parent = ctrlTree.GetParentItem(cur);
-				if(parent != NULL)
-					ctrlTree.SelectItem(parent);
-			}
-		} 
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
+		if(kd->wVKey == VK_TAB) {
+			onTab();
+		}
 		return 0;
 	}
 
+	void onTab() {
+		HWND focus = ::GetFocus();
+		if(focus == ctrlTree.m_hWnd) {
+			ctrlList.SetFocus();
+		} else if(focus == ctrlList.m_hWnd) {
+			ctrlTree.SetFocus();
+		}
+	}
 private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(string const& str, HTREEITEM root, int &foundFile, int &skipHits);
@@ -235,5 +244,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.13 2003/03/13 13:31:47 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.14 2003/03/31 11:22:45 arnetheduck Exp $
  */
