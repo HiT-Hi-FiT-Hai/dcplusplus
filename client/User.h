@@ -27,7 +27,6 @@
 #include "Pointer.h"
 
 class Client;
-class SocketException;
 
 /**
  * A user connected to a hubs.
@@ -47,7 +46,7 @@ public:
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 
-	User(const string& aNick) throw() : nick(aNick), client(NULL), sharingLong(0) { };
+	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
 	virtual ~User() throw() { };
 
 	void setClient(Client* aClient);
@@ -61,10 +60,7 @@ public:
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp();
 	
-	int64_t getBytesShared() const { return sharingLong; };
-	const string& getBytesSharedString() const { return sharing; };
-	void setBytesShared(int64_t aSharing) { sharing = Util::toString(aSharing); sharingLong = aSharing; };
-	void setBytesShared(const string& aSharing) { sharing = aSharing; sharingLong = Util::toInt64(aSharing); };
+	void setBytesShared(const string& aSharing) { setBytesShared(Util::toInt64(aSharing)); };
 
 	bool isOnline() const { return isSet(ONLINE); };
 	bool isClient(Client* aClient) const { return client == aClient; };
@@ -76,14 +72,12 @@ public:
 	GETSETREF(string, email, Email);
 	GETSETREF(string, description, Description);
 	GETSETREF(string, lastHubIp, LastHubIp);
-	GETSETREF(string, lastHubName, LastHubName)
+	GETSETREF(string, lastHubName, LastHubName);
+	GETSET(int64_t, bytesShared, BytesShared);
 private:
 	RWLock cs;
 	
 	Client* client;
-	string sharing;
-	int64_t sharingLong;		// Cache this...requested very frequently...
-	
 };
 
 namespace _STL {
@@ -98,6 +92,6 @@ namespace _STL {
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.19 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: User.h,v 1.20 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

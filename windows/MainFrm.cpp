@@ -152,8 +152,8 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		delete str;
 	} else if(wParam == AUTO_CONNECT) {
-		HubManager::getInstance()->addListener(this);
-		HubManager::getInstance()->getFavoriteHubs();
+		autoConnect(HubManager::getInstance()->lockFavoriteHubs());
+		HubManager::getInstance()->unlockFavoriteHubs();
 	}
 
 	return 0;
@@ -330,7 +330,6 @@ HWND MainFrame::createToolbar() {
 		
 	ctrl.SetButtonStructSize();
 	ctrl.AddButtons(8, tb);
-	
 	ctrl.AutoSize();
 
 	return ctrl.m_hWnd;
@@ -692,16 +691,36 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 	}
 }
 
-void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl) {
-	switch(type) {
-	case HubManagerListener::GET_FAVORITE_HUBS: 
-		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			FavoriteHubEntry* entry = *i;
-			if(entry->getConnect())
-				HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword());
+LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	LPNMTTDISPINFO pDispInfo = (LPNMTTDISPINFO)pnmh;
+	pDispInfo->szText[0] = 0;
+
+	if((idCtrl != 0) && !(pDispInfo->uFlags & TTF_IDISHWND))
+	{
+		int stringId = -1;
+		switch(idCtrl) {
+			case ID_FILE_CONNECT: stringId = ResourceManager::MENU_FILE_PUBLIC_HUBS; break;
+			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_FILE_RECONNECT; break;
+			case IDC_FOLLOW: stringId = ResourceManager::MENU_FILE_FOLLOW_REDIRECT; break;
+			case IDC_FAVORITES: stringId = ResourceManager::MENU_FILE_FAVORITE_HUBS; break;
+			case IDC_QUEUE: stringId = ResourceManager::MENU_FILE_DOWNLOAD_QUEUE; break;
+			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_FILE_SEARCH; break;
+			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_FILE_SETTINGS; break;
+			case IDC_NOTEPAD: stringId = ResourceManager::MENU_FILE_NOTEPAD; break;
 		}
-		HubManager::getInstance()->removeListener(this);
-		break;
+		if(stringId != -1) {
+			strncpy(pDispInfo->lpszText, ResourceManager::getInstance()->getString((ResourceManager::Strings)stringId).c_str(), 79);
+			pDispInfo->uFlags |= TTF_DI_SETITEM;
+		}
+	}
+	return 0;
+}
+
+void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
+	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+		FavoriteHubEntry* entry = *i;
+		if(entry->getConnect())
+			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword());
 	}
 }
 
@@ -936,9 +955,84 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+void MainFrame::onAction(UploadManagerListener::Types type, Upload* aUpload) {
+	switch(type) {
+		case UploadManagerListener::COMPLETE: onUploadComplete(aUpload); break;
+		case UploadManagerListener::STARTING: onUploadStarting(aUpload); break;
+		default: dcassert(0);
+	}
+}
+void MainFrame::onAction(UploadManagerListener::Types type, const Upload::List& ul) {
+	switch(type) {	
+		case UploadManagerListener::TICK: onUploadTick(ul); break;
+	}
+}
+void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload) {
+	switch(type) {
+	case DownloadManagerListener::COMPLETE: onDownloadComplete(aDownload); break;
+	case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
+	default: dcassert(0); break;
+	}
+}
+void MainFrame::onAction(DownloadManagerListener::Types type, const Download::List& dl) {
+	switch(type) {	
+	case DownloadManagerListener::TICK: onDownloadTick(dl); break;
+	}
+}
+void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
+	switch(type) {
+	case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
+	default: dcassert(0); break;
+	}
+}
+void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) { 
+	switch(type) {
+		case ConnectionManagerListener::ADDED: onConnectionAdded(aCqi); break;
+		case ConnectionManagerListener::CONNECTED: onConnectionConnected(aCqi); break;
+		case ConnectionManagerListener::REMOVED: onConnectionRemoved(aCqi); break;
+		case ConnectionManagerListener::STATUS_CHANGED: onConnectionStatus(aCqi); break;
+		default: dcassert(0); break;
+	}
+};
+void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) { 
+	switch(type) {
+		case ConnectionManagerListener::FAILED: onConnectionFailed(aCqi, aLine); break;
+		default: dcassert(0); break;
+	}
+}
+
+void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	if(type == TimerManagerListener::SECOND) {
+		u_int32_t diff = (lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate;
+
+		StringList* str = new StringList();
+		str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
+		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
+		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
+		str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+		str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
+		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+		SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + Socket::getUp());
+		SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + Socket::getDown());
+		lastUpdate = aTick;
+		Socket::resetStats();
+	}
+}
+
+// HttpConnectionListener
+void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
+	switch(type) {
+		case HttpConnectionListener::COMPLETE: onHttpComplete(conn); break;
+	}
+}
+void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
+	switch(type) {
+		case HttpConnectionListener::DATA: versionInfo += string((const char*)buf, len); break;
+	}
+}
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.11 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.12 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

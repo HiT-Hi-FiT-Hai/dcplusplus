@@ -60,7 +60,7 @@ public:
 	};
 
 	virtual void onAction(Types, Upload*) { };
-	virtual void onAction(Types, const Upload::List) { };
+	virtual void onAction(Types, const Upload::List&) { };
 	virtual void onAction(Types, Upload*, const string&) { };
 
 };
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.48 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.49 2002/06/02 00:12:44 arnetheduck Exp $
  */

@@ -14,7 +14,8 @@
 * More potential connection timeout fixed (go, farcry, go!)
 * Fixed some minor client-client protocol issues
 * Fixed some more faulty "user offline" errors
-
+* Made autosearch more effective (much less hub bandwidth usage...)
+* Added a tiny splash sceen
 
  -- 0.176 2002-05-26 --
 * Various optimizations of search handling and list sorting for better perfomance

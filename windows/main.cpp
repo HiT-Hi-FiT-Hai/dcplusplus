@@ -22,6 +22,7 @@
 
 #include "MainFrm.h"
 #include "ExtendedTrace.h"
+#include "WinUtil.h"
 
 extern void startup();
 extern void shutdown();
@@ -59,8 +60,30 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	_Module.AddMessageLoop(&theLoop);
 	
 	MainFrame wndMain;
+	CEdit splash;
+	RECT rc;
+	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
+	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
+	rc.left = (rc.right / 2) - 100;
+	rc.right = (rc.right / 2) + 100;
+	rc.top = (rc.bottom / 2) - 12;
+	rc.bottom = (rc.bottom / 2) + 12;
+
+	splash.Create(NULL, splash.rcDefault, APPNAME " " VERSIONSTRING, WS_POPUP | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE | WS_EX_TOPMOST);
+	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
+	HDC dc = splash.GetDC();
+	rc.bottom = rc.top + WinUtil::getFontHeight(dc, splash.GetFont()) + 4;
+	splash.ReleaseDC(dc);
+	splash.HideCaret();
+	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
+	splash.SetWindowText("Loading DC++, please wait...");
+	splash.RedrawWindow();
+
 	startup();
+
+	splash.DestroyWindow();
 	
 	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
@@ -117,5 +140,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.5 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: main.cpp,v 1.6 2002/06/02 00:12:44 arnetheduck Exp $
  */

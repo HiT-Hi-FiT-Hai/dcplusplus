@@ -33,7 +33,7 @@
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, private HubManagerListener
 {
 public:
-	FavoriteHubsFrame() : users(0), hubs(0) { };
+	FavoriteHubsFrame() { };
 	virtual ~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
@@ -161,8 +161,6 @@ private:
 		COLUMN_LAST
 	};
 	
-	int hubs;
-	int users;
 	CStatusBarCtrl ctrlStatus;
 	CButton ctrlConnect;
 	CButton ctrlRemove;
@@ -175,54 +173,34 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 	
-	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl) {
-		switch(type) {
-		case HubManagerListener::GET_FAVORITE_HUBS: 
-			ctrlHubs.SetRedraw(FALSE);
-			for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-				FavoriteHubEntry* entry = *i;
-				StringList l;
-				l.push_back(entry->getName());
-				l.push_back(entry->getDescription());
-				l.push_back(entry->getNick(false));
-				l.push_back(string(entry->getPassword().size(), '*'));
-				l.push_back(entry->getServer());
-				bool b = entry->getConnect();
-				int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
-				ctrlHubs.SetCheckState(i, b);
-			}
-			ctrlHubs.SetRedraw(TRUE);
-			ctrlHubs.Invalidate();
-			break;
+	void updateList(const FavoriteHubEntry::List& fl) {
+		ctrlHubs.SetRedraw(FALSE);
+		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+			addEntry(*i);
 		}
+		ctrlHubs.SetRedraw(TRUE);
+		ctrlHubs.Invalidate();
+	}
+
+	void addEntry(FavoriteHubEntry* entry) {
+		StringList l;
+		l.push_back(entry->getName());
+		l.push_back(entry->getDescription());
+		l.push_back(entry->getNick(false));
+		l.push_back(string(entry->getPassword().size(), '*'));
+		l.push_back(entry->getServer());
+		bool b = entry->getConnect();
+		int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
+		ctrlHubs.SetCheckState(i, b);
 	}
 	
-	virtual void onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) {
-		switch(type) {
-		case HubManagerListener::FAVORITE_ADDED: {
-				StringList l;
-				l.push_back(entry->getName());
-				l.push_back(entry->getDescription());
-				l.push_back(entry->getNick(false));
-				l.push_back(string(entry->getPassword().size(), '*'));
-				l.push_back(entry->getServer());
-				bool b = entry->getConnect();
-				int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
-				ctrlHubs.SetCheckState(i, b);
-			}
-
-			break;
-		case HubManagerListener::FAVORITE_REMOVED: 
-			ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)entry));
-			break;
-		}
-	};
+	virtual void onAction(HubManagerListener::Types type, FavoriteHubEntry* entry);
 };
 
 #endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.4 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.5 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

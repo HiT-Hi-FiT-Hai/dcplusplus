@@ -71,8 +71,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		
 		if( (j = find(downPool.begin(), downPool.end(), aUser)) != downPool.end()) {
 			dcassert((*j)->getConnection());
-			pendingAdd.push_back(*j);
-			downPool.erase(j);
+			pendingAdd.push_back(aUser);
 			return;
 		}
 		
@@ -120,7 +119,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 				
 				ConnectionQueueItem::QueueIter i = connections.find(aSource);
 				if(i != connections.end()) {
-					ConnectionQueueItem::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second);
+					User::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second->getUser());
 					if(j != pendingAdd.end()) {
 						pendingAdd.erase(j);
 					}
@@ -165,7 +164,6 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 }
 
 void ConnectionManager::onTimerSecond(u_int32_t aTick) {
-	ConnectionQueueItem::List add;
 	ConnectionQueueItem::List remove;
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
@@ -174,8 +172,20 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 
 	{
 		Lock l(cs);
-		add = pendingAdd;
-		pendingAdd.clear();
+		{
+			for(User::Iter k = pendingAdd.begin(); k != pendingAdd.end(); ++k) {
+				ConnectionQueueItem::Iter i = find(downPool.begin(), downPool.end(), *k);
+				if(i == downPool.end()) {
+					// Hm, connection must have failed before it could be collected...
+					getDownloadConnection(*k);
+				} else {
+					dcassert((*i)->getConnection());
+					(*i)->getConnection()->removeListener(this);
+					fire(ConnectionManagerListener::STATUS_CHANGED, *i);
+					DownloadManager::getInstance()->addConnection((*i)->getConnection());
+				}
+			}
+		}
 
 		{
 			for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
@@ -231,15 +241,8 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 				fire(ConnectionManagerListener::FAILED, cqi, STRING(CONNECTION_TIMEOUT));
 				cqi->setStatus(ConnectionQueueItem::WAITING);
 			}
-
 			++i;
 		}
-	}
-
-	for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
-		fire(ConnectionManagerListener::STATUS_CHANGED, *k);
-		(*k)->getConnection()->removeListener(this);
-		DownloadManager::getInstance()->addConnection((*k)->getConnection());
 	}
 
 	for(ConnectionQueueItem::Iter l = remove.begin(); l != remove.end(); ++l) {
@@ -584,5 +587,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.49 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.50 2002/06/02 00:12:44 arnetheduck Exp $
  */

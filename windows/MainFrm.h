@@ -36,7 +36,7 @@
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener,
+		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener,
 		private ConnectionManagerListener
 {
 public:
@@ -125,6 +125,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
+		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
@@ -158,7 +159,8 @@ public:
 	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
+	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -296,9 +298,7 @@ private:
 		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		User::Ptr user;
 		string file;
-		
 		LPARAM lParam;
-		
 	};
 	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
@@ -328,71 +328,28 @@ private:
 	void buildMenu();
 	void updateTray(bool add = true);
 
+	void autoConnect(const FavoriteHubEntry::List& fl);
+
 	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
-	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) {
-		switch(type) {
-		case UploadManagerListener::COMPLETE:
-			onUploadComplete(aUpload); break;
-		case UploadManagerListener::STARTING:
-			onUploadStarting(aUpload); break;
-		default:
-			dcassert(0);
-		}
-	}
-	virtual void onAction(UploadManagerListener::Types type, const Upload::List ul) {
-		switch(type) {	
-		case UploadManagerListener::TICK: onUploadTick(ul); break;
-		}
-	}
-	
+	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload);
+	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul);
 	void onUploadStarting(Upload* aUpload);
 	void onUploadTick(const Upload::List aUpload);
 	void onUploadComplete(Upload* aUpload);
 	
 	// DownloadManagerListener
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload) {
-		switch(type) {
-		case DownloadManagerListener::COMPLETE: onDownloadComplete(aDownload); break;
-		case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
-		default: dcassert(0); break;
-		}
-	}
-	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl) {
-		switch(type) {	
-		case DownloadManagerListener::TICK: onDownloadTick(dl); break;
-		}
-	}
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
-		switch(type) {
-		case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
-		default: dcassert(0); break;
-		}
-	}
-
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload);
+	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl);
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason);
 	void onDownloadComplete(Download* aDownload);
 	void onDownloadFailed(Download* aDownload, const string& aReason);
 	void onDownloadStarting(Download* aDownload);
 	void onDownloadTick(const Download::List aDownload);
 
 	// ConnectionManagerListener
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) { 
-		switch(type) {
-		case ConnectionManagerListener::ADDED: onConnectionAdded(aCqi); break;
-		case ConnectionManagerListener::CONNECTED: onConnectionConnected(aCqi); break;
-		case ConnectionManagerListener::REMOVED: onConnectionRemoved(aCqi); break;
-		case ConnectionManagerListener::STATUS_CHANGED: onConnectionStatus(aCqi); break;
-		default: dcassert(0); break;
-		}
-	};
-
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) { 
-		switch(type) {
-		case ConnectionManagerListener::FAILED: onConnectionFailed(aCqi, aLine); break;
-		default: dcassert(0); break;
-		}
-	}
-	
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi);
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine);	
 	void onConnectionAdded(ConnectionQueueItem* aCqi);
 	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
 	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
@@ -400,50 +357,19 @@ private:
 	void onConnectionStatus(ConnectionQueueItem* aCqi);
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
-		if(type == TimerManagerListener::SECOND) {
-			u_int32_t diff = (lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate;
-
-			StringList* str = new StringList();
-			str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
-			str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
-			str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-			str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
-			str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
-			PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
-			SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + Socket::getUp());
-			SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + Socket::getDown());
-			lastUpdate = aTick;
-			Socket::resetStats();
-		}
-	}
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
 	
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
-		switch(type) {
-		case HttpConnectionListener::COMPLETE:
-			onHttpComplete(conn); break;
-		}
-	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
-		switch(type) {
-		case HttpConnectionListener::DATA:
-			versionInfo += string((const char*)buf, len); break;
-		}
-	}
-	
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len);	
 	void onHttpComplete(HttpConnection* aConn);
-
-	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl);
-	
 };
 
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.7 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.8 2002/06/02 00:12:44 arnetheduck Exp $
  */
 
  

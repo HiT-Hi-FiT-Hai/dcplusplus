@@ -51,15 +51,8 @@ inline void CDECL debugTrace(const char* format, ...)
 #define dcassert(exp) assert(exp)
 #endif
 #define dcdrun(exp) exp
-
 #else //_DEBUG
-// There are a few of these because variable argument functions are not inlined...
-inline void debugTrace(const char*) { };
-template<class T1> inline void debugTrace(const char*, T1) { };
-template<class T1,class T2> inline void debugTrace(const char*, T1, T2) { };
-template<class T1,class T2, class T3> inline void debugTrace(const char*, T1, T2, T3) { };
-template<class T1,class T2, class T3, class T4> inline void debugTrace(const char*, T1, T2, T3, T4) { };
-#define dcdebug debugTrace
+#define dcdebug true ? ((void)0) : printf
 #define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
@@ -94,6 +87,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.26 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.27 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

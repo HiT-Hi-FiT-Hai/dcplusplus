@@ -37,15 +37,7 @@ public:
 	SearchResult(const SearchResult& rhs) : slots(rhs.slots), freeSlots(rhs.freeSlots), size(rhs.size), 
 		file(rhs.file), hubName(rhs.hubName), hubAddress(rhs.hubAddress), user(rhs.user) { };
 
-	string getFileName() { 
-		string::size_type i;
-		if( (i=file.rfind('\\')) != string::npos ) {
-			if((i + 1) < file.size()) {
-				return file.substr(i + 1);
-			}
-		}
-		return Util::emptyString;
-	}
+	string getFileName() { return Util::getFileName(getFile()); };
 
 	User::Ptr& getUser() { return user; };
 	void setUser(const User::Ptr& aUser) { user = aUser; };
@@ -147,6 +139,5 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.20 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.21 2002/06/02 00:12:44 arnetheduck Exp $
  */
-

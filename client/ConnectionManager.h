@@ -47,12 +47,11 @@ public:
 		WAITING
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser) : status(CONNECTING), connection(NULL), user(aUser)  { };
+	ConnectionQueueItem(const User::Ptr& aUser) : status(CONNECTING), connection(NULL), user(aUser) { };
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	User::Ptr& getUser() { return user; };
 	
-
 	GETSET(Status, status, Status);
 	GETSET(UserConnection*, connection, Connection);
 private:
@@ -103,7 +102,7 @@ private:
 	ConnectionQueueItem::TimeMap pendingDown;
 	ConnectionQueueItem::List downPool;
 	ConnectionQueueItem::QueueMap connections;
-	ConnectionQueueItem::List pendingAdd;
+	User::List pendingAdd;
 	UserConnection::List pendingDelete;
 	UserConnection::List userConnections;
 
@@ -160,5 +159,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.41 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.42 2002/06/02 00:12:44 arnetheduck Exp $
  */

@@ -224,7 +224,6 @@ public:
 	 * @todo fix for unix...
 	 */
 	virtual void setEOF() throw(FileException) {
-
 	}
 
 	static void deleteFile(const string& aFileName) { ::unlink(aFileName.c_str()); };
@@ -347,6 +346,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.13 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: File.h,v 1.14 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

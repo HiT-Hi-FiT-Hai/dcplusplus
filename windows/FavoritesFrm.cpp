@@ -106,7 +106,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlNew.SetFont(ctrlHubs.GetFont());
 
 	HubManager::getInstance()->addListener(this);
-	HubManager::getInstance()->getFavoriteHubs();
+	updateList(HubManager::getInstance()->lockFavoriteHubs());
+	HubManager::getInstance()->unlockFavoriteHubs();
 	
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
@@ -194,7 +195,7 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	
 	string tmp1;
 	string tmp2;
-	
+
 	ctrlHubs.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
 		columnSizes[j] = ctrlHubs.GetColumnWidth(j);
@@ -211,8 +212,15 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
+void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) {
+	switch(type) {
+		case HubManagerListener::FAVORITE_ADDED: addEntry(entry); break;
+		case HubManagerListener::FAVORITE_REMOVED: ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)entry)); break;
+	}
+};
+
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.4 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.5 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

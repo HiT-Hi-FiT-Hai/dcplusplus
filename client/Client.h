@@ -101,7 +101,7 @@ public:
 	void sendMessage(const string& aMessage) { checkstate(); send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
 
 	void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
-	void searchResults(const string& aResults) { send(aResults); }
+	void searchResults(const string& aResults) { send(aResults); };
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		checkstate();
@@ -188,19 +188,12 @@ public:
 		}
 		return x;
 	}
-	const string& getNick() {
-		if(nick.empty()) {
-			return SETTING(NICK);
-		} else {
-			return nick;
-		}
-	}
 
-	void setNick(const string& aNick) {
-		nick = aNick;
-	}
+	const string& getNick() { return nick.empty() ? SETTING(NICK) : nick; };
+	void setNick(const string& aNick) { nick = aNick; }
 	
 	const string& getIp() {
+		return (socket == NULL) ? server : socket->getIp();
 		dcassert(socket);
 		return socket->getIp();
 	}
@@ -267,6 +260,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.58 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: Client.h,v 1.59 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

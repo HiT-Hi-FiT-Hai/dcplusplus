@@ -414,7 +414,7 @@ int HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInfo
 		if(sorted) {
 			StringList l;
 			l.push_back(u->getNick());
-			l.push_back(Util::formatBytes(u->getBytesSharedString()));
+			l.push_back(Util::formatBytes(u->getBytesShared()));
 			l.push_back(u->getDescription());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
@@ -739,5 +739,5 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.12 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.13 2002/06/02 00:12:44 arnetheduck Exp $
  */

@@ -22,6 +22,7 @@ enum Strings { // @DontAdd
 	BOTH_USERS_OFFLINE, // "Both users offline"
 	BROWSE, // "Browse..."
 	CANT_CONNECT_IN_PASSIVE_MODE, // "Can't connect to passive user while in passive mode"
+	CHOOSE_FOLDER, // "Choose folder"
 	CLOSE_CONNECTION, // "Close connection"
 	CLOSING_CONNECTION, // "Closing connection..."
 	CLOSE, // "Close"

@@ -71,7 +71,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 	
 	bi.hwndOwner = owner;
 	bi.pszDisplayName = buf;
-	bi.lpszTitle = "Choose folder";
+	bi.lpszTitle = CSTRING(CHOOSE_FOLDER);
 	bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
@@ -180,5 +180,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.6 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.7 2002/06/02 00:12:44 arnetheduck Exp $
  */

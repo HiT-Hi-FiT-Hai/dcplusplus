@@ -19,6 +19,7 @@
 		<String Name="BothUsersOffline">Both users offline</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="CantConnectInPassiveMode">Can't connect to passive user while in passive mode</String>
+		<String Name="ChooseFolder">Choose folder</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Close">Close</String>

@@ -25,6 +25,7 @@
 
 #include "CriticalSection.h"
 
+/** Evaluates op(pair<T1, T2>.first, compareTo) */
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
 public:
@@ -34,6 +35,7 @@ private:
 	const T1& a;
 };
 
+/** Evaluates op(pair<T1, T2>.second, compareTo) */
 template<class T1, class T2, class op = equal_to<T2> >
 class CompareSecond {
 public:
@@ -42,6 +44,13 @@ public:
 private:
 	const T2& a;
 };
+
+/** 
+ * Compares two values
+ * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
+ */
+template<typename T1>
+int compare(const T1& v1, const T1& v2) { return (v1 < v2) ? -1 : ((v1 == v2) ? 0 : 1); };
 
 class Flags {
 	public:
@@ -369,6 +378,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.45 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: Util.h,v 1.46 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

@@ -55,17 +55,13 @@ public:
 	FavoriteHubEntry() throw() : connect(false) { };
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false) { };
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick) { };
-	virtual ~FavoriteHubEntry() throw() { }	
-	const string& getNick(bool useDefault = true) const {
-		if(nick.size() > 0 || !useDefault) 
-			return nick;
-		else 
-			return SETTING(NICK);
+	~FavoriteHubEntry() throw() { }	
+	
+	const string& getNick(bool useDefault = true) const { 
+		return (!nick.empty() || !useDefault) ? nick : SETTING(NICK);
 	}
 
-	void setNick(const string& aNick) {
-		nick = aNick;
-	}
+	void setNick(const string& aNick) { nick = aNick; };
 
 	GETSETREF(string, name, Name);
 	GETSETREF(string, server, Server);
@@ -85,13 +81,11 @@ public:
 		DOWNLOAD_STARTING,
 		DOWNLOAD_FAILED,
 		DOWNLOAD_FINISHED,
-		GET_FAVORITE_HUBS,
 		FAVORITE_ADDED,
 		FAVORITE_REMOVED,
 		USER_ADDED,
 		USER_REMOVED
 	};
-	virtual void onAction(Types, const FavoriteHubEntry::List&) { };
 	virtual void onAction(Types, FavoriteHubEntry*) { };
 	virtual void onAction(Types, const string&) { };
 	virtual void onAction(Types, const User::Ptr&) { };
@@ -106,12 +100,10 @@ class HubManager : public Speaker<HubManagerListener>, private HttpConnectionLis
 public:
 	
 	void refresh();
-	
-	void getFavoriteHubs() {
-		Lock l(cs);
-		fire(HubManagerListener::GET_FAVORITE_HUBS, favoriteHubs);
-	}
-	
+
+	const FavoriteHubEntry::List& lockFavoriteHubs() { cs.enter(); return favoriteHubs; };
+	void unlockFavoriteHubs() { cs.leave(); };
+
 	User::List getFavoriteUsers() { Lock l(cs); return users; };
 	
 	void addFavoriteUser(const User::Ptr& aUser) { 
@@ -246,6 +238,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.31 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.32 2002/06/02 00:12:44 arnetheduck Exp $
  */
 

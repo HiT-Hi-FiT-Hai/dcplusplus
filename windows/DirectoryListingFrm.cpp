@@ -25,6 +25,48 @@
 
 StringList DirectoryListingFrame::lastDirs;
 
+DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
+statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
+user(aUser), skipHits(0)
+{
+	string tmp;
+	try{
+		File f(aFile, File::READ, File::OPEN);
+		dl = new DirectoryListing();
+		DWORD size = (DWORD)f.getSize();
+
+		if(size > 16) {
+			BYTE* buf = new BYTE[size];
+			f.read(buf, size);
+			if(aFile.substr(aFile.size() - 4) == ".bz2") {
+				CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
+			} else {
+				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+			}
+			delete[] buf;
+		} else {
+			tmp = Util::emptyString;
+		}
+	} catch(FileException) {
+		string file = aFile.substr(0, aFile.size() - 5) + "bz2";
+
+		File f(file, File::READ, File::OPEN);
+		dl = new DirectoryListing();
+		DWORD size = (DWORD)f.getSize();
+
+		if(size > 16) {
+			BYTE* buf = new BYTE[size];
+			f.read(buf, size);
+			CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
+			delete[] buf;
+		} else {
+			tmp = Util::emptyString;
+		}
+	}
+
+	dl->load(tmp);
+};
+
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
@@ -396,23 +438,17 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 int DirectoryListingFrame::sortSize(LPARAM a, LPARAM b) {
 	ItemInfo* c = (ItemInfo*)((LVITEM*)a)->lParam;
 	ItemInfo* d = (ItemInfo*)((LVITEM*)b)->lParam;
-	
+
 	if(c->type == ItemInfo::DIRECTORY) {
 		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		LONGLONG g = c->dir->getTotalSize();
-		LONGLONG h = d->dir->getTotalSize();
-		
-		return (g < h) ? -1 : ((g == h) ? 0 : 1);
+		return compare(c->dir->getTotalSize(), d->dir->getTotalSize());
 	} else {
 		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
 		}
-		
-		LONGLONG g = c->file->getSize();
-		LONGLONG h = d->file->getSize();
-		return (g < h) ? -1 : ((g == h) ? 0 : 1);
+		return compare(c->file->getSize(), d->file->getSize());
 	}
 }
 
@@ -614,5 +650,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.10 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.11 2002/06/02 00:12:44 arnetheduck Exp $
  */

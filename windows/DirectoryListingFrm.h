@@ -47,49 +47,7 @@ public:
 		COLUMN_SIZE
 	};
 	
-	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
-		statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-		user(aUser),
-		skipHits(0)
-	{
-		string tmp;
-		try{
-			File f(aFile, File::READ, File::OPEN);
-			dl = new DirectoryListing();
-			DWORD size = (DWORD)f.getSize();
-			
-			if(size > 16) {
-				BYTE* buf = new BYTE[size];
-				f.read(buf, size);
-				if(aFile.substr(aFile.size() - 4) == ".bz2") {
-					CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
-				} else {
-					CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-				}
-				delete[] buf;
-			} else {
-				tmp = Util::emptyString;
-			}
-		} catch(FileException) {
-			string file = aFile.substr(0, aFile.size() - 5) + "bz2";
-			
-			File f(file, File::READ, File::OPEN);
-			dl = new DirectoryListing();
-			DWORD size = (DWORD)f.getSize();
-			
-			if(size > 16) {
-				BYTE* buf = new BYTE[size];
-				f.read(buf, size);
-				CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
-				delete[] buf;
-			} else {
-				tmp = Util::emptyString;
-			}
-		}
-
-		dl->load(tmp);
-	};
-
+	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser);
 	~DirectoryListingFrame() { }
 
 	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_DIRECTORY)
@@ -146,6 +104,7 @@ public:
 	}
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		ctrlTree.DeleteAllItems();
 		clearList();
 		bHandled = FALSE;
 		return 0;
@@ -241,5 +200,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.8 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.9 2002/06/02 00:12:44 arnetheduck Exp $
  */
