@@ -25,12 +25,12 @@ TimerManager* TimerManager::instance;
 
 DWORD WINAPI TimerManager::ticker(void* p) {
 	TimerManager* t = (TimerManager*)p;
-	DWORD nextTick;
-	int nextMin = 0;
-	int x;
 
-	nextTick = GetTickCount() + 1000;
-	while(WaitForSingleObject(t->stopEvent, (x = (nextTick - GetTickCount())) > 0 ? x : 0) == WAIT_TIMEOUT) {
+	int nextMin = 0;
+	DWORD x = GetTickCount();
+	DWORD nextTick = x + 1000;
+
+	while(WaitForSingleObject(t->stopEvent, nextTick > x ? nextTick - x : 0) == WAIT_TIMEOUT) {
 		DWORD z = GetTickCount();
 		nextTick = z + 1000;
 		t->fire(TimerManagerListener::SECOND, z);
@@ -38,15 +38,42 @@ DWORD WINAPI TimerManager::ticker(void* p) {
 			t->fire(TimerManagerListener::MINUTE, z);
 			nextMin = 0;
 		}
+		x = GetTickCount();
 	}
 
 	return 0;
 }
+
+void TimerManager::startTicker() {
+	DWORD threadId;
+	stopTicker();
+	
+	stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
+	readerThread=CreateThread(NULL, 0, &ticker, this, 0, &threadId);
+}
+
+void TimerManager::stopTicker() {
+	if(readerThread != NULL) {
+		SetEvent(stopEvent);
+		
+		if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
+			MessageBox(NULL, _T("TimerManager: Unable to stop timer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+		}
+		CloseHandle(readerThread);
+		readerThread = NULL;
+		CloseHandle(stopEvent);
+		stopEvent = NULL;
+	}
+}
+
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.7 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.8 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.8  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.7  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

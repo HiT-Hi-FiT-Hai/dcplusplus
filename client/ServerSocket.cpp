@@ -62,11 +62,36 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 	return 0;
 }
 
+void ServerSocket::startWaiter() {
+	DWORD threadId;
+	stopWaiter();
+	
+	waiterEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
+	waiterThread=CreateThread(NULL, 0, &waiter, this, 0, &threadId);
+}
+
+void ServerSocket::stopWaiter() {
+	if(waiterThread != NULL) {
+		SetEvent(waiterEvent);
+		
+		if(WaitForSingleObject(waiterThread, 3000) == WAIT_TIMEOUT) {
+			MessageBox(NULL, _T("Unable to stop waiter thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+		}
+		CloseHandle(waiterThread);
+		waiterThread = NULL;
+		CloseHandle(waiterEvent);
+		waiterEvent = NULL;
+	}
+}
+
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.6 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.7 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.7  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.6  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

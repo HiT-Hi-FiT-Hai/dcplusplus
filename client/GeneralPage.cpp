@@ -63,7 +63,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
-		ctrlConnection.AddString(SettingsManager::connectionSpeeds[i]);
+		ctrlConnection.AddString(SettingsManager::connectionSpeeds[i].c_str());
 
 	PropPage::read((HWND)(*this), items);
 	if(SettingsManager::getInstance()->get(SettingsManager::SERVER, false).empty()) {
@@ -131,9 +131,12 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.4 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.5 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: GeneralPage.cpp,v $
+ * Revision 1.5  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.4  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

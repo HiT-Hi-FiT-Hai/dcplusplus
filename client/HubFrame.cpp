@@ -33,11 +33,11 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- ht
 "\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
 "\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
 "\r\n-- I share, therefore I am.\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I came, I searched, I found...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
-"\r\n-- I came, I shared, I sent...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
-"\r\n-- I can set away mode, can't you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
-"\r\n-- I don't have to see any ads, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
-"\r\n-- I don't have to see those annoying kick messages, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I came, I searched, I found...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I came, I shared, I sent...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I can set away mode, can't you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I don't have to see any ads, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I don't have to see those annoying kick messages, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
 "\r\n-- I can resume my files to a different filename, can you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
 };
 
@@ -65,7 +65,9 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
 	
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	} else {
+		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 	
 	ctrlMessage.SetFont(ctrlUsers.GetFont());
@@ -500,9 +502,12 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.42 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.43 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.43  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.42  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

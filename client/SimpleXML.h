@@ -65,7 +65,7 @@ public:
 		addChildAttrib(aName, string(aData ? "1" : "0"));
 	}
 	
-	const string& getData() {
+	const string& getData() const {
 		dcassert(current != NULL);
 		return current->data;
 	}
@@ -111,7 +111,7 @@ public:
 		return false;
 	}
 
-	const string& getChildData() throw(SimpleXMLException) {
+	const string& getChildData() const throw(SimpleXMLException) {
 		checkChildSelected();
 		return (*currentChild)->data;
 	}
@@ -188,7 +188,7 @@ private:
 	Tag::Iter currentChild;
 
 	string cleanUp(const string& aString);
-	void checkChildSelected() throw(SimpleXMLException) {
+	void checkChildSelected() const throw(SimpleXMLException) {
 		dcassert(current != NULL);
 		if(currentChild == current->children.end()) {
 			throw SimpleXMLException("No child selected");				
@@ -203,9 +203,12 @@ private:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.12 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.13 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.13  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.12  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

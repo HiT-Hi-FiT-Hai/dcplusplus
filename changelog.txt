@@ -17,9 +17,14 @@
 * Did some more work on the queue managment to reduce crash frequency
 * Improved file transfer perfomance a bit
 * Fixed so that priorities are saved / loaded
-* Improved rollback buffering, the app now discards the last <rollback> bytes, and 
-  then checks the <rollback> bytes before that for inconsistensies.
+* Improved rollback buffering, the app now discards the last <rollbacksize> bytes, and 
+  then checks the <rollbacksize> bytes before that for inconsistensies.
 * Fixed so that the correct edit box gets the focus when switching windows
+* Fixed a bug with renaming share directory names when refreshing
+* Some code cleanup
+* Added option to keep duplicate files in the dclist (but their sizes are not added to the file share total in any case)
+* More random crashes fixed
+* Added timestamps to private frames as well
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

@@ -28,7 +28,7 @@
 
 SettingsManager* SettingsManager::instance = 0;
 
-char const* SettingsManager::settingTags[] =
+const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
@@ -36,11 +36,12 @@ char const* SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline"
+	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"RemoveDupes",
 	"SENTRY"
 };
 
-const char* SettingsManager::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", 
+const string SettingsManager::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", 
 "Satellite", "Cable", "DSL", "LAN(T1)", "LAN(T3)" };
 
 SettingsManager::SettingsManager()
@@ -74,6 +75,7 @@ SettingsManager::SettingsManager()
 	setDefault(CONFIRM_EXIT, false);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
+	setDefault(REMOVE_DUPES, true);
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -113,7 +115,7 @@ void SettingsManager::load(string const& aFileName)
 		for(i=STR_FIRST; i<STR_LAST; i++)
 		{
 			attr = settingTags[i];
-			dcassert(attr != "SENTRY");
+			dcassert(attr.find("SENTRY") == string::npos);
 
 			if(xml.findChild(attr))
 				set(StrSetting(i), xml.getChildData());
@@ -122,7 +124,7 @@ void SettingsManager::load(string const& aFileName)
 		for(i=INT_FIRST; i<INT_LAST; i++)
 		{
 			attr = settingTags[i];
-			dcassert(attr != "SENTRY");
+			dcassert(attr.find("SENTRY") == string::npos);
 
 			if(xml.findChild(attr))
 				set(IntSetting(i), Util::toInt(xml.getChildData()));
@@ -196,9 +198,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.21 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.22 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.22  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.21  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

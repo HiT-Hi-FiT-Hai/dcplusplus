@@ -108,7 +108,8 @@ void SimpleXML::Tag::fromXML(const string& tmp) throw(SimpleXMLException) {
 	string::size_type i = 0;
 	string::size_type j;
 
-	while( tmp[i] == '<' ) {
+	dcassert(tmp.size() > 0);
+	while( i < tmp.size() && tmp[i] == '<' ) {
 		Ptr child = NULL;
 
 		i += 1;
@@ -292,9 +293,12 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.10 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.11 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.11  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.10  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

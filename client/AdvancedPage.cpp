@@ -39,6 +39,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_AUTOSEARCH, SettingsManager::AUTO_SEARCH, PropPage::T_BOOL },
 	{ IDC_IGNOREOFFLINE, SettingsManager::IGNORE_OFFLINE, PropPage::T_BOOL },
 	{ IDC_POPUPOFFLINE, SettingsManager::POPUP_OFFLINE, PropPage::T_BOOL },
+	{ IDC_REMOVEDUPES, SettingsManager::REMOVE_DUPES, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -68,9 +69,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.10 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.11 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.11  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.10  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

@@ -46,7 +46,7 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 	aServer = "";
 	aFile = "";
 
-	if( (j=url.find("://"), i) != string::npos) {
+	if( (j=url.find("://", i)) != string::npos) {
 		// Protocol found
 		string protocol = url.substr(0, j);
 		i = j + 3;
@@ -141,9 +141,12 @@ int CALLBACK Util::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARA
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.8 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.9 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.9  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.8  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

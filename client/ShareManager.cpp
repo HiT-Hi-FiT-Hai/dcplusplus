@@ -137,7 +137,7 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		} else {
 			d = aDirectory;
 		}
-
+		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(d.find(i->first + '\\') != string::npos) {
 				throw ShareException("Directory already shared.");
@@ -168,13 +168,19 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 
 void ShareManager::removeDirectory(const string& aDirectory) {
 	WLock l(cs);
-	
+
 	Directory::MapIter i = directories.find(aDirectory);
 	if(i != directories.end()) {
 		delete i->second;
 		directories.erase(i);
 	}
-	
+
+	for(StringMapIter j = dirs.begin(); j != dirs.end(); ++j) {
+		if(stricmp(j->second.c_str(), aDirectory.c_str()) == 0) {
+			dirs.erase(j);
+			break;
+		}
+	}
 	dirty = true;
 }
 
@@ -215,6 +221,7 @@ StringList ShareManager::getDirectories() {
 	RLock l(cs);
 
 	StringList tmp;
+	tmp.reserve(directories.size());
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 		tmp.push_back(i->first);
 	}
@@ -250,10 +257,13 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 			StringList dirs = sm->getDirectories();
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
 				sm->removeDirectory(*k);
-				sm->addDirectory(*k);
+			}
+			for(StringIter l = dirs.begin(); l != dirs.end(); ++l) {
+				sm->addDirectory(*l);
 			}
 			sm->refreshDirs = false;
 		}
+
 		Directory::DupeMap dupes;
 		for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
 			tmp += i->second->toString(dupes);
@@ -300,7 +310,11 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 
 		if(dupe) {
 			size-=j->second;
-			files.erase(j++);
+			if(BOOLSETTING(REMOVE_DUPES)) {
+				files.erase(j++);
+			} else {
+				++j;
+			}
 		} else {
 			dupes.insert(make_pair(j->second, j->first));
 			tmp += string(ident + 1, '\t') + j->first + "|" + Util::toString(j->second) + "\r\n";
@@ -311,7 +325,7 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 	return tmp;
 }
 
-#define IS_TYPE(x) (Util::findSubString(aString, x) != -1)
+#define IS_TYPE(x) (Util::findSubString(aString, x) != string::npos)
 
 static const string types[] = { 
 	".mp3", ".mp2", ".mid", ".wav", ".au", ".aiff",				// 0-6
@@ -468,9 +482,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.29 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.30 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.30  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.29  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

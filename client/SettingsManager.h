@@ -28,7 +28,7 @@ class SettingsManager : public Singleton<SettingsManager>
 {
 public:
 
-	static const char*connectionSpeeds[];
+	static const string connectionSpeeds[];
 
 	enum StrSetting { STR_FIRST,
 		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOAD_DIRECTORY, EMAIL, NICK, SERVER,
@@ -38,6 +38,7 @@ public:
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT, REMOVE_NOT_AVAILABLE, 
 		BACKGROUND_COLOR, TEXT_COLOR, SHARE_HIDDEN, REMOVE_FINISHED, FILTER_KICKMSGS, MINIMIZE_TRAY,
 		OPEN_PUBLIC, OPEN_QUEUE, AUTO_SEARCH, TIME_STAMPS, CONFIRM_EXIT, IGNORE_OFFLINE, POPUP_OFFLINE,
+		REMOVE_DUPES,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -45,7 +46,7 @@ public:
 
 	enum {	CONNECTION_ACTIVE, CONNECTION_PASSIVE };
 
-	string const& get(StrSetting key, bool useDefault = true) const {
+	const string& get(StrSetting key, bool useDefault = true) const {
 		return (isSet[key] || !useDefault) ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
 	}
 
@@ -106,7 +107,7 @@ private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
 
-	static char const* settingTags[SETTINGS_LAST+1];
+	static const string settingTags[SETTINGS_LAST+1];
 
 	string strSettings[STR_LAST - STR_FIRST];
 	int    intSettings[INT_LAST - INT_FIRST];
@@ -115,47 +116,6 @@ private:
 	bool isSet[SETTINGS_LAST];
 };
 
-// Shorthand accessor class
-#ifdef ALTERNATE_SETTING_ACCESSORS
-class Settings
-{
-public:
-	__inline static string const& getString(StrSetting key, bool useDefault = true) const {
-		return SettingsManager::getInstance()->get(key, useDefault);
-	}
-	__inline static int getInt(IntSetting key, bool useDefault = true) const {
-		return SettingsManager::getInstance()->get(key, useDefault);
-	}
-	__inline static bool getBool(IntSetting key, bool useDefault = true) const {
-		return SettingsManager::getInstance()->getBool(key, useDefault);
-	}
-	__inline static void set(StrSetting key, string const& value) {
-		SettingsManager::getInstance()->set(key, value);
-	}
-	__inline static void set(IntSetting key, int value) {
-		SettingsManager::getInstance()->set(key, value);
-	}
-	__inline static void set(IntSetting key, bool value) {
-		SettingsManager::getInstance()->set(key, value);
-	}
-	__inline static void setDefault(StrSetting key, string const& value) {
-		SettingsManager::getInstance()->setDefault(key, value);
-	}
-	__inline void setDefault(IntSetting key, int value) {
-		SettingsManager::getInstance()->setDefault(key, value);
-	}
-}
-
-// Shorthand accessor functions
-__inline string const& Setting(SettingsManager::StrSetting key, bool useDefault = true) {
-	return SettingsManager::getInstance()->get(key, useDefault);
-}
-
-__inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
-	return SettingsManager::getInstance()->get(key, useDefault);
-}
-
-#endif
 
 // Shorthand accessor macros
 #define SETTING(k) (SettingsManager::getInstance()->get(SettingsManager::k, true))
@@ -165,9 +125,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.17 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.18 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.18  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.17  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

@@ -20,7 +20,6 @@
 #include "DCPlusPlus.h"
 
 #include "SearchManager.h"
-#include "Client.h"
 #include "ClientManager.h"
 
 SearchManager* SearchManager::instance = NULL;
@@ -83,9 +82,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.16 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.16  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.15  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -22,7 +22,6 @@
 #include "ClientManager.h"
 #include "ShareManager.h"
 #include "SearchManager.h"
-#include "QueueManager.h"
 
 ClientManager* ClientManager::instance = NULL;
 
@@ -179,7 +178,6 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		if( (!j->second->isOnline()) && (j->second->getLastHubIp() == aClient->getIp()) ) {
 			if(putOnline) {
 				j->second->setClient(aClient);
-				QueueManager::getInstance()->userUpdated(j->second);
 			}
 			return j->second;
 		}
@@ -190,7 +188,6 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		if(!m->second->isOnline()) {
 			if(putOnline) {
 				m->second->setClient(aClient);
-				QueueManager::getInstance()->userUpdated(m->second);
 			}
 			return m->second;
 		}
@@ -209,14 +206,16 @@ void ClientManager::putUserOffline(User::Ptr& aUser) {
 		Lock l(cs);
 		aUser->setClient(NULL);
 	}
-	QueueManager::getInstance()->userUpdated(aUser);
 }
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.12 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.13 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.13  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.12  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

@@ -67,8 +67,10 @@ string SocketException::errorToString(int aError) {
 		return "Connection reset by server";
 	case ENOTSOCK:
 		return "Socket error";
+	case ENOTCONN:
+		return "Not connected";
 	default:
-		char tmp[128];
+		char tmp[64];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
 		return tmp;
 	}
@@ -182,8 +184,9 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 }
 
 /**
- * Sends data.
- * @param aData The string to send
+ * Sends data, will block until all data has been sent or an exception occurs
+ * @param aBuffer Buffer with data
+ * @param aLen Data length
  * @throw SocketExcpetion Send failed.
  */
 void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
@@ -206,16 +209,14 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				// Wait until something happens with the socket...
 				select(1, &rfd, &wfd, NULL, &t);
 			} else if(errno == ENOBUFS) {
-				TIMEVAL t = { 1, 0 };
-				fd_set rfd, wfd, efd;
+				TIMEVAL t = { 0, 500 };
+				fd_set rfd, wfd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
-				FD_ZERO(&efd);
 				FD_SET(sock, &rfd);
 				FD_SET(sock, &wfd);
-				FD_SET(sock, &efd);
 				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, &efd, &t);
+				select(1, &rfd, &wfd, NULL, &t);
 				if(sendSize > 32) {
 					sendSize /= 2;
 					dcdebug("Reducing send window size to %d\n", sendSize);
@@ -239,9 +240,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.24 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.25 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.25  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.24  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

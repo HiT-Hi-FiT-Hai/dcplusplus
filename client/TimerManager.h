@@ -42,10 +42,11 @@ class TimerManager : public Speaker<TimerManagerListener>, public Singleton<Time
 {
 public:
 	static DWORD getTick() { return GetTickCount(); };
-	void start() {
-		startTicker();
-	}
+	void start() { startTicker(); };
 private:
+
+	HANDLE stopEvent;
+	HANDLE readerThread;
 
 	friend class Singleton<TimerManager>;
 	TimerManager() : stopEvent(NULL), readerThread(NULL) { 
@@ -56,31 +57,8 @@ private:
 		stopTicker();
 	};
 	
-	HANDLE stopEvent;
-	HANDLE readerThread;
-
-	void startTicker() {
-		DWORD threadId;
-		stopTicker();
-		
-		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		readerThread=CreateThread(NULL, 0, &ticker, this, 0, &threadId);
-	}
-	
-	void stopTicker() {
-		if(readerThread != NULL) {
-			SetEvent(stopEvent);
-			
-			if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("TimerManager: Unable to stop timer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			CloseHandle(readerThread);
-			readerThread = NULL;
-			CloseHandle(stopEvent);
-			stopEvent = NULL;
-		}
-	}
-	
+	void startTicker();
+	void stopTicker();
 	static DWORD WINAPI ticker(void* p);
 
 };
@@ -89,9 +67,12 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.10 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.10  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.9  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

@@ -429,9 +429,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		pmMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			if(s->getUser()) {
-				PrivateFrame::openWindow(s->getUser(), m_hWndMDIClient, getTab());
-			}
+			PrivateFrame::openWindow(s->getUser(), m_hWndMDIClient, getTab());
 		} catch(...) {
 			// ...
 		}
@@ -466,9 +464,12 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.11 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.12  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.11  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

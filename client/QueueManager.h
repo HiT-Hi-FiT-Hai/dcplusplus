@@ -247,12 +247,18 @@ public:
 	Download* getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi);
 	bool hasDownload(const User::Ptr& aUser) {
 		Lock l(cs);
-		return users.find(aUser) != users.end();
+		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+			if(((*i)->getStatus() != QueueItem::RUNNING) && 
+				((*i)->getPriority() != QueueItem::PAUSED) && 
+				((*i)->isSource(aUser)) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	void putDownload(Download* aDownload, bool finished = false);
-	void userUpdated(User::Ptr& aUser);
-	
+
 	void getQueue() {
 		Lock l(cs);
 		for(QueueItem::Iter i = queue.begin(); i!= queue.end(); ++i) {
@@ -289,23 +295,9 @@ private:
 	StringList userLists;
 	typedef hash_map<string, DWORD> SearchMap;
 	SearchMap search;
-	typedef map<User::Ptr, int> UserMap;
-	UserMap users;
 
 	static const string USER_LIST_NAME;
 	
-	void removeFromUserMap(QueueItem* aQI) {
-		for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
-			UserMap::iterator j = users.find((*i)->getUser());
-			dcassert(j != users.end());
-			if(j->second == 1) {
-				users.erase(j); 
-			} else {
-				j->second--;
-			}
-		}
-	};
-
 	QueueItem* findByTarget(const string& aTarget) {
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
 			if(stricmp((*i)->getTarget().c_str(), aTarget.c_str()) == 0)
@@ -333,9 +325,12 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.11 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.12  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.11  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Util.h"
+#include "Socket.h"
 
 class ServerSocketListener {
 public:
@@ -36,7 +37,6 @@ public:
 	virtual void onAction(Types) { };
 };
 
-#include "Socket.h"
 #include "Util.h"
 
 class ServerSocket : public Speaker<ServerSocketListener>  
@@ -44,13 +44,13 @@ class ServerSocket : public Speaker<ServerSocketListener>
 public:
 	void waitForConnections(short aPort) throw(SocketException);
 
-	ServerSocket() : sock(NULL), waiterEvent(NULL), waiterThread(NULL), sockEvent(NULL) {
+	ServerSocket() : sock(INVALID_SOCKET), waiterEvent(NULL), waiterThread(NULL), sockEvent(NULL) {
 	};
 	void disconnect() {
 		stopWaiter();
-		if(sock != NULL) {
+		if(sock != INVALID_SOCKET) {
 			closesocket(sock);
-			sock = NULL;
+			sock = INVALID_SOCKET;
 		}
 		if(sockEvent != NULL) {
 			CloseHandle(sockEvent);
@@ -72,47 +72,30 @@ public:
 		return sockEvent;
 	}
 	
-	SOCKET getSocket() const {
-		return sock;
-	}
+	SOCKET getSocket() const { return sock; }
 	
 private:
 	HANDLE sockEvent;
 	SOCKET sock;
 	HANDLE waiterEvent;
 	HANDLE waiterThread;
+
 	static DWORD WINAPI waiter(void* p);
 
-	void startWaiter() {
-		DWORD threadId;
-		stopWaiter();
-		
-		waiterEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		waiterThread=CreateThread(NULL, 0, &waiter, this, 0, &threadId);
-	}
-	
-	void stopWaiter() {
-		if(waiterThread != NULL) {
-			SetEvent(waiterEvent);
-			
-			if(WaitForSingleObject(waiterThread, 3000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("Unable to stop waiter thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			CloseHandle(waiterThread);
-			waiterThread = NULL;
-			CloseHandle(waiterEvent);
-			waiterEvent = NULL;
-		}
-	}
+	void startWaiter();
+	void stopWaiter();
 };
 
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.11 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.12  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.11  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

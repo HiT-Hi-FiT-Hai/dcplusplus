@@ -423,11 +423,43 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 	
-	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_USER], "User", LVCFMT_LEFT, columnSizes[COLUMN_USER], COLUMN_USER);
-	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_STATUS], "Status", LVCFMT_LEFT, columnSizes[COLUMN_STATUS], COLUMN_STATUS);
+	LV_COLUMN lvc;
+	ZeroMemory(&lvc, sizeof(lvc));
+	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+	
+	lvc.pszText = "User";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_USER];
+	lvc.iOrder = columnIndexes[COLUMN_USER];
+	lvc.iSubItem = COLUMN_USER;
+	ctrlTransfers.InsertColumn(0, &lvc);
+
+	lvc.pszText = "Status";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_STATUS];
+	lvc.iOrder = columnIndexes[COLUMN_STATUS];
+	lvc.iSubItem = COLUMN_STATUS;
+	ctrlTransfers.InsertColumn(1, &lvc);
+
+	lvc.pszText = "File";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_FILE];
+	lvc.iOrder = columnIndexes[COLUMN_FILE];
+	lvc.iSubItem = COLUMN_FILE;
+	ctrlTransfers.InsertColumn(2, &lvc);
+
+	lvc.pszText = "Size";
+	lvc.fmt = LVCFMT_RIGHT;
+	lvc.cx = columnSizes[COLUMN_SIZE];
+	lvc.iOrder = columnIndexes[COLUMN_SIZE];
+	lvc.iSubItem = COLUMN_SIZE;
+	ctrlTransfers.InsertColumn(3, &lvc);
+	
+/*	ctrlTransfers.InsertColumn(0, "User", LVCFMT_LEFT, columnSizes[COLUMN_USER], COLUMN_USER);
+	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, columnSizes[COLUMN_STATUS], COLUMN_STATUS);
 	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_FILE], "File", LVCFMT_LEFT, columnSizes[COLUMN_FILE], COLUMN_FILE);
 	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_SIZE], "Size", LVCFMT_RIGHT, columnSizes[COLUMN_SIZE], COLUMN_SIZE);
-
+*/
 	ctrlTransfers.SetBkColor(Util::bgColor);
 	ctrlTransfers.SetTextBkColor(Util::bgColor);
 	ctrlTransfers.SetTextColor(Util::textColor);
@@ -719,9 +751,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.66 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.67 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.67  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.66  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

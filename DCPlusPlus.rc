@@ -445,6 +445,9 @@ BEGIN
     CONTROL         "Popup messages from users that are not online (if not ignoring)",
                     IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     15,144,211,10
+    CONTROL         "Remove dupes completely (instead of just subtracting their size)",
+                    IDC_REMOVEDUPES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    155,215,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -585,8 +588,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,5,3
- PRODUCTVERSION 0,1,5,3
+ FILEVERSION 0,1,5,5
+ PRODUCTVERSION 0,1,5,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -601,10 +604,10 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://sourceforge.net/dcplusplus\0"
+            VALUE "Comments", "http://dcplusplus.sourceforge.net\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "0, 1, 5, 3\0"
+            VALUE "FileVersion", "0, 1, 5, 5\0"
             VALUE "InternalName", "DC++\0"
             VALUE "LegalCopyright", "Copyright 2001 Jacek Sieka\0"
             VALUE "LegalTrademarks", "\0"
@@ -612,7 +615,7 @@ BEGIN
             VALUE "OriginalFilename", "DCPlusPlus.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "0, 1, 5, 3\0"
+            VALUE "ProductVersion", "0, 1, 5, 5\0"
             VALUE "SpecialBuild", "\0"
         END
     END

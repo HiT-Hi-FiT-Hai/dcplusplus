@@ -94,6 +94,7 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 	{
 		Lock l(cs);
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+			if(((*i)->getStatus() == QueueItem::WAITING) && ((*i)->getPriority() != QueueItem::PAUSED) )
 			for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
 				if((*j)->getUser()->isOnline()) {
 					ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
@@ -125,12 +126,6 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 		Lock l(cs);
 		if(!q->isSource(aUser)) {
 			s = q->addSource(aUser, aFile);
-			UserMap::iterator ui = users.find(aUser);
-			if(ui == users.end()) {
-				users[aUser] = 1;
-			} else {
-				ui->second++;
-			}
 		}
 		if(newItem) {
 			queue.push_back(q);
@@ -148,7 +143,7 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 	fire(QueueManagerListener::SOURCES_UPDATED, q);
 	dirty = true;
 
-	if(aUser->isOnline())
+	if(aUser->isOnline() && q->getStatus() != QueueItem::RUNNING && q->getPriority() != QueueItem::PAUSED)
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
@@ -228,7 +223,6 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	
 				if(q->isSet(QueueItem::USER_LIST) || BOOLSETTING(REMOVE_FINISHED)) {
 					dcassert(find(queue.begin(), queue.end(), q) != queue.end());
-					removeFromUserMap(q);
 					queue.erase(find(queue.begin(), queue.end(), q));
 					
 					fire(QueueManagerListener::REMOVED, q);
@@ -268,7 +262,6 @@ void QueueManager::remove(const string& aTarget) throw(QueueException) {
 			queue.erase(i);
 			fire(QueueManagerListener::REMOVED, q);
 			dirty = true;
-			removeFromUserMap(q);
 			delete q;
 		}
 	}
@@ -292,14 +285,6 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, bool re
 			q->removeSource(aUser);
 			fire(QueueManagerListener::SOURCES_UPDATED, q);
 
-			UserMap::iterator j = users.find(aUser);
-			dcassert(j != users.end());
-			if(j->second == 1) {
-				users.erase(j); 
-			} else {
-				j->second--;
-			}
-			
 			dirty = true;
 		}
 	}
@@ -330,7 +315,7 @@ void QueueManager::save(SimpleXML* aXml) {
 			aXml->addChildAttrib("Target", d->getTarget());
 			aXml->addChildAttrib("Resume", d->isSet(QueueItem::RESUME));
 			aXml->addChildAttrib("Size", d->getSize());
-			aXml->addChildAttrib("Priority", d->getPriority());
+			aXml->addChildAttrib("Priority", (int)d->getPriority());
 
 			aXml->stepIn();
 			for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
@@ -376,9 +361,9 @@ void QueueManager::load(SimpleXML* aXml) {
 	}
 }
 
-void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
+void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr) {
 	
-	if(BOOLSETTING(AUTO_SEARCH) && sr->getUser()) {
+	if(type == SearchManagerListener::SEARCH_RESULT && BOOLSETTING(AUTO_SEARCH)) {
 		StringList l = getTargetsBySize(sr->getSize());
 		StringList tok = StringTokenizer(SearchManager::clean(sr->getFileName()), ' ').getTokens();
 
@@ -405,30 +390,14 @@ void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
 	}
 }
 
-void QueueManager::userUpdated(User::Ptr& aUser) {
-	bool connect = false;
-	{
-		Lock l(cs);
-		if(users.find(aUser) != users.end()) {
-			for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-				if((*i)->isSource(aUser)) {
-					fire(QueueManagerListener::SOURCES_UPDATED, *i);
-					if(aUser->isOnline())
-						connect = true;
-				}
-			}
-		}
-	}
-
-	if(connect)
-		ConnectionManager::getInstance()->getDownloadConnection(aUser);
-}
-
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.11 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.12  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.11  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

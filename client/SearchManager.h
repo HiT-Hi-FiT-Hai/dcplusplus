@@ -114,7 +114,7 @@ public:
 		// Remove all strange characters from the search string
 		string::size_type i = 0;
 
-		while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
+		while( (i = tmp.find_first_of("$|.[]()-_+")) != string::npos) {
 			tmp.replace(i, 1, 1, ' ');
 		}
 		return tmp;
@@ -165,9 +165,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.16 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.16  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.15  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -73,18 +73,11 @@ public:
 		
 		return -1;
 	}
-	string getShareSizeString() {
-		return Util::toString(getShareSize());
-	}
-	string getShareSizeString(const string& aDir) {
-		return Util::toString(getShareSize(aDir));
-	}
+	string getShareSizeString() { return Util::toString(getShareSize()); };
+	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
 	LONGLONG getListLen() { return listLen; };
-
-	string getListLenString() {
-		return Util::toString(getListLen());
-	}
+	string getListLenString() { return Util::toString(getListLen()); };
 	
 	const string& getListFile() {
 		if(listFile.empty())
@@ -173,7 +166,6 @@ private:
 	RWLock cs;
 	HANDLE refreshThread;
 
-//	StringList files;
 	bool checkFile(const string& aDir, const string& aFile);
 
 	static DWORD WINAPI refresher(void* p);
@@ -186,9 +178,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.21 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.22 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.22  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.21  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

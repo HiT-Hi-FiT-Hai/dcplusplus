@@ -79,6 +79,8 @@ void Client::onLine(const string& aLine) throw() {
 	if(cmd == "$Search") {
 		int i = 0;
 		int j = param.find(' ', i);
+		if(j == string::npos)
+			return;
 		string seeker = param.substr(i, j-i);
 		i = j + 1;
 		int a;
@@ -91,9 +93,13 @@ void Client::onLine(const string& aLine) throw() {
 		}
 		i += 4;
 		j = param.find('?', i);
+		if(j == string::npos)
+			return;
 		string size = param.substr(i, j-i);
 		i = j + 1;
 		j = param.find('?', i);
+		if(j == string::npos)
+			return;
 		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
 		param = param.substr(i);
@@ -139,6 +145,8 @@ void Client::onLine(const string& aLine) throw() {
 		i = 5;
 		string nick;
 		j = param.find(' ', i);
+		if(j == string::npos)
+			return;
 		nick = param.substr(i, j-i);
 		i = j + 1;
 		User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
@@ -148,15 +156,23 @@ void Client::onLine(const string& aLine) throw() {
 			users[nick] = u;
 		}
 		j = param.find('$', i);
+		if(j == string::npos)
+			return;
 		u->setDescription(param.substr(i, j-i));
 		i = j + 3;
 		j = param.find('$', i);
+		if(j == string::npos)
+			return;
 		u->setConnection(param.substr(i, j-i-1));
 		i = j + 1;
 		j = param.find('$', i);
+		if(j == string::npos)
+			return;
 		u->setEmail(param.substr(i, j-i));
 		i = j + 1;
 		j = param.find('$', i);
+		if(j == string::npos)
+			return;
 		u->setBytesShared(param.substr(i, j-i));
 		
 		fire(ClientListener::MY_INFO, this, u);
@@ -282,10 +298,10 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::OP_LIST, this, v);
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
-		if(i != -1) {
+		if(i != string::npos) {
 			i+=6;
 			string::size_type j = param.find("$");
-			if(j != -1) {
+			if(j != string::npos) {
 				string from = param.substr(i, j - 1 - i);
 				if(from.size() > 0 && param.size() > (j + 1)) {
 					fire(ClientListener::PRIVATE_MESSAGE, this, ClientManager::getInstance()->getUser(from, this, false), param.substr(j + 1));
@@ -323,9 +339,12 @@ void Client::disconnect(bool rl /* = true */) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.30 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.31 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.31  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.30  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

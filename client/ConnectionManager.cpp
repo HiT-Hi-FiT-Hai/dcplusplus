@@ -174,7 +174,6 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 					// Nothing's happened for 60 seconds, try again...
 					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 						pendingDown.erase(i++);
-						// i = pendingDown.erase(i);	// This works with MSVC++ STL 
 						remove.push_back(cqi);
 						continue;
 					}
@@ -462,9 +461,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.34 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.35 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.35  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.34  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

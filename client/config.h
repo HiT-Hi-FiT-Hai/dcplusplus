@@ -27,7 +27,7 @@
 # ifdef _DEBUG
 //# define _STLP_DEBUG 1
 # else
-//# undef _STLP_DEBUG
+# undef _STLP_DEBUG
 # endif
 
 // Remove this line if hashes are not available in your stl

@@ -102,8 +102,6 @@ private:
 	string errorToString(int aError);
 };
 
-STANDARD_EXCEPTION(TimeOutException);
-
 class ServerSocket;
 
 class Socket
@@ -201,9 +199,10 @@ public:
 	static DWORD getUp() { return stats.up; };
 	static LONGLONG getTotalDown() { return stats.totalDown; };
 	static LONGLONG getTotalUp() { return stats.totalUp; };
-	SOCKET sock;
 
 	GETSETREF(string, ip, Ip);
+protected:
+	SOCKET sock;
 private:
 	Socket(const Socket&) {
 		// Copies not allowed
@@ -226,9 +225,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.23 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: Socket.h,v 1.24 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.24  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.23  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

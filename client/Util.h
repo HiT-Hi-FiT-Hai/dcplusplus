@@ -350,7 +350,7 @@ public:
 	}
 
 	static string validateNick(string tmp) {	
-		int i;
+		string::size_type i;
 		while( (i = tmp.find_first_of("|$ ")) != string::npos) {
 			tmp[i]='_';
 		}
@@ -358,7 +358,7 @@ public:
 	}
 
 	static string validateMessage(string tmp) {
-		int i = -1;
+		string::size_type i;
 		while( (i = tmp.find_first_of("|$")) != string::npos) {
 			tmp[i]='_';
 		}
@@ -384,9 +384,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.33 2002/03/07 20:17:15 arnetheduck Exp $
+ * $Id: Util.h,v 1.34 2002/03/10 22:41:08 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.34  2002/03/10 22:41:08  arnetheduck
+ * Working on internationalization...
+ *
  * Revision 1.33  2002/03/07 20:17:15  arnetheduck
  * Oops...
  *
