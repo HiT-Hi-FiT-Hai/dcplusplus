@@ -278,6 +278,10 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["actualsizeshort"] = Util::formatBytes(u->getActual());
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
+		TTHValue *hash = HashManager::getInstance()->getTTH(u->getFileName());
+		if(hash != NULL) {
+			params["tth"] = hash->toBase32();
+		}
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
 
@@ -390,5 +394,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.70 2004/09/23 09:06:26 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.71 2004/10/08 14:44:45 arnetheduck Exp $
  */

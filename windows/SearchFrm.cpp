@@ -662,6 +662,10 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
+		TTHValue *hash = sr->getTTH();
+		if(hash != NULL) {
+			ucParams["tth"] = hash->toBase32();
+		}
 
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
@@ -966,5 +970,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.67 2004/10/05 16:46:42 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.68 2004/10/08 14:44:48 arnetheduck Exp $
  */
