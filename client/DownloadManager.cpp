@@ -808,7 +808,7 @@ void DownloadManager::noSlots(UserConnection* aSource) {
 
 	aSource->setDownload(NULL);
 	removeDownload(d, true);
-	removeConnection(aSource, false, true);
+	removeConnection(aSource, false, !aSource->isSet(UserConnection::FLAG_NMDC));
 }
 
 void DownloadManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& aError) throw() {
@@ -977,5 +977,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.132 2005/01/03 20:44:55 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.133 2005/01/04 23:23:02 arnetheduck Exp $
  */
