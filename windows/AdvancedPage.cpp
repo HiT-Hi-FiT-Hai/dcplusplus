@@ -85,7 +85,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 
 LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
 
 	// Do specialized reading here
@@ -98,6 +98,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.22 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.23 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

@@ -83,7 +83,7 @@ AppearancePage::~AppearancePage()
 
 LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
@@ -168,5 +168,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.9 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.10 2003/12/03 22:09:22 arnetheduck Exp $
  */

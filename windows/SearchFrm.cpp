@@ -29,11 +29,11 @@
 
 StringList SearchFrame::lastSearches;
 
-int SearchFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_FILENAME, COLUMN_TYPE, COLUMN_SIZE,
+int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
 	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE };
-int SearchFrame::columnSizes[] = { 100, 200, 50, 80, 100, 40, 70, 150, 80 };
+int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::SIZE, 
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::USER, ResourceManager::TYPE, ResourceManager::SIZE, 
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
 	ResourceManager::HUB, ResourceManager::EXACT_SIZE };
 
@@ -864,5 +864,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.39 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.40 2003/12/03 22:09:22 arnetheduck Exp $
  */

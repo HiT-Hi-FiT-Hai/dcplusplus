@@ -103,7 +103,7 @@ void GeneralPage::write()
 
 LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
@@ -199,6 +199,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file
- * $Id: GeneralPage.cpp,v 1.7 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.8 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

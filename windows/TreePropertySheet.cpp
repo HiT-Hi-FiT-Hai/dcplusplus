@@ -190,3 +190,8 @@ LRESULT TreePropertySheet::onSetCurSel(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lP
 	bHandled = FALSE;
 	return 0;
 }
+
+/**
+* @file
+* $Id: TreePropertySheet.cpp,v 1.6 2003/12/03 22:09:22 arnetheduck Exp $
+*/

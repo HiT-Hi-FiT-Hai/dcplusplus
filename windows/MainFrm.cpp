@@ -213,7 +213,7 @@ void MainFrame::startSocket() {
 					// tried all ports
 					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
 					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
-					MessageBox(buf);
+					MessageBox(buf, APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
 					delete[] buf;
 					break;
 				}
@@ -923,6 +923,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.39 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.40 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

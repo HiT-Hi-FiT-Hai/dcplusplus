@@ -61,7 +61,7 @@ PropPage::Item Advanced2Page::items[] = {
 
 LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items);
 
 	updateEdits();
@@ -109,6 +109,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.7 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.8 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

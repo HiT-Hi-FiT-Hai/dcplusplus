@@ -192,7 +192,7 @@ void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem
 
 void FinishedULFrame::addEntry(FinishedItem* entry) {
 	StringList l;
-	l.push_back(entry->getTime());
+	l.push_back(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
 	l.push_back(Util::getFileName(entry->getTarget()));
 	l.push_back(Util::getFilePath(entry->getTarget()));
 	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
@@ -208,5 +208,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.12 2003/11/19 22:52:00 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.13 2003/12/03 22:09:22 arnetheduck Exp $
  */

@@ -35,19 +35,11 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 	switch(type) {
 	case DownloadManagerListener::COMPLETE:
 		{
-			char buf[32];
-			time_t _tt;
-			time(&_tt);
-			tm* _tm = localtime(&_tt);
-			strftime(buf, 31, "%Y-%m-%d %H:%M:%S", _tm);
-			
 			FinishedItem *item = new FinishedItem(
 				d->getTarget(), d->getUserConnection()->getUser()->getNick(),
 				d->getUserConnection()->getUser()->getLastHubName(),
-				d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), buf, d->isSet(Download::FLAG_CRC32_OK));
+				d->getSize(), d->getTotal(), (GET_TICK() - d->getStart()), GET_TIME(), d->isSet(Download::FLAG_CRC32_OK));
 			{
-				dcdebug("Adding finished: \"%s\" - \"%s\" (user: \"%s\")\n", item->getTime().c_str(), 
-					item->getTarget().c_str(), item->getUser().c_str());
 				Lock l(cs);
 				downloads.push_back(item);
 			}
@@ -66,19 +58,11 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 	switch(type) {
 	case UploadManagerListener::COMPLETE:
 		{
-			char buf[32];
-			time_t _tt;
-			time(&_tt);
-			tm* _tm = localtime(&_tt);
-			strftime(buf, 31, "%Y-%m-%d %H:%M:%S", _tm);
-			
 			FinishedItem *item = new FinishedItem(
 				u->getLocalFileName(), u->getUserConnection()->getUser()->getNick(),
 				u->getUserConnection()->getUser()->getLastHubName(),
-				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), buf);
+				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), GET_TIME());
 			{
-				dcdebug("Adding finished upload: \"%s\" - \"%s\" (user: \"%s\")\n", item->getTime().c_str(), 
-					item->getTarget().c_str(), item->getUser().c_str());
 				Lock l(cs);
 				uploads.push_back(item);
 			}
@@ -94,5 +78,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.12 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.13 2003/12/03 22:09:21 arnetheduck Exp $
  */

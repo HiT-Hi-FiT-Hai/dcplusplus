@@ -59,13 +59,13 @@ protected:
 	SettingsManager *settings;
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
-	void tanslate(HWND page, TextItem* textItems);
+	void translate(HWND page, TextItem* textItems);
 };
 
 #endif // PROPPAGE_H
 
 /**
  * @file
- * $Id: PropPage.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.8 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

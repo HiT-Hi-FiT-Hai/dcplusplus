@@ -300,7 +300,7 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 bool PublicHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		MessageBox(CSTRING(ENTER_NICK));
+		MessageBox(CSTRING(ENTER_NICK), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
 		return false;
 	}
 	return true;
@@ -398,6 +398,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.17 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.18 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

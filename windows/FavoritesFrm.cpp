@@ -174,7 +174,7 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 bool FavoriteHubsFrame::checkNick() {
 	if(SETTING(NICK).empty()) {
-		MessageBox(CSTRING(ENTER_NICK));
+		MessageBox(CSTRING(ENTER_NICK), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
 		return false;
 	}
 	return true;
@@ -291,6 +291,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.16 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.17 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

@@ -38,6 +38,12 @@ BEGIN
     "\0"
 END
 
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
 #endif    // APSTUDIO_INVOKED
 
 
@@ -261,7 +267,7 @@ BEGIN
     PUSHBUTTON      "Select &window color",IDC_SELWINCOLOR,16,17,82,14
     PUSHBUTTON      "Select &text style",IDC_SELTEXT,16,35,82,14
     LTEXT           "Donate $$$:s! (well, €€€ preferably =) (see help menu)",
-                    IDC_COLOREXAMPLE,107,17,153,32,SS_NOPREFIX | SS_SUNKEN | 
+                    IDC_COLOREXAMPLE,107,17,91,32,SS_NOPREFIX | SS_SUNKEN | 
                     WS_BORDER | NOT WS_GROUP
     GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,57,261,75
     CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
@@ -275,6 +281,8 @@ BEGIN
     PUSHBUTTON      "&Browse...",IDC_BROWSE,210,180,50,14
     LTEXT           "Note; most of these options require that you restart DC++",
                     IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
+    PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
+    PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
 END
 
 IDD_ADVANCED2PAGE DIALOG  0, 0, 275, 225
@@ -388,6 +396,30 @@ BEGIN
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,192
     PUSHBUTTON      "&Remove",IDC_REMOVE_MENU,215,204,50,14
+END
+
+IDD_FAVORITEHUB DIALOG  0, 0, 201, 163
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Favorite Hub Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBNICK,56,87,131,12
+    EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
+    EDITTEXT        IDC_HUBUSERDESCR,56,117,131,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,90,142,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,142,50,14
+    GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
+    GROUPBOX        "Identification (leave blank for defaults)",IDC_STATIC,7,
+                    74,187,63
+    RTEXT           "Nick",IDC_STATIC,12,89,40,8
+    RTEXT           "Password",IDC_STATIC,12,104,40,8
+    RTEXT           "Name",IDC_STATIC,12,21,40,8
+    RTEXT           "Description",IDC_STATIC,12,51,40,8
+    RTEXT           "Address",IDC_STATIC,12,36,40,8
+    LTEXT           "Description",IDC_STATIC,16,119,36,8
 END
 
 
@@ -531,6 +563,17 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
+
+    IDD_FAVORITEHUB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        VERTGUIDE, 12
+        VERTGUIDE, 52
+        VERTGUIDE, 56
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 156
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -627,85 +670,6 @@ END
 
 1                       RT_MANIFEST             "res\\DCPlusPlus.Manifest"
 #endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Swedish resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
-#ifdef _WIN32
-LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
-#pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-3 TEXTINCLUDE 
-BEGIN
-    "\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_FAVORITEHUB DIALOG  0, 0, 201, 163
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
-CAPTION "Favorite Hub Properties"
-FONT 8, "MS Sans Serif"
-BEGIN
-    EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBNICK,56,87,131,12
-    EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
-    EDITTEXT        IDC_HUBUSERDESCR,56,117,131,12,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,90,142,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,144,142,50,14
-    GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
-    GROUPBOX        "Identification (leave blank for defaults)",IDC_STATIC,7,
-                    74,187,63
-    RTEXT           "Nick",IDC_STATIC,12,89,40,8
-    RTEXT           "Password",IDC_STATIC,12,104,40,8
-    RTEXT           "Name",IDC_STATIC,12,21,40,8
-    RTEXT           "Description",IDC_STATIC,12,51,40,8
-    RTEXT           "Address",IDC_STATIC,12,36,40,8
-    LTEXT           "Description",IDC_STATIC,16,119,36,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_FAVORITEHUB, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 194
-        VERTGUIDE, 12
-        VERTGUIDE, 52
-        VERTGUIDE, 56
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 156
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-#endif    // Swedish resources
 /////////////////////////////////////////////////////////////////////////////
 
 

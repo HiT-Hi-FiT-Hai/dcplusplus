@@ -195,8 +195,8 @@ public:
 private:
 	enum {
 		COLUMN_FIRST,
-		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_FILENAME,
+		COLUMN_FILENAME = COLUMN_FIRST,
+		COLUMN_NICK,
 		COLUMN_TYPE,
 		COLUMN_SIZE,
 		COLUMN_PATH,
@@ -481,6 +481,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.28 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.29 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

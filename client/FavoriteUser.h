@@ -34,7 +34,7 @@ public:
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
-	GETSETREF(u_int32_t, lastSeen, LastSeen);
+	GETSET(u_int32_t, lastSeen, LastSeen);
 
 	FavoriteUser() {}
 	virtual ~FavoriteUser() {}
@@ -45,5 +45,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.2 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.3 2003/12/03 22:09:21 arnetheduck Exp $
  */

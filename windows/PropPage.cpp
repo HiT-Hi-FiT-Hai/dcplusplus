@@ -125,7 +125,7 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 	}
 }
 
-void PropPage::tanslate(HWND page, TextItem* textItems) 
+void PropPage::translate(HWND page, TextItem* textItems) 
 {
 	if (textItems != NULL) {
 		for(int i = 0; textItems[i].itemID != 0; i++) {
@@ -137,6 +137,6 @@ void PropPage::tanslate(HWND page, TextItem* textItems)
 
 /**
  * @file
- * $Id: PropPage.cpp,v 1.6 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.7 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

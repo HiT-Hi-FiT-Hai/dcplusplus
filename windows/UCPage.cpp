@@ -47,7 +47,7 @@ PropPage::Item UCPage::items[] = {
 
 LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items);
 
 	CRect rc;
@@ -176,6 +176,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.5 2003/11/13 15:32:17 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.6 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

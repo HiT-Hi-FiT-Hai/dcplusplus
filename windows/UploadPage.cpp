@@ -54,7 +54,7 @@ PropPage::Item UploadPage::items[] = {
 
 LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
@@ -114,7 +114,7 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 			ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
 			ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 		} catch(const ShareException& e) {
-			MessageBox(e.getError().c_str());
+			MessageBox(e.getError().c_str(), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
 		}
 	}
 	
@@ -140,6 +140,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.12 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.13 2003/12/03 22:09:22 arnetheduck Exp $
  */
 

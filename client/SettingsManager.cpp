@@ -154,6 +154,9 @@ SettingsManager::SettingsManager()
 	setDefault(MAIN_WINDOW_POS_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_POS_Y, CW_USEDEFAULT);
 	setDefault(MDI_MAXIMIZED, true);
+	setDefault(UPLOAD_BAR_COLOR, RGB(205, 60, 55));
+	setDefault(DOWNLOAD_BAR_COLOR, RGB(55, 170, 85));
+
 #endif
 }
 
@@ -284,6 +287,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.59 2003/12/02 15:40:23 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.60 2003/12/03 22:09:21 arnetheduck Exp $
  */
 

@@ -72,3 +72,9 @@ public:
 };
 
 #endif
+
+/**
+ * @file
+ * $Id: UserCommand.h,v 1.5 2003/12/03 22:09:22 arnetheduck Exp $
+ */
+

@@ -59,7 +59,7 @@ PropPage::Item DownloadPage::items[] = {
 
 LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::tanslate((HWND)(*this), texts);
+	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items);
 	
 	CUpDownCtrl spin;
@@ -118,5 +118,5 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 /**
  * @file
- * $Id: DownloadPage.cpp,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.9 2003/12/03 22:09:22 arnetheduck Exp $
  */
