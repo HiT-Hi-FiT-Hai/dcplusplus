@@ -16,6 +16,9 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifndef STRINGSEARCH_H
+#define STRINGSEARCH_H
+
 /**
  * A class that implements a fast substring search algo suited for matching
  * one pattern against many strings (currently Quick Search, a variant of
@@ -23,13 +26,12 @@
  * D. Sunday).
  * @todo Perhaps find an algo suitable for matching multiple substrings.
  */
-class StringSearch
-{
+class StringSearch {
 public:
 	typedef vector<StringSearch> List;
 	typedef List::iterator Iter;
 
-	StringSearch(const string& aPattern) throw() : pattern(Util::toLower(aPattern)) { 
+	explicit StringSearch(const string& aPattern) throw() : pattern(Util::toLower(aPattern)) { 
 		initDelta1();
 	};
 	StringSearch(const StringSearch& rhs) throw() : pattern(rhs.pattern) { 
@@ -38,6 +40,11 @@ public:
 	const StringSearch& operator=(const StringSearch& rhs) {
 		memcpy(delta1, rhs.delta1, sizeof(delta1));
 		pattern = rhs.pattern;
+		return *this;
+	}
+	const StringSearch& operator=(const string& rhs) {
+		pattern = Util::toLower(rhs);
+		initDelta1();
 		return *this;
 	}
 
@@ -96,7 +103,8 @@ private:
 	}
 };
 
+#endif STRINGSEARCH_H
 /**
  * @file
- * $Id: StringSearch.h,v 1.2 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: StringSearch.h,v 1.3 2003/05/14 09:17:57 arnetheduck Exp $
  */

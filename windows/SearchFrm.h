@@ -36,10 +36,6 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
-	enum {
-		IDC_DOWNLOAD_TARGET = 5000,
-		IDC_DOWNLOAD_WHOLE_TARGET = 5500
-	};
 
 	enum {
 		COLUMN_FIRST,
@@ -76,7 +72,7 @@ public:
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), 
-		showUI(true), onlyFree(false), closed(false)
+		showUI(true), onlyFree(false), closed(false), commands(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -112,6 +108,7 @@ public:
 		COMMAND_HANDLER(IDC_FREESLOTS, BN_CLICKED, onFreeSlots)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
+		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands, onUserCommand)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -137,6 +134,7 @@ public:
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onUserCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 
@@ -214,8 +212,15 @@ public:
 	}
 	
 private:
+
+	enum {
+		IDC_DOWNLOAD_TARGET = 5000,
+		IDC_DOWNLOAD_WHOLE_TARGET = 5500,
+		IDC_USER_COMMAND = 6000
+	};
+
 	string initialString;
-	LONGLONG initialSize;
+	int64_t initialSize;
 	SearchManager::SizeModes initialMode;
 
 	CStatusBarCtrl ctrlStatus;
@@ -251,6 +256,10 @@ private:
 	StringList search;
 	StringList targets;
 	StringList wholeTargets;
+
+	/** Parameter map for user commands */
+	StringMap ucParams;
+	size_t commands;
 
 	bool onlyFree;
 
@@ -289,6 +298,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.16 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.17 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

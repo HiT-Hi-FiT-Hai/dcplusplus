@@ -27,6 +27,7 @@
 #include "../client/SettingsManager.h"
 
 class FlatTabCtrl;
+class UserCommand;
 
 class WinUtil {
 public:
@@ -131,7 +132,7 @@ public:
 				if(j != fileIndexes.end())
 					return j->second;
 			}
-			CImageList il = (HIMAGELIST)::SHGetFileInfo(aFileName.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+			CImageList il = (HIMAGELIST)::SHGetFileInfo((SETTING(DOWNLOAD_DIRECTORY) + Util::getFileName(aFileName)).c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 			while(il.GetImageCount() > fileImages.GetImageCount()) {
 				HICON hi = il.GetIcon(fileImages.GetImageCount());
 				fileImages.AddIcon(hi);
@@ -148,8 +149,11 @@ public:
 		return dirIconIndex;
 	}
 	
-	static void splitTokens(int* array, const string& tokens, int maxItems = -1);
-	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, SettingsManager::StrSetting widths, int n, int* indexes, int* sizes);
+	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
+
+	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
+	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
+		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
 	
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
@@ -160,5 +164,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.11 2003/05/14 09:17:57 arnetheduck Exp $
  */

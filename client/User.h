@@ -69,8 +69,10 @@ public:
 	const string& getClientNick() const;
 	void update();
 	const string& getClientName() const;
+	const string& getClientServer() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
+	void clientPM(const string& aTo, const string& aMsg);
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp();
@@ -108,6 +110,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.26 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: User.h,v 1.27 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

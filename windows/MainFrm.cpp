@@ -88,6 +88,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ConnectionManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
 
+	// Ugly fix for the multi-cpu issues: we set all threads to run on processor 0
+	if(::SetThreadAffinityMask(GetCurrentThread(), 1) == 0)
+		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+
 	// Register server socket message
 	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
 		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
@@ -235,7 +239,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_QUEUE))
 		PostMessage(WM_COMMAND, IDC_QUEUE);
 
-	PostMessage(WM_SPEAKER, AUTO_CONNECT);
+	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
+		PostMessage(WM_SPEAKER, AUTO_CONNECT);
+
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
 	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
@@ -1398,6 +1404,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.23 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.24 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

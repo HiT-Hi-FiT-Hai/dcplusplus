@@ -733,7 +733,7 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 		if(client->getOp()) {
 			// Alrite, now add the special menu items...
 			int added = 0;
-			commands.clear();
+			int n = 0;
 			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
 			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
 				UserCommand& uc = *ui;
@@ -744,11 +744,12 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 						opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
 						added++;
 					}
-					opMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+added-1, uc.getName().c_str());
+					opMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
 					added++;
-					commands.push_back(uc.getName());
 				}
+				n++;
 			}
+			commands = ul.size();
 			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			while(added > 0) {
 				opMenu.DeleteMenu(opMenu.GetMenuItemCount()-1, MF_BYPOSITION);
@@ -756,7 +757,7 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 			}
 		} else {
 			int added = 0;
-			commands.clear();
+			int n = 0;
 			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
 			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
 				UserCommand& uc = *ui;
@@ -767,11 +768,12 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 						userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
 						added++;
 					}
-					commands.push_back(uc.getName());
-					userMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+added-1, uc.getName().c_str());
+					userMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
 					added++;
 				}
+				n++;
 			}
+			commands = ul.size();
 			userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			while(added > 0) {
 				userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
@@ -784,46 +786,25 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 
 LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	dcassert(wID >= IDC_USER_COMMAND);
-	int n = wID - IDC_USER_COMMAND;
-	dcassert(n < (int)commands.size());
-	string& cmd = commands[n];
+	size_t n = (size_t)wID - IDC_USER_COMMAND;
+
 	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-	for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
-		UserCommand& uc = *ui;
-		if(uc.getName() == cmd) {
-			int sel = -1;
-			ucParams["mynick"] = client->getNick();
+	dcassert(n < ul.size());
 
-			string::size_type i = 0;
+	UserCommand& uc = ul[n];
+	ucParams["mynick"] = client->getNick();
 
-			while( (i = uc.getCommand().find("%[line:", i)) != string::npos) {
-				i += 7;
-				string::size_type j = uc.getCommand().find(']', i);
-				if(j == string::npos)
-					break;
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+		return 0;
 
-				string name = uc.getCommand().substr(i, j-i);
-				LineDlg dlg;
-				dlg.title = uc.getName();
-				dlg.description = name;
-				dlg.line = ucParams["line:" + name];
-				if(dlg.DoModal() == IDOK) {
-					ucParams["line:" + name] = dlg.line;
-				} else {
-					return 0;
-				}
-				i = j + 1;
-			}
-
-			while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-				UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
-				ucParams["nick"] = u->user->getNick();
-				if(uc.getNick().empty()) {
-					client->sendMessage(Util::formatParams(uc.getCommand(), ucParams));
-				} else {
-					client->privateMessage(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
-				}
-			}
+	int sel = -1;
+	while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
+		UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
+		ucParams["nick"] = u->user->getNick();
+		if(uc.getNick().empty()) {
+			client->sendMessage(Util::formatParams(uc.getCommand(), ucParams));
+		} else {
+			client->privateMessage(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
 		}
 	}
 	return 0;
@@ -1029,5 +1010,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.24 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.25 2003/05/14 09:17:57 arnetheduck Exp $
  */

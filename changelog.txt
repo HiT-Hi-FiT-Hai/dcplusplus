@@ -1,21 +1,30 @@
  -- 0.243 --
-* Fixed public hub list to point to a working one
-* Fixed %[hub] in upload log
-* Updates to ADLSearch: (by Henrik Engström)
+Major:
+* Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 
+  the Boyer-Moore)
+* User commands now work from search as well
+* Fixed a major bug where queue items without sources were not loaded from disk on restart
+* Fixed slow favorites opening / excessive saving (thanks todd pederzani)
+* Large speedup in file listing search (QuickSearch + unnecessary processing added earlier removed)
+* Added selection size info to queue frame (same as file listing)
+* Fixed some crashes when closing windows
+
+ADLSearch: (by Henrik Engström)
   * Keyboard shortcuts.
   * Context menu (back again).
   * Removed 'Active' column and made it a check box.
   * Unified button texts to the rest of DC++.
   * Fixed bug with multiple destination directories, some search results only ended up in the first of multiples.
-* Some code cleanup
+
+Minor:
 * Memory savings for users with many files in share
+* Hyperthreading / multicpu users, try again and report back if it works
+* Fixed %[hub] in upload log
+* Some code cleanup
 * Fix for buggy HTTP servers sending Content-Length with wrong case (thanks sandos)
 * Added link to change log in help menu (thanks todd)
 * Fixed link to faq (thanks todd)
-* Fixed public hub list mouse clicks and list reviewing (thanks todd)
-* Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 
-  the Boyer-Moore)
-* Fixed a major bug where queue items without sources were not loaded from disk on restart
+* Fixed public hub list mouse clicks and reopening (thanks todd)
 * Fixed so that "3/4 users offline" can be translated to polish
 * Fixed tabbing in search frame 
 * Added option for not downloading zero-byte files
@@ -24,11 +33,10 @@
 * Fixed a bug with orphaned file lists
 * Fixed a bug with socks5 password length (thanks dwomac) 
 * Double-clicking text selects the word (as in old versions, thanks todd pederzani)
-* Fixed slow favorites opening / excessive saving (thanks todd pederzani)
 * Directories are no longer returned for "at least" searches with bytes > 0 (i e directory size is assumed 0)
-* Large speedup in file listing search
-* Added selection size info to queue frame (same as file listing)
-* Fixed some crashes when closing windows
+* Fixed another issue with accesses to invalid drive letters (thanks sarf)
+* Holding shift during startup (when the main window shows) will disable autoconnecting to hubs
+
 
  -- 0.242 2003-04-19 --
 * Updated compile.txt with some notes on submitting patches

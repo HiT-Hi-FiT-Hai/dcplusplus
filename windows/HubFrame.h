@@ -35,8 +35,6 @@
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
-#define IDC_USER_COMMAND 3500
-
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
@@ -71,7 +69,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
-		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands.size(), onUserCommand)
+		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands, onUserCommand)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
@@ -194,6 +192,9 @@ public:
 	}
 
 private:
+
+	enum { IDC_USER_COMMAND = 3500 };
+
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, REMOVE_USERS, ADD_CHAT_LINE,
 		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, PRIVATE_MESSAGE, STATS
 	};
@@ -221,7 +222,7 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), server(aServer), needSort(false), closed(false),
+	waitingForPW(false), server(aServer), needSort(false), closed(false), commands(0),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
@@ -266,7 +267,6 @@ private:
 
 	CMenu userMenu;
 	CMenu opMenu;
-	StringList commands;
 
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
@@ -276,6 +276,7 @@ private:
 
 	/** Parameter map for user commands */
 	StringMap ucParams;
+	size_t commands;
 
 	bool closed;
 	
@@ -335,6 +336,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.21 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.22 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

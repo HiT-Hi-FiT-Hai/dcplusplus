@@ -27,6 +27,7 @@
 #include "ExListViewCtrl.h"
 
 #include "../client/HubManager.h"
+#include "../client/StringSearch.h"
 
 #include "WinUtil.h"
 
@@ -38,7 +39,7 @@ public:
 
 	static PublicHubsFrame* frame;
 
-	PublicHubsFrame() : users(0), hubs(0), closed(false),
+	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
 		ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
 		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
 	};
@@ -165,7 +166,7 @@ private:
 	ExListViewCtrl ctrlHubs;
 
 	HubEntry::List hubs;
-	string filter;
+	StringSearch filter;
 
 	bool closed;
 	
@@ -192,5 +193,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.11 2003/05/14 09:17:57 arnetheduck Exp $
  */

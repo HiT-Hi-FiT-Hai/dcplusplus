@@ -26,6 +26,7 @@
 
 #include "../client/QueueManager.h"
 #include "../client/StringTokenizer.h"
+#include "../client/HubManager.h"
 
 StringList SearchFrame::lastSearches;
 
@@ -640,6 +641,32 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 	}	
 }
 
+LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	dcassert(wID >= IDC_USER_COMMAND);
+	size_t n = (size_t)wID - IDC_USER_COMMAND;
+
+	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
+	dcassert(n < ul.size());
+
+	UserCommand& uc = ul[n];
+
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+		return 0;
+
+	int sel = -1;
+	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(sel);
+		ucParams["nick"] = sr->getUser()->getNick();
+		ucParams["mynick"] = sr->getUser()->getClientNick();
+		if(uc.getNick().empty()) {
+			sr->getUser()->clientMessage(Util::formatParams(uc.getCommand(), ucParams));
+		} else {
+			sr->getUser()->clientPM(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
+		}
+	}
+	return 0;
+};
+
 LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	HWND hWnd = (HWND)lParam;
 	HDC hDC = (HDC)wParam;
@@ -761,10 +788,11 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	ctrlResults.GetClientRect(&rc);
 	ctrlResults.ScreenToClient(&pt); 
 	int64_t cmpSize;
-	
-	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
-	{
 
+	bool op = true;
+	string oneHub;
+	
+	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) {
 		ctrlResults.ClientToScreen(&pt);
 
 		while(targetMenu.GetMenuItemCount() > 0) {
@@ -814,12 +842,10 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 					}
 				}
 			}
+			
+			op = sr->getUser()->isClientOp();
+			oneHub = sr->getUser()->getClientServer();
 
-			if(sr->getUser() && sr->getUser()->isClientOp()) {
-				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			} else {
-				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			}
 		} else if(ctrlResults.GetSelectedCount() > 1) {
 
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
@@ -872,19 +898,76 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 
 			pos = -1;
-			bool op = true;
+			bool one = true;
+
 			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
 				SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(pos);
-				if(!sr->getUser() || !sr->getUser()->isClientOp()) {
+				if(!sr->getUser()->isClientOp()) {
 					op = false;
 					break;
 				}
+				if(one) {
+					if(oneHub.empty()) {
+						oneHub = sr->getUser()->getClientServer();
+					} else {
+						if(Util::stricmp(sr->getUser()->getClientServer(), oneHub) != 0) {
+							oneHub.clear();
+							one = false;
+						}
+					}
+				}
 			}
-			if(op)
-				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			else
-				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		}
 
+		if(op) {
+			// Alrite, now add the special menu items...
+			int added = 0;
+			int n = 0;
+			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
+			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
+				UserCommand& uc = *ui;
+				if(uc.getHub().empty() || uc.getHub() == "op" || 
+					Util::stricmp(uc.getHub(), oneHub) == 0) {
+						// We add!
+						if(added == 0) {
+							opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
+							added++;
+						}
+						opMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
+						added++;
+					}
+					n++;
+			}
+			commands = ul.size();
+			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			while(added > 0) {
+				opMenu.DeleteMenu(opMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+				added--;
+			}
+		} else {
+			int added = 0;
+			int n = 0;
+			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
+			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
+				UserCommand& uc = *ui;
+				if(uc.getHub().empty() || 
+					Util::stricmp(uc.getHub(), oneHub) == 0) {
+						// We add!
+						if(added == 0) {
+							resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
+							added++;
+						}
+						resultsMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
+						added++;
+					}
+					n++;
+			}
+			commands = ul.size();
+			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			while(added > 0) {
+				resultsMenu.DeleteMenu(resultsMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+				added--;
+			}
 		}
 		return TRUE; 
 	}
@@ -942,5 +1025,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.18 2003/05/14 09:17:57 arnetheduck Exp $
  */

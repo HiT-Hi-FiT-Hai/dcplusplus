@@ -67,6 +67,15 @@ const string& User::getClientName() const {
 	}
 }
 
+const string& User::getClientServer() const {
+	RLock l(cs);
+	if(client) {
+		return client->getServer();
+	} else {
+		return Util::emptyString;
+	}
+}
+
 void User::privateMessage(const string& aMsg) {
 	RLock l(cs);
 	if(client) {
@@ -103,6 +112,13 @@ void User::clientMessage(const string& aMsg) {
 	}
 }
 
+void User::clientPM(const string& aTo, const string& aMsg) {
+	RLock l(cs);
+	if(client) {
+		client->privateMessage(aTo, aMsg);
+	}
+}
+
 void User::setClient(Client* aClient) { 
 	WLock l(cs); 
 	client = aClient; 
@@ -118,6 +134,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.18 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: User.cpp,v 1.19 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

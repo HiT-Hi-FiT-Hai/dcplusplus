@@ -22,12 +22,14 @@
 
 #include "WinUtil.h"
 #include "SearchFrm.h"
+#include "LineDlg.h"
 
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
+#include "../client/HubManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 HBRUSH WinUtil::bgBrush = NULL;
@@ -198,7 +200,7 @@ void WinUtil::buildMenu() {
 	
 }
 
-void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) {
+void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
 	StringTokenizer t(tokens, ',');
 	StringList& l = t.getTokens();
 	if(maxItems == -1)
@@ -210,6 +212,29 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 	}
 }
 
+bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) throw() {
+	string::size_type i = 0;
+
+	while( (i = uc.getCommand().find("%[line:", i)) != string::npos) {
+		i += 7;
+		string::size_type j = uc.getCommand().find(']', i);
+		if(j == string::npos)
+			break;
+
+		string name = uc.getCommand().substr(i, j-i);
+		LineDlg dlg;
+		dlg.title = uc.getName();
+		dlg.description = name;
+		dlg.line = sm["line:" + name];
+		if(dlg.DoModal(parent) == IDOK) {
+			sm["line:" + name] = dlg.line;
+		} else {
+			return false;
+		}
+		i = j + 1;
+	}
+	return true;
+}
 
 #define LINE2 "-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
 char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LINE2,
@@ -288,24 +313,30 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 	return true;
 }
 
-void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) {
-	string tmp1;
-	string tmp2;
+void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
+							  SettingsManager::StrSetting widths, int n, 
+							  int* indexes, int* sizes) throw() {
+	string tmp;
 
 	ctrl.GetColumnOrderArray(n, indexes);
-	for(int j = 0; j < n; j++) {
-		sizes[j] = ctrl.GetColumnWidth(j);
-		tmp1 += Util::toString(indexes[j]) + ",";
-		tmp2 += Util::toString(sizes[j]) + ",";
+	int i;
+	for(i = 0; i < n; ++i) {
+		tmp += Util::toString(indexes[i]);
+		tmp += ',';
 	}
-	tmp1.erase(tmp1.size()-1, 1);
-	tmp2.erase(tmp2.size()-1, 1);
-
-	SettingsManager::getInstance()->set(order, tmp1);
-	SettingsManager::getInstance()->set(widths, tmp2);
+	tmp.erase(tmp.size()-1, 1);
+	SettingsManager::getInstance()->set(order, tmp);
+	tmp.clear();
+	for(i = 0; i < n; ++i) {
+		sizes[i] = ctrl.GetColumnWidth(i);
+		tmp += Util::toString(sizes[i]);
+		tmp += ',';
+	}
+	tmp.erase(tmp.size()-1, 1);
+	SettingsManager::getInstance()->set(widths, tmp);
 }
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.14 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.15 2003/05/14 09:17:57 arnetheduck Exp $
  */

@@ -122,7 +122,8 @@ Contents
     Log Downloads:       You can use this feature to see what downloads
                           completed while you were AFK :)
     Parameters for the logging (the things in %[xxx]):
-     target         target filename
+     target         target filename (for downloads)
+     source         source filename (for uploads)
      user           nick
      hub            hub name
      hubip          hub ip
@@ -133,6 +134,8 @@ Contents
      speed          speed of download
      time           time to download (hh:mm:ss format)
      sfv            1 if the file was sfv/crc32 checked, 0 otherwise
+   
+    You can also use all date and time parameters (%Y, %m, ...) of strftime (google for it).
 
 
    Advanced:

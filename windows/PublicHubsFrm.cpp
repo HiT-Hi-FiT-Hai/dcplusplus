@@ -314,10 +314,10 @@ void PublicHubsFrame::updateList() {
 	ctrlHubs.SetRedraw(FALSE);
 	
 	for(HubEntry::List::const_iterator i = hubs.begin(); i != hubs.end(); ++i) {
-		if( (filter.empty()) ||
-			(Util::findSubString(i->getName(), filter) != string::npos) ||
-			(Util::findSubString(i->getDescription(), filter) != string::npos) ||
-			(Util::findSubString(i->getServer(), filter) != string::npos) ) {
+		if( filter.getPattern().empty() ||
+			filter.match(i->getName()) ||
+			filter.match(i->getDescription()) ||
+			filter.match(i->getServer()) ) {
 
 			StringList l;
 			l.push_back(i->getName());
@@ -398,6 +398,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.12 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.13 2003/05/14 09:17:57 arnetheduck Exp $
  */
 

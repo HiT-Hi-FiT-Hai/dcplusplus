@@ -73,27 +73,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 		SettingsManager::getInstance()->set(SettingsManager::OPEN_PUBLIC, false);
 	}
 
-	if(v <= 0.242) {
-		// Update server list to use bz2 lists instead...
-		StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
-		string tmp;
-		for(StringIter j = st.getTokens().begin(); j != st.getTokens().end(); ++j) {
-			if(*j == "http://dcplusplus.sourceforge.net/PublicHubList.config.bz2") {
-				tmp += string("http://www.mds.mdh.se/~dtv01jbd/PublicHubList.config.bz2") + ";";
-			} else if(*j == "http://dcplusplus.sourceforge.net/PublicHubList.config") {
-				tmp += string("http://www.mds.mdh.se/~dtv01jbd/PublicHubList.config.bz2") + ";";
-			} else {
-				tmp += *j + ';';
-			}
-		}
-		if(!tmp.empty()) {
-			tmp.erase(tmp.size()-1);
-		}
-
-		SettingsManager::getInstance()->set(SettingsManager::HUBLIST_SERVERS, tmp);
-	}
-	
-
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->loadQueue();
@@ -126,6 +105,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.22 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.23 2003/05/14 09:17:57 arnetheduck Exp $
  */
 
