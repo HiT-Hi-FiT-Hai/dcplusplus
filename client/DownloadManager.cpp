@@ -178,7 +178,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(firstTry && !d->getTreeValid() && 
 		!d->isSet(Download::FLAG_USER_LIST) && d->getTTH() != NULL)
 	{
-		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
+		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTTH(), d->getTigerTree())) {
 			d->setTreeValid(true);
 		} else if(!d->isSet(Download::FLAG_TREE_TRIED) && 
 			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 
@@ -536,12 +536,11 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 	try {
 		d->addPos(d->getFile()->write(aData, aLen), aLen);
 
-		if(d->getPos() == d->getSize()) {
+		if(d->getPos() > d->getSize()) {
+			throw Exception(STRING(TOO_MUCH_DATA));
+		} else if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
 			aSource->setLineMode();
-		}
-		if(d->getPos() > d->getSize()) {
-			//throw Exception(STRING(TOO_MUCH_DATA));
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
@@ -913,5 +912,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.118 2004/09/22 10:40:17 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.119 2004/09/23 09:06:26 arnetheduck Exp $
  */

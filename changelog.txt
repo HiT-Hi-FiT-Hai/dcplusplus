@@ -2,9 +2,13 @@
 *** WARNING *** 
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version
+<<<<<<< changelog.txt
+once the update has been done!!! Keep a backup handy!!!
+=======
 once the update has been done!!!
 Also, finish your queue file before upgrading if you care for your
 international filenames in it - they will not be correctly converted.
+>>>>>>> 1.183
 *** WARNING ***
 
 * Fixed a rare download crash (thanks farcry)
@@ -18,9 +22,11 @@ international filenames in it - they will not be correctly converted.
 * Updated license to allow others to release legal binaries compiled against WTL
 * Moved the core structures to UTF-8 to allow correct internationalisation (major change)
 * Moving towards full unicodization of the user interface, MS layer for unicode
-  now needed for old crappy windows versions
-* Rewrote the share manager to accomodate for future features, it can now read
-  unicode names and translate them correctly into utf-8 regardless of codepage
+  now needed for old crappy windows versions, and I don't know how good that works. The
+  rest of us can now see correct names being displayed in file listings (for XML filelists anyway)
+* Rewrote the share manager so that it doesn't lock the whole of DC++ while reading the
+  directories of shared files when refreshing the list
+* Added virtual share name
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
@@ -28,9 +34,13 @@ international filenames in it - they will not be correctly converted.
 * Ctrl-L now opens file lists (thanks garg)
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
-* Added virtual directory names to shares
 * TTH Leaf uploads no longer logged (thanks garg)
 * Added (initial) support for hublist.org xml hublists, now default
+  (you have to change your hub list address to http://www.hublist.org/PublicHubList.xml.bz2
+  if you want to benefit)
+* Fixed an issue with invalid TTH inconsistencies due to files being downloaded to the same
+  target filename as a previously downloaded file (.nfo's usually)
+* Some memory savings for people with large queues
 
 
  -- 0.4032 2004-08-08 --

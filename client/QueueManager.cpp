@@ -78,13 +78,13 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 
 void QueueManager::FileQueue::add(QueueItem* qi) {
 	if(lastInsert == queue.end())
-		lastInsert = queue.insert(make_pair(qi->getTarget(), qi)).first;
+		lastInsert = queue.insert(make_pair(const_cast<string*>(&qi->getTarget()), qi)).first;
 	else
-		lastInsert = queue.insert(lastInsert, make_pair(qi->getTarget(), qi));
+		lastInsert = queue.insert(lastInsert, make_pair(const_cast<string*>(&qi->getTarget()), qi));
 }
 
 QueueItem* QueueManager::FileQueue::find(const string& target) {
-	QueueItem::StringIter i = queue.find(target);
+	QueueItem::StringIter i = queue.find(const_cast<string*>(&target));
 	return (i == queue.end()) ? NULL : i->second;
 }
 
@@ -160,9 +160,9 @@ QueueItem* QueueManager::FileQueue::findAutoSearch(StringList& recent) {
 }
 
 void QueueManager::FileQueue::move(QueueItem* qi, const string& aTarget) {
-	if(lastInsert != queue.end() && lastInsert->first == qi->getTarget())
+	if(lastInsert != queue.end() && Util::stricmp(*lastInsert->first, qi->getTarget()) == 0)
 		lastInsert = queue.end();
-	queue.erase(qi->getTarget());
+	queue.erase(const_cast<string*>(&qi->getTarget()));
 	qi->setTarget(aTarget);
 	add(qi);
 }
@@ -1261,5 +1261,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.100 2004/09/13 23:02:43 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.101 2004/09/23 09:06:26 arnetheduck Exp $
  */

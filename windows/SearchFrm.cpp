@@ -331,7 +331,7 @@ void SearchFrame::SearchInfo::view() {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
 				Util::getTempPath() + Text::fromT(fileName), sr->getTTH(), Util::emptyString,
-				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT));
+				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT | (sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0)));
 		}
 	} catch(const Exception&) {
 	}
@@ -341,7 +341,7 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt + si->fileName), si->sr->getTTH());
+				Text::fromT(tgt + si->fileName), si->sr->getTTH(), Util::emptyString, QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0));
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt));
 		}
@@ -364,7 +364,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				Text::fromT(tgt), si->sr->getTTH());
+				Text::fromT(tgt), si->sr->getTTH(), Util::emptyString, QueueItem::FLAG_RESUME | (si->sr->getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0));
 		} else {
 			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt));
 		}
@@ -953,5 +953,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.62 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.63 2004/09/23 09:06:26 arnetheduck Exp $
  */

@@ -922,7 +922,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		(((aFileType == SearchManager::TYPE_ANY) && sizeOk) || (aFileType == SearchManager::TYPE_DIRECTORY)) ) {
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_DIRECTORY, 
-			0, getFullName(), NULL);
+			0, getFullName(), NULL, true);
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -946,7 +946,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			if(checkType(i->getName(), aFileType)) {
 				
 				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
-					i->getSize(), getFullName() + i->getName(), i->getTTH());
+					i->getSize(), getFullName() + i->getName(), i->getTTH(), true);
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(aResults.size() >= maxResults) {
@@ -972,7 +972,7 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 
 				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
 					i->second->getSize(), i->second->getParent()->getFullName() + i->second->getName(), 
-					i->second->getTTH());
+					i->second->getTTH(), true);
 
 				results.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -1067,7 +1067,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 	if( cur->empty() && aStrings.ext.empty() && sizeOk ) {
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_DIRECTORY, 
-			0, getFullName(), NULL);
+			0, getFullName(), NULL, true);
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -1095,7 +1095,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 			if(aStrings.hasExt(i->getName())) {
 
 				SearchResult* sr = new SearchResult(aClient, SearchResult::TYPE_FILE, 
-					i->getSize(), getFullName() + i->getName(), i->getTTH());
+					i->getSize(), getFullName() + i->getName(), i->getTTH(), true);
 				aResults.push_back(sr);
 				ShareManager::getInstance()->addHits(1);
 				if(aResults.size() >= maxResults) {
@@ -1123,7 +1123,7 @@ void ShareManager::search(SearchResult::List& results, const StringList& params,
 
 			SearchResult* sr = new SearchResult(aClient,
 				SearchResult::TYPE_FILE, i->second->getSize(), i->second->getParent()->getFullName() + i->second->getName(), 
-				i->second->getTTH());
+				i->second->getTTH(), true);
 			results.push_back(sr);
 			ShareManager::getInstance()->addHits(1);
 		}
@@ -1218,6 +1218,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.101 2004/09/21 08:19:55 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.102 2004/09/23 09:06:26 arnetheduck Exp $
  */
 

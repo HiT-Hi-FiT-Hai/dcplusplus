@@ -370,7 +370,7 @@ bool Util::isPrivateIp(string const& ip) {
 
 
 typedef const u_int8_t* ccp;
-static wchar_t utf8ToC(ccp& str) {
+static wchar_t utf8ToLC(ccp& str) {
 	wchar_t c = 0;
 	if(str[0] & 0x80) {
 		if(str[0] & 0x40) {
@@ -380,6 +380,7 @@ static wchar_t utf8ToC(ccp& str) {
 					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
 				{
 					str++;
+					return 0;
 				}
 				c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
 					((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
@@ -390,6 +391,7 @@ static wchar_t utf8ToC(ccp& str) {
 					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
 				{
 					str++;
+					return 0;
 				}
 				c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
 					((wchar_t)(unsigned char)str[1] & 0x3f);
@@ -397,13 +399,15 @@ static wchar_t utf8ToC(ccp& str) {
 			}
 		} else {
 			str++;
+			return 0;
 		}
 	} else {
-		c = (unsigned char)str[0];
+		wchar_t c = Text::asciiToLower((char)str[0]);
 		str++;
+		return c;
 	}
 
-	return c;
+	return Text::toLower(c);
 }
 
 string::size_type Util::findSubString(const string& aString, const string& aSubString, string::size_type start) throw() {
@@ -416,18 +420,17 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 	if(aSubString.empty())
 		return 0;
 
-	u_int8_t* tx = (u_int8_t*)aString.c_str();
+	// Hm, should start measure in characters or in bytes? bytes for now...
+	u_int8_t* tx = (u_int8_t*)aString.c_str() + start;
 	u_int8_t* px = (u_int8_t*)aSubString.c_str();
 
 	u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
-	wchar_t wp = Text::toLower(utf8ToC(px));
-	for(string::size_type i = 0; i < start; ++i) {
-		utf8ToC(tx);
-	}
+
+	wchar_t wp = utf8ToLC(px);
 
 	while(tx < end) {
 		u_int8_t* otx = tx;
-		if(wp == Text::toLower(utf8ToC(tx))) {
+		if(wp == utf8ToLC(tx)) {
 			u_int8_t* px2 = px;
 			u_int8_t* tx2 = tx;
 
@@ -435,12 +438,47 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 				if(*px2 == 0)
 					return otx - (u_int8_t*)aString.c_str();
 
-				if(Text::toLower(utf8ToC(px2)) != Text::toLower(utf8ToC(tx2)))
+				if(utf8ToLC(px2) != utf8ToLC(tx2))
 					break;
 			}
 		}
 	}
 	return (string::size_type)string::npos;
+}
+
+int Util::stricmp(const char* a, const char* b) {
+	while(*a) {
+		wchar_t ca = 0, cb = 0;
+		int na = Text::utf8ToWc(a, ca);
+		int nb = Text::utf8ToWc(b, cb);
+		if(ca != cb) {
+			return (int)cb - (int)ca;
+		}
+		a+= na < 0 ? 1 : na;
+		b+= nb < 0 ? 1 : nb;
+	}
+	wchar_t ca = 0, cb = 0;
+	Text::utf8ToWc(a, ca);
+	Text::utf8ToWc(b, cb);
+	return (int)cb - (int)ca;
+}
+
+int Util::strnicmp(const char* a, const char* b, size_t n) {
+	const char* end = a + n;
+	while(*a && a < end) {
+		wchar_t ca = 0, cb = 0;
+		int na = Text::utf8ToWc(a, ca);
+		int nb = Text::utf8ToWc(b, cb);
+		if(ca != cb) {
+			return (int)cb - (int)ca;
+		}
+		a+= na < 0 ? 1 : na;
+		b+= nb < 0 ? 1 : nb;
+	}
+	wchar_t ca = 0, cb = 0;
+	Text::utf8ToWc(a, ca);
+	Text::utf8ToWc(b, cb);
+	return (int)cb - (int)ca;
 }
 
 string Util::encodeURI(const string& aString, bool reverse) {
@@ -757,6 +795,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.65 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.66 2004/09/23 09:06:26 arnetheduck Exp $
  */
 

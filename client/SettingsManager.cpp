@@ -100,7 +100,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(LIST_DUPES, false);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.config.bz2");
+	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
@@ -314,6 +314,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.86 2004/09/13 23:02:43 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.87 2004/09/23 09:06:26 arnetheduck Exp $
  */
 

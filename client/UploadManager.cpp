@@ -110,7 +110,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	} else if(aType == "tthl") {
 		// TTH Leaves...
 		TigerTree tree;
-		if(!HashManager::getInstance()->getTree(file, tree)) {
+		if(!HashManager::getInstance()->getTree(file, NULL, tree)) {
 			aSource->fileNotAvail();
 			return false;
 		}
@@ -390,5 +390,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.69 2004/09/11 06:50:48 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.70 2004/09/23 09:06:26 arnetheduck Exp $
  */

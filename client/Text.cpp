@@ -21,6 +21,7 @@
 
 #include "Text.h"
 
+char Text::asciiLower[128];
 wchar_t Text::lower[65536];
 
 void Text::initialize() {
@@ -31,6 +32,10 @@ void Text::initialize() {
 #warning FIXME for non-ascii char codes
 		lower[i] = (char)tolower(i);
 #endif
+	}
+
+	for(size_t i = 0; i < 128; ++i) {
+		asciiLower[i] = (char)lower[i];
 	}
 
 }
@@ -183,5 +188,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.3 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.4 2004/09/23 09:06:26 arnetheduck Exp $
  */

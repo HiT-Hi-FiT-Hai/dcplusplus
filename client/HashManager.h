@@ -66,7 +66,7 @@ public:
 	 */
 	TTHValue* getTTH(const string& aFileName);
 
-	bool getTree(const string& aFileName, TigerTree& tt);
+	bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tt);
 
 	void addTree(const string& aFileName, const TigerTree& tt) {
 		hashDone(aFileName, tt, -1);
@@ -129,7 +129,9 @@ private:
 		}
 
 	private:
-		typedef set<string> WorkSet;	// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless
+		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
+		// set because it's sorted (to avoid random hash order that would create quite strange shares while hashing)
+		typedef set<string> WorkSet;	
 		typedef WorkSet::iterator WorkIter;
 
 		WorkSet w;
@@ -177,7 +179,7 @@ private:
 			return NULL;
 		}
 
-		bool getTree(const string& aFileName, TigerTree& tth);
+		bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
@@ -231,5 +233,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.15 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.16 2004/09/23 09:06:26 arnetheduck Exp $
  */

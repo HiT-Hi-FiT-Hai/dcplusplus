@@ -378,22 +378,7 @@ public:
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
 
 	/* Utf-8 versions of strnicmp and stricmp, unicode char code order (!) */
-	static int stricmp(const char* a, const char* b) {
-		while(*a) {
-			wchar_t ca = 0, cb = 0;
-			int na = Text::utf8ToWc(a, ca);
-			int nb = Text::utf8ToWc(b, cb);
-			if(ca != cb) {
-				return (int)cb - (int)ca;
-			}
-			a+= na < 0 ? 1 : na;
-			b+= nb < 0 ? 1 : nb;
-		}
-		wchar_t ca = 0, cb = 0;
-		Text::utf8ToWc(a, ca);
-		Text::utf8ToWc(b, cb);
-		return (int)cb - (int)ca;
-	}
+	static int stricmp(const char* a, const char* b);
 	static int stricmp(const wchar_t* a, const wchar_t* b) {
 #ifdef _WIN32
 		return ::_wcsicmp(a, b);
@@ -404,14 +389,7 @@ public:
 		// return ::stricmp(a, b);
 		
 	}
-	static int strnicmp(const char* a, const char* b, size_t n) {
-		return stricmp(Text::utf8ToWide(string(a, n)), Text::utf8ToWide(string(b, n)));
-		// return ::strnicmp(a, b, n);
-/*		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
-			n--; a++; b++;
-		}
-		return (n == 0) ? 0 : cmpi[(u_int8_t)*a][(u_int8_t)*b];*/
-	}
+	static int strnicmp(const char* a, const char* b, size_t n);
 	static int strnicmp(const wchar_t* a, const wchar_t* b, size_t n) {
 #ifdef _WIN32
 		return ::_wcsnicmp(a, b, n);
@@ -476,6 +454,10 @@ struct noCaseStringHash {
 	static const size_t min_buckets = 8; 
 #endif // _MSC_VER == 1200
 
+	size_t operator()(const string* s) const {
+		return operator()(*s);
+	}
+
 	size_t operator()(const string& s) const {
 		size_t x = 0;
 		const char* end = s.data() + s.size();
@@ -491,6 +473,10 @@ struct noCaseStringHash {
 		}
 		return x;
 	}
+
+	size_t operator()(const wstring* s) const {
+		return operator()(*s);
+	}
 	size_t operator()(const wstring& s) const {
 		size_t x = 0;
 		const wchar_t* y = s.data();
@@ -504,21 +490,33 @@ struct noCaseStringHash {
 
 /** Case insensitive string comparison */
 struct noCaseStringEq {
+	bool operator()(const string* a, const string* b) const {
+		return a == b || Util::stricmp(*a, *b) == 0;
+	}
 	bool operator()(const string& a, const string& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) == 0;
+		return Util::stricmp(a, b) == 0;
+	}
+	bool operator()(const wstring* a, const wstring* b) const {
+		return a == b || Util::stricmp(*a, *b) == 0;
 	}
 	bool operator()(const wstring& a, const wstring& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) == 0;
+		return Util::stricmp(a, b) == 0;
 	}
 };
 
 /** Case insensitive string ordering */
 struct noCaseStringLess {
+	bool operator()(const string* a, const string* b) const {
+		return Util::stricmp(*a, *b) < 0;
+	}
 	bool operator()(const string& a, const string& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) < 0;
+		return Util::stricmp(a, b) < 0;
+	}
+	bool operator()(const wstring* a, const wstring* b) const {
+		return Util::stricmp(*a, *b) < 0;
 	}
 	bool operator()(const wstring& a, const wstring& b) const {
-		return Util::stricmp(a.c_str(), b.c_str()) < 0;
+		return Util::stricmp(a, b) < 0;
 	}
 };
 
@@ -527,5 +525,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.101 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: Util.h,v 1.102 2004/09/23 09:06:26 arnetheduck Exp $
  */

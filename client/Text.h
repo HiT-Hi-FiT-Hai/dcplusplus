@@ -98,7 +98,7 @@ public:
 		return true;
 	}
 
-	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return (char)toLower((wchar_t)c); }
+	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return asciiLower[(u_int8_t)c]; }
 
 	static wchar_t toLower(wchar_t c) { return lower[(unsigned short)c]; }
 	static wstring toLower(const wstring& str) throw() {
@@ -112,6 +112,7 @@ public:
 	}
 	static string& toLower(const string& str, string& tmp) throw();
 private:
+	static char asciiLower[128];
 	static wchar_t lower[65536];
 
 };
@@ -120,5 +121,5 @@ private:
 
 /**
  * @file
- * $Id: Text.h,v 1.3 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: Text.h,v 1.4 2004/09/23 09:06:26 arnetheduck Exp $
  */
