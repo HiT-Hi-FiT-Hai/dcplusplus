@@ -75,10 +75,10 @@ public:
 
 		HashManager::getInstance()->getStats(file, bytes, files);
 		if(bytes > startBytes)
-			bytes = startBytes;
+			startBytes = bytes;
 
 		if(files > startFiles)
-			files = startFiles;
+			startFiles = files;
 
 		if(autoClose && files == 0) {
 			PostMessage(WM_CLOSE);
@@ -140,6 +140,6 @@ private:
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.3 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.4 2004/09/11 13:35:06 arnetheduck Exp $
  */
 

@@ -293,24 +293,6 @@ public:
 	static string formatParams(const string& msg, StringMap& params);
 	static string formatTime(const string &msg, const time_t t);
 
-	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
-	static string toLower(const char* aString, size_t len = (size_t)-1) {
-		string tmp;
-		tmp.resize((len == (size_t)-1) ? strlen(aString) : len);
-		for(string::size_type i = 0; aString[i]; i++) {
-			tmp[i] = toLower(aString[i]);
-		}
-		return tmp;
-	}
-	static char toLower(char c) { return (char)lower[(u_int8_t)c]; };
-	static u_int8_t toLower(u_int8_t c) { return (u_int8_t)lower[c]; };
-	static wchar_t toLower(wchar_t c) { return (wchar_t)lower[(u_int16_t)c]; };
-	static u_int16_t toLower(u_int16_t c) { return lower[c]; };
-	static void toLower2(string& aString) {
-		for(string::size_type i = 0; i < aString.length(); ++i) {
-			aString[i] = toLower(aString[i]);
-		}
-	}
 	static int64_t toInt64(const string& aString) {
 #ifdef _WIN32
 		return _atoi64(aString.c_str());
@@ -385,9 +367,6 @@ public:
 		sscanf(aString.c_str(), "%X", &res);
 		return static_cast<char>(res);
 	}
-	static bool isAscii(u_int8_t c) {
-		return !(c & 80);
-	}
 
 	static string encodeURI(const string& /*aString*/, bool reverse = false);
 	static string getLocalIp();
@@ -398,14 +377,22 @@ public:
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) throw();
 
-	/* Utf-8 versions of strnicmp and stricmp, not very fast at the moment */
+	/* Utf-8 versions of strnicmp and stricmp, unicode char code order (!) */
 	static int stricmp(const char* a, const char* b) {
-		// return ::stricmp(a, b);
-		return stricmp(Text::utf8ToWide(a), Text::utf8ToWide(b));
-/*		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
-			a++; b++;
+		while(*a) {
+			wchar_t ca = 0, cb = 0;
+			int na = Text::utf8ToWc(a, ca);
+			int nb = Text::utf8ToWc(b, cb);
+			if(ca != cb) {
+				return (int)cb - (int)ca;
+			}
+			a+= na < 0 ? 1 : na;
+			b+= nb < 0 ? 1 : nb;
 		}
-		return cmpi[(u_int8_t)*a][(u_int8_t)*b];*/
+		wchar_t ca = 0, cb = 0;
+		Text::utf8ToWc(a, ca);
+		Text::utf8ToWc(b, cb);
+		return (int)cb - (int)ca;
 	}
 	static int stricmp(const wchar_t* a, const wchar_t* b) {
 #ifdef _WIN32
@@ -471,9 +458,6 @@ private:
 	static bool away;
 	static string awayMsg;
 	static time_t awayTime;
-	static wchar_t lower[];
-	static int8_t cmp[128][128];
-	static int8_t cmpi[128][128];
 
 	typedef map<u_int32_t, u_int16_t> CountryList;
 	typedef CountryList::iterator CountryIter;
@@ -494,10 +478,16 @@ struct noCaseStringHash {
 
 	size_t operator()(const string& s) const {
 		size_t x = 0;
-		const char* y = s.data();
-		string::size_type j = s.size();
-		for(string::size_type i = 0; i < j; ++i) {
-			x = x*31 + (size_t)Util::toLower(y[i]);
+		const char* end = s.data() + s.size();
+		for(const char* str = s.data(); str < end; ) {
+			wchar_t c = 0;
+			int n = Text::utf8ToWc(str, c);
+			if(n == -1) {
+				str++;
+			} else {
+				x = x*31 + (size_t)Text::toLower(c);
+				str += n;
+			}
 		}
 		return x;
 	}
@@ -506,12 +496,9 @@ struct noCaseStringHash {
 		const wchar_t* y = s.data();
 		wstring::size_type j = s.size();
 		for(wstring::size_type i = 0; i < j; ++i) {
-			x = x*31 + (size_t)Util::toLower(y[i]);
+			x = x*31 + (size_t)Text::toLower(y[i]);
 		}
 		return x;
-	}
-	bool operator()(const wstring& a, const wstring& b) const {
-		return Util::stricmp(a, b) < 0;
 	}
 };
 
@@ -540,5 +527,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.100 2004/09/11 06:50:48 arnetheduck Exp $
+ * $Id: Util.h,v 1.101 2004/09/11 13:35:04 arnetheduck Exp $
  */

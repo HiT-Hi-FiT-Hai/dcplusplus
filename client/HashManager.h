@@ -129,7 +129,7 @@ private:
 		}
 
 	private:
-		typedef set<string, noCaseStringLess> WorkSet;
+		typedef set<string> WorkSet;	// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless
 		typedef WorkSet::iterator WorkIter;
 
 		WorkSet w;
@@ -231,5 +231,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.14 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.15 2004/09/11 13:35:04 arnetheduck Exp $
  */

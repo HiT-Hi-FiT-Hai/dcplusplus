@@ -50,9 +50,6 @@ bool Util::away = false;
 string Util::awayMsg;
 time_t Util::awayTime;
 
-wchar_t Util::lower[65536];
-int8_t Util::cmp[128][128];
-int8_t Util::cmpi[128][128];
 Util::CountryList Util::countries;
 string Util::appPath;
 
@@ -61,38 +58,33 @@ static void sgenrand(unsigned long seed);
 void Util::initialize() {
 	setlocale(LC_ALL, "");
 
-	size_t i;
-	for(i = 0; i < 65536; ++i) {
-#ifdef _WIN32
-		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
-#else
-#warning FIXME for non-ascii char codes
-		lower[i] = (char)tolower(i);
-#endif
-	}
-
-
-	// Now initialize the ASCII compare table
-	for(i = 0; i < 128; ++i) {
-		for(int j = 0; j < 128; ++j) {
-			cmp[i][j] = (int8_t)::strncmp((char*)&i, (char*)&j, 1);
-			cmpi[i][j] = (int8_t)::strncmp((char*)&lower[i], (char*)&lower[j], 1);
-		}
-	}
+	Text::initialize();
 
 	sgenrand((unsigned long)time(NULL));
 
 	try {
 		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
+		string data = File(file, File::READ, File::OPEN).read();
 
-		StringTokenizer<string> st(File(file, File::READ, File::OPEN).read(), '\n');
+		const char* start = data.c_str();
+		string::size_type i = 0;
+		string::size_type j = 0;
+		string::size_type k = 0;
 		CountryIter last = countries.end();
-		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			string::size_type j = i->find(',');
-			if(j != string::npos && j < i->length() - 2) {
-				u_int16_t* country = (u_int16_t*)(i->c_str() + j + 1);
-				last = countries.insert(last, make_pair(Util::toUInt32(i->c_str()), *country));
-			}
+		
+		for(;;) {
+			i = data.find(',', k);
+			if(i == string::npos)
+				break;
+
+			j = data.find('\n', i);
+			if(j == string::npos)
+				break;
+
+			u_int16_t* country = (u_int16_t*)(start + i + 1);
+			last = countries.insert(last, make_pair(Util::toUInt32(start + k), *country));
+
+			k = j + 1;
 		}
 	} catch(const FileException&) {
 	}
@@ -427,44 +419,24 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 	u_int8_t* tx = (u_int8_t*)aString.c_str();
 	u_int8_t* px = (u_int8_t*)aSubString.c_str();
 
-	u_int8_t p = Util::toLower(px[0]);
-
 	u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
-	if(isAscii(p)) {
-		for (tx += start; tx < end; ++tx) {
-			if(isAscii(tx[0]) && p == Util::toLower(tx[0])) {
-				u_int8_t* px2 = px;
-				u_int8_t* tx2 = tx;
+	wchar_t wp = Text::toLower(utf8ToC(px));
+	for(string::size_type i = 0; i < start; ++i) {
+		utf8ToC(tx);
+	}
 
-				for(;;) {
-					if(*px2 == 0)
-						return tx - (u_int8_t*)aString.c_str();
+	while(tx < end) {
+		u_int8_t* otx = tx;
+		if(wp == Text::toLower(utf8ToC(tx))) {
+			u_int8_t* px2 = px;
+			u_int8_t* tx2 = tx;
 
-					if(Util::toLower(utf8ToC(px2)) != Util::toLower(utf8ToC(tx2)))
-						break;
-				}
-				tx++;
-			}
-		}
-	} else {
-		wchar_t wp = Util::toLower(utf8ToC(px));
-		for(string::size_type i = 0; i < start; ++i) {
-			utf8ToC(tx);
-		}
+			for(;;) {
+				if(*px2 == 0)
+					return otx - (u_int8_t*)aString.c_str();
 
-		while(tx < end) {
-			u_int8_t* otx = tx;
-			if(wp == Util::toLower(utf8ToC(tx))) {
-				u_int8_t* px2 = px;
-				u_int8_t* tx2 = tx;
-
-				for(;;) {
-					if(*px2 == 0)
-						return otx - (u_int8_t*)aString.c_str();
-
-					if(Util::toLower(utf8ToC(px2)) != Util::toLower(utf8ToC(tx2)))
-						break;
-				}
+				if(Text::toLower(utf8ToC(px2)) != Text::toLower(utf8ToC(tx2)))
+					break;
 			}
 		}
 	}
@@ -785,6 +757,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.64 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.65 2004/09/11 13:35:04 arnetheduck Exp $
  */
 

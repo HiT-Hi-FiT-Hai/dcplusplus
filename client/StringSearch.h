@@ -19,6 +19,8 @@
 #ifndef STRINGSEARCH_H
 #define STRINGSEARCH_H
 
+#include "Text.h"
+
 /**
  * A class that implements a fast substring search algo suited for matching
  * one pattern against many strings (currently Quick Search, a variant of
@@ -31,7 +33,7 @@ public:
 	typedef vector<StringSearch> List;
 	typedef List::iterator Iter;
 
-	explicit StringSearch(const string& aPattern) throw() : pattern(Util::toLower(aPattern)) { 
+	explicit StringSearch(const string& aPattern) throw() : pattern(Text::toLower(aPattern)) { 
 		initDelta1();
 	};
 	StringSearch(const StringSearch& rhs) throw() : pattern(rhs.pattern) { 
@@ -43,7 +45,7 @@ public:
 		return *this;
 	}
 	const StringSearch& operator=(const string& rhs) {
-		pattern = Util::toLower(rhs);
+		pattern = Text::toLower(rhs);
 		initDelta1();
 		return *this;
 	}
@@ -54,8 +56,13 @@ public:
 
 	/** Match a text against the pattern */
 	bool match(const string& aText) const throw() {
+
+		// Lower-case representation of UTF-8 string, since we no longer have that 1 char = 1 byte...
+		string lower;
+		Text::toLower(aText, lower);
+
 		// u_int8_t to avoid problems with signed char pointer arithmetic
-		u_int8_t *tx = (u_int8_t*)aText.c_str();
+		u_int8_t *tx = (u_int8_t*)lower.c_str();
 		u_int8_t *px = (u_int8_t*)pattern.c_str();
 
 		string::size_type plen = pattern.length();
@@ -67,13 +74,13 @@ public:
 		u_int8_t *end = tx + aText.length() - plen + 1;
 		while(tx < end) {
 			size_t i = 0;
-			for(; px[i] && (px[i] == Util::toLower(tx[i])); ++i)
+			for(; px[i] && (px[i] == tx[i]); ++i)
 				;		// Empty!
 			
 			if(px[i] == 0) 
 				return true;
 
-			tx += delta1[Util::toLower(tx[plen])];
+			tx += delta1[tx[plen]];
 		}
 
 		return false;
@@ -106,5 +113,5 @@ private:
 #endif // STRINGSEARCH_H
 /**
  * @file
- * $Id: StringSearch.h,v 1.6 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: StringSearch.h,v 1.7 2004/09/11 13:35:04 arnetheduck Exp $
  */

@@ -61,12 +61,13 @@ void ResourceManager::loadLanguage(const string& aFile) {
 
 void ResourceManager::createWide() {
 	for(int i = 0; i < LAST; ++i) {
+		wstrings[i].clear();
 		Text::utf8ToWide(strings[i], wstrings[i]);
 	}
 }
 
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.10 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.11 2004/09/11 13:35:04 arnetheduck Exp $
  */
 

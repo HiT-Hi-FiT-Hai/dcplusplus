@@ -21,54 +21,66 @@
 
 #include "Text.h"
 
-namespace {
-	int utf8ToC(const char* str, wchar_t& c) {
-		int l = 0;
-		if(str[0] & 0x80) {
-			if(str[0] & 0x40) {
-				if(str[0] & 0x20) {
-					if(str[1] == 0 || str[2] == 0 ||
-						!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
-						!((((unsigned char)str[2]) & ~0x3f) == 0x80))
-					{
-						return -1;
-					}
-					c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
-						((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
-						((wchar_t)(unsigned char)str[2] & 0x3f);
-					l = 3;
-				} else {
-					if(str[1] == 0 ||
-						!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
-					{
-						return -1;
-					}
-					c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
-						((wchar_t)(unsigned char)str[1] & 0x3f);
-					l = 2;
+wchar_t Text::lower[65536];
+
+void Text::initialize() {
+	for(size_t i = 0; i < 65536; ++i) {
+#ifdef _WIN32
+		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
+#else
+#warning FIXME for non-ascii char codes
+		lower[i] = (char)tolower(i);
+#endif
+	}
+
+}
+
+int Text::utf8ToWc(const char* str, wchar_t& c) {
+	int l = 0;
+	if(str[0] & 0x80) {
+		if(str[0] & 0x40) {
+			if(str[0] & 0x20) {
+				if(str[1] == 0 || str[2] == 0 ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
+					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
+				{
+					return -1;
 				}
+				c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
+					((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
+					((wchar_t)(unsigned char)str[2] & 0x3f);
+				l = 3;
 			} else {
-				return -1;
+				if(str[1] == 0 ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
+				{
+					return -1;
+				}
+				c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
+					((wchar_t)(unsigned char)str[1] & 0x3f);
+				l = 2;
 			}
 		} else {
-			c = (unsigned char)str[0];
-			l = 1;
+			return -1;
 		}
-
-		return l;
+	} else {
+		c = (unsigned char)str[0];
+		l = 1;
 	}
-	
-	void cToUtf8(wchar_t c, string& str) {
-		if(c >= 0x0800) {
-			str += (char)(0x80 | 0x40 | 0x20  | (c >> 12));
-			str += (char)(0x80 | ((c >> 6) & 0x3f));
-			str += (char)(0x80 | (c & 0x3f));
-		} else if(c >= 0x0080) {
-			str += (char)(0x80 | 0x40 | (c >> 6));
-			str += (char)(0x80 | (c & 0x3f));
-		} else {
-			str += (char)c;
-		}
+
+	return l;
+}
+
+void Text::wcToUtf8(wchar_t c, string& str) {
+	if(c >= 0x0800) {
+		str += (char)(0x80 | 0x40 | 0x20  | (c >> 12));
+		str += (char)(0x80 | ((c >> 6) & 0x3f));
+		str += (char)(0x80 | (c & 0x3f));
+	} else if(c >= 0x0080) {
+		str += (char)(0x80 | 0x40 | (c >> 6));
+		str += (char)(0x80 | (c & 0x3f));
+	} else {
+		str += (char)c;
 	}
 }
 
@@ -99,7 +111,7 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 string& Text::wideToUtf8(const wstring& str, string& tgt) throw() {
 	string::size_type n = str.length();
 	for(string::size_type i = 0; i < n; ++i) {
-		cToUtf8(str[i], tgt);
+		wcToUtf8(str[i], tgt);
 	}
 	return tgt;
 }
@@ -133,7 +145,7 @@ wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
 	string::size_type n = str.length();
 	for(string::size_type i = 0; i < n; ) {
 		wchar_t c = 0;
-		int x = utf8ToC(str.c_str() + i, c);
+		int x = utf8ToWc(str.c_str() + i, c);
 		if(x == -1) {
 			i++;
 		} else {
@@ -144,7 +156,32 @@ wstring& Text::utf8ToWide(const string& str, wstring& tgt) throw() {
 	return tgt;
 }
 
+wstring& Text::toLower(const wstring& str, wstring& tmp) throw() {
+	tmp.reserve(str.length());
+	wstring::const_iterator end = str.end();
+	for(wstring::const_iterator i = str.begin(); i != end; ++i) {
+		tmp += toLower(*i);
+	}
+	return tmp;
+}
+
+string& Text::toLower(const string& str, string& tmp) throw() {
+	tmp.reserve(str.length());
+	const char* end = &str[0] + str.length();
+	for(const char* p = &str[0]; p < end;) {
+		wchar_t c = 0;
+		int n = utf8ToWc(p, c);
+		if(n == -1) {
+			p++;
+		} else {
+			p += n;
+			wcToUtf8(toLower(c), tmp);
+		}
+	}
+	return tmp;
+}
+
 /**
  * @file
- * $Id: Text.cpp,v 1.2 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.3 2004/09/11 13:35:04 arnetheduck Exp $
  */

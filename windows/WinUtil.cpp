@@ -804,7 +804,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			// break into pairs
 			string::size_type pos = idx->find(_T('='));
 			if(pos != string::npos) {
-				type = Text::toT(Util::toLower(Util::encodeURI(Text::fromT(idx->substr(0, pos)), true)));
+				type = Text::toT(Text::toLower(Util::encodeURI(Text::fromT(idx->substr(0, pos)), true)));
 				param = Text::toT(Util::encodeURI(Text::fromT(idx->substr(pos+1)), true));
 			} else {
 				type = Text::toT(Util::encodeURI(Text::fromT(*idx), true));
@@ -880,13 +880,13 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 int WinUtil::getIconIndex(const tstring& aFileName) {
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		string x = Util::toLower(Util::getFileExt(Text::fromT(aFileName)));
+		string x = Text::toLower(Util::getFileExt(Text::fromT(aFileName)));
 		if(!x.empty()) {
 			ImageIter j = fileIndexes.find(x);
 			if(j != fileIndexes.end())
 				return j->second;
 		}
-		tstring fn = Text::toT(Util::toLower(Util::getFileName(Text::fromT(aFileName))));
+		tstring fn = Text::toT(Text::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
@@ -899,5 +899,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.56 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.57 2004/09/11 13:35:06 arnetheduck Exp $
  */

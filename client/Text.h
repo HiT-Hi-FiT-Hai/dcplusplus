@@ -33,6 +33,8 @@
  */
 class Text {
 public:
+	static void initialize();
+
 	static string& acpToUtf8(const string& str, string& tmp) throw();
 	static string acpToUtf8(const string& str) throw() { 
 		string tmp;
@@ -68,6 +70,9 @@ public:
 		return wideToUtf8(str, tmp);
 	}
 
+	static int utf8ToWc(const char* str, wchar_t& c);
+	static void wcToUtf8(wchar_t c, string& str);
+
 #ifdef UNICODE
 	static tstring toT(const string& str) throw() { return utf8ToWide(str); }
 	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
@@ -82,7 +87,32 @@ public:
 	static string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
 #endif
 
+	static bool isAscii(const string& str) {
+		return isAscii(str.c_str());
+	}
+	static bool isAscii(const char* str) {
+		for(const u_int8_t* p = (const u_int8_t*)str; *p; ++p) {
+			if(*p & 0x80)
+				return false;
+		}
+		return true;
+	}
+
+	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return (char)toLower((wchar_t)c); }
+
+	static wchar_t toLower(wchar_t c) { return lower[(unsigned short)c]; }
+	static wstring toLower(const wstring& str) throw() {
+		wstring tmp;
+		return toLower(str, tmp);
+	}
+	static wstring& toLower(const wstring& str, wstring& tmp) throw();
+	static string toLower(const string& str) throw() {
+		string tmp;
+		return toLower(str, tmp);
+	}
+	static string& toLower(const string& str, string& tmp) throw();
 private:
+	static wchar_t lower[65536];
 
 };
 
@@ -90,5 +120,5 @@ private:
 
 /**
  * @file
- * $Id: Text.h,v 1.2 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: Text.h,v 1.3 2004/09/11 13:35:04 arnetheduck Exp $
  */
