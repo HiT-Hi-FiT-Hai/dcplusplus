@@ -61,6 +61,7 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	}
 	
 	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlList.setSort(COLUMN_DONE, ExListViewCtrl::SORT_STRING_NOCASE);
 	
 	UpdateLayout();
 	
@@ -209,5 +210,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.17 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.18 2004/03/24 20:38:17 arnetheduck Exp $
  */

@@ -56,6 +56,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	
 	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlUsers.setSortColumn(COLUMN_NICK);
 	usersMenu.CreatePopupMenu();
 	appendUserItems(usersMenu);
 	usersMenu.AppendMenu(MF_SEPARATOR);
@@ -166,6 +167,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.19 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.20 2004/03/24 20:38:18 arnetheduck Exp $
  */
 

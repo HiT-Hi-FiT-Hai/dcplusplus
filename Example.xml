@@ -126,8 +126,8 @@
 		<String Name="IgnoredMessage">Ignored message: </String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
-		<String Name="Ip">Ip: </String>
-		<String Name="IpBare">Ip</String>
+		<String Name="Ip">IP: </String>
+		<String Name="IpBare">IP</String>
 		<String Name="Items">Items</String>
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>
@@ -235,7 +235,7 @@
 		<String Name="Properties">&amp;Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
 		<String Name="Ratio">Ratio</String>
-		<String Name="ReaddSource">Readd source</String>
+		<String Name="ReaddSource">Re-add source</String>
 		<String Name="ReallyExit">Really exit?</String>
 		<String Name="Redirect">Redirect</String>
 		<String Name="RedirectAlreadyConnected">Redirect request received to a hub that's already connected</String>

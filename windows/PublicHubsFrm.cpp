@@ -112,6 +112,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CSTRING(ADD_TO_FAVORITES));
+	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 	
 	m_hMenu = WinUtil::mainMenu;
 
@@ -398,6 +399,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.18 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.19 2004/03/24 20:38:18 arnetheduck Exp $
  */
 

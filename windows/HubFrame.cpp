@@ -106,6 +106,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
+	userMenu.SetMenuDefaultItem(IDC_GETLIST);
 
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CSTRING(ADD_TO_FAVORITES));
@@ -1091,5 +1092,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.52 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.53 2004/03/24 20:38:17 arnetheduck Exp $
  */

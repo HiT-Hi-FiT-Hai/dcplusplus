@@ -537,35 +537,44 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 
 void WinUtil::openLink(const string& url) {
 	CRegKey key;
-	char buf[MAX_PATH];
+	char regbuf[MAX_PATH];
 	ULONG len = MAX_PATH;
 	if(key.Open(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", KEY_READ) == ERROR_SUCCESS) {
-		if(key.QueryStringValue(NULL, buf, &len) == ERROR_SUCCESS) {
-			string cmd(buf, len);
+		if(key.QueryStringValue(NULL, regbuf, &len) == ERROR_SUCCESS) {
+			/*
+			 * Various values:
+			 *  C:\PROGRA~1\MOZILL~1\FIREFOX.EXE -url "%1"
+			 *  "C:\Program Files\Internet Explorer\iexplore.exe" -nohome
+			 *  "C:\Apps\Opera7\opera.exe"
+			 *  C:\PROGRAMY\MOZILLA\MOZILLA.EXE -url "%1"
+			 */
+			string cmd(regbuf); // otherwise you consistently get two trailing nulls
 			
-			if(!cmd.empty()) {
+			if(!cmd.empty() && cmd.length() > 1) {
 				string::size_type start,end;
 				if(cmd[0] == '"') {
 					start = 1;
-					end = cmd.find('"');
+					end = cmd.find('"', 1);
 				} else {
 					start = 0;
-					end = cmd.find(' ');
+					end = cmd.find(' ', 1);
 				}
 				if(end == string::npos)
 					end = cmd.length();
 
+				string cmdLine(cmd);
 				cmd = cmd.substr(start, end-start);
-				
+				size_t arg_pos;
+				if((arg_pos = cmdLine.find("%1")) != string::npos) {
+					cmdLine.replace(arg_pos, 2, url);
+				} else {
+					cmdLine.append(" \"" + url + '\"');
+				}
+
 				STARTUPINFO si = { sizeof(si), 0 };
 				PROCESS_INFORMATION pi = { 0 };
-				AutoArray<char> buf(url.length() + 4);
-				size_t pos = 0;
-				buf[pos++] = '"';
-				strcpy(buf + pos, url.c_str());
-				pos += url.length();
-				buf[pos++] = '"';
-				buf[pos++] = 0;
+				AutoArray<char> buf(cmdLine.length() + 1);
+				strcpy(buf, cmdLine.c_str());
 				if(::CreateProcess(cmd.c_str(), buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
 					::CloseHandle(pi.hThread);
 					::CloseHandle(pi.hProcess);
@@ -625,5 +634,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.40 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.41 2004/03/24 20:38:18 arnetheduck Exp $
  */

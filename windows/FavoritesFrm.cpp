@@ -99,6 +99,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	hubsMenu.AppendMenu(MF_STRING, IDC_MOVE_DOWN, CSTRING(MOVE_DOWN));
 	hubsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	hubsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 
 	nosave = false;
 
@@ -291,6 +292,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.18 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.19 2004/03/24 20:38:17 arnetheduck Exp $
  */
 

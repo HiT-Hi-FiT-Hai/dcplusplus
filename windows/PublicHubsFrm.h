@@ -113,6 +113,8 @@ public:
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
+			WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
+				SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 			MDIDestroy(m_hWnd);
 			return 0;
 		}
@@ -194,5 +196,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.16 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.17 2004/03/24 20:38:18 arnetheduck Exp $
  */

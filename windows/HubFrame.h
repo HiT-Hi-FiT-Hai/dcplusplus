@@ -52,7 +52,7 @@ public:
 	BEGIN_MSG_MAP(HubFrame)
 		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
-		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
+		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
@@ -381,6 +381,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.38 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.39 2004/03/24 20:38:18 arnetheduck Exp $
  */
 

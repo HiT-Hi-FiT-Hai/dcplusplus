@@ -65,7 +65,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.SetTextColor(WinUtil::textColor);
 
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	ctrlTransfers.setSortColumn(COLUMN_STATUS);
+	ctrlTransfers.setSortColumn(COLUMN_USER);
 
 	transferMenu.CreatePopupMenu();
 	appendUserItems(transferMenu);
@@ -73,6 +73,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
+	transferMenu.SetMenuDefaultItem(IDC_PRIVATEMESSAGE);
 
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
@@ -280,6 +281,12 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 	default:
 		return CDRF_DODEFAULT;
 	}
+}
+
+LRESULT TransferView::onDoubleClickTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+	ctrlTransfers.getItemData(item->iItem)->pm();
+	return 0;
 }
 
 LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -616,5 +623,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.26 2004/03/24 20:22:15 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.27 2004/03/24 20:38:18 arnetheduck Exp $
  */
