@@ -205,8 +205,12 @@ public:
 
 	string getSearchString() const;
 
+	const string& getTempTarget();
+	void setTempTarget(const string& aTempTarget) {
+		tempTarget = aTempTarget;
+	}
 	GETSET(string, target, Target);
-	GETSET(string, tempTarget, TempTarget);
+	string tempTarget;
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, downloadedBytes, DownloadedBytes);
 	GETSET(Status, status, Status);
@@ -276,5 +280,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.16 2004/09/26 18:54:08 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.17 2004/12/27 22:01:48 arnetheduck Exp $
 */

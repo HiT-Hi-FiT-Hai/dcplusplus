@@ -16,7 +16,10 @@
 * Improved search timer to avoid spamming hub (thanks naga)
 * Redid some of the hash storage code, should be slighly more efficient
 * Share is cached for faster startup
-
+* Temporary targetnames are now filled in when download starts, not when item is added to queue,
+  which makes temp target dir changes happen for current queue items as well, plus we get a huge
+  memory save on huge queues.
+  
 -- 0.668 2004-11-30 --
 * Fixed crash on open own filelist (thanks sulan)
 * Added option to make /join open a new window (thanks ullner)

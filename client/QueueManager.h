@@ -79,7 +79,7 @@ public:
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
 		const string& aTarget, const TTHValue* root, 
 		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
-		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
+		bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
@@ -91,7 +91,7 @@ public:
 		// We use the searchString to store the start viewing directory for file lists
 		add(USER_LIST_NAME, -1, aUser, file, NULL, 
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
-			Util::emptyString, true);
+			true);
 	}
 
 	/** Readd a source that was removed */
@@ -227,8 +227,6 @@ private:
 	u_int32_t nextSearch;
 	
 	static const string USER_LIST_NAME;
-	static const string TEMP_EXTENSION;
-	static string getTempName(const string& /*aFileName*/, const TTHValue* /*aRoot*/);
 
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
@@ -262,6 +260,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.61 2004/09/24 20:48:27 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.62 2004/12/27 22:01:48 arnetheduck Exp $
  */
 
