@@ -38,13 +38,6 @@
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
-	enum {
-		COLUMN_NICK,
-		COLUMN_SHARED,
-		COLUMN_DESCRIPTION,
-		COLUMN_CONNECTION,
-		COLUMN_EMAIL
-	};
 	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
@@ -165,20 +158,7 @@ public:
 		return FALSE; 
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		int i = 0;
-
-		TimerManager::getInstance()->removeListener(this);
-		ClientManager::getInstance()->putClient(client);
-		client = NULL;
-
-		while(i < ctrlUsers.GetItemCount()) {
-			delete (UserInfo*)ctrlUsers.GetItemData(i);
-			i++;
-		}
-		bHandled = FALSE;
-		return 0;
-	}
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -322,6 +302,16 @@ private:
 		IMAGE_OP
 	};
 	
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_SHARED,
+		COLUMN_DESCRIPTION,
+		COLUMN_CONNECTION,
+		COLUMN_EMAIL,
+		COLUMN_LAST
+	};
+	
 	class UserInfo {
 	public:
 		LONGLONG size;
@@ -353,6 +343,8 @@ private:
 	CStatusBarCtrl ctrlStatus;
 	
 	static CImageList* images;
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
 	
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
@@ -492,9 +484,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.57 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.58 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.58  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.57  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

@@ -182,24 +182,7 @@ public:
 	}
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		DWORD id;
-		if(stopperThread) {
-			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-				PostMessage(WM_CLOSE);
-				return 0;
-			}
-			CloseHandle(stopperThread);
-			stopperThread = NULL;
-			bHandled = FALSE;
-		} else {
-			if( (!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox("Really exit?", "", MB_YESNO) == IDYES) ) {
-				stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-			}
-		}
-		return 0;
-	}
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
@@ -294,7 +277,8 @@ public:
 
 private:
 	enum {
-		COLUMN_USER,
+		COLUMN_FIRST,
+		COLUMN_USER = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_FILE,
 		COLUMN_SIZE,
@@ -339,8 +323,8 @@ private:
 	CMenu transferMenu;
 	
 	int lastUpload;
-	static int columnIndexes[];
-	static int columnSizes[];
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -457,9 +441,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.46 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.47 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.47  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.46  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

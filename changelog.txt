@@ -25,6 +25,8 @@
 * Added option to keep duplicate files in the dclist (but their sizes are not added to the file share total in any case)
 * More random crashes fixed
 * Added timestamps to private frames as well
+* Added possibility to change column order and widths
+* Added write buffering to reduce fragmentation when downloading multiple files
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

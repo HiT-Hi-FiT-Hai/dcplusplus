@@ -40,6 +40,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_IGNOREOFFLINE, SettingsManager::IGNORE_OFFLINE, PropPage::T_BOOL },
 	{ IDC_POPUPOFFLINE, SettingsManager::POPUP_OFFLINE, PropPage::T_BOOL },
 	{ IDC_REMOVEDUPES, SettingsManager::REMOVE_DUPES, PropPage::T_BOOL },
+	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -69,9 +70,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.11 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.12 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.12  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.11  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

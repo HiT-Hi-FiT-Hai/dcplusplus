@@ -26,6 +26,7 @@
 #include "SearchFrm.h"
 #include "Util.h"
 #include "UploadManager.h"
+#include "StringTokenizer.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -40,6 +41,9 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- ht
 "\r\n-- I don't have to see those annoying kick messages, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
 "\r\n-- I can resume my files to a different filename, can you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
 };
+
+int HubFrame::columnSizes[] = { 100, 75, 100, 75, 100 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_CONNECTION, COLUMN_EMAIL };
 
 #define MSGS 10
 
@@ -76,11 +80,65 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 7500;
 
-	ctrlUsers.InsertColumn(COLUMN_NICK, _T("Nick"), LVCFMT_LEFT, 100, COLUMN_NICK);
-	ctrlUsers.InsertColumn(COLUMN_SHARED, _T("Shared"), LVCFMT_LEFT, 75, COLUMN_SHARED);
-	ctrlUsers.InsertColumn(COLUMN_DESCRIPTION, _T("Description"), LVCFMT_LEFT, 100, COLUMN_DESCRIPTION);
-	ctrlUsers.InsertColumn(COLUMN_CONNECTION, _T("Connection"), LVCFMT_LEFT, 75, COLUMN_CONNECTION);
-	ctrlUsers.InsertColumn(COLUMN_EMAIL, _T("E-Mail"), LVCFMT_LEFT, 100, COLUMN_EMAIL);
+	StringList l = StringTokenizer(SETTING(HUBFRAME_ORDER), ',').getTokens();
+	
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnIndexes[k++] = Util::toInt(*i);
+		}
+	}
+	
+	l = StringTokenizer(SETTING(HUBFRAME_WIDTHS), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnSizes[k++] = Util::toInt(*i);
+		}
+	}
+
+	LV_COLUMN lvc;
+	ZeroMemory(&lvc, sizeof(lvc));
+	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+	
+	lvc.pszText = "Nick";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_NICK];
+	lvc.iOrder = columnIndexes[COLUMN_NICK];
+	lvc.iSubItem = COLUMN_NICK;
+	ctrlUsers.InsertColumn(0, &lvc);
+
+	lvc.pszText = "Shared";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_SHARED];
+	lvc.iOrder = columnIndexes[COLUMN_SHARED];
+	lvc.iSubItem = COLUMN_SHARED;
+	ctrlUsers.InsertColumn(1, &lvc);
+	
+	lvc.pszText = "Description";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_DESCRIPTION];
+	lvc.iOrder = columnIndexes[COLUMN_DESCRIPTION];
+	lvc.iSubItem = COLUMN_DESCRIPTION;
+	ctrlUsers.InsertColumn(2, &lvc);
+	
+	lvc.pszText = "Connection";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_CONNECTION];
+	lvc.iOrder = columnIndexes[COLUMN_CONNECTION];
+	lvc.iSubItem = COLUMN_CONNECTION;
+	ctrlUsers.InsertColumn(3, &lvc);
+	
+	lvc.pszText = "E-Mail";
+	lvc.fmt = LVCFMT_LEFT;
+	lvc.cx = columnSizes[COLUMN_EMAIL];
+	lvc.iOrder = columnIndexes[COLUMN_EMAIL];
+	lvc.iSubItem = COLUMN_EMAIL;
+	ctrlUsers.InsertColumn(4, &lvc);
 
 	ctrlUsers.SetBkColor(Util::bgColor);
 	ctrlUsers.SetTextBkColor(Util::bgColor);
@@ -499,12 +557,47 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlMessage.MoveWindow(rc);
 	
 }
+
+LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	int i = 0;
 	
+	TimerManager::getInstance()->removeListener(this);
+	ClientManager::getInstance()->putClient(client);
+	client = NULL;
+	
+	while(i < ctrlUsers.GetItemCount()) {
+		delete (UserInfo*)ctrlUsers.GetItemData(i);
+		i++;
+	}
+	
+	string tmp1;
+	string tmp2;
+	
+	ctrlUsers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
+		columnSizes[j] = ctrlUsers.GetColumnWidth(j);
+		tmp1 += Util::toString(columnIndexes[j]) + ",";
+		tmp2 += Util::toString(columnSizes[j]) + ",";
+	}
+	tmp1.erase(tmp1.size()-1, 1);
+	tmp2.erase(tmp2.size()-1, 1);
+	
+	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_ORDER, tmp1);
+	SettingsManager::getInstance()->set(SettingsManager::HUBFRAME_WIDTHS, tmp2);
+				
+	bHandled = FALSE;
+	return 0;
+}
+
+
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.43 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.44 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.44  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.43  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

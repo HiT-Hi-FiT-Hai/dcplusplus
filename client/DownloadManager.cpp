@@ -127,7 +127,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	
 	File* file;
 	try {
-		file = new File(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
+		file = new BufferedFile(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
 	} catch(FileException e) {
 		fire(DownloadManagerListener::FAILED, d, "Could not open target file:" + e.getError());
 		aSource->setDownload(NULL);
@@ -271,9 +271,12 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.50 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.51 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.51  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.50  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

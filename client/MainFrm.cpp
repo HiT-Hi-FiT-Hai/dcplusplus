@@ -39,6 +39,8 @@
 #include "NotepadFrame.h"
 #include "QueueManager.h"
 #include "QueueFrame.h"
+#include "StringTokenizer.h"
+#include "ResourceManager.h"
 
 int MainFrame::columnIndexes[MainFrame::COLUMN_LAST] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SIZE, COLUMN_FILE };
 int MainFrame::columnSizes[MainFrame::COLUMN_LAST] = { 200, 300, 400, 100 };
@@ -79,6 +81,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	ClientManager::deleteInstance();
 	HubManager::deleteInstance();
 	TimerManager::deleteInstance();
+	ResourceManager::deleteInstance();
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
@@ -122,7 +125,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		int n = ctrlTransfers.find(i->lParam);
-		ctrlTransfers.SetItemText(n, COLUMN_STATUS, "Preparing file list...");
+		ctrlTransfers.SetItemText(n, COLUMN_STATUS, CSTRING(PREPARING_FILE_LIST));
 		try {
 			File f(i->file, File::READ, File::OPEN);
 
@@ -148,7 +151,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		} catch(FileException e) {
 			// ...
 		}
-		ctrlTransfers.SetItemText(n, COLUMN_STATUS, "Download finished, idle...");
+		ctrlTransfers.SetItemText(n, COLUMN_STATUS, CSTRING(DOWNLOAD_FINISHED_IDLE));
 	} else if(wParam == STATS) {
 		StringList* str = (StringList*)lParam;
 		if(ctrlStatus.IsWindow()) {
@@ -171,7 +174,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
 	i->columns[COLUMN_USER] = aCqi->getUser()->getNick() + " (" + aCqi->getUser()->getClientName() + ")";
-	i->columns[COLUMN_STATUS] = "Connecting...";
+	i->columns[COLUMN_STATUS] = STRING(CONNECTING);
 
 	if(aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD)) {
 		PostMessage(WM_SPEAKER, ADD_UPLOAD_ITEM, (LPARAM)i);
@@ -182,10 +185,9 @@ void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 
 void MainFrame::onConnectionStatus(ConnectionQueueItem* aCqi) {
 	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
-	i->columns[COLUMN_STATUS] = aCqi->getStatus() == ConnectionQueueItem::CONNECTING ? "Connecting..." : "Waiting to retry...";
+	i->columns[COLUMN_STATUS] = aCqi->getStatus() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
-
 
 void MainFrame::onConnectionRemoved(ConnectionQueueItem* aCqi) {
 	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)aCqi);
@@ -199,14 +201,13 @@ void MainFrame::onConnectionFailed(ConnectionQueueItem* aCqi, const string& aRea
 void MainFrame::onUploadStarting(Upload* aUpload) {
 	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
 	i->columns[COLUMN_FILE] = aUpload->getFileName();
-	i->columns[COLUMN_STATUS] = "Upload starting...";
+	i->columns[COLUMN_STATUS] = STRING(UPLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aUpload->getSize());
 
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onUploadTick(Upload* aUpload) {
-	char buf[128];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aUpload->getStart());
 	LONGLONG seconds = 0;
 	LONGLONG avg = 0;
@@ -217,19 +218,21 @@ void MainFrame::onUploadTick(Upload* aUpload) {
 		}
 	}
 
-	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aUpload->getPos()).c_str(), 
+	char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
+	sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(aUpload->getPos()).c_str(), 
 		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 
 	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
 	i->columns[COLUMN_STATUS] = buf;
+
+	delete buf;
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onUploadComplete(Upload* aUpload) {
 	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
-	i->columns[COLUMN_STATUS] = "Upload finished, idle...";
+	i->columns[COLUMN_STATUS] = STRING(UPLOAD_FINISHED_IDLE);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
-	
 }
 
 void MainFrame::onDownloadComplete(Download* p) {
@@ -242,7 +245,7 @@ void MainFrame::onDownloadComplete(Download* p) {
 		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 	} else {
 		StringListInfo* i = new StringListInfo((LPARAM)p->getCQI());
-		i->columns[COLUMN_STATUS] = "Download finished, idle...";
+		i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_FINISHED_IDLE);
 		PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
 	}
 }
@@ -256,14 +259,13 @@ void MainFrame::onDownloadFailed(Download* aDownload, const string& aReason) {
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getCQI());
 	i->columns[COLUMN_FILE] = aDownload->getTargetFileName();
-	i->columns[COLUMN_STATUS] = "Download starting...";
+	i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aDownload->getSize());
 	
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onDownloadTick(Download* aDownload) {
-	char buf[256];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aDownload->getStart());
 	LONGLONG seconds = 0;
 	LONGLONG avg = 0;
@@ -274,11 +276,13 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 		}
 	}
 	
-	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aDownload->getPos()).c_str(), 
+	char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
+	sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(aDownload->getPos()).c_str(), 
 		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 	
 	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getCQI());
 	i->columns[COLUMN_STATUS] = buf;
+	delete buf;
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
@@ -344,6 +348,7 @@ HWND MainFrame::createToolbar() {
 
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	
+	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 	ShareManager::newInstance();
 	TimerManager::newInstance();
@@ -423,43 +428,59 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 	
+	StringList l = StringTokenizer(SETTING(MAINFRAME_ORDER), ',').getTokens();
+
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnIndexes[k++] = Util::toInt(*i);
+		}
+	}
+
+	l = StringTokenizer(SETTING(MAINFRAME_WIDTHS), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnSizes[k++] = Util::toInt(*i);
+		}
+	}
+	
 	LV_COLUMN lvc;
 	ZeroMemory(&lvc, sizeof(lvc));
 	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
 	
-	lvc.pszText = "User";
+	lvc.pszText = const_cast<char*>(CSTRING(USER));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_USER];
 	lvc.iOrder = columnIndexes[COLUMN_USER];
 	lvc.iSubItem = COLUMN_USER;
 	ctrlTransfers.InsertColumn(0, &lvc);
 
-	lvc.pszText = "Status";
+	lvc.pszText = const_cast<char*>(CSTRING(STATUS));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_STATUS];
 	lvc.iOrder = columnIndexes[COLUMN_STATUS];
 	lvc.iSubItem = COLUMN_STATUS;
 	ctrlTransfers.InsertColumn(1, &lvc);
 
-	lvc.pszText = "File";
+	lvc.pszText = const_cast<char*>(CSTRING(FILE));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_FILE];
 	lvc.iOrder = columnIndexes[COLUMN_FILE];
 	lvc.iSubItem = COLUMN_FILE;
 	ctrlTransfers.InsertColumn(2, &lvc);
 
-	lvc.pszText = "Size";
+	lvc.pszText = const_cast<char*>(CSTRING(SIZE));
 	lvc.fmt = LVCFMT_RIGHT;
 	lvc.cx = columnSizes[COLUMN_SIZE];
 	lvc.iOrder = columnIndexes[COLUMN_SIZE];
 	lvc.iSubItem = COLUMN_SIZE;
 	ctrlTransfers.InsertColumn(3, &lvc);
 	
-/*	ctrlTransfers.InsertColumn(0, "User", LVCFMT_LEFT, columnSizes[COLUMN_USER], COLUMN_USER);
-	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, columnSizes[COLUMN_STATUS], COLUMN_STATUS);
-	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_FILE], "File", LVCFMT_LEFT, columnSizes[COLUMN_FILE], COLUMN_FILE);
-	ctrlTransfers.InsertColumn(columnIndexes[COLUMN_SIZE], "Size", LVCFMT_RIGHT, columnSizes[COLUMN_SIZE], COLUMN_SIZE);
-*/
 	ctrlTransfers.SetBkColor(Util::bgColor);
 	ctrlTransfers.SetTextBkColor(Util::bgColor);
 	ctrlTransfers.SetTextColor(Util::textColor);
@@ -488,7 +509,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			SearchManager::getInstance()->setPort((short)SETTING(PORT));
 		} catch(Exception e) {
 			dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-			MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
+			char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+			sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
+			MessageBox(buf);
+			delete buf;
 		}
 	}
 
@@ -499,25 +523,25 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Close connection";
+	mi.dwTypeData = const_cast<char*>(CSTRING(CLOSE_CONNECTION));
 	mi.wID = IDC_REMOVE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Force attempt";
+	mi.dwTypeData = const_cast<char*>(CSTRING(FORCE_ATTEMPT));
 	mi.wID = IDC_FORCE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Get File List";
+	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.wID = IDC_GETLIST;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Send Private Message";
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
 	mi.wID = IDC_PRIVATEMESSAGE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
@@ -603,17 +627,6 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		MDIActivate(PublicHubsFrame::frame->m_hWnd);
 	}
 
-/*	HANDLE h = CreateFile("c:\\temp\\test.dcl", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-	BYTE* buf = new BYTE[GetFileSize(h, NULL)];
-	DWORD x;
-
-	ReadFile(h, buf, GetFileSize(h, NULL), &x, NULL);
-	string tmp1;
-	CloseHandle(h);
-
-	CryptoManager::getInstance()->decodeHuffman(buf, tmp1);
-	delete buf;
-*/	
 	return 0;
 }
 
@@ -637,7 +650,10 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 				SearchManager::getInstance()->setPort((short)SETTING(PORT));
 			} catch(Exception e) {
 				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
+				char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+				sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
+				MessageBox(buf);
+				delete buf;
 			}
 		}
 	}
@@ -707,7 +723,7 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 LRESULT MainFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlTransfers.SetItemText(i, COLUMN_STATUS, "Connecting (forced)...");
+		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CSTRING(CONNECTING_FORCED));
 		((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser()->connect();
 	}
 	return 0;
@@ -743,7 +759,41 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		} catch(QueueException e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
-			dcdebug("MainFrm::onGetList caught %s\n", e.getError().c_str());
+			dcdebug("MainFonGetList caught %s\n", e.getError().c_str());
+		}
+	}
+	return 0;
+}
+
+LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	DWORD id;
+	if(stopperThread) {
+		if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
+			// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
+			PostMessage(WM_CLOSE);
+			return 0;
+		}
+		CloseHandle(stopperThread);
+		stopperThread = NULL;
+		bHandled = FALSE;
+	} else {
+		if( (!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), "", MB_YESNO) == IDYES) ) {
+			string tmp1;
+			string tmp2;
+
+			ctrlTransfers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
+			for(int i = COLUMN_FIRST; i != COLUMN_LAST; i++) {
+				columnSizes[i] = ctrlTransfers.GetColumnWidth(i);
+				tmp1 += Util::toString(columnIndexes[i]) + ",";
+				tmp2 += Util::toString(columnSizes[i]) + ",";
+			}
+			tmp1.erase(tmp1.size()-1, 1);
+			tmp2.erase(tmp2.size()-1, 1);
+			
+			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, tmp1);
+			SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
+
+			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
 		}
 	}
 	return 0;
@@ -751,9 +801,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.67 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.68 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.68  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.67  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

@@ -23,31 +23,39 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class ResourceManager : public Singleton<ResourceManager> 
-{
+class ResourceManager : public Singleton<ResourceManager> {
 public:
-	StringList getLanguages();
-	void loadLanguage(const string& aLanguage);
+	
+#include "StringDefs.h"
 
-	const string& getString();
+	void loadLanguage(const string& aFile);
+	const string& getString(Strings x) const { return strings[x]; };
+
 private:
 
 	friend class Singleton<ResourceManager>;
-	ResourceManager();
-	virtual ~ResourceManager();
+	ResourceManager() { };
+	virtual ~ResourceManager() { };
 	
+	static const string strings[LAST];
+	static const string names[LAST];
 };
+
+#define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
+#define CSTRING(x) ResourceManager::getInstance()->getString(ResourceManager::x).c_str()
 
 #endif // !defined(AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_)
 
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.h,v 1.1 2002/03/10 22:41:43 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.2 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: ResourceManager.h,v $
+ * Revision 1.2  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.1  2002/03/10 22:41:43  arnetheduck
  * First go at the new resource managment...
  *
  * @endif
  */
-

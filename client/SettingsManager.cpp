@@ -32,12 +32,12 @@ const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
-	"ClientVersion", "Font", "SENTRY", 
+	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
-	"RemoveDupes",
+	"RemoveDupes", "BufferSize",
 	"SENTRY"
 };
 
@@ -76,6 +76,7 @@ SettingsManager::SettingsManager()
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
+	setDefault(BUFFER_SIZE, 64);
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -198,9 +199,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.22 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.23 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.23  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.22  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

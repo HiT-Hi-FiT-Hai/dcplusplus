@@ -68,37 +68,37 @@ public:
 		close();
 	}
 
-	void close() {
+	virtual void close() {
 		if(h != INVALID_HANDLE_VALUE) {
 			CloseHandle(h);
 			h = INVALID_HANDLE_VALUE;
 		}
 	}
-	LONGLONG getSize() {
+	virtual LONGLONG getSize() {
 		DWORD x;
 		DWORD l = ::GetFileSize(h, &x);
 
 		return (LONGLONG)l | ((LONGLONG)x)<<32;
 	}
 
-	LONGLONG getPos() {
+	virtual LONGLONG getPos() {
 		LONG x = 0;
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
 
 		return (LONGLONG)l | ((LONGLONG)x)<<32;
 	}
 
-	void setPos(LONGLONG pos) {
+	virtual void setPos(LONGLONG pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_BEGIN);
 	}
 
-	void movePos(LONGLONG pos) {
+	virtual void movePos(LONGLONG pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 	}
 
-	DWORD read(void* buf, DWORD len) throw(FileException) {
+	virtual DWORD read(void* buf, DWORD len) throw(FileException) {
 		DWORD x;
 		if(!::ReadFile(h, buf, len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
@@ -106,7 +106,7 @@ public:
 		return x;
 	}
 
-	string read(DWORD len) throw(FileException) {
+	virtual string read(DWORD len) throw(FileException) {
 		char* buf = new char[len];
 		DWORD x;
 		try {
@@ -120,12 +120,12 @@ public:
 		return tmp;
 	}
 
-	string read() {
+	virtual string read() throw(FileException) {
 		setPos(0);
 		return read((DWORD)getSize());
 	}
 
-	DWORD write(const void* buf, DWORD len) throw(FileException) {
+	virtual DWORD write(const void* buf, DWORD len) throw(FileException) {
 		DWORD x;
 		if(!::WriteFile(h, buf, len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
@@ -136,7 +136,7 @@ public:
 		return x;
 	}
 
-	DWORD write(const string& aString) {
+	virtual DWORD write(const string& aString) throw(FileException) {
 		return write((void*)aString.data(), aString.size());
 	}
 	
@@ -165,13 +165,73 @@ private:
 
 };
 
+class BufferedFile : public File {
+public:
+	BufferedFile(const string& aFileName, int access = WRITE, int mode = OPEN, DWORD bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : File(aFileName, access, mode), pos(0), size(bufSize*1024) {
+		buf = new BYTE[size];
+	}
+	
+	virtual ~BufferedFile() {
+		flush();
+		delete buf;
+	}
+
+	virtual void flush() throw(FileException) {
+		if(pos > 0) {
+			File::write(buf, pos);
+		}
+		pos = 0;
+	}
+
+	virtual DWORD write(const void* aBuf, DWORD len) throw(FileException) {
+		while(len) {
+			if(pos == 0 && len > size) {
+				File::write(aBuf, len);
+				len = 0;
+			} else {
+				int i = min(size-pos, len);
+				memcpy(buf+pos, aBuf, i);
+				pos += i;
+				dcassert(pos <= size);
+				len -= i;
+
+				if(pos == size)
+					flush();
+				
+			}
+		}
+		return len;
+	}
+
+	virtual DWORD write(const string& aStr) throw(FileException) {
+		return write(aStr.c_str(), aStr.size());
+	}
+
+	virtual void close() { flush(); File::close(); };
+	virtual LONGLONG getSize() { flush(); return File::getSize(); };
+	virtual LONGLONG getPos() { flush(); return File::getPos(); };
+	virtual void setPos(LONGLONG pos) { flush(); File::setPos(pos); };	
+	virtual void movePos(LONGLONG pos) { flush(); File::movePos(pos); };
+	virtual DWORD read(void* aBuf, DWORD len) throw(FileException) { flush(); return File::read(aBuf, len); };
+	virtual string read(DWORD len) throw(FileException) { flush(); return File::read(len); };	
+	virtual string read() throw(FileException) {  flush(); return File::read(); };
+	
+private:
+	BYTE* buf;
+	DWORD pos;
+	DWORD size;
+};
+
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file File.h
- * $Id: File.h,v 1.5 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: File.h,v 1.6 2002/03/11 22:58:54 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.6  2002/03/11 22:58:54  arnetheduck
+ * A step towards internationalization
+ *
  * Revision 1.5  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *
