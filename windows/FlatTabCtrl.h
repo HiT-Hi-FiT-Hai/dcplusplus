@@ -332,7 +332,10 @@ private:
 
 		enum { MAX_LENGTH = 20 };
 
-		TabInfo(HWND aWnd) : hWnd(aWnd), dirty(false) { 
+		TabInfo(HWND aWnd) : hWnd(aWnd), len(0), xpos(0), row(0), dirty(false) { 
+			memset(&size, 0, sizeof(size));
+			memset(&boldSize, 0, sizeof(boldSize));
+			name[0] = 0;
 			update();
 		};
 
@@ -578,5 +581,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.11 2003/03/31 11:23:03 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.12 2003/04/01 12:25:35 arnetheduck Exp $
  */

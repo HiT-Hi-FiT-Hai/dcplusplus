@@ -45,7 +45,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386"
+				AdditionalOptions="/MACHINE:I386 /fixed:no"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib vc7/Debug/client/client.lib vc7/Debug/bzip/bzip2.lib vc7/debug/zlib/zlib.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"

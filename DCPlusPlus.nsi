@@ -61,7 +61,7 @@ Section "Uninstall"
   DeleteRegKey HKLM SOFTWARE\DC++
   ; remove files
   Delete "$INSTDIR\DCPlusPlus.exe"
-  Delete "$INSTDIR\dbghelp.dll
+  Delete "$INSTDIR\dbghelp.dll"
   Delete "$INSTDIR\DCPlusPlus.pdb"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\ReadMe.txt"
