@@ -1,4 +1,6 @@
-How to compile in 3 easy steps:
+The most important thing about compiling: If it didn't work, *you* screwed up.
+
+How to compile in 4 easy steps:
 
 1) Make sure you have stlport installed and that it's included _before_ the standard vc directories
    Use the one supplied on the dc++ sourceforge page (do not use the one from www.stlport.org unless 
@@ -9,13 +11,17 @@ How to compile in 3 easy steps:
      but I don't recommend this as it's completely untested, and is not being actively maintained.
      See client\config.h for further details.
 
-2) Make sure you've downloaded the WTL 7.1 Package and have all the files in it in your include path.
+2) Make sure you've downloaded the latest package and have all the files in it in your include path.
    You can find it on the dc++ sourceforge site. Mind the version.  Make sure it's listed after
-   stlport in your directory includes.
+   stlport in your directory includes, but before the rest of the ms include dirs.
+   
+3) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
+   You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this
+   one file, you can ask someone at the dev hub to supply it for you (or look for it in the DC++
+   bugzilla, it's attached to one of the bugs)
 
-3) Open the solution and press your build button. If you find your executable unreasonably large, you
+4) Open the solution and press your build button. If you find your executable unreasonably large, you
    probably compiled in debug mode - switch to release once you're done testing the code.
-
 
 Note 1;	I now use vc7.1 (2003). I don't care particularily if you use an older MS compiler (6.0, 7.0),
 	because these don't even come close to supporting the c++ standard. If you want to try anyway,
@@ -35,6 +41,13 @@ Note 3;	If you have problems, read the forum posts before posting. Somebody else
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...
 
+Linux / Unix:
+I've made some rudimentary autoconf/automake scripts now, so you can compile the client part into a library
+without too much hassle (I don't check if it compiles very often though...). You'll need the latest versions
+of automake and autoconf, and after getting the source (from CVS is easiest), do 
+"aclocal && automake && autoconf && configure && make" and you'll have the client part nicely compiled.
+When / if I test it I do it on a Gentoo AMD64 box with the latest gcc in 64-bit mode, so I don't have a clue
+if the 32-bit compile works...
 
 Submitting patches
 
