@@ -37,7 +37,7 @@ PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
 	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE }, 
 	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
-	{ IDC_REMOVE, ResourceManager::REMOVE_ACCEL },
+	{ IDC_REMOVE, ResourceManager::REMOVE },
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
 	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
 	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS }, 
@@ -100,9 +100,7 @@ void UploadPage::write()
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	
-	if(lv->uNewState & LVIS_FOCUSED)
-		::EnableWindow(GetDlgItem(IDC_REMOVE), TRUE);
+	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
 	return 0;		
 }
 
@@ -142,6 +140,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.11 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.12 2003/10/27 17:10:53 arnetheduck Exp $
  */
 

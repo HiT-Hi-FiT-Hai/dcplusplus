@@ -357,8 +357,8 @@ BEGIN
     EDITTEXT        IDC_SEARCH_STRING,7,17,88,12,ES_AUTOHSCROLL
     COMBOBOX        IDC_SOURCE_TYPE,105,17,61,78,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
-    EDITTEXT        IDC_MIN_FILE_SIZE,7,50,41,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_MAX_FILE_SIZE,53,50,41,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_MIN_FILE_SIZE,7,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_MAX_FILE_SIZE,53,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
     COMBOBOX        IDC_SIZE_TYPE,105,50,61,68,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP,WS_EX_CLIENTEDGE
     EDITTEXT        IDC_DEST_DIR,7,83,88,12,ES_AUTOHSCROLL
@@ -382,7 +382,7 @@ BEGIN
     PUSHBUTTON      "&Add",IDC_ADD_MENU,7,204,50,14
     PUSHBUTTON      "Chang&e",IDC_CHANGE_MENU,59,204,50,14
     PUSHBUTTON      "Move &Up",IDC_MOVE_UP,111,204,50,14
-    PUSHBUTTON      "Move &Down",IDC_BUTTON2,163,204,50,14
+    PUSHBUTTON      "Move &Down",IDC_MOVE_DOWN,163,204,50,14
     CONTROL         "",IDC_MENU_ITEMS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,261,192
@@ -537,8 +537,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,6,3
- PRODUCTVERSION 0,2,6,3
+ FILEVERSION 0,3,0,0
+ PRODUCTVERSION 0,3,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -555,12 +555,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 2, 6, 3"
+            VALUE "FileVersion", "0, 3, 0, 0"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 2, 6, 3"
+            VALUE "ProductVersion", "0, 3, 0, 0"
         END
     END
     BLOCK "VarFileInfo"
@@ -586,6 +586,32 @@ BEGIN
     "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
     "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
     "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_PUBLICHUBS ACCELERATORS 
+BEGIN
+    "R",            IDC_REFRESH,            VIRTKEY, ALT, NOINVERT
+    "C",            IDC_CONNECT,            VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ADLSEARCH ACCELERATORS 
+BEGIN
+    "N",            IDC_ADD,                VIRTKEY, ALT, NOINVERT
+    "P",            IDC_EDIT,               VIRTKEY, ALT, NOINVERT
+    "R",            IDC_REMOVE,             VIRTKEY, ALT, NOINVERT
+    "U",            IDC_MOVE_UP,            VIRTKEY, ALT, NOINVERT
+    "D",            IDC_MOVE_DOWN,          VIRTKEY, ALT, NOINVERT
+    "T",            IDC_HELP_FAQ,           VIRTKEY, ALT, NOINVERT
+END
+
+IDR_FAVORITES ACCELERATORS 
+BEGIN
+    "N",            IDC_NEWFAV,             VIRTKEY, ALT, NOINVERT
+    "P",            IDC_EDIT,               VIRTKEY, ALT, NOINVERT
+    "R",            IDC_REMOVE,             VIRTKEY, ALT, NOINVERT
+    "U",            IDC_MOVE_UP,            VIRTKEY, ALT, NOINVERT
+    "D",            IDC_MOVE_DOWN,          VIRTKEY, ALT, NOINVERT
+    "C",            IDC_CONNECT,            VIRTKEY, ALT, NOINVERT
 END
 
 

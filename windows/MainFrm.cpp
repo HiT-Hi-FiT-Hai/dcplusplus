@@ -713,10 +713,10 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
 	string site;
-
+	bool isFile = false;
 	switch(wID) {
-	case IDC_HELP_README: site = Util::getAppPath() + "README.txt"; break;
-	case IDC_HELP_CHANGELOG: site = Util::getAppPath() + "changelog.txt"; break;
+	case IDC_HELP_README: site = Util::getAppPath() + "README.txt"; isFile = true; break;
+	case IDC_HELP_CHANGELOG: site = Util::getAppPath() + "changelog.txt"; isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
 	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
 	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1&lang=en"; break;
@@ -728,7 +728,10 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	default: dcassert(0);
 	}
 
-	ShellExecute(NULL, NULL, site.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	if(isFile)
+		WinUtil::openFile(site);
+	else
+		WinUtil::openLink(site);
 
 	return 0;
 }
@@ -898,6 +901,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.35 2003/10/22 09:26:30 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.36 2003/10/27 17:10:53 arnetheduck Exp $
  */
 

@@ -146,7 +146,7 @@ public:
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(16*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
+		dataBytes(0), inbufSize(64*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -239,5 +239,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.49 2003/09/22 13:17:21 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.50 2003/10/27 17:10:53 arnetheduck Exp $
  */

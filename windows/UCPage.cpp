@@ -35,9 +35,9 @@ static char THIS_FILE[] = __FILE__;
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
 	{ IDC_MOVE_DOWN, ResourceManager::MOVE_DOWN },
-	{ IDC_ADD_MENU, ResourceManager::ADD_ACCEL },
+	{ IDC_ADD_MENU, ResourceManager::ADD },
 	{ IDC_CHANGE_MENU, ResourceManager::SETTINGS_CHANGE },
-	{ IDC_REMOVE_MENU, ResourceManager::REMOVE_ACCEL },
+	{ IDC_REMOVE_MENU, ResourceManager::REMOVE },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -180,6 +180,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.3 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.4 2003/10/27 17:10:53 arnetheduck Exp $
  */
 

@@ -71,6 +71,7 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
+		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(ucBase)
@@ -107,6 +108,7 @@ public:
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEnterUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
@@ -305,6 +307,11 @@ private:
 	StringMap ucParams;
 	StringMap tabParams;
 	bool tabMenuShown;
+
+	enum { MAX_CLIENT_LINES = 5 };
+	StringList lastLinesList;
+	string lastLines;
+	CToolTipCtrl ctrlLastLines;
 	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -362,6 +369,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.28 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.29 2003/10/27 17:10:53 arnetheduck Exp $
  */
 

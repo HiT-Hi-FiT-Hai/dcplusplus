@@ -117,7 +117,7 @@ Usage: "$Supports <feature1> <feature2> ... <featureN>|"
 This is mostly analogous to the client-client communcation part. The hub 
 must send a $Lock that begins with "EXTENDEDPROTOCOL", which will prompt 
 the client to answer with $Supports. Then, when a hub receives "$Supports" 
-it must answer with "$Supports" to tell the client about its features 
+it _must_ answer with "$Supports" to tell the client about its features 
 (which may differ from the ones the client supports). See client-client 
 part for details. The hub must not send "EXTENDEDPROTOCOL" unless it 
 supports at least one feature.

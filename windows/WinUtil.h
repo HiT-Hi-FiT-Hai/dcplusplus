@@ -86,7 +86,7 @@ public:
 	 * @param status Message that should be shown in the status line.
 	 * @return True if the command was processed, false otherwise.
 	 */
-	static bool checkCommand(HWND mdiClient, string& cmd, string& param, string& message, string& status);
+	static bool checkCommand(string& cmd, string& param, string& message, string& status);
 
 	static int getTextWidth(const string& str, HWND hWnd) {
 		HDC dc = ::GetDC(hWnd);
@@ -145,6 +145,11 @@ public:
 	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
+	static void openLink(const string& url);
+	static void openFile(const string& file) {
+		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+
 	static int getIconIndex(const string& aFileName);
 
 	static int getDirIconIndex() {
@@ -166,5 +171,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.17 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.18 2003/10/27 17:10:53 arnetheduck Exp $
  */

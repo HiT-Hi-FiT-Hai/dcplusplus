@@ -1,7 +1,9 @@
- -- 0.264 --
-* *IMPORTANT* Security update, upgrade unless you want to risk losing files anywhere
+ -- 0.300 2003-10-27 --
+* ---- IMPORTANT ---- 
+  Security update, upgrade unless you want to risk losing files anywhere
   on your hd (this is for all versions prior to this one) (thanks fusbar for bringing 
-  it to my attention) *IMPORTANT*
+  it to my attention) 
+  ---- IMPORTANT ----
 * Some code cleanup
 * Added vertical tiling of windows
 * Nick and password are now taken from favorite hubs on redirect (thanks saurod)
@@ -25,6 +27,7 @@
 * Added support for hub $Supports
 * Added hub-sent usercommands
 * Usercommands changed to raw in save file
+* New %[ parameters in user commands
 * &amp; is used to escape the & in chat (currently only escapes when really necessary, i e
   | or $ escape is used)
 * Added "Match Queue" to various right-click menus
@@ -36,6 +39,11 @@
 * Fixed right-click issue in the hub frame (thanks bzbetty)
 * Fixed a problem with detecting protocol extensions
 * Updates to the queue frame (bugs fixed and smarter when using with multiple drives)
+* Fixes to zblock sends (thanks sandos)
+* Links are opened in a new browser window
+* New STLPort again (4.5-1020)
+* Increased some buffer sizes to increase high-speed transfer performance
+
 
 -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)

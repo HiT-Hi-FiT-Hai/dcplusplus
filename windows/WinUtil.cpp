@@ -59,6 +59,7 @@ void WinUtil::init(HWND hWnd) {
 	file.CreatePopupMenu();
 
 	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(MENU_OPEN_FILE_LIST));
+	file.AppendMenu(MF_STRING, IDC_REFRESH_FILE_LIST, CSTRING(MENU_REFRESH_FILE_LIST));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
@@ -316,9 +317,9 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LIN
 
 #define MSGS 14
 
-string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back";
+string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>";
 
-bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& message, string& status) {
+bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& status) {
 	int i = cmd.find(' ');
 	if(i != string::npos) {
 		param = cmd.substr(i+1);
@@ -346,9 +347,7 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 		}
 	} else if(Util::stricmp(cmd.c_str(), "search") == 0) {
 		if(!param.empty()) {
-			SearchFrame* pChild = new SearchFrame();
-			pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
-			pChild->CreateEx(mdiClient);
+			SearchFrame::openWindow(param);
 		} else {
 			status = STRING(SPECIFY_SEARCH_STRING);
 		}
@@ -366,11 +365,35 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 	} else if(Util::stricmp(cmd.c_str(), "back") == 0) {
 		Util::setAway(false);
 		status = STRING(AWAY_MODE_OFF);
+	} else if(Util::stricmp(cmd.c_str(), "g") == 0) {
+		if(param.empty()) {
+			status = STRING(SPECIFY_SEARCH_STRING);
+		} else {
+			WinUtil::openLink("http://www.google.com/search?q="+param);
+		}
+	} else if(Util::stricmp(cmd.c_str(), "imdb") == 0) {
+		if(param.empty()) {
+			status = STRING(SPECIFY_SEARCH_STRING);
+		} else {
+			WinUtil::openLink("http://www.imdb.com/find?q="+param);
+		}
 	} else {
 		return false;
 	}
 
 	return true;
+}
+
+void WinUtil::openLink(const string& url) {
+	CRegKey key;
+	char buf[MAX_PATH];
+	ULONG len = MAX_PATH;
+	if(key.Open(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", KEY_READ) != ERROR_SUCCESS) {
+		::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	} else {
+		key.QueryStringValue(NULL, buf, &len);
+		::ShellExecute(NULL, NULL, buf, url.c_str(), NULL, SW_SHOWNORMAL);
+	}
 }
 
 void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
@@ -420,5 +443,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.24 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.25 2003/10/27 17:10:53 arnetheduck Exp $
  */

@@ -97,6 +97,18 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 				
 	ctrlUsers.SetImageList(WinUtil::userImages, LVSIL_SMALL);
 
+	TOOLINFO ti;
+	ZeroMemory(&ti, sizeof(ti));
+	ti.cbSize = sizeof(ti);
+	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+	ti.hwnd = m_hWnd;
+	ti.lpszText = LPSTR_TEXTCALLBACK;
+	ti.uId = (UINT_PTR)ctrlStatus.m_hWnd;
+	
+	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP);
+	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	ctrlLastLines.AddTool(&ti);
+
 	userMenu.CreatePopupMenu();
 	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
@@ -145,7 +157,7 @@ void HubFrame::onEnter() {
 			string param;
 			string message;
 			string status;
-			if(WinUtil::checkCommand(m_hWndMDIClient, s, param, message, status)) {
+			if(WinUtil::checkCommand(s, param, message, status)) {
 				if(!message.empty()) {
 					client->sendMessage(message);
 				}
@@ -189,7 +201,28 @@ void HubFrame::onEnter() {
 			} else if((Util::stricmp(s.c_str(), "favorite") == 0) || (Util::stricmp(s.c_str(), "fav") == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite");
+				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
+			} else if(Util::stricmp(s.c_str(), "pm") == 0) {
+				string::size_type j = param.find(' ');
+				if(j != string::npos) {
+					string nick = param.substr(0, j);
+					int k = ctrlUsers.find(nick);
+					if(k != -1) {
+						UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(k);
+						if(param.size() > j + 1)
+							PrivateFrame::openWindow(ui->user, param.substr(j+1));
+						else
+							PrivateFrame::openWindow(ui->user);
+					}
+				} else if(!param.empty()) {
+					int k = ctrlUsers.find(param);
+					if(k != -1) {
+						UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(k);
+						PrivateFrame::openWindow(ui->user);
+					}
+				}
+			} else {
+				client->sendMessage(s);
 			}
 		} else {
 			client->sendMessage(s);
@@ -480,6 +513,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		sr.left = sr.right + 2;
 		sr.right = sr.left + 16;
 		ctrlShowUsers.MoveWindow(sr);
+		ctrlLastLines.SetMaxTipWidth(w[0]);
 	}
 	int h = WinUtil::fontHeight + 4;
 
@@ -576,7 +610,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 				return 0;
 			}
 
-			ShellExecute(NULL, NULL, x.substr(start, end-start).c_str(), NULL, NULL, SW_SHOWNORMAL);
+			WinUtil::openLink(x.substr(start, end-start));
 		} else if(Util::strnicmp(x.c_str() + start, "dchub://", 8) == 0) {
 			bHandled = true;
 			string server, file;
@@ -661,10 +695,9 @@ LRESULT HubFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, 
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	cleanMenu(tabMenu);
 	return TRUE;
 }
-
-
 
 LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	RECT rc; 
@@ -918,16 +951,34 @@ LRESULT HubFrame::onEnterUsers(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHand
 	return 0;
 }
 
+LRESULT HubFrame::onGetToolTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMTTDISPINFO* nm = (NMTTDISPINFO*)pnmh;
+	lastLines.clear();
+	for(StringIter i = lastLinesList.begin(); i != lastLinesList.end(); ++i) {
+		lastLines += *i;
+		lastLines += "\r\n";
+	}
+	if(lastLines.size() > 2) {
+		lastLines.erase(lastLines.size() - 2);
+	}
+	nm->lpszText = const_cast<char*>(lastLines.c_str());
+	return 0;
+}
 
 void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
 	string line = "[" + Util::getShortTimeString() + "] " + aLine;
 
-	ctrlStatus.SetText(0, (line + "\r\n").c_str());
+	ctrlStatus.SetText(0, line.c_str());
+	while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
+		lastLinesList.erase(lastLinesList.begin());
+	lastLinesList.push_back(line);
+
 	setDirty();
 	
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine("*** " + aLine);
 	}
+
 }
 
 void HubFrame::closeDisconnected() {
@@ -1029,5 +1080,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.36 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.37 2003/10/27 17:10:53 arnetheduck Exp $
  */

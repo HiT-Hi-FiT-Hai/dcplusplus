@@ -88,7 +88,7 @@ LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 	if(item->iItem != -1) {
 		FinishedItem* entry = (FinishedItem*)ctrlList.GetItemData(item->iItem);
-		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
+		WinUtil::openFile(entry->getTarget());
 	}
 	return 0;
 }
@@ -108,7 +108,7 @@ LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
+		WinUtil::openFile(entry->getTarget());
 	}
 	return 0;
 }
@@ -118,7 +118,7 @@ LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		ShellExecute(NULL, NULL, Util::getFilePath(entry->getTarget()).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		WinUtil::openFile(entry->getTarget());
 	}
 	return 0;
 }
@@ -208,5 +208,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.12 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.13 2003/10/27 17:10:53 arnetheduck Exp $
  */

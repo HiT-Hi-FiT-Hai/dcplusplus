@@ -38,7 +38,7 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)
 {
 public:
 	static void gotMessage(const User::Ptr& aUser, const string& aMessage);
-	static void openWindow(const User::Ptr& aUser);
+	static void openWindow(const User::Ptr& aUser, const string& aMessage = Util::emptyString);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 
 	enum {
@@ -52,6 +52,7 @@ public:
 	}
 
 	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
+	typedef UCHandler<PrivateFrame> ucBase;
 
 	BEGIN_MSG_MAP(PrivateFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
@@ -67,6 +68,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
+		CHAIN_MSG_MAP(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -188,6 +190,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.13 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.14 2003/10/27 17:10:53 arnetheduck Exp $
  */
 

@@ -3,8 +3,7 @@
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Active / Search String</String>
-		<String Name="Add">Add</String>
-		<String Name="AddAccel">&amp;Add</String>
+		<String Name="Add">&amp;Add</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
 		<String Name="AddressNotAvailable">Address not available</String>
@@ -28,14 +27,13 @@
 		<String Name="BothUsersOffline">Both users offline</String>
 		<String Name="Browse">Browse...</String>
 		<String Name="BrowseAccel">&amp;Browse...</String>
-		<String Name="CantConnectInPassiveMode">Can't download from passive user while in passive mode</String>
 		<String Name="ChooseFolder">Choose folder</String>
 		<String Name="CloseConnection">Close connection</String>
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Close">Close</String>
 		<String Name="Compressed">Compressed</String>
 		<String Name="CompressionError">Error during compression</String>
-		<String Name="Connect">Connect</String>
+		<String Name="Connect">&amp;Connect</String>
 		<String Name="Connected">Connected</String>
 		<String Name="Connecting">Connecting...</String>
 		<String Name="ConnectingForced">Connecting (forced)...</String>
@@ -148,6 +146,7 @@
 		<String Name="MenuOpenFileList">Open file list...</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs\tCtrl+P</String>
 		<String Name="MenuReconnect">&amp;Reconnect\tCtrl+R</String>
+		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuSearch">&amp;Search\tCtrl+S</String>
 		<String Name="MenuSearchSpy">Search spy</String>
 		<String Name="MenuSettings">Settings...</String>
@@ -174,12 +173,12 @@
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuMinimizeAll">Minimize &amp;All</String>
 		<String Name="Move">Move/Rename</String>
-		<String Name="MoveDown">Move Down</String>
-		<String Name="MoveUp">Move Up</String>
+		<String Name="MoveDown">Move &amp;Down</String>
+		<String Name="MoveUp">Move &amp;Up</String>
 		<String Name="NetworkStatistics">Network Statistics</String>
 		<String Name="NetworkUnreachable">Network unreachable (are you connected to the internet?)</String>
 		<String Name="Next">Next</String>
-		<String Name="New">New...</String>
+		<String Name="New">&amp;New...</String>
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
@@ -216,17 +215,16 @@
 		<String Name="PressFollow">Press the follow redirect button to connect to </String>
 		<String Name="Priority">Priority</String>
 		<String Name="PrivateMessageFrom">Private message from </String>
-		<String Name="Properties">Properties</String>
+		<String Name="Properties">&amp;Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
 		<String Name="ReaddSource">Readd source</String>
 		<String Name="ReallyExit">Really exit?</String>
 		<String Name="Redirect">Redirect</String>
 		<String Name="RedirectAlreadyConnected">Redirect request received to a hub that's already connected</String>
 		<String Name="RedirectUser">Redirect user(s)</String>
-		<String Name="Refresh">Refresh</String>
+		<String Name="Refresh">&amp;Refresh</String>
 		<String Name="RefreshUserList">Refresh user list</String>
-		<String Name="Remove">Remove</String>
-		<String Name="RemoveAccel">&amp;Remove</String>
+		<String Name="Remove">&amp;Remove</String>
 		<String Name="RemoveAll">Remove all</String>
 		<String Name="RemoveAllSubdirectories">Remove all subdirectories before adding this one</String>
 		<String Name="RemoveFromAll">Remove user from queue</String>
@@ -306,12 +304,12 @@
 		<String Name="SettingsPort">Port (empty=random)</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
-		<String Name="SettingsPublicHubListHttpProxy"/>
+		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsRemoveDupes">Remove dupes completely from your share (otherwise, only their size is subtracted, but the files can be seen by others)</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
-		<String Name="SettingsSelectTextFace">Select text style</String>
-		<String Name="SettingsSelectWindowColor">Select window color</String>
+		<String Name="SettingsSelectTextFace">Select &amp;text style</String>
+		<String Name="SettingsSelectWindowColor">Select &amp;window color</String>
 		<String Name="SettingsSfvCheck">Enable automatic SFV checking</String>
 		<String Name="SettingsShareHidden">Share hidden files</String>
 		<String Name="SettingsShareSize">Total size:</String>
@@ -335,7 +333,7 @@
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
 		<String Name="SettingsUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
-		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text	files</String>
+		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\\User Commands</String>
 		<String Name="SettingsUserMenu">User Menu Items</String>
@@ -390,7 +388,7 @@
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
 		<String Name="WaitingToRetry">Waiting to retry...</String>
-		<String Name="WhatsThis">What's this?</String>
+		<String Name="WhatsThis">What's &amp;this?</String>
 		<String Name="Yes">Yes</String>
 		<String Name="YouAreBeingRedirected">You are being redirected to </String>
 	</Strings>

@@ -340,6 +340,9 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 				tmp += client->getNick(); 
 				tmp += '|';
 			}
+			if(!tmp.empty()) {
+				client->send(tmp);
+			}
 		} break;
 	case ClientListener::OP_LIST:
 		{
@@ -375,5 +378,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.39 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.40 2003/10/27 17:10:53 arnetheduck Exp $
  */

@@ -115,7 +115,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage) {
 	}
 }
 
-void PrivateFrame::openWindow(const User::Ptr& aUser) {
+void PrivateFrame::openWindow(const User::Ptr& aUser, const string& msg) {
 	PrivateFrame* p = NULL;
 	Lock l(cs);
 	FrameIter i = frames.find(aUser);
@@ -127,6 +127,8 @@ void PrivateFrame::openWindow(const User::Ptr& aUser) {
 		p = i->second;
 		p->MDIActivate(p->m_hWnd);
 	}
+	if(!msg.empty())
+		p->sendMessage(msg);
 }
 
 LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -164,7 +166,7 @@ void PrivateFrame::onEnter()
 			string param;
 			string message;
 			string status;
-			if(WinUtil::checkCommand(m_hWndMDIClient, s, param, message, status)) {
+			if(WinUtil::checkCommand(s, param, message, status)) {
 				if(!message.empty()) {
 					sendMessage(message);
 				}
@@ -183,6 +185,13 @@ void PrivateFrame::onEnter()
 				addLine(STRING(FAVORITE_USER_ADDED));
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
 				addLine("*** " + WinUtil::commands + ", /clear, /grant, /close, /favorite");
+			} else {
+				if(user->isOnline()) {
+					sendMessage(s);
+				} else {
+					ctrlStatus.SetText(0, CSTRING(USER_WENT_OFFLINE));
+					resetText = false;
+				}
 			}
 		} else {
 			if(user->isOnline()) {
@@ -332,7 +341,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.19 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.20 2003/10/27 17:10:53 arnetheduck Exp $
  */
 
 
