@@ -172,7 +172,7 @@ private:
 	CStatusBarCtrl ctrlStatus;
 	CButton ctrlConnect;
 	CButton ctrlRefresh;
-	CStatic ctrlAddress;
+	CButton ctrlAddress;
 	CButton ctrlFilterDesc;
 	CEdit ctrlFilter;
 	CMenu hubsMenu;
@@ -214,9 +214,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.17 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.18 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.18  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.17  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *

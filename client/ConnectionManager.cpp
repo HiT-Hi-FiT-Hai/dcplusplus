@@ -157,6 +157,12 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 		pendingDelete.clear();
 
 		ConnectionQueueItem::TimeIter i = pendingDown.begin();
+		bool startDown = true;
+		
+		if( ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
+			((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) ) ) {
+			startDown = false;
+		}
 		
 		while(i != pendingDown.end()) {
 			ConnectionQueueItem* cqi = i->first;
@@ -170,7 +176,8 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 			}
 
 			if( ((i->second + 60*1000) < aTick) ) {
-				if((attempts <= 3) ) {
+
+				if(startDown && (attempts <= 3) ) {
 					// Nothing's happened for 60 seconds, try again...
 					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 						pendingDown.erase(i++);
@@ -461,9 +468,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.36 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.37 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.37  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.36  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

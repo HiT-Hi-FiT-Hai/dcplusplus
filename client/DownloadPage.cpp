@@ -11,13 +11,21 @@ static char THIS_FILE[] = __FILE__;
 
 PropPage::Item DownloadPage::items[] = {
 	{ IDC_DOWNLOADDIR,	SettingsManager::DOWNLOAD_DIRECTORY, PropPage::T_STR }, 
+	{ IDC_DOWNLOADS, SettingsManager::DOWNLOAD_SLOTS, PropPage::T_INT },
+	{ IDC_MAXSPEED, SettingsManager::MAX_DOWNLOAD_SPEED, PropPage::T_INT },
+	{ IDC_PROXY, SettingsManager::HTTP_PROXY, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
 LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::read((HWND)*this, items);
-
+	
+	CUpDownCtrl spin;
+	spin.Attach(GetDlgItem(IDC_SLOTSSPIN));
+	spin.SetRange32(0, 100);
+	spin.Attach(GetDlgItem(IDC_SPEEDSPIN));
+	spin.SetRange32(0, 10000);
 	// Do specialized reading here
 	return TRUE;
 }

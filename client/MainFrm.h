@@ -39,7 +39,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private ConnectionManagerListener
 {
 public:
-	MainFrame() : lastUpload(-1), stopperThread(NULL) { 
+	MainFrame() : trayIcon(false), lastUpload(-1), stopperThread(NULL) { 
 	};
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
@@ -88,7 +88,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
-		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
+		MESSAGE_HANDLER(WM_SIZE, onSize)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -100,6 +100,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
+		COMMAND_ID_HANDLER(IDC_FAVUSERS, onFavoriteUsers)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
@@ -108,6 +109,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		CHAIN_MDI_CHILD_COMMANDS()
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
+		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
@@ -118,11 +120,12 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
-	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
@@ -136,6 +139,20 @@ public:
 	
 	static DWORD WINAPI stopper(void* p);
 
+	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
+			ctrlTransfers.setSortDirection(!ctrlTransfers.getSortDirection());
+		} else {
+			if(l->iSubItem == COLUMN_SIZE) {
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+			} else {
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			}
+		}
+		return 0;
+	}
+
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
 		return 0;
@@ -143,27 +160,25 @@ public:
 	
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		dcassert(trayIcon);
 		if (lParam == WM_LBUTTONUP)
 		{
-			NOTIFYICONDATA nid;
-			nid.cbSize = sizeof(NOTIFYICONDATA);
-			nid.hWnd = m_hWnd;
-			nid.uID = 0;
-			nid.uFlags = 0;
-			::Shell_NotifyIcon(NIM_DELETE, &nid);
 			ShowWindow(SW_SHOW);
+			ShowWindow(SW_RESTORE);
 		}
 		return 0;
 	}
 	
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		NOTIFYICONDATA nid;
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = m_hWnd;
-		nid.uID = 0;
-		nid.uFlags = 0;
-		::Shell_NotifyIcon(NIM_DELETE, &nid);
+		if(trayIcon) {
+			NOTIFYICONDATA nid;
+			nid.cbSize = sizeof(NOTIFYICONDATA);
+			nid.hWnd = m_hWnd;
+			nid.uID = 0;
+			nid.uFlags = 0;
+			::Shell_NotifyIcon(NIM_DELETE, &nid);
+		}
 		bHandled = FALSE;
 		return 0;
 	}
@@ -319,6 +334,8 @@ private:
 	
 	CMenu transferMenu;
 	
+	bool trayIcon;
+
 	int lastUpload;
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -438,9 +455,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.48 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.49 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.49  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.48  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

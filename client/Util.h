@@ -233,6 +233,23 @@ public:
 		
 		return buf;
 	}
+
+	static string formatBytesFraction(LONGLONG part, LONGLONG aBytes) {
+		char buf[64];
+		if(aBytes < 1024) {
+			sprintf(buf, "%I64d/%I64d B", part, aBytes );
+		} else if(aBytes < 1024*1024) {
+			sprintf(buf, "%.02f/%.02f kB", (double)part/1024.0, (double)aBytes/(1024.0) );
+		} else if(aBytes < 1024*1024*1024) {
+			sprintf(buf, "%.02f/%.02f MB", (double)part/(1024.0*1024.0), (double)aBytes/(1024.0*1024.0) );
+		} else if(aBytes < 1024I64*1024I64*1024I64*1024I64) {
+			sprintf(buf, "%.02f/%.02f GB", (double)part/(1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0) );
+		} else {
+			sprintf(buf, "%.02f/%.02f TB", (double)part/(1024.0*1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
+		}
+		
+		return buf;
+	}
 	
 	static string formatSeconds(LONGLONG aSec) {
 		char buf[64];
@@ -336,9 +353,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.35 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: Util.h,v 1.36 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.36  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.35  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

@@ -30,16 +30,20 @@
  * @return A string with the content, or empty if download failed
  */
 void HttpConnection::downloadFile(const string& aUrl) {
-
-	Util::decodeUrl(aUrl, server, port, file);
-
-	if(file.empty())
-		file = "/";
+	dcassert(Util::findSubString(aUrl, "http://") == 0);
+	
+	if(SETTING(HTTP_PROXY).empty()) {
+		Util::decodeUrl(aUrl, server, port, file);
+		if(file.empty())
+			file = "/";
+	} else {
+		Util::decodeUrl(SETTING(HTTP_PROXY), server, port, file);
+		file = aUrl;
+	}
 
 	if(port == 0)
 		port = 80;
 	
-
 	socket.connect(server, port);
 }
 
@@ -66,9 +70,12 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.7 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.8 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.8  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.7  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

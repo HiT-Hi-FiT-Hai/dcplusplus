@@ -34,12 +34,13 @@ const string SettingsManager::settingTags[] =
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
-	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", "SENTRY", 
+	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
+	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
-	"RemoveDupes", "BufferSize",
+	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed",
 	"SENTRY"
 };
 
@@ -80,7 +81,9 @@ SettingsManager::SettingsManager()
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
 	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config;http://dcplusplus.sourceforge.net/PublicHubList.config;http://www.neo-modus.com/PublicHubList.config");
-
+	setDefault(DOWNLOAD_SLOTS, 0);
+	setDefault(MAX_DOWNLOAD_SPEED, 0);
+	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	setDefault(TEXT_FONT, Util::encodeFont(lf));			
@@ -202,9 +205,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.26 2002/03/23 01:58:43 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.27 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.27  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.26  2002/03/23 01:58:43  arnetheduck
  * Work done on favorites...
  *

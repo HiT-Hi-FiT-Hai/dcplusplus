@@ -116,22 +116,29 @@ public:
 	
 	User::List getFavoriteUsers() { Lock l(cs); return users; };
 	
-	void addUser(const User::Ptr& aUser) { 
+	void addFavoriteUser(const User::Ptr& aUser) { 
 		Lock l(cs);
 		if(find(users.begin(), users.end(), aUser) == users.end()) {
 			users.push_back(aUser);
+			fire(HubManagerListener::USER_ADDED, aUser);
 		}
 	}
 
-	void removeUser(const User::Ptr& aUser) {
+	void removeFavoriteUser(const User::Ptr& aUser) {
 		Lock l(cs);
 		User::Iter i = find(users.begin(), users.end(), aUser);
-		if(i != users.end())
+		if(i != users.end()) {
+			fire(HubManagerListener::USER_REMOVED, aUser);
 			users.erase(i);
+		}
 	}
 
+	bool isFavoriteUser(const User::Ptr& aUser) {
+		Lock l(cs);
+		return (find(users.begin(), users.end(), aUser) != users.end());
+	}
+	
 	void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
-
 	void addFavorite(const FavoriteHubEntry& aEntry) {
 		FavoriteHubEntry* f;
 
@@ -255,9 +262,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.24 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.25 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.25  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.24  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *

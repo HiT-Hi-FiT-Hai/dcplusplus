@@ -178,6 +178,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		if( (!j->second->isOnline()) && (j->second->getLastHubIp() == aClient->getIp()) ) {
 			if(putOnline) {
 				j->second->setClient(aClient);
+				fire(ClientManagerListener::USER_UPDATED, j->second);
 			}
 			return j->second;
 		}
@@ -188,6 +189,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		if(!m->second->isOnline()) {
 			if(putOnline) {
 				m->second->setClient(aClient);
+				fire(ClientManagerListener::USER_UPDATED, m->second);
 			}
 			return m->second;
 		}
@@ -197,6 +199,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 	UserIter k = users.insert(make_pair(aNick, new User(aNick)));
 	if(putOnline) {
 		k->second->setClient(aClient);
+		fire(ClientManagerListener::USER_UPDATED, k->second);
 	}
 	return k->second;
 }
@@ -224,9 +227,12 @@ void ClientManager::onTimerMinute(DWORD aTick) {
 }
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.14 2002/03/13 23:06:07 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.15 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.15  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.14  2002/03/13 23:06:07  arnetheduck
  * New info sent in the description part of myinfo...
  *

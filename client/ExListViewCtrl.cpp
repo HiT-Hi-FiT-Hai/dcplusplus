@@ -84,7 +84,8 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 	} else {
 
 		string& b = aList[sortColumn];
-		int c = 0;
+		int c = atoi(b.c_str());
+		double f = atof(b.c_str());
 		LPARAM data = NULL;			
 		int low = 0;
 		int high = count-1;
@@ -103,7 +104,6 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 				break;
 			case SORT_INT:
 				GetItemText(loc, sortColumn, buf, 128);
-				c = atoi(b.c_str());
 				comp = compare(c, atoi(buf)); break;
 			case SORT_FUNC:
 				data = GetItemData(loc);
@@ -118,6 +118,9 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 					comp = fun((LPARAM)&a, (LPARAM)&b);
 				} 
 				break;
+			case SORT_FLOAT:
+				GetItemText(loc, sortColumn, buf, 128);
+				comp = compare(f, atof(buf)); break;
 			default:
 				dcassert(0);
 			}
@@ -154,6 +157,8 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 				comp = fun((LPARAM)&a, (LPARAM)&b);
 			}
 			break;
+		case SORT_FLOAT:
+			comp = compare(f, atof(buf)); break;
 		default:
 			dcassert(0);
 		}
@@ -202,9 +207,12 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.6 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.7 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.cpp,v $
+ * Revision 1.7  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.6  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

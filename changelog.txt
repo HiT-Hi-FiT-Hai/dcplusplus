@@ -3,6 +3,13 @@
 * Added public hublist filter
 * Minor UI fixes
 * Changed error messages in public hubs frame
+* Fixed some minimize to tray issues (window popping up...)
+* Reduced flicker in the bottom tabs when resizing window
+* Added simultaneous downloads limit option, as well as max download speed to start new downloads
+* Added a favorite users frame
+* Added proxy support for downloading the hub list
+* Fixed a crash when loading invalid hub lists
+* Added transfer window sorting
 
  -- 0.162 2002-03-18 --
 * Fixed another hub counting bug (this is becoming annoying...gee, I should be sleeping...=)

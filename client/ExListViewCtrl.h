@@ -35,7 +35,8 @@ public:
 			SORT_STRING_NOCASE,
 			SORT_INT,
 			SORT_FUNC,
-			SORT_FUNC_ITEM
+			SORT_FUNC_ITEM,
+			SORT_FLOAT
 	};
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		sortColumn = aColumn;
@@ -137,6 +138,11 @@ public:
 				p->GetItem(&b);
 				return p->ascending ? p->fun((LPARAM)&a, (LPARAM)&b) : -p->fun((LPARAM)&a, (LPARAM)&b);
 			}
+		case SORT_FLOAT:
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			return p->ascending ? compare(atof(buf), atof(buf2)) : -compare(atof(buf), atof(buf2));
+			
 		default:
 			return -1;
 		}
@@ -162,9 +168,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.17 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.17  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.16  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

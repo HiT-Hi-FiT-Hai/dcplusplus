@@ -44,6 +44,14 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* 
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
+
+	if( ((SETTING(DOWNLOAD_SLOTS) != 0) && getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
+		((SETTING(MAX_DOWNLOAD_SPEED) != 0 && getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) ) ) {
+		
+		removeConnection(aConn);
+		return;
+	}
+	
 	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser(), ConnectionManager::getInstance()->getQueueItem(aConn));
 	
 	if(d) {
@@ -271,9 +279,12 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.51 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.52 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.52  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.51  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

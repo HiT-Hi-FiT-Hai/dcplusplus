@@ -302,6 +302,10 @@ SOURCE=.\client\UserConnection.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\UsersFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Util.cpp
 # End Source File
 # End Group
@@ -531,6 +535,10 @@ SOURCE=.\client\User.h
 # Begin Source File
 
 SOURCE=.\client\UserConnection.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\UsersFrame.h
 # End Source File
 # Begin Source File
 

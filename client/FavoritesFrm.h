@@ -32,23 +32,10 @@
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, private HubManagerListener
 {
 public:
-	enum {
-		COLUMN_NAME,
-		COLUMN_DESCRIPTION,
-		COLUMN_NICK,
-		COLUMN_PASSWORD,
-		COLUMN_SERVER,
-		COLUMN_LAST
-	};
-	
-	FavoriteHubsFrame() : stopperThread(NULL), users(0), hubs(0) {
-		
-	};
+	FavoriteHubsFrame() : users(0), hubs(0) { };
+	virtual ~FavoriteHubsFrame() { };
 
-	virtual ~FavoriteHubsFrame() {
-	};
-
-	DECLARE_FRAME_WND_CLASS("FavoriteHubsFrame", IDR_FAVORITES);
+	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_BTNFACE);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		frame = NULL;
@@ -59,8 +46,6 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
@@ -73,6 +58,7 @@ public:
 	END_MSG_MAP()
 		
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -100,30 +86,11 @@ public:
 		return FALSE; 
 	}
 	
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
-		EndPaint(&ps);
-		return 0;
-	}
-	
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
 		return CMDIChildWindowImpl2<FavoriteHubsFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		HubManager::getInstance()->removeListener(this);
-		bHandled = FALSE;
-		return 0;
-	}
-
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 		if(l->iItem != -1) {
@@ -183,6 +150,16 @@ public:
 	static FavoriteHubsFrame* frame;
 	
 private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NAME = COLUMN_FIRST,
+		COLUMN_DESCRIPTION,
+		COLUMN_NICK,
+		COLUMN_PASSWORD,
+		COLUMN_SERVER,
+		COLUMN_LAST
+	};
+	
 	int hubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;
@@ -193,7 +170,6 @@ private:
 	CMenu hubsMenu;
 	
 	ExListViewCtrl ctrlHubs;
-	HANDLE stopperThread;
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -237,16 +213,18 @@ private:
 			break;
 		}
 	};
-	
 };
 
 #endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.6 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.7 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.h,v $
+ * Revision 1.7  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.6  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *

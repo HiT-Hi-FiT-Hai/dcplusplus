@@ -91,16 +91,20 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 		}
 	}
 
-	{
-		Lock l(cs);
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if(((*i)->getStatus() == QueueItem::WAITING) && ((*i)->getPriority() != QueueItem::PAUSED) )
-			for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
-				if((*j)->getUser()->isOnline()) {
-					ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
+	if( !(((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
+		((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) )) ) {
+		
+			{
+				Lock l(cs);
+				for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+					if(((*i)->getStatus() == QueueItem::WAITING) && ((*i)->getPriority() != QueueItem::PAUSED) )
+						for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
+							if((*j)->getUser()->isOnline()) {
+								ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
+							}
+						}
 				}
 			}
-		}
 	}
 	
 	if(dirty) {
@@ -392,9 +396,12 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.13 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.14 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.14  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.13  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

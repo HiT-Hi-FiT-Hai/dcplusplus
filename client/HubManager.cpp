@@ -36,8 +36,10 @@ void HubManager::onHttpFinished() throw() {
 		i = 0;
 		
 		while( (i < downloadBuf.size()) && ((j=downloadBuf.find("\r\n", i)) != string::npos)) {
-			StringTokenizer tok(downloadBuf.substr(i, j-i), '|');
 			i = j + 2;
+			StringTokenizer tok(downloadBuf.substr(i, j-i), '|');
+			if(tok.getTokens().size() < 4)
+				continue;
 
 			StringList::const_iterator k = tok.getTokens().begin();
 			const string& name = *k++;
@@ -69,6 +71,7 @@ void HubManager::save(SimpleXML* aXml) {
 	aXml->stepIn();
 	for(User::Iter j = users.begin(); j != users.end(); ++j) {
 		aXml->addTag("User");
+		aXml->addChildAttrib("Nick", (*j)->getNick());
 		aXml->addChildAttrib("LastHubIp", (*j)->getLastHubIp());
 		aXml->addChildAttrib("LastHubName", (*j)->getLastHubName());
 	}
@@ -102,7 +105,7 @@ void HubManager::load(SimpleXML* aXml) {
 				u->setLastHubIp(aXml->getChildAttrib("LastHubIp"));
 				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
 			}
-			addUser(u);
+			addFavoriteUser(u);
 		}
 		aXml->stepOut();
 	}
@@ -129,9 +132,12 @@ void HubManager::refresh() {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.18 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.19 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.19  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.18  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *

@@ -133,7 +133,7 @@ public:
 			for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
 				t->update(dc, boldFont);
-				if(pos <= rc.right && (pos + t->getWidth()) >= rc.left) {
+				if(pos <= rc.right && (pos + t->getWidth() + t->getFill()) >= rc.left) {
 					if(*i == active) {
 						activepos = pos;
 						pos+=(*i)->getWidth();
@@ -147,7 +147,7 @@ public:
 			}
 			
 			if(active) {
-				if(activepos != -1 && activepos <= rc.right && (activepos + active->getWidth()) >= rc.left) {
+				if(activepos != -1 && activepos <= rc.right && (activepos + active->getWidth() + active->getFill()) >= rc.left) {
 					drawTab(dc, active, activepos, true);
 				}
 				dc.MoveTo(0, 0);
@@ -272,7 +272,7 @@ class FlatTabCtrl : public FlatTabCtrlImpl<FlatTabCtrl> {
 public:
 	static CWndClassInfo& GetWndClassInfo() { 
 		static CWndClassInfo wc = { 
-			{ sizeof(WNDCLASSEX), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, StartWindowProc, 
+			{ sizeof(WNDCLASSEX), 0, StartWindowProc, 
 		  0, 0, NULL, NULL, NULL, (HBRUSH)(COLOR_BTNFACE + 1), NULL, GetWndClassName(), NULL }, 
 		  NULL, NULL, IDC_ARROW, TRUE, 0, _T("") }; 
 		return wc; 
@@ -339,9 +339,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.8 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.9 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.9  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.8  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

@@ -64,6 +64,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -95,6 +96,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs\tCtrl+F",      IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -129,6 +131,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -160,6 +163,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -191,6 +195,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -222,6 +227,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -253,6 +259,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -284,6 +291,7 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -315,6 +323,39 @@ BEGIN
         MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_USERS MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
         MENUITEM SEPARATOR
@@ -458,14 +499,30 @@ BEGIN
     LTEXT           "Download public hublist from:",IDC_STATIC,15,187,93,8
 END
 
-IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
+IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 262, 225
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_DOWNLOADDIR,15,19,186,14,ES_AUTOHSCROLL
-    GROUPBOX        "Default download directory",IDC_STATIC,7,7,261,33
-    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,209,19,50,14
+    EDITTEXT        IDC_DOWNLOADDIR,14,19,186,14,ES_AUTOHSCROLL
+    GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
+    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,209,19,39,14
+    GROUPBOX        "Options",IDC_STATIC,7,45,248,82
+    EDITTEXT        IDC_DOWNLOADS,14,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,37,56,11,
+                    14
+    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,49,59,87,8
+    LTEXT           "Don't start new downloads if download speed is more than",
+                    IDC_STATIC,14,77,184,8
+    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,223,74,11,
+                    14
+    LTEXT           "kB/s",IDC_STATIC,231,77,16,8
+    EDITTEXT        IDC_PROXY,14,106,235,14,ES_AUTOHSCROLL
+    LTEXT           "HTTP proxy address for downloading the hub list (i e www.proxy.com:8080)",
+                    IDC_STATIC,14,95,237,8
 END
 
 IDD_UPLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -569,7 +626,8 @@ BEGIN
     IDD_DOWNLOADPAGE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 268
+        RIGHTMARGIN, 255
+        VERTGUIDE, 14
         TOPMARGIN, 7
         BOTTOMMARGIN, 217
     END
@@ -656,6 +714,7 @@ BEGIN
     "R",            ID_FILE_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SEARCH,         VIRTKEY, CONTROL, NOINVERT
     "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
+    "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
 END
 
 

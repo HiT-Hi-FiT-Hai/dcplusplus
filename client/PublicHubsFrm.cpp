@@ -109,8 +109,9 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlRefresh.SetWindowText(CSTRING(REFRESH));
 	ctrlRefresh.SetFont(ctrlHubs.GetFont());
 
-	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlAddress.SetWindowText(CSTRING(ADDRESS));
+	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_GROUPBOX, WS_EX_TRANSPARENT);
+	ctrlAddress.SetWindowText(CSTRING(MANUAL_ADDRESS));
 	ctrlAddress.SetFont(ctrlHubs.GetFont());
 	
 	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -277,13 +278,15 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	}
 	
 	CRect rc = rect;
-	rc.top += 56;
-	rc.bottom -=28;
+	rc.top += 2;
+	rc.bottom -=(56);
 	ctrlHubs.MoveWindow(rc);
-	
+
 	rc = rect;
-	rc.top+=2;
+	rc.top = rc.bottom - 52;
 	rc.bottom = rc.top + 46;
+	rc.right -= 100;
+	rc.right -= ((rc.right - rc.left) / 2) + 1;
 	ctrlFilterDesc.MoveWindow(rc);
 
 	rc.top += 16;
@@ -293,32 +296,29 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlFilter.MoveWindow(rc);
 
 	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
-	rc.left += 140;
+	rc.top = rc.bottom - 52;
+	rc.bottom = rc.top + 46;
 	rc.right -= 100;
-	ctrlHub.MoveWindow(rc);
-	
-	rc.left -= 43;
-	rc.right = rc.left + 43;
-	rc.top += 3;
+	rc.left += ((rc.right - rc.left) / 2) + 1;
 	ctrlAddress.MoveWindow(rc);
 	
-	rc = rect;
-	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
-	
-	rc.left += 2;
-	rc.right = rc.left + 80;
-	ctrlRefresh.MoveWindow(rc);
+	rc.top += 16;
+	rc.bottom -= 8;
+	rc.right -= 8;
+	rc.left += 8;
+	ctrlHub.MoveWindow(rc);
 	
 	rc = rect;
 	rc.bottom -= 2;
 	rc.top = rc.bottom - 22;
-	
 	rc.left = rc.right - 96;
 	rc.right -= 2;
 	ctrlConnect.MoveWindow(rc);
+
+	rc.top -= 24;
+	rc.bottom -= 24;
+	ctrlRefresh.MoveWindow(rc);
+	
 }
 
 bool PublicHubsFrame::checkNick() {
@@ -399,9 +399,12 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.18 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.19 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.19  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.18  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *

@@ -119,6 +119,22 @@ public:
 	}
 
 	void abortDownload(const string& aTarget);
+	int getAverageSpeed() {
+		Lock l(cs);
+		int avg = 0;
+		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
+			Download* d = *i;
+			LONGLONG dif = (LONGLONG)(TimerManager::getTick() - d->getStart());
+			if(dif > 0) {
+				avg += (int)(d->getTotal() * (LONGLONG)1000 / dif);
+			}
+		}
+		return avg;
+	}
+	int getDownloads() {
+		Lock l(cs);
+		return downloads.size();
+	}
 private:
 	
 	CriticalSection cs;
@@ -198,9 +214,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.36 2002/03/05 11:19:35 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.37 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.37  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.36  2002/03/05 11:19:35  arnetheduck
  * Fixed a window closing bug
  *

@@ -28,7 +28,20 @@
 #include "ConnectionManager.h"
 #include "TimerManager.h"
 
-class ClientManager : private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
+class ClientManagerListener {
+public:
+	typedef ClientManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+	enum Types {
+		USER_UPDATED
+	};
+
+	virtual void onAction(Types, const User::Ptr&) { };
+};
+
+class ClientManager : public Speaker<ClientManagerListener>, private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
 {
 public:
 	Client* getClient();
@@ -90,8 +103,11 @@ public:
 	}
 
 	void ClientManager::putUserOffline(User::Ptr& aUser) {
-		Lock l(cs);
-		aUser->setClient(NULL);
+		{
+			Lock l(cs);
+			aUser->setClient(NULL);
+		}
+		fire(ClientManagerListener::USER_UPDATED, aUser);
 	}
 	
 private:
@@ -177,9 +193,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.19 2002/03/13 23:06:07 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.20 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.20  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.19  2002/03/13 23:06:07  arnetheduck
  * New info sent in the description part of myinfo...
  *

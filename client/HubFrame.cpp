@@ -28,6 +28,7 @@
 #include "UploadManager.h"
 #include "StringTokenizer.h"
 #include "ResourceManager.h"
+#include "HubManager.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -156,28 +157,29 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	CMenuItemInfo mi;
 	int n = 0;
-
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
+
 	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.wID = IDC_GETLIST;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
 	mi.wID = IDC_PRIVATEMESSAGE;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(GRANT_EXTRA_SLOT));
 	mi.wID = IDC_GRANTSLOT;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
+	mi.dwTypeData = const_cast<char*>(CSTRING(ADD_TO_FAVORITES));
+	mi.wID = IDC_ADD_TO_FAVORITES;
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
 	mi.fType = MFT_SEPARATOR;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -309,6 +311,19 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 			} catch(...) {
 				// ...
 			}
+		}
+	}
+	return 0;
+}
+
+LRESULT HubFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	char buf[256];
+	
+	if(client && client->isConnected()) {
+		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
+			HubManager::getInstance()->addFavoriteUser(ClientManager::getInstance()->getUser(buf, client->getIp()));
 		}
 	}
 	return 0;
@@ -651,9 +666,12 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.47 2002/03/15 15:12:35 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.48 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.48  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.47  2002/03/15 15:12:35  arnetheduck
  * 0.16
  *

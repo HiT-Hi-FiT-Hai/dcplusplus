@@ -26,7 +26,7 @@
 #include "PublicHubsFrm.h"
 #include "SimpleXML.h"
 #include "PropertiesDlg.h"
-
+#include "UsersFrame.h"
 #include "ConnectionManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
@@ -121,6 +121,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			}
 			ctrlTransfers.SetRedraw(TRUE);
 		}
+		ctrlTransfers.resort();
 		delete l;
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
@@ -424,7 +425,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
@@ -600,6 +601,17 @@ LRESULT MainFrame::onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT MainFrame::onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(UsersFrame::frame == NULL) {
+		UsersFrame* pChild = new UsersFrame();
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+	} else {
+		MDIActivate(UsersFrame::frame->m_hWnd);
+	}
+	return 0;
+}
+
 LRESULT MainFrame::onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(NotepadFrame::frame == NULL) {
 		NotepadFrame* pChild = new NotepadFrame();
@@ -734,9 +746,9 @@ LRESULT MainFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
-LRESULT MainFrame::onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if (wParam== SC_MINIMIZE && BOOLSETTING(MINIMIZE_TRAY)) {
+	if(wParam == SIZE_MINIMIZED && BOOLSETTING(MINIMIZE_TRAY)) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
 		nid.hWnd = m_hWnd;
@@ -749,7 +761,16 @@ LRESULT MainFrame::onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		
 		::Shell_NotifyIcon(NIM_ADD, &nid);
 		ShowWindow(SW_HIDE);
-		return 0;
+		trayIcon = true;
+	} else if(wParam == SIZE_RESTORED && trayIcon) {
+		NOTIFYICONDATA nid;
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = m_hWnd;
+		nid.uID = 0;
+		nid.uFlags = 0;
+		::Shell_NotifyIcon(NIM_DELETE, &nid);
+		ShowWindow(SW_SHOW);
+		trayIcon = false;		
 	}
 	
 	bHandled = FALSE;
@@ -806,9 +827,12 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.70 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.71 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.71  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.70  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

@@ -188,7 +188,14 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 
 	i->columns[COLUMN_TARGET] = aQI->getTargetFileName();
 	i->columns[COLUMN_STATUS] = STRING(WAITING);
-	i->columns[COLUMN_SIZE] = aQI->getSize() == -1 ?STRING(UNKNOWN) : Util::formatBytes(aQI->getSize());
+	if(aQI->getSize() == -1) {
+		i->columns[COLUMN_SIZE] = STRING(UNKNOWN);
+	} else {
+		LONGLONG x = File::getSize(aQI->getTarget());
+		if(x == -1)
+			x = 0;
+		i->columns[COLUMN_SIZE] = Util::formatBytesFraction(x, aQI->getSize()); 
+	}
 	switch(aQI->getPriority()) {
 	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
 	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = STRING(LOW); break;
@@ -584,9 +591,12 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.13 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.14 2002/03/25 22:23:25 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.14  2002/03/25 22:23:25  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.13  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

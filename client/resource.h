@@ -35,6 +35,7 @@
 #define IDB_TOOLBAR20                   221
 #define IDR_QUEUE                       221
 #define IDD_FAVORITEHUB                 223
+#define IDR_USERS                       224
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -106,6 +107,14 @@
 #define IDC_BROWSE                      1053
 #define IDC_PUBLIC_HUBS                 1054
 #define IDC_THANKS                      1055
+#define IDC_DOWNLOADS                   1056
+#define IDC_SLOTSSPIN                   1057
+#define IDC_MAXSPEED                    1058
+#define IDC_SPEEDSPIN                   1059
+#define IDC_FAVUSERS                    1060
+#define IDC_PROXY                       1060
+#define IDC_ADD_TO_FAVORITES            1061
+#define IDC_COMMENT                     1062
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -121,8 +130,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
-#define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1056
+#define _APS_NEXT_COMMAND_VALUE         32786
+#define _APS_NEXT_CONTROL_VALUE         1061
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

@@ -22,7 +22,6 @@
 #include "FavoritesFrm.h"
 #include "HubFrame.h"
 #include "ClientManager.h"
-#include "LineDlg.h"
 #include "FavHubProperties.h"
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
@@ -51,9 +50,9 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
 	} else {
-		ctrlHubs.SetExtendedListViewStyle(LVS_EX_CHECKBOXES);
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
 	}
 	
 	ctrlHubs.SetBkColor(Util::bgColor);
@@ -113,32 +112,22 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 7;
+
 	mi.dwTypeData = const_cast<char*>(CSTRING(CONNECT));
 	mi.wID = IDC_CONNECT;
 	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 6;
 	mi.dwTypeData = const_cast<char*>(CSTRING(NEW));
 	mi.wID = IDC_NEWFAV;
 	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 13;
 	mi.dwTypeData = const_cast<char*>(CSTRING(PROPERTIES));
 	mi.wID = IDC_EDIT;
 	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 21;
 	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE));
 	mi.wID = IDC_REMOVE;
 	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
-	
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -223,12 +212,36 @@ bool FavoriteHubsFrame::checkNick() {
 	return true;
 }
 
+LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	HubManager::getInstance()->removeListener(this);
+	
+	string tmp1;
+	string tmp2;
+	
+	ctrlHubs.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
+		columnSizes[j] = ctrlHubs.GetColumnWidth(j);
+		tmp1 += Util::toString(columnIndexes[j]) + ",";
+		tmp2 += Util::toString(columnSizes[j]) + ",";
+	}
+	tmp1.erase(tmp1.size()-1, 1);
+	tmp2.erase(tmp2.size()-1, 1);
+	
+	SettingsManager::getInstance()->set(SettingsManager::FAVORITESFRAME_ORDER, tmp1);
+	SettingsManager::getInstance()->set(SettingsManager::FAVORITESFRAME_WIDTHS, tmp2);
+	
+	bHandled = FALSE;
+	return 0;
+}
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.10 2002/03/23 01:58:42 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.11 2002/03/25 22:23:24 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.11  2002/03/25 22:23:24  arnetheduck
+ * Lots of minor updates
+ *
  * Revision 1.10  2002/03/23 01:58:42  arnetheduck
  * Work done on favorites...
  *
