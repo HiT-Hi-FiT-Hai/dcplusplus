@@ -392,7 +392,15 @@ void WinUtil::openLink(const string& url) {
 		::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	} else {
 		key.QueryStringValue(NULL, buf, &len);
-		::ShellExecute(NULL, NULL, buf, url.c_str(), NULL, SW_SHOWNORMAL);
+		string cmd = buf;
+		string::size_type i = cmd.find('"');
+		if(i != string::npos) {
+			string::size_type j = cmd.find('"', i+1);
+			if(j != string::npos) {
+				cmd = cmd.substr(i+1, j-i-1);
+			}
+		}
+		::ShellExecute(NULL, "open", cmd.c_str(), url.c_str(), NULL, SW_SHOWNORMAL);
 	}
 }
 
@@ -443,5 +451,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.25 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.26 2003/10/27 17:43:45 arnetheduck Exp $
  */
