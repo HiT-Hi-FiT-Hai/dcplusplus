@@ -2,8 +2,10 @@
 * Fixed a resource leak that might have caused the sudden deaths (thanks carxor)
 * Added saving of last kick & redirect reasons (and server...)
 * Added hub name to the password dialog
-* Changed default port to 1412, should improve compatibility with a lot of firewalls (that only allow incoming data on port >1024)
-
+* Changed default port to 1412, should improve compatibility with a lot of firewalls 
+  (that only allow incoming data on port >1024)
+* Updated user handling, issues related to diffent users with same nick should work out better now 
+  (also increased performance in user handling) (Major change...)
 
  -- 0.154 2002-02-11 --
 * Added passive user detection, those that are behind a set of bricks are passive.

@@ -499,11 +499,11 @@ private:
 		}
 	}
 	
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const StringList& aList) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) {
 		switch(type) {
 		case ClientListener::OP_LIST:
-			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
-				if(*i == client->getNick()) {
+			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+				if((*i)->getNick() == client->getNick()) {
 					op = true;
 					return;
 				}
@@ -557,9 +557,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.53 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.54 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.54  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.53  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

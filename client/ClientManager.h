@@ -33,7 +33,7 @@ public:
 	Client* getClient();
 	void putClient(Client* aClient);
 
-	int getTotalUserCount() {
+	int getUserCount() {
 		Lock l(cs);
 
 		int c = 0;
@@ -43,39 +43,21 @@ public:
 		return c;
 	}
 
-	User::Ptr& findUser(const string& aNick, const string& aHint = "") {
-		dcassert(aNick.length() > 0);
-		{
-			Lock l(cs);
-
-			if(aHint.size() > 0) {
-				for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-					if((*i)->getServer() == aHint) {
-						User::Ptr& u = (*i)->getUser(aNick);
-						if(u) {
-							return u;
-						} else {
-							break;
-						}
-					} 
-				}
-			}
-			
-			for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-				User::Ptr& u = (*i)->getUser(aNick);
-				if(u) {
-					return u;
-				}
-			}
-			return User::nuser;
+	LONGLONG getAvailable() {
+		Lock l(cs);
+		
+		LONGLONG c = 0;
+		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+			c+=(*i)->getAvailable();
 		}
+		return c;
 	}
-	
+
 	bool isConnected(const string& aServer) {
 		Lock l(cs);
 
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if((*i)->getServer() == aServer) {
+			if((*i)->getServer() == aServer || (*i)->getIp() == aServer) {
 				return true;
 			}
 		}
@@ -94,10 +76,37 @@ public:
 
 	void infoUpdated();
 
+	User::Ptr& getUser(const string& aNick, const string& aHint = Util::emptyString);
+	User::Ptr& getUser(const string& aNick, Client* aClient, bool putOnline = true);
+	
+	bool isOnline(const string& aNick) {
+		Lock l(cs);
+		UserIter i = users.find(aNick);
+		if(i != users.end()) {
+			return i->second->isOnline();
+		}
+		return false;
+	}
+
+	void putUserOffline(User::Ptr& aUser) {
+		Lock l(cs);
+		aUser->setClient(NULL);
+	}
+
 private:
+#ifdef HAS_HASH
+	typedef hash_multimap<string, User::Ptr> UserMap;
+#else
+	typedef multimap<string, User::Ptr> UserMap;
+#endif
+	typedef UserMap::iterator UserIter;
+	typedef pair<UserIter, UserIter> UserPair;
+
 	Client::List clients;
 	CriticalSection cs;
 	
+	UserMap users;
+
 	friend class Singleton<ClientManager>;
 	ClientManager() { };
 	virtual ~ClientManager() { };
@@ -126,11 +135,11 @@ private:
 			
 		}
 	}
-	virtual void onAction(ClientListener::Types type, Client* client, const StringList& aList) {
+	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList) {
 		switch(type) {
 		case ClientListener::NICK_LIST:		// Fall through...
 		case ClientListener::OP_LIST:
-			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
+			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
 				// Make sure we're indeed connected (if the server resets on the first getInfo, 
 				// we'll on trying aNicks.size times...not good...)
 				if(!client->isConnected()) {
@@ -138,7 +147,7 @@ private:
 				}
 				client->getInfo(*i);
 				if(type == OP_LIST) {
-					if(*i == client->getNick())
+					if((*i)->getNick() == client->getNick())
 						client->setOp(true);
 				}
 			}
@@ -164,9 +173,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.14 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.15  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.14  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

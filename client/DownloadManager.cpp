@@ -96,11 +96,6 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	dcdebug("Checking downloads...");
 	
-	// If the user is offline, check if he's maybe back online, and change the user pointer if that is the case...
-	if( !aConn->getUser()->isOnline() ) {
-		ConnectionManager::getInstance()->updateUser(aConn);
-	}
-
 	Download* d = QueueManager::getInstance()->getDownload(aConn);
 
 	if(d) {
@@ -350,9 +345,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.48 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.49 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.49  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.48  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

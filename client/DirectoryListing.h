@@ -101,25 +101,6 @@ public:
 		return root->getTotalFileCount();
 	}
 
-	void download(Directory* aDir, const string& aUser, const string& aTarget) {
-		string target = aTarget + aDir->getName() + '\\';
-		// First, recurse over the directories
-		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
-			download(*j, aUser, target);
-		}
-		// Then add the files
-		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
-			File* file = *i;
-			try {
-				download(file, aUser, target + file->getName());
-			} catch(QueueException e) {
-				// Catch it here to allow parts of directories to be added...
-			} catch(FileException e) {
-				//..
-			}
-		}
-	}
-
 	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget) {
 		string target = aTarget + aDir->getName() + '\\';
 		// First, recurse over the directories
@@ -139,9 +120,6 @@ public:
 		}
 	}
 	
-	void download(File* aFile, const string& aUser, const string& aTarget) {
-		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
-	}
 	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
 		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
@@ -168,9 +146,12 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.9 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.10  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.9  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

@@ -95,9 +95,6 @@ public:
 	LONGLONG getTotal() { return total; };
 	void resetTotal() { total = 0; };
 	
-	DWORD getStart() { return start; };
-	void setStart(DWORD aStart) { start = aStart; };
-
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
@@ -106,9 +103,8 @@ public:
 	~Transfer() { if(file) delete file; };
 
 	GETSET(ConnectionQueueItem*, cqi, CQI);
-	
+	GETSET(DWORD, start, Start);
 private:
-	DWORD start;
 	LONGLONG last;
 	LONGLONG total;
 	
@@ -161,9 +157,6 @@ public:
 		STATE_DONE,
 		// DownloadManager
 		STATE_FILELENGTH
-		
-		
-		
 	};
 
 	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
@@ -300,9 +293,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.35 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.36 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.36  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.35  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

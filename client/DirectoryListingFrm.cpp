@@ -364,10 +364,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
 		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
 		try {
-			if(user->isOnline())
-				QueueManager::getInstance()->add(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
-			else
-				QueueManager::getInstance()->add(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+			QueueManager::getInstance()->add(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
@@ -379,9 +376,12 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.24 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.25 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.25  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.24  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

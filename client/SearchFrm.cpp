@@ -169,10 +169,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		string target = SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName();
 		if(Util::browseSaveFile(target)) {
 			try {
-				if(sr->getUser())
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
-				else
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), target);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
 			} catch(QueueException e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			} catch(FileException e) {
@@ -195,10 +192,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		dcassert((wID - IDC_DOWNLOAD_TARGET) <	(WORD)targets.size());
 		try {
-			if(sr->getUser())
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
-			else
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
@@ -279,7 +273,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	}
 	
 	StringList* l = new StringList();
-	l->push_back(aResult->getNick());
+	l->push_back(aResult->getUser()->getNick());
 	l->push_back(file);
 	int i = file.rfind('.');
 	if(i != string::npos) {
@@ -413,10 +407,7 @@ LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		try {
-			if(sr->getUser())
-				QueueManager::getInstance()->addList(sr->getUser());
-			else
-				QueueManager::getInstance()->addList(sr->getNick());
+			QueueManager::getInstance()->addList(sr->getUser());
 		} catch(...) {
 			// ...
 		}
@@ -430,10 +421,7 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 	if(item->iItem != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(item->iItem);
 		try { 
-			if(sr->getUser())
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
-			else
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
+			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
 		} catch(QueueException e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
@@ -450,10 +438,7 @@ void SearchFrame::downloadSelected(const string& aDir) {
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		try { 
-			if(sr->getUser())
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
-			else
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), aDir + sr->getFileName());
+			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
 		} catch(Exception e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
@@ -464,9 +449,7 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	int i=-1;
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-		if(sr->getUser()) {
-			PrivateFrame::openWindow(sr->getUser(), m_hWndMDIClient, getTab());
-		}
+		PrivateFrame::openWindow(sr->getUser(), m_hWndMDIClient, getTab());
 	}
 	return 0;
 }
@@ -481,9 +464,12 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.30 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.31 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.31  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.30  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

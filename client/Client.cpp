@@ -22,6 +22,7 @@
 #include "Socket.h"
 #include "Client.h"
 #include "CriticalSection.h"
+#include "ClientManager.h"
 
 void Client::connect(const string& aServer) {
 	
@@ -140,21 +141,12 @@ void Client::onLine(const string& aLine) throw() {
 		j = param.find(' ', i);
 		nick = param.substr(i, j-i);
 		i = j + 1;
-		User::Ptr u;
+		User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 
 		{
 			Lock l(cs);
-
-			User::NickIter it = users.find(nick);
-			if(it == users.end()) {
-				u = new User(nick, User::ONLINE);
-				u->setClient(this);
-				users[nick] = u;
-			} else {
-				u = it->second;
-			}
+			users[nick] = u;
 		}
-
 		j = param.find('$', i);
 		u->setDescription(param.substr(i, j-i));
 		i = j + 3;
@@ -170,18 +162,23 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::MY_INFO, this, u);
 		
 	} else if(cmd == "$Quit") {
-		cs.enter();
-		User::NickIter i = users.find(param);
-		if(i != users.end()) {
-			User::Ptr u = i->second;
-			users.erase(i);
-			cs.leave();
-			u->unsetFlag(User::ONLINE);
-			fire(ClientListener::QUIT, this, u);
-		} else {
-			cs.leave();
+		User::Ptr u;
+		{
+			Lock l(cs);
+			User::NickIter i = users.find(param);
+			if(i == users.end()) {
+				dcdebug("C::onLine Quitting user %s not found", param.c_str());
+				return;
+			}
+			
+			u = i->second;
+			users.erase(param);
+
 		}
-		
+
+		fire(ClientListener::QUIT, this, u);
+		ClientManager::getInstance()->putUserOffline(u);
+
 	} else if(cmd == "$ConnectToMe") {
 		param = param.substr(param.find(' ') + 1);
 		string server = param.substr(0, param.find(':'));
@@ -229,27 +226,19 @@ void Client::onLine(const string& aLine) throw() {
 		}
 		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
-		User::Ptr u;
-
+		
+		User::Ptr& u = ClientManager::getInstance()->getUser(param, this);
 		{
 			Lock l(cs);
-
-			User::NickIter i = users.find(param);
-			if(i == users.end()) {
-				u = new User(param, User::ONLINE);
-				u->setClient(this);
-				users[param] = u;
-			} else {
-				u = i->second;
-			}
-			
-			if(u->getNick() == getNick()) {
-				u->setFlag(User::DCPLUSPLUS);
-				if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
-					u->setFlag(User::PASSIVE);
-			}
+			users[param] = u;
 		}
 
+		if(u->getNick() == getNick()) {
+			u->setFlag(User::DCPLUSPLUS);
+			if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+				u->setFlag(User::PASSIVE);
+		}
+		
 		fire(ClientListener::HELLO, this, u);
 	} else if(cmd == "$ForceMove") {
 		fire(ClientListener::FORCE_MOVE, this, param);
@@ -258,46 +247,36 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$ValidateDenide") {
 		fire(ClientListener::VALIDATE_DENIED, this);
 	} else if(cmd == "$NickList") {
-		StringList v;
+		User::List v;
+
 		int j, k = 0;
 		while( (j=param.find("$$", k)) != string::npos) {
 			string nick = param.substr(k, j-k);
-			cs.enter();
-			if(users.find(nick) == users.end()) {
-				User::Ptr u = new User(nick, User::ONLINE);
-				u->setClient(this);
-				users[nick] = u;
-				cs.leave();
-				fire(ClientListener::MY_INFO, this, u);
-			} else {
-				cs.leave();
-			}
-			v.push_back(nick);
+			User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
+			users[param] = u;
+			fire(ClientListener::MY_INFO, this, u);
+
+			v.push_back(u);
 			k = j + 2;
 		}
 		
 		fire(ClientListener::NICK_LIST, this, v);
 		
 	} else if(cmd == "$OpList") {
-		StringList v;
+		User::List v;
 		int j, k;
 		k = 0;
 		while( (j=param.find("$$", k)) != string::npos) {
 			string nick = param.substr(k, j-k);
+			User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 			{
 				Lock l(cs);
-				User::NickIter i = users.find(nick);
-				if( i == users.end()) {
-					User::Ptr u = new User(nick, User::OP | User::ONLINE);
-					u->setClient(this);
-					users[nick] = u;
-				} else {
-					i->second->setFlag(User::OP);
-				}
+				users[nick] = u;
 			}
-
-			fire(ClientListener::MY_INFO, this, users[nick]);
-			v.push_back(nick);
+			u->setFlag(User::OP);
+			fire(ClientListener::MY_INFO, this, u);
+			
+			v.push_back(u);
 			k = j + 2;
 		}
 		fire(ClientListener::OP_LIST, this, v);
@@ -309,12 +288,7 @@ void Client::onLine(const string& aLine) throw() {
 			if(j != -1) {
 				string from = param.substr(i, j - 1 - i);
 				if(from.size() > 0 && param.size() > (j + 1)) {
-					User::Ptr& user = getUser(from);
-					if(user) {
-						fire(ClientListener::PRIVATE_MESSAGE, this, user, param.substr(j + 1));
-					} else {
-						fire(ClientListener::PRIVATE_MESSAGE, this, from, param.substr(j + 1));
-					}
+					fire(ClientListener::PRIVATE_MESSAGE, this, ClientManager::getInstance()->getUser(from, this, false), param.substr(j + 1));
 				}
 			}
 		}
@@ -331,12 +305,30 @@ void Client::onLine(const string& aLine) throw() {
 	}
 }
 
+void Client::disconnect(bool rl /* = true */) throw() {	
+	if(rl)
+		socket.removeListener(this);
+	
+	socket.disconnect();
+	
+	{ 
+		Lock l(cs);
+		
+		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+			ClientManager::getInstance()->putUserOffline(i->second);
+		}
+		users.clear();
+	}
+}
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.27 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.28 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.28  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.27  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

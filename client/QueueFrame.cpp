@@ -183,15 +183,10 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 			tmp += ", ";
 		
 		QueueItem::Source::Ptr sr = *j;
-		if(sr->getUser()) {
+		if(sr->getUser()->isOnline())
+			online++;
 			
-			if(sr->getUser()->isOnline())
-				online++;
-			
-			tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
-		} else {
-			tmp += sr->getNick() + " (Offline)";
-		}
+		tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
 	}
 	if(tmp.empty()) {
 		tmp = "No users";
@@ -319,7 +314,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
-					mi.dwTypeData = (LPSTR)(*i)->getNick().c_str();
+					mi.dwTypeData = (LPSTR)(*i)->getUser()->getNick().c_str();
 					mi.dwItemData = (DWORD)*i;
 					mi.wID = IDC_BROWSELIST + menuItems;
 					browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
@@ -397,10 +392,7 @@ LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			if(s->getUser())
-				QueueManager::getInstance()->addList(s->getUser());
-			else
-				QueueManager::getInstance()->addList(s->getNick());
+			QueueManager::getInstance()->addList(s->getUser());
 		} catch(...) {
 			// ...
 		}
@@ -420,7 +412,7 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->removeSource(q->getTarget(), s->getNick());
+			QueueManager::getInstance()->removeSource(q->getTarget(), s->getUser());
 		} catch(...) {
 			// ...
 		}
@@ -474,9 +466,12 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.10  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.9  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

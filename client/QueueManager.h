@@ -65,15 +65,12 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		Source(const string& aNick, const string& aPath) : nick(aNick), path(aPath) { };
-		Source(const User::Ptr& aUser, const string& aPath) : user(aUser), path(aPath), nick(aUser->getNick()) { };
-		Source(const Source& aSource) : nick(aSource.nick), path(aSource.path), user(aSource.user) { }
+		Source(const User::Ptr& aUser, const string& aPath) : user(aUser), path(aPath) { };
+		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
 		void setUser(const User::Ptr& aUser) {
 			user = aUser;
-			if(user)
-				nick = user->getNick();
 		}
 		
 		string getFileName() {
@@ -84,8 +81,6 @@ public:
 				return path;
 			}
 		}
-
-		GETSETREF(string, nick, Nick);
 		GETSETREF(string, path, Path);
 		
 	private:
@@ -149,22 +144,9 @@ private:
 		}
 		return s;
 	}
-	Source* addSource(const string& aNick, const string& aPath) {
-		Source* s = getSource(aNick);
-		if(s == NULL) {
-			Source* s = new Source(aNick, aPath);
-			sources.push_back(s);
-		}
-		return s;
-	}
-	
 	void removeSource(const User::Ptr& aUser) {
-		removeSource(aUser->getNick());
-	}
-	
-	void removeSource(const string& aNick) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getNick() == aNick) {
+			if((*i)->getUser() == aUser) {
 				// Bingo!
 				delete *i;
 				sources.erase(i);
@@ -173,14 +155,6 @@ private:
 		}
 	}
 	
-	void setCurrent(const string& aNick) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getNick() == aNick) {
-				// Bingo!
-				current = *i;
-			}
-		}
-	}
 	void setCurrent(const User::Ptr& aUser) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser) {
@@ -204,15 +178,6 @@ private:
 		}
 		return NULL;
 	}
-	Source* getSource(const string& aNick) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getNick() == aNick) {
-				return *i;
-			}
-		}
-		return NULL;
-	}
-	
 	bool isSource(const User::Ptr& aUser) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser) {
@@ -222,8 +187,6 @@ private:
 		return false;
 	}
 
-	bool updateUsers(bool reconnect);
-	
 };
 
 class QueueManagerListener {
@@ -255,32 +218,14 @@ public:
 	void add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
 			 bool aResume = true) throw(QueueException, FileException);
 	
-	void add(const string& aFile, const string& aSize, const string& aUser, const string& aTarget, 
-			 bool aResume = true) throw(QueueException, FileException) {
-
-		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume);
-	}
-	void add(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, 
-			 bool aResume = true) throw(QueueException, FileException);
-
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
 		string file = Util::getAppPath() + aUser->getNick() + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false);
 		userLists.push_back(file);
 	}
 	
-	void addList(const string& aUser) throw(QueueException, FileException) {
-		string file = Util::getAppPath() + aUser + ".DcLst";
-		add(USER_LIST_NAME, -1, aUser, file, false);
-		userLists.push_back(file);
-	}
-
 	void remove(const string& aTarget) throw(QueueException);
-	void removeSource(const string& aTarget, const User::Ptr& aUser, bool removeConn = true) {
-		removeSource(aTarget, aUser->getNick(), removeConn);
-	}
-
-	void removeSource(const string& aTarget, const string& aUser, bool removeConn = true);
+	void removeSource(const string& aTarget, User::Ptr& aUser, bool removeConn = true);
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
@@ -367,9 +312,12 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.9 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.10  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.9  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

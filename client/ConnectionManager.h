@@ -94,7 +94,6 @@ public:
 		putConnection(aSource);
 	}
 	void connect(const string& aServer, short aPort, const string& aNick);
-	void updateUser(UserConnection* aConn);
 	
 	bool isConnected(const User::Ptr& aUser, bool downOnly = true) {
 		Lock l(cs);
@@ -217,9 +216,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.28 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.29 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.29  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.28  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

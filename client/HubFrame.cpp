@@ -235,6 +235,9 @@ void HubFrame::onEnter() {
 	}
 }
 
+/**
+ * @todo fix the user stuff...
+ */
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	char buf[256];
@@ -243,13 +246,8 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-			string user = buf;
-			User::Ptr& u = client->getUser(user);
 			try {
-				if(u)
-					QueueManager::getInstance()->addList(u);
-				else 
-					QueueManager::getInstance()->addList(user);
+				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(buf, client->getIp()));
 			} catch(...) {
 				// ...
 			}
@@ -265,11 +263,8 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-			string user = buf;
-			User::Ptr& u = client->getUser(user);
-			if(u) {
-				PrivateFrame::openWindow(u, m_hWndMDIClient, getTab());
-			}
+			
+			PrivateFrame::openWindow(ClientManager::getInstance()->getUser(buf, client->getIp()), m_hWndMDIClient, getTab());
 		}
 	}
 	return 0;
@@ -283,13 +278,8 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	Lock l(cs);
 	if(client && client->isConnected() && item->iItem != -1) {
 		ctrlUsers.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
-		user = buf;
-		User::Ptr& u = client->getUser(user);
 		try {
-			if(u)
-				QueueManager::getInstance()->addList(u);
-			else 
-				QueueManager::getInstance()->addList(user);
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user, client->getIp()));
 		} catch(...) {
 			// ...
 		}
@@ -313,10 +303,7 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 			{
 				Lock l(cs);
 				if(client) {
-					User::Ptr& u = client->getUser(user);
-					if(u) {
-						u->kick(dlg.line);
-					}
+					ClientManager::getInstance()->getUser(user, client->getIp())->kick(dlg.line);
 				}
 			}
 		}
@@ -334,10 +321,7 @@ LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		{
 			Lock l(cs);
 			if(client) {
-				User::Ptr& u = client->getUser(user);
-				if(u) {
-					UploadManager::getInstance()->reserveSlot(u);
-				}
+				UploadManager::getInstance()->reserveSlot(ClientManager::getInstance()->getUser(user, client->getIp()));
 			}
 		}
 	}
@@ -365,10 +349,7 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 				{
 					Lock l(cs);
 					if(client) {
-						User::Ptr& u = client->getUser(user);
-						if(u) {
-							client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
-						}
+						client->opForceMove(ClientManager::getInstance()->getUser(user, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
 					}
 				}
 			}
@@ -503,9 +484,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.38 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.39 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.39  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.38  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

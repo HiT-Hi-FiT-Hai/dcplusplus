@@ -382,7 +382,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				int slots = UploadManager::getInstance()->getFreeSlots();
 				sr->setFreeSlots(slots <= 0 ? 0 : slots);
 				sr->setSlots(SETTING(SLOTS));
-				sr->setNick(aClient->getNick());
+				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
 				sr->setHubAddress(aClient->getIp());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
@@ -414,8 +414,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				int slots = UploadManager::getInstance()->getFreeSlots();
 				sr->setFreeSlots(slots <= 0 ? 0 : slots);
 				sr->setSlots(SETTING(SLOTS));
-				sr->setNick(SETTING(NICK));
-				sr->setNick(aClient->getNick());
+				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
 				sr->setHubAddress(aClient->getIp());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
@@ -446,9 +445,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.27 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.28 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.28  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.27  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

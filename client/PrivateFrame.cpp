@@ -64,7 +64,10 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 	if(i == frames.end()) {
 		bool found = false;
 		for(i = frames.begin(); i != frames.end(); ++i) {
-			if(i->first->getNick() == aUser->getNick()) {
+			if( (!i->first->isOnline()) && 
+				(i->first->getNick() == aUser->getNick()) &&
+				(i->first->getLastHubIp() == aUser->getLastHubIp()) ) {
+				
 				found = true;
 				p = i->second;
 				frames.erase(i);
@@ -95,7 +98,10 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 	if(i == frames.end()) {
 		bool found = false;
 		for(i = frames.begin(); i != frames.end(); ++i) {
-			if(i->first->getNick() == aUser->getNick()) {
+			if( (!i->first->isOnline()) && 
+				(i->first->getNick() == aUser->getNick()) &&
+				(i->first->getLastHubIp() == aUser->getLastHubIp()) ) {
+
 				found = true;
 				p = i->second;
 				frames.erase(i);
@@ -117,13 +123,6 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 
 void PrivateFrame::onEnter()
 {
-	if(!user->isOnline()) {
-		User::Ptr& p = ClientManager::getInstance()->findUser(user->getNick());
-		if(p) {
-			setUser(p);
-		}
-	}
-
 	if(user->isOnline()) {
 		char* message;
 		
@@ -141,9 +140,12 @@ void PrivateFrame::onEnter()
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.18 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.18  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.17  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

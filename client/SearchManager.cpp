@@ -35,14 +35,14 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 		SearchResult sr;
 		
 		int i, j;
-
+		string nick;
 		// Find out if this is a file or directory...skip the directories for now...
 		if(x.find('/') > x.find((char)5)) {
 			i = 4;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
 			}
-			sr.setNick(x.substr(i, j-i));
+			nick = x.substr(i, j-i);
 			i = j + 1;
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
@@ -74,18 +74,21 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 			}
 			sr.setHubAddress(x.substr(i, j-i));
 
-			sr.setUser(ClientManager::getInstance()->findUser(sr.getNick(), sr.getHubAddress()));
+			sr.setUser(ClientManager::getInstance()->getUser(nick, sr.getHubAddress()));
+			
 			fire(SearchManagerListener::SEARCH_RESULT, &sr);
 		}
-
 	}
 }
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.14 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.15  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.14  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -42,7 +42,8 @@ SocketException::SocketException(int aError) {
 Socket::Stats Socket::stats = { 0, 0, 0, 0 };
 
 string SocketException::errorToString(int aError) {
-	switch(aError) {
+	return strerror(aError);
+/*	switch(aError) {
 	case EWOULDBLOCK:
 		return "Operation would block execution";
 	case EACCES:
@@ -71,7 +72,7 @@ string SocketException::errorToString(int aError) {
 		char tmp[128];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
 		return tmp;
-	}
+	}*/
 }
 
 Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
@@ -195,6 +196,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
+				TIMEVAL t = { 0, 500 };
 				fd_set rfd, wfd, efd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
@@ -203,8 +205,9 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				FD_SET(sock, &wfd);
 				FD_SET(sock, &efd);
 				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, &efd, NULL);
+				select(1, &rfd, &wfd, &efd, &t);
 			} else if(errno == ENOBUFS) {
+				TIMEVAL t = { 1, 0 };
 				fd_set rfd, wfd, efd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
@@ -213,7 +216,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				FD_SET(sock, &wfd);
 				FD_SET(sock, &efd);
 				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, &efd, NULL);
+				select(1, &rfd, &wfd, &efd, &t);
 				if(sendSize > 32) {
 					sendSize /= 2;
 					dcdebug("Reducing send window size to %d\n", sendSize);
@@ -237,9 +240,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.22 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.23 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.23  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.22  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

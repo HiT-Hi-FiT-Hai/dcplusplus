@@ -106,11 +106,26 @@ void User::clientMessage(const string& aMsg) {
 	}
 }
 
+void User::setClient(Client* aClient) { 
+	Lock l(cs); 
+	client = aClient; 
+	if(client == NULL)
+		unsetFlag(ONLINE);
+	else {
+		setLastHubIp(aClient->getIp());
+		setLastHubName(aClient->getName());
+		setFlag(ONLINE);
+	}
+};
+
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: User.cpp,v 1.8 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.8  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.7  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -33,9 +33,6 @@ const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 
-	// Avoid firing while holding cs:s...
-	QueueItem::List updated;
-
 	{
 		Lock l(cs);
 
@@ -45,9 +42,6 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 			if(q->getStatus() == QueueItem::RUNNING) {
 				continue;
 			}
-			
-			if(q->updateUsers(q->getPriority() != QueueItem::PAUSED))
-				updated.push_back(q);
 			
 			if(BOOLSETTING(AUTO_SEARCH) && q->getPriority() != QueueItem::PAUSED) {
 				bool online = false;
@@ -87,51 +81,12 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 		}
 	}
 
-	for(QueueItem::Iter i = updated.begin(); i != updated.end(); ++i) {
-		fire(QueueManagerListener::SOURCES_UPDATED, *i);
-	}
-
 	if(dirty) {
 		SettingsManager::getInstance()->save();		
 	}
 	
 }
 
-bool QueueItem::updateUsers(bool reconnect) {
-	bool updated = false;
-	for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-		Source* s = *i;
-		if( !s->getUser()) {
-			s->setUser(ClientManager::getInstance()->findUser(s->getNick()));
-			if(!s->getUser()) {
-				continue;
-			}
-			
-			updated = true;
-		}
-
-		if( !s->getUser()->isOnline() ) {
-
-			if(ConnectionManager::getInstance()->isConnected(s->getUser())) {
-				continue;
-			}
-
-			updated = true;
-			s->setUser(ClientManager::getInstance()->findUser(s->getNick()));
-			if(!s->getUser()) {
-				continue;
-			}
-		}
-
-		if(reconnect) {
-			ConnectionManager::getInstance()->getDownloadConnection(s->getUser());
-		}
-
-	}
-
-	return updated;
-}
- 
 void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
 					   bool aResume) throw(QueueException, FileException) {
 
@@ -156,35 +111,6 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 	dirty = true;
 	// And make sure we're trying to connect to this fellow...
 	ConnectionManager::getInstance()->getDownloadConnection(aUser);
-}
-
-void QueueManager::add(const string& aFile, LONGLONG aSize, const string& aNick, const string& aTarget, 
-					   bool aResume) throw(QueueException, FileException) {
-	User::Ptr& u = ClientManager::getInstance()->findUser(aNick);
-	if(u) {
-		add(aFile, aSize, u, aTarget, aResume);
-	}
-
-	// Alright, first we get a queue item, new or old...
-	bool newItem = false;
-	QueueItem* q = getQueueItem(aFile, aTarget, aSize, aResume, newItem);
-
-	QueueItem::Source* s = NULL;
-	{
-		Lock l(cs);
-		s = q->addSource(aNick, aFile);
-		if(newItem) {
-			queue.push_back(q);
-		}
-	}
-	
-	// Good, now notify the listeners of the changes
-	if(newItem)
-		fire(QueueManagerListener::ADDED, q);
-	
-	fire(QueueManagerListener::SOURCES_UPDATED, q);
-	dirty = true;
-	
 }
 
 QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, LONGLONG aSize, bool aResume, bool& newItem) {
@@ -331,14 +257,14 @@ void QueueManager::remove(QueueItem* aQI) throw(QueueException) {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, const string& aUser, bool removeConn /* = true */)  {
+void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, bool removeConn /* = true */)  {
 	Lock l(cs);
 	QueueItem* q = findByTarget(aTarget);
 	if(q != NULL) {
 
 		if(removeConn && q->getStatus() == QueueItem::RUNNING) {
 			dcassert(q->getCurrent());
-			if(q->getCurrent()->getUser()->getNick() == aUser) {
+			if(q->getCurrent()->getUser() == aUser) {
 				// Oops...
 				DownloadManager::getInstance()->removeDownload(q);
 			}
@@ -384,7 +310,7 @@ void QueueManager::save(SimpleXML* aXml) {
 			for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
 				QueueItem::Source* s = *j;
 				aXml->addTag("Source");
-				aXml->addChildAttrib("Nick", s->getNick());
+				aXml->addChildAttrib("Nick", s->getUser()->getNick());
 				aXml->addChildAttrib("Path", s->getPath());
 			}
 			aXml->stepOut();
@@ -415,7 +341,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				const string& file = aXml->getChildAttrib("FileName");
 				
 				try {
-					add(path + file, size, nick, target, resume);
+					add(path + file, size, ClientManager::getInstance()->getUser(nick), target, resume);
 				} catch(Exception e) {
 					// ...
 				}
@@ -444,7 +370,7 @@ void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
 
 			if(found) {
 				// Wow! found a new source that seems to match...add it...
-				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getNick().c_str(), i->c_str());
+				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 				try {
 					add(sr->getFile(), sr->getSize(), sr->getUser(), *i);
 				} catch(Exception e) {
@@ -457,9 +383,12 @@ void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.8 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.9 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.9  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.8  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

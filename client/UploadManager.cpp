@@ -252,12 +252,6 @@ void UploadManager::removeConnections() {
 
 void UploadManager::onTimerMinute(DWORD aTick) {
 	Lock l(cs);
-	for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-		UserConnection* c = i->first;
-		if(!c->getUser()->isOnline()) {
-			ConnectionManager::getInstance()->updateUser(c);
-		}
-	}
 	for(map<User::Ptr, DWORD>::iterator j = reservedSlots.begin(); j != reservedSlots.end();) {
 		if(j->second + 600 * 1000 < aTick) {
 			reservedSlots.erase(j++);
@@ -269,9 +263,12 @@ void UploadManager::onTimerMinute(DWORD aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.18 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.19 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.19  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.18  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -69,7 +69,7 @@ public:
 	virtual void onAction(Types, Client*, const string&) { };
 	virtual void onAction(Types, Client*, const string&, const string&) { };
 	virtual void onAction(Types, Client*, const User::Ptr&) { };
-	virtual void onAction(Types, Client*, const StringList&) { };
+	virtual void onAction(Types, Client*, const User::List&) { };
 	virtual void onAction(Types, Client*, const User::Ptr&, const string&) { };
 	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) { };
 	
@@ -90,24 +90,7 @@ public:
 
 	bool isConnected() { return socket.isConnected(); };
 
-	void disconnect(bool rl = true) throw() {	
-		if(rl)
-			socket.removeListener(this);
-
-		socket.disconnect();
-
-		{ 
-			Lock l(cs);
-			
-			for(User::NickIter i = users.begin(); i != users.end(); ++i) {
-				i->second->unsetFlag(User::ONLINE);
-			}
-			users.clear();
-		
-		}
-		
-	}
-
+	void disconnect(bool rl = true) throw();
 	void validateNick(const string& aNick) {
 		dcdebug("validateNick %s\n", aNick.c_str());
 		send("$ValidateNick " + aNick + "|");
@@ -215,25 +198,8 @@ public:
 		fire(ClientListener::MY_INFO, this, aUser);
 	}
 
-	bool userConnected(const string& aNick) {
-		Lock l(cs);
-		return !(users.find(aNick) == users.end());
-	}
-
 	const string& getName() { return name; };
 	const string& getServer() { return server; };
-
-	User::Ptr& getUser(const string& aNick) throw() {
-		Lock l(cs);
-
-		dcassert(aNick.length() > 0);
-		User::NickIter j = users.find(aNick);
-		if(j != users.end()) {
-			return j->second;
-		} else {
-			return User::nuser;
-		}
-	}
 
 	int getUserCount() throw() {
 		Lock l(cs);
@@ -248,7 +214,6 @@ public:
 		}
 		return x;
 	}
-
 	const string& getNick() {
 		if(nick.empty()) {
 			return SETTING(NICK);
@@ -267,7 +232,7 @@ public:
 	GETSET(bool, op, Op);
 	GETSETREF(string, defpassword, Password);
 private:
-	
+
 	string nick;
 	string server;
 	short port;
@@ -276,6 +241,7 @@ private:
 	DWORD lastActivity;
 
 	CriticalSection cs;
+
 	User::NickMap users;
 
 	map<string, int> searchFlood;
@@ -352,9 +318,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.39 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: Client.h,v 1.40 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.40  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.39  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

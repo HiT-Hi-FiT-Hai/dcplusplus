@@ -33,7 +33,7 @@ public:
 	typedef List::iterator Iter;
 	
 	SearchResult() : size(0), slots(0), freeSlots(0) { };
-	SearchResult(const SearchResult& rhs) : user(rhs.user), nick(rhs.nick), file(rhs.file), 
+	SearchResult(const SearchResult& rhs) : user(rhs.user), file(rhs.file), 
 		hubName(rhs.hubName), hubAddress(rhs.hubAddress), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots) { };
 
 	string getFileName() { 
@@ -62,7 +62,6 @@ public:
 	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
 	void setFreeSlots(const string& aSlots) { setFreeSlots(Util::toInt(aSlots)); };
 	
-	GETSETREF(string, nick, Nick);
 	GETSETREF(string, file, File);
 	GETSETREF(string, hubName, HubName);
 	GETSETREF(string, hubAddress, HubAddress);
@@ -166,9 +165,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.14 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.15  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.14  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

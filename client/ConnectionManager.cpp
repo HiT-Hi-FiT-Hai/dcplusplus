@@ -160,16 +160,12 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 		
 		while(i != pendingDown.end()) {
 			ConnectionQueueItem* cqi = i->first;
+			dcassert(cqi->getUser());
 
 			if(!cqi->getUser()->isOnline()) {
 				// Not online anymore...remove him from the pending...
-				cqi->setUser(ClientManager::getInstance()->findUser(cqi->getUser()->getNick()));
-				if(!cqi->getUser()) {
-					pendingDown.erase(i++);
-					remove.push_back(cqi);
-				} else {
-					++i;
-				}
+				pendingDown.erase(i++);
+				remove.push_back(cqi);
 				continue;
 			}
 
@@ -291,12 +287,13 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 
 		// We didn't order it so it must be an uploading connection...
 		// Make sure we know who it is, i e that he/she is connected...
-		aSource->user = ClientManager::getInstance()->findUser(aNick);
-		if(!aSource->user) {
+		if(!ClientManager::getInstance()->isOnline(aNick)) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
+
+		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 		cqi = new ConnectionQueueItem(aSource->getUser());
 		cqi->setConnection(aSource);
@@ -424,16 +421,6 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 	}
 }
 
-void ConnectionManager::updateUser(UserConnection* aConn) {
-	dcassert(!aConn->getUser()->isOnline());
-	
-	User::Ptr& p = ClientManager::getInstance()->findUser(aConn->getUser()->getNick());
-	if(p) {
-		aConn->setUser(p);
-	}
-	
-}
-
 void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& /*num*/) throw() {
 	if(dir == "Upload") {
 		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
@@ -474,9 +461,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.32 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.33 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.33  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.32  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

@@ -140,11 +140,70 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	}
 }
 
+User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
+	Lock l(cs);
+
+	UserPair p = users.equal_range(aNick);
+
+	if(p.first == p.second) {
+		return users.insert(make_pair(aNick, new User(aNick)))->second;
+	}
+
+	for(UserIter i = p.first; i != p.second; ++i) {
+		if(i->second->getLastHubIp() == aHint) {
+			return i->second;
+		}
+	}
+
+	return p.first->second;
+}
+
+User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
+	Lock l(cs);
+	dcassert(aClient != NULL);
+	dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
+
+	UserPair p = users.equal_range(aNick);
+	
+	// Check for a user already online
+	for(UserIter i = p.first; i != p.second; ++i) {
+		if(i->second->isClient(aClient)) {
+			return i->second;
+		}
+	}
+
+	// Check for an offline user that was on that hub that we can put online again
+	for(UserIter j = p.first; j != p.second; ++j) {
+		if(!j->second->isOnline() && j->second->getLastHubIp() == aClient->getIp()) {
+			if(putOnline)
+				j->second->setClient(aClient);
+			return j->second;
+		}
+	}
+
+	// Check for any offline user that we can put online again
+	for(UserIter m = p.first; m != p.second; ++m) {
+		if(!m->second->isOnline()) {
+			if(putOnline)
+				m->second->setClient(aClient);
+			return m->second;
+		}
+	}
+	
+	// Create a new user
+	UserIter k = users.insert(make_pair(aNick, new User(aNick)));
+	k->second->setClient(aClient);
+	return k->second;
+}
+
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.9 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.10  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.9  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

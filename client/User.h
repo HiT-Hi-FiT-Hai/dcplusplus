@@ -45,12 +45,16 @@ public:
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+#ifdef HAS_HASH
+	typedef hash_map<string,Ptr> NickMap;
+#else
 	typedef map<string,Ptr> NickMap;
+#endif
 	typedef NickMap::iterator NickIter;
+
 	static Ptr nuser;
 
-	void setClient(Client* aClient) { Lock l(cs); client = aClient; };
-
+	void setClient(Client* aClient);
 	void connect();
 	string getClientNick();
 	void update();
@@ -71,8 +75,9 @@ public:
 	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
 	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
 
-	bool isOnline() const { return (flags & ONLINE) != 0; };
-
+	bool isOnline() const { return isSet(ONLINE); };
+	bool isClient(Client* aClient) const { return client == aClient; };
+	
 	static void updated(User::Ptr& aUser);
 	
 	User() : sharingLong(0), client(NULL), flags(0) { };
@@ -83,6 +88,8 @@ public:
 	GETSETREF(string, nick, Nick);
 	GETSETREF(string, email, Email);
 	GETSETREF(string, description, Description);
+	GETSETREF(string, lastHubIp, LastHubIp);
+	GETSETREF(string, lastHubName, LastHubName)
 private:
 	CriticalSection cs;
 	
@@ -97,9 +104,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.11 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: User.h,v 1.12 2002/02/27 12:02:09 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.12  2002/02/27 12:02:09  arnetheduck
+ * Completely new user handling, wonder how it turns out...
+ *
  * Revision 1.11  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *
