@@ -81,6 +81,10 @@ public:
 	virtual void on(TransmitDone, UserConnection*) throw() { }
 	virtual void on(Supports, UserConnection*, const StringList&) throw() { }
 	virtual void on(FileNotAvailable, UserConnection*) throw() { }
+
+	virtual void on(Command::SUP, UserConnection*, const Command&) throw() { }
+	virtual void on(Command::INF, UserConnection*, const Command&) throw() { }
+	virtual void on(Command::NTD, UserConnection*, const Command&) throw() { }
 	virtual void on(Command::GET, UserConnection*, const Command&) throw() { }
 	virtual void on(Command::SND, UserConnection*, const Command&) throw() { }
 	virtual void on(Command::STA, UserConnection*, const Command&) throw() { }
@@ -174,7 +178,8 @@ public:
 	};
 
 	enum Flags {
-		FLAG_UPLOAD = 0x01,
+		FLAG_NMDC = 0x01,
+		FLAG_UPLOAD = FLAG_NMDC,
 		FLAG_DOWNLOAD = FLAG_UPLOAD << 1,
 		FLAG_INCOMING = FLAG_DOWNLOAD << 1,
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
@@ -193,10 +198,14 @@ public:
 		// ConnectionManager
 		STATE_UNCONNECTED,
 		STATE_CONNECT,
-		STATE_NICK,
+
+		// Handshake
+		STATE_SUPNICK,		// ADC: SUP, Nmdc: $Nick
+		STATE_INF,
 		STATE_LOCK,
 		STATE_DIRECTION,
 		STATE_KEY,
+
 		// UploadManager
 		STATE_GET,
 		STATE_SEND,
@@ -204,10 +213,12 @@ public:
 		// DownloadManager
 		STATE_FILELENGTH,
 		STATE_TREE,
+
 	};
 
 	short getNumber() { return (short)((((size_t)this)>>2) & 0x7fff); };
 
+	// NMDC stuff
 	void myNick(const string& aNick) { send("$MyNick " + Text::utf8ToAcp(aNick) + '|'); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
@@ -223,9 +234,23 @@ public:
 	void maxedOut() { send("$MaxedOut|"); };
 	void fileNotAvail() { send("$Error File Not Available|"); }
 
-	void send(const Command& c) {
-		send(c.toString(true));
+	// ADC Stuff
+	void sup() { send(Command(Command::SUP()).addParam("BASE")); };
+	void inf(bool withToken) { 
+		Command c = Command(Command::INF());
+		c.addParam("CI", getCID().toBase32());
+		if(withToken) {
+			c.addParam("TO", Util::toString(getToken()));
+		}
+		send(c);
 	}
+	void get(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(Command(Command::GET()).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
+	void snd(const string& aType, const string& aName, const int64_t aStart, const int64_t aBytes) {  send(Command(Command::SND()).addParam(aType).addParam(aName).addParam(Util::toString(aStart)).addParam(Util::toString(aBytes))); }
+	void ntd() { send(Command(Command::NTD())); }
+	void sta(Command::Severity sev, Command::Error err, const string& desc) { send(Command(Command::STA()).addParam(Util::toString(100 * sev + err)).addParam(desc)); }
+
+	void send(const Command& c) { send(c.toString(isSet(FLAG_NMDC))); }
+
 	void supports(const StringList& feat) { 
 		string x;
 		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
@@ -262,6 +287,12 @@ public:
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
 	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
 
+	void handle(Command::SUP t, const Command& c) {
+		fire(t, this, c);
+	}
+	void handle(Command::INF t, const Command& c) {
+		fire(t, this, c);
+	}
 	void handle(Command::GET t, const Command& c) {
 		fire(t, this, c);
 	}
@@ -271,13 +302,21 @@ public:
 	void handle(Command::STA t, const Command& c) {
 		fire(t, this, c);
 	}
+	void handle(Command::NTD t, const Command& c) {
+		fire(t, this, c);
+	}
+
+	// Ignore any other ADC commands for now
 	template<typename T>
 	void handle(T , const Command& ) {
 	}
+
+	GETSET(string, nick, Nick);
+	GETSET(int32_t, token, Token);
+	GETSET(CID, cid, CID);
 	GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
-	GETSET(string, nick, Nick);
 	GETSET(Download*, tempDownload, TempDownload);
 
 private:
@@ -344,6 +383,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.80 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.81 2004/11/22 00:13:29 arnetheduck Exp $
  */
 

@@ -560,7 +560,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			updateCounts(false);
 			// Special...to avoid op's complaining that their count is not correctly
 			// updated when they log in (they'll be counted as registered first...)
-			myInfo(true);
+			myInfo(false);
 		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.23 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.24 2004/11/22 00:13:29 arnetheduck Exp $
  */
 

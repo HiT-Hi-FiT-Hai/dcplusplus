@@ -82,7 +82,7 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
-	const CID getClientCID() const;
+	CID getClientCID() const;
 	const string& getClientName() const;
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
@@ -144,5 +144,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.47 2004/10/05 16:46:42 arnetheduck Exp $
+ * $Id: User.h,v 1.48 2004/11/22 00:13:29 arnetheduck Exp $
  */

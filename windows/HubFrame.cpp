@@ -170,8 +170,12 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("join"))==0) {
 				if(!param.empty()) {
 					redirect = param;
-					BOOL whatever = FALSE;
-					onFollow(0, 0, 0, whatever);
+					if(BOOLSETTING(SETTINGS_OPEN_NEW_WINDOW)) {
+						HubFrame::openWindow(param);
+					} else {
+						BOOL whatever = FALSE;
+						onFollow(0, 0, 0, whatever);
+					}
 				} else {
 					addClientLine(TSTRING(SPECIFY_SERVER));
 				}
@@ -1104,5 +1108,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.87 2004/11/13 11:54:11 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.88 2004/11/22 00:13:33 arnetheduck Exp $
  */

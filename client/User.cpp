@@ -48,7 +48,7 @@ const string& User::getClientNick() const {
 	}
 }
 
-const CID User::getClientCID() const {
+CID User::getClientCID() const {
 	RLock l(cs);
 	if(client) {
 		return client->getMe()->getCID();
@@ -213,6 +213,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.37 2004/10/21 10:27:16 arnetheduck Exp $
+ * $Id: User.cpp,v 1.38 2004/11/22 00:13:30 arnetheduck Exp $
  */
 

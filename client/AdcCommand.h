@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _COMMAND_H
-#define _COMMAND_H
+#ifndef ADC_COMMAND_H
+#define ADC_COMMAND_H
 
 #include "CID.h"
 
@@ -26,6 +26,37 @@ public:
 	template<u_int32_t T>
 	struct Type {
 		enum { CMD = T };
+	};
+
+	enum Error {
+		ERROR_GENERIC = 0,
+		ERROR_HUB_GENERIC = 10,
+		ERROR_HUB_FULL = 11,
+		ERROR_HUB_DISABLED = 12,
+		ERROR_LOGIN_GENERIC = 20,
+		ERROR_NICK_INVALID = 21,
+		ERROR_NICK_TAKEN = 22,
+		ERROR_BAD_PASSWORD = 23,
+		ERROR_CID_TAKEN = 24,
+		ERROR_COMMAND_ACCESS = 25,
+		ERROR_REGGED_ONLY = 26,
+		ERROR_BANNED_GENERIC = 30,
+		ERROR_PERM_BANNED = 31,
+		ERROR_TEMP_BANNED = 32,
+		ERROR_PROTOCOL_GENERIC = 40,
+		ERROR_PROTOCOL_UNSUPPORTED = 41,
+		ERROR_INF_MISSING = 42,
+		ERROR_BAD_STATE = 43,
+		ERROR_TRANSFER_GENERIC = 50,
+		ERROR_FILE_NOT_AVAILABLE = 51,
+		ERROR_FILE_PART_NOT_AVAILABLE = 52,
+		ERROR_SLOTS_FULL = 53,
+	};
+
+	enum Severity {
+		SEV_SUCCESS = 0,
+		SEV_RECOVERABLE = 1,
+		SEV_FATAL = 2,
 	};
 
 	static const char TYPE_ACTIVE = 'A';
@@ -59,6 +90,12 @@ public:
 	template<typename T>
 	explicit Command(const T&) : cmdInt(T::CMD), type(TYPE_CLIENT) { }
 
+	template<typename T>
+	explicit Command(const T&, const CID& aFrom, char aType) : cmdInt(T::CMD), type(aType), from(aFrom) { }
+
+	template<typename T>
+	explicit Command(const T&, const CID& aFrom, const CID& aTarget) : cmdInt(T::CMD), type(TYPE_DIRECT), from(aFrom), to(aTarget) { }
+
 	//explicit Command(u_int32_t cmd) : cmdInt(cmd), type(0) { }
 
 	explicit Command(const string& aLine, bool nmdc = false) : cmdInt(0), type(TYPE_CLIENT) {
@@ -75,12 +112,14 @@ public:
 
 	string toString(bool nmdc = false) const;
 
-	void addParam(const string& name, const string& value) {
+	Command& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
 		parameters.back() += value;
+		return *this;
 	}
-	void addParam(const string& str) {
+	Command& addParam(const string& str) {
 		parameters.push_back(str);
+		return *this;
 	}
 	const string& getParam(size_t n) const {
 		return getParameters().size() > n ? getParameters()[n] : Util::emptyString;
@@ -140,15 +179,17 @@ public:
 			CMD(GFI);
 			CMD(SND);
 			CMD(NTD);
-		default: break;
+		default: 
+			dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
+			break;
 #undef CMD
 
 		}
 	}
 };
 
-#endif // _COMMAND_H
+#endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.10 2004/10/29 15:53:38 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.11 2004/11/22 00:13:30 arnetheduck Exp $
 */

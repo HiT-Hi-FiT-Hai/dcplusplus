@@ -1,4 +1,13 @@
-﻿-- 0.667 2004-11-15 --
+﻿-- 0.668 --
+* Fixed crash on open own filelist (thanks sulan)
+* Added option to make /join open a new window (thanks ullner)
+* Added mailto: to link-clicking (thanks ullner)
+* Fixed stack overflow with excessive xml nesting (thanks farcry)
+* Fixed virtual name issue with invalid chars in the virtual name (thanks farcry)
+* Fixes to ADC implementation, see http://developer.berlios.de/projects/ddc/ for a 
+  somewhat compatible hub in development
+
+-- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)
 * Fixed some favdirs issues (thanks naga)
 * Fixed a status logging issue (thanks naga)

@@ -26,68 +26,7 @@
 #include "AdcCommand.h"
 #include "ConnectionManager.h"
 
-void Command::parse(const string& aLine, bool nmdc /* = false */) {
-	string::size_type i = 5;
-
-	if(nmdc) {
-		// "$ADCxxx ..."
-		if(aLine.length() < 7)
-			return;
-		type = Command::TYPE_CLIENT;
-		memcpy(cmd, &aLine[4], 3);
-		i += 3;
-	} else {
-		// "yxxx ..."
-		if(aLine.length() < 4)
-			return;
-		type = aLine[0];
-		memcpy(cmd, &aLine[1], 3);
-	}
-
-	string::size_type len = aLine.length();
-	const char* buf = aLine.c_str();
-	string cur;
-	cur.reserve(128);
-
-	bool toSet = false;
-	bool fromSet = false;
-
-	while(i < len) {
-		switch(buf[i]) {
-		case '\\': i++; cur += buf[i]; break;
-		case ' ': 
-			// New parameter...
-			{
-				if(type == TYPE_DIRECT && !toSet) {
-					to = CID(cur);
-					toSet = true;
-				} else if(!fromSet && type != TYPE_CLIENT) {
-					from = CID(cur);
-					fromSet = true;
-				} else {
-					parameters.push_back(cur);
-				}
-				cur.clear();
-			}
-			break;
-		default:
-			cur += buf[i];
-		}
-		i++;
-	}
-	if(!cur.empty()) {
-		if(!fromSet && type != TYPE_CLIENT) {
-			from = CID(cur);
-			fromSet = true;
-		} else 	if(type == TYPE_DIRECT && !toSet) {
-			to = CID(cur);
-			toSet = true;
-		} else {
-			parameters.push_back(cur);
-		}
-		cur.clear();
-	}
-}
+const string AdcHub::CLIENT_PROTOCOL("ADC/0.8");
 
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n', true), state(STATE_PROTOCOL) {
 }
@@ -224,9 +163,19 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p || p == getMe())
 		return;
-	if(c.getParameters().size() != 3 || c.getParameters()[1] != "ADC/1.0")
+	if(c.getParameters().size() < 3)
 		return;
-	//ConnectionManager::getInstance()->connect(p->getIp(), (short)Util::toInt(c.getParameters()[2]), c.getParameters()[0], getMe()->getCID());
+
+	if(c.getParam(1) != CLIENT_PROTOCOL) {
+		// Protocol unhandled...
+		Command c(Command::STA(), getMe()->getCID(), p);
+		c.addParam(Util::toString(Command::ERROR_PROTOCOL_UNSUPPORTED));
+		c.addParam(c.getParam(0));
+		c.addParam(c.getParam(1));
+		c.addParam("Protocol unsupported");
+		return;
+	}
+	ConnectionManager::getInstance()->connect(p->getIp(), (short)Util::toInt(c.getParameters()[2]), getMe()->getCID(), Util::toUInt32(c.getParameters()[0]));
 }
 
 void AdcHub::handle(Command::RCM, Command& c) throw() {
@@ -235,7 +184,7 @@ void AdcHub::handle(Command::RCM, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p || p == getMe())
 		return;
-	if(c.getParameters().size() != 2 || c.getParameters()[1] != "ADC/1.0")
+	if(c.getParameters().size() != 2 || c.getParameters()[1] != "ADC/0.8")
 		return;
     connect(&*p, c.getParameters()[0]);
 }
@@ -248,16 +197,12 @@ void AdcHub::connect(const User* user) {
 void AdcHub::connect(const User* user, string const& token) {
 	if(state != STATE_NORMAL)
 		return;
-	string tmp;
+
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		tmp = "DCTM " + user->getCID().toBase32() + " " +
-				getMe()->getCID().toBase32() + " " + token + " ADC/1.0 " +
-				Util::toString(SETTING(IN_PORT)) + "\n";
+		send(Command(Command::CTM(), getMe()->getCID(), user->getCID()).addParam(token).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))));
 	} else {
-		tmp = "DRCM " + user->getCID().toBase32() + " " +
-				getMe()->getCID().toBase32() + " " + token + " ADC/1.0\n";
+		send(Command(Command::CTM(), getMe()->getCID(), user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
-	send(tmp);
 }
 
 void AdcHub::disconnect() {
@@ -282,19 +227,27 @@ void AdcHub::privateMessage(const User* user, const string& aMessage) {
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	if(state != STATE_NORMAL)
 		return;
+
 	string strtmp;
-	strtmp += "BSCH " + getMe()->getCID().toBase32() + " ";
-	if(aSizeMode == SearchManager::SIZE_ATLEAST) {
-		strtmp += ">=" + Util::toString(aSize) + " ";
-	} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
-		strtmp += "<=" + Util::toString(aSize) + " ";
+	strtmp += "BSCH " + getMe()->getCID().toBase32();
+
+	if(aFileType == SearchManager::TYPE_TTH) {
+		strtmp += " TR";
+		strtmp += aString;
+	} else {
+		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
+			strtmp += " >=";
+			strtmp += Util::toString(aSize);
+		} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
+			strtmp += " <=";
+			strtmp += Util::toString(aSize);
+		}
+		StringTokenizer<string> st(aString, ' ');
+		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+			strtmp += " ++" + Command::escape(*i);
+		}
 	}
-	StringTokenizer<string> st(aString, ' ');
-	string tmp;
-	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-		strtmp += "++" + Command::escape(*i) + " ";
-	}
-	strtmp[strtmp.length() - 1] = '\n';
+	strtmp += '\n';
 	send(strtmp);
 }
 
@@ -395,5 +348,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.23 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.24 2004/11/22 00:13:29 arnetheduck Exp $
  */

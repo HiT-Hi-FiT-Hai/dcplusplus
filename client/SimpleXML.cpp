@@ -188,7 +188,7 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, const string&
 	}
 }
 
-string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, string::size_type start, bool inTag) throw(SimpleXMLException) {
+string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, string::size_type start, int depth) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
 
@@ -196,10 +196,12 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 
 	for(;;) {
 		if((j = tmp.find('<', i)) == string::npos) {
-			if(inTag) {
+			if(depth > 0) {
 				throw SimpleXMLException("Missing end tag in " + n);
 			}
 			return tmp.size();
+		} else if(depth > maxNesting) {
+			throw SimpleXMLException("Too many nested tags (depth >" + Util::toString(maxNesting) + ")");
 		}
 
 		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
@@ -275,7 +277,7 @@ string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, s
 		if(tmp[j] == '>') {
 			// This is a real tag with data etc...
 			cb->startTag(name, attribs, false);
-			j = fromXML(tmp, name, j+1, true);
+			j = fromXML(tmp, name, j+1, depth+1);
 			cb->endTag(name, data);
 		} else {
 			// A simple tag (<xxx/>
@@ -331,6 +333,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.29 2004/09/26 08:45:33 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.30 2004/11/22 00:13:29 arnetheduck Exp $
  */
 

@@ -75,6 +75,8 @@ public:
 	
 	SearchManager::TypeModes getType(const string& fileName);
 
+	string validateVirtual(const string& /*aVirt*/);
+
 	void addHits(u_int32_t aHits) {
 		hits += aHits;
 	}
@@ -260,7 +262,6 @@ private:
 	StringPairIter findVirtual(const string& name);
 	/** Find real name from virtual name */
 	StringPairIter lookupVirtual(const string& name);
-	string validateVirtual(const string& /*aVirt*/);
 
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
@@ -300,6 +301,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.66 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.67 2004/11/22 00:13:29 arnetheduck Exp $
  */
 

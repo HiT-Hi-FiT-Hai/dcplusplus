@@ -396,6 +396,7 @@ enum Strings { // @DontAdd
 	SETTINGS_ONLY_HASHED, // "Note; New files are added to the share only once they've been hashed!"
 	SETTINGS_OPEN_FAVORITE_HUBS, // "Open the favorite hubs window at startup"
 	SETTINGS_OPEN_FINISHED_DOWNLOADS, // "Open the finished downloads window at startup"
+	SETTINGS_OPEN_NEW_WINDOW, // "Open new window when using /join"
 	SETTINGS_OPEN_PUBLIC, // "Open the public hubs window at startup"
 	SETTINGS_OPEN_QUEUE, // "Open the download queue window at startup"
 	SETTINGS_OPEN_USER_CMD_HELP, // "Always open help file with this dialog"
