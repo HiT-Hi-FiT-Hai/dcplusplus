@@ -215,11 +215,23 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+bool FavoriteHubsFrame::checkNick() {
+	if(SETTING(NICK).empty()) {
+		MessageBox(CSTRING(ENTER_NICK));
+		return false;
+	}
+	return true;
+}
+
+
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.9 2002/03/13 23:06:07 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.10 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.10  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.9  2002/03/13 23:06:07  arnetheduck
  * New info sent in the description part of myinfo...
  *

@@ -72,14 +72,14 @@ public:
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FavoriteHubsFrame>)
 	END_MSG_MAP()
 		
-
-	bool checkNick() {
-		if(SETTING(NICK).empty()) {
-			MessageBox("Please enter a nickname in the settings dialog!");
-			return false;
-		}
-		return true;
-	}
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	
+	bool checkNick();
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
@@ -109,32 +109,18 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		
 		return CMDIChildWindowImpl2<FavoriteHubsFrame>::PreTranslateMessage(pMsg);
 	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		DWORD id;
-		if(stopperThread) {
-			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-				PostMessage(WM_CLOSE);
-				return 0;
-			}
-			CloseHandle(stopperThread);
-			stopperThread = NULL;
-			bHandled = FALSE;
-		} else {
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-		}
+		HubManager::getInstance()->removeListener(this);
+		bHandled = FALSE;
 		return 0;
 	}
 
@@ -147,8 +133,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
@@ -158,11 +142,6 @@ public:
 		}
 		return 0;
 	}
-	
-	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
@@ -219,13 +198,6 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 	
-	static DWORD WINAPI stopper(void* p) {
-		FavoriteHubsFrame* frm = (FavoriteHubsFrame*)p;
-		HubManager::getInstance()->removeListener(frm);
-		HubManager::getInstance()->reset();
-		frm->PostMessage(WM_CLOSE);	
-		return 0;
-	}
 	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl) {
 		switch(type) {
 		case HubManagerListener::GET_FAVORITE_HUBS: 
@@ -272,9 +244,12 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.5 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.6 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.h,v $
+ * Revision 1.6  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.5  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

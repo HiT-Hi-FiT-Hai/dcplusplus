@@ -27,6 +27,7 @@
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 #include "TimerManager.h"
+#include "User.h"
 
 class HubEntry {
 public:
@@ -82,17 +83,19 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	enum Types {
-		MESSAGE,
-		FINISHED,
-		GET_PUBLIC_HUBS,
+		DOWNLOAD_STARTING,
+		DOWNLOAD_FAILED,
+		DOWNLOAD_FINISHED,
 		GET_FAVORITE_HUBS,
 		FAVORITE_ADDED,
-		FAVORITE_REMOVED
+		FAVORITE_REMOVED,
+		USER_ADDED,
+		USER_REMOVED
 	};
 	virtual void onAction(Types, const FavoriteHubEntry::List&) { };
 	virtual void onAction(Types, FavoriteHubEntry*) { };
 	virtual void onAction(Types, const string&) { };
-	virtual void onAction(Types, const HubEntry::List&) { };
+	virtual void onAction(Types, const User::Ptr&) { };
 	virtual void onAction(Types) { };
 };
 
@@ -104,15 +107,30 @@ public:
 	
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
+	void refresh();
 	
 	void getFavoriteHubs() {
 		Lock l(cs);
 		fire(HubManagerListener::GET_FAVORITE_HUBS, favoriteHubs);
 	}
 	
-	void addFavorite(const HubEntry& aEntry) {
-		addFavorite(FavoriteHubEntry(aEntry));
+	User::List getFavoriteUsers() { Lock l(cs); return users; };
+	
+	void addUser(const User::Ptr& aUser) { 
+		Lock l(cs);
+		if(find(users.begin(), users.end(), aUser) == users.end()) {
+			users.push_back(aUser);
+		}
 	}
+
+	void removeUser(const User::Ptr& aUser) {
+		Lock l(cs);
+		User::Iter i = find(users.begin(), users.end(), aUser);
+		if(i != users.end())
+			users.erase(i);
+	}
+
+	void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
 
 	void addFavorite(const FavoriteHubEntry& aEntry) {
 		FavoriteHubEntry* f;
@@ -144,52 +162,36 @@ public:
 		delete entry;
 	}
 	
-	void getPublicHubs() {
+	HubEntry::List getPublicHubs() {
 		Lock l(cs);
-		fire(HubManagerListener::GET_PUBLIC_HUBS, publicHubs);
+		return publicHubs;
 	}
 
-	bool isRunning() {
-		return running;
-	}
-	bool hasDownloaded() {
-		return downloaded;
-	}
-	
- 	void refresh();
-	
-	void reset() {
-		if(conn) {
-			conn->removeListener(this);
-			delete conn;
-			conn = NULL;
-		}
-	}
 private:
 	
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
-	
-	CriticalSection cs;
-	HttpConnection* conn;
-	bool running;
-	bool downloaded;
-	bool pendingConnect;
+	User::List users;
 
+	CriticalSection cs;
+	HttpConnection* c;
+	bool running;
 	int lastServer;
 
 	friend class Singleton<HubManager>;
 	
-	HubManager() : downloaded(false), conn(NULL), running(false), pendingConnect(false), lastServer(0) {
+	HubManager() : running(false), c(NULL), lastServer(0) {
 		TimerManager::getInstance()->addListener(this);
 	}
 
 	~HubManager() {
 		TimerManager::getInstance()->removeListener(this);
-		if(conn) {
-			conn->removeListener(this);
-			delete conn;
+		if(c) {
+			c->removeListener(this);
+			delete c;
+			c = NULL;
 		}
+		
 		{
 			Lock l(cs);
 			for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
@@ -217,23 +219,24 @@ private:
 			dcassert(0);
 		}
 	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const string& /*aLine*/) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
 		switch(type) {
 		case HttpConnectionListener::FAILED:
-			conn->removeListener(this);
+			dcassert(c);
+			c->removeListener(this);
+			lastServer++;
+			fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
 			running = false;
-			fire(HubManagerListener::MESSAGE, "Unable to download public server list. Check your internet connection!");
-			pendingConnect = true;
 		}
 	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
 		switch(type) {
 		case HttpConnectionListener::COMPLETE:
-			conn->removeListener(this);
+			dcassert(c);
+			c->removeListener(this);
 			onHttpFinished();
+			fire(HubManagerListener::DOWNLOAD_FINISHED);
 			running = false;
-			downloaded = true;
-			fire(HubManagerListener::FINISHED);
 		}
 	}
 	
@@ -241,9 +244,9 @@ private:
 
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD) {
-		if(pendingConnect && type == TimerManagerListener::MINUTE) {
-			pendingConnect = false;
-			refresh();
+		if(type == TimerManagerListener::MINUTE) {
+			if(publicHubs.empty() && !running)
+				refresh();
 		}
 	}
 };
@@ -252,9 +255,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.23 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.24 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.24  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.23  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

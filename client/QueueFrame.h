@@ -52,7 +52,7 @@ public:
 
 	static QueueFrame* frame;
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), stopperThread(NULL) { 
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0) { 
 		QueueManager::getInstance()->addListener(this);
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
@@ -198,8 +198,6 @@ private:
 		string columns[COLUMN_LAST];
 	};
 	
-	
-	HANDLE stopperThread;
 	CMenu transferMenu;
 	CMenu browseMenu;
 	CMenu removeMenu;
@@ -249,9 +247,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.10 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.11 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.11  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.10  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

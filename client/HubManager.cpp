@@ -24,6 +24,7 @@
 #include "HttpConnection.h"
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
+#include "ClientManager.h"
 
 HubManager* HubManager::instance = NULL;
 
@@ -64,10 +65,20 @@ void HubManager::save(SimpleXML* aXml) {
 		aXml->addChildAttrib("Server", (*i)->getServer());
 	}
 	aXml->stepOut();
+	aXml->addTag("Users");
+	aXml->stepIn();
+	for(User::Iter j = users.begin(); j != users.end(); ++j) {
+		aXml->addTag("User");
+		aXml->addChildAttrib("LastHubIp", (*j)->getLastHubIp());
+		aXml->addChildAttrib("LastHubName", (*j)->getLastHubName());
+	}
+
+	aXml->stepOut();
 }
 
 void HubManager::load(SimpleXML* aXml) {
 	Lock l(cs);
+	aXml->resetCurrentChild();
 	if(aXml->findChild("Favorites")) {
 		aXml->stepIn();
 		while(aXml->findChild("Favorite")) {
@@ -82,32 +93,48 @@ void HubManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+	aXml->resetCurrentChild();
+	if(aXml->findChild("Users")) {
+		aXml->stepIn();
+		while(aXml->findChild("User")) {
+			User::Ptr& u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubIp"));
+			if(!u->isOnline()) {
+				u->setLastHubIp(aXml->getChildAttrib("LastHubIp"));
+				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
+			}
+			addUser(u);
+		}
+		aXml->stepOut();
+	}
 }
 
 void HubManager::refresh() {
-	{
-		Lock l(cs);
-		publicHubs.clear();
-		running = true;
-		downloaded = false;
-		
-	}
 	
-	reset();
-	
-	conn = new HttpConnection();
-	conn->addListener(this);
 	StringList l = StringTokenizer(SETTING(HUBLIST_SERVERS), ';').getTokens();
-	string server = l[(lastServer++) % l.size()];
-	fire(HubManagerListener::MESSAGE, "Connecting to " + server + "...");
-	conn->downloadFile(server);
+	const string& server = l[(lastServer) % l.size()];
+
+	fire(HubManagerListener::DOWNLOAD_STARTING, server);
+	if(!running) {
+		if(!c)
+			c = new HttpConnection();
+		{
+			Lock l(cs);
+			publicHubs.clear();
+		}
+		c->addListener(this);
+		c->downloadFile(server);
+
+	}
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.17 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.18 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.18  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.17  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

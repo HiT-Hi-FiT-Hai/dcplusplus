@@ -28,19 +28,13 @@
 #include "ExListViewCtrl.h"
 
 #define SERVER_MESSAGE_MAP 7
-
+#define FILTER_MESSAGE_MAP 8
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private HubManagerListener
 {
 public:
 
-	enum {
-		COLUMN_NAME,
-		COLUMN_DESCRIPTION,
-		COLUMN_USERS,
-		COLUMN_SERVER
-	};
-	PublicHubsFrame() : stopperThread(NULL), users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
-		
+	PublicHubsFrame() : users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
+		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
 	};
 
 	virtual ~PublicHubsFrame() {
@@ -70,13 +64,27 @@ public:
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PublicHubsFrame>)
 	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, OnChar)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
+	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
 	END_MSG_MAP()
 		
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+	bool checkNick();
+	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlHub.m_hWnd) {
+		if(hWnd == ctrlHub.m_hWnd || hWnd == ctrlFilter.m_hWnd) {
 			::SetBkColor(hDC, Util::bgColor);
 			::SetTextColor(hDC, Util::textColor);
 			return (LRESULT)Util::bgBrush;
@@ -85,25 +93,10 @@ public:
 		return FALSE;
 	};
 	
-	bool checkNick() {
-		if(SETTING(NICK).empty()) {
-			MessageBox("Please enter a nickname in the settings dialog!");
-			return false;
-		}
-		return true;
-	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		HubManager::getInstance()->getPublicHubs();
-		return 0;
-	}
-		
-	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
-		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
+		FillRect(hdc, &ps.rcPaint, ::GetSysColorBrush(COLOR_BTNFACE));
 		EndPaint(&ps);
 		return 0;
 	}
@@ -127,37 +120,20 @@ public:
 		return FALSE; 
 	}
 	
-	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		
 		return CMDIChildWindowImpl2<PublicHubsFrame>::PreTranslateMessage(pMsg);
 	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		DWORD id;
-		if(stopperThread) {
-			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-				PostMessage(WM_CLOSE);
-				return 0;
-			}
-			CloseHandle(stopperThread);
-			stopperThread = NULL;
-			bHandled = FALSE;
-		} else {
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-		}
+		HubManager::getInstance()->removeListener(this);
+		bHandled = FALSE;
 		return 0;
 	}
-
-	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
@@ -172,151 +148,78 @@ public:
 		}
 		return 0;
 	}
-	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-		
-		CRect rc = rect;
-		rc.bottom -=28;
-		ctrlHubs.MoveWindow(rc);
-		
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-
-		rc.left += 140;
-		rc.right -= 100;
-		ctrlHub.MoveWindow(rc);
-
-		rc.left -= 43;
-		rc.right = rc.left + 43;
-		rc.top += 3;
-		ctrlAddress.MoveWindow(rc);
-
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-
-		rc.left += 2;
-		rc.right = rc.left + 80;
-		ctrlRefresh.MoveWindow(rc);
-		
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-
-		rc.left = rc.right - 96;
-		rc.right -= 2;
-		ctrlConnect.MoveWindow(rc);
-	}
 	
 	static PublicHubsFrame* frame;
 	
 private:
-	int hubs;
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NAME = COLUMN_FIRST,
+		COLUMN_DESCRIPTION,
+		COLUMN_USERS,
+		COLUMN_SERVER,
+		COLUMN_LAST
+	};
+
+	enum {
+		FINISHED,
+		STARTING,
+		FAILED
+	};
+
+	int visibleHubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;
 	CButton ctrlConnect;
 	CButton ctrlRefresh;
 	CStatic ctrlAddress;
+	CButton ctrlFilterDesc;
+	CEdit ctrlFilter;
 	CMenu hubsMenu;
 	
 	CContainedWindow ctrlHubContainer;
-	
+	CContainedWindow filterContainer;	
 	CEdit ctrlHub;
 	ExListViewCtrl ctrlHubs;
-	HANDLE stopperThread;
+
+	HubEntry::List hubs;
+	string filter;
 	
-	static DWORD WINAPI stopper(void* p) {
-		PublicHubsFrame* frm = (PublicHubsFrame*)p;
-		HubManager::getInstance()->removeListener(frm);
-		HubManager::getInstance()->reset();
-		frm->PostMessage(WM_CLOSE);	
-		return 0;
-	}
+	static int columnIndexes[];
+	static int columnSizes[];
 	
 	// HubManagerListener
 	virtual void onAction(HubManagerListener::Types type) {
 		switch(type) {
-		case HubManagerListener::FINISHED:
-			PostMessage(WM_SPEAKER);
-		}
-	}
-	virtual void onAction(HubManagerListener::Types type, const HubEntry::List& aList) {
-		switch(type) {
-		case HubManagerListener::GET_PUBLIC_HUBS:
-			onHubFinished(aList); break;
+		case HubManagerListener::DOWNLOAD_FINISHED:
+			PostMessage(WM_SPEAKER, FINISHED); break;
 		}
 	}
 
 	virtual void onAction(HubManagerListener::Types type, const string& line) {
+		string* x = new string(line);
 		switch(type) {
-		case HubManagerListener::MESSAGE:
-			ctrlStatus.SetText(0, line.c_str());
+		case HubManagerListener::DOWNLOAD_STARTING:
+			PostMessage(WM_SPEAKER, STARTING, (LPARAM)x); break;
+		case HubManagerListener::DOWNLOAD_FAILED:
+			PostMessage(WM_SPEAKER, FINISHED, (LPARAM)x); break;
 		}
 	}
 	
-	void onHubFinished(const HubEntry::List& aList) {
-		HubManager::getInstance()->removeListener(this);
-		ctrlStatus.SetText(0, "Done!");
-		ctrlHubs.DeleteAllItems();
-		users = 0;
-		hubs = 0;
-		
-		ctrlHubs.SetRedraw(FALSE);
-
-		for(HubEntry::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-			StringList l;
-			l.push_back(i->getName());
-			l.push_back(i->getDescription());
-			l.push_back(i->getUsers());
-			l.push_back(i->getServer());
-			ctrlHubs.insert(l);
-			hubs++;
-			users += Util::toInt(i->getUsers());
-		}
-
-		ctrlHubs.SetRedraw(TRUE);
-		updateStatus();
-		ctrlHubs.Invalidate();
-	}
-
-	void updateStatus() {
-		char buf[128];
-		sprintf(buf, "Users: %d", users);
-		ctrlStatus.SetText(2, buf);
-		sprintf(buf, "Hubs: %d", hubs);
-		ctrlStatus.SetText(1, buf);
-	}
+	void updateStatus();
+	void updateList();
 };
 
 #endif // !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.16 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.17 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.17  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.16  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

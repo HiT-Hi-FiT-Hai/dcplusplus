@@ -34,7 +34,7 @@ const string SettingsManager::settingTags[] =
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
-	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "SENTRY", 
+	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
@@ -202,9 +202,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.25 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.26 2002/03/23 01:58:43 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.26  2002/03/23 01:58:43  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.25  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

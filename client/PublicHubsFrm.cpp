@@ -22,8 +22,17 @@
 #include "PublicHubsFrm.h"
 #include "HubFrame.h"
 #include "Client.h"
+#include "ResourceManager.h"
+#include "StringTokenizer.h"
 
 PublicHubsFrame* PublicHubsFrame::frame = NULL;
+
+int PublicHubsFrame::columnIndexes[] = { COLUMN_NAME, COLUMN_DESCRIPTION, COLUMN_USERS, COLUMN_SERVER };
+
+int PublicHubsFrame::columnSizes[] = { 200, 290, 50, 100 };
+
+static ResourceManager::Strings columnNames[] = { ResourceManager::HUB_NAME, ResourceManager::DESCRIPTION, 
+ResourceManager::USERS, ResourceManager::HUB_ADDRESS };
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -32,7 +41,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	dcassert(frame == NULL);
 	frame = this;
 	
-	SetWindowText("Public Hubs");
+	SetWindowText(CSTRING(PUBLIC_HUBS));
 	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
@@ -43,10 +52,40 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	}
 	
-	ctrlHubs.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 200, 0);
-	ctrlHubs.InsertColumn(1, _T("Description"), LVCFMT_LEFT, 290, 1);
-	ctrlHubs.InsertColumn(2, _T("Users"), LVCFMT_RIGHT, 50, 2);
-	ctrlHubs.InsertColumn(3, _T("Server"), LVCFMT_LEFT, 100, 3);
+	// Create listview columns
+	StringList l = StringTokenizer(SETTING(PUBLICHUBSFRAME_ORDER), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnIndexes[k++] = Util::toInt(*i);
+		}
+	}
+	
+	l = StringTokenizer(SETTING(PUBLICHUBSFRAME_WIDTHS), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnSizes[k++] = Util::toInt(*i);
+		}
+	}
+	
+	LV_COLUMN lvc;
+	ZeroMemory(&lvc, sizeof(lvc));
+	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+	
+	for(int j=0; j<COLUMN_LAST; j++)
+	{
+		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
+		lvc.fmt = ((j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT);
+		lvc.cx = columnSizes[j];
+		lvc.iOrder = columnIndexes[j];
+		lvc.iSubItem = j;
+		ctrlHubs.InsertColumn(j, &lvc);
+	}
 	
 	ctrlHubs.SetBkColor(Util::bgColor);
 	ctrlHubs.SetTextBkColor(Util::bgColor);
@@ -62,41 +101,48 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
-	ctrlConnect.SetWindowText("Connect");
+	ctrlConnect.SetWindowText(CSTRING(CONNECT));
 	ctrlConnect.SetFont(ctrlHubs.GetFont());
 
 	ctrlRefresh.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_REFRESH);
-	ctrlRefresh.SetWindowText("Refresh");
+	ctrlRefresh.SetWindowText(CSTRING(REFRESH));
 	ctrlRefresh.SetFont(ctrlHubs.GetFont());
 
 	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	ctrlAddress.SetWindowText("Address");
+	ctrlAddress.SetWindowText(CSTRING(ADDRESS));
 	ctrlAddress.SetFont(ctrlHubs.GetFont());
 	
-	ctrlStatus.SetText(0, "Downloading hub list...");
+	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+	filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
+	ctrlFilter.SetFont(ctrlHubs.GetFont());
+	
+	ctrlFilterDesc.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_GROUPBOX, WS_EX_TRANSPARENT);
+	ctrlFilterDesc.SetWindowText(CSTRING(FILTER));
+	ctrlFilterDesc.SetFont(ctrlHubs.GetFont());
+
+	ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
 	hubsMenu.CreatePopupMenu();
+
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 7;
-	mi.dwTypeData = "Connect";
+	mi.dwTypeData = const_cast<char*>(CSTRING(CONNECT));
 	mi.wID = IDC_CONNECT;
 	hubsMenu.InsertMenuItem(0, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 16;
-	mi.dwTypeData = "Add To Favorites";
+	mi.dwTypeData = const_cast<char*>(CSTRING(ADD_TO_FAVORITES));
 	mi.wID = IDC_ADD;
 	hubsMenu.InsertMenuItem(1, TRUE, &mi);
 	
 	HubManager::getInstance()->addListener(this);
-	if(HubManager::getInstance()->hasDownloaded()) {
-		PostMessage(WM_SPEAKER);
-	} else if(!HubManager::getInstance()->isRunning()) {
-		HubManager::getInstance()->refresh();
-	}
+
+	hubs = HubManager::getInstance()->getPublicHubs();
+	updateList();
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -126,8 +172,8 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ctrlHubs.DeleteAllItems();
 	users = 0;
-	hubs = 0;
-	ctrlStatus.SetText(0, "Downloading hub list...");
+	visibleHubs = 0;
+	ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->refresh();
 
@@ -187,7 +233,7 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
-LRESULT PublicHubsFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	char* hub;
 	
 	if(wParam == VK_RETURN && ctrlHub.GetWindowTextLength() > 0) {
@@ -211,11 +257,154 @@ LRESULT PublicHubsFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	return 0;
 }
 
+void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+	
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+		
+		ctrlStatus.SetParts(3, w);
+	}
+	
+	CRect rc = rect;
+	rc.top += 56;
+	rc.bottom -=28;
+	ctrlHubs.MoveWindow(rc);
+	
+	rc = rect;
+	rc.top+=2;
+	rc.bottom = rc.top + 46;
+	ctrlFilterDesc.MoveWindow(rc);
+
+	rc.top += 16;
+	rc.bottom -= 8;
+	rc.right -= 8;
+	rc.left += 8;
+	ctrlFilter.MoveWindow(rc);
+
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+	rc.left += 140;
+	rc.right -= 100;
+	ctrlHub.MoveWindow(rc);
+	
+	rc.left -= 43;
+	rc.right = rc.left + 43;
+	rc.top += 3;
+	ctrlAddress.MoveWindow(rc);
+	
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+	
+	rc.left += 2;
+	rc.right = rc.left + 80;
+	ctrlRefresh.MoveWindow(rc);
+	
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+	
+	rc.left = rc.right - 96;
+	rc.right -= 2;
+	ctrlConnect.MoveWindow(rc);
+}
+
+bool PublicHubsFrame::checkNick() {
+	if(SETTING(NICK).empty()) {
+		MessageBox(CSTRING(ENTER_NICK));
+		return false;
+	}
+	return true;
+}
+
+void PublicHubsFrame::updateList() {
+	ctrlHubs.DeleteAllItems();
+	users = 0;
+	visibleHubs = 0;
+	
+	ctrlHubs.SetRedraw(FALSE);
+	
+	for(HubEntry::List::const_iterator i = hubs.begin(); i != hubs.end(); ++i) {
+		if( (filter.empty()) ||
+			(Util::findSubString(i->getName(), filter) != string::npos) ||
+			(Util::findSubString(i->getDescription(), filter) != string::npos) ||
+			(Util::findSubString(i->getServer(), filter) != string::npos) ) {
+
+			StringList l;
+			l.push_back(i->getName());
+			l.push_back(i->getDescription());
+			l.push_back(i->getUsers());
+			l.push_back(i->getServer());
+			ctrlHubs.insert(l);
+			visibleHubs++;
+			users += Util::toInt(i->getUsers());
+		}
+
+	}
+	
+	ctrlHubs.SetRedraw(TRUE);
+	ctrlHubs.Invalidate();
+
+	updateStatus();
+	
+}
+
+void PublicHubsFrame::updateStatus() {
+	ctrlStatus.SetText(1, (STRING(HUBS) + ": " + Util::toString(visibleHubs)).c_str());
+	ctrlStatus.SetText(2, (STRING(USERS) + ": " + Util::toString(users)).c_str());
+}
+
+LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == FINISHED) {
+		hubs = HubManager::getInstance()->getPublicHubs();
+		updateList();
+	} else if(wParam == STARTING) {
+		string* x = (string*)lParam;
+		ctrlStatus.SetText(0, (STRING(DOWNLOADING_HUB_LIST) + "(" + (*x) + ")").c_str());
+		delete x;
+	} else if(wParam == FAILED) {
+		string* x = (string*)lParam;
+		ctrlStatus.SetText(0, (STRING(DOWNLOAD_FAILED) + ": " + (*x) ).c_str());
+		delete x;
+	}
+	return 0;
+}
+
+LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	char* str;
+	
+	if(wParam == VK_RETURN) {
+		str = new char[ctrlFilter.GetWindowTextLength()+1];
+		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
+		filter = string(str, ctrlFilter.GetWindowTextLength());
+		delete str;
+		updateList();
+	} else {
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.17 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.18 2002/03/23 01:58:42 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.18  2002/03/23 01:58:42  arnetheduck
+ * Work done on favorites...
+ *
  * Revision 1.17  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

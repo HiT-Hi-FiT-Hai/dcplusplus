@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 		ex.stepIn();
 		ex.addTag("Strings");
 		ex.stepIn();
+		int a = 0;
 		for(i = l.begin(); i != l.end(); i++) {
 			string name;
 			string def;
@@ -97,6 +98,11 @@ int main(int argc, char* argv[])
 
 			varStr += def + ", ";
 			varName += '\"' + name + "\", ";
+
+			if(((++a) % 10) == 0) {
+				varStr += "\r\n";
+				varName += "\r\n";
+			}
 
 		}
 
