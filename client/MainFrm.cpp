@@ -71,38 +71,44 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED) {
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
 	} else if(wParam == UPLOAD_STARTING) {
-		dcassert(uploadStarting.find(lParam) != uploadStarting.end());
-		ctrlTransfers.insert(uploadStarting[lParam], 1, lParam);
-		uploadStarting.erase(lParam);
-
+		if(uploadStarting.find(lParam) != uploadStarting.end()) {
+			ctrlTransfers.insert(uploadStarting[lParam], 1, lParam);
+			uploadStarting.erase(lParam);
+		}
 	} else if(wParam == UPLOAD_TICK) {
-		dcassert(uploadTick.find(lParam) != uploadTick.end());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, uploadTick[lParam].c_str());
-		uploadTick.erase(lParam);
+		if(uploadTick.find(lParam) != uploadTick.end()) {
+			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, uploadTick[lParam].c_str());
+			uploadTick.erase(lParam);
+		}
 	} else if(wParam == DOWNLOAD_ADDED) {
-		dcassert(downloadAdded.find(lParam) != downloadAdded.end());
-		ctrlTransfers.insert(downloadAdded[lParam], 0, lParam);
-		downloadAdded.erase(lParam);
+		if(downloadAdded.find(lParam) != downloadAdded.end()) {
+			ctrlTransfers.insert(downloadAdded[lParam], 0, lParam);
+			downloadAdded.erase(lParam);
+		}
 	} else if(wParam == DOWNLOAD_CONNECTING) {
 		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, "Connecting...");
 	} else if(wParam == DOWNLOAD_FAILED) {
-		dcassert(downloadFailed.find(lParam) != downloadFailed.end());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadFailed[lParam].c_str());
-		downloadFailed.erase(lParam);
+		if(downloadFailed.find(lParam) != downloadFailed.end()) {
+			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadFailed[lParam].c_str());
+			downloadFailed.erase(lParam);
+		}
 	} else if(wParam == DOWNLOAD_STARTING) {
-		dcassert(downloadStarting.find(lParam) != downloadStarting.end());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam][0].c_str());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 3, downloadStarting[lParam][1].c_str());
-		downloadStarting.erase(lParam);
+		if(downloadStarting.find(lParam) != downloadStarting.end()) {
+			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam][0].c_str());
+			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 3, downloadStarting[lParam][1].c_str());
+			downloadStarting.erase(lParam);
+		}
 	} else if(wParam == DOWNLOAD_TICK) {
-		dcassert(downloadTick.find(lParam) != downloadTick.end());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadTick[lParam].c_str());
-		downloadTick.erase(lParam);
+		if(downloadTick.find(lParam) != downloadTick.end()) {
+			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadTick[lParam].c_str());
+			downloadTick.erase(lParam);
+		}
 	} else if(wParam == DOWNLOAD_SOURCEADDED) {
-		dcassert(downloadSourceAdded.find(lParam) != downloadSourceAdded.end());
-		SourceInfo& si = downloadSourceAdded[lParam];
-		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)si.d), 3, si.source.c_str());
-		downloadSourceAdded.erase(lParam);
+		if(downloadSourceAdded.find(lParam) != downloadSourceAdded.end()) {
+			SourceInfo& si = downloadSourceAdded[lParam];
+			ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)si.d), 3, si.source.c_str());
+			downloadSourceAdded.erase(lParam);
+		}
 	}
 	cs.leave();
 
@@ -201,7 +207,6 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 
 void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
 	if(!aDownload->isSet(Download::RUNNING)) {
-		cs.enter();
 		string s;
 		for(Download::Source::Iter i = aDownload->getSources().begin(); i != aDownload->getSources().end(); ++i) {
 			if(s.size() > 0)
@@ -219,6 +224,7 @@ void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source*
 			}
 		}
 
+		cs.enter();
 		downloadSourceAdded[(LPARAM) aSource] = SourceInfo(aDownload, s);
 		cs.leave();
 		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)aSource);
@@ -443,9 +449,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.28 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.29 2002/01/02 16:55:56 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.29  2002/01/02 16:55:56  arnetheduck
+ * Time for 0.09
+ *
  * Revision 1.28  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

@@ -130,10 +130,8 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
 		if(d) {
 			fireFailed(d, "Connection timeout");
 		}
-		cs.leave();
-	} else {
-		cs.leave();
 	}
+	cs.leave();
 }
 
 /**
@@ -607,9 +605,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.20 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.21 2002/01/02 16:55:56 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.21  2002/01/02 16:55:56  arnetheduck
+ * Time for 0.09
+ *
  * Revision 1.20  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

@@ -62,6 +62,7 @@ public:
 		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
 			delete (LONGLONG*)ctrlResults.GetItemData(i);
 		}
+		bHandled = FALSE;
 		return 0;
 	}				
 
@@ -291,9 +292,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.7 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.8 2002/01/02 16:55:56 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.8  2002/01/02 16:55:56  arnetheduck
+ * Time for 0.09
+ *
  * Revision 1.7  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

@@ -184,7 +184,7 @@ CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,65,82,50,14
-    CTEXT           "DC++ v0.08\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
+    CTEXT           "DC++ v0.09\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
                     IDC_STATIC,18,38,143,36
     ICON            IDR_MAINFRAME,IDC_STATIC,79,15,20,20
     GROUPBOX        "",IDC_STATIC,7,7,166,69
@@ -299,8 +299,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 0,0,9,0
+ PRODUCTVERSION 0,0,9,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -318,7 +318,7 @@ BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "FileVersion", "0, 0, 9, 0\0"
             VALUE "InternalName", "DC++\0"
             VALUE "LegalCopyright", "Copyright 2001 Jacek Sieka\0"
             VALUE "LegalTrademarks", "\0"
@@ -326,7 +326,7 @@ BEGIN
             VALUE "OriginalFilename", "DCPlusPlus.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "ProductVersion", "0, 0, 9, 0\0"
             VALUE "SpecialBuild", "\0"
         END
     END
