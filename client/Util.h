@@ -296,12 +296,35 @@ public:
 	}
 
 	static string getLocalIp() {
+		string tmp;
+
 		char buf[256];
 		gethostname(buf, 256);
 		hostent* he = gethostbyname(buf);
 		sockaddr_in dest;
-        memcpy(&(dest.sin_addr), he->h_addr_list[0], he->h_length);
-		return inet_ntoa(dest.sin_addr);
+        int i = 0;
+
+		// We take the first ip as default, but if we can find a better one, use it instead...
+		memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
+		tmp = inet_ntoa(dest.sin_addr);
+		if( strncmp(tmp.c_str(), "192", 3) == 0 || 
+			strncmp(tmp.c_str(), "169", 3) == 0 || 
+			strncmp(tmp.c_str(), "127", 3) == 0 || 
+			strncmp(tmp.c_str(), "10", 2) == 0 ) {
+
+			while(he->h_addr_list[i]) {
+				memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
+				string tmp2 = inet_ntoa(dest.sin_addr);
+				if(	strncmp(tmp2.c_str(), "192", 3) != 0 &&
+					strncmp(tmp2.c_str(), "169", 3) != 0 &&
+					strncmp(tmp2.c_str(), "127", 3) != 0 &&
+					strncmp(tmp2.c_str(), "10", 2) != 0) {
+							
+					tmp = tmp2;
+				}
+			}
+		}
+		return tmp;
 	}
 	/**
 	 * Case insensitive substring search.
@@ -363,9 +386,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.18 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: Util.h,v 1.19 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.19  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.18  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

@@ -17,14 +17,17 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.122"
-#define VERSIONFLOAT 0.122
+#define VERSIONSTRING "0.13"
+#define VERSIONFLOAT 0.13
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.14 2002/01/15 21:57:53 arnetheduck Exp $
+ * $Id: version.h,v 1.15 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.15  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.14  2002/01/15 21:57:53  arnetheduck
  * Hopefully fixed the two annoying bugs...
  *

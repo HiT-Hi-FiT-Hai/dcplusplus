@@ -93,7 +93,153 @@ BEGIN
         MENUITEM "&Favorite Hubs\tCtrl+F",      IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM SEPARATOR
+        MENUITEM "Follow last redirec&t\tCtrl+T", IDC_FOLLOW
         MENUITEM "&Reconnect\tCtrl+R",          ID_FILE_RECONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_DIRECTORY MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_FAVORITES MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_PRIVATE MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_SEARCH MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
+    END
+END
+
+IDR_PUBLICHUBS MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
+        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                ID_FILE_SETTINGS
         MENUITEM SEPARATOR
@@ -338,6 +484,7 @@ BEGIN
     "P",            ID_FILE_CONNECT,        VIRTKEY, CONTROL, NOINVERT
     "R",            ID_FILE_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SEARCH,         VIRTKEY, CONTROL, NOINVERT
+    "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -416,6 +563,11 @@ BEGIN
     ID_FILE_SEARCH          "Search for files\nSearch"
     IDC_DOWNLOAD            "Download selected file\nDownload"
     IDC_FAVORITES           "Displays a list of favorite hubs\nFavorites"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDC_FOLLOW              "Follow the latest redirect to a new hub\nFollow redirect"
 END
 
 #endif    // English (U.S.) resources

@@ -45,7 +45,7 @@ public:
 		IMAGE_DIRECTORY = 0,
 		IMAGE_FILE = 2
 	};
-	DirectoryListingFrame(DirectoryListing* aList, const string& aNick) :  dl(aList), user(aNick) { };
+	DirectoryListingFrame(DirectoryListing* aList, const User::Ptr& aUser) :  dl(aList), user(aUser) { };
 
 	~DirectoryListingFrame() {
 		ctrlImages.Destroy();
@@ -71,6 +71,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -152,48 +153,17 @@ public:
 	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void downloadList(const string& aTarget);
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		// Get the bounding rectangle of the client area. 
-		ctrlList.GetClientRect(&rc);
-		ctrlList.ScreenToClient(&pt); 
-		
-		if (PtInRect(&rc, pt)) 
-		{ 
-			ctrlList.ClientToScreen(&pt);
-			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
-		} else { 
-		
-			ctrlList.ClientToScreen(&pt);
-
-			ctrlTree.GetClientRect(&rc);
-			ctrlTree.ScreenToClient(&pt); 
-			
-			if (PtInRect(&rc, pt)) 
-			{ 
-				ctrlTree.ClientToScreen(&pt);
-				directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-				
-				return TRUE; 
-			} 
-		}
-		
-		return FALSE; 
-	}
-		
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		return 0;
 	}
 	
 	void setWindowTitle() {
-		SetWindowText(user.c_str());
+		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
 	}
 
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
@@ -242,10 +212,14 @@ public:
 private:
 	CImageList ctrlImages;
 	
+	CMenu targetMenu;
+	CMenu oneFileMenu;
 	CMenu fileMenu;
 	CMenu directoryMenu;
 	
-	string user;
+	StringList targets;
+
+	User::Ptr user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
 	CStatusBarCtrl ctrlStatus;
@@ -265,9 +239,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.11 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.12 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.12  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.11  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

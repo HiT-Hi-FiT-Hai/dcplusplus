@@ -123,10 +123,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 3, i->str.c_str());
 		delete i;
 	} else if(wParam == DOWNLOAD_LISTING) {
-		StringListInfo* i = (StringListInfo*)lParam;
+		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, "Preparing file list...");
 		try {
-			File f(i->l[0], File::READ, File::OPEN);
+			File f(i->file, File::READ, File::OPEN);
 
 			DirectoryListing* dl = new DirectoryListing();
 			DWORD size = (DWORD)f.getSize();
@@ -138,10 +138,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			delete buf;
 			dl->load(tmp);
 			
-			DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->l[1]);
+			DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->user);
 			pChild->setTab(&ctrlTab);
 			pChild->CreateEx(m_hWndClient);
-			pChild->SetWindowText((i->l[1] + i->l[2]).c_str());
+			pChild->setWindowTitle();
 			delete i;
 		} catch(FileException e) {
 			// ...
@@ -224,10 +224,9 @@ void MainFrame::onDownloadAdded(Download* p) {
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
-		StringListInfo* i = new StringListInfo((LPARAM)p);
-		i->l.push_back(p->getTarget());
-		i->l.push_back(p->getCurrentSource()->getUser()->getNick());
-		i->l.push_back(" (" + p->getCurrentSource()->getUser()->getClientName() + ")");
+		DirectoryListInfo* i = new DirectoryListInfo((LPARAM)p);
+		i->file = p->getTarget();
+		i->user = p->getCurrentSource()->getUser();
 		
 		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 	}
@@ -302,7 +301,7 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 HWND MainFrame::createToolbar() {
 	
 	CToolBarCtrl ctrl;
-	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT, 0, ATL_IDW_TOOLBAR);
+	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrl.SetImageList(images);
 	
 	TBBUTTON tb[5];
@@ -335,6 +334,7 @@ HWND MainFrame::createToolbar() {
 	ctrl.AddButtons(5, tb);
 	
 	ctrl.AutoSize();
+
 	return ctrl.m_hWnd;
 	
 }
@@ -805,9 +805,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.42 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.43 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.43  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.42  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

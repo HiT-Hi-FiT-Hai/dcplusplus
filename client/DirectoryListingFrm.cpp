@@ -239,32 +239,38 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.SetText(2, buf);
 
 	fileMenu.CreatePopupMenu();
+	oneFileMenu.CreatePopupMenu();
+	targetMenu.CreatePopupMenu();
+	directoryMenu.CreatePopupMenu();
+
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 8;
 	mi.dwTypeData = "Download";
 	mi.wID = IDC_DOWNLOAD;
+	oneFileMenu.InsertMenuItem(0, TRUE, &mi);
 	fileMenu.InsertMenuItem(0, TRUE, &mi);
-
+	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 14;
 	mi.dwTypeData = "Download to...";
 	mi.wID = IDC_DOWNLOADTO;
 	fileMenu.InsertMenuItem(1, TRUE, &mi);
 
-	directoryMenu.CreatePopupMenu();
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Download to...";
+	mi.hSubMenu = targetMenu;
+	oneFileMenu.InsertMenuItem(1, TRUE, &mi);
+
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 8;
 	mi.dwTypeData = "Download";
 	mi.wID = IDC_DOWNLOADDIR;
 	directoryMenu.InsertMenuItem(0, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 14;
 	mi.dwTypeData = "Download to...";
 	mi.wID = IDC_DOWNLOADDIRTO;
 	directoryMenu.InsertMenuItem(1, TRUE, &mi);
@@ -273,11 +279,101 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	return 1;
 }
 
+LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlList.GetClientRect(&rc);
+	ctrlList.ScreenToClient(&pt); 
+	
+	if (PtInRect(&rc, pt) && ctrlList.GetSelectedCount() > 0) {
+		ctrlList.ClientToScreen(&pt);
+
+		LVITEM lvi;
+		lvi.iItem = ctrlList.GetNextItem(-1, LVNI_SELECTED);
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
+		ctrlList.GetItem(&lvi);
+
+		if(ctrlList.GetSelectedCount() == 1 && lvi.iImage == IMAGE_FILE) {
+			while(targetMenu.GetMenuItemCount() > 0) {
+				targetMenu.DeleteMenu(0, MF_BYPOSITION);
+			}
+
+			int pos = ctrlList.GetNextItem(-1, LVNI_SELECTED);
+			dcassert(pos != -1);
+			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(pos);
+			
+			int n = 0;
+			CMenuItemInfo mi;
+
+			targets = DownloadManager::getInstance()->getTargetsBySize(f->getSize());
+			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
+				mi.fMask = MIIM_ID | MIIM_TYPE;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
+				mi.wID = IDC_DOWNLOAD_TARGET + n;
+				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			}
+			
+			mi.fMask = MIIM_ID | MIIM_TYPE;
+			mi.fType = MFT_STRING;
+			mi.dwTypeData = "Browse...";
+			mi.wID = IDC_DOWNLOADTO;
+			targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			
+			oneFileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		} else {
+			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		}
+		
+		return TRUE; 
+	} else { 
+		
+		ctrlList.ClientToScreen(&pt);
+		
+		ctrlTree.GetClientRect(&rc);
+		ctrlTree.ScreenToClient(&pt); 
+		
+		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) 
+		{ 
+			ctrlTree.ClientToScreen(&pt);
+			directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			
+			return TRUE; 
+		} 
+	}
+	
+	return FALSE; 
+}
+
+LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlList.GetSelectedCount() == 1) {
+		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
+		dcassert(i != -1);
+		DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
+		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
+		try {
+			if(user->isOnline())
+				DownloadManager::getInstance()->download(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
+			else
+				DownloadManager::getInstance()->download(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
+	} 
+	return 0;
+}
+
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.17 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.18 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.18  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.17  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

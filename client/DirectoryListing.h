@@ -114,7 +114,23 @@ public:
 		}
 	}
 
+	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget) {
+		string target = aTarget + aDir->getName() + '\\';
+		// First, recurse over the directories
+		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
+			download(*j, aUser, target);
+		}
+		// Then add the files
+		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
+			File* file = *i;
+			download(file, aUser, target + file->getName());
+		}
+	}
+	
 	void download(File* aFile, const string& aUser, const string& aTarget) {
+		DownloadManager::getInstance()->download(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
+	}
+	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
 		DownloadManager::getInstance()->download(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
 	
@@ -140,9 +156,12 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.5 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.6 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.6  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.5  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

@@ -306,7 +306,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 			if(dd->getSize() != aSize) {
 				// Same target, but different sizes...not good...
 				cs.leave();
-				throw DownloadException("A download with the same target but different size already exists in the queue");
+				throw DownloadException("A file of different size but same target already exists in the queue");
 			}
 			
 			if(!dd->getSources().empty() && dd->getSources()[0]->getFileName() == USER_LIST_NAME) {
@@ -337,7 +337,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	if(aResume && (aSize != -1) ) {
 		if(Util::getFileSize(aTarget) >= aSize) {
 			cs.leave();
-			throw DownloadException("Target file is larger than the source");
+			throw DownloadException(aTarget + ": A file of larger or equal size already exists");
 		}
 	}
 	
@@ -777,9 +777,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.34 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.35 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.35  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.34  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

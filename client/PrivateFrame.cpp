@@ -21,6 +21,7 @@
 
 #include "PrivateFrame.h"
 #include "Client.h"
+#include "ClientManager.h"
 
 CriticalSection PrivateFrame::cs;
 map<User::Ptr, PrivateFrame*> PrivateFrame::frames;
@@ -85,6 +86,13 @@ PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
 
 LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	if(!user->isOnline()) {
+		User::Ptr& p = ClientManager::getInstance()->findUser(user->getNick());
+		if(p) {
+			setUser(p);
+		}
+	}
+
 	if(user->isOnline()) {
 		char* message;
 		
@@ -109,9 +117,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.7 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.8 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.8  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.7  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

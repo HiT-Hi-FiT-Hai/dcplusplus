@@ -89,6 +89,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
+		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<HubFrame>)
@@ -110,6 +111,14 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		if(!redirect.empty()) {
+			client->disconnect();
+			client->connect(redirect);
+		}
+		return 0;
+	}
 
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
@@ -344,6 +353,8 @@ private:
 		string msg;
 	};
 
+	string redirect;
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		switch(type) {
@@ -377,6 +388,8 @@ private:
 			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
 		case ClientListener::MESSAGE:
 			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x); break;
+		case ClientListener::FORCE_MOVE:
+			redirect = line; break;
 		}
 	}
 
@@ -451,9 +464,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.38 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.39 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.39  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.38  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

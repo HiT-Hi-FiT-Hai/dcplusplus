@@ -1,4 +1,4 @@
- -- 0.13 --
+ -- 0.13 2002-01-19 --
 * Added directory listing sort
 * Fixed missing '\\' in the default download directory bug
 * Fixed a small bug where search responses sometimes reported -1 free slots
@@ -14,6 +14,13 @@
 * Running downloads are now moved to top of transfer list, and running uploads are put at bottom
 * Files smaller than 16k and file lists are now downloaded before any larger ones from the same user
 * More work on the multihub feature
+* More work on the resume rollback, it should now work a bit better
+* Made sure that the settings file is never shared (DCPlusPlus.xml)
+* Reworked local ip discovery, hopefully it will work better on machines with multiple ip's...
+* Made sure transfers stop when the disk is full (also added more verbose file error messages)
+* Users can now download files <16kb and file lists regardless of free slots (!)
+* Readded tooltips for the toolbar buttons
+* Added a "Follow last redirect" to the menu (will add to toolbar later on)
 
  -- 0.122 2002-01-16 --
 * Fixed search bug

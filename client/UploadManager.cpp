@@ -27,7 +27,16 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	Upload* u;
 
 	try {
-		if((getFreeSlots()<=0)) {
+
+		string file;
+		try {
+			file = ShareManager::getInstance()->translateFileName(aFile);
+		} catch(ShareException e) {
+			aSource->error("File Not Available");
+			return;
+		}
+		
+		if( (getFreeSlots()<=0) && (Util::getFileSize(file) > (LONGLONG)(16 * 1024)) && (stricmp(aFile.c_str(), "MyList.DcLst") != 0) ) {
 			aSource->maxedOut();
 			removeConnection(aSource);
 			return;
@@ -43,18 +52,6 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 				return;					
 			}
 		}
-		cs.leave();
-
-		string file;
-
-		try {
-			file = ShareManager::getInstance()->translateFileName(aFile);
-		} catch(ShareException e) {
-			aSource->error("File Not Available");
-			return;
-		}
-
-		cs.enter();
 
 		Upload::MapIter i = uploads.find(aSource);
 		if(i != uploads.end()) {
@@ -187,9 +184,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.8 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.9 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.9  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.8  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

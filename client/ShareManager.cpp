@@ -146,9 +146,11 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				dir->directories[name] = buildTree(aName + '\\' + name, dir);
 			} else {
-				// Not a directory, assume it's a file...
-				dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
-				dir->size+=(LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
+				if(stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
+					dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+					dir->size+=(LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+				}
 			}
 			
 		} while(FindNextFile(hFind, &data));
@@ -304,9 +306,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.14 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.15 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.15  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.14  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

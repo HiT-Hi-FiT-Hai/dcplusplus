@@ -293,7 +293,15 @@ private:
 		StringList l;
 		LPARAM lParam;
 	};
-
+	class DirectoryListInfo {
+	public:
+		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
+		User::Ptr user;
+		string file;
+		
+		LPARAM lParam;
+		
+	};
 	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;
@@ -413,9 +421,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.31 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.32 2002/01/19 19:07:39 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.32  2002/01/19 19:07:39  arnetheduck
+ * Last fixes before 0.13
+ *
  * Revision 1.31  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *
