@@ -176,8 +176,19 @@ public:
 		dcassert(flags & (FLAG_UPLOAD | FLAG_DOWNLOAD));
 		return (flags & UserConnection::FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
-
+	const string& getNick() {
+		if(nick.empty()) {
+			return SETTING(NICK);
+		} else {
+			return nick;
+		}
+	}
+	void setNick(const string& aNick) {
+		nick = aNick;
+	}
+	
 private:
+	string nick;
 	string server;
 	short port;
 	BufferedSocket socket;
@@ -286,9 +297,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.24 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.25 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.25  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.24  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -154,6 +154,10 @@ SOURCE=.\client\ExListViewCtrl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\FavoritesFrm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\FlatTabCtrl.cpp
 # End Source File
 # Begin Source File
@@ -198,11 +202,11 @@ SOURCE=.\client\ServerSocket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\Settings.cpp
+SOURCE=.\client\SettingsDlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\SettingsDlg.cpp
+SOURCE=.\client\SettingsManager.cpp
 # End Source File
 # Begin Source File
 
@@ -315,6 +319,10 @@ SOURCE=.\client\ExListViewCtrl.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\FavoritesFrm.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\FlatTabCtrl.h
 # End Source File
 # Begin Source File
@@ -367,11 +375,11 @@ SOURCE=.\client\ServerSocket.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\Settings.h
+SOURCE=.\client\SettingsDlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\SettingsDlg.h
+SOURCE=.\client\SettingsManager.h
 # End Source File
 # Begin Source File
 

@@ -30,10 +30,11 @@
 #include "CriticalSection.h"
 #include "FlatTabCtrl.h"
 #include "HttpConnection.h"
+#include "HubManager.h"
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener
+		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener
 {
 public:
 	MainFrame() : stopperThread(NULL), menuItems(0) { };
@@ -56,7 +57,8 @@ public:
 		DOWNLOAD_SOURCEADDED,
 		DOWNLOAD_TICK,
 		DOWNLOAD_LISTING,
-		STATS
+		STATS,
+		AUTO_CONNECT
 	};
 
 	enum {
@@ -104,6 +106,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
+		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		CHAIN_MDI_CHILD_COMMANDS()
 		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + menuItems), onTransferItem)
@@ -134,8 +137,9 @@ public:
 		}
 		return 0;
 	}
-
+	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
@@ -292,11 +296,14 @@ private:
 	FlatTabCtrl ctrlTab;
 	HttpConnection c;
 	string versionInfo;
+	CImageList images;
 	
 	CMenu transferMenu;
 	
 	CImageList arrows;
 	HANDLE stopperThread;
+
+	HWND createToolbar();
 
 
 	// UploadManagerListener
@@ -382,6 +389,10 @@ private:
 	
 	void onHttpComplete(HttpConnection* aConn);
 	void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
+
+	// HubManagerListener
+	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl);
+	
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -393,9 +404,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.27 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.28 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.28  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.27  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

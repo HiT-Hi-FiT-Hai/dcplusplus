@@ -131,6 +131,8 @@ protected:
 class Util  
 {
 public:
+	static string emptyString;
+
 	static bool browseSaveFile(string& target, HWND owner = NULL) {
 		char buf[MAX_PATH];
 		OPENFILENAME ofn;       // common dialog box structure
@@ -189,6 +191,14 @@ public:
 		}
 	}
 	
+	static string getAppPath() {
+		TCHAR buf[MAX_PATH+1];
+		GetModuleFileName(NULL, buf, MAX_PATH);
+		int i = (strrchr(buf, '\\') - buf);
+		return string(buf, i + 1);
+		
+	}	
+	
 	static LONGLONG getFileSize(const string& aName) {
 		WIN32_FIND_DATA fd;
 		HANDLE hFind;
@@ -202,6 +212,7 @@ public:
 			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
 		}
 	}
+
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
 	}
@@ -290,15 +301,31 @@ public:
 		}
 		return string::npos;
 	}
+
+	static string validateString(const string& aNick) {	
+		string nick = aNick;
+		int i;
+		while((i=nick.find('$')) != string::npos)
+			nick.replace(i, 1, 1, '_');
+		while((i=nick.find(' ')) != string::npos)
+			nick.replace(i, 1, 1, '_');
+		while((i=nick.find('|')) != string::npos)
+			nick.replace(i, 1, 1, '_');
+		return nick;
+	}
+	
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.15 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: Util.h,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.16  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.15  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

@@ -5,6 +5,7 @@
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
+#define IDR_HUB                         129
 #define IDC_PUBLIST                     130
 #define IDC_HUBLIST                     131
 #define IDR_MDIDIRECTORY                132
@@ -17,6 +18,12 @@
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
 #define IDB_USERS                       210
+#define IDB_TOOLBAR                     213
+#define IDR_PUBLICHUBS                  215
+#define IDR_SEARCH                      216
+#define IDR_FAVORITES                   217
+#define IDR_PRIVATE                     218
+#define IDR_DIRECTORY                   219
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -45,19 +52,23 @@
 #define IDC_KICK                        1023
 #define IDC_REDIRECT                    1024
 #define IDC_REMOVESOURCE                1025
+#define IDC_EDIT                        1026
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
 #define ID_FILE_SEARCH                  32776
 #define IDC_DOWNLOAD                    32780
 #define IDC_DOWNLOADTO                  32781
+#define IDC_FAVORITES                   32783
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        213
-#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NO_MFC                     1
+#define _APS_3D_CONTROLS                     1
+#define _APS_NEXT_RESOURCE_VALUE        220
+#define _APS_NEXT_COMMAND_VALUE         32784
 #define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

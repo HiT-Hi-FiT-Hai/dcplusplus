@@ -45,7 +45,7 @@ public:
 		cs.leave();
 		putConnection(aSource);
 	}
-	void connect(const string& aServer, short aPort);
+	void connect(const string& aServer, short aPort, const string& aNick);
 
 	/**
 	 * Set this ConnectionManager to listen at a different port.
@@ -162,9 +162,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.19 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.20 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.20  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.19  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

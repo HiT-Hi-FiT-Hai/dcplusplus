@@ -31,6 +31,7 @@
 STANDARD_EXCEPTION(ShareException);
 
 class SimpleXML;
+class Client;
 
 class ShareManager : public Singleton<ShareManager>
 {
@@ -43,10 +44,10 @@ public:
 	string translateFileName(const string& aFile) throw(ShareException);
 	void refresh() throw(ShareException);
 
-	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType) {
-		return search(aString, aSearchType, Util::toInt64(aSize), aFileType);
+	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
+		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient);
 	}
-	SearchResult::List search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType);
+	SearchResult::List search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient);
 
 
 	LONGLONG getShareSize() {
@@ -87,7 +88,7 @@ public:
 	
 	const string& getListFile() {
 		if(listFile.empty())
-			listFile = Settings::getAppPath() + "\\MyList.DcLst";
+			listFile = Util::getAppPath() + "\\MyList.DcLst";
 
 		return listFile;
 	}
@@ -127,7 +128,7 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType);
+		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient);
 		
 		Map directories;
 		map<string, LONGLONG> files;
@@ -178,9 +179,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.12  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.11  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

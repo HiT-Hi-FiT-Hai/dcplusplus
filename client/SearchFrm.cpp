@@ -66,10 +66,11 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.InsertColumn(0, _T("User"), LVCFMT_LEFT, 100, 0);
 	ctrlResults.InsertColumn(1, _T("File"), LVCFMT_LEFT, 200, 1);
 	ctrlResults.InsertColumn(2, _T("Type"), LVCFMT_LEFT, 50, 2);
-	ctrlResults.InsertColumn(3, _T("Size"), LVCFMT_RIGHT, 100, 3);
+	ctrlResults.InsertColumn(3, _T("Size"), LVCFMT_RIGHT, 80, 3);
 	ctrlResults.InsertColumn(4, _T("Path"), LVCFMT_LEFT, 100, 4);
-	ctrlResults.InsertColumn(5, _T("Slots"), LVCFMT_LEFT, 75, 5);
-	ctrlResults.InsertColumn(6, _T("Hub"), LVCFMT_LEFT, 150, 6);
+	ctrlResults.InsertColumn(5, _T("Slots"), LVCFMT_LEFT, 40, 5);
+	ctrlResults.InsertColumn(6, _T("Connection"), LVCFMT_LEFT, 70, 6);
+	ctrlResults.InsertColumn(7, _T("Hub"), LVCFMT_LEFT, 150, 7);
 
 	SetWindowText("Search");
 
@@ -108,7 +109,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		ctrlResults.GetItemText(i, 1, buf, 512);
 		string file = buf;
-		string target = Settings::getDownloadDirectory() + buf;
+		string target = SETTING(DOWNLOAD_DIRECTORY) + buf;
 		if(Util::browseSaveFile(target)) {
 			ctrlResults.GetItemText(i, 0, buf, 512);
 			string user = buf;
@@ -123,7 +124,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			}
 		}
 	} else {
-		string target = Settings::getDownloadDirectory();
+		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(Util::browseDirectory(target, m_hWnd)) {
 			downloadSelected(target);
 		}
@@ -201,15 +202,23 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	l->push_back(Util::formatBytes(aResult->getSize()));
 	l->push_back(path);
 	l->push_back(aResult->getSlotString());
+	if(aResult->getUser()) {
+		l->push_back(aResult->getUser()->getConnection());
+	} else {
+		l->push_back("");
+	}
 	l->push_back(aResult->getHubName());
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)psize);	
 }
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.12 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.13 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.13  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.12  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

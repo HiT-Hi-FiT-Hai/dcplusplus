@@ -32,6 +32,13 @@
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private HubManagerListener
 {
 public:
+
+	enum {
+		COLUMN_NAME,
+		COLUMN_DESCRIPTION,
+		COLUMN_USERS,
+		COLUMN_SERVER
+	};
 	PublicHubsFrame() : stopperThread(NULL), users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
 		
 	};
@@ -39,7 +46,7 @@ public:
 	virtual ~PublicHubsFrame() {
 	};
 
-	DECLARE_FRAME_WND_CLASS("PublicHubsFrame", IDR_MDICHILD);
+	DECLARE_FRAME_WND_CLASS("PublicHubsFrame", IDR_PUBLICHUBS);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		frame = NULL;
@@ -52,6 +59,9 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, onClickedRefresh)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
@@ -63,7 +73,7 @@ public:
 		
 
 	bool checkNick() {
-		if(Settings::getNick().empty()) {
+		if(SETTING(NICK).empty()) {
 			MessageBox("Please enter a nickname in the settings dialog!");
 			return false;
 		}
@@ -71,6 +81,11 @@ public:
 	}
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
+	LRESULT onSpeaker(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HubManager::getInstance()->getPublicHubs();
+		return 0;
+	}
+		
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		PAINTSTRUCT ps;
@@ -79,6 +94,26 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
+
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		
+		// Get the bounding rectangle of the client area. 
+		ctrlHubs.GetClientRect(&rc);
+		ctrlHubs.ScreenToClient(&pt); 
+		
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlHubs.ClientToScreen(&pt);
+			hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			
+			return TRUE; 
+		}
+		
+		return FALSE; 
+	}
+	
 	
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
@@ -124,7 +159,7 @@ public:
 		}
 		return 0;
 	}
-
+	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
@@ -191,7 +226,8 @@ private:
 	CButton ctrlConnect;
 	CButton ctrlRefresh;
 	CStatic ctrlAddress;
-
+	CMenu hubsMenu;
+	
 	CContainedWindow ctrlHubContainer;
 	
 	CEdit ctrlHub;
@@ -207,9 +243,15 @@ private:
 	}
 	
 	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type, const HubEntry::List& aList) {
+	virtual void onAction(HubManagerListener::Types type) {
 		switch(type) {
 		case HubManagerListener::FINISHED:
+			PostMessage(WM_SPEAKER);
+		}
+	}
+	virtual void onAction(HubManagerListener::Types type, const HubEntry::List& aList) {
+		switch(type) {
+		case HubManagerListener::GET_PUBLIC_HUBS:
 			onHubFinished(aList); break;
 		}
 	}
@@ -259,9 +301,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.12 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.13 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.13  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.12  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

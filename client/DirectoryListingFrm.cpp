@@ -52,6 +52,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 
 	if(p->itemNew.state & TVIS_SELECTED) {
 		DirectoryListing::Directory* d = (DirectoryListing::Directory*)p->itemNew.lParam;
+		ctrlList.SetRedraw(FALSE);
 		ctrlList.DeleteAllItems();
 		for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
 			DirectoryListing::Directory* d = *i;
@@ -67,6 +68,8 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			l.push_back(Util::formatBytes((*j)->size));
 			ctrlList.insert(l, 2, (LPARAM)*j);
 		}
+		ctrlList.SetRedraw(TRUE);
+		ctrlList.Invalidate();
 	}
 	return 0;
 }
@@ -89,7 +92,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 		if(lvi.iImage == 2) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 			try {
-				dl->download(file, user, Settings::getDownloadDirectory() + file->name);
+				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->name);
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -114,7 +117,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		string target = Settings::getDownloadDirectory();
+		string target = SETTING(DOWNLOAD_DIRECTORY);
 		try {
 			dl->download(dir, user, target);
 		} catch(Exception e) {
@@ -128,7 +131,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		string target = Settings::getDownloadDirectory();
+		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(Util::browseDirectory(target, m_hWnd)) {
 			try {
 				dl->download(dir, user, target);
@@ -150,7 +153,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 		string target;
 		ctrlList.GetItem(&lvi);
 		if(aTarget.empty()) {
-			target = Settings::getDownloadDirectory();
+			target = SETTING(DOWNLOAD_DIRECTORY);
 		} else {
 			target = aTarget;
 		}
@@ -169,7 +172,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 }
 
 LRESULT DirectoryListingFrame::onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	downloadList(Settings::getDownloadDirectory());
+	downloadList(SETTING(DOWNLOAD_DIRECTORY));
 	return 0;
 }
 
@@ -198,7 +201,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 			MessageBox(e.getError().c_str());
 		}
 	} else {
-		string target = Settings::getDownloadDirectory();
+		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(Util::browseDirectory(target, m_hWnd)) {
 			downloadList(target);
 		}
@@ -219,7 +222,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlList.InsertColumn(0, _T("Filename"), LVCFMT_LEFT, 400, 0);
 	ctrlList.InsertColumn(1, _T("Size"), LVCFMT_RIGHT, 100, 1);
 	
-	ctrlImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_DEFAULTCOLOR);
+	ctrlImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTree.SetImageList(ctrlImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(ctrlImages, LVSIL_SMALL);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -272,9 +275,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.15 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.16  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.15  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

@@ -21,7 +21,7 @@
 #define AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_
 
 // Change these values to use different versions
-#define WINVER		0x0500
+#define WINVER		0x0400
 #define _WIN32_IE	0x0500
 #define _RICHEDIT_VER	0x0200
 
@@ -61,9 +61,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.13 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.14 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.14  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.13  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

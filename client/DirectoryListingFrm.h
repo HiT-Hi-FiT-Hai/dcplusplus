@@ -42,7 +42,7 @@ public:
 		ctrlImages.Destroy();
 	}
 
-	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_MDIDIRECTORY)
+	DECLARE_FRAME_WND_CLASS("DirectoryListingFrame", IDR_DIRECTORY)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -184,9 +184,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.9 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.10 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.10  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.9  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

@@ -35,6 +35,7 @@
 #include "DirectoryListingFrm.h"
 #include "ShareManager.h"
 #include "SearchManager.h"
+#include "FavoritesFrm.h"
 
 MainFrame::~MainFrame() {
 	arrows.Destroy();
@@ -51,9 +52,11 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 			wnd2 = wnd;
 		}
 	}
-	Settings::save();
 	TimerManager::getInstance()->removeListeners();
 	
+	SettingsManager::getInstance()->save();
+	SettingsManager::deleteInstance();
+
 	ShareManager::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
@@ -134,6 +137,9 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		pChild->CreateEx(m_hWndClient);
 		pChild->SetWindowText((i->l[1] + i->l[2]).c_str());
 		delete i;
+	} else if(wParam == AUTO_CONNECT) {
+		HubManager::getInstance()->addListener(this);
+		HubManager::getInstance()->getFavoriteHubs();
 	}
 	cs.leave();
 
@@ -145,10 +151,10 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	i->l.push_back(aUpload->getFileName());
 	i->l.push_back("Connecting...");
 	i->l.push_back(Util::formatBytes(aUpload->getSize()));
-	if(aUpload->getUser()->isOnline()) {
+	if(aUpload->getUser() && aUpload->getUser()->isOnline()) {
 		i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
 	} else {
-		i->l.push_back(aUpload->getUser()->getNick() + " (Offline)");
+		i->l.push_back(aUpload->getNick() + " (Offline)");
 	}
 	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)i);
 }
@@ -302,20 +308,69 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 
 }
 
+HWND MainFrame::createToolbar() {
+	
+	CToolBarCtrl ctrl;
+	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT, 0, ATL_IDW_TOOLBAR);
+	ctrl.SetImageList(images);
+	
+	TBBUTTON tb[5];
+	memset(tb, 0, sizeof(tb));
+	tb[0].iBitmap = 0;
+	tb[0].idCommand = ID_FILE_CONNECT;
+	tb[0].fsState = TBSTATE_ENABLED;
+	tb[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	tb[1].iBitmap = 1;
+	tb[1].idCommand = ID_FILE_RECONNECT;
+	tb[1].fsState = TBSTATE_ENABLED;
+	tb[1].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	
+	tb[2].iBitmap = 2;
+	tb[2].idCommand = IDC_FAVORITES;
+	tb[2].fsState = TBSTATE_ENABLED;
+	tb[2].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	tb[3].iBitmap = 3;
+	tb[3].idCommand = ID_FILE_SEARCH;
+	tb[3].fsState = TBSTATE_ENABLED;
+	tb[3].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	
+	tb[4].iBitmap = 4;
+	tb[4].idCommand = ID_FILE_SETTINGS;
+	tb[4].fsState = TBSTATE_ENABLED;
+	tb[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	ctrl.SetButtonStructSize();
+	ctrl.AddButtons(5, tb);
+	
+	ctrl.AutoSize();
+	return ctrl.m_hWnd;
+	
+}
+
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		
 	// Set window name
 	SetWindowText(APPNAME " " VERSIONSTRING);
+
+	// Load images
 	// create command bar window
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 	// attach menu
 	m_CmdBar.AttachMenu(GetMenu());
 	// load command bar images
-	m_CmdBar.LoadImages(IDR_MDICHILD);
+	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	m_CmdBar.m_hImageList = images;
+	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
+	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+	
 	// remove old menu
 	SetMenu(NULL);
 	
-	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MDICHILD, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+	HWND hWndToolBar = createToolbar();
 	
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
@@ -328,7 +383,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	
-	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
+	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 	
@@ -355,6 +410,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
+	SettingsManager::newInstance();
 	ShareManager::newInstance();
 	TimerManager::newInstance();
 	CryptoManager::newInstance();
@@ -369,35 +425,33 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 
-	Settings::load();	
+	SettingsManager::getInstance()->load();	
+
+	SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, Util::getLocalIp());
+	SettingsManager::getInstance()->setDefault(SettingsManager::PORT, 412);
 
 	ShareManager::getInstance()->refresh();
 	HubManager::getInstance()->refresh();
 
-	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		try {
-			int port;
-			if(Settings::getPort() == -1) {
-				port = 412;
-			} else {
-				port = Settings::getPort();
-			}
-			ConnectionManager::getInstance()->setPort(port);
-			SearchManager::getInstance()->setPort(port);
+			ConnectionManager::getInstance()->setPort(SETTING(PORT));
+			SearchManager::getInstance()->setPort(SETTING(PORT));
 		} catch(Exception e) {
 			dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-			MessageBox("Port 412 is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++");
+			MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
 		}
 	}
 
 	transferMenu.CreatePopupMenu();
-	// We want to pass this one on to the splitter...hope it get's there...
 
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	PostMessage(WM_COMMAND, ID_FILE_CONNECT);
+	PostMessage(WM_SPEAKER, AUTO_CONNECT);
 	
+	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
 	return 0;
 }
@@ -439,10 +493,10 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 			lvi.mask = LVIF_IMAGE | LVIF_PARAM;
 			
 			ctrlTransfers.GetItem(&lvi);
+			menuItems = 0;
 			
 			if(lvi.iImage == IMAGE_DOWNLOAD) {
 				Download* d = (Download*)lvi.lParam;
-				menuItems = 0;
 				for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
 					string str = "Browse " + (*i)->getNick() + "'s files";
 					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
@@ -506,7 +560,6 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
 		return TRUE; 
 	}
-	cs.leave();
 	return FALSE; 
 }
 
@@ -517,7 +570,18 @@ LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	pChild->CreateEx(m_hWndClient);
 	return 0;
 }	
-	
+
+LRESULT MainFrame::onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(FavoriteHubsFrame::frame == NULL) {
+		FavoriteHubsFrame* pChild = new FavoriteHubsFrame();
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+	} else {
+		MDIActivate(FavoriteHubsFrame::frame->m_hWnd);
+	}
+	return 0;
+}
+
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(PublicHubsFrame::frame == NULL) {
 		PublicHubsFrame* pChild = new PublicHubsFrame();
@@ -549,43 +613,37 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	SettingsDlg dlg;
-	dlg.nick = Settings::getNick();
-	dlg.email = Settings::getEmail();
-	dlg.description = Settings::getDescription();
-	dlg.connection = Settings::getConnection();
-	dlg.server = Settings::getServer();
-	dlg.directory = Settings::getDownloadDirectory();
-	dlg.port = Settings::getPortString();
-	dlg.connectionType = Settings::getConnectionType();
-	dlg.slots = Settings::getSlots();
+	dlg.nick = SettingsManager::getInstance()->get(SettingsManager::NICK, false);
+	dlg.email = SettingsManager::getInstance()->get(SettingsManager::EMAIL, false);
+	dlg.description = SettingsManager::getInstance()->get(SettingsManager::DESCRIPTION, false);
+	dlg.connection = SettingsManager::getInstance()->get(SettingsManager::CONNECTION, false);
+	dlg.server = SettingsManager::getInstance()->get(SettingsManager::SERVER, false);
+	dlg.directory = SettingsManager::getInstance()->get(SettingsManager::DOWNLOAD_DIRECTORY, false);
+	dlg.port = SettingsManager::getInstance()->get(SettingsManager::PORT, false) == 0 ? "" : Util::toString(SettingsManager::getInstance()->get(SettingsManager::PORT, false));
+	dlg.connectionType = SettingsManager::getInstance()->get(SettingsManager::CONNECTION_TYPE, false);
+	dlg.slots = SettingsManager::getInstance()->get(SettingsManager::SLOTS, false);
 
 	if(dlg.DoModal(m_hWnd) == IDOK) {
-		Settings::setNick(dlg.nick);
-		Settings::setDescription(dlg.description);
-		Settings::setEmail(dlg.email);
-		Settings::setConnection(dlg.connection);
-		Settings::setServer(dlg.server);
-		Settings::setPort(dlg.port);
-		Settings::setConnectionType(dlg.connectionType);
-		Settings::setDownloadDirectory(dlg.directory);
-		Settings::setSlots(dlg.slots);
-		Settings::save();
+		SettingsManager::getInstance()->set(SettingsManager::NICK, Util::validateString(dlg.nick));
+		SettingsManager::getInstance()->set(SettingsManager::DESCRIPTION, Util::validateString(dlg.description));
+		SettingsManager::getInstance()->set(SettingsManager::EMAIL, Util::validateString(dlg.email));
+		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, dlg.connection);
+		SettingsManager::getInstance()->set(SettingsManager::SERVER, dlg.server);
+		SettingsManager::getInstance()->set(SettingsManager::PORT, dlg.port);
+		SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, dlg.connectionType);
+		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, dlg.directory);
+		SettingsManager::getInstance()->set(SettingsManager::SLOTS, dlg.slots);
+		SettingsManager::getInstance()->save();
 
 		ShareManager::getInstance()->refresh();
 
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 			try {
-				int port;
-				if(Settings::getPort() == -1) {
-					port = 412;
-				} else {
-					port = Settings::getPort();
-				}
-				ConnectionManager::getInstance()->setPort(port);
-				SearchManager::getInstance()->setPort(port);
+				ConnectionManager::getInstance()->setPort(SETTING(PORT));
+				SearchManager::getInstance()->setPort(SETTING(PORT));
 			} catch(Exception e) {
 				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				MessageBox("Port 412 is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++");
+				MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
 			}
 		}
 	}
@@ -689,11 +747,30 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 	}
 }
 
+void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl) {
+	switch(type) {
+	case HubManagerListener::GET_FAVORITE_HUBS: 
+		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
+			FavoriteHubEntry* entry = *i;
+			if(entry->getConnect()) {
+				HubFrame* frm = new HubFrame(entry->getServer(), entry->getNick(), entry->getPassword());
+				frm->setTab(&ctrlTab);
+				frm->CreateEx(m_hWndMDIClient);
+			}
+		}
+		HubManager::getInstance()->removeListener(this);
+		break;
+	}
+}
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.36 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.37 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.37  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.36  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

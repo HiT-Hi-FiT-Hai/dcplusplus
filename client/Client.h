@@ -120,10 +120,12 @@ public:
 		dcdebug("getNickList\n");
 		send("$GetNickList|");
 	}
+
 	void password(const string& aPass) {
 		dcdebug("password");
 		send("$MyPass " + aPass + "|");
 	}
+	
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
 		char buf[512];
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
@@ -133,20 +135,10 @@ public:
 		while((i = tmp.find(' ')) != string::npos) {
 			tmp.replace(i, 1, 1, '$');
 		}
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-			string server = Settings::getServer();
-			int port = Settings::getPort();
-			if(server.empty()) {
-				server = socket.getLocalIp();
-			}
-			
-			if(port==-1) {
-				port = 412;
-			}
-			
-			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", server.c_str(), port, c1, c2, aSize, aFileType+1, tmp.c_str());
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", SETTING(SERVER).c_str(), SETTING(PORT), c1, c2, aSize, aFileType+1, tmp.c_str());
 		} else {
-			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", Settings::getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
+			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
 		}
 		send(buf);
 	}
@@ -162,14 +154,14 @@ public:
 		while( (i = tmp.find_first_of("|$")) != string::npos) {
 			tmp.erase(i, 1);
 		}
-		send("<" + Settings::getNick() + "> " + tmp + "|");
+		send("<" + getNick() + "> " + tmp + "|");
 	}
 	void getInfo(User::Ptr aUser) {
 //		dcdebug("GetInfo %s\n", aUser->getNick().c_str());
-		send("$GetINFO " + aUser->getNick() + " " + Settings::getNick() + "|");
+		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
 	}
 	void getInfo(const string& aNick) {
-		send("$GetINFO " + aNick + " " + Settings::getNick() + "|");
+		send("$GetINFO " + aNick + " " +getNick() + "|");
 	}
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
@@ -179,24 +171,14 @@ public:
 
 	void connectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		string server = Settings::getServer();
-		string port = Settings::getPortString();
-		if(server.empty()) {
-			server = socket.getLocalIp();
-		}
-		
-		if(port.empty()) {
-			port = "412";
-		}
-
-		send("$ConnectToMe " + aUser->getNick() + " " + server + ":" + port + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
-		send("$To: " + aUser->getNick() + " From: " + Settings::getNick() + " $" + aMessage + "|");
+		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + aMessage + "|");
 	}
 	void revConnectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
-		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
+		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
 
 	void kick(const User::Ptr& aUser) {
@@ -249,9 +231,22 @@ public:
 		cs.leave();
 		return x;
 	}
-	
+
+	const string& getNick() {
+		if(nick.empty()) {
+			return SETTING(NICK);
+		} else {
+			return nick;
+		}
+	}
+	void setNick(const string& aNick) {
+		nick = aNick;
+	}
+
+	GETSETREF(string, defpassword, Password);
 private:
 	
+	string nick;
 	string server;
 	short port;
 	BufferedSocket socket;
@@ -267,11 +262,8 @@ private:
 	
 	virtual ~Client() throw() {
 		TimerManager::getInstance()->removeListener(this);
-		cs.enter();
 		socket.removeListener(this);
-		
 		removeListeners();
-		cs.leave();
 	};
 	
 	// TimerManagerListener
@@ -336,9 +328,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.25 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: Client.h,v 1.26 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.26  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.25  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

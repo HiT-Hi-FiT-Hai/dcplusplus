@@ -34,7 +34,7 @@ class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>
 {
 public:
 
-	DECLARE_FRAME_WND_CLASS("PrivateFrame", IDR_MDICHILD);
+	DECLARE_FRAME_WND_CLASS("PrivateFrame", IDR_PRIVATE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		cs.enter();
@@ -158,9 +158,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.4 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.5 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.5  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.4  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

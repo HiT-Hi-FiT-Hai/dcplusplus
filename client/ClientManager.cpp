@@ -36,9 +36,9 @@ Client* ClientManager::getClient() {
 }
 
 void ClientManager::putClient(Client* aClient) {
-	cs.enter();
 	aClient->removeListeners();
 	aClient->disconnect();
+	cs.enter();
 
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if( (*i) == aClient) {
@@ -54,10 +54,10 @@ void ClientManager::putClient(Client* aClient) {
 
 void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
 	aClient->cs.enter();
-	if(aUser->getNick() == Settings::getNick()) {
+	if(aUser->getNick() == aClient->getNick()) {
 		aClient->version("1,0091");
 		aClient->getNickList();
-		aClient->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), ShareManager::getInstance()->getShareSizeString());
+		aClient->myInfo(aClient->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
 	} else {
 		aClient->getInfo(aUser);
 	}
@@ -68,12 +68,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 							int aFileType, const string& aString) throw() {
 	
 	bool search = false;
-	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-		if(aSeeker.find(Settings::getServer().empty() ? Util::getLocalIp() : Settings::getServer()) == string::npos) {
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		if(aSeeker.find(SETTING(SERVER)) == string::npos) {
 			search = true;
 		}
 	} else {
-		if(aSeeker.find(Settings::getNick()) == string::npos) {
+		if(aSeeker.find(aClient->getNick()) == string::npos) {
 			search = true;
 		}
 	}
@@ -81,11 +81,11 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	if(search) {
 		int pos = aSeeker.find("Hub:");
 		// We don't wan't to answer passive searches if we're in passive mode...
-		if(pos != string::npos && Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
+		if(pos != string::npos && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
 			return;
 		}
 		
-		SearchResult::List l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType);
+		SearchResult::List l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType, aClient);
 		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
 		if(pos != string::npos) {
 			string name = aSeeker.substr(4);
@@ -94,7 +94,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 				char buf[512];
 				SearchResult* sr = *i;
-				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", Settings::getNick().c_str(), sr->getFile().c_str(), 5,
+				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 					sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
 				str += buf;
 				delete sr;
@@ -111,7 +111,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 				char buf[512];
 				SearchResult* sr = *i;
-				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", Settings::getNick().c_str(), sr->getFile().c_str(), 5,
+				sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 					sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
 				s.write(buf, strlen(buf));
 				delete sr;
@@ -122,9 +122,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.3 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.4 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.4  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.3  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

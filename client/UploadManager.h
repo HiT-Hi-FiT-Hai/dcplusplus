@@ -34,14 +34,12 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
-	const string& getFileName() { return fileName; };
-	void setFileName(const string& aName) { fileName = aName; };
-
 	void setUser(User::Ptr& aUser) { user = aUser; }
 	User::Ptr& getUser() { return user; };
 	
+	GETSETREF(string, fileName, FileName);
+	GETSETREF(string, nick, Nick);
 private:
-	string fileName;
 	User::Ptr user;	
 
 };
@@ -82,7 +80,8 @@ public:
 	}
 
 	int getConnections() { cs.enter(); int sz = connections.size(); cs.leave(); return sz; };
-	
+	int getFreeSlots() { return SETTING(SLOTS) - getConnections(); }
+
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		connections.push_back(conn);
@@ -90,15 +89,20 @@ public:
 
 	void removeConnection(UserConnection::Ptr aConn) {
 		cs.enter();
+		bool found = false;
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			if(*i == aConn) {
 				aConn->removeListener(this);
 				connections.erase(i);
+				found = true;
+				cs.leave();
 				ConnectionManager::getInstance()->putUploadConnection(aConn);
 				break;
 			}
 		}
-		cs.leave();
+		if(!found) {
+			cs.leave();
+		}
 	}
 
 	void removeConnections() {
@@ -190,9 +194,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.26 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.27 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.27  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.26  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

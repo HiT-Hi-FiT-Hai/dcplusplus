@@ -226,7 +226,7 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 	return tmp;
 }
 
-void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType) {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
 	bool found = true;
 	for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
 		if(Util::findSubString(name, *k) == -1) {
@@ -240,14 +240,11 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			SearchResult* sr = new SearchResult();
 			sr->setFile(getFullName() + i->first);
 			sr->setSize(i->second);
-			sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
-			sr->setSlots(Settings::getSlots());
-			sr->setNick(Settings::getNick());
-			Client* c = ClientManager::getInstance()->getConnectedClient();
-			if(c) {
-				sr->setHubName(c->getName());
-				sr->setHubAddress(c->getServer());
-			}
+			sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+			sr->setSlots(SETTING(SLOTS));
+			sr->setNick(aClient->getNick());
+			sr->setHubAddress(aClient->getServer());
+			sr->setHubName(aClient->getName());
 			aResults.push_back(sr);
 		}	
 	} else {
@@ -271,14 +268,12 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				SearchResult* sr = new SearchResult();
 				sr->setFile(getFullName() + i->first);
 				sr->setSize(i->second);
-				sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
-				sr->setSlots(Settings::getSlots());
-				sr->setNick(Settings::getNick());
-				Client* c = ClientManager::getInstance()->getConnectedClient();
-				if(c) {
-					sr->setHubName(c->getName());
-					sr->setHubAddress(c->getServer());
-				}
+				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+				sr->setSlots(SETTING(SLOTS));
+				sr->setNick(SETTING(NICK));
+				sr->setNick(aClient->getNick());
+				sr->setHubAddress(aClient->getServer());
+				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 
 				if(aResults.size() >= MAX_RESULTS) {
@@ -289,25 +284,28 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 	}
 
 	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < MAX_RESULTS); ++l) {
-		l->second->search(aResults, aStrings, aSearchType, aSize, aFileType);
+		l->second->search(aResults, aStrings, aSearchType, aSize, aFileType, aClient);
 	}
 }
-SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType) {
+SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
 	StringTokenizer t(aString, '$');
 	StringList& l = t.getTokens();
 	SearchResult::List results;
 
 	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
-		i->second->search(results, l, aSearchType, aSize, aFileType);
+		i->second->search(results, l, aSearchType, aSize, aFileType, aClient);
 	}
 	return results;
 }
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.11 2002/01/09 19:01:35 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.12  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.11  2002/01/09 19:01:35  arnetheduck
  * Made some small changed to the key generation and search frame...
  *

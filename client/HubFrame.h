@@ -39,8 +39,10 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 {
 public:
 
-	HubFrame(const string& aServer) : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
+	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
 		client = ClientManager::getInstance()->getClient();
+		client->setNick(aNick);
+		client->setPassword(aPassword);
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 	}
@@ -49,7 +51,7 @@ public:
 		dcassert(client == NULL);
 	}
 
-	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD);
+	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_HUB);
 
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
@@ -93,7 +95,7 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		if(hWnd == ctrlClient.m_hWnd) {
-			return (LRESULT)GetStockObject(WHITE_BRUSH);
+			return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
 		}
 		bHandled = FALSE;
 		return FALSE;
@@ -261,6 +263,12 @@ public:
 	}
 
 	void addLine(const string& aLine) {
+		if(ctrlClient.GetWindowTextLength() > 20000) {
+			// We want to limit the buffer to the last 20000 characters...after that, w95 becomes sad...
+			ctrlClient.SetRedraw(FALSE);
+			ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
+			ctrlClient.ReplaceSel("");
+		}
 		ctrlClient.AppendText(aLine.c_str());
 		ctrlClient.AppendText("\r\n");
 	}
@@ -300,6 +308,7 @@ public:
 private:
 	enum {
 		CLIENT_CONNECTING,
+		CLIENT_CONNECTED,
 		CLIENT_FAILED,
 		CLIENT_GETPASSWORD,
 		CLIENT_HUBNAME,
@@ -341,6 +350,10 @@ private:
 		switch(type) {
 		case ClientListener::CONNECTING:
 			PostMessage(WM_SPEAKER, CLIENT_CONNECTING); break;
+		case ClientListener::CONNECTED:
+			PostMessage(WM_SPEAKER, CLIENT_CONNECTED); break;
+		case ClientListener::BAD_PASSWORD:
+			client->setPassword(""); break;
 		case ClientListener::GET_PASSWORD:
 			PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); break;
 		case ClientListener::HUB_NAME:
@@ -376,7 +389,7 @@ private:
 		switch(type) {
 		case ClientListener::OP_LIST:
 			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
-				if(*i == Settings::getNick()) {
+				if(*i == client->getNick()) {
 					op = true;
 					return;
 				}
@@ -436,9 +449,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.33 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.34 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.34  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.33  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

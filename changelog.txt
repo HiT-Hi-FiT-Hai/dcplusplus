@@ -1,13 +1,19 @@
  -- 0.12 --
 * Improved search efficiency a tiny bit
 * Changed default option in the search window to 'At Least'. All files are at least 0 bytes long anyway...
-* Added file extension tab in search
+* Added file extension field in the search frame
 * Fixed a bug where the application could stop working if a right-button menu was displayed
 * Added PM and browse file list to uploads right button menu as well
 * Huge performance increase in the user list (most noticeable when connecting to the hub and getting the initial list...)
 * More general ui performance fixes, it should now be a lot more responsive even when the cpu load is significant
-* Empty search fields bug fixed (I hope...)
-* Fixed some of the random crashes (major code rewrite, so I might have introduced some new ones...we'll see)
+* Fixed empty search fields bug (I hope...)
+* Fixed some of the random crashes (major code rewrite, so I might have introduced some new ones...we'll see=)
+* Changed background color to white, don't worry though, soon you'll be able to choose it yourselves...
+* Fixed case of connection type strings
+* The bots are now visible in the user list (Seems like they don't answer to getinfo requests...)
+* Added user connection type to search frame
+* New icons and colors for the user interface
+* Fixed menu bug for NT4, hopefully it works in W95 as well now...
 
  -- 0.11 2002-01-08 --
 * Fixed annoying reconnect bug

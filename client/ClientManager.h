@@ -52,9 +52,23 @@ public:
 		return c;
 	}
 
-	User::Ptr& findUser(const string& aNick) {
+	User::Ptr& findUser(const string& aNick, const string& aHint = "") {
 		dcassert(aNick.length() > 0);
 		cs.enter();
+		if(aHint.size() > 0) {
+			for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+				if((*i)->getServer() == aHint) {
+					User::Ptr& u = (*i)->getUser(aNick);
+					if(u) {
+						cs.leave();
+						return u;
+					} else {
+						break;
+					}
+				} 
+			}
+			
+		}
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 			User::Ptr& u = (*i)->getUser(aNick);
 			if(u) {
@@ -81,7 +95,9 @@ public:
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString) {
 		cs.enter();
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			(*i)->search(aSearchType, aSize, aFileType, aString);
+			if((*i)->isConnected()) {
+				(*i)->search(aSearchType, aSize, aFileType, aString);
+			}
 		}
 		cs.leave();
 	}
@@ -100,11 +116,11 @@ private:
 		case ClientListener::LOCK:
 			client->cs.enter();
 			client->key(CryptoManager::getInstance()->makeKey(line1));
-			client->validateNick(Settings::getNick());
+			client->validateNick(client->getNick());
 			client->cs.leave();
 			break;
 		case ClientListener::CONNECT_TO_ME:
-			ConnectionManager::getInstance()->connect(line1, Util::toInt(line2)); break;
+			ConnectionManager::getInstance()->connect(line1, Util::toInt(line2), client->getNick()); break;
 
 		}
 	}
@@ -113,7 +129,7 @@ private:
 		case ClientListener::HELLO:
 			onClientHello(client, user); break;
 		case ClientListener::REV_CONNECT_TO_ME:
-			if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 				client->cs.enter();
 				client->connectToMe(user);
 				client->cs.leave();
@@ -159,9 +175,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.6 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.7 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.7  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.6  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -178,7 +178,7 @@ public:
 			}
 			return false;
 		} else {
-			if(found)
+			if(found && currentChild != current->children.end())
 				currentChild++;
 			while(currentChild!=current->children.end()) {
 				if((*currentChild)->name == aName) {
@@ -228,9 +228,12 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.8 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.8  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.7  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

@@ -76,10 +76,16 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 			online = true;
 
 			// Check if we already have a connection to this fellow...
+			bool found = false;
 			for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 				if((*k)->getUser() == s->getUser()) {
-					continue;
+					found = true;
+					break;
 				}
+			}
+
+			if(found) {
+				continue;
 			}
 
 			// Alright, we've made it this far, add the user to the waiting queue (unless he's there already...)
@@ -206,7 +212,15 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 			}
 
 			if(waiting.find(aUser) == waiting.end()) {
-				waiting[aUser] = 0;
+				bool found = false;
+				for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+					if((*i)->getUser() == aUser) {
+						found = true;
+					}
+				}
+				if(!found) {
+					waiting[aUser] = 0;
+				}
 			}
 			cs.leave();
 			return;
@@ -243,7 +257,15 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 	queue.push_back(d);
 	
 	if(waiting.find(aUser) == waiting.end()) {
-		waiting[aUser] = 0;
+		bool found = false;
+		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+			if((*i)->getUser() == aUser) {
+				found = true;
+			}
+		}
+		if(!found) {
+			waiting[aUser] = 0;
+		}
 	}
 	
 	cs.leave();
@@ -344,13 +366,13 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 }
 
 void DownloadManager::downloadList(User::Ptr& aUser) throw(DownloadException) {
-	string file = Settings::getAppPath() + aUser->getNick() + ".DcLst";
+	string file = Util::getAppPath() + aUser->getNick() + ".DcLst";
 	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
 }
 
 void DownloadManager::downloadList(const string& aUser) throw(DownloadException) {
-	string file = Settings::getAppPath() + aUser + ".DcLst";
+	string file = Util::getAppPath() + aUser + ".DcLst";
 	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
 }
@@ -390,11 +412,12 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* 
 	if(i != connections.end()) {
 		aConn->removeListener(this);
 		connections.erase(i);
+		cs.leave();
 		ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
 	} else {
+		// We should never get here...
 		dcassert(0);
 	}
-	cs.leave();
 }
 
 void DownloadManager::removeConnections() {
@@ -423,10 +446,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		
 		if(d->isSet(Download::RESUME)) {
 			LONGLONG x = Util::getFileSize(d->getTarget());
-			if(x < Settings::getRollback()) {
+			if(x < (LONGLONG)SETTING(ROLLBACK)) {
 				d->setPos(0);
 			} else {
-				d->setPos(x - Settings::getRollback());
+				d->setPos(x - (LONGLONG)SETTING(ROLLBACK));
 				d->setFlag(Download::ROLLBACK);
 			}
 
@@ -463,6 +486,7 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 				aDownload->unsetFlag(Download::RUNNING);
 				aDownload->setCurrentSource(NULL);
 				fire(DownloadManagerListener::FAILED, aDownload, "User removed");
+				break;
 			}
 		}
 	}
@@ -490,7 +514,7 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 
 		if(d->isSet(Download::ROLLBACK)) {
 			dcassert(d->getRollbackBuffer());
-			if(d->getTotal() + aLen >= Settings::getRollback()) {
+			if(d->getTotal() + aLen >= SETTING(ROLLBACK)) {
 				BYTE* buf = new BYTE[d->getRollbackSize()];
 				DWORD x;
 				
@@ -511,7 +535,7 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 						d->setFile(NULL);
 					}
 
-					fire(DownloadManagerListener::FAILED, d, "Rollback discovered resume inconsistency, removing the download source from the queue");
+					fire(DownloadManagerListener::FAILED, d, "Rollback discovered resume inconsistency, removing download source from the queue");
 					removeSource(d, d->getCurrentSource());
 
 					d->setCurrentSource(NULL);
@@ -565,10 +589,10 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 
 		d->setFile(file, true);
 
-		if(fileLength > Settings::getRollback() && d->isSet(Download::ROLLBACK)) {
+		if(fileLength > SETTING(ROLLBACK) && d->isSet(Download::ROLLBACK)) {
 			// Update the file pointer...yes, this is what they call ugly code in the books...
 			d->setPos(d->getPos(), true);
-			d->setRollbackBuffer(Settings::getRollback());
+			d->setRollbackBuffer(SETTING(ROLLBACK));
 		} else {
 			d->setPos(0, true);
 			dcassert(!d->isSet(Download::ROLLBACK));
@@ -728,9 +752,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.28 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.29 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.29  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.28  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

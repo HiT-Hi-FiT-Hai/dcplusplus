@@ -32,7 +32,7 @@ typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
 #include "resource.h"
-#include "Settings.h"
+#include "SettingsManager.h"
 #include "Version.h"
 
 
@@ -50,9 +50,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.8 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.9 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.9  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.8  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

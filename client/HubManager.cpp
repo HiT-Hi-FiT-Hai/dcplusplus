@@ -23,6 +23,7 @@
 
 #include "HttpConnection.h"
 #include "StringTokenizer.h"
+#include "SimpleXML.h"
 
 HubManager* HubManager::instance = NULL;
 
@@ -47,11 +48,50 @@ void HubManager::onHttpData(const BYTE* aBuf, int aLen) throw() {
 	cs.leave();
 }
 
+void HubManager::save(SimpleXML* aXml) {
+	cs.enter();
+	aXml->addTag("Favorites");
+	aXml->stepIn();
+	
+	for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+		aXml->addTag("Favorite");
+		aXml->addChildAttrib("Name", (*i)->getName());
+		aXml->addChildAttrib("Connect", (*i)->getConnect());
+		aXml->addChildAttrib("Description", (*i)->getDescription());
+		aXml->addChildAttrib("Nick", (*i)->getNick(false));
+		aXml->addChildAttrib("Password", (*i)->getPassword());
+		aXml->addChildAttrib("Server", (*i)->getServer());
+	}
+	aXml->stepOut();
+	cs.leave();
+}
+
+void HubManager::load(SimpleXML* aXml) {
+	cs.enter();
+	if(aXml->findChild("Favorites")) {
+		aXml->stepIn();
+		while(aXml->findChild("Favorite")) {
+			FavoriteHubEntry* e = new FavoriteHubEntry();
+			e->setName(aXml->getChildAttrib("Name"));
+			e->setConnect(aXml->getBoolChildAttrib("Connect"));
+			e->setDescription(aXml->getChildAttrib("Description"));
+			e->setNick(aXml->getChildAttrib("Nick"));
+			e->setPassword(aXml->getChildAttrib("Password"));
+			e->setServer(aXml->getChildAttrib("Server"));
+			favoriteHubs.push_back(e);
+		}
+	}
+	cs.leave();
+}
+
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.12  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.11  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

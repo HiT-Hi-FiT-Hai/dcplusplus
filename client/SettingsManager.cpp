@@ -19,10 +19,10 @@
 #include "stdafx.h"
 #include "DCPlusPlus.h"
 #include "SimpleXML.h"
-#include "Settings.h"
 #include "SettingsManager.h"
 #include "ShareManager.h"
 #include "DownloadManager.h"
+#include "HubManager.h"
 
 SettingsManager* SettingsManager::instance = 0;
 
@@ -32,45 +32,40 @@ char const* SettingsManager::settingTags[] =
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", 
+	"ConnectionType", "Port", "Slots", "Rollback",
 	"SENTRY"
 };
+
+const char* SettingsManager::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", 
+"Satellite", "Cable", "DSL", "LAN(T1)", "LAN(T3)" };
 
 SettingsManager::SettingsManager()
 {
 	for(int i=0; i<SETTINGS_LAST; i++)
 		isSet[i] = false;
-}
 
-void SettingsManager::setNick(const string& aNick)
-{
-	string &nick = strSettings[NICK - STR_FIRST];
-
-	nick = aNick; 
-	int i;
-	while((i=nick.find('$')) != string::npos)
-		nick.replace(i, 1, 1, '_');
-	while((i=nick.find(' ')) != string::npos)
-		nick.replace(i, 1, 1, '_');
-	while((i=nick.find('|')) != string::npos)
-		nick.replace(i, 1, 1, '_');
-}
-
-void SettingsManager::load()
-{
-	load(Settings::getAppPath() + "DCPlusPlus.xml");
-}
-
-void SettingsManager::save() const
-{
-	save(Settings::getAppPath() + "DCPlusPlus.xml");
+	for(int j=0; j<INT_LAST-INT_FIRST; j++) {
+		intDefaults[j] = 0;
+		intSettings[j] = 0;
+	}
+	
 }
 
 void SettingsManager::load(string const& aFileName)
 {
 	string xmltext = ReadStringFromFile(aFileName);
+	if(xmltext.empty()) {
+		// Nothing to load...
+		return;
+	}
+
 	SimpleXML xml;
 	xml.fromXML(xmltext);
+
+	// We load the old settings as well for now...
+	oldLoad(&xml);
+	xml.resetCurrentChild();
+	
 	xml.stepIn();
 	
 	if(xml.findChild("Settings"))
@@ -87,6 +82,7 @@ void SettingsManager::load(string const& aFileName)
 
 			if(xml.findChild(attr))
 				set(StrSetting(i), xml.getChildData());
+			xml.resetCurrentChild();
 		}
 		for(i=INT_FIRST; i<INT_LAST; i++)
 		{
@@ -95,6 +91,7 @@ void SettingsManager::load(string const& aFileName)
 
 			if(xml.findChild(attr))
 				set(IntSetting(i), atoi(xml.getChildData().c_str()));
+			xml.resetCurrentChild();
 		}
 		
 		xml.stepOut();
@@ -104,41 +101,28 @@ void SettingsManager::load(string const& aFileName)
 	ShareManager::getInstance()->load(&xml);
 	xml.resetCurrentChild();
 	DownloadManager::getInstance()->load(&xml);
+	xml.resetCurrentChild();
+	HubManager::getInstance()->load(&xml);
+	xml.stepOut();
 }
 
-void SettingsManager::oldLoad()
+void SettingsManager::oldLoad(SimpleXML* xml)
 {
-	string aFileName;
-	aFileName = Settings::getAppPath() + "DCPlusPlus.xml";
-
-	string xmltext = ReadStringFromFile(aFileName);
-	SimpleXML xml;
-	xml.fromXML(xmltext);	
-	xml.stepIn();
+	xml->stepIn();
 	
-	if(xml.findChild("User"))
+	if(xml->findChild("User"))
 	{
-		int i;
-		string attr;
-
-		for(i=STR_FIRST; i<STR_LAST; i++)
-		{
-			attr = settingTags[i];
-			dcassert(attr != "SENTRY");
-			set(StrSetting(i), xml.getChildAttrib(attr));
-		}
-		for(i=INT_FIRST; i<INT_LAST; i++)
-		{
-			attr = settingTags[i];
-			dcassert(attr != "SENTRY");
-			set(IntSetting(i), xml.getIntChildAttrib(attr));
-		}
+		set(NICK, xml->getChildAttrib("Nick"));
+		set(EMAIL, xml->getChildAttrib("EMail"));
+		set(DESCRIPTION, xml->getChildAttrib("Description"));
+		set(CONNECTION, xml->getChildAttrib("Connection"));
+		set(SERVER, xml->getChildAttrib("Server"));
+		set(DOWNLOAD_DIRECTORY, xml->getChildAttrib("DownloadDirectory"));
+		set(PORT, xml->getChildAttrib("Port"));
+		set(CONNECTION_TYPE, xml->getChildAttrib("ConnectionType"));
+		set(SLOTS, xml->getChildAttrib("Slots"));	
 	}
-	
-	xml.resetCurrentChild();
-	ShareManager::getInstance()->load(&xml);
-	xml.resetCurrentChild();
-	DownloadManager::getInstance()->load(&xml);
+	xml->stepOut();
 }
 
 void SettingsManager::save(string const& aFileName) const
@@ -176,6 +160,7 @@ void SettingsManager::save(string const& aFileName) const
 	
 	ShareManager::getInstance()->save(&xml);
 	DownloadManager::getInstance()->save(&xml);
+	HubManager::getInstance()->save(&xml);
 
 	string xmltext = xml.toXML();
 	WriteStringToFile(aFileName, xmltext);

@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "BufferedSocket.h"
+#include "User.h"
 
 class SearchResult {
 public:	
@@ -56,6 +57,7 @@ public:
 	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
 	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
 	
+	GETSETREF(User::Ptr, user, User);
 private:
 	string nick;
 	string file;
@@ -146,9 +148,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.7 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.8 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.8  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.7  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

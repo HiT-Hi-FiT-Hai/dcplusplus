@@ -60,7 +60,7 @@ int ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	}
 	// Alright, set up a new connection attempt.
 	try {
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 			aUser->getClient()->connectToMe(aUser);
 		} else {
 			aUser->getClient()->revConnectToMe(aUser);
@@ -130,8 +130,6 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->flags |= UserConnection::FLAG_INCOMING;
 		uc->state = UserConnection::LOGIN;
 
-		uc->myNick(Settings::getNick());
-		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
@@ -153,6 +151,12 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 	}
 
 	if(aSource->user) {
+		if(aSource->user->getClient()) {
+			aSource->myNick(aSource->user->getClient()->getNick());
+		} else {
+			aSource->myNick(SETTING(NICK));
+		}
+		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		
 		aSource->flags |= UserConnection::FLAG_DOWNLOAD;
 		
@@ -169,6 +173,13 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 			return;
 		}
 		
+		if(aSource->user->getClient()) {
+			aSource->myNick(aSource->user->getClient()->getNick());
+		} else {
+			aSource->myNick(SETTING(NICK));
+		}
+		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+
 		aSource->flags |= UserConnection::FLAG_UPLOAD;
 
 		uploaders.push_back(aSource);
@@ -213,7 +224,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 
 void ConnectionManager::onConnected(UserConnection* aSource) throw() {
 	try {
-		aSource->myNick(Settings::getNick());
+		aSource->myNick(aSource->getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::onConnected caught: %s\n", e.getError().c_str());
@@ -221,8 +232,9 @@ void ConnectionManager::onConnected(UserConnection* aSource) throw() {
 	}
 }
 
-void ConnectionManager::connect(const string& aServer, short aPort) {
+void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
 	UserConnection* c = getConnection();
+	c->setNick(aNick);
 	c->state = UserConnection::LOGIN;
 
 	try { 
@@ -252,9 +264,12 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) 
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.17 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.18 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.18  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.17  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

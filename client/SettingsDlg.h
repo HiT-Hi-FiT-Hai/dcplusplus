@@ -116,8 +116,8 @@ public:
 		ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
 		ctrlTotal.Attach(GetDlgItem(IDC_TOTAL));
 
-		for(int i = 0; i < Settings::SPEED_LAST; i++) {
-			ctrlConnection.AddString(Settings::connectionSpeeds[i]);
+		for(int i = 0; i < SettingsManager::SPEED_LAST; i++) {
+			ctrlConnection.AddString(SettingsManager::connectionSpeeds[i]);
 		}
 		char buf[16];
 
@@ -133,9 +133,9 @@ public:
 		updown.Attach(GetDlgItem(IDC_SLOTSPIN));
 		updown.SetRange(1, 100);
 		
-		if(connectionType == Settings::CONNECTION_ACTIVE) {
+		if(connectionType == SettingsManager::CONNECTION_ACTIVE) {
 			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
-		} else if(connectionType == Settings::CONNECTION_PASSIVE) {
+		} else if(connectionType == SettingsManager::CONNECTION_PASSIVE) {
 			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_PASSIVE);
 		}
 
@@ -185,9 +185,9 @@ public:
 			slots = atoi(buf);
 			
 			if(IsDlgButtonChecked(IDC_ACTIVE)) {
-				connectionType = Settings::CONNECTION_ACTIVE;
+				connectionType = SettingsManager::CONNECTION_ACTIVE;
 			} else if(IsDlgButtonChecked(IDC_PASSIVE)) {
-				connectionType = Settings::CONNECTION_PASSIVE;
+				connectionType = SettingsManager::CONNECTION_PASSIVE;
 			} else {
 				connectionType = -1;
 			}
@@ -213,9 +213,12 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.9 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.10 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.10  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.9  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *

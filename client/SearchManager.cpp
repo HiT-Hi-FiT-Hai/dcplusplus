@@ -73,17 +73,22 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 				return;
 			}
 			sr.setHubAddress(x.substr(i, j-i));
+
+			sr.setUser(ClientManager::getInstance()->findUser(sr.getNick(), sr.getHubAddress()));
+			fire(SearchManagerListener::SEARCH_RESULT, &sr);
 		}
 
-		fire(SearchManagerListener::SEARCH_RESULT, &sr);
 	}
 }
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.10 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.11 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.11  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.10  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

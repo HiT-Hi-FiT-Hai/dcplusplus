@@ -63,7 +63,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	if(!images) {
 		images = new CImageList();
-		images->CreateFromImage(IDB_USERS, 16, 4, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
+		images->CreateFromImage(IDB_USERS, 16, 4, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	}
 	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
 
@@ -195,7 +195,7 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 			string user = buf;
 			User::Ptr& u = client->getUser(user);
 			if(u) {
-				client->sendMessage(Settings::getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
+				client->sendMessage(client->getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
 				client->privateMessage(u, "You are being kicked because: " + dlg.line);
 				client->kick(u);
 			}
@@ -293,15 +293,21 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 		delete (User::Ptr*)lParam;
 	} else if(wParam == CLIENT_GETPASSWORD) {
-		LineDlg dlg;
-		dlg.title = "Hub Password";
-		dlg.description = "Please enter your password";
-		dlg.password = true;
-		
-		if(dlg.DoModal() == IDOK) {
-			client->password(dlg.line);
+
+		if(client->getPassword().size() > 0) {
+			client->password(client->getPassword());
 		} else {
-			client->disconnect();
+			LineDlg dlg;
+			dlg.title = "Hub Password";
+			dlg.description = "Please enter your password";
+			dlg.password = true;
+			
+			if(dlg.DoModal() == IDOK) {
+				client->setPassword(dlg.line);
+				client->password(dlg.line);
+			} else {
+				client->disconnect();
+			}
 		}
 	} else if(wParam == CLIENT_CONNECTING) {
 		addClientLine("Connecting to " + client->getServer() + "...");
@@ -309,6 +315,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if(wParam == CLIENT_FAILED) {
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
+		//ctrlClient.Invalidate();
 	} else if(wParam == CLIENT_HUBNAME) {
 		SetWindowText(client->getName().c_str());
 		addClientLine("Connected");
@@ -323,15 +330,20 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		} 
 		i->frm->addLine(i->msg);
 		delete i;
+	} else if(wParam == CLIENT_CONNECTED) {
+		//ctrlClient.Invalidate();
 	}
 	return 0;
 };
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.20 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.21 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.21  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.20  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

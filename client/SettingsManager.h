@@ -23,15 +23,20 @@
 #include "DCPlusPlus.h"
 #include "Util.h"
 
+class SimpleXML;
+
 class SettingsManager : public Singleton<SettingsManager>
 {
 public:
+
+	static const char*connectionSpeeds[];
+
 	enum StrSetting { STR_FIRST,
-		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOADDIRECTORY, EMAIL, NICK, SERVER,
+		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOAD_DIRECTORY, EMAIL, NICK, SERVER,
 		STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
-		CONNECTIONTYPE = INT_FIRST, PORT, SLOTS,
+		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -40,11 +45,11 @@ public:
 	enum {	CONNECTION_ACTIVE, CONNECTION_PASSIVE };
 
 	string const& get(StrSetting key, bool useDefault = true) const {
-		return isSet[key] ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
+		return (isSet[key] || !useDefault) ? strSettings[key - STR_FIRST] : strDefaults[key - STR_FIRST];
 	}
 
 	int get(IntSetting key, bool useDefault = true) const {
-		return isSet[key] ? intSettings[key - INT_FIRST] : intDefaults[key - INT_FIRST];
+		return (isSet[key] || !useDefault) ? intSettings[key - INT_FIRST] : intDefaults[key - INT_FIRST];
 	}
 
 	bool getBool(IntSetting key, bool useDefault = true) const {
@@ -53,7 +58,7 @@ public:
 
 	void set(StrSetting key, string const& value) {
 		strSettings[key - STR_FIRST] = value;
-		isSet[key] = true;
+		isSet[key] = !value.empty();
 	}
 
 	void set(IntSetting key, int value) {
@@ -61,6 +66,16 @@ public:
 		isSet[key] = true;
 	}
 
+	void set(IntSetting key, const string& value) {
+		if(value.empty()) {
+			intSettings[key - INT_FIRST] = 0;
+			isSet[key] = false;
+		} else {
+			intSettings[key - INT_FIRST] = Util::toInt(value);
+			isSet[key] = true;
+		}
+	}
+	
 	void set(IntSetting key, bool value) { set(key, (int)value); }
 
 	void setDefault(StrSetting key, string const& value) {
@@ -71,22 +86,16 @@ public:
 		intDefaults[key - INT_FIRST] = value;
 	}
 
-	void load();
-	void oldLoad();
-	void save() const;
+	void load() {
+		load(Util::getAppPath() + "DCPlusPlus.xml");
+	}
+	void oldLoad(SimpleXML* xml);
+	void save() const {
+		save(Util::getAppPath() + "DCPlusPlus.xml");
+	}
 
 	void load(const string& aFileName);
 	void save(const string& aFileName) const;
-
-	const string& getNick() { return strSettings[NICK - STR_FIRST]; }
-	int getConnectionType() { return intSettings[CONNECTIONTYPE - INT_FIRST]; }
-	LONGLONG getRollback()  { return 1024; };
-
-	void setNick(const string& aNick);
-	void setConnectionType(int aType) {
-		intSettings[CONNECTIONTYPE - INT_FIRST] = aType;
-		isSet[CONNECTIONTYPE - INT_FIRST] = true;
-	}
 
 private:
 	static string ReadStringFromFile(string const& aFileName);

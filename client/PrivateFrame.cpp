@@ -78,7 +78,7 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
 			message = new char[ctrlMessage.GetWindowTextLength()+1];
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-			string s = "<" + Settings::getNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
+			string s = "<" + user->getClient()->getNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
 			delete message;
 			user->getClient()->privateMessage(user, s);
 			ctrlMessage.SetWindowText("");
@@ -95,9 +95,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.3 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.4 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.4  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.3  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

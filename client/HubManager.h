@@ -46,25 +46,30 @@ public:
 	
 };
 
-class FavoriteHubEntry : public HubEntry {
+class FavoriteHubEntry {
 public:
-	typedef vector<FavoriteHubEntry> List;
+	typedef FavoriteHubEntry* Ptr;
+	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry(const HubEntry& rhs) throw() : HubEntry(rhs) { };
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : HubEntry(rhs), nick(rhs.nick), password(rhs.password), connect(rhs.connect) { };
+	FavoriteHubEntry() throw() : connect(false) { };
+	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false) { };
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), nick(rhs.nick), password(rhs.password), connect(rhs.connect) { };
 	virtual ~FavoriteHubEntry() throw() { }	
-	const string& getNick() {
-		if(nick.size() > 0) 
+	const string& getNick(bool useDefault = true) const {
+		if(nick.size() > 0 || !useDefault) 
 			return nick;
 		else 
-			return Settings::getNick();
+			return SETTING(NICK);
 	}
 
 	void setNick(const string& aNick) {
 		nick = aNick;
 	}
 
+	GETSETREF(string, name, Name);
+	GETSETREF(string, server, Server);
+	GETSETREF(string, description, Description);
 	GETSETREF(string, password, Password);
 	GETSET(bool, connect, Connect);
 private:
@@ -78,10 +83,17 @@ public:
 	typedef List::iterator Iter;
 	enum Types {
 		MESSAGE,
-		FINISHED
+		FINISHED,
+		GET_PUBLIC_HUBS,
+		GET_FAVORITE_HUBS,
+		FAVORITE_ADDED,
+		FAVORITE_REMOVED
 	};
+	virtual void onAction(Types, const FavoriteHubEntry::List&) { };
+	virtual void onAction(Types, FavoriteHubEntry*) { };
 	virtual void onAction(Types, const string&) { };
 	virtual void onAction(Types, const HubEntry::List&) { };
+	virtual void onAction(Types) { };
 };
 
 class SimpleXML;
@@ -93,39 +105,61 @@ public:
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
-	FavoriteHubEntry::List& getFavoriteHubList() {
-		return favoriteHubs;
+	void getFavoriteHubs() {
+		cs.enter();
+		fire(HubManagerListener::GET_FAVORITE_HUBS, favoriteHubs);
+		cs.leave();
 	}
-
+	
 	void addFavorite(const HubEntry& aEntry) {
-		favoriteHubs.push_back(aEntry);
+		addFavorite(FavoriteHubEntry(aEntry));
 	}
 
 	void addFavorite(const FavoriteHubEntry& aEntry) {
-		favoriteHubs.push_back(aEntry);
+		cs.enter();
+		FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+		if(i == favoriteHubs.end()) {
+			FavoriteHubEntry* f = new FavoriteHubEntry(aEntry);
+			favoriteHubs.push_back(f);
+			cs.leave();
+			fire(HubManagerListener::FAVORITE_ADDED, f);
+			return;
+		}
+		cs.leave();
+	}
+
+	void removeFavorite(FavoriteHubEntry* entry) {
+		cs.enter();
+		FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
+		if(i != favoriteHubs.end()) {
+			favoriteHubs.erase(i);
+			cs.leave();
+			fire(HubManagerListener::FAVORITE_REMOVED, entry);
+			delete entry;
+			return;
+		}
+				
+		cs.leave();
 	}
 	
-	void getPublicHubList(bool aRefresh = false) { 
+	void getPublicHubs() {
 		cs.enter();
-		if(aRefresh) {
-			refresh();
-			cs.leave();
-			return;
-		}
-		
-		if(running) {
-			cs.leave();
-			return;
-		}
-
-		fire(HubManagerListener::FINISHED, publicHubs);
+		fire(HubManagerListener::GET_PUBLIC_HUBS, publicHubs);
 		cs.leave();
-	};
+	}
 
-	void refresh() {
+	bool isRunning() {
+		return running;
+	}
+	bool hasDownloaded() {
+		return downloaded;
+	}
+	
+ 	void refresh() {
 		cs.enter();
 		publicHubs.clear();
 		running = true;
+		downloaded = false;
 		cs.leave();
 		
 		reset();
@@ -143,17 +177,18 @@ public:
 		}
 	}
 private:
-
+	
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
 	
 	CriticalSection cs;
 	HttpConnection* conn;
 	bool running;
-	
+	bool downloaded;
+
 	friend class Singleton<HubManager>;
 	
-	HubManager() : conn(NULL), running(false) {
+	HubManager() : downloaded(false), conn(NULL), running(false) {
 	}
 
 	~HubManager() {
@@ -165,6 +200,14 @@ private:
 	
 	string downloadBuf;
 
+	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
+		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+			if((*i)->getServer() == aServer) {
+				return i;
+			}
+		}
+		return favoriteHubs.end();
+	}
 	// HttpConnectionListener
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const BYTE* buf, int len) {
 		switch(type) {
@@ -190,7 +233,8 @@ private:
 			cs.enter();
 			conn->removeListener(this);
 			running = false;
-			fire(HubManagerListener::FINISHED, publicHubs);
+			downloaded = true;
+			fire(HubManagerListener::FINISHED);
 			cs.leave();
 		}
 	}
@@ -203,9 +247,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.15 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.16  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.15  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

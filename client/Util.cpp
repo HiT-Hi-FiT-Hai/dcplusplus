@@ -21,6 +21,8 @@
 
 #include "Util.h"
 
+string Util::emptyString;
+
 /**
  * Decodes a URL the best it can...
  * Recognised protocols:
@@ -70,9 +72,12 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.2 2001/12/07 20:03:28 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.3 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.3  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.2  2001/12/07 20:03:28  arnetheduck
  * More work done towards application stability
  *

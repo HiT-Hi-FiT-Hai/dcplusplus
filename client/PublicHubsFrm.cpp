@@ -39,7 +39,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_HUBLIST);
-	
+	ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+
 	ctrlHubs.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 200, 0);
 	ctrlHubs.InsertColumn(1, _T("Description"), LVCFMT_LEFT, 290, 1);
 	ctrlHubs.InsertColumn(2, _T("Users"), LVCFMT_RIGHT, 50, 2);
@@ -68,9 +69,28 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlAddress.SetFont(ctrlHubs.GetFont());
 	
 	ctrlStatus.SetText(0, "Downloading hub list...");
-
+	hubsMenu.CreatePopupMenu();
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 7;
+	mi.dwTypeData = "Connect";
+	mi.wID = IDC_CONNECT;
+	hubsMenu.InsertMenuItem(0, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 16;
+	mi.dwTypeData = "Add To Favorites";
+	mi.wID = IDC_ADD;
+	hubsMenu.InsertMenuItem(1, TRUE, &mi);
+	
 	HubManager::getInstance()->addListener(this);
-	HubManager::getInstance()->getPublicHubList();
+	if(HubManager::getInstance()->hasDownloaded()) {
+		PostMessage(WM_SPEAKER);
+	} else if(!HubManager::getInstance()->isRunning()) {
+		HubManager::getInstance()->refresh();
+	}
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -103,7 +123,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndC
 	hubs = 0;
 	ctrlStatus.SetText(0, "Downloading hub list...");
 	HubManager::getInstance()->addListener(this);
-	HubManager::getInstance()->getPublicHubList(true);
+	HubManager::getInstance()->refresh();
 
 	return 0;
 }
@@ -139,6 +159,27 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 	return 0;
 }
 
+LRESULT PublicHubsFrame::onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	if(!checkNick())
+		return 0;
+	
+	char buf[256];
+	
+	int i = -1;
+	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		FavoriteHubEntry e;
+		ctrlHubs.GetItemText(i, COLUMN_NAME, buf, 256);
+		e.setName(buf);
+		ctrlHubs.GetItemText(i, COLUMN_DESCRIPTION, buf, 256);
+		e.setDescription(buf);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+		e.setServer(buf);
+		HubManager::getInstance()->addFavorite(e);
+	}
+	
+	return 0;
+}
+
 LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	char* hub;
 	
@@ -165,9 +206,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.11 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.12  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.11  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

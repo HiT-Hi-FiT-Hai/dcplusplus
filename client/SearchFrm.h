@@ -37,7 +37,7 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
-	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_MDICHILD)
+	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_SEARCH)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -103,7 +103,7 @@ public:
 	}				
 
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		downloadSelected(Settings::getDownloadDirectory());
+		downloadSelected(SETTING(DOWNLOAD_DIRECTORY));
 		return 0;
 	}
 	
@@ -176,7 +176,7 @@ public:
 			string path = buf;
 			
 			try { 
-				DownloadManager::getInstance()->download(path + file, size, user, Settings::getDownloadDirectory() + file);
+				DownloadManager::getInstance()->download(path + file, size, user, SETTING(DOWNLOAD_DIRECTORY) + file);
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -359,9 +359,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.17 2002/01/11 16:13:33 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.18 2002/01/13 22:50:48 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.18  2002/01/13 22:50:48  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.17  2002/01/11 16:13:33  arnetheduck
  * Fixed some locks and bugs, added type field to the search frame
  *

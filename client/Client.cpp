@@ -118,7 +118,7 @@ void Client::onLine(const string& aLine) throw() {
 		string server = param.substr(0, param.find(':'));
 		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(param.find(':')+1));
 	} else if(cmd == "$RevConnectToMe") {
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 			cs.enter();
 			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
@@ -148,7 +148,7 @@ void Client::onLine(const string& aLine) throw() {
 			u = i->second;
 		}
 
-		if(u->getNick() == Settings::getNick())
+		if(u->getNick() == getNick())
 			u->setFlag(User::DCPLUSPLUS);
 		
 		cs.leave();
@@ -230,9 +230,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.17 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.18 2002/01/13 22:50:47 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.18  2002/01/13 22:50:47  arnetheduck
+ * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
+ *
  * Revision 1.17  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template
