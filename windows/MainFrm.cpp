@@ -391,7 +391,9 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		parseCommandLine(GetCommandLine());
 	} else if(wParam == STATUS_MESSAGE) {
 		string* s = (string*)lParam;
-		ctrlStatus.SetText(0, s->c_str());
+		if(ctrlStatus.IsWindow()) {
+			ctrlStatus.SetText(0, (Util::formatTime("[%H:%m] ", time(NULL))+ *s).c_str());
+		}
 		delete s;
 	}
 
@@ -944,6 +946,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.43 2004/01/25 10:37:41 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.44 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
+#include "FastAlloc.h"
 
 class FavoriteUser : public Flags, public FastAlloc<FavoriteUser>
 {
@@ -45,5 +45,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.4 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.5 2004/01/28 19:37:54 arnetheduck Exp $
  */

@@ -166,6 +166,10 @@ public:
 		}
 	}
 
+	virtual void flushBuffers() {
+		FlushFileBuffers(h);
+	}
+
 	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw(FileException) { 
 		if(!::MoveFile(source.c_str(), target.c_str())) {
@@ -273,6 +277,8 @@ public:
 	 */
 	virtual void setEOF() throw(FileException) {
 	}
+
+	virtual void flushBuffers();
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
@@ -382,6 +388,7 @@ public:
 	virtual void movePos(int64_t aPos) throw(FileException) { flush(); File::movePos(aPos); };
 	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
 	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
+	virtual void flushBuffers() { flush(); File::flushBuffers(); }
 
 private:
 	u_int8_t* buf;
@@ -420,6 +427,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.26 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: File.h,v 1.27 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

@@ -30,6 +30,7 @@
 #include "../client/User.h"
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
+#include "../client/FastAlloc.h"
 
 #include "WinUtil.h"
 #include "UCHandler.h"
@@ -380,6 +381,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.37 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.38 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

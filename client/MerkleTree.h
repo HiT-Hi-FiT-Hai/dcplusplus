@@ -21,7 +21,10 @@
 
 #pragma once
 
+#include "FastAlloc.h"
 #include "File.h"
+#include "TigerHash.h"
+#include "Encoder.h"
 
 #include <math.h>
 
@@ -33,8 +36,11 @@ public:
 
 		HashValue() { };
 		HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
+		HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); };
 		HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
 		HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
+		string toBase32() { return Encoder::toBase32(data, SIZE); };
+
 		u_int8_t data[SIZE];
 	};
 
@@ -134,6 +140,7 @@ public:
 	HashList& getLeaves() { return leaves; }
 
 	size_t getBlockSize() { return blockSize; }
+	int64_t getFileSize() { return fileSize; }
 
 	bool verifyRoot(const u_int8_t* aRoot) {
 		return memcmp(aRoot, getRoot().data(), Hasher::HASH_SIZE) == 0;
@@ -173,9 +180,12 @@ private:
 	}
 };
 
+typedef MerkleTree<TigerHash> TigerTree;
+typedef TigerTree::HashValue TTHValue;
+
 #endif // _MERKLE_TREE
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.2 2004/01/25 15:29:07 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.3 2004/01/28 19:37:54 arnetheduck Exp $
  */

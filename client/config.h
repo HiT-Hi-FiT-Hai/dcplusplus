@@ -98,21 +98,21 @@ typedef unsigned __int64 u_int64_t;
 
 #ifdef _MSC_VER
 #define _LL(x) x##I64
+#define I64_FMT "%I64d"
 #else
 #define _LL(x) x##LL
+#define I64_FMT "%lld"
 #endif
 
 #ifdef _WIN32
 #define PATH_SEPARATOR '\\'
 #define PATH_SEPARATOR_STR "\\"
-#define I64_FMT "%I64d"
 #else
 #define PATH_SEPARATOR '/'
 #define PATH_SEPARATOR_STR "/"
-#define I64_FMT "%lld"
 #endif
 
 /**
  * @file
- * $Id: config.h,v 1.20 2004/01/24 20:44:22 arnetheduck Exp $
+ * $Id: config.h,v 1.21 2004/01/28 19:37:54 arnetheduck Exp $
  */

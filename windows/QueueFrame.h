@@ -28,6 +28,7 @@
 
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
+#include "../client/FastAlloc.h"
 
 #define SHOWTREE_MESSAGE_MAP 12
 
@@ -442,5 +443,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.33 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.34 2004/01/28 19:37:54 arnetheduck Exp $
  */

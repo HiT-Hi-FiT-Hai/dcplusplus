@@ -398,8 +398,10 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 			User::updated(aSource->getUser());
 		}
 		StringList defFeatures = features;
-		if(BOOLSETTING(COMPRESS_TRANSFERS))
+		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
 			defFeatures.push_back("GetTestZBlock");
+			defFeatures.push_back("GetZBlock");
+		}
 
 		aSource->supports(defFeatures);
 	}
@@ -607,6 +609,8 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 				if(*i == "BZList")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
 				else if(*i == "GetTestZBlock")
+					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK);
+				else if(*i == "GetZBlock")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 				else if(*i == "MiniSlots")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
@@ -628,5 +632,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.66 2003/12/02 15:40:23 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.67 2004/01/28 19:37:54 arnetheduck Exp $
  */

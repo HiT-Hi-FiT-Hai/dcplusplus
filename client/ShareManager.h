@@ -26,12 +26,15 @@
 #include "TimerManager.h"
 #include "SearchManager.h"
 #include "SettingsManager.h"
+#include "HashManager.h"
 
 #include "Exception.h"
 #include "CriticalSection.h"
 #include "StringSearch.h"
 #include "Singleton.h"
 #include "BloomFilter.h"
+#include "FastAlloc.h"
+#include "MerkleTree.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -39,7 +42,8 @@ class SimpleXML;
 class Client;
 class File;
 
-class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener
+class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
+	private HashManagerListener
 {
 public:
 	StringList getDirectories();
@@ -50,7 +54,7 @@ public:
 	void setDirty() { dirty = true; };
 	
 	void search(SearchResult::List& l, const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
-		return search(l, aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
+		search(l, aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
 	}
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 
@@ -96,19 +100,40 @@ public:
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzListFile, BZListFile);
 private:
+
 	class Directory : public FastAlloc<Directory> {
 	public:
+		struct File {
+			struct StringComp {
+				StringComp(const string& s) : a(s) { }
+				bool operator()(const File& b) const { return Util::stricmp(a, b.getName()) == 0; }
+				const string& a;
+			};
+			struct FileLess {
+				int operator()(const File& a, const File& b) const { return Util::stricmp(a.getName(), b.getName()); }
+			};
+			typedef set<File, FileLess> Set;
+			typedef Set::iterator Iter;
+
+			File() : size(0), parent(NULL), tth(NULL) { };
+			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
+			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
+
+			GETSETREF(string, name, Name);
+			GETSET(int64_t, size, Size);
+			GETSET(Directory*, parent, Parent);
+			GETSET(TTHValue*, tth, TTH);
+		};
+
 		typedef Directory* Ptr;
 		typedef HASH_MAP<string, Ptr> Map;
 		typedef Map::iterator MapIter;
-		typedef HASH_MULTIMAP<int64_t, string> DupeMap;
+		typedef HASH_MULTIMAP_X(string, int64_t, noCaseStringHash, noCaseStringEq, noCaseStringLess) DupeMap;
 		typedef DupeMap::iterator DupeIter;
-		typedef map<string, int64_t, noCaseStringLess> FileMap;
-		typedef FileMap::iterator FileIter;
 
 		int64_t size;
 		Map directories;
-		FileMap files;
+		File::Set files;
 
 		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
 			size(0), name(aName), parent(aParent), fileTypes(0), searchTypes(0) { 
@@ -180,6 +205,20 @@ private:
 	
 	virtual ~ShareManager();
 	
+	StringList loadDirs;
+
+	struct TTHHash {
+		size_t operator()(const TTHValue* tth) const { return *(size_t*)tth; };
+		bool operator()(const TTHValue* a, const TTHValue* b) const { return memcmp(a, b, sizeof(*a)) == 0; };
+	};
+	struct TTHLess {
+		int operator()(const TTHValue* a, const TTHValue* b) { return memcmp(a, b, sizeof(*a)); };
+	};
+	typedef HASH_MAP_X(TTHValue*, Directory::File::Iter, TTHHash, TTHHash, TTHLess) HashFileMap;
+	typedef HashFileMap::iterator HashFileIter;
+
+	HashFileMap tthIndex;
+
 	int64_t listLen;
 	int64_t bzListLen;
 	bool dirty;
@@ -205,7 +244,12 @@ private:
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
 
+	Directory* getDirectory(const string& fname);
+
 	virtual int run();
+
+	// HashManagerListener
+	virtual void onAction(HashManagerListener::Types type, const string& fname, TTHValue* root) throw();
 
 	// SettingsManagerListener
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();
@@ -214,7 +258,6 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
-
 	
 };
 
@@ -222,6 +265,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.41 2004/01/24 20:43:44 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.42 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

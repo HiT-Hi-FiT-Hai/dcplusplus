@@ -28,6 +28,7 @@
 
 #include "Exception.h"
 #include "Singleton.h"
+#include "FastAlloc.h"
 
 #ifdef _WIN32
 #include "../zlib/zlib.h"
@@ -152,9 +153,6 @@ public:
 	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 	void encodeBZ2(const string& is, string& os, int strength = 9);
-	
-	string encodeBase32(const u_int8_t* src, size_t len);
-	void decodeBase32(const char* src, u_int8_t* dst, size_t len);
 private:
 
 	friend class Singleton<CryptoManager>;
@@ -184,9 +182,6 @@ private:
 		}
 	};
 	
-	static const int8_t base32Table[];
-	static const char base32Alphabet[];
-
 	const string lock;
 	const string pk;
 
@@ -207,5 +202,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.34 2004/01/25 15:29:07 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.35 2004/01/28 19:37:54 arnetheduck Exp $
  */

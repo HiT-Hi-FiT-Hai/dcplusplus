@@ -966,7 +966,7 @@ void QueueManager::saveQueue() throw() {
 #define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
 		
 		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE, false, 256);
-		f.write(STRINGLEN("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n"));
+		f.write(STRINGLEN("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n"));
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
@@ -1019,6 +1019,7 @@ void QueueManager::saveQueue() throw() {
 		}
 		
 		f.write("</Downloads>\r\n");
+		f.flushBuffers();
 		f.close();
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
@@ -1041,11 +1042,6 @@ private:
 
 	QueueItem* cur;
 	bool inDownloads;
-
-	const string& getAttrib(StringPairList& attribs, const string& name) {
-		StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string, string>(name));
-		return ((i == attribs.end()) ? Util::emptyString : i->second);
-	}
 };
 
 void QueueManager::loadQueue() throw() {
@@ -1214,21 +1210,25 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 			bool found = true;
 
 			string target = Util::toLower(Util::getFileName(*i));
-			if (target.size() >= fileName.size()) {
-				for(StringIter j = tok.begin(); j != tok.end(); ++j) {
-					if(Util::findSubStringCaseSensitive(target, *j) == string::npos) {
-						found = false;
-						break;
-					}
-				}
+			if(BOOLSETTING(AUTO_SEARCH_EXACT)) {
+				found = (Util::stricmp(target, fileName) == 0);
 			} else {
-				StringTokenizer t2(SearchManager::clean(target), ' ');
-				StringList& tok2 = t2.getTokens();
+				if (target.size() >= fileName.size()) {
+					for(StringIter j = tok.begin(); j != tok.end(); ++j) {
+						if(Util::findSubStringCaseSensitive(target, *j) == string::npos) {
+							found = false;
+							break;
+						}
+					}
+				} else {
+					StringTokenizer t2(SearchManager::clean(target), ' ');
+					StringList& tok2 = t2.getTokens();
 
-				for(StringIter k = tok2.begin(); k != tok2.end(); ++k) {
-					if(Util::findSubStringCaseSensitive(fileName, *k) == string::npos) {
-						found = false;
-						break;
+					for(StringIter k = tok2.begin(); k != tok2.end(); ++k) {
+						if(Util::findSubStringCaseSensitive(fileName, *k) == string::npos) {
+							found = false;
+							break;
+						}
 					}
 				}
 			}
@@ -1290,5 +1290,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.71 2004/01/25 10:37:40 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.72 2004/01/28 19:37:54 arnetheduck Exp $
  */

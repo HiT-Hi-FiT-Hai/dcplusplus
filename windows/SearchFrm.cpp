@@ -154,6 +154,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlFiletype.AddString(CSTRING(PICTURE));
 	ctrlFiletype.AddString(CSTRING(VIDEO));
 	ctrlFiletype.AddString(CSTRING(DIRECTORY));
+	ctrlFiletype.AddString("TTH");
 	ctrlFiletype.SetCurSel(0);
 	
 	// Create listview columns
@@ -264,8 +265,12 @@ void SearchFrame::onEnter() {
 	if(llsize == 0)
 		mode = SearchManager::SIZE_DONTCARE;
 
+	int ftype = ctrlFiletype.GetCurSel();
+	if(ftype == SearchManager::TYPE_HASH)
+		s = "TTH:" + s;
+
 	SearchManager::getInstance()->search(clients, s, llsize, 
-		(SearchManager::TypeModes)ctrlFiletype.GetCurSel(), mode);
+		(SearchManager::TypeModes)ftype, mode);
 
 	if(BOOLSETTING(CLEAR_SEARCH)){
 		ctrlSearch.SetWindowText("");
@@ -303,9 +308,15 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 		if(search.empty()) {
 			return;
 		}
-		for(StringIter j = search.begin(); j != search.end(); ++j) {
-			if(Util::findSubString(aResult->getFile(), *j) == -1) {
+
+		if(ctrlFiletype.GetCurSel() == SearchManager::TYPE_HASH) {
+			if(Util::stricmp(aResult->getHubName(), search[0]) != 0)
 				return;
+		} else {
+			for(StringIter j = search.begin(); j != search.end(); ++j) {
+				if(Util::findSubString(aResult->getFile(), *j) == -1) {
+					return;
+				}
 			}
 		}
 	}
@@ -875,5 +886,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.42 2004/01/05 09:59:18 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.43 2004/01/28 19:37:54 arnetheduck Exp $
  */

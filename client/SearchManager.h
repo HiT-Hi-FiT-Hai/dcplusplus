@@ -30,6 +30,7 @@
 #include "Thread.h"
 #include "Client.h"
 #include "Singleton.h"
+#include "FastAlloc.h"
 
 #include "SearchManagerListener.h"
 
@@ -112,7 +113,8 @@ public:
 		TYPE_EXECUTABLE,
 		TYPE_PICTURE,
 		TYPE_VIDEO,
-		TYPE_DIRECTORY
+		TYPE_DIRECTORY,
+		TYPE_HASH
 	};
 	
 	void search(const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
@@ -159,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.31 2004/01/24 20:42:35 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.32 2004/01/28 19:37:54 arnetheduck Exp $
  */

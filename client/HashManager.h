@@ -23,23 +23,168 @@
 
 #include "Singleton.h"
 #include "MerkleTree.h"
-#include "TigerHash.h"
+#include "Thread.h"
+#include "CriticalSection.h"
+#include "Semaphore.h"
+#include "TimerManager.h"
 
-class HashManager : public Singleton<HashManager> {
+class HashManagerListener {
 public:
-	HashManager(void);
-	virtual ~HashManager(void);
+	typedef HashManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+
+	enum Types {
+		TTH_DONE
+	};
+
+	virtual void onAction(Types, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
+};
+
+class HashLoader;
+
+class HashManager : public Singleton<HashManager>, public Speaker<HashManagerListener>,
+	private TimerManagerListener 
+{
+public:
+	HashManager() {
+		TimerManager::getInstance()->addListener(this);
+	}
+	virtual ~HashManager() {
+		TimerManager::getInstance()->removeListener(this);
+		hasher.join();
+	}
+
+	/**
+	 * Retrieves TTH root or queue's file for hashing.
+	 * @return TTH root if available, otherwise NULL
+	 */
+	TTHValue* getTTHRoot(const string& aFileName, int64_t aSize);
+
+
+	void startup() {
+		hasher.start();
+		store.load();
+	}
+	void shutdown() {
+		hasher.shutdown();
+		hasher.join();
+		Lock l(cs);
+		store.save();
+	}
 
 private:
-	typedef MerkleTree<TigerHash> TigerTree;
-	typedef TigerTree::HashValue TTH;
 
+	class Hasher : public Thread {
+	public:
+		Hasher() : stop(false) { };
 
+		void hashFile(const string& fileName) {
+			Lock l(cs);
+			w.insert(fileName);
+			s.signal();
+		}
+		virtual int run();
+		void shutdown() {
+			stop = true;
+			s.signal();
+		}
+
+	private:
+		typedef set<string, noCaseStringLess> WorkSet;
+		typedef WorkSet::iterator WorkIter;
+
+		WorkSet w;
+		CriticalSection cs;
+		Semaphore s;
+
+		bool stop;
+
+	};
+
+	friend class Hasher;
+
+	class HashStore {
+	public:
+		HashStore() : indexFile(Util::getAppPath() + "HashIndex.xml"), 
+			dataFile(Util::getAppPath() + "HashData.dat"), dirty(false) 
+		{ 
+			if(File::getSize(dataFile) <= 0)
+				createFiles();
+		};
+		void addFile(const string& aFileName, TigerTree& tth);
+
+		void load();
+		void save();
+
+		//void rebuild();
+
+		TTHValue* getTTHRoot(const string& aFileName, int64_t aSize) {
+			TTHIter i = indexTTH.find(aFileName);
+			if(i != indexTTH.end()) {
+				if(i->second->getSize() == aSize) {
+					return &(i->second->getRoot());
+				} else {
+					delete i->second;
+					indexTTH.erase(i);
+					dirty = true;
+				}
+			}
+			return NULL;
+		}
+
+		//bool getTTH(const string& aFileName, TigerTree& tth);
+		bool isDirty() { return dirty; };
+	private:
+		class FileInfo : public FastAlloc<FileInfo> {
+		public:
+			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize) :
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize) { }
+
+			TTHValue& getRoot() { return root; }
+			void setRoot(const TTHValue& aRoot) { root = aRoot; }
+		private:
+			TTHValue root;
+			GETSET(int64_t, size, Size)
+			GETSET(int64_t, index, Index);
+			GETSET(size_t, blockSize, BlockSize);
+		};
+
+		typedef HASH_MAP_X(string, FileInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) TTHMap;
+		typedef TTHMap::iterator TTHIter;
+
+		friend class HashLoader;
+
+		TTHMap indexTTH;
+
+		string indexFile;
+		string dataFile;
+
+		bool dirty;
+
+		void createFiles();
+	};
+
+	friend class HashLoader;
+
+	Hasher hasher;
+	HashStore store;
+
+	CriticalSection cs;
+
+	void hashDone(const string& aFileName, TigerTree& tth);
+
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
+		if(type == TimerManagerListener::MINUTE) {
+			Lock l(cs);
+			store.save();
+		}
+	}
 };
 
 #endif // _HASH_MANAGER
 
 /**
  * @file
- * $Id: HashManager.h,v 1.2 2004/01/25 16:13:29 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.3 2004/01/28 19:37:54 arnetheduck Exp $
  */

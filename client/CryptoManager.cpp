@@ -33,27 +33,6 @@
 
 CryptoManager* Singleton<CryptoManager>::instance;
 
-const int8_t CryptoManager::base32Table[] = {
-	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,26,27,28,29,30,31,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,
-		15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,
-		-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,
-		15,16,17,18,19,20,21,22,23,24,25,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-		-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-};
-
-const char CryptoManager::base32Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
-
 ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
 	inbuf(NULL), f(file), maxBytes(aMaxBytes), level(aStrength) {
 	
@@ -158,16 +137,14 @@ u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(Crypt
 }
 
 void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
-	bz_stream bs;
-
-	memset(&bs, 0, sizeof(bs));
+	bz_stream bs = { 0 };
 
 	if(BZ2_bzDecompressInit(&bs, 0, 0) != BZ_OK)
 		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
 
-	// We assume that the files aren't compressed more than 4:1...if they are it'll work anyway,
+	// We assume that the files aren't compressed more than 2:1...if they are it'll work anyway,
 	// but we'll have to do multiple passes...
-	int bufsize = 4*sz;
+	int bufsize = 2*sz;
 	AutoArray<char> buf(bufsize);
 	
 	bs.avail_in = sz;
@@ -552,69 +529,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	bos.skipToByte();
 }
 
-string CryptoManager::encodeBase32(const u_int8_t* src, size_t len) {
-	// Code snagged from the bitzi bitcollider
-	size_t i, index;
-	u_int8_t word;
-	string dst;
-	dst.reserve(((len * 8) / 5) + 1);
-
-	for(i = 0, index = 0; i < len;) {
-		/* Is the current word going to span a byte boundary? */
-		if (index > 3) {
-			word = (src[i] & (0xFF >> index));
-			index = (index + 5) % 8;
-			word <<= index;
-			if ((i + 1) < len)
-				word |= src[i + 1] >> (8 - index);
-
-			i++;
-		} else {
-			word = (src[i] >> (8 - (index + 5))) & 0x1F;
-			index = (index + 5) % 8;
-			if (index == 0)
-				i++;
-		}
-
-		dcassert(word < 32);
-		dst += base32Alphabet[word];
-	}
-	return dst;
-}
-
-void CryptoManager::decodeBase32(const char* src, u_int8_t* dst, size_t len) {
-	size_t i, index, offset;
-
-	memset(dst, 0, len);
-	for(i = 0, index = 0, offset = 0; src[i]; i++) {
-		// Skip what we don't recognise
-		int8_t tmp = base32Table[src[i]];
-
-		if(tmp == -1)
-			continue;
-
-		if (index <= 3) {
-			index = (index + 5) % 8;
-			if (index == 0) {
-				dst[offset] |= tmp;
-				offset++;
-				if(offset == len)
-					break;
-			} else {
-				dst[offset] |= tmp << (8 - index);
-			}
-		} else {
-			index = (index + 5) % 8;
-			dst[offset] |= (tmp >> index);
-			offset++;
-			if(offset == len)
-				break;
-			dst[offset] |= tmp << (8 - index);
-		}
-	}
-}
-
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.40 2004/01/25 15:29:07 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.41 2004/01/28 19:37:54 arnetheduck Exp $
  */

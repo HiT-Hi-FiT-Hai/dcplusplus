@@ -24,6 +24,7 @@
 #endif // _MSC_VER >= 1000
 
 #include "../client/User.h"
+#include "../client/FastAlloc.h"
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
@@ -258,5 +259,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.25 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.26 2004/01/28 19:37:54 arnetheduck Exp $
  */

@@ -157,7 +157,8 @@ public:
 		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
 		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
 		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
-		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1
+		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
+		FLAG_SUPPORTS_GETTESTZBLOCK = FLAG_SUPPORTS_MINISLOTS << 1,
 	};
 	
 	enum States {
@@ -183,7 +184,7 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$GetTestZBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
+	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send(isSet(FLAG_SUPPORTS_GETZBLOCK) ? "$GetZBlock " : "$GetTestZBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
 	void sending() { send("$Sending|"); };
@@ -282,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.62 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.63 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

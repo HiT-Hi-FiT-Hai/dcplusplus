@@ -27,6 +27,7 @@ class QueueManager;
 class Download;
 
 #include "User.h"
+#include "FastAlloc.h"
 
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
@@ -237,5 +238,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.4 2003/12/17 13:53:07 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.5 2004/01/28 19:37:54 arnetheduck Exp $
 */

@@ -91,7 +91,7 @@
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				WarningLevel="4"
+				WarningLevel="3"
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				CompileAs="0"/>

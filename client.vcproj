@@ -160,6 +160,9 @@
 				RelativePath=".\client\DownloadManager.cpp">
 			</File>
 			<File
+				RelativePath=".\client\Encoder.cpp">
+			</File>
+			<File
 				RelativePath="client\FinishedManager.cpp">
 			</File>
 			<File
@@ -296,7 +299,13 @@
 				RelativePath=".\client\DownloadManager.h">
 			</File>
 			<File
+				RelativePath=".\client\Encoder.h">
+			</File>
+			<File
 				RelativePath=".\client\Exception.h">
+			</File>
+			<File
+				RelativePath=".\client\FastAlloc.h">
 			</File>
 			<File
 				RelativePath=".\client\FavoriteUser.h">

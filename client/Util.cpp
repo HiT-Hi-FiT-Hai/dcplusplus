@@ -33,8 +33,10 @@
 #include <ctype.h>
 #endif
 
+#include "FastAlloc.h"
+
 #ifdef HAS_STLPORT
-allocator<char> FastAllocBase::alloc;
+allocator<u_int8_t> FastAllocBase::alloc;
 #endif
 
 string Util::emptyString;
@@ -554,6 +556,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.41 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.42 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

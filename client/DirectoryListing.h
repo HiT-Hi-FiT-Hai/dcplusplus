@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "User.h"
+#include "FastAlloc.h"
 
 class DirectoryListing  
 {
@@ -139,5 +140,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.20 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.21 2004/01/28 19:37:54 arnetheduck Exp $
  */

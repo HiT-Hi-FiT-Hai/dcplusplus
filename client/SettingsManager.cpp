@@ -53,7 +53,7 @@ const string SettingsManager::settingTags[] =
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", 
-	"LogFilelistTransfers",
+	"LogFilelistTransfers", "AutoSearchExact", "HashFiles",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -148,6 +148,8 @@ SettingsManager::SettingsManager()
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
+	setDefault(AUTO_SEARCH_EXACT, true);
+	setDefault(HASH_FILES, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -277,7 +279,7 @@ void SettingsManager::save(string const& aFileName) {
 
 	try {
 		BufferedFile f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
+		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
 		xml.toXML(&f);
 		f.close();
 		File::deleteFile(aFileName);
@@ -289,6 +291,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.64 2004/01/07 14:14:52 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.65 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

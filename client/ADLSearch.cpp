@@ -163,7 +163,7 @@ void ADLSearchManager::Save()
 		// Save string to file			
 		try {
 			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
-			fout.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
+			fout.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
 			fout.write(xml.toXML());
 			fout.close();
 		} catch(const FileException&) {
@@ -291,6 +291,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.8 2004/01/04 16:34:37 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.9 2004/01/28 19:37:54 arnetheduck Exp $
 */
 

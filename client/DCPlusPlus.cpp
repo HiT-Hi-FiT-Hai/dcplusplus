@@ -27,6 +27,7 @@
 #include "SearchManager.h"
 #include "QueueManager.h"
 #include "ClientManager.h"
+#include "HashManager.h"
 #include "LogManager.h"
 #include "HubManager.h"
 #include "SettingsManager.h"
@@ -43,6 +44,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 
 	LogManager::newInstance();
 	TimerManager::newInstance();
+	HashManager::newInstance();
 	ShareManager::newInstance();
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
@@ -105,6 +107,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 		}
 	}
 
+	HashManager::getInstance()->startup();
 	if(f != NULL)
 		(*f)(p, STRING(SHARED_FILES));
 	ShareManager::getInstance()->refresh(false, false, true);
@@ -116,6 +119,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 
 void shutdown() {
 	ConnectionManager::getInstance()->shutdown();
+	HashManager::getInstance()->shutdown();
 
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
@@ -131,6 +135,7 @@ void shutdown() {
 	SearchManager::deleteInstance();
 	ClientManager::deleteInstance();
 	HubManager::deleteInstance();
+	HashManager::deleteInstance();
 	LogManager::deleteInstance();
 	SettingsManager::deleteInstance();
 	TimerManager::deleteInstance();
@@ -139,6 +144,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.27 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.28 2004/01/28 19:37:54 arnetheduck Exp $
  */
 

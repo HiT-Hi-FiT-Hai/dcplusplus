@@ -265,6 +265,7 @@
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
+		<String Name="SettingsAutoSearchExact">Use exact filename when matching autosearches</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoSearchAutoString">Use default search strings in auto search when no string is specified</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
@@ -289,6 +290,7 @@
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFullRowSelect">Full row select in lists</String>
 		<String Name="SettingsGeneral">General</String>
+		<String Name="SettingsHashFiles">Enable TTH file hash features</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
 		<String Name="SettingsIp">IP</String>

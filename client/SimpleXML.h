@@ -47,6 +47,12 @@ public:
 		 */
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) = 0;
 		virtual void endTag(const string& name, const string& data) = 0;
+
+		const string& getAttrib(StringPairList& attribs, const string& name) {
+			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string, string>(name));
+			return ((i == attribs.end()) ? Util::emptyString : i->second);
+		}
+
 	};
 	SimpleXMLReader(CallBack* callback) : cb(callback) { }
 
@@ -266,6 +272,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.27 2003/12/26 11:00:06 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.28 2004/01/28 19:37:54 arnetheduck Exp $
  */
 
