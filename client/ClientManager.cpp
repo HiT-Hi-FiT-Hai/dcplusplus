@@ -52,10 +52,9 @@ void ClientManager::putClient(Client* aClient) {
 	cs.leave();
 }
 
-void ClientManager::onClientHello(Client::Ptr aClient, User::Ptr& aUser) {
+void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
 	aClient->cs.enter();
 	if(aUser->getNick() == Settings::getNick()) {
-		aUser->setFlag(User::DCPLUSPLUS);
 		aClient->version("1,0091");
 		aClient->getNickList();
 		aClient->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), ShareManager::getInstance()->getShareSizeString());
@@ -66,7 +65,7 @@ void ClientManager::onClientHello(Client::Ptr aClient, User::Ptr& aUser) {
 }
 
 void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
-							int aFileType, const string& aString) {
+							int aFileType, const string& aString) throw() {
 	
 	bool search = false;
 	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
@@ -123,9 +122,13 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.2 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.3 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.3  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.2  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

@@ -50,7 +50,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			// This is bad!
 			
 			dcdebug("UploadManager::onGet Unexpected command\n");				
-			fireFailed(i->second, "Unexpected command");
+			fire(UploadManagerListener::FAILED, i->second, "Unexpected command");
 			delete i->second;
 			dcdebug("onGet: Removing upload\n");
 			uploads.erase(i);
@@ -99,7 +99,7 @@ void UploadManager::onSend(UserConnection* aSource) {
 	try {
 		u->setStart(TimerManager::getTick());
 		aSource->transmitFile(u->getFile());
-		fireStarting(u);
+		fire(UploadManagerListener::STARTING, u);
 	} catch(Exception e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		dcdebug("onSend: Removing upload\n");
@@ -110,11 +110,69 @@ void UploadManager::onSend(UserConnection* aSource) {
 	cs.leave();
 }
 
+void UploadManager::onBytesSent(UserConnection* aSource, DWORD aBytes) {
+	Upload* u;
+	cs.enter();
+	Upload::MapIter i = uploads.find(aSource);
+	if(i == uploads.end()) {
+		// Something strange happened?
+		dcdebug("onBytesSent: Upload not found???\n");
+		cs.leave();
+		removeConnection(aSource);
+		return;
+	}
+	u = i->second;
+	cs.leave();
+	u->addPos(aBytes);
+	//fire(UploadManagerListener::TICK, u);
+}
+
+void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
+	Upload* u;
+	aSource->disconnect();
+	cs.enter();
+	Upload::MapIter i = uploads.find(aSource);
+	if(i != uploads.end()) {
+		u = i->second;
+		fire(UploadManagerListener::FAILED, u, aError);
+		dcdebug("onError: Removing upload\n");
+		uploads.erase(i);
+		delete u;
+	}
+	cs.leave();
+	removeConnection(aSource);
+}
+
+void UploadManager::onTransmitDone(UserConnection* aSource) {
+	Upload * u;
+	cs.enter();
+	Upload::MapIter i = uploads.find(aSource);
+	if(i == uploads.end()) {
+		// Something strange happened?
+		dcdebug("onTransmitDone: Upload not found???\n");
+		
+		cs.leave();
+		removeConnection(aSource);
+		return;
+	}
+	u = i->second;
+	fire(UploadManagerListener::COMPLETE, u);
+	dcdebug("onTransmitDone: Removing upload\n");
+	uploads.erase(i);
+	cs.leave();
+	delete u;
+	
+}
+
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.2 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.3 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.3  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.2  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

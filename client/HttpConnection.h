@@ -33,10 +33,15 @@ public:
 	typedef HttpConnectionListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+	enum Types {
+		DATA,
+		FAILED,
+		COMPLETE
+	};
 
-	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) { };
-	virtual void onHttpError(HttpConnection* aConn, const string& aError) { };
-	virtual void onHttpComplete(HttpConnection* aConn) { };	
+	virtual void onAction(Types, HttpConnection*) { };	
+	virtual void onAction(Types, HttpConnection*, const string&) { };
+	virtual void onAction(Types, HttpConnection*, const BYTE*, int) { };
 };
 
 class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
@@ -48,12 +53,6 @@ public:
 
 private:
 
-	virtual void onConnected();
-	virtual void onLine(const string& aLine);
-	virtual void onData(const BYTE* aBuf, int aLen) { fireData(aBuf, aLen); }
-	virtual void onError(const string& aReason) { fireError(aReason); }
-	virtual void onModeChange(int newMode) { fireComplete(); socket.disconnect(); }
-	
 	string file;
 	string server;
 	short port;
@@ -61,43 +60,55 @@ private:
 	
 	bool ok;
 	BufferedSocket socket;
-	
-	void fireData(const BYTE* aBuf, int aLen) {
-		listenerCS.enter();
-		dcdebug("HttpConnection::fireData %d\n", aLen);
-		HttpConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHttpData(this, aBuf, aLen);
+
+	// BufferedSocketListener
+	virtual void onAction(BufferedSocketListener::Types type) {
+		switch(type) {
+		case BufferedSocketListener::CONNECTED:
+			onConnected(); break;
 		}
 	}
-	void fireError(const string& aError) {
-		listenerCS.enter();
-		dcdebug("HttpConnection::fireError %s\n", aError.c_str());
-		HttpConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHttpError(this, aError);
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
+		switch(type) {
+		case BufferedSocketListener::LINE:
+			onLine(aLine); break;
+		case BufferedSocketListener::FAILED:
+			fire(HttpConnectionListener::FAILED, this, aLine); break;
 		}
 	}
-	void fireComplete() {
-		listenerCS.enter();
-		dcdebug("HttpConnection::fireComplete\n");
-		HttpConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHttpComplete(this);
+	virtual void onAction(BufferedSocketListener::Types type, int mode) {
+		switch(type) {
+		case BufferedSocketListener::MODE_CHANGE:
+			fire(HttpConnectionListener::COMPLETE, this); socket.disconnect(); break;
+		default:
+			dcassert(0);
 		}
 	}
+	virtual void onAction(BufferedSocketListener::Types type, const BYTE* aBuf, int aLen) {
+		switch(type) {
+		case BufferedSocketListener::DATA:
+			fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
+		default:
+			dcassert(0);
+		}
+	}
+
+	void onConnected(); 
+	void onLine(const string& aLine);
+
 };
 
 #endif // !defined(AFX_HTTPCONNECTION_H__47AE2649_8D90_4C38_B048_69B3C26B3954__INCLUDED_)
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.4 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.5 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
+ * Revision 1.5  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.4  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -28,28 +28,11 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "TimerManager.h"
+#include "Util.h"
 
-class ConnectionManager : public UserConnectionListener, ServerSocketListener, TimerManagerListener
+class ConnectionManager : public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
 {
 public:
-	static void newInstance() {
-		if(instance)
-			delete instance;
-
-		instance = new ConnectionManager();
-		TimerManager::getInstance()->addListener(instance);
-	}
-	static ConnectionManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	static void deleteInstance() {
-		TimerManager::getInstance()->removeListener(instance);
-		if(instance)
-			delete instance;
-		instance = NULL;
-	}
-
 	int getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 
@@ -82,17 +65,63 @@ private:
 	UserConnection::List uploaders;
 	UserConnection::List pool;
 	UserConnection::List downPool;
+	ServerSocket socket;
+	
+	friend class Singleton<ConnectionManager>;
+	ConnectionManager() {
+		TimerManager::getInstance()->addListener(this);
+		socket.addListener(this);
+	};
+	
+	~ConnectionManager() {
+		TimerManager::getInstance()->removeListener(this);
+		socket.removeListener(this);
+		// Time to empty the pool...
+		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
+			dcdebug("Deleting connection %p\n", *i);
+			delete *i;
+		}
+	}
+	// ServerSocketListener
+	virtual void onAction(ServerSocketListener::Types type) {
+		switch(type) {
+		case ServerSocketListener::INCOMING_CONNECTION:
+			onIncomingConnection();
+		}
+	}
+	void onIncomingConnection() throw();
 
 	// UserConnectionListener
-	virtual void onIncomingConnection();
-	virtual void onMyNick(UserConnection* aSource, const string& aNick);
-	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk);
-	virtual void onConnected(UserConnection* aSource);
-	virtual void onKey(UserConnection* aSource, const string& aKey);
-	virtual void onError(UserConnection* aSource, const string& aError);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
+		switch(type) {
+		case UserConnectionListener::CONNECTED:
+			onConnected(conn); break;
+		}
+	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+		switch(type) {
+		case UserConnectionListener::MY_NICK:
+			onMyNick(conn, line); break;
+		case UserConnectionListener::KEY:
+			onKey(conn, line); break;
+		case UserConnectionListener::FAILED:
+			onFailed(conn, line); break;
+		}
+	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) {
+		switch(type) {
+		case UserConnectionListener::LOCK:
+			onLock(conn, line1, line2); break;
+		}
+	}
+	void onMyNick(UserConnection* aSource, const string& aNick) throw();
+	void onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw();
+	void onConnected(UserConnection* aSource) throw();
+	void onKey(UserConnection* aSource, const string& aKey) throw();
+	void onFailed(UserConnection* aSource, const string& aError) throw();
 	
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick);
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick);
 	
 	/**
 	 * Returns an connection, either from the pool or a brand new fresh one.
@@ -127,31 +156,19 @@ private:
 		}
 		cs.leave();
 	}
-	static ConnectionManager* instance;
-
-	ConnectionManager() {
-		socket.addListener(this);
-	};
-
-	~ConnectionManager() {
-		socket.removeListener(this);
-		// Time to empty the pool...
-		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
-			dcdebug("Deleting connection %p\n", *i);
-			delete *i;
-		}
-	}
-
-	ServerSocket socket;
 };
 
 #endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.18 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.19 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.19  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.18  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

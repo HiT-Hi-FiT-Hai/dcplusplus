@@ -56,7 +56,7 @@ public:
 	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL) {
 
 		char buf[128];
-		int loc;
+		int loc = 0;
 		int count = GetItemCount();
 
 		if(sortColumn == -1) {
@@ -126,11 +126,16 @@ public:
 				loc++;
 			
 		}
+		SetRedraw(FALSE);
 		int i = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, loc, aList[0].c_str(), 0, 0, iImage, lParam);
 		int k = 0;
 		for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 			SetItemText(i, k, j->c_str());
 		}
+		SetRedraw(TRUE);
+		RECT rc;
+		GetItemRect(i, &rc, LVIR_BOUNDS);
+		InvalidateRect(&rc);
 		return loc;
 	}
 	int insert(int nItem, const string& aString, int iImage = 0, LPARAM lParam = NULL) {
@@ -214,9 +219,13 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.12 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.13 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.13  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.12  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

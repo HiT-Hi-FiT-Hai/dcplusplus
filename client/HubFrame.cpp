@@ -229,7 +229,6 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 };
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	cs.enter();
 	// First some specials to handle those messages that have to initialize variables...
 	if(wParam == CLIENT_MESSAGE) {
 		addLine(*(string*)lParam);
@@ -259,17 +258,30 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
 			if(u->isSet(User::DCPLUSPLUS))
 				image+=2;
-
+			
+			ctrlUsers.SetRedraw(FALSE);
+			
 			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, image, 0, 0, NULL);
 			ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
 			ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
 			ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
 			ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
+			
+			ctrlUsers.SetRedraw(TRUE);
+			RECT rc;
+			ctrlUsers.GetItemRect(j, &rc, LVIR_BOUNDS);
+			ctrlUsers.InvalidateRect(&rc);
+
 			((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 		}
 		
-		updateStatusBar();
 		delete (User::Ptr*)lParam;
+	} else if(wParam==STATS) {
+		StringList* str = (StringList*)lParam;
+		ctrlStatus.SetText(1, (*str)[0].c_str());
+		ctrlStatus.SetText(2, (*str)[1].c_str());
+		delete str;
+
 	} else if(wParam == CLIENT_QUIT) {
 		User::Ptr& u = *(User::Ptr*)lParam;
 		
@@ -278,7 +290,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			delete (UserInfo*)ctrlUsers.GetItemData(item);
 			ctrlUsers.DeleteItem(item);
 		}
-		updateStatusBar();		
 		delete (User::Ptr*)lParam;
 	} else if(wParam == CLIENT_GETPASSWORD) {
 		LineDlg dlg;
@@ -294,7 +305,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if(wParam == CLIENT_CONNECTING) {
 		addClientLine("Connecting to " + client->getServer() + "...");
 		SetWindowText(client->getServer().c_str());
-	} else if(wParam == CLIENT_ERROR) {
+	} else if(wParam == CLIENT_FAILED) {
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
 	} else if(wParam == CLIENT_HUBNAME) {
@@ -312,15 +323,18 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		i->frm->addLine(i->msg);
 		delete i;
 	}
-	cs.leave();
 	return 0;
 };
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.18 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.19 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.19  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.18  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

@@ -49,7 +49,7 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 	wait[1] = s->getReadEvent();
 	dcdebug("Waiting for incoming connections...\n");
 	while(WaitForMultipleObjects(2, wait, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		s->fireIncomingConnection();
+		s->fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
 	s->waiterThread = NULL;
@@ -58,9 +58,13 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.2 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.3 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.3  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.2  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

@@ -206,11 +206,22 @@ private:
 		return 0;
 	}
 	
-	virtual void onHubMessage(const string& aMessage) {
-		ctrlStatus.SetText(0, aMessage.c_str());
+	// HubManagerListener
+	virtual void onAction(HubManagerListener::Types type, const HubEntry::List& aList) {
+		switch(type) {
+		case HubManagerListener::FINISHED:
+			onHubFinished(aList); break;
+		}
+	}
+
+	virtual void onAction(HubManagerListener::Types type, const string& line) {
+		switch(type) {
+		case HubManagerListener::MESSAGE:
+			ctrlStatus.SetText(0, line.c_str());
+		}
 	}
 	
-	virtual void onHubFinished(HubEntry::List& aList) {
+	void onHubFinished(const HubEntry::List& aList) {
 		HubManager::getInstance()->removeListener(this);
 		ctrlStatus.SetText(0, "Done!");
 		ctrlHubs.DeleteAllItems();
@@ -219,7 +230,7 @@ private:
 		
 		ctrlHubs.SetRedraw(FALSE);
 
-		for(HubEntry::Iter i = aList.begin(); i != aList.end(); ++i) {
+		for(HubEntry::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
 			StringList l;
 			l.push_back(i->getName());
 			l.push_back(i->getDescription());
@@ -248,9 +259,13 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.11 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.12 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.12  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.11  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

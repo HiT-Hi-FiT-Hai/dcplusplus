@@ -30,38 +30,26 @@ public:
 	typedef TimerManagerListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+	enum Types {
+		SECOND,
+		MINUTE
+	};
 	
-	virtual void onTimerSecond(DWORD aTick) { };
-	virtual void onTimerMinute(DWORD aTick) { };
+	virtual void onAction(Types type, DWORD aTick) { };
 };
 
-class TimerManager : public Speaker<TimerManagerListener>
+class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>
 {
 public:
 	static DWORD getTick() { return GetTickCount(); };
 	
-	static TimerManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new TimerManager();
-	}
-	
-	static void deleteInstance() {
-		if(instance)
-			delete instance;
-		instance = NULL;
-	}
-	
 private:
+
+	friend class Singleton<TimerManager>;
 	TimerManager() : stopEvent(NULL), readerThread(NULL) { 
 		startTicker();		
 	};
+	
 	virtual ~TimerManager() {
 		stopTicker();
 	};
@@ -93,36 +81,19 @@ private:
 	
 	static DWORD WINAPI ticker(void* p);
 
-	static TimerManager* instance;
-
-	void fireSecond(DWORD aTick) {
-		listenerCS.enter();
-		TimerManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(TimerManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onTimerSecond(aTick);
-		}
-	}
-	void fireMinute(DWORD aTick) {
-		listenerCS.enter();
-		TimerManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(TimerManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onTimerMinute(aTick);
-		}
-	}
-	
 };
 
 #endif // !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.4 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.5 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.5  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.4  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

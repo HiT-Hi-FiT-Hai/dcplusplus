@@ -101,11 +101,112 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
+LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	char buf[512];
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		ctrlResults.GetItemText(i, 1, buf, 512);
+		string file = buf;
+		string target = Settings::getDownloadDirectory() + buf;
+		if(Util::browseSaveFile(target)) {
+			ctrlResults.GetItemText(i, 0, buf, 512);
+			string user = buf;
+			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
+			ctrlResults.GetItemText(i, 3, buf, 512);
+			string path = buf;
+			
+			try {
+				DownloadManager::getInstance()->download(path + file, size, user, target);
+			} catch(Exception e) {
+				MessageBox(e.getError().c_str());
+			}
+		}
+	} else {
+		string target = Settings::getDownloadDirectory();
+		if(Util::browseDirectory(target, m_hWnd)) {
+			downloadSelected(target);
+		}
+	}
+	return 0;
+}
+
+LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	char* message;
+	
+	if(ctrlSearch.GetWindowTextLength() > 0) {
+		message = new char[ctrlSearch.GetWindowTextLength()+1];
+		ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
+		string s(message, ctrlSearch.GetWindowTextLength());
+		delete message;
+		
+		message = new char[ctrlSize.GetWindowTextLength()+1];
+		ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
+		string size(message, ctrlSize.GetWindowTextLength());
+		delete message;
+		
+		double lsize = Util::toInt64(size);
+		switch(ctrlSizeMode.GetCurSel()) {
+		case 1:
+			lsize*=1024I64; break;
+		case 2:
+			lsize*=1024I64*1024I64; break;
+		case 3:
+			lsize*=1024I64*1024I64*1024I64; break;
+		}
+		
+		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
+			delete (LONGLONG*)ctrlResults.GetItemData(i);
+		}
+		ctrlResults.DeleteAllItems();
+		
+		SearchManager::getInstance()->search(s, (LONGLONG)lsize, 0, ctrlMode.GetCurSel());
+		//client->sendMessage(s);
+		ctrlSearch.SetWindowText("");
+		
+		ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+		search = StringTokenizer(s, ' ').getTokens();
+		
+	}
+	return 0;
+}
+
+void SearchFrame::onSearchResult(SearchResult* aResult) {
+	// Check that this is really a relevant search result...
+	for(StringIter j = search.begin(); j != search.end(); ++j) {
+		if(Util::findSubString(aResult->getFile(), *j) == -1) {
+			return;
+		}
+	}
+	LONGLONG* psize = new LONGLONG;
+	*psize = aResult->getSize();
+	
+	string file, path;
+	if(aResult->getFile().rfind('\\') == string::npos) {
+		file = aResult->getFile();
+	} else {
+		file = aResult->getFile().substr(aResult->getFile().rfind('\\')+1);
+		path = aResult->getFile().substr(0, aResult->getFile().rfind('\\')+1);
+	}
+	
+	StringList* l = new StringList();
+	l->push_back(aResult->getNick());
+	l->push_back(file);
+	l->push_back(Util::formatBytes(aResult->getSize()));
+	l->push_back(path);
+	l->push_back(aResult->getSlotString());
+	l->push_back(aResult->getHubName());
+	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)psize);	
+}
+
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.10 2002/01/09 19:01:35 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.11  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.10  2002/01/09 19:01:35  arnetheduck
  * Made some small changed to the key generation and search frame...
  *

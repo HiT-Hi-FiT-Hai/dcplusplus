@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
+
 class Node {
 public:
 	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
@@ -63,8 +65,7 @@ struct std::greater<Node*> {
 	}; 
 };
 
-
-class CryptoManager  
+class CryptoManager : public Singleton<CryptoManager>
 {
 public:
 	string makeKey(const string& aLock);
@@ -74,23 +75,12 @@ public:
 	void decodeHuffman(const BYTE* is, string& os);
 	void encodeHuffman(const string& is, string& os);
 	
-	static CryptoManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new CryptoManager();
-	}
-	static void deleteInstance() {
-		delete instance;
-		instance = NULL;
-	}
-
 private:
-	static CryptoManager* instance;
+
+	friend class Singleton<CryptoManager>;
+	
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABCABC") { };
+	virtual ~CryptoManager() { };
 
 	class Leaf {
 	public:
@@ -114,7 +104,6 @@ private:
 		}
 	};
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABCABC") { };
 
 	string lock;
 	string pk;
@@ -136,9 +125,13 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.8 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.9 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.9  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.8  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

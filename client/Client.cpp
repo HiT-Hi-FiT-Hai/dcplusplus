@@ -29,7 +29,7 @@ void Client::connect(const string& aServer, short aPort) {
 	}
 	server = aServer;
 	port = aPort;
-	fireConnecting();
+	fire(ClientListener::CONNECTING, this);
 	socket.addListener(this);
 	socket.connect(aServer, aPort);
 }
@@ -40,15 +40,15 @@ void Client::connect(const string& aServer, short aPort) {
  * @param p Pointer to the Clientent that started the thread
  */
 
-void Client::onLine(const string& aLine) {
+void Client::onLine(const string& aLine) throw() {
 	lastActivity = TimerManager::getTick();
-
-	string cmd;
-	string param;
-	int x;
 
 	if(aLine.length() == 0)
 		return;
+	
+	string cmd;
+	string param;
+	int x;
 	
 	if( (x = aLine.find(' ')) == string::npos) {
 		cmd = aLine;
@@ -73,7 +73,7 @@ void Client::onLine(const string& aLine) {
 		param = param.substr(param.find('?')+1);
 		int type = Util::toInt(param.substr(0, param.find('?')));
 		param = param.substr(param.find('?')+1);
-		fireSearch(seeker, a, size, type, param);
+		fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
 	} else if(cmd == "$MyINFO") {
 		string nick;
 		param = param.substr(5);
@@ -81,12 +81,13 @@ void Client::onLine(const string& aLine) {
 		param = param.substr(param.find(' ')+1);
 		User::Ptr u;
 		cs.enter();
-		if(users.find(nick) == users.end()) {
+		User::NickIter i = users.find(nick);
+		if(i == users.end()) {
 			u = new User(nick, User::ONLINE);
 			u->setClient(this);
 			users[nick] = u;
 		} else {
-			u = users[nick];
+			u = i->second;
 		}
 		cs.leave();
 		u->setDescription(param.substr(0, param.find('$')));
@@ -97,28 +98,31 @@ void Client::onLine(const string& aLine) {
 		param = param.substr(param.find('$')+1);
 		u->setBytesShared(param.substr(0, param.find('$')));
 		
-		fireMyInfo(u);
+		fire(ClientListener::MY_INFO, this, u);
 		
 	} else if(cmd == "$Quit") {
-		if(users.find(param) != users.end()) {
-			cs.enter();
-			User::Ptr u = users[param];
-			users.erase(param);
+		cs.enter();
+		User::NickIter i = users.find(param);
+		if(i != users.end()) {
+			User::Ptr u = i->second;
+			users.erase(i);
 			cs.leave();
 			u->unsetFlag(User::ONLINE);
-			fireQuit(u);
+			fire(ClientListener::QUIT, this, u);
+		} else {
+			cs.leave();
 		}
 		
 	} else if(cmd == "$ConnectToMe") {
 		param = param.substr(param.find(' ') + 1);
 		string server = param.substr(0, param.find(':'));
-		fireConnectToMe(server, param.substr(param.find(':')+1));
+		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(param.find(':')+1));
 	} else if(cmd == "$RevConnectToMe") {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
 			cs.enter();
 			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
-				fireRevConnectToMe(i->second);
+				fire(ClientListener::REV_CONNECT_TO_ME, this, i->second);
 			}
 			cs.leave();
 		}
@@ -126,12 +130,12 @@ void Client::onLine(const string& aLine) {
 		SearchManager::getInstance()->onSearchResult(aLine);
 	} else if(cmd == "$HubName") {
 		name = param;
-		fireHubName();
+		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Lock") {
 	
 		string lock = param.substr(0, param.find(' '));
 		string pk = param.substr(param.find(' ') + 4);
-		fireLock(lock, pk);	
+		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
 		User::Ptr u;
 		cs.enter();
@@ -143,14 +147,18 @@ void Client::onLine(const string& aLine) {
 		} else {
 			u = i->second;
 		}
+
+		if(u->getNick() == Settings::getNick())
+			u->setFlag(User::DCPLUSPLUS);
+		
 		cs.leave();
-		fireHello(u);
+		fire(ClientListener::HELLO, this, u);
 	} else if(cmd == "$ForceMove") {
-		fireForceMove(param);
+		fire(ClientListener::FORCE_MOVE, this, param);
 	} else if(cmd == "$HubIsFull") {
-		fireHubFull();
+		fire(ClientListener::HUB_FULL, this);
 	} else if(cmd == "$ValidateDenide") {
-		fireValidateDenied();
+		fire(ClientListener::VALIDATE_DENIED, this);
 	} else if(cmd == "$NickList") {
 		StringList v;
 		int j, k = 0;
@@ -161,14 +169,14 @@ void Client::onLine(const string& aLine) {
 				User::Ptr u = new User(nick, User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
-				fireMyInfo(u);
+				fire(ClientListener::MY_INFO, this, u);
 			}
 			cs.leave();
 			v.push_back(nick);
 			k = j + 2;
 		}
 		
-		fireNickList(v);
+		fire(ClientListener::NICK_LIST, this, v);
 		
 	} else if(cmd == "$OpList") {
 		StringList v;
@@ -186,40 +194,49 @@ void Client::onLine(const string& aLine) {
 				i->second->setFlag(User::OP);
 			}
 			cs.leave();
-			fireMyInfo(users[nick]);
+			fire(ClientListener::MY_INFO, this, users[nick]);
 			v.push_back(nick);
 			k = j + 2;
 		}
-		fireOpList(v);
+		fire(ClientListener::OP_LIST, this, v);
 	} else if(cmd == "$To:") {
-		string tmp = param.substr(param.find("From:") + 6);
-		string from = tmp.substr(0, tmp.find("$") - 1);
-		User::Ptr& user = getUser(from);
-		if(user) {
-			
-			firePrivateMessage(user, tmp.substr(tmp.find("$") + 1));
-		} else {
-			firePrivateMessage(from, tmp.substr(tmp.find("$") + 1));
+		int i = param.find("From:");
+		if(i != -1) {
+			i+=6;
+			int j = param.find("$");
+			string from = param.substr(i, j - 1 - i);
+			if(from.size() > 0 && param.size() > (j + 1)) {
+				User::Ptr& user = getUser(from);
+				if(user) {
+					fire(ClientListener::PRIVATE_MESSAGE, this, user, param.substr(j + 1));
+				} else {
+					fire(ClientListener::PRIVATE_MESSAGE, this, from, param.substr(j + 1));
+				}
+			}
 		}
 	} else if(cmd == "$GetPass") {
-		fireGetPassword();
+		fire(ClientListener::GET_PASSWORD, this);
 	} else if(cmd == "$BadPass") {
-		fireBadPassword();
+		fire(ClientListener::BAD_PASSWORD, this);
 	} else if(cmd == "$LogedIn") {
-		fireLoggedIn();
+		fire(ClientListener::LOGGED_IN, this);
 	} else if(cmd[0] == '$') {
-		fireUnknown(aLine);
+		fire(ClientListener::UNKNOWN, this, aLine);
 	} else {
-		fireMessage(aLine);
+		fire(ClientListener::MESSAGE, this, aLine);
 	}
 }
 
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.16 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.17 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.17  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.16  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

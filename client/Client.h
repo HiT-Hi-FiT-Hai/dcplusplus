@@ -23,12 +23,56 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "ClientListener.h"
 #include "BufferedSocket.h"
 #include "User.h"
 #include "Util.h"
 #include "SearchManager.h"
 #include "TimerManager.h"
+
+class Client;
+
+class ClientListener  
+{
+public:
+	typedef ClientListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+	enum Types {
+		
+		BAD_PASSWORD,
+			CONNECT_TO_ME,
+			CONNECTED,
+			CONNECTING,
+			FAILED,
+			FORCE_MOVE,
+			GET_PASSWORD,
+			HELLO,
+			HUB_NAME,
+			HUB_FULL,
+			LOCK,
+			LOGGED_IN,
+			MESSAGE,
+			MY_INFO,
+			NICK_LIST,
+			OP_LIST,
+			PRIVATE_MESSAGE,
+			REV_CONNECT_TO_ME,
+			SEARCH,
+			QUIT,
+			UNKNOWN,
+			VALIDATE_DENIED
+	};
+	
+	virtual void onAction(Types, Client*) { };
+	virtual void onAction(Types, Client*, const string&) { };
+	virtual void onAction(Types, Client*, const string&, const string&) { };
+	virtual void onAction(Types, Client*, const User::Ptr&) { };
+	virtual void onAction(Types, Client*, const StringList&) { };
+	virtual void onAction(Types, Client*, const User::Ptr&, const string&) { };
+	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) { };
+	
+};
 
 class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener
 {
@@ -49,11 +93,11 @@ public:
 		socket.removeListener(this);
 		socket.disconnect();
 		cs.enter();
-		User::NickIter i = users.begin();
-		while(i != users.end()) {
+		
+		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
 			i->second->unsetFlag(User::ONLINE);
-			i = users.erase(i);
 		}
+		users.clear();
 		cs.leave();
 	}
 
@@ -125,10 +169,7 @@ public:
 		send("$GetINFO " + aUser->getNick() + " " + Settings::getNick() + "|");
 	}
 	void getInfo(const string& aNick) {
-		cs.enter();
-		if(users.find(aNick) != users.end())
-			send("$GetINFO " + aNick + " " + Settings::getNick() + "|");
-		cs.leave();
+		send("$GetINFO " + aNick + " " + Settings::getNick() + "|");
 	}
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
@@ -224,7 +265,7 @@ private:
 		TimerManager::getInstance()->addListener(this);
 	};
 	
-	virtual ~Client() {
+	virtual ~Client() throw() {
 		cs.enter();
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
@@ -233,252 +274,59 @@ private:
 		cs.leave();
 	};
 	
-	
-	virtual void onTimerSecond(DWORD aTick) {
-		if((lastActivity + 120 * 1000) < aTick) {
-			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
-			lastActivity = aTick;
-			// Try to send something for the fun of it...
-			if(isConnected()) {
-				try {
-					dcdebug("Testing writing...\n");
-					socket.write("|", 1);
-				} catch(Exception e) {
-					dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
-					fireError(e.getError());
-					disconnect();
+	// TimerManagerListener
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		if(type == TimerManagerListener::SECOND) {
+			if((lastActivity + 60 * 1000) < aTick) {
+				// Nothing's happened for 60 seconds, check if we're connected, if not, try to connect...
+				lastActivity = aTick;
+				// Try to send something for the fun of it...
+				if(isConnected()) {
+					try {
+						dcdebug("Testing writing...\n");
+						socket.write("|", 1);
+					} catch(Exception e) {
+						dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
+						fire(ClientListener::FAILED, this, e.getError());
+						disconnect();
+					}
+				} else {
+					// Try to reconnect...
+					connect(server, port);
 				}
-			} else {
-				// Try to reconnect...
-				connect(server, port);
 			}
 		}
 	}
-	virtual void onLine(const string& aLine);
-	
-	virtual void onError(const string& aReason) {
-		fireError(aReason);
-		disconnect();
-	}
 
-	virtual void onConnected() {
-		lastActivity = TimerManager::getTick();
-		fireConnected();
+	// BufferedSocketListener
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
+		switch(type) {
+		case BufferedSocketListener::LINE:
+			onLine(aLine); break;
+		case BufferedSocketListener::FAILED:
+			fire(ClientListener::FAILED, this, aLine);
+			disconnect();
+			break;
+		default:
+			dcassert(0);
+		}
 	}
+	virtual void onAction(BufferedSocketListener::Types type) {
+		switch(type) {
+		case BufferedSocketListener::CONNECTED:
+			lastActivity = TimerManager::getTick();
+			fire(ClientListener::CONNECTED, this);
+			break;
+		}
+	}
+	void onLine(const string& aLine) throw();
 
 	void send(const string& a) {
 		lastActivity = TimerManager::getTick();
 		try {
 			socket.write(a);
 		} catch(SocketException e) {
-			fireError(e.getError());
-		}
-	}
-	
-	void fireBadPassword() {
-		dcdebug("fireBadPassword\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientBadPassword(this);
-		}
-	}
-	void fireConnected() {
-		dcdebug("fireConnected\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientConnected(this);
-		}
-	}
-	void fireConnecting() {
-		dcdebug("fireConnecting\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientConnecting(this);
-		}
-	}
-	void fireConnectToMe(const string& aServer, const string& aPort) {
-		dcdebug("fireConnectToMe %s:%s\n", aServer.c_str(), aPort.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientConnectToMe(this, aServer, aPort);
-		}
-	}
-	void fireError(const string& aMessage) {
-		dcdebug("fireError %s\n", aMessage.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientError(this, aMessage);
-		}
-	}
-	void fireForceMove(const string& aServer) {
-		dcdebug("fireForceMove %s\n", aServer.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientForceMove(this, aServer);
-		}
-	}
-	void fireGetPassword() {
-		dcdebug("fireGetPassword\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientGetPassword(this);
-		}
-	}
-	void fireHello(User::Ptr& aUser) {
-		//dcdebug("fireHello\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientHello(this, aUser);
-		}
-	}
-	void fireHubFull() {
-		dcdebug("fireHubFull\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientHubFull(this);
-		}
-	}
-	void fireHubName() {
-		dcdebug("fireHubName\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientHubName(this);
-		}
-		listenerCS.leave();
-	}
-	void fireLoggedIn() {
-		dcdebug("fireLoggedIn\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientLoggedIn(this);
-		}
-		listenerCS.leave();
-	}
-	void fireLock(const string& aLock, const string& aPk) {
-		dcdebug("fireLock %s\n", aLock.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientLock(this, aLock, aPk);
-		}
-	}
-	void fireMessage(const string& aMessage) {
-		// dcdebug("fireMessage %s\n", aMessage.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientMessage(this, aMessage);
-		}
-	}
-	void fireMyInfo(User::Ptr& aUser) {
-//		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientMyInfo(this, aUser);
-		}
-	}
-	void fireNickList(StringList& aList) {
-		dcdebug("fireNickList ... \n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientNickList(this, aList);
-		}
-	}
-	void fireOpList(StringList& aList) {
-		dcdebug("fireOpList ... \n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientOpList(this, aList);
-		}
-	}
-	void firePrivateMessage(User::Ptr& aUser, const string& aMessage) {
-		dcdebug("firePM %s ...\n", aUser->getNick().c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientPrivateMessage(this, aUser, aMessage);
-		}
-	}
-	void firePrivateMessage(const string& aUser, const string& aMessage) {
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientPrivateMessage(this, aUser, aMessage);
-		}
-	}
-	void fireQuit(User::Ptr& aUser) {
-		//dcdebug("fireQuit %s\n", aUser->getNick().c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientQuit(this, aUser);
-		}
-	}
-	void fireRevConnectToMe(User::Ptr& aUser) {
-		dcdebug("fireRevConnectToMe %s\n", aUser->getNick().c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientRevConnectToMe(this, aUser);
-		}
-	}
-	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
-		//dcdebug("fireSearch\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientSearch(this, aSeeker, aSearchType, aSize, aFileType, aString);
-		}
-	}
-	void fireUnknown(const string& aString) {
-		dcdebug("fireUnknown %s\n", aString.c_str());
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientUnknown(this, aString);
-		}
-	}
-	void fireValidateDenied() {
-		dcdebug("fireValidateDenied\n");
-		listenerCS.enter();
-		ClientListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientValidateDenied(this);
+			fire(ClientListener::FAILED, this, e.getError());
 		}
 	}
 };
@@ -488,9 +336,13 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.23 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: Client.h,v 1.24 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.24  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.23  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

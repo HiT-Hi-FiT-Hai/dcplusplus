@@ -26,6 +26,8 @@
 
 typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
+typedef StringList::const_iterator StringIterC;
+
 typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
@@ -34,8 +36,8 @@ typedef StringMap::iterator StringMapIter;
 #include "Version.h"
 
 
-#define GETSET(type, name, name2) private: type name; public: type get##name2() { return name; }; void set##name2(type a##name2) { name = a##name2; };
-#define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
+#define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
+#define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() const { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
 
 
 /**
@@ -48,9 +50,13 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.7 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.8 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.8  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.7  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

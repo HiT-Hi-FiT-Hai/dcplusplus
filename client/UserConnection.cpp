@@ -40,43 +40,57 @@ void UserConnection::accept(const ServerSocket& aServer) {
 	socket.accept(aServer);
 	TimerManager::getInstance()->addListener(this);
 }
-void UserConnection::onLine(const string& aLine) {
+
+void UserConnection::onLine(const string& aLine) throw () {
 	lastActivity = TimerManager::getTick();
 
+	
+	if(aLine.length() == 0)
+		return;
+
+	string cmd;
+	string param;
+	int x;
+	
+	if( (x = aLine.find(' ')) == string::npos) {
+		cmd = aLine;
+	} else {
+		cmd = aLine.substr(0, x);
+		param = aLine.substr(x+1);
+	}
+	
 	if(aLine.length() == 0) {
 		// Do nothing
-	} else if(aLine.find("$MyNick") != string::npos) {
+	} else if(cmd == "$MyNick") {
 		string nick = aLine.substr(8);
-		fireMyNick(nick);
-	} else if(aLine.find("$Direction") != string::npos) {
-		string tmp = aLine.substr(11);
-		string dir = tmp.substr(0, tmp.find(" "));
-		tmp = tmp.substr(tmp.find(" ")+1);
-		fireDirection(dir, tmp);
-	} else if(aLine.find("$Error") != string::npos) {
-		fireError(aLine.substr(6));
-	} else if(aLine.find("$FileLength") != string::npos) {
-		fireFileLength(aLine.substr(12));
-	} else if(aLine.find("$GetListLen") != string::npos) {
-		fireGetListLen();
-	} else if(aLine.find("$Get") != string::npos) {
-		string tmp = aLine.substr(5);
-		string file = tmp.substr(0, tmp.find('$'));
-
-		fireGet(file, _atoi64(tmp.substr(tmp.find('$')+1).c_str())-1);
-	} else if(aLine.find("$Key") != string::npos) {
-		fireKey(aLine.substr(5));
-	} else if(aLine.find("$Lock") != string::npos) {
-		string tmp = aLine.substr(6);
-		string lock = tmp.substr(0, tmp.find(" Pk="));
-		tmp = tmp.substr(tmp.find(" Pk=") + 4);
-		fireLock(lock, tmp);
-	} else if(aLine.find("$MyNick") != string::npos) {
-		fireMyNick(aLine.substr(8));
-	} else if(aLine.find("$Send") != string::npos) {
-		fireSend();
-	} else if(aLine.find("$MaxedOut") != string::npos){
-		fireMaxedOut();
+		fire(UserConnectionListener::MY_NICK, this, nick);
+	} else if(cmd == "$Direction") {
+		x = param.find(" ");
+		if(x != string::npos) {
+			fire(UserConnectionListener::DIRECTION, this, param.substr(0, x), param.substr(x+1));
+		}
+	} else if(cmd == "$Error") {
+		fire(UserConnectionListener::FAILED, this, param);
+	} else if(cmd == "$FileLength") {
+		fire(UserConnectionListener::FILE_LENGTH, this, param);
+	} else if(cmd == "$GetListLen") {
+		fire(UserConnectionListener::GET_LIST_LENGTH, this);
+	} else if(cmd == "$Get") {
+		x = param.find('$');
+		if(x != string::npos) {
+			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - 1I64);
+		}
+	} else if(cmd == "$Key") {
+		fire(UserConnectionListener::KEY, this, param);
+	} else if(cmd == "$Lock") {
+		x = param.find(" Pk=");
+		if(x != string::npos) {
+			fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
+		}
+	} else if(cmd == "$Send") {
+		fire(UserConnectionListener::SEND, this);
+	} else if(cmd == "$MaxedOut"){
+		fire(UserConnectionListener::MAXED_OUT, this);
 	} else {
 		//dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
 	}
@@ -87,9 +101,13 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.7 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.8 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.8  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.7  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

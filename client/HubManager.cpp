@@ -26,7 +26,7 @@
 
 HubManager* HubManager::instance = NULL;
 
-void HubManager::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
+void HubManager::onHttpData(const BYTE* aBuf, int aLen) throw() {
 	downloadBuf.append((char*)aBuf, aLen);
 	string::size_type i;
 	
@@ -47,29 +47,15 @@ void HubManager::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
 	cs.leave();
 }
 
-void HubManager::onHttpComplete(HttpConnection* aConn) {
-	cs.enter();
-	aConn->removeListener(this);
-	fireFinished();
-	running = false;
-	cs.leave();
-
-}
-
-void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
-	cs.enter();
-	aConn->removeListener(this);
-	fireMessage("Unable to download public server list. Check your internet connection!");
-	running = false;
-	cs.leave();
-}
-
-
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.10 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.11  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.10  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

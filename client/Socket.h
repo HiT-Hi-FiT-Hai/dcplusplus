@@ -149,7 +149,7 @@ public:
 	}
 
 	int getAvailable() {
-		DWORD i;
+		DWORD i = 0;
 		ioctlsocket(sock, FIONREAD, &i);
 		return i;
 	}
@@ -219,9 +219,13 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.13 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: Socket.h,v 1.14 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.14  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.13  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

@@ -56,7 +56,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 }
 
 
-PrivateFrame* PrivateFrame::getFrame(User::Ptr& aUser, HWND aParent) {
+PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
 	PrivateFrame* p;
 	cs.enter();
 	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
@@ -95,9 +95,13 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.2 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.3 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.3  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.2  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

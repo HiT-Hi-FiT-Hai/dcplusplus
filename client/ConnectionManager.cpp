@@ -99,28 +99,30 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 	}
 }
 
-void ConnectionManager::onTimerSecond(DWORD aTick) {
-	cs.enter();
-	map<User::Ptr, DWORD>::iterator i = pendingDown.begin();
-
-	while(i != pendingDown.end()) {
-		if((i->second + 40*1000) < aTick) {
-			// Haven't connected for a long, long time...
-			DownloadManager::getInstance()->connectFailed(i->first);
-
-			i = pendingDown.erase(i);
-		} else {
-			++i;
+void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) {
+	if(type == TimerManagerListener::SECOND) {
+		cs.enter();
+		map<User::Ptr, DWORD>::iterator i = pendingDown.begin();
+		
+		while(i != pendingDown.end()) {
+			if((i->second + 30*1000) < aTick) {
+				// Haven't connected for a long, long time...
+				DownloadManager::getInstance()->connectFailed(i->first);
+				
+				i = pendingDown.erase(i);
+			} else {
+				++i;
+			}
 		}
+		cs.leave();
 	}
-	cs.leave();
 }
 
 /**
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
-void ConnectionManager::onIncomingConnection() {
+void ConnectionManager::onIncomingConnection() throw() {
 	UserConnection* uc = getConnection();
 
 	try { 
@@ -140,7 +142,7 @@ void ConnectionManager::onIncomingConnection() {
 /**
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
-void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
+void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
 	cs.enter();
 
 	for(map<User::Ptr, DWORD>::iterator i = pendingDown.begin(); i != pendingDown.end(); ++i) {
@@ -174,7 +176,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 	cs.leave();
 }
 
-void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
+void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw() {
 	try {
 		if(aLock == CryptoManager::getInstance()->getLock()) {
 			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
@@ -196,7 +198,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 				
 }
 
-void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) {
+void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw() {
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
 	aSource->state = UserConnection::BUSY;
@@ -209,7 +211,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) {
 	}
 }
 
-void ConnectionManager::onConnected(UserConnection* aSource) {
+void ConnectionManager::onConnected(UserConnection* aSource) throw() {
 	try {
 		aSource->myNick(Settings::getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
@@ -231,7 +233,7 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 	}
 }
 
-void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
+void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) throw() {
 	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
 		cs.enter();
 		UserConnection::Iter i = find(downPool.begin(), downPool.end(), aSource);
@@ -250,9 +252,13 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.16 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.17 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.17  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.16  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

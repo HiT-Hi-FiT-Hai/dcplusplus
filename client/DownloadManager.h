@@ -175,19 +175,26 @@ public:
 	typedef DownloadManagerListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+
+	enum Types {
+		ADDED,
+		COMPLETE,
+		CONNECTING,
+		FAILED,
+		REMOVED,
+		SOURCE_ADDED,
+		SOURCE_REMOVED,
+		STARTING,
+		TICK
+	};
+
+	virtual void onAction(Types type, Download* aDownload) { };
+	virtual void onAction(Types type, Download* aDownload, Download::Source* aSource) { };
+	virtual void onAction(Types type, Download* aDownload, const string& aReason) { };
 	
-	virtual void onDownloadAdded(Download* aDownload) { };
-	virtual void onDownloadComplete(Download* aDownload) { };
-	virtual void onDownloadConnecting(Download* aDownload) { };
-	virtual void onDownloadFailed(Download* aDownload, const string& aReason) { };
-	virtual void onDownloadRemoved(Download* aDownload) { };
-	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource) { };
-	virtual void onDownloadSourceRemoved(Download* aDownload, Download::Source* aSource) { };
-	virtual void onDownloadStarting(Download* aDownload) { };
-	virtual void onDownloadTick(Download* aDownload) { };
 };
 
-class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener
+class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
 {
 public:
 	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
@@ -205,26 +212,6 @@ public:
 	
 	void removeDownload(Download* aDownload);
 
-	static DownloadManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new DownloadManager();
-		// Add ourselves to the Timer Manager
-		TimerManager::getInstance()->addListener(instance);
-	}
-
-	static void deleteInstance() {
-		if(instance)
-			delete instance;
-		instance = NULL;
-	}
-	
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		
@@ -245,13 +232,23 @@ public:
 	void save(SimpleXML* aXml);
 private:
 
+	friend class Singleton<DownloadManager>;
+	DownloadManager() { 
+		TimerManager::getInstance()->addListener(this);
+	};
+	virtual ~DownloadManager() {
+		TimerManager::getInstance()->removeListener(this);
+		removeConnections();
+		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
+			DeleteFile(i->c_str());
+		}
+	};
+	
 	CriticalSection cs;
 
 	Download::List queue;
 	map<User::Ptr, DWORD> waiting;
 	Download::Map running;
-	
-	static DownloadManager* instance;
 	
 	UserConnection::List connections;
 	StringList userLists;
@@ -269,115 +266,67 @@ private:
 	void checkDownloads(UserConnection* aConn);
 	
 	// UserConnectionListener
-	virtual void onError(UserConnection* aSource, const string& aError);
-	virtual void onData(UserConnection* aSource, const BYTE* aData, int aLen);
-	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
-	virtual void onMaxedOut(UserConnection* aSource);
-	virtual void onModeChange(UserConnection* aSource, int aNewMode);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
+		switch(type) {
+		case UserConnectionListener::MAXED_OUT:
+			onMaxedOut(conn); break;
+		}
+	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+		switch(type) {
+		case UserConnectionListener::FILE_LENGTH:
+			onFileLength(conn, line); break;
+		case UserConnectionListener::FAILED:
+			onFailed(conn, line); break;
+		}
+	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const BYTE* data, int len) {
+		switch(type) {
+		case UserConnectionListener::DATA:
+			onData(conn, data, len); break;
+		}
+	}
+
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) {
+		switch(type) {
+		case UserConnectionListener::MODE_CHANGE:
+			onModeChange(conn, mode); break;
+		}
+	}
+	
+	void onFailed(UserConnection* aSource, const string& aError);
+	void onData(UserConnection* aSource, const BYTE* aData, int aLen);
+	void onFileLength(UserConnection* aSource, const string& aFileLength);
+	void onMaxedOut(UserConnection* aSource);
+	void onModeChange(UserConnection* aSource, int aNewMode);
 	
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick);
-	virtual void onTimerMinute(DWORD aTick);
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		switch(type) {
+		case TimerManagerListener::SECOND:
+			onTimerSecond(aTick); break;
+		case TimerManagerListener::MINUTE:
+			onTimerMinute(aTick); break;
+		default:
+			dcassert(0);			
+		}
+	}
+	void onTimerSecond(DWORD aTick);
+	void onTimerMinute(DWORD aTick);
 
-	void fireAdded(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireAdded %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadAdded(aPtr);
-		}
-	}
-	void fireComplete(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireComplete %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadComplete(aPtr);
-		}
-	}
-	void fireConnecting(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager:.fireConnecting %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadConnecting(aPtr);
-		}
-	}
-	void fireFailed(Download::Ptr aPtr, const string& aReason) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireFailed %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadFailed(aPtr, aReason);
-		}
-	}
-	void fireSourceAdded(Download::Ptr aPtr, Download::Source::Ptr aSource) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadSourceAdded(aPtr, aSource);
-		}
-	}
-	void fireSourceRemoved(Download::Ptr aPtr, Download::Source::Ptr aSource) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadSourceRemoved(aPtr, aSource);
-		}
-	}
-	void fireRemoved(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadRemoved(aPtr);
-		}
-	}
-	void fireStarting(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadStarting(aPtr);
-		}
-	}
-	void fireTick(Download::Ptr aPtr) {
-		listenerCS.enter();
-		DownloadManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDownloadTick(aPtr);
-		}
-	}
-	
-
-	DownloadManager() { };
-	virtual ~DownloadManager() {
-		removeConnections();
-		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
-			DeleteFile(i->c_str());
-		}
-	};
 };
 
 #endif // !defined(AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_)
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.23 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.24 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.24  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.23  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

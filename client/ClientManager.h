@@ -27,7 +27,7 @@
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
 
-class ClientManager : private ClientListener  
+class ClientManager : private ClientListener, public Singleton<ClientManager>
 {
 public:
 	Client* getConnectedClient() { 
@@ -81,86 +81,91 @@ public:
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString) {
 		cs.enter();
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			(*i)->cs.enter();
 			(*i)->search(aSearchType, aSize, aFileType, aString);
-			(*i)->cs.leave();
 		}
 		cs.leave();
 	}
 
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new ClientManager();
-	}
-	static ClientManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	static void deleteInstance() {
-		if(instance)
-			delete instance;
-		instance = NULL;
-	}
-	
-	
 private:
 	Client::List clients;
-
 	CriticalSection cs;
-	static ClientManager* instance;
-
+	
+	friend class Singleton<ClientManager>;
 	ClientManager() { };
 	virtual ~ClientManager() { };
 
 	// ClientListener
-	virtual void onClientLock(Client::Ptr aClient, const string& aLock, const string& aPk) {
-		aClient->cs.enter();
-		aClient->key(CryptoManager::getInstance()->makeKey(aLock));
-		aClient->validateNick(Settings::getNick());
-		aClient->cs.leave();
-	}
-	virtual void onClientHello(Client::Ptr aClient, User::Ptr& aUser);
-	virtual void onClientNickList(Client::Ptr aClient, StringList& aNicks) {
-		aClient->cs.enter();
-		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
-			aClient->getInfo(*i);
-		}
-		aClient->cs.leave();
-	}
-	
-	virtual void onClientOpList(Client::Ptr aClient, StringList& aNicks) {
-		aClient->cs.enter();
-		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
-			aClient->getInfo(*i);
-		}
-		aClient->cs.leave();
-	}
-	
-	virtual void onClientConnectToMe(Client::Ptr aClient, const string& aServer, const string& aPort) {
-		ConnectionManager::getInstance()->connect(aServer, Util::toInt(aPort));
-	}
-	
-	virtual void onClientRevConnectToMe(Client::Ptr aClient, User::Ptr& aUser) {
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-			aClient->cs.enter();
-			aClient->connectToMe(aUser);
-			aClient->cs.leave();
-		}
-	}
+	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
+		switch(type) {
+		case ClientListener::LOCK:
+			client->cs.enter();
+			client->key(CryptoManager::getInstance()->makeKey(line1));
+			client->validateNick(Settings::getNick());
+			client->cs.leave();
+			break;
+		case ClientListener::CONNECT_TO_ME:
+			ConnectionManager::getInstance()->connect(line1, Util::toInt(line2)); break;
 
-	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
-		int aFileType, const string& aString);
+		}
+	}
+	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) {
+		switch(type) {
+		case ClientListener::HELLO:
+			onClientHello(client, user); break;
+		case ClientListener::REV_CONNECT_TO_ME:
+			if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+				client->cs.enter();
+				client->connectToMe(user);
+				client->cs.leave();
+			}
+			break;
+			
+		}
+	}
+	virtual void onAction(ClientListener::Types type, Client* client, const StringList& aList) {
+		switch(type) {
+		case ClientListener::NICK_LIST:		// Fall through...
+		case ClientListener::OP_LIST:
+			client->cs.enter();
+			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
+				// Make sure we're indeed connected (if the server resets on the first getInfo, 
+				// we'll on trying aNicks.size times...not good...)
+				if(!client->isConnected()) {
+					break;
+				}
+				client->getInfo(*i);
+			}
+			client->cs.leave();
+			
+		}
+	}
+	virtual void onAction(ClientListener::Types type, Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+		int aFileType, const string& aString) {
+		switch(type) {
+		case ClientListener::SEARCH:
+			onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
+		}
+	}
+		
+	
+	void onClientHello(Client* aClient, const User::Ptr& aUser) throw();
+
+	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+		int aFileType, const string& aString) throw();
+	
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.5 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.6 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.6  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.5  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

@@ -75,15 +75,19 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 			sr.setHubAddress(x.substr(i, j-i));
 		}
 
-		fireResult(&sr);
+		fire(SearchManagerListener::SEARCH_RESULT, &sr);
 	}
 }
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.9 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.10 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.10  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.9  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

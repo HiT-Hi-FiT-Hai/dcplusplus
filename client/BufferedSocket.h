@@ -32,13 +32,21 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	virtual void onBytesSent(DWORD bytes) { };
-	virtual void onConnected() { };
-	virtual void onLine(const string& aLine) { };
-	virtual void onError(const string& aReason) { };
-	virtual void onData(const BYTE* aBuf, int aLen) { };
-	virtual void onModeChange(int newMode) { };
-	virtual void onTransmitDone() { };
+	enum Types {
+		BYTES_SENT,
+		CONNECTED,
+		LINE,
+		FAILED,
+		DATA,
+		MODE_CHANGE,
+		TRANSMIT_DONE
+	};
+	
+	virtual void onAction(Types type) { };
+	virtual void onAction(Types type, DWORD) { };
+	virtual void onAction(Types type, const string&) { };
+	virtual void onAction(Types type, const BYTE*, int) { };
+	virtual void onAction(Types type, int) { };
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
@@ -87,7 +95,7 @@ public:
 		cs.leave();
 	}
 	
-	BufferedSocket(char aSeparator = 0x0a) : file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
+	BufferedSocket(char aSeparator = 0x0a) : inbuf(NULL), inbufSize(2048), outbufPos(0), outbuf(NULL), outbufSize(2048), file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
 		dataBytes(0) {
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -97,6 +105,8 @@ public:
 		stopReader();
 		CloseHandle(writerEvent);
 		CloseHandle(readerEvent);
+		delete inbuf;
+		delete outbuf;
 	}
 
 	/**
@@ -119,16 +129,23 @@ private:
 	int mode;
 	LONGLONG dataBytes;
 
+	BYTE* inbuf;
+	int inbufSize;
+
+	BYTE* outbuf;
+	int outbufSize;
+	int outbufPos;
+
 	char separator;
 
 	HANDLE file;
 
+	HANDLE fileWriterEvent;
 	HANDLE writerEvent;
-	
 	HANDLE readerEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
-	static bool writer(BufferedSocket* bs, BYTE* buf);
+	static bool writer(BufferedSocket* bs);
 	
 	void startReader() {
 		DWORD threadId;
@@ -151,79 +168,19 @@ private:
 		}
 	}
 	
-	void fireBytesSent(DWORD aLen) {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onBytesSent(aLen);
-		}
-	}
-	void fireConnected() {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onConnected();
-		}
-	}
-	void fireData(const BYTE* aBuf, int aLen) {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onData(aBuf, aLen);
-		}
-	}
-	void fireError(const string& aLine) {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onError(aLine);
-		}
-	}
-	void fireLine(const string& aLine) {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onLine(aLine);
-		}
-	}
-	void fireModeChange(int aNewMode) {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onModeChange(aNewMode);
-		}
-	}
-	void fireTransmitDone() {
-		listenerCS.enter();
-		BufferedSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onTransmitDone();
-		}
-	}
-	
 };
 
 #endif // !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.17 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.18 2002/01/11 14:52:56 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.18  2002/01/11 14:52:56  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.17  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

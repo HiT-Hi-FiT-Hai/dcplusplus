@@ -4,6 +4,10 @@
 * Added file extension tab in search
 * Fixed a bug where the application could stop working if a right-button menu was displayed
 * Added PM and browse file list to uploads right button menu as well
+* Huge performance increase in the user list (most noticeable when connecting to the hub and getting the initial list...)
+* More general ui performance fixes, it should now be a lot more responsive even when the cpu load is significant
+* Empty search fields bug fixed (I hope...)
+* Fixed some of the random crashes (major code rewrite, so I might have introduced some new ones...we'll see)
 
  -- 0.11 2002-01-08 --
 * Fixed annoying reconnect bug

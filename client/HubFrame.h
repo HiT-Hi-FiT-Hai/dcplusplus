@@ -30,120 +30,20 @@
 #include "CriticalSection.h"
 #include "ClientManager.h"
 #include "PrivateFrame.h"
+#include "TimerManager.h"
 
 #include "FlatTabCtrl.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
-class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
+class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
-private:
-	enum {
-		CLIENT_CONNECTING,
-		CLIENT_ERROR,
-		CLIENT_GETPASSWORD,
-		CLIENT_HUBNAME,
-		CLIENT_MESSAGE,
-		CLIENT_MYINFO,
-		CLIENT_PRIVATEMESSAGE,
-		CLIENT_QUIT,
-		CLIENT_UNKNOWN,
-		CLIENT_VALIDATEDENIED
-	};
-
-	enum {
-		IMAGE_USER = 0,
-		IMAGE_OP
-	};
-	
-	class UserInfo {
-	public:
-		LONGLONG size;
-	};
-
-	class PMInfo {
-	public:
-		PrivateFrame* frm;
-		string msg;
-	};
-	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-		
-	virtual void onClientConnecting(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_CONNECTING); };
-	
-	virtual void onClientError(Client* aClient, const string& aReason) {
-		string* x = new string(aReason);
-		SendNotifyMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM) x);
-	}
-	
-	virtual void onClientGetPassword(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_GETPASSWORD); };
-	virtual void onClientHubName(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_HUBNAME); };
-	
-	virtual void onClientMessage(Client* aClient, const string& aMessage) {
-		string* msg = new string(aMessage);
-		SendNotifyMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
-	}
-
-	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
-		User::Ptr* x = new User::Ptr();
-		*x = aUser;
-		SendNotifyMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x);
-	}
-	
-	virtual void onClientOpList(Client* aClient, StringList& aOps) {
-		for(StringIter i = aOps.begin(); i != aOps.end(); ++i) {
-			if(*i == Settings::getNick()) {
-				op = true;
-				return;
-			}
-		}
-	}
-	virtual void onClientPrivateMessage(Client* aClient, const string& aUser, const string& aMessage) {
-		string* msg = new string("Private message from " + aUser + "\r\n" + aMessage);
-		SendNotifyMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
-	}
-	
-	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
-		PMInfo* i = new PMInfo();
-
-		i->frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
-		i->msg = aMessage;
-		SendNotifyMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
-	}
-	
-	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
-#ifdef _DEBUG
-		string* x = new string("Unknown command: " + aCommand);
-		SendNotifyMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM)x);
-#endif // _DEBUG
-	}
-	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) {
-		User::Ptr* x = new User::Ptr();
-		*x = aUser;
-		SendNotifyMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x);
-	}
-	virtual void onClientValidateDenied(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); };
-
-	void updateStatusBar() {
-		char buf[256];
-		sprintf(buf, "%d users", client->getUserCount());
-		ctrlStatus.SetText(1, buf);
-		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
-	}
-
-	Client::Ptr client;
-	string server;
-	CContainedWindow ctrlMessageContainer;
-	CMenu userMenu;
-	CMenu opMenu;
-	bool op;
-
-	static CImageList* images;
 public:
 
 	HubFrame(const string& aServer) : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
 		client = ClientManager::getInstance()->getClient();
 		client->addListener(this);
+		TimerManager::getInstance()->addListener(this);
 	}
 
 	~HubFrame() {
@@ -189,6 +89,7 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -253,6 +154,9 @@ public:
 		HubFrame* f = (HubFrame*)p;
 
 		ClientManager::getInstance()->putClient(f->client);
+		f->cs.enter();
+		TimerManager::getInstance()->removeListener(f);
+		f->cs.leave();
 
 		f->client = NULL;
 		f->PostMessage(WM_CLOSE);
@@ -384,6 +288,132 @@ public:
 		}
 		return 0;
 	}
+private:
+	enum {
+		CLIENT_CONNECTING,
+		CLIENT_FAILED,
+		CLIENT_GETPASSWORD,
+		CLIENT_HUBNAME,
+		CLIENT_MESSAGE,
+		CLIENT_MYINFO,
+		CLIENT_PRIVATEMESSAGE,
+		CLIENT_QUIT,
+		CLIENT_UNKNOWN,
+		CLIENT_VALIDATEDENIED,
+		STATS
+	};
+
+	enum {
+		IMAGE_USER = 0,
+		IMAGE_OP
+	};
+	
+	class UserInfo {
+	public:
+		LONGLONG size;
+	};
+
+	class PMInfo {
+	public:
+		PrivateFrame* frm;
+		string msg;
+	};
+
+	// TimerManagerListener
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		switch(type) {
+		case TimerManagerListener::SECOND:
+			updateStatusBar(); break;
+		}
+	}
+
+	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client) {
+		switch(type) {
+		case ClientListener::CONNECTING:
+			PostMessage(WM_SPEAKER, CLIENT_CONNECTING); break;
+		case ClientListener::GET_PASSWORD:
+			PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); break;
+		case ClientListener::HUB_NAME:
+			PostMessage(WM_SPEAKER, CLIENT_HUBNAME); break;
+		case ClientListener::VALIDATE_DENIED:
+			PostMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); break;
+		}
+	}
+	
+	virtual void onAction(ClientListener::Types type, Client* client, const string& line) {
+		string* x = new string(line);
+		switch(type) {
+		case ClientListener::FAILED:
+			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
+		case ClientListener::MESSAGE:
+			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) x); break;
+		}
+	}
+
+	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) {
+		User::Ptr* x = new User::Ptr();
+		*x = user;
+		switch(type) {
+		case ClientListener::MY_INFO:
+			PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x); break;
+		case ClientListener::QUIT:
+			PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x); break;
+			
+		}
+	}
+	
+	virtual void onAction(ClientListener::Types type, Client* client, const StringList& aList) {
+		switch(type) {
+		case ClientListener::OP_LIST:
+			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
+				if(*i == Settings::getNick()) {
+					op = true;
+					return;
+				}
+			}
+			break;
+		}
+	}
+
+	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user, const string&  line) {
+		User::Ptr* x = new User::Ptr();
+		*x = user;
+		switch(type) {
+		case ClientListener::PRIVATE_MESSAGE:
+			PMInfo* i = new PMInfo();
+			
+			i->frm = PrivateFrame::getFrame(user, m_hWndMDIClient);
+			i->msg = line;
+			PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
+			break;
+		}
+	}
+
+	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
+		switch(type) {
+		case ClientListener::PRIVATE_MESSAGE:
+			string* msg = new string("Private message from " + line1 + "\r\n" + line1);
+			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
+			break;
+		}
+	}
+	
+	void updateStatusBar() {
+		StringList* str = new StringList();
+		str->push_back(Util::toString(client->getUserCount()) + " users");
+		str->push_back(Util::formatBytes(client->getAvailable()));
+		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+	}
+
+	Client::Ptr client;
+	string server;
+	CContainedWindow ctrlMessageContainer;
+	CMenu userMenu;
+	CMenu opMenu;
+	bool op;
+
+	static CImageList* images;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -395,9 +425,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.31 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.32 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.32  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.31  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

@@ -33,10 +33,11 @@ public:
 	typedef vector<HubEntry> List;
 	typedef List::iterator Iter;
 	
-	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) : 
+	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
 	name(aName), server(aServer), description(aDescription), users(aUsers) { };
-	HubEntry() { };
-	HubEntry(const HubEntry& rhs) : name(rhs.name), server(rhs.server), description(rhs.description), users(rhs.users) { }
+	HubEntry() throw() { };
+	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), users(rhs.users) { }
+	virtual ~HubEntry() throw() { };
 
 	GETSETREF(string, name, Name);
 	GETSETREF(string, server, Server);
@@ -50,10 +51,9 @@ public:
 	typedef vector<FavoriteHubEntry> List;
 	typedef List::iterator Iter;
 
-	FavoriteHubEntry(const HubEntry& rhs) : HubEntry(rhs) { };
-	
-	FavoriteHubEntry(const FavoriteHubEntry& rhs) : HubEntry(rhs), nick(rhs.nick), password(rhs.password), connect(rhs.connect) { };
-	
+	FavoriteHubEntry(const HubEntry& rhs) throw() : HubEntry(rhs) { };
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : HubEntry(rhs), nick(rhs.nick), password(rhs.password), connect(rhs.connect) { };
+	virtual ~FavoriteHubEntry() throw() { }	
 	const string& getNick() {
 		if(nick.size() > 0) 
 			return nick;
@@ -76,34 +76,22 @@ public:
 	typedef HubManagerListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-
-	virtual void onHubMessage(const string& aMessage) { };
-	virtual void onHubFinished(HubEntry::List& aList) { };
+	enum Types {
+		MESSAGE,
+		FINISHED
+	};
+	virtual void onAction(Types, const string&) { };
+	virtual void onAction(Types, const HubEntry::List&) { };
 };
 
 class SimpleXML;
 
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener
+class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>
 {
 public:
 	
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
-	
-	static HubManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new HubManager();
-	}
-	static void deleteInstance() {
-		delete instance;
-		instance = NULL;
-	}
 	
 	FavoriteHubEntry::List& getFavoriteHubList() {
 		return favoriteHubs;
@@ -129,9 +117,9 @@ public:
 			cs.leave();
 			return;
 		}
-		cs.leave();
 
-		fireFinished();
+		fire(HubManagerListener::FINISHED, publicHubs);
+		cs.leave();
 	};
 
 	void refresh() {
@@ -156,14 +144,14 @@ public:
 	}
 private:
 
-	static HubManager* instance;
-
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
 	
 	CriticalSection cs;
 	HttpConnection* conn;
 	bool running;
+	
+	friend class Singleton<HubManager>;
 	
 	HubManager() : conn(NULL), running(false) {
 	}
@@ -178,38 +166,50 @@ private:
 	string downloadBuf;
 
 	// HttpConnectionListener
-	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
-	virtual void onHttpError(HttpConnection* aConn, const string& aError);
-	virtual void onHttpComplete(HttpConnection* aConn);	
-
-	void fireMessage(const string& aMessage) {
-		listenerCS.enter();
-		HubManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireMessage\n");
-		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHubMessage(aMessage);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const BYTE* buf, int len) {
+		switch(type) {
+		case HttpConnectionListener::DATA:
+			onHttpData(buf, len); break;
+		default:
+			dcassert(0);
 		}
 	}
-
-	void fireFinished() {
-		listenerCS.enter();
-		HubManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireMessage\n");
-		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHubFinished(publicHubs);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const string& aLine) {
+		switch(type) {
+		case HttpConnectionListener::FAILED:
+			cs.enter();
+			conn->removeListener(this);
+			running = false;
+			cs.leave();
+			fire(HubManagerListener::MESSAGE, "Unable to download public server list. Check your internet connection!");
 		}
 	}
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
+		switch(type) {
+		case HttpConnectionListener::COMPLETE:
+			cs.enter();
+			conn->removeListener(this);
+			running = false;
+			fire(HubManagerListener::FINISHED, publicHubs);
+			cs.leave();
+		}
+	}
+	
+ 	void onHttpData(const BYTE* aBuf, int aLen) throw();
+
 };
 
 #endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.14 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.15 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.15  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.14  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

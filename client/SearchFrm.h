@@ -54,6 +54,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_ENTER, onEnter)
 		MESSAGE_HANDLER(WM_TAB, onTab)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
@@ -106,34 +107,7 @@ public:
 		return 0;
 	}
 	
-	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		char buf[512];
-		if(ctrlResults.GetSelectedCount() == 1) {
-			int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
-			ctrlResults.GetItemText(i, 1, buf, 512);
-			string file = buf;
-			string target = Settings::getDownloadDirectory() + buf;
-			if(Util::browseSaveFile(target)) {
-				ctrlResults.GetItemText(i, 0, buf, 512);
-				string user = buf;
-				LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-				ctrlResults.GetItemText(i, 3, buf, 512);
-				string path = buf;
-				
-				try {
-					DownloadManager::getInstance()->download(path + file, size, user, target);
-				} catch(Exception e) {
-					MessageBox(e.getError().c_str());
-				}
-			}
-		} else {
-			string target = Settings::getDownloadDirectory();
-			if(Util::browseDirectory(target, m_hWnd)) {
-				downloadSelected(target);
-			}
-		}
-		return 0;
-	}
+	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void downloadSelected(const string& aDir) {
 		int i=-1;
@@ -283,6 +257,12 @@ public:
 		ctrlSizeMode.MoveWindow(rc);
 	}
 
+	LRESULT onSpeaker(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		ctrlResults.insert(*(StringList*)wParam, 0, lParam);
+		delete (StringList*)wParam;
+		return 0;
+	}
+		
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		switch (uMsg) 
 		{ 
@@ -315,45 +295,7 @@ public:
 		return 0;
 	}
 	
-	LRESULT onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		char* message;
-		
-		if(ctrlSearch.GetWindowTextLength() > 0) {
-			message = new char[ctrlSearch.GetWindowTextLength()+1];
-			ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
-			string s(message, ctrlSearch.GetWindowTextLength());
-			delete message;
-
-			message = new char[ctrlSize.GetWindowTextLength()+1];
-			ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
-			string size(message, ctrlSize.GetWindowTextLength());
-			delete message;
-
-			double lsize = Util::toInt64(size);
-			switch(ctrlSizeMode.GetCurSel()) {
-			case 1:
-				lsize*=1024I64; break;
-			case 2:
-				lsize*=1024I64*1024I64; break;
-			case 3:
-				lsize*=1024I64*1024I64*1024I64; break;
-			}
-
-			for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
-				delete (LONGLONG*)ctrlResults.GetItemData(i);
-			}
-			ctrlResults.DeleteAllItems();
-
-			SearchManager::getInstance()->search(s, (LONGLONG)lsize, 0, ctrlMode.GetCurSel());
-			//client->sendMessage(s);
-			ctrlSearch.SetWindowText("");
-			
-			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
-			search = StringTokenizer(s, ' ').getTokens();
-
-		}
-		return 0;
-	}
+	LRESULT onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
 	LRESULT onTab(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND focus = GetFocus();
@@ -397,33 +339,15 @@ private:
 	
 	StringList search;
 
-	virtual void onSearchResult(SearchResult* aResult) {
-		// Check that this is really a relevant search result...
-		for(StringIter j = search.begin(); j != search.end(); ++j) {
-			if(Util::findSubString(aResult->getFile(), *j) == -1) {
-				return;
-			}
+	// SearchManagerListener
+	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) {
+		switch(type) {
+		case SearchManagerListener::SEARCH_RESULT:
+			onSearchResult(sr); break;
 		}
-		LONGLONG* psize = new LONGLONG;
-		*psize = aResult->getSize();
-
-		string file, path;
-		if(aResult->getFile().rfind('\\') == string::npos) {
-			file = aResult->getFile();
-		} else {
-			file = aResult->getFile().substr(aResult->getFile().rfind('\\')+1);
-			path = aResult->getFile().substr(0, aResult->getFile().rfind('\\')+1);
-		}
-
-		StringList l;
-		l.push_back(aResult->getNick());
-		l.push_back(file);
-		l.push_back(Util::formatBytes(aResult->getSize()));
-		l.push_back(path);
-		l.push_back(aResult->getSlotString());
-		l.push_back(aResult->getHubName());
-		ctrlResults.insert(l, 0, (LPARAM)psize);		
 	}
+	
+	void onSearchResult(SearchResult* aResult);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -435,9 +359,13 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.15 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.16 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.16  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.15  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

@@ -91,9 +91,9 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 
 		if(!online) {
 			if(d->getSources().size() > 1) {
-				fireFailed(d, "All users offline");
+				fire(DownloadManagerListener::FAILED, d, "All users offline");
 			} else {
-				fireFailed(d, "User is offline");
+				fire(DownloadManagerListener::FAILED, d, "User is offline");
 			}
 		}
 	}
@@ -117,7 +117,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 			if(d && i->first->isOnline()) {
 				int status = ConnectionManager::getInstance()->getDownloadConnection(i->first);
 				if(status==UserConnection::CONNECTING) {
-					fireConnecting(d);
+					fire(DownloadManagerListener::CONNECTING, d);
 				} else if(status == UserConnection::FREE) {
 					// Alright, the connection was reused, so the waiting pool might have changed...try again...
 					i = waiting.begin();
@@ -136,7 +136,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 	// Tick each ongoing download
 	for(Download::MapIter m = running.begin(); m != running.end(); ++m) {
 		if(m->second->getPos() > 0) {
-			fireTick(m->second);
+			fire(DownloadManagerListener::TICK, m->second);
 		}
 	}
 	cs.leave();
@@ -148,7 +148,7 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
 	if(i != waiting.end()) {
 		Download* d = getNextDownload(aUser);
 		if(d) {
-			fireFailed(d, "Connection timeout");
+			fire(DownloadManagerListener::FAILED, d, "Connection timeout");
 		}
 	}
 	cs.leave();
@@ -196,7 +196,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 				} else {
 					fileName = aFile;
 				}
-				fireSourceAdded(dd, dd->addSource(aUser, fileName, path));
+				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
 			if(dd->isSet(Download::RUNNING)) {
@@ -248,8 +248,8 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 	
 	cs.leave();
 	
-	fireAdded(d);
-	fireSourceAdded(d, s);
+	fire(DownloadManagerListener::ADDED, d);
+	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 	
 }
 
@@ -299,7 +299,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 				} else {
 					fileName = aFile;
 				}
-				fireSourceAdded(dd, dd->addSource(aUser, fileName, path));
+				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
 			cs.leave();
@@ -338,8 +338,8 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	queue.push_back(d);
 	cs.leave();
 
-	fireAdded(d);
-	fireSourceAdded(d, s);
+	fire(DownloadManagerListener::ADDED, d);
+	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 
 }
 
@@ -374,7 +374,7 @@ void DownloadManager::removeDownload(Download* aDownload) {
 
 	if(i != queue.end()) {
 		queue.erase(i);
-		fireRemoved(aDownload);
+		fire(DownloadManagerListener::REMOVED, aDownload);
 		delete aDownload;
 	} else {
 		dcassert(0);
@@ -462,7 +462,7 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 				removeConnection(uc);
 				aDownload->unsetFlag(Download::RUNNING);
 				aDownload->setCurrentSource(NULL);
-				fireFailed(aDownload, "User removed");
+				fire(DownloadManagerListener::FAILED, aDownload, "User removed");
 			}
 		}
 	}
@@ -472,13 +472,13 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 		if(i != queue.end()) {
 			queue.erase(i);
 			cs.leave();
-			fireRemoved(aDownload);
+			fire(DownloadManagerListener::REMOVED, aDownload);
 			delete aDownload;
 		}
 	} else {
 		aDownload->removeSource(aSource);
 		cs.leave();
-		fireSourceRemoved(aDownload, aSource);
+		fire(DownloadManagerListener::SOURCE_REMOVED, aDownload, aSource);
 	}
 }
 
@@ -511,7 +511,7 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 						d->setFile(NULL);
 					}
 
-					fireFailed(d, "Rollback discovered resume inconsistency, removing the download source from the queue");
+					fire(DownloadManagerListener::FAILED, d, "Rollback discovered resume inconsistency, removing the download source from the queue");
 					removeSource(d, d->getCurrentSource());
 
 					d->setCurrentSource(NULL);
@@ -559,7 +559,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			cs.leave();
 			removeConnection(aSource);
 			
-			fireFailed(d, "Could not open target file");
+			fire(DownloadManagerListener::FAILED, d, "Could not open target file");
 			return;
 		}
 
@@ -585,14 +585,14 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			removeConnection(aSource);
 			
 			// We're done...and this connection is broken...
-			fireComplete(d);
-			fireRemoved(d);
+			fire(DownloadManagerListener::COMPLETE, d);
+			fire(DownloadManagerListener::REMOVED, d);
 			delete d;
 			
 		} else {
 			cs.leave();
 			d->setStart(TimerManager::getTick());
-			fireStarting(d);
+			fire(DownloadManagerListener::STARTING, d);
 			
 			aSource->setDataMode(d->getSize() - d->getPos());
 			aSource->startSend();
@@ -621,8 +621,8 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 		p->setFile(NULL);
 		
 		dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
-		fireComplete(p);
-		fireRemoved(p);
+		fire(DownloadManagerListener::COMPLETE, p);
+		fire(DownloadManagerListener::REMOVED, p);
 		delete p;
 		
 		checkDownloads(aSource);
@@ -643,11 +643,11 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 
 	cs.leave();
 
-	fireFailed(d, "No slots available");
+	fire(DownloadManagerListener::FAILED, d, "No slots available");
 	removeConnection(aSource);
 }
 
-void DownloadManager::onError(UserConnection* aSource, const string& aError) {
+void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
 	
@@ -668,7 +668,7 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 		CloseHandle(d->getFile());
 		d->setFile(NULL);
 	}
-	fireFailed(d, aError);
+	fire(DownloadManagerListener::FAILED, d, aError);
 	d->setCurrentSource(NULL);
 	removeConnection(aSource);
 }
@@ -728,9 +728,13 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.27 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.28 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.28  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.27  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

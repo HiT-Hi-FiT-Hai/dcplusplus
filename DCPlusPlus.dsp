@@ -53,8 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.8 /subsystem:windows /map /machine:I386
-# SUBTRACT LINK32 /pdb:none /debug
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.8 /subsystem:windows /profile /map /debug /machine:I386
 
 !ELSEIF  "$(CFG)" == "DCPlusPlus - Win32 Debug"
 
@@ -107,10 +106,6 @@ SOURCE=.\client\BufferedSocket.cpp
 # Begin Source File
 
 SOURCE=.\client\Client.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ClientListener.cpp
 # End Source File
 # Begin Source File
 
@@ -276,10 +271,6 @@ SOURCE=.\client\BufferedSocket.h
 # Begin Source File
 
 SOURCE=.\client\Client.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ClientListener.h
 # End Source File
 # Begin Source File
 

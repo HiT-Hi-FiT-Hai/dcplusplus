@@ -71,6 +71,15 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	cs.enter();
 	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED || wParam == DOWNLOAD_REMOVED) {
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
+	} else if(wParam == STATS) {
+		StringList* str = (StringList*)lParam;
+		if(ctrlStatus.IsWindow()) {
+			ctrlStatus.SetText(1, (*str)[0].c_str());
+			ctrlStatus.SetText(2, (*str)[1].c_str());
+			ctrlStatus.SetText(3, (*str)[2].c_str());
+			ctrlStatus.SetText(4, (*str)[3].c_str());
+		}
+		delete str;
 	} else if(wParam == UPLOAD_STARTING) {
 		StringListInfo* i = (StringListInfo*)lParam;
 		ctrlTransfers.insert(i->l, IMAGE_UPLOAD, i->lParam);
@@ -163,6 +172,32 @@ void MainFrame::onUploadTick(Upload* aUpload) {
 	PostMessage(WM_SPEAKER, UPLOAD_TICK, (LPARAM)i);
 }
 
+void MainFrame::onAction(DownloadManagerListener::Types type, Download* aDownload) {
+	switch(type) {
+	case DownloadManagerListener::ADDED:
+		onDownloadAdded(aDownload); 
+		break;
+	case DownloadManagerListener::COMPLETE:
+		onDownloadComplete(aDownload); 
+		break;
+	case DownloadManagerListener::CONNECTING:
+		PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); 
+		break;
+	case DownloadManagerListener::REMOVED:
+		PostMessage(WM_SPEAKER, DOWNLOAD_REMOVED, (LPARAM)aDownload); 
+		break;
+	case DownloadManagerListener::STARTING:
+		onDownloadStarting(aDownload); 
+		break;
+	case DownloadManagerListener::TICK:
+		onDownloadTick(aDownload);
+		break;
+	default:
+		dcassert(0);
+	}
+}
+
+
 void MainFrame::onDownloadAdded(Download* p) {
 	StringListInfo* i = new StringListInfo((LPARAM)p);	
 	i->l.push_back(p->getTarget().substr(p->getTarget().rfind('\\') + 1));
@@ -173,11 +208,7 @@ void MainFrame::onDownloadAdded(Download* p) {
 	PostMessage(WM_SPEAKER, DOWNLOAD_ADDED, (LPARAM)i);
 }
 
-/**
- * This is an exception to the WM_SPEAKER thing....
- * -> DownloadManager::fireComplete must never be called when it's holding DownloadManager::cs
- * @todo Work this out...
- */
+
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
@@ -215,10 +246,7 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 	}
 	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)i);
 }
-void MainFrame::onDownloadRemoved(Download* aDownload) {
-	PostMessage(WM_SPEAKER, DOWNLOAD_REMOVED, (LPARAM)aDownload);
-}
-	
+
 void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
 	if(!aDownload->isSet(Download::RUNNING)) {
 		StringInfo* i = new StringInfo((LPARAM)aDownload);
@@ -242,10 +270,6 @@ void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source*
 	}
 }
 
-void MainFrame::onDownloadSourceRemoved(Download::Ptr aDownload, Download::Source* aSource) {
-	onDownloadSourceAdded(aDownload, aSource);
-}
-
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	StringListInfo* i = new StringListInfo((LPARAM)aDownload);
 	i->l.push_back(Util::formatBytes(aDownload->getSize()));
@@ -262,7 +286,7 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[256];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aDownload->getStart());
 	int seconds = 0;
-	LONGLONG avg;
+	LONGLONG avg = 0;
 	if(dif > 0) {
 		avg = aDownload->getTotal() * (LONGLONG)1000 / dif;
 		if(avg > 0) {
@@ -667,9 +691,13 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.35 2002/01/10 12:33:14 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.36 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.36  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.35  2002/01/10 12:33:14  arnetheduck
  * Various fixes
  *

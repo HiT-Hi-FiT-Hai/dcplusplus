@@ -30,8 +30,10 @@ public:
 	typedef ServerSocketListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-
-	virtual void onIncomingConnection() { };
+	enum Types {
+		INCOMING_CONNECTION
+	};
+	virtual void onAction(Types) { };
 };
 
 #include "Socket.h"
@@ -98,25 +100,19 @@ private:
 			waiterEvent = NULL;
 		}
 	}
-
-	void fireIncomingConnection() {
-		dcdebug("ServerSocket::fireIncomingConnection\n");
-		listenerCS.enter();
-		ServerSocketListener::List tmp = listeners;
-		listenerCS.leave();
-		for(ServerSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onIncomingConnection();
-		}
-	}
 };
 
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.6 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.6  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.5  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

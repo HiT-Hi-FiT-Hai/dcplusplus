@@ -132,10 +132,10 @@ public:
 	}
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-	static PrivateFrame* getFrame(User::Ptr& aUser, HWND aParent = NULL);
+	static PrivateFrame* getFrame(const User::Ptr& aUser, HWND aParent = NULL);
 	
 private:
-	PrivateFrame(User::Ptr& aUser, HWND aParent = NULL) : user(aUser), parent(aParent), created(false), ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
+	PrivateFrame(const User::Ptr& aUser, HWND aParent = NULL) : user(aUser), parent(aParent), created(false), ctrlMessageContainer("edit", this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
@@ -158,9 +158,13 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.3 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.4 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.4  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.3  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

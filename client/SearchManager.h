@@ -72,11 +72,13 @@ public:
 	typedef SearchManagerListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	
-	virtual void onSearchResult(SearchResult* aResult) { };
+	enum Types {
+		SEARCH_RESULT
+	};
+	virtual void onAction(Types, SearchResult*) { }
 };
 
-class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener
+class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener, public Singleton<SearchManager>
 {
 public:
 	enum {
@@ -101,21 +103,6 @@ public:
 		search(aName, _atoi64(aSize.c_str()), aFlags, aType);
 	}
 	
-	static SearchManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new SearchManager();
-	}
-	static void deleteInstance() {
-		delete instance;
-		instance = NULL;
-	}
-	
 	void setPort(short aPort) throw(SocketException) {
 		socket.disconnect();
 		socket.create(Socket::TYPE_UDP);
@@ -127,10 +114,11 @@ public:
 	}
 	
 private:
-	static SearchManager* instance;
 	
 	BufferedSocket socket;
 	short port;
+
+	friend class Singleton<SearchManager>;
 
 	SearchManager() : socket('|') { 
 		try {
@@ -144,27 +132,27 @@ private:
 		socket.removeListener(this);
 	};
 
-	virtual void onData(const BYTE* buf, int aLen);
-
-	void fireResult(SearchResult* aResult) {
-		listenerCS.enter();
-		SearchManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		for(SearchManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onSearchResult(aResult);
+	// BufferedSocketListener
+	virtual void onAction(BufferedSocketListener::Types type, const BYTE* aBuf, int aLen) {
+		if(type == BufferedSocketListener::DATA) {
+			onData(aBuf, aLen);
 		}
 	}
-	
-	
+	void onData(const BYTE* buf, int aLen);
+
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.6 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.7 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.7  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.6  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

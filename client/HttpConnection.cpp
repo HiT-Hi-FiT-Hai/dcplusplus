@@ -54,7 +54,7 @@ void HttpConnection::onLine(const string& aLine) {
 	if(!ok) {
 		if(aLine.find("200") == string::npos) {
 			socket.disconnect();
-			fireError("File Not Available");
+			fire(HttpConnectionListener::FAILED, this, "File Not Available");
 		}
 		ok = true;
 	} else if(aLine == "\x0d") {
@@ -66,9 +66,13 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.3 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.4 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.4  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.3  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -36,23 +36,33 @@ public:
 	typedef UserConnectionListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+	enum Types {
+		BYTES_SENT,
+		CONNECTING,
+		CONNECTED,
+		DATA,
+		FAILED,
+		LOCK,
+		KEY,
+		DIRECTION,
+		GET,
+		FILE_LENGTH,
+		SEND,
+		GET_LIST_LENGTH,
+		MAXED_OUT,
+		MODE_CHANGE,
+		MY_NICK,
+		TRANSMIT_DONE
 
-	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) { };
-	virtual void onConnecting(UserConnection* aSource, const string& aServer) { };
-	virtual void onConnected(UserConnection* aSource) { };
-	virtual void onData(UserConnection* aSource, const BYTE* aBuf, int aLen) { };
-	virtual void onError(UserConnection* aSource, const string& aError) { };
-	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk) { };
-	virtual void onKey(UserConnection* aSource, const string& aKey) { };
-	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) { };
-	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResumeFrom) { };
-	virtual void onFileLength(UserConnection* aSource, const string& aFileLength) { };
-	virtual void onSend(UserConnection* aSource) { };
-	virtual void onGetListLen(UserConnection* aSource) { };
-	virtual void onMaxedOut(UserConnection* aSource) { };
-	virtual void onModeChange(UserConnection* aSource, int aNewMode) { };
-	virtual void onMyNick(UserConnection* aSource, const string& aNick) { };
-	virtual void onTransmitDone(UserConnection* aSource) { };
+	};
+
+	virtual void onAction(Types, UserConnection*) { };
+	virtual void onAction(Types, UserConnection*, DWORD) { };
+	virtual void onAction(Types, UserConnection*, const string&) { };
+	virtual void onAction(Types, UserConnection*, const BYTE*, int) { };
+	virtual void onAction(Types, UserConnection*, const string&, const string&) { };
+	virtual void onAction(Types, UserConnection*, const string&, LONGLONG) { };
+	virtual void onAction(Types, UserConnection*, int) { };
 };
 
 class Transfer {
@@ -202,23 +212,63 @@ private:
 	};
 
 	// BufferedSocketListener
-	virtual void onBytesSent(DWORD aBytes) { lastActivity = TimerManager::getTick();	fireBytesSent(aBytes); };
-	virtual void onConnected() { TimerManager::getInstance()->addListener(this); lastActivity = TimerManager::getTick(); fireConnected(); };
-	virtual void onLine(const string& aLine);
-	virtual void onError(const string& aError) { fireError(aError); };
-	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
-	virtual void onData(const BYTE *aBuf, int aLen) { lastActivity = TimerManager::getTick(); fireData(aBuf, aLen); };
-	virtual void onTransmitDone() {
-		fireTransmitDone();
-	};
+	virtual void onAction(BufferedSocketListener::Types type) {
+		switch(type) {
+		case BufferedSocketListener::CONNECTED:
+			TimerManager::getInstance()->addListener(this); 
+			lastActivity = TimerManager::getTick();
+			fire(UserConnectionListener::CONNECTED, this);
+			break;
+		case BufferedSocketListener::TRANSMIT_DONE:
+			fire(UserConnectionListener::TRANSMIT_DONE, this); break;
+		}
+	}
+	virtual void onAction(BufferedSocketListener::Types type, DWORD bytes) {
+		switch(type) {
+		case BufferedSocketListener::BYTES_SENT:
+			lastActivity = TimerManager::getTick(); fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
+		default:
+			dcassert(0);
+		}
+	}
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
+		switch(type) {
+		case BufferedSocketListener::LINE:
+			onLine(aLine); break;
+		case BufferedSocketListener::FAILED:
+			fire(UserConnectionListener::FAILED, this, aLine); break;
+		default:
+			dcassert(0);
+		}
+	}
+	virtual void onAction(BufferedSocketListener::Types type, int mode) {
+		switch(type) {
+		case BufferedSocketListener::MODE_CHANGE:
+			fire(UserConnectionListener::MODE_CHANGE, this, mode); break;
+		default:
+			dcassert(0);
+		}
+	}
+	virtual void onAction(BufferedSocketListener::Types type, const BYTE* buf, int len) {
+		switch(type) {
+		case BufferedSocketListener::DATA:
+			lastActivity = TimerManager::getTick(); fire(UserConnectionListener::DATA, this, buf, len); break;
+		default:
+			dcassert(0);
+		}
+	}
+
+	void onLine(const string& aLine) throw();
 
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick) {
-		if((lastActivity + 120 * 1000) < aTick) {
-			// Nothing's happened for 120 seconds, fire error...
-			dcdebug("UserConnection::onTimerSecond Connection timeout\n");
-			fireError("Connection Timeout");
-			lastActivity = aTick;
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		if(type == TimerManagerListener::SECOND) {
+			if((lastActivity + 180 * 1000) < aTick) {
+				// Nothing's happened for 180 seconds, fire error...
+				dcdebug("UserConnection::onTimerSecond Connection timeout\n");
+				fire(UserConnectionListener::FAILED, this, "Connection Timeout");
+				lastActivity = aTick;
+			}
 		}
 	}
 
@@ -227,152 +277,7 @@ private:
 		try {
 			socket.write(aString);
 		} catch(SocketException e) {
-			fireError(e.getError());
-		}
-	}
-
-	void fireBytesSent(DWORD aBytes) {
-		listenerCS.enter();
-	//	dcdebug("UserConnection(%p)::fireBytesSent\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onBytesSent(this, aBytes);
-		}
-	}
-	void fireConnected() {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireConnected\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onConnected(this);
-		}
-	}
-	void fireConnecting(const string& aServer) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireConnecting %s\n", this , aServer.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onConnecting(this, aServer);
-		}
-	}
-	void fireData(const BYTE* aData, int aLen) {
-		listenerCS.enter();
-//		dcdebug("UserConnection(%p)::fireData %d\n", this , aLen);
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onData(this, aData, aLen);
-		}
-	}
-	void fireDirection(const string& aDirection, const string& aNumber) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireDirection %s\n", this , aDirection.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDirection(this, aDirection, aNumber);
-		}
-	}
-	void fireError(const string& aError) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireError %s\n", this , aError.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onError(this, aError);
-		}
-	}
-	void fireFileLength(const string& aLength) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireFileLength %s\n", this , aLength.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onFileLength(this, aLength);
-		}
-	}
-	void fireGet(const string& aFile, LONGLONG aResume) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireGet %s\n", this , aFile.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onGet(this, aFile, aResume);
-		}
-	}
-	void fireKey(const string& aKey) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireKey\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onKey(this, aKey);
-		}
-	}
-	void fireGetListLen() {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireGetListLen\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onGetListLen(this);
-		}
-	}
-	void fireLock(const string& aLock, const string& aPk) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireLock\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onLock(this, aLock, aPk);
-		}
-	}
-	void fireMaxedOut() {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireMaxedOut\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onMaxedOut(this);
-		}
-	}
-	void fireModeChange(int aNewMode) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireModeChange\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onModeChange(this, aNewMode);
-		}
-	}
-	void fireMyNick(const string& aNick) {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireMyNick %s\n", this , aNick.c_str());
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onMyNick(this, aNick);
-		}
-	}
-	void fireSend() {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireSend\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onSend(this);
-		}
-	}
-	void fireTransmitDone() {
-		listenerCS.enter();
-		dcdebug("UserConnection(%p)::fireTransmitDone\n", this );
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onTransmitDone(this);
+			fire(UserConnectionListener::FAILED, this, e.getError());
 		}
 	}
 };
@@ -381,9 +286,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.23 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.24 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.24  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.23  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

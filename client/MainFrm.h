@@ -55,7 +55,8 @@ public:
 		DOWNLOAD_STARTING,
 		DOWNLOAD_SOURCEADDED,
 		DOWNLOAD_TICK,
-		DOWNLOAD_LISTING
+		DOWNLOAD_LISTING,
+		STATS
 	};
 
 	enum {
@@ -117,6 +118,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
 		return 0;
@@ -296,43 +298,90 @@ private:
 	CImageList arrows;
 	HANDLE stopperThread;
 
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	// UploadManagerListener
-	virtual void onUploadComplete(Upload* aUpload) { PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); };
-	virtual void onUploadFailed(Upload* aUpload, const string& aReason) { PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); };
-	virtual void onUploadStarting(Upload* aUpload);
-	virtual void onUploadTick(Upload* aUpload);
+	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) {
+		switch(type) {
+		case UploadManagerListener::COMPLETE:
+			PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); break;
+		case UploadManagerListener::STARTING:
+			onUploadStarting(aUpload); break;
+		case UploadManagerListener::TICK:
+			onUploadTick(aUpload);
+		default:
+			dcassert(0);
+		}
+	}
+
+	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload, const string& aReason) {
+		switch(type) {
+		case UploadManagerListener::FAILED:
+			PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); break;
+		default:
+			dcassert(0);
+		}
+	}
+
+	void onUploadStarting(Upload* aUpload);
+	void onUploadTick(Upload* aUpload);
 	
 	// DownloadManagerListener
-	virtual void onDownloadAdded(Download* aDownload);
-	virtual void onDownloadComplete(Download* aDownload);
-	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
-	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
-	virtual void onDownloadRemoved(Download* aDownload);
-	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
-	virtual void onDownloadSourceRemoved(Download* aDownload, Download::Source* aSource);
-	virtual void onDownloadStarting(Download* aDownload);
-	virtual void onDownloadTick(Download* aDownload);
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload);
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, Download::Source* aSource) {
+		switch(type) {
+		case DownloadManagerListener::SOURCE_ADDED:		// Fallthrough
+		case DownloadManagerListener::SOURCE_REMOVED:
+			onDownloadSourceAdded(aDownload, aSource); break;
+		default:
+			dcassert(0);
+			
+		}
+	}
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
+		switch(type) {
+		case DownloadManagerListener::FAILED:
+			onDownloadFailed(aDownload, aReason); break;
+		default:
+			dcassert(0);
+		}
+	}
+	
+	void onDownloadAdded(Download* aDownload);
+	void onDownloadComplete(Download* aDownload);
+	void onDownloadFailed(Download* aDownload, const string& aReason);
+	void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
+	void onDownloadStarting(Download* aDownload);
+	void onDownloadTick(Download* aDownload);
 	
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick) {
-		if(ctrlStatus.IsWindow()) {
-			char buf[128];
-			sprintf(buf, "D: %s", Util::formatBytes(Socket::getTotalDown()).c_str());
-			ctrlStatus.SetText(1, buf);
-			sprintf(buf, "U: %s", Util::formatBytes(Socket::getTotalUp()).c_str());
-			ctrlStatus.SetText(2, buf);
-			sprintf(buf, "D: %s/s", Util::formatBytes(Socket::getDown()).c_str());
-			ctrlStatus.SetText(3, buf);
-			sprintf(buf, "U: %s/s", Util::formatBytes(Socket::getUp()).c_str());
-			ctrlStatus.SetText(4, buf);
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		if(type == TimerManagerListener::SECOND) {
+			StringList* str = new StringList();
+			str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
+			str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
+			str->push_back("D: " + Util::formatBytes(Socket::getDown()) + "/s");
+			str->push_back("U: " + Util::formatBytes(Socket::getUp()) + "/s");
+			PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+			Socket::resetStats();
 		}
-		Socket::resetStats();
 	}
 	
 	// HttpConnectionListener
-	virtual void onHttpComplete(HttpConnection* aConn);
-	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
+		switch(type) {
+		case HttpConnectionListener::COMPLETE:
+			onHttpComplete(conn); break;
+		}
+	}
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const BYTE* buf, int len) {
+		switch(type) {
+		case HttpConnectionListener::DATA:
+			onHttpData(conn, buf, len); break;
+		}
+	}
+	
+	void onHttpComplete(HttpConnection* aConn);
+	void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -344,9 +393,13 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.25 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.26 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.26  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.25  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

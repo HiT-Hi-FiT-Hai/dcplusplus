@@ -32,7 +32,7 @@ STANDARD_EXCEPTION(ShareException);
 
 class SimpleXML;
 
-class ShareManager  
+class ShareManager : public Singleton<ShareManager>
 {
 public:
 	StringList getDirectories();
@@ -91,21 +91,6 @@ public:
 
 		return listFile;
 	}
-	static ShareManager* getInstance() {
-		dcassert(instance);
-		return instance;
-	}
-
-	static void newInstance() {
-		if(instance)
-			delete instance;
-		
-		instance = new ShareManager();
-	}
-	static void deleteInstance() {
-		delete instance;
-		instance = NULL;
-	}
 private:
 	class Directory {
 	public:
@@ -155,6 +140,22 @@ private:
 		Directory* parent;
 	};
 		
+	friend class Singleton<ShareManager>;
+	ShareManager() : listLen(0), dirty(false), refreshThread(NULL) { 
+		
+	};
+	
+	virtual ~ShareManager() {
+		if(refreshThread) {
+			WaitForSingleObject(refreshThread, INFINITE);
+			CloseHandle(refreshThread);
+		}
+		
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			delete i->second;
+		}
+	}
+	
 	Directory* buildTree(const string& aName, Directory* aParent);
 	
 	LONGLONG listLen;
@@ -168,24 +169,6 @@ private:
 	StringList files;
 
 	static DWORD WINAPI refresher(void* p);
-
-	ShareManager() : listLen(0), dirty(false), refreshThread(NULL) { 
-		
-	};
-	
-	virtual ~ShareManager() {
-		if(refreshThread) {
-			WaitForSingleObject(refreshThread, INFINITE);
-			CloseHandle(refreshThread);
-		}
-
-		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			delete i->second;
-		}
-	}
-
-	static ShareManager* instance;
-	
 	Directory::Map directories;
 	StringMap dirs;
 
@@ -195,9 +178,13 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.10 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.11  2002/01/11 14:52:57  arnetheduck
+ * Huge changes in the listener code, replaced most of it with templates,
+ * also moved the getinstance stuff for the managers to a template
+ *
  * Revision 1.10  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *
