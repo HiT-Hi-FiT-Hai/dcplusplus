@@ -26,6 +26,7 @@
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
 #include "../client/User.h"
+#include "../client/MerkleTree.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
@@ -227,6 +228,10 @@ public:
 	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
+	// Hash related
+	static void bitziLink(TTHValue* /*aHash*/);
+	static void copyMagnet(TTHValue* /*aHash*/, const string& /*aFile*/);
+	
 	static void openLink(const string& url);
 	static void openFile(const string& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -266,5 +271,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.28 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.29 2004/07/26 20:01:22 arnetheduck Exp $
  */

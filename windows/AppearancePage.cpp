@@ -66,6 +66,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
+	{ SettingsManager::TAB_DIRTY, ResourceManager::SETTINGS_TAB_DIRTY },
 	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
@@ -155,11 +156,12 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	char buf[MAX_PATH];
+	static const char types[] = "Language Files\0*.xml\0All Files\0*.*\0";
 
 	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
 	string x = buf;
 
-	if(WinUtil::browseFile(x, m_hWnd, false) == IDOK) {
+	if(WinUtil::browseFile(x, m_hWnd, false, Util::getAppPath(), types) == IDOK) {
 		SetDlgItemText(IDC_LANGUAGE, x.c_str());
 	}
 	return 0;
@@ -193,5 +195,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.15 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.16 2004/07/26 20:01:21 arnetheduck Exp $
  */

@@ -138,6 +138,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(FINISHED_DIRTY, true);
 	setDefault(QUEUE_DIRTY, true);
+	setDefault(TAB_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -302,6 +303,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.77 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.78 2004/07/26 20:01:21 arnetheduck Exp $
  */
 

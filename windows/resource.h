@@ -112,7 +112,6 @@
 #define IDC_HELP_HELP_FORUM             1068
 #define IDC_HELP_FAQ                    1069
 #define IDC_SEARCH_SPY                  1070
-#define IDC_IMPORT_QUEUE                1071
 #define IDC_LATEST                      1071
 #define IDC_PRIVATE_MESSAGE_BEEP        1072
 #define IDC_PRIVATE_MESSAGE_BEEP_OPEN   1073
@@ -242,7 +241,6 @@
 #define IDC_OPEN_DOWNLOADS              1213
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1214
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1215
-#define IDC_COPY_TTH                    1216
 #define IDC_SETTINGS_FORMAT1            1217
 #define IDC_SETTINGS_FORMAT2            1218
 #define IDC_SETTINGS_FORMAT3            1219
@@ -255,8 +253,9 @@
 #define IDC_SETTINGS_MBS                1226
 #define IDC_SETTINGS_GET_USER_COUNTRY   1227
 #define IDC_SETTINGS_LOG_STATUS_MESSAGES 1228
-#define IDC_EDIT1                       1230
-#define IDC_TTH                         1230
+#define IDC_TTH                         1229
+#define IDC_BITZI_LOOKUP                1230
+#define IDC_COPY_MAGNET                 1231
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -292,7 +291,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1231
+#define _APS_NEXT_CONTROL_VALUE         1232
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

@@ -124,7 +124,7 @@ LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	string target;
-	if(WinUtil::browseDirectory(target, (HWND) *this)) {
+	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		addDirectory(target);
 	}
 	
@@ -142,7 +142,8 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 	int i = -1;
 	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		ctrlDirectories.GetSelectedItem(&item);
+		item.iItem = i;
+		ctrlDirectories.GetItem(&item);
 		ShareManager::getInstance()->removeDirectory(buf);
 		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 		ctrlDirectories.DeleteItem(i);
@@ -193,6 +194,6 @@ void UploadPage::addDirectory(string path){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.17 2004/06/26 18:16:55 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.18 2004/07/26 20:01:22 arnetheduck Exp $
  */
 

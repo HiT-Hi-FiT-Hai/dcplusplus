@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="windows-1252"?>
+<?xml version="1.0" encoding="windows-1252" standalone="yes"?>
 <Language Name="Example Language">
 	<Strings>
 		<String Name="Active">Active</String>
-		<String Name="ActiveSearchString">Active / Search String</String>
+		<String Name="ActiveSearchString">Enabled / Search String</String>
 		<String Name="Add">&amp;Add</String>
 		<String Name="Added">Added</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
@@ -45,6 +45,7 @@
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="CopyHub">Copy address to clipboard</String>
+		<String Name="CopyMagnet">Copy magnet link to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
 		<String Name="CouldNotOpenTargetFile">Could not open target file: </String>
 		<String Name="Count">Count</String>
@@ -83,7 +84,6 @@
 		<String Name="EnterReason">Please enter a reason</String>
 		<String Name="EnterSearchString">Enter search string</String>
 		<String Name="EnterServer">Please enter a destination server</String>
-		<String Name="ErrorOpeningFile">Error opening file</String>
 		<String Name="Errors">Errors</String>
 		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
@@ -146,6 +146,7 @@
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="LastSeen">Time last seen</String>
 		<String Name="Loading">Loading DC++, please wait...</String>
+		<String Name="LookupAtBitzi">Lookup TTH at Bitzi.com</String>
 		<String Name="Low">Low</String>
 		<String Name="Lowest">Lowest</String>
 		<String Name="ManualAddress">Manual connect address</String>
@@ -160,7 +161,6 @@
 		<String Name="MenuFavoriteHubs">&amp;Favorite Hubs	Ctrl+F</String>
 		<String Name="MenuFavoriteUsers">Favorite &amp;Users	Ctrl+U</String>
 		<String Name="MenuFollowRedirect">Follow last redirec&amp;t	Ctrl+T</String>
-		<String Name="MenuImportQueue">Import queue from NMDC...</String>
 		<String Name="MenuNetworkStatistics">Network Statistics</String>
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenFileList">Open file list...</String>
@@ -335,6 +335,8 @@
 		<String Name="SettingsPersonalInformation">Personal Information</String>
 		<String Name="SettingsPmBeep">Make an annoying sound every time a private message is received</String>
 		<String Name="SettingsPmBeepOpen">Make an annoying sound when a private message window is opened</String>
+		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
+		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
 		<String Name="SettingsPopupOffline">Popup messages from users that are not online (if not ignoring, messages go to main chat if enabled)</String>
 		<String Name="SettingsPopupPms">Popup private messages</String>
 		<String Name="SettingsPort">Port (empty=random)</String>

@@ -108,7 +108,7 @@ void Advanced2Page::write()
 LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	string dir;
-	if(WinUtil::browseDirectory(dir))
+	if(WinUtil::browseDirectory(dir, m_hWnd))
 	{
 		// Adjust path string
 		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
@@ -121,6 +121,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.10 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.11 2004/07/26 20:01:21 arnetheduck Exp $
  */
 

@@ -291,32 +291,36 @@ void BufferedSocket::threadRead() {
 		string l;
 		while(i > 0) {
 			if(mode == MODE_LINE) {
-				string::size_type pos;
+				string::size_type pos = 0;
 
 				l = string((char*)inbuf + bufpos, i);
 
-				for(;;) {
-					string::size_type n = 0;
-					n = pos = l.find(separator, n);
-					if(usesEscapes) {
-						if(pos > 0 && l[pos - 1] == '\\') {
-							n++;
-						} else if(pos == 0 && !line.empty() && line[line.length()-1] == '\\') {
-							n++;
-						} else {
-							break;
+				bool foundSeparator = false;
+				if(usesEscapes) {
+					// We need to read every byte to make sure it isn't preceded by the escape character
+					for(string::iterator k = l.begin(); k != l.end(); ++k) {
+						if(*k == '\\') {
+							escaped = !escaped;
+						} else if(*k == separator) {
+							if(!escaped) {
+								pos = k - l.begin();
+								foundSeparator = true;
+								break;
+							} else {
+								escaped = false;
+							}
 						}
-					} else {
-						break;
 					}
+				} else {
+					// Not using escapes, search is much easier
+					if((pos = l.find(separator)) != string::npos)
+						foundSeparator = true;
 				}
 
-				if(pos != string::npos) {
+				if(foundSeparator) {
 					if(!line.empty()) {
 						fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
 						line.clear();
-					} else if(pos == l.length() - 1) {
-						fire(BufferedSocketListener::Line(), l);
 					} else {
 						fire(BufferedSocketListener::Line(), l.substr(0, pos));
 					}
@@ -446,5 +450,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.71 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.72 2004/07/26 20:01:20 arnetheduck Exp $
  */

@@ -42,7 +42,7 @@ static char buf[DEBUG_BUFSIZE];
 #ifndef _DEBUG
 
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	MessageBox(WinUtil::mainWnd, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
 	exit(-1);
 }
 
@@ -76,7 +76,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
 		// No debug symbols, we're not interested...
-		::MessageBox(NULL, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
+		::MessageBox(WinUtil::mainWnd, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
 #ifndef _DEBUG
 		exit(1);
 #else
@@ -118,7 +118,7 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
-	if(MessageBox(NULL, "DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?", "DC++ Has Crashed", MB_YESNO | MB_ICONERROR) == IDYES) {
+	if(MessageBox(WinUtil::mainWnd, "DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?", "DC++ Has Crashed", MB_YESNO | MB_ICONERROR) == IDYES) {
 		WinUtil::openLink("http://dcplusplus.sf.net/crash/");
 	}
 
@@ -379,5 +379,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.24 2004/07/05 16:02:44 arnetheduck Exp $
+ * $Id: main.cpp,v 1.25 2004/07/26 20:01:22 arnetheduck Exp $
  */

@@ -133,7 +133,6 @@ public:
 		return (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
-	void importNMQueue(const string& aFile) throw(FileException);
 	void loadQueue() throw();
 	void saveQueue() throw();
 	
@@ -255,6 +254,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.56 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.57 2004/07/26 20:01:21 arnetheduck Exp $
  */
 

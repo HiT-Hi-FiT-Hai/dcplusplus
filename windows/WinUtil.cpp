@@ -199,7 +199,6 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(MENU_IMPORT_QUEUE));
 	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_SETTINGS));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_APP_EXIT, CSTRING(MENU_EXIT));
@@ -551,6 +550,23 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 	return true;
 }
 
+void WinUtil::bitziLink(TTHValue* aHash) {
+	// to use this free service by bitzi, we must not hammer or request information from bitzi
+	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
+	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be 
+	// tracked down and the code can be fixed
+	if(aHash != NULL) {
+		openLink("http://bitzi.com/lookup/tree:tiger:" + aHash->toBase32());
+	}
+}
+
+ void WinUtil::copyMagnet(TTHValue* aHash, const string& aFile) {
+	if(aHash != NULL && !aFile.empty()) {
+		setClipboard("magnet:?xt=urn:tree:tiger:" + aHash->toBase32() + "&dn=" + Util::encodeURI(aFile));
+	}
+}
+
+
 void WinUtil::openLink(const string& url) {
 	CRegKey key;
 	char regbuf[MAX_PATH];
@@ -649,5 +665,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.46 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.47 2004/07/26 20:01:22 arnetheduck Exp $
  */

@@ -23,6 +23,15 @@
 * Fixed search in utf-8 file lists (thanks fleetcommand)
 * Fixed utf-8 encoding/decoding, chinese and other multi-byte scripts should
   now work ok (thanks liny)
+* Removed obsolete Import from NMDC queue (blame cologic)
+* Added option to disable bolding for hub frames (thanks ullner)
+* Fixed a small leak in the Search Frame (thanks psf8500)
+* Added bitzi.com lookup and magnet link copy (thanks garg)
+* Removed .bz2 lists from "open file list" types (thanks garg)
+* Fixed a download-to crash (thanks farcry)
+* Fixed dialog modality in several places (thanks garg)
+* Fixed some debug assertions (thanks garg)
+* Queue sorted sensibly (thanks garg)
 
 
  -- 0.403 2004-06-27 --

@@ -185,6 +185,10 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_WHOLE_DIR_TO));
 	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
+	resultsMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CSTRING(LOOKUP_AT_BITZI));
+	resultsMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CSTRING(COPY_MAGNET));
+	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	appendUserItems(resultsMenu);
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
@@ -439,7 +443,7 @@ LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	dcassert(wID > IDC_DOWNLOAD_TARGET);
+	dcassert(wID >= IDC_DOWNLOAD_TARGET);
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_TARGET;
 
 	if(newId < WinUtil::lastDirs.size()) {
@@ -477,7 +481,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			delete ctrlResults.getItemData(i);
 		}
 		ctrlResults.DeleteAllItems();
-		for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
+		for(int i = 0; i < ctrlHubs.GetItemCount(); i++) {
 			delete ctrlHubs.getItemData(i);
 		}
 		ctrlHubs.DeleteAllItems();
@@ -702,6 +706,38 @@ void SearchFrame::onTab(bool shift) {
 	::SetFocus(wnds[(i + (shift ? -1 : 1)) % size]);
 }
 
+LRESULT SearchFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		SearchResult* sr = ctrlResults.getItemData(i)->sr;
+
+		if(sr->getTTH() != NULL) {
+			SearchFrame::openWindow(sr->getTTH()->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		}
+	} 
+
+	return 0;
+}
+
+LRESULT SearchFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		SearchResult* sr = ctrlResults.getItemData(i)->sr;
+		WinUtil::bitziLink(sr->getTTH());
+	}
+	return 0;
+}
+
+LRESULT SearchFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		SearchResult* sr = ctrlResults.getItemData(i)->sr;
+		WinUtil::copyMagnet(sr->getTTH(), sr->getFileName());
+	}
+	return 0;
+}
+
+
 LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
  	switch(wParam) {
 	case ADD_RESULT:
@@ -787,6 +823,18 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_TARGET + n, i->c_str());
 				n++;
 			}
+		}
+
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		SearchResult* sr = ctrlResults.getItemData(i)->sr;
+		if (ctrlResults.GetSelectedCount() == 1 && sr->getTTH() != NULL) {
+			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+		} else {
+			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
@@ -887,5 +935,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.56 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.57 2004/07/26 20:01:22 arnetheduck Exp $
  */

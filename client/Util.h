@@ -401,6 +401,17 @@ public:
 		sprintf(buf, "%0.2f", val);
 		return buf;
 	}
+	static string toHexEscape(char val) {
+		char buf[sizeof(int)*2+1];
+		sprintf(buf, "%%%X", val);
+		return buf;
+	}
+	static char fromHexEscape(const string aString) {
+		int res = 0;
+		sscanf(aString.c_str(), "%X", &res);
+		return static_cast<char>(res);
+	}
+	static string encodeURI(const string& /*aString*/, bool reverse = false);
 	static string getLocalIp();
 	static bool isPrivateIp(string const& ip);
 	/**
@@ -575,5 +586,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.87 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: Util.h,v 1.88 2004/07/26 20:01:21 arnetheduck Exp $
  */

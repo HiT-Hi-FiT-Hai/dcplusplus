@@ -28,6 +28,8 @@
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
+#include "SearchFrm.h"
+#include "../client/MerkleTree.h"
 
 void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
@@ -138,6 +140,11 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
+	fileMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CSTRING(SEARCH_BY_TTH));
+	fileMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CSTRING(LOOKUP_AT_BITZI));
+	fileMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CSTRING(COPY_MAGNET));
+	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
@@ -343,11 +350,29 @@ LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
-	if(ii != NULL)
-		WinUtil::setClipboard(ii->getText(COLUMN_TTH));
+	if(ii != NULL) {
+		SearchFrame::openWindow(ii->getText(COLUMN_TTH), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+	}
+	return 0;
+}
 
+LRESULT DirectoryListingFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL) {
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::bitziLink(&tmp);
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL) {
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::copyMagnet(&tmp, ii->getText(COLUMN_FILENAME));
+	}
 	return 0;
 }
 
@@ -449,6 +474,17 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
 
+		string hash = ii->getText(COLUMN_TTH);
+		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
+			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+		} else {
+			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
+		}
+
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 			targets.clear();
@@ -456,15 +492,16 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
-					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
 			if(WinUtil::lastDirs.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
-					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
+
 			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
 			}
@@ -474,7 +511,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			if(WinUtil::lastDirs.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
-					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (++n), i->c_str());
 				}
 			}
 			if(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
@@ -508,7 +545,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 				targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				int n = 0;
 				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
+					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (++n), i->c_str());
 				}
 			}
 			
@@ -530,13 +567,17 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
 		if(ii->type == ItemInfo::FILE) {
-			dcassert(newId < (int)targets.size());
-
-			try {
-				dl->download(ii->file, targets[newId]);
-			} catch(const Exception& e) {
-				ctrlStatus.SetText(0, e.getError().c_str());
-			} 
+			if(newId < (int)targets.size()) {
+				try {
+					dl->download(ii->file, targets[newId]);
+				} catch(const Exception& e) {
+					ctrlStatus.SetText(0, e.getError().c_str());
+				}
+			} else {
+				newId -= (int)targets.size();
+				dcassert(newId < (int)WinUtil::lastDirs.size());
+				downloadList(WinUtil::lastDirs[newId]);
+			}
 		} else {
 			dcassert(newId < (int)WinUtil::lastDirs.size());
 			downloadList(WinUtil::lastDirs[newId]);
@@ -764,5 +805,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.34 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.35 2004/07/26 20:01:21 arnetheduck Exp $
  */
