@@ -23,12 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "SettingsManager.h"
+
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 #include "User.h"
-#include "SettingsManager.h"
 #include "UserCommand.h"
 #include "FavoriteUser.h"
+#include "Singleton.h"
 
 class HubEntry {
 public:
@@ -322,6 +324,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.45 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.46 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -31,6 +31,7 @@
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 #include "WinUtil.h"
+
 #include "../client/ADLSearch.h"
 
 #define ADLLIST_MESSAGE_MAP 6
@@ -151,5 +152,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.6 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
  */

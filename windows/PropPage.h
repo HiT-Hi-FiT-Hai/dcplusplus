@@ -26,6 +26,7 @@
 #define SETTINGS_BUF_LEN 1024
 
 class SettingsManager;
+#include "../client/ResourceManager.h"
 
 class PropPage
 {
@@ -65,6 +66,6 @@ protected:
 
 /**
  * @file
- * $Id: PropPage.h,v 1.6 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

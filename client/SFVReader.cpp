@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "SFVReader.h"
+
 #include "StringTokenizer.h"
 
 bool SFVReader::tryFile(const string& sfvFile, const string& fileName) throw(FileException) {
@@ -72,5 +73,5 @@ void SFVReader::load(const string& fileName) throw() {
 
 /**
  * @file
- * $Id: SFVReader.cpp,v 1.2 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: SFVReader.cpp,v 1.3 2003/11/10 22:42:12 arnetheduck Exp $
  */

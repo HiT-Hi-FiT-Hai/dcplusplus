@@ -23,9 +23,11 @@
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
+
+#include "ADLSearch.h"
+
 #include "File.h"
 #include "SimpleXML.h"
-#include "ADLSearch.h"
 
 #define ADLS_STORE_FILENAME "ADLSearch.xml"
 
@@ -187,6 +189,6 @@ void ADLSearchManager::Save()
 
 /**
  * @file
- * $Id: ADLSearch.cpp,v 1.5 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: ADLSearch.cpp,v 1.6 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -23,11 +23,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "SettingsManager.h"
+
 #include "Socket.h"
 #include "User.h"
 #include "Thread.h"
-#include "SettingsManager.h"
 #include "Client.h"
+#include "Singleton.h"
 
 #include "SearchManagerListener.h"
 
@@ -147,5 +149,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.25 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.26 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Singleton.h"
+
 class ResourceManager : public Singleton<ResourceManager> {
 public:
 	
@@ -55,5 +57,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.9 2003/10/21 17:10:40 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.10 2003/11/10 22:42:12 arnetheduck Exp $
  */

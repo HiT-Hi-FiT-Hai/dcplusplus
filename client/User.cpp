@@ -19,7 +19,10 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
+#include "ResourceManager.h"
+
 #include "User.h"
+
 #include "Client.h"
 #include "FavoriteUser.h"
 
@@ -179,6 +182,6 @@ void User::setFavoriteGrantSlot(bool grant)
 
 /**
  * @file
- * $Id: User.cpp,v 1.24 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: User.cpp,v 1.25 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -23,12 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Exception.h"
-#include "CriticalSection.h"
 #include "TimerManager.h"
 #include "SearchManager.h"
 #include "SettingsManager.h"
+
+#include "Exception.h"
+#include "CriticalSection.h"
 #include "StringSearch.h"
+#include "Singleton.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -217,6 +219,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.37 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.38 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -25,6 +25,7 @@
 #include "WinUtil.h"
 
 #include "../client/ShareManager.h"
+#include "../client/ResourceManager.h"
 
 LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -184,5 +185,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.14 2003/11/04 20:18:15 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
  */

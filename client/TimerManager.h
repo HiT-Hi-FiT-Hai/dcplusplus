@@ -26,6 +26,7 @@
 #include "Thread.h"
 #include "Semaphore.h"
 #include "Speaker.h"
+#include "Singleton.h"
 
 #ifndef WIN32
 #include <sys/time.h>
@@ -86,6 +87,6 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.18 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.19 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -26,6 +26,7 @@
 #include "../client/User.h"
 #include "../client/CriticalSection.h"
 #include "../client/ClientManagerListener.h"
+#include "../client/ResourceManager.h"
 
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
@@ -190,6 +191,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.14 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -19,7 +19,6 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include <time.h>
 #include "FinishedManager.h"
 
 FinishedManager* Singleton<FinishedManager>::instance = NULL;
@@ -95,5 +94,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.11 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.12 2003/11/10 22:42:12 arnetheduck Exp $
  */

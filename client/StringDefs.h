@@ -1,5 +1,6 @@
 // @Prolog: #include "stdinc.h"
 // @Prolog: #include "DCPlusPlus.h"
+// @Prolog: #include "ResourceManager.h"
 // @Strings: string ResourceManager::strings[]
 // @Names: string ResourceManager::names[]
 

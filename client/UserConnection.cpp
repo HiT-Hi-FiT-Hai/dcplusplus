@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "UserConnection.h"
+
 #include "StringTokenizer.h"
 
 const string UserConnection::UPLOAD = "Upload";
@@ -190,5 +191,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.29 2003/11/07 01:31:58 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.30 2003/11/10 22:42:12 arnetheduck Exp $
  */

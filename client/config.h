@@ -93,7 +93,13 @@ typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
 #endif
 
+#ifdef WIN32
+#define PATH_SEPARATOR '\\'
+#else
+#define PATH_SEPARATOR '/'
+#endif
+
 /**
  * @file
- * $Id: config.h,v 1.14 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: config.h,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -23,8 +23,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "UserConnection.h"
 #include "TimerManager.h"
+
+#include "UserConnection.h"
+#include "Singleton.h"
 
 class QueueItem;
 class ConnectionQueueItem;
@@ -112,7 +114,9 @@ public:
 	virtual void onAction(Types, const Download::List&) throw() { };
 };
 
-class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
+class DownloadManager : public Speaker<DownloadManagerListener>, 
+	private UserConnectionListener, private TimerManagerListener, 
+	public Singleton<DownloadManager>
 {
 public:
 
@@ -209,5 +213,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.52 2003/05/21 12:08:43 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.53 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -19,11 +19,14 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include "Socket.h"
 #include "Client.h"
+
+#include "ResourceManager.h"
 #include "ClientManager.h"
 #include "SearchManager.h"
 #include "ShareManager.h"
+
+#include "Socket.h"
 #include "UserCommand.h"
 #include "StringTokenizer.h"
 
@@ -701,6 +704,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.60 2003/11/04 20:18:10 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.61 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -31,8 +31,11 @@
 #include "Util.h"
 
 #include "SettingsManager.h"
+#include "ResourceManager.h"
+
 #include "StringSearch.h"
 #include "StringTokenizer.h"
+#include "Singleton.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -477,5 +480,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.7 2003/09/22 13:17:21 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.8 2003/11/10 22:42:12 arnetheduck Exp $
  */

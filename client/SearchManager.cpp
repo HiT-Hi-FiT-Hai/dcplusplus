@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "SearchManager.h"
+
 #include "ClientManager.h"
 
 SearchManager* Singleton<SearchManager>::instance = NULL;
@@ -178,6 +179,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.26 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.27 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -20,10 +20,12 @@
 #include "DCPlusPlus.h"
 
 #include "DirectoryListing.h"
-#include "StringTokenizer.h"
-#include "ADLSearch.h"
+
 #include "QueueManager.h"
 #include "SearchManager.h"
+
+#include "StringTokenizer.h"
+#include "ADLSearch.h"
 
 void DirectoryListing::load(const string& in) 
 {
@@ -181,5 +183,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.20 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.21 2003/11/10 22:42:12 arnetheduck Exp $
  */

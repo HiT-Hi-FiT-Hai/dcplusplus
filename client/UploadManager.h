@@ -24,13 +24,16 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
+#include "Singleton.h"
+
 #include "ClientManagerListener.h"
 
 class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
-		USER_LIST = 0x01,
-		SMALL_FILE = USER_LIST << 1
+		FLAG_USER_LIST = 0x01,
+		FLAG_SMALL_FILE = 0x02,
+		FLAG_ZUPLOAD = 0x04
 	};
 
 	typedef Upload* Ptr;
@@ -151,5 +154,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.55 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
  */

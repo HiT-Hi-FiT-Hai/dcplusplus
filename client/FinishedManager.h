@@ -23,9 +23,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "CriticalSection.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
+
+#include "CriticalSection.h"
+#include "Singleton.h"
 
 class FinishedItem
 {
@@ -135,5 +137,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.9 2003/11/10 22:42:12 arnetheduck Exp $
  */

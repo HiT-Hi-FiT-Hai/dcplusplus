@@ -21,11 +21,12 @@
 
 #include "HubManager.h"
 
+#include "ClientManager.h"
+#include "CryptoManager.h"
+
 #include "HttpConnection.h"
 #include "StringTokenizer.h"
 #include "SimpleXML.h"
-#include "ClientManager.h"
-#include "CryptoManager.h"
 #include "UserCommand.h"
 
 HubManager* Singleton<HubManager>::instance = NULL;
@@ -333,5 +334,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.36 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.37 2003/11/10 22:42:12 arnetheduck Exp $
  */

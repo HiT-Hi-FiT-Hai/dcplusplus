@@ -88,9 +88,6 @@ typedef StringMap::iterator StringMapIter;
 
 #include "version.h"
 
-#include "Singleton.h"
-#include "ResourceManager.h"
-
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
@@ -101,6 +98,6 @@ extern void shutdown();
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.31 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.32 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -388,9 +388,6 @@
 				RelativePath="windows\CommandDlg.h">
 			</File>
 			<File
-				RelativePath="client\ConnectionManagerListener.h">
-			</File>
-			<File
 				RelativePath=".\windows\DirectoryListingFrm.h">
 			</File>
 			<File

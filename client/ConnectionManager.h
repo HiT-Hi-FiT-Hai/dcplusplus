@@ -23,11 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "TimerManager.h"
+
 #include "ServerSocket.h"
 #include "UserConnection.h"
 #include "User.h"
 #include "CriticalSection.h"
-#include "TimerManager.h"
+#include "Singleton.h"
+
 #include "ConnectionManagerListener.h"
 
 class ConnectionQueueItem {
@@ -57,7 +60,9 @@ private:
 // Comparing with a user...
 inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; };
 
-class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
+class ConnectionManager : public Speaker<ConnectionManagerListener>, 
+	public UserConnectionListener, ServerSocketListener, TimerManagerListener, 
+	public Singleton<ConnectionManager>
 {
 public:
 	void connect(const string& aServer, short aPort, const string& aNick);
@@ -148,5 +153,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.52 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.53 2003/11/10 22:42:12 arnetheduck Exp $
  */

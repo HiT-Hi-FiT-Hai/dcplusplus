@@ -37,7 +37,7 @@ protected:
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
-	name(const string& aError) : Exception(#name ": " + aError) { }; \
+	name(const string& aError) throw() : Exception(#name ": " + aError) { }; \
 	virtual ~name() { }; \
 }
 
@@ -45,7 +45,7 @@ public:\
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
-	name(const string& aError) : Exception(aError) { }; \
+	name(const string& aError) throw() : Exception(aError) { }; \
 	virtual ~name() { }; \
 }
 #endif
@@ -54,6 +54,6 @@ public:\
 
 /**
  * @file
- * $Id: Exception.h,v 1.11 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: Exception.h,v 1.12 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -18,11 +18,13 @@
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
-#include "TimerManager.h"
 
 #include "BufferedSocket.h"
-#include "File.h"
+
+#include "TimerManager.h"
 #include "CryptoManager.h"
+
+#include "File.h"
 
 #define SMALL_BUFFER_SIZE 1024
 
@@ -449,5 +451,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.55 2003/11/04 20:18:09 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
  */

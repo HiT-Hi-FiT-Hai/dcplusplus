@@ -20,12 +20,14 @@
 #include "DCPlusPlus.h"
 
 #include "DownloadManager.h"
+
 #include "ConnectionManager.h"
-#include "User.h"
 #include "QueueManager.h"
-#include "LogManager.h"
 #include "CryptoManager.h"
+
+#include "LogManager.h"
 #include "SFVReader.h"
+#include "User.h"
 
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
@@ -664,5 +666,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.78 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.79 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -21,6 +21,7 @@
 
 #include "Util.h"
 #include "Speaker.h"
+#include "Singleton.h"
 
 class SimpleXML;
 
@@ -183,6 +184,6 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.47 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.48 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

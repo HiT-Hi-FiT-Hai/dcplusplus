@@ -23,10 +23,11 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "TimerManager.h"
+
 #include "BufferedSocket.h"
 #include "CriticalSection.h"
 #include "File.h"
-#include "TimerManager.h"
 #include "User.h"
 
 class UserConnection;
@@ -277,6 +278,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.58 2003/11/07 01:31:58 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.59 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -328,17 +328,12 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 
 		next = ctrlDirs.GetRootItem();
 
-		if((next != NULL) && (next == fileLists)) {
-			next = ctrlDirs.GetNextSiblingItem(next);
-		}
-
 		while(next != NULL) {
-			if((next != NULL) && (next == fileLists)) {
-				next = ctrlDirs.GetNextSiblingItem(next);
+			if(next != fileLists) {
+				string* stmp = (string*)ctrlDirs.GetItemData(next);
+				if(Util::strnicmp(*stmp, dir, 3) == 0)
+					break;
 			}
-			string* stmp = (string*)ctrlDirs.GetItemData(next);
-			if(Util::strnicmp(*stmp, dir, 3) == 0)
-				break;
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
 
@@ -408,18 +403,17 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 	}
 
 	while( i < dir.length() ) {
-		if((next != NULL) && (next == fileLists)) {
-			next = ctrlDirs.GetNextSiblingItem(next);
-		}
 		while(next != NULL) {
-			const string& n = getDir(next);
-			if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
-				// Found a part, we assume it's the best one we can find...
-				i = n.length();
-				
-				parent = next;
-				next = ctrlDirs.GetChildItem(next);
-				break;
+			if(next != fileLists) {
+				const string& n = getDir(next);
+				if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
+					// Found a part, we assume it's the best one we can find...
+					i = n.length();
+
+					parent = next;
+					next = ctrlDirs.GetChildItem(next);
+					break;
+				}
 			}
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
@@ -459,17 +453,15 @@ void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false *
 	} else {
 		while(i < dir.length()) {
 			while(next != NULL) {
-				if(next == fileLists) {
-					next = ctrlDirs.GetNextSiblingItem(next);
-					continue;
-				}
-				const string& n = getDir(next);
-				if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
-					// Match!
-					parent = next;
-					next = ctrlDirs.GetChildItem(next);
-					i = n.length();
-					break;
+				if(next != fileLists) {
+					const string& n = getDir(next);
+					if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
+						// Match!
+						parent = next;
+						next = ctrlDirs.GetChildItem(next);
+						i = n.length();
+						break;
+					}
 				}
 				next = ctrlDirs.GetNextSiblingItem(next);
 			}
@@ -1266,7 +1258,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.34 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.35 2003/11/10 22:42:12 arnetheduck Exp $
  */
 
 

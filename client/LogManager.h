@@ -25,6 +25,7 @@
 
 #include "File.h"
 #include "CriticalSection.h"
+#include "Singleton.h"
 
 class LogManager : public Singleton<LogManager>
 {
@@ -63,5 +64,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.6 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
  */

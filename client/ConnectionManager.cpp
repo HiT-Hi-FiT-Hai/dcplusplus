@@ -20,13 +20,14 @@
 #include "DCPlusPlus.h"
 
 #include "ConnectionManager.h"
+
 #include "DownloadManager.h"
 #include "UploadManager.h"
-
-#include "UserConnection.h"
 #include "CryptoManager.h"
 #include "ClientManager.h"
 #include "QueueManager.h"
+
+#include "UserConnection.h"
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
@@ -623,5 +624,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.63 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.64 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "HttpConnection.h"
+
 #include "SettingsManager.h"
 
 /**
@@ -174,6 +175,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.18 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.19 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

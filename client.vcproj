@@ -274,6 +274,9 @@
 				RelativePath=".\client\ConnectionManager.h">
 			</File>
 			<File
+				RelativePath=".\client\ConnectionManagerListener.h">
+			</File>
+			<File
 				RelativePath=".\client\CriticalSection.h">
 			</File>
 			<File

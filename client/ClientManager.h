@@ -23,12 +23,16 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Client.h"
 #include "TimerManager.h"
+
+#include "Client.h"
+#include "Singleton.h"
 
 #include "ClientManagerListener.h"
 
-class ClientManager : public Speaker<ClientManagerListener>, private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
+class ClientManager : public Speaker<ClientManagerListener>, 
+	private ClientListener, public Singleton<ClientManager>, 
+	private TimerManagerListener
 {
 public:
 	Client* getClient();
@@ -185,6 +189,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.38 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.39 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

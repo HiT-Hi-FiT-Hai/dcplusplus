@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "ClientManager.h"
+
 #include "ShareManager.h"
 #include "SearchManager.h"
 #include "CryptoManager.h"
@@ -381,5 +382,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.42 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.43 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -45,8 +45,13 @@ private:
 
 template<class T>
 struct PointerHash {
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
+#if _MSC_VER < 1300 
+	enum {bucket_size = 4}; 
+	enum {min_buckets = 8}; 
+#else 
+	static const size_t bucket_size = 4; 
+	static const size_t min_buckets = 8; 
+#endif // _MSC_VER == 1200
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
 	bool operator()(const T* a, const T* b) { return a < b; };
 };
@@ -172,11 +177,11 @@ public:
 	}
 
 	static string getFilePath(const string& path) {
-		string::size_type i = path.rfind('\\');
+		string::size_type i = path.rfind(PATH_SEPARATOR);
 		return (i != string::npos) ? path.substr(0, i + 1) : path;
 	}
 	static string getFileName(const string& path) {
-		string::size_type i = path.rfind('\\');
+		string::size_type i = path.rfind(PATH_SEPARATOR);
 		return (i != string::npos) ? path.substr(i + 1) : path;
 	}
 	static string getFileExt(const string& path) {
@@ -184,10 +189,10 @@ public:
 		return (i != string::npos) ? path.substr(i) : Util::emptyString;
 	}
 	static string getLastDir(const string& path) {
-		string::size_type i = path.rfind('\\');
+		string::size_type i = path.rfind(PATH_SEPARATOR);
 		if(i == string::npos)
 			return Util::emptyString;
-		string::size_type j = path.rfind('\\', i-1);
+		string::size_type j = path.rfind(PATH_SEPARATOR, i-1);
 		return (j != string::npos) ? path.substr(j+1, j-i-1) : path;
 	}
 	
@@ -219,22 +224,7 @@ public:
 		return buf;
 	}
 	
-	static string formatBytes(int64_t aBytes) {
-		char buf[64];
-		if(aBytes < 1024) {
-			sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
-		} else if(aBytes < 1024*1024) {
-			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KB));
-		} else if(aBytes < 1024*1024*1024) {
-			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
-		} else if(aBytes < (int64_t)1024*1024*1024*1024) {
-			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
-		} else {
-			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
-		}
-		
-		return buf;
-	}
+	static string formatBytes(int64_t aBytes);
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
@@ -464,7 +454,7 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
-#if _MSC_VER == 1200 
+#if _MSC_VER < 1300 
 	enum {bucket_size = 4}; 
 	enum {min_buckets = 8}; 
 #else 
@@ -505,5 +495,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.66 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: Util.h,v 1.67 2003/11/10 22:42:12 arnetheduck Exp $
  */

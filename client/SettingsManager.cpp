@@ -18,8 +18,10 @@
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
-#include "SimpleXML.h"
+
 #include "SettingsManager.h"
+
+#include "SimpleXML.h"
 #include "Util.h"
 #include "File.h"
 
@@ -283,6 +285,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.55 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -96,6 +96,7 @@ typedef SOCKET socket_t;
 #include <netdb.h>
 
 typedef int socket_t;
+typedef socket_t SOCKET;
 
 #define SOCKET_ERROR -1
 #define INVALID_SOCKET -1
@@ -245,6 +246,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.44 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: Socket.h,v 1.45 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

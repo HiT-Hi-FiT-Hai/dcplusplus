@@ -154,16 +154,10 @@
 				RelativePath=".\MakeDefs.cpp">
 			</File>
 			<File
-				RelativePath="..\client\ResourceManager.cpp">
-			</File>
-			<File
 				RelativePath="..\client\SimpleXML.cpp">
 			</File>
 			<File
 				RelativePath=".\StdAfx.cpp">
-			</File>
-			<File
-				RelativePath="..\client\StringDefs.cpp">
 			</File>
 			<File
 				RelativePath="..\client\StringTokenizer.cpp">

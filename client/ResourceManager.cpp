@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "ResourceManager.h"
+
 #include "SimpleXML.h"
 #include "File.h"
 
@@ -57,6 +58,6 @@ void ResourceManager::loadLanguage(const string& aFile) {
 }
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.6 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.7 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

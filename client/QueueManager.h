@@ -23,17 +23,19 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "TimerManager.h"
+
 #include "CriticalSection.h"
 #include "Exception.h"
 #include "User.h"
 #include "File.h"
-#include "TimerManager.h"
-#include "SearchManagerListener.h"
-#include "ClientManagerListener.h"
 #include "DirectoryListing.h"
+#include "QueueItem.h"
+#include "Singleton.h"
 
 #include "QueueManagerListener.h"
-#include "QueueItem.h"
+#include "SearchManagerListener.h"
+#include "ClientManagerListener.h"
 
 STANDARD_EXCEPTION(QueueException);
 
@@ -140,7 +142,8 @@ private:
 		}
 		void add(QueueItem* qi);
 		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
-			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded);
+			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded)
+			throw(QueueException, FileException);
 		QueueItem* find(const string& target);
 		void find(StringList& sl, int64_t aSize, const string& ext);
 		QueueItem* findAutoSearch(StringList& recent);
@@ -239,6 +242,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.44 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.45 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

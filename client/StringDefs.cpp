@@ -1,5 +1,6 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
+#include "ResourceManager.h"
 string ResourceManager::strings[] = {
 "Active", 
 "Active / Search String", 

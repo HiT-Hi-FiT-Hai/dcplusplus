@@ -19,8 +19,10 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include "SettingsManager.h"
 #include "Util.h"
+
+#include "SettingsManager.h"
+#include "ResourceManager.h"
 
 #ifndef WIN32
 #include <sys/socket.h>
@@ -297,6 +299,23 @@ string Util::getAwayMessage() {
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 };
 
+string Util::formatBytes(int64_t aBytes) {
+	char buf[64];
+	if(aBytes < 1024) {
+		sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
+	} else if(aBytes < 1024*1024) {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KB));
+	} else if(aBytes < 1024*1024*1024) {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
+	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
+	} else {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
+	}
+
+	return buf;
+}
+
 
 string Util::getLocalIp() {
 	string tmp;
@@ -527,6 +546,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.33 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.34 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

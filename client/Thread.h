@@ -48,13 +48,7 @@ public:
 			CloseHandle(threadHandle);
 	};
 	
-	void start() throw(ThreadException) {
-		join();
-		if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
-			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
-		}
-	}
-
+	void start() throw(ThreadException);
 	void join() throw(ThreadException) {
 		if(threadHandle == NULL) {
 			return;
@@ -84,16 +78,12 @@ public:
 			pthread_detach(threadHandle);
 		}
 	};
-	void start() throw(ThreadException) { 
-		join();
-		if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
-			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
-		}
-	};
+	void start() throw(ThreadException);
 	void join() throw() { 
-		void* x;
-		pthread_join(threadHandle, &x);
-		threadHandle = 0;
+		if (threadHandle) {
+			pthread_join(threadHandle, 0);
+			threadHandle = 0;
+		}
 	};
 
 	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); };
@@ -150,6 +140,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.10 2003/11/04 20:18:12 arnetheduck Exp $
+ * $Id: Thread.h,v 1.11 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

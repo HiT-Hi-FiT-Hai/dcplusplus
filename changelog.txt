@@ -18,12 +18,16 @@
   require some extra cpu, so it can be turned off in settings, turning it off will turn it off for
   both up- and downloads. If both users have it enabled it will automatically be used. Compression
   is automatically turned off file files that don't compress well (.rar's for example), but the extra
-  CRC check is still done.
+  CRC check is still done. Safe transfers are marked by a * in the active transfers list (I'll think
+  of something better later on...)
 * New, very nice progress bars for the transfers window (thanks citruz)
 * Multi-shade progress bars to show how much was resumed and compressed
 * Added auto-grant option to favorite users (thanks saurod)
 * Improvements of robustness and speed of the XML reader
-
+* Fixed some minor Examples.xml issues ("\\" and "\t" are now correctly shown)
+* Fixed a queue crash bug
+* Changed transfer view sort order (active downloads, active uploads then connection attempts...one
+  fine day perhaps it'll be configurable...)
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

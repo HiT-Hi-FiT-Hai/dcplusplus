@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/SettingsManager.h"
+#include "../client/ResourceManager.h"
 
 #include "WinUtil.h"
 
@@ -613,5 +614,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.19 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.20 2003/11/10 22:42:12 arnetheduck Exp $
  */

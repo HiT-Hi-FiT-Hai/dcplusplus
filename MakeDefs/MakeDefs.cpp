@@ -11,6 +11,9 @@
 
 SettingsManager* Singleton<SettingsManager>::instance = 0;
 
+string ResourceManager::strings[];
+ResourceManager* Singleton<ResourceManager>::instance;
+
 /*
 int __cdecl main(int argc, char* argv[]) {
 	File src(argv[1], File::READ, File::OPEN);
@@ -82,9 +85,9 @@ int __cdecl main(int argc, char* argv[])
 		ex.stepIn();
 		ex.addTag("Strings");
 		ex.stepIn();
-		int a = 0;
 		string name;
 		string def;
+		string xmldef;
 		string s;
 		for(i = l.begin(); i != l.end(); i++) {
 
@@ -105,8 +108,14 @@ int __cdecl main(int argc, char* argv[])
 
 			k = s.find("// ");
 			def = s.substr(k + 3);
-			
-			ex.addTag("String", def.substr(1, def.size() - 2));
+			xmldef = def.substr(1, def.size() - 2);
+			while( (k = xmldef.find("\\t")) != string::npos) {
+				xmldef.replace(k, 2, "\t");
+			}
+			while( (k = xmldef.find("\\\\")) != string::npos) {
+				xmldef.replace(k, 2, "\\");
+			}
+			ex.addTag("String", xmldef);
 			ex.addChildAttrib("Name", name);
 
 			varStr += def + ", \r\n";

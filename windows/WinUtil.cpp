@@ -30,6 +30,7 @@
 #include "../client/ClientManager.h"
 #include "../client/TimerManager.h"
 #include "../client/HubManager.h"
+#include "../client/ResourceManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -548,5 +549,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.30 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.31 2003/11/10 22:42:12 arnetheduck Exp $
  */

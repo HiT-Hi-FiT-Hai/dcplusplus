@@ -30,9 +30,10 @@
 #include "LogManager.h"
 #include "HubManager.h"
 #include "SettingsManager.h"
-#include "StringTokenizer.h"
 #include "FinishedManager.h"
 #include "ADLSearch.h"
+
+#include "StringTokenizer.h"
 
 void startup(void (*f)(void*, const string&), void* p) {
 	Util::initialize();
@@ -133,6 +134,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.25 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.26 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

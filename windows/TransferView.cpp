@@ -254,14 +254,14 @@ int TransferView::sortTimeLeft(LPARAM a, LPARAM b) {
 int TransferView::sortItem(LPARAM a, LPARAM b) {
 	ItemInfo* c = (ItemInfo*)a;
 	ItemInfo* d = (ItemInfo*)b;
-	if(c->type == d->type) {
-		if(c->status == d->status || d->type == ItemInfo::TYPE_UPLOAD) {
+	if(c->status == d->status) {
+		if((c->type == d->type)) {
 			return ExListViewCtrl::SORT_STRING_NOCASE;
 		} else {
-			return c->status == ItemInfo::STATUS_RUNNING ? -1 : 1;
+			return (c->status == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
 		}
 	} else {
-		return c->type == ItemInfo::TYPE_DOWNLOAD ? -1 : 1;
+		return (c->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
 	}
 }
 
@@ -339,7 +339,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				if(rc.Width()>2) {
 					DeleteObject(SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,1,barPal[2])));
 
-					rc.top += (int)rc.Height()*0.33;
+					rc.top += 2;
 					::MoveToEx(cd->nmcd.hdc,rc.left+1,rc.top,(LPPOINT)NULL);
 					::LineTo(cd->nmcd.hdc,rc.right-2,rc.top);
 				};
@@ -538,7 +538,11 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 			ii->speed = d->getRunningAverage();
 
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
-			i->columns[COLUMN_STATUS] = buf;
+			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+				i->columns[COLUMN_STATUS] = "* " + string(buf);
+			} else {
+				i->columns[COLUMN_STATUS] = buf;
+			}
 			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(d->getSecondsLeft());
 			i->columns[COLUMN_SPEED] = Util::formatBytes(d->getRunningAverage()) + "/s";
 
@@ -614,7 +618,11 @@ void TransferView::onUploadTick(const Upload::List& ul) {
 				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatSeconds((GET_TICK() - u->getStart())/1000).c_str());
 
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
-			i->columns[COLUMN_STATUS] = buf;
+			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
+				i->columns[COLUMN_STATUS] = "* " + string(buf);
+			} else {
+				i->columns[COLUMN_STATUS] = buf;
+			}
 			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(u->getSecondsLeft());
 			i->columns[COLUMN_SPEED] = Util::formatBytes(u->getRunningAverage()) + "/s";
 
@@ -701,5 +709,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.10 2003/11/07 16:38:22 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.11 2003/11/10 22:42:12 arnetheduck Exp $
  */

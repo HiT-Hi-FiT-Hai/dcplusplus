@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "UploadManager.h"
+
 #include "ConnectionManager.h"
 #include "LogManager.h"
 #include "ShareManager.h"
@@ -132,9 +133,9 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	u->setLocalFileName(file);
 
 	if(smallfile)
-		u->setFlag(Upload::SMALL_FILE);
+		u->setFlag(Upload::FLAG_SMALL_FILE);
 	if(userlist)
-		u->setFlag(Upload::USER_LIST);
+		u->setFlag(Upload::FLAG_USER_LIST);
 
 	dcassert(aSource->getUpload() == NULL);
 	aSource->setUpload(u);
@@ -181,6 +182,7 @@ void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, in
 			dcassert(u != NULL);
 
 			u->setStart(GET_TICK());
+			u->setFlag(Upload::FLAG_ZUPLOAD);
 			aSource->sending();
 			aSource->setState(UserConnection::STATE_DONE);
 			aSource->transmitFile(u->getFile(), aBytes, true);
@@ -368,5 +370,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.42 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.43 2003/11/10 22:42:12 arnetheduck Exp $
  */

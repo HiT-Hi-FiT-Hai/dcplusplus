@@ -53,7 +53,7 @@ public:
 		}
 	}
 
-	SOCKET getSocket() const { return sock; }
+	socket_t getSocket() const { return sock; }
 
 	/** This is called by windows whenever an "FD_ACCEPT" is sent...doesn't work with unix... */
 	void incoming() {
@@ -61,13 +61,13 @@ public:
 	}
 	
 private:
-	SOCKET sock;
+	socket_t sock;
 };
  
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.18 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.19 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

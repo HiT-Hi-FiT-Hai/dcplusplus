@@ -19,14 +19,17 @@
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
+#include "CryptoManager.h"
+
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
 #include "File.h"
 
-#include "CryptoManager.h"
-
+#ifdef WIN32
 #include "../bzip2/bzlib.h"
-
+#else
+#include <bzlib.h>
+#endif
 
 CryptoManager* Singleton<CryptoManager>::instance;
 
@@ -48,7 +51,7 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRea
 	}
 	
 	if(state == STATE_FINISHED) {
-		return -1;
+		return (u_int32_t)-1;
 	}
 	
 	// We make a read buffer four times as large as the out buffer...this should be
@@ -568,5 +571,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.34 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.35 2003/11/10 22:42:12 arnetheduck Exp $
  */

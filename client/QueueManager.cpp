@@ -20,16 +20,17 @@
 #include "DCPlusPlus.h"
 
 #include "QueueManager.h"
+
 #include "ConnectionManager.h"
 #include "SearchManager.h"
 #include "ClientManager.h"
 #include "DownloadManager.h"
+#include "CryptoManager.h"
+#include "ShareManager.h"
+
 #include "UserConnection.h"
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
-#include "DirectoryListing.h"
-#include "CryptoManager.h"
-#include "ShareManager.h"
 #include "DirectoryListing.h"
 
 QueueManager* Singleton<QueueManager>::instance = NULL;
@@ -56,7 +57,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 	}
 
 	const string& tgt = qi->getTempTarget().empty() ? qi->getTarget() : qi->getTempTarget();
-	if(File::getSize(tgt) > 0)
+	if((qi->getDownloadedBytes() > 0) || (File::getSize(tgt) > 0))
 		qi->setFlag(QueueItem::FLAG_EXISTS);
 
 	dcassert(find(aTarget) == NULL);
@@ -486,26 +487,24 @@ void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, cons
 
 #define isnum(c) (((c) >= '0') && ((c) <= '9'))
 
-static inline int adjustSize(u_int32_t sz, const string& name) {
-	if((name.length() > 2) && ((sz == 15 * 1000 * 1000) || (sz == 50 * 1000 * 1000))) {
-		// Common rar-set size...handle specially because it makes
-		// the hash map ineffective
+static inline u_int32_t adjustSize(u_int32_t sz, const string& name) {
+	if(name.length() > 2) {
 		// filename.r32
 		u_int8_t c1 = (u_int8_t)name[name.length()-2];
 		u_int8_t c2 = (u_int8_t)name[name.length()-1];
 		if(isnum(c1) && isnum(c2)) {
-			return (c1-'0')*10 + (c2-'0');
+			return sz + (c1-'0')*10 + (c2-'0');
 		} else if(name.length() > 6) {
 			// filename.part32.rar
 			c1 = name[name.length() - 6];
 			c2 = name[name.length() - 5];
 			if(isnum(c1) && isnum(c2)) {
-				return (c1-'0')*10 + (c2-'0');
+				return sz + (c1-'0')*10 + (c2-'0');
 			}
 		}
 	} 
 
-	return 0;
+	return sz;
 }
 
 typedef HASH_MULTIMAP<u_int32_t, QueueItem*> SizeMap;
@@ -529,7 +528,7 @@ void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 	for(DirectoryListing::File::Iter i = dir->files.begin(); i != dir->files.end(); ++i) {
 		DirectoryListing::File* df = *i;
 
-		SizePair files = sizeMap.equal_range(((u_int32_t)df->getSize()) + adjustSize((u_int32_t)df->getSize(), df->getName()));
+		SizePair files = sizeMap.equal_range(adjustSize((u_int32_t)df->getSize(), df->getName()));
 		for(SizeIter j = files.first; j != files.second; ++j) {
 			QueueItem* qi = j->second;
 			if(Util::stricmp(df->getName(), qi->getTargetFileName()) == 0 && df->getSize() == qi->getSize()) {
@@ -552,7 +551,7 @@ int QueueManager::matchListing(DirectoryListing* dl) throw() {
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 			QueueItem* qi = i->second;
 			if(qi->getSize() != -1) {
-				sizeMap.insert(make_pair(((u_int32_t)qi->getSize()) + adjustSize((u_int32_t)qi->getSize(), qi->getTarget()), qi));
+				sizeMap.insert(make_pair(adjustSize((u_int32_t)qi->getSize(), qi->getTarget()), qi));
 			}
 		}
 
@@ -671,6 +670,8 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 			} else {
 				q->setDownloadedBytes(aDownload->getPos());
 				q->setCurrentDownload(NULL);
+				if(q->getDownloadedBytes() > 0)
+					q->setFlag(QueueItem::FLAG_EXISTS);
 
 				if(q->getPriority() != QueueItem::PAUSED) {
 					for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
@@ -1187,5 +1188,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.53 2003/11/07 16:38:22 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.54 2003/11/10 22:42:12 arnetheduck Exp $
  */

@@ -20,12 +20,21 @@
 #include "DCPlusPlus.h"
 
 #include "ShareManager.h"
+
 #include "CryptoManager.h"
-#include "SimpleXML.h"
-#include "StringTokenizer.h"
 #include "UploadManager.h"
 #include "ClientManager.h"
+
+#include "SimpleXML.h"
+#include "StringTokenizer.h"
 #include "File.h"
+
+#ifndef WIN32
+#include <sys/types.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 ShareManager* Singleton<ShareManager>::instance = NULL;
 
@@ -83,7 +92,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	} else if(aFile == "MyList.bz2") {
 		return getBZListFile();
 	} else {
-		string::size_type i = aFile.find('\\');
+		string::size_type i = aFile.find(PATH_SEPARATOR);
 		if(i == string::npos)
 			throw ShareException("File Not Available");
 		
@@ -112,7 +121,7 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 
 	string::size_type i;
 	string::size_type j = 0;
-	while( (i = aFile.find('\\', j)) != string::npos) {
+	while( (i = aFile.find(PATH_SEPARATOR, j)) != string::npos) {
 		mi = d->directories.find(aFile.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
@@ -162,21 +171,21 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		WLock l(cs);
 		
 		string d;
-		if(aDirectory[aDirectory.size() - 1] == '\\') {
+		if(aDirectory[aDirectory.size() - 1] == PATH_SEPARATOR) {
 			d = aDirectory.substr(0, aDirectory.size()-1);
 		} else {
 			d = aDirectory;
 		}
 		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			if(d.find(i->first + '\\') != string::npos) {
+			if(d.find(i->first + PATH_SEPARATOR) != string::npos) {
 				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
-			} else if(i->first.find(d + '\\') != string::npos) {
+			} else if(i->first.find(d + PATH_SEPARATOR) != string::npos) {
 				throw ShareException(STRING(REMOVE_ALL_SUBDIRECTORIES));
 			}
 		}
 
-		string dir = Util::toLower(d.substr(d.rfind('\\') + 1));
+		string dir = Util::toLower(d.substr(d.rfind(PATH_SEPARATOR) + 1));
 		
 		if(dirs.find(dir) != dirs.end()) {
 			// We have a duplicate, rename it internally...
@@ -215,7 +224,7 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 }
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
-	Directory* dir = new Directory(aName.substr(aName.rfind('\\') + 1), aParent);
+	Directory* dir = new Directory(aName.substr(aName.rfind(PATH_SEPARATOR) + 1), aParent);
 	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 	dir->addSearchType(getMask(dir->getName()));
 
@@ -257,7 +266,39 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	}
 	
 	FindClose(hFind);
-#endif
+
+#else // WIN32
+	Directory::FileIter lastFileIter = dir->files.begin();
+	DIR *dirp = opendir(aName.c_str());
+	if (dirp) {
+		while (dirent* entry = readdir(dirp)) {
+			string name = entry->d_name;
+			if (name == "." || name == "..") {
+				continue;
+			}
+			if (name[0] == '.' && !BOOLSETTING(SHARE_HIDDEN)) {
+				continue;
+			}
+			string pathname = aName + PATH_SEPARATOR + name;
+			struct stat s;
+			if (stat(pathname.c_str(), &s) == 0) {
+				if (S_ISDIR(s.st_mode)) {
+					//dir->addType(SearchManager::TYPE_DIRECTORY);
+					dir->directories[name] = buildTree(pathname, dir);
+					dir->addSearchType(dir->directories[name]->getSearchTypes()); 
+
+				} else if (S_ISREG(s.st_mode)) {
+					dir->addSearchType(getMask(name));
+					dir->addType(getType(name));
+					lastFileIter = dir->files.insert(lastFileIter, make_pair(name, s.st_size));
+					dir->size += s.st_size;
+				}
+			}
+		}
+		closedir(dirp);
+	}
+#endif // WIN32
+
 	return dir;
 }
 
@@ -496,7 +537,7 @@ static bool checkType(const string& aString, int aType) {
 }
 
 SearchManager::TypeModes ShareManager::getType(const string& aFileName) {
-	if(aFileName[aFileName.length() - 1] == '\\') {
+	if(aFileName[aFileName.length() - 1] == PATH_SEPARATOR) {
 		return SearchManager::TYPE_DIRECTORY;
 	}
 
@@ -699,6 +740,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.58 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.59 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

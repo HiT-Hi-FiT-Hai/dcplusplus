@@ -23,11 +23,12 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "TimerManager.h"
+#include "SettingsManager.h"
+
 #include "BufferedSocket.h"
 #include "User.h"
-#include "TimerManager.h"
 #include "CriticalSection.h"
-#include "SettingsManager.h"
 
 class Client;
 
@@ -305,6 +306,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.71 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: Client.h,v 1.72 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

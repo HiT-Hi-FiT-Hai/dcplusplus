@@ -24,7 +24,10 @@
 #endif // _MSC_VER > 1000
 
 #include "SettingsManager.h"
+#include "ResourceManager.h"
+
 #include "Exception.h"
+#include "Util.h"
 
 #ifndef WIN32
 #include <sys/stat.h>
@@ -41,7 +44,6 @@ public:
 private:
 	u_int32_t value;
 };
-
 
 class File  
 {
@@ -410,6 +412,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.22 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: File.h,v 1.23 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

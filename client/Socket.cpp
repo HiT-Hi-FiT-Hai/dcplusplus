@@ -20,8 +20,11 @@
 #include "DCPlusPlus.h"
 
 #include "Socket.h"
-#include "ServerSocket.h"
+
 #include "SettingsManager.h"
+#include "ResourceManager.h"
+
+#include "ServerSocket.h"
 
 string Socket::udpServer;
 short Socket::udpPort;
@@ -517,6 +520,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.49 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.50 2003/11/10 22:42:12 arnetheduck Exp $
  */
 

@@ -21,8 +21,26 @@
 
 #include "Thread.h"
 
+#include "ResourceManager.h"
+
+#ifdef WIN32
+void Thread::start() throw(ThreadException) {
+	join();
+	if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
+		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+	}
+}
+
+#else
+void start() throw(ThreadException) { 
+	join();
+	if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
+		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+	}
+};
+#endif
 /**
  * @file
- * $Id: Thread.cpp,v 1.3 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: Thread.cpp,v 1.4 2003/11/10 22:42:12 arnetheduck Exp $
  */
 
