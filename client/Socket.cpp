@@ -203,15 +203,16 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	}
 }
 
-void Socket::write(const string& aData) throw(SocketException) {
-	write(aData.c_str(), aData.length());
-}
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.11 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.12 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.12  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.11  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

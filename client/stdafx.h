@@ -52,8 +52,9 @@ extern CAppModule _Module;
 #include <map>
 #include <list>
 #include <set>
+#include <deque>
 
-#include <iosfwd>
+//#include <iosfwd>
 using namespace std;
 
 //{{AFX_INSERT_LOCATION}}
@@ -63,9 +64,13 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.7 2001/12/07 20:03:34 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.8 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.8  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.7  2001/12/07 20:03:34  arnetheduck
  * More work done towards application stability
  *

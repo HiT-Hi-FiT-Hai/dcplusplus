@@ -37,32 +37,15 @@ ConnectionManager* ConnectionManager::instance = NULL;
  * @return The state of the connection sequence (UserConnection::CONNECTING if a connection is being made, otherwise
  * there's probably already a connection in progress).
  */
-int ConnectionManager::getDownloadConnection(User* aUser) {
-	downloaderCS.enter();
+int ConnectionManager::getDownloadConnection(User* aUser, bool aRemind /* = false */) {
+	cs.enter();
 	UserConnection::NickIter i = downloaders.find(aUser->getNick());
 
-	if(i != downloaders.end()) {
-		UserConnection* u = i->second;
-		if(u->state == UserConnection::FREE) {
-			// Good, we found a free connection, use it!
-			u->state = UserConnection::BUSY;
-			DownloadManager::getInstance()->addConnection(i->second);
-			downloaderCS.leave();		
-			
-			return UserConnection::CONNECTING;
-		}
-		// Already connected to this user...		
-		downloaderCS.leave();		
-		return UserConnection::BUSY;
-
-	} else if(pendingDown.find(aUser->getNick()) != pendingDown.end()) {
-		// Already trying to connect to this user...
-		downloaderCS.leave();		
+	if(i != downloaders.end() || (!aRemind && pendingDown.find(aUser->getNick()) != pendingDown.end())) {
+		cs.leave();
 		return UserConnection::BUSY;
 	}
 
-	downloaderCS.leave();		
-	
 	// Alright, set up a new connection attempt.
 	try {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
@@ -72,11 +55,14 @@ int ConnectionManager::getDownloadConnection(User* aUser) {
 		}
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::getDownloadConnection: Caught: %s\n", e.getError().c_str());
+		cs.leave();
+		
 		return UserConnection::BUSY;
 	}
 	
 	// Add to the list of pending downloads...
 	pendingDown[aUser->getNick()] = aUser;
+	cs.leave();
 	return UserConnection::CONNECTING;
 }
 
@@ -89,11 +75,11 @@ void ConnectionManager::onIncomingConnection() {
 
 	try { 
 		uc->accept(socket);
+		uc->flags |= UserConnection::FLAG_INCOMING;
 		uc->state = UserConnection::LOGIN;
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
-		uc->disconnect();
-		pool.push_back(uc);
+		putConnection(uc);
 	}
 }
 
@@ -101,85 +87,61 @@ void ConnectionManager::onIncomingConnection() {
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
+	cs.enter();
 	User::NickIter i = pendingDown.find(aNick);
 
 	if(i != pendingDown.end()) {
-		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-			// We sent a CTM and got an answer, now the other fellow sent his nick.
-			// Record it, send own nick and wait for the lock...
-			try {
-				aSource->myNick(Settings::getNick());
-				aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-			} catch(Exception e) {
-				dcdebug("ConnectionManager::onMyNick caught: %s\n", e.getError().c_str());
-				putConnection(aSource);
-			}
-		} 	
-		// In a passive connection, we sent our nick first, and then waited for the
-		// other fellow to send his...
-
+		aSource->flags |= UserConnection::FLAG_DOWNLOAD;
 		aSource->user = i->second;
-		downloaderCS.enter();
+		dcassert(i->second != NULL);
 		downloaders[aNick] = aSource;
-		downloaderCS.leave();
-
 		pendingDown.erase(i);
-		try {
-			aSource->direction("Download", "666");
-		} catch(Exception e) {
-			dcdebug("ConnectionManager::onMyNick caught(2): %s\n", e.getError().c_str());
-			putConnection(aSource);
-		}
-	
+
 	} else {
 		// We didn't order it so it must be an uploading connection...
 		// Make sure we know who it is, i e that he/she is connected...
 		aSource->user = Client::findUser(aNick);
 		if(aSource->user == NULL) {
 			// Duuuh...this is bad...abort, abort, abort! (Disconnect and replace the connection on the pool)
+			dcdebug("ConnectionManager::onMyNick Unknown nick: %s\n", aNick.c_str());
 			putConnection(aSource);
+			cs.leave();
+			return;
 		}
 		
-		try {
-			aSource->myNick(Settings::getNick());
-			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-		} catch(Exception e) {
-			dcdebug("ConnectionManager::onMyNick caught(3): %s\n", e.getError().c_str());
-			putConnection(aSource);
-		}
-	
 		aSource->flags |= UserConnection::FLAG_UPLOAD;
-		uploaderCS.enter();
 		uploaders[aNick] = aSource;
-		uploaderCS.leave();
 	} 
+	cs.leave();
 }
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
-
 	try {
+		if(aSource->flags & UserConnection::FLAG_INCOMING) {
+				aSource->myNick(Settings::getNick());
+				aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+		}
+
+		aSource->direction(aSource->getDirectionString(), "666");
 		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
-	} catch(Exception e) {
+	} catch(SocketException e) {
 		dcdebug("ConnectionManager::onLock caught: %s\n", e.getError().c_str());
 		putConnection(aSource);
+		return;
 	}
-	
-	if(aSource->flags & UserConnection::FLAG_UPLOAD) {
-		// Pass it to the UploadManager
-		aSource->direction("Upload", "666");
-		aSource->state = UserConnection::BUSY;
-		UploadManager::getInstance()->addConnection(aSource);
-	} else if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
-		// We're done, send this connection to the downloadmanager.
-		aSource->state = UserConnection::BUSY;
-		DownloadManager::getInstance()->addConnection(aSource);
-	}
+				
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) {
-	if(!(aSource->flags & UserConnection::FLAG_UPLOAD) && Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-		// We're done, send this connection to the downloadmanager.
+	// We don't want any messages while the Up/DownloadManagers are working...
+	aSource->removeListener(this);
+	aSource->state = UserConnection::BUSY;
+	
+	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
 		DownloadManager::getInstance()->addConnection(aSource);
+	} else {
+		dcassert(aSource->flags & UserConnection::FLAG_UPLOAD);
+		UploadManager::getInstance()->addConnection(aSource);
 	}
 }
 
@@ -205,11 +167,25 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 	}
 }
 
+void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
+	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
+		putDownloadConnection(aSource);
+	} else if(aSource->flags & UserConnection::FLAG_UPLOAD) {
+		putUploadConnection(aSource);
+	} else {
+		putConnection(aSource);
+	}
+}
+
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.8 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.9 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.9  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.8  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

@@ -150,7 +150,9 @@ public:
 	}
 	virtual void accept(const ServerSocket& aSocket);
 	virtual void write(const char* buffer, int len) throw(SocketException);
-	virtual void write(const string& aData) throw(SocketException); 
+	virtual void write(const string& aData) throw(SocketException) {
+		write(aData.data(), aData.length());
+	}
 
 	bool isConnected() {
 		return connected;
@@ -204,9 +206,13 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.10 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: Socket.h,v 1.11 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.11  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.10  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

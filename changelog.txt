@@ -1,3 +1,10 @@
+ -- 0.05 2001-12-08 --
+* Searching (A very basic first version, only in active mode)
+* More information about things (Hub statistics)
+* A lot of bugs fixed, still a lot of them left tho...
+* More bugfixes...
+* Improved Huffman en/decoding speed quite a bit
+
  -- 0.04 2001-12-05 --
 * Downloads
 * Uploads (file sharing)

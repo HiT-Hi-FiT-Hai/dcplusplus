@@ -209,8 +209,8 @@ public:
 		UserConnection::Iter i = connections.begin();
 		while( i != connections.end()) {
 			(*i)->removeListener(this);
-			i = connections.erase(i);
 			ConnectionManager::getInstance()->putUploadConnection(*i);
+			i = connections.erase(i);
 		}
 	}
 	
@@ -288,9 +288,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.13 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.13  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.12  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

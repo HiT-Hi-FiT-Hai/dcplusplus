@@ -73,6 +73,15 @@ public:
 	char getSeparator() { return separator; };
 	void setSeparator(char aSeparator) { separator = aSeparator; };
 
+	virtual void write(const string& aData) throw(SocketException) {
+		write(aData.data(), aData.length());
+	}
+	virtual void write(const char* aBuf, int aLen) throw(SocketException) {
+		cs.enter();
+		Socket::write(aBuf, aLen);
+		cs.leave();
+	}
+	
 	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), readerEvent(NULL), mode(MODE_LINE),
 		writerEvent(NULL), writerThread(NULL), dataBytes(0) {
 
@@ -91,6 +100,8 @@ private:
 	BufferedSocket(const BufferedSocket& aSocket) {
 		// Copy still not allowed
 	}
+
+	CriticalSection cs;
 	
 	string server;
 	short port;
@@ -231,9 +242,13 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.9 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.10 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.10  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.9  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

@@ -76,29 +76,14 @@ public:
 	virtual void onDownloadTick(Download* aDownload) { };
 };
 
-class DownloadManager : public Speaker<DownloadManagerListener>, public UserConnectionListener, public TimerManagerListener
+class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener
 {
 public:
-
-	virtual void onError(UserConnection* aSource, const string& aError);
-	virtual void onData(UserConnection* aSource, BYTE* aData, int aLen);
-	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
-	virtual void onMaxedOut(UserConnection* aSource);
-	virtual void onModeChange(UserConnection* aSource, int aNewMode);
-
-	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) {
-		dcassert(aDirection == "Upload");
-	}
-	
-	virtual void onTimerSecond(DWORD aTick);
-
 	void download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume = true) {
 		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume = true);
 	
-	void checkDownloads(UserConnection* aConn);
-
 	static DownloadManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -122,9 +107,9 @@ public:
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		
-		connectionCS.enter();
+		cs.enter();
 		connections.push_back(conn);
-		connectionCS.leave();
+		cs.leave();
 
 		checkDownloads(conn);
 	}
@@ -133,22 +118,32 @@ public:
 	void removeConnections(); 
 private:
 
+	CriticalSection cs;
+
 	Download::List queue;
 	Download::Map running;
 	
-	CriticalSection runningCS;
-	
 	static DownloadManager* instance;
-	StringList expectedNicks;
 	
 	UserConnection::List connections;
-	CriticalSection connectionCS;
 
+	void checkDownloads(UserConnection* aConn);
+	
+	// UserConnectionListener
+	virtual void onError(UserConnection* aSource, const string& aError);
+	virtual void onData(UserConnection* aSource, BYTE* aData, int aLen);
+	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
+	virtual void onMaxedOut(UserConnection* aSource);
+	virtual void onModeChange(UserConnection* aSource, int aNewMode);
+	
+	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick);
+	
 	void fireAdded(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		dcdebug("DownloadManager::fireAdded %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadAdded(aPtr);
 		}
@@ -157,7 +152,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		dcdebug("DownloadManager::fireComplete %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadComplete(aPtr);
 		}
@@ -166,7 +161,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		dcdebug("DownloadManager:.fireConnecting %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadConnecting(aPtr);
 		}
@@ -175,7 +170,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		dcdebug("DownloadManager::fireFailed %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadFailed(aPtr, aReason);
 		}
@@ -184,7 +179,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		dcdebug("DownloadManager::fireStarting %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadStarting(aPtr);
 		}
@@ -210,9 +205,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.8 2001/12/07 20:03:06 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.9 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.9  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.8  2001/12/07 20:03:06  arnetheduck
  * More work done towards application stability
  *

@@ -96,13 +96,13 @@ private:
 };
 class ServerSocket;
 
-class UserConnection : public Speaker<UserConnectionListener>, public BufferedSocketListener
+class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener
 {
 public:
 	friend class ConnectionManager;
 	
 	typedef UserConnection* Ptr;
-	typedef vector<Ptr> List;
+	typedef deque<Ptr> List;
 	typedef List::iterator Iter;
 	typedef map<string, Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
@@ -121,27 +121,19 @@ public:
 
 	enum {
 		FLAG_UPLOAD = 0x01,
+		FLAG_DOWNLOAD = 0x02,
+		FLAG_INCOMING = 0x04
 	};
 
-	virtual void onBytesSent(DWORD aBytes) { fireBytesSent(aBytes); };
-	virtual void onConnected() { fireConnected(); };
-	virtual void onLine(const string& aLine);
-	virtual void onError(const string& aError) { fireError(aError); };
-	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
-	virtual void onData(BYTE *aBuf, int aLen) { fireData(aBuf, aLen); };
-	virtual void onTransmitDone() {
-		fireTransmitDone();
-	};
-	
 	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
 	
 	void get(const string& aFile, LONGLONG aResume) { 
-		char buf[24];
-		_i64toa(aResume+1, buf, 10);
-		send("$Get " + aFile + "$" + string(buf)+"|");
+		char buf[1024];
+		sprintf(buf, "$Get %s$%I64d|", aFile.c_str(), aResume+1);
+		send(buf);
 	}
 	
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + "|"); }
@@ -164,6 +156,12 @@ public:
 	void transmitFile(HANDLE f) {
 		socket.transmitFile(f);
 	}
+
+	const string& getDirectionString() {
+		dcassert(flags & (FLAG_UPLOAD | FLAG_DOWNLOAD));
+		return (flags & UserConnection::FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
+	}
+
 private:
 	string server;
 	short port;
@@ -171,8 +169,11 @@ private:
 	User* user;
 	int state;
 	int flags;
+
+	static const string UPLOAD, DOWNLOAD;
 	
 	void reset() {
+		dcdebug("UserConnection(%p)::reset\n", this );
 		disconnect();
 		removeListeners();
 		user = NULL;
@@ -187,7 +188,18 @@ private:
 		socket.addListener(this);
 	};
 	virtual ~UserConnection() {
-		dcdebug("UserConnection destroyer\n");
+		dcdebug("UserConnection destroyer\n", this );
+	};
+
+	// BufferedSocketListener
+	virtual void onBytesSent(DWORD aBytes) { fireBytesSent(aBytes); };
+	virtual void onConnected() { fireConnected(); };
+	virtual void onLine(const string& aLine);
+	virtual void onError(const string& aError) { fireError(aError); };
+	virtual void onModeChange(int aNewMode) { fireModeChange(aNewMode); };
+	virtual void onData(BYTE *aBuf, int aLen) { fireData(aBuf, aLen); };
+	virtual void onTransmitDone() {
+		fireTransmitDone();
 	};
 	
 	void send(const string& aString) {
@@ -195,7 +207,7 @@ private:
 	}
 	void fireBytesSent(DWORD aBytes) {
 		listenerCS.enter();
-	//	dcdebug("UserConnection::fireBytesSent\n");
+	//	dcdebug("UserConnection(%p)::fireBytesSent\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -204,7 +216,7 @@ private:
 	}
 	void fireConnected() {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireConnected\n");
+		dcdebug("UserConnection(%p)::fireConnected\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -213,7 +225,7 @@ private:
 	}
 	void fireConnecting(const string& aServer) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireConnecting %s\n", aServer.c_str());
+		dcdebug("UserConnection(%p)::fireConnecting %s\n", this , aServer.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -222,7 +234,7 @@ private:
 	}
 	void fireData(BYTE* aData, int aLen) {
 		listenerCS.enter();
-//		dcdebug("UserConnection::fireData %d\n", aLen);
+//		dcdebug("UserConnection(%p)::fireData %d\n", this , aLen);
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -231,7 +243,7 @@ private:
 	}
 	void fireDirection(const string& aDirection, const string& aNumber) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireDirection %s\n", aDirection.c_str());
+		dcdebug("UserConnection(%p)::fireDirection %s\n", this , aDirection.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -240,7 +252,7 @@ private:
 	}
 	void fireError(const string& aError) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireError %s\n", aError.c_str());
+		dcdebug("UserConnection(%p)::fireError %s\n", this , aError.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -249,7 +261,7 @@ private:
 	}
 	void fireFileLength(const string& aLength) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireFileLength %s\n", aLength.c_str());
+		dcdebug("UserConnection(%p)::fireFileLength %s\n", this , aLength.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -258,7 +270,7 @@ private:
 	}
 	void fireGet(const string& aFile, LONGLONG aResume) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireGet %s\n", aFile.c_str());
+		dcdebug("UserConnection(%p)::fireGet %s\n", this , aFile.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -267,7 +279,7 @@ private:
 	}
 	void fireKey(const string& aKey) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireKey\n");
+		dcdebug("UserConnection(%p)::fireKey\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -276,7 +288,7 @@ private:
 	}
 	void fireGetListLen() {
 		listenerCS.enter();
-		dcdebug("fireGetListLen\n");
+		dcdebug("UserConnection(%p)::fireGetListLen\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -285,7 +297,7 @@ private:
 	}
 	void fireLock(const string& aLock, const string& aPk) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireLock\n");
+		dcdebug("UserConnection(%p)::fireLock\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -294,7 +306,7 @@ private:
 	}
 	void fireMaxedOut() {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireMaxedOut\n");
+		dcdebug("UserConnection(%p)::fireMaxedOut\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -303,7 +315,7 @@ private:
 	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireModeChange\n");
+		dcdebug("UserConnection(%p)::fireModeChange\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -312,7 +324,7 @@ private:
 	}
 	void fireMyNick(const string& aNick) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireMyNick %s\n", aNick.c_str());
+		dcdebug("UserConnection(%p)::fireMyNick %s\n", this , aNick.c_str());
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -321,7 +333,7 @@ private:
 	}
 	void fireSend() {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireSend\n");
+		dcdebug("UserConnection(%p)::fireSend\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -330,7 +342,7 @@ private:
 	}
 	void fireTransmitDone() {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireTransmitDone\n");
+		dcdebug("UserConnection(%p)::fireTransmitDone\n", this );
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -343,9 +355,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.13 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.13  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.12  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

@@ -23,6 +23,9 @@
 
 #include "ServerSocket.h"
 
+const string UserConnection::UPLOAD = "Upload";
+const string UserConnection::DOWNLOAD = "Download";
+
 void UserConnection::connect(const string& aServer, short aPort /* = 412 */) {
 	if(socket.isConnected())
 		disconnect();
@@ -81,9 +84,13 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.5 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.5  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

@@ -128,7 +128,12 @@ private:
 	LONGLONG listLen;
 
 	ShareManager() : listLen(0) { };
-	virtual ~ShareManager() { };
+	virtual ~ShareManager() { 
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			delete i->second;
+		}
+	}
+
 	static ShareManager* instance;
 	
 	Directory::Map directories;
@@ -140,9 +145,13 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.2 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.3 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.3  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.2  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

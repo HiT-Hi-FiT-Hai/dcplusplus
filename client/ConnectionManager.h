@@ -47,10 +47,10 @@ public:
 		instance = NULL;
 	}
 
-	int getDownloadConnection(User* aUser);
+	int getDownloadConnection(User* aUser, bool aRemind = false);
+	
 	void putDownloadConnection(UserConnection* aSource) {
-		downloaderCS.enter();
-		int j = downloaders.size();
+		cs.enter();
 		for(UserConnection::NickIter i = downloaders.begin(); i != downloaders.end(); ++i) {
 			// Can't search by user, he/she might have disconnected...
 			if(i->second == aSource) {
@@ -58,12 +58,12 @@ public:
 				break;
 			}
 		}
-		downloaderCS.leave();		
+		cs.leave();		
 		// Pool it for later usage...
 		putConnection(aSource);
 	}
 	void putUploadConnection(UserConnection* aSource) {
-		uploaderCS.enter();
+		cs.enter();
 		for(UserConnection::NickIter i = uploaders.begin(); i != uploaders.end(); ++i) {
 			// Can't search by user, he/she might have disconnected...
 			if(i->second == aSource) {
@@ -71,7 +71,7 @@ public:
 				break;
 			}
 		}
-		uploaderCS.leave();
+		cs.leave();
 		putConnection(aSource);
 	}
 	void connect(const string& aServer, short aPort);
@@ -90,46 +90,58 @@ public:
 		}
 	}
 
+private:
+
+	/** Main critical section for the connection manager */
+	CriticalSection cs;
+
+	User::NickMap pendingDown;
+	UserConnection::NickMap downloaders;
+	UserConnection::NickMap uploaders;
+	UserConnection::List pool;
+
 	virtual void onIncomingConnection();
 	virtual void onMyNick(UserConnection* aSource, const string& aNick);
 	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk);
 	virtual void onConnected(UserConnection* aSource);
 	virtual void onKey(UserConnection* aSource, const string& aKey);
-private:
-	User::NickMap pendingDown;
-	CriticalSection downloaderCS;
-	UserConnection::NickMap downloaders;
-	CriticalSection uploaderCS;
-	UserConnection::NickMap uploaders;
+	virtual void onError(UserConnection* aSource, const string& aError);
 	
-	UserConnection::List pool;
-	CriticalSection poolCS;
-
 	/**
 	 * Returns an unused connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
 		UserConnection* uc;
-		poolCS.enter();
-		if(pool.size() == 0) {
+		cs.enter();
+		if(pool.size() < 2) {
 			uc = new UserConnection();
 			uc->addListener(this);
 		} else {
-			uc = pool.back();
-			pool.pop_back();
+			uc = pool.front();
+			pool.pop_front();
+			dcdebug("ConnectionManager::getConnection %p, %d listeners\n", uc, uc->listeners.size());
 			uc->addListener(this);
 		}
-		poolCS.leave();
+		cs.leave();
 		return uc;
 	}
 	/**
-	 * Put a connection back into the pool.
+	 * Put a connection back into the pool. Note; As it seems, this function might be called multiple times
+	 * for the same connection, once when the reader dies, and once when some other thread tries to recover...
 	 */
 	void putConnection(UserConnection* aConn) {
 		aConn->reset();
-		poolCS.enter();
-		pool.push_back(aConn);
-		poolCS.leave();
+		cs.enter();
+		bool found = false;
+		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
+			if(*i == aConn) {
+				found = true;
+				break;
+			}
+		}
+		if(!found)
+			pool.push_back(aConn);
+		cs.leave();
 	}
 	static ConnectionManager* instance;
 	/**
@@ -138,7 +150,11 @@ private:
 	ConnectionManager() {
 		try {
 			socket.addListener(this);
-			socket.waitForConnections(Settings::getPort());
+			
+			if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+				// We only want to listen if we're in active mode...
+				socket.waitForConnections(Settings::getPort());
+			}
 		} catch(SocketException e) {
 			dcdebug("ConnectionManager::ConnectionManager caught: %s\n", e.getError().c_str());
 		}
@@ -147,12 +163,10 @@ private:
 	~ConnectionManager() {
 		socket.removeListener(this);
 		// Time to empty the pool...
-		poolCS.enter();
 		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
 			dcdebug("Deleting connection %p\n", *i);
 			delete *i;
 		}
-		poolCS.leave();
 	}
 
 	ServerSocket socket;
@@ -162,9 +176,13 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.9 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.10 2001/12/10 10:48:40 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.10  2001/12/10 10:48:40  arnetheduck
+ * Ahh, finally found one bug that's been annoying me for days...=) the connections
+ * in the pool were not reset correctly before being put back for later use...
+ *
  * Revision 1.9  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *
