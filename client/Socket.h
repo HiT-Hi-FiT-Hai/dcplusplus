@@ -74,7 +74,7 @@
 #	define errno WSAGetLastError()
 #	define checksocket(x) if((x) == INVALID_SOCKET) { throw SocketException(WSAGetLastError()); }
 #	define checksend(x, len) if((x) != len) { throw SocketException(WSAGetLastError()); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return 0; else throw SocketException(WSAGetLastError()); }
+#	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return -1; else throw SocketException(WSAGetLastError()); }
 #	define checksockerr(x) if((x) == SOCKET_ERROR) { throw SocketException(WSAGetLastError()); }
 #else
 #	define closesocket(x) close(x)
@@ -183,9 +183,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: Socket.h,v 1.8 2001/12/05 19:40:13 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.8  2001/12/05 19:40:13  arnetheduck
+ * More bugfixes.
+ *
  * Revision 1.7  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

@@ -36,7 +36,6 @@ public:
 	
 };
 
-
 class UploadManagerListener {
 public:
 	typedef UploadManagerListener* Ptr;
@@ -53,10 +52,11 @@ class UploadManager : public UserConnectionListener, public Speaker<UploadManage
 {
 public:
 	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
-		Upload * u;
+		Upload* u;
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
+			dcdebug("onBytesSent: Upload not found\n");
 			removeConnection(aSource);
 			return;
 		}
@@ -69,6 +69,7 @@ public:
 		Upload* u;
 		Upload::MapIter i = uploads.find(aSource);
 		if(i != uploads.end()) {
+			dcdebug("onError: Removing upload\n");
 			u = i->second;
 			fireFailed(u, aError);
 			uploads.erase(i);
@@ -85,11 +86,13 @@ public:
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
+			dcdebug("onTransmitDone: Upload not found\n");
 			removeConnection(aSource);
 			return;
 		}
 		u = i->second;
 		fireComplete(u);
+		dcdebug("onTransmitDone: removing upload\n");
 		uploads.erase(i);
 		delete u;
 
@@ -108,6 +111,7 @@ public:
 			Upload::MapIter i = uploads.find(aSource);
 			if(i != uploads.end()) {
 				delete i->second;
+				dcdebug("onGet: removing upload\n");
 				uploads.erase(i);
 			} 
 
@@ -126,6 +130,7 @@ public:
 			char buf[24];
 			aSource->fileLength(_i64toa(u->getSize(), buf, 10));
 
+			dcdebug("onGet: adding upload\n");
 			uploads[aSource] = u;
 
 		} catch (ShareException e) {
@@ -134,7 +139,7 @@ public:
 	}
 	
 	virtual void onSend(UserConnection* aSource) {
-		Upload * u;
+		Upload* u;
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
@@ -146,12 +151,10 @@ public:
 			aSource->transmitFile(u->getFile());
 			fireStarting(u);
 		} catch(Exception e) {
+			dcdebug("onSend: removing upload\n");
 			uploads.erase(i);
 			delete u;
-			aSource->removeListener(this);
-
-			aSource->disconnect();
-			ConnectionManager::getInstance()->putUploadConnection(aSource);
+			removeConnection(aSource);
 		}
 	}
 	
@@ -178,8 +181,8 @@ public:
 	void removeConnections() {
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			(*i)->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(*i);
 			i = connections.erase(i);
+			ConnectionManager::getInstance()->putUploadConnection(*i);
 		}
 	}
 	
@@ -254,9 +257,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.8 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.9 2001/12/05 19:40:13 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.9  2001/12/05 19:40:13  arnetheduck
+ * More bugfixes.
+ *
  * Revision 1.8  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

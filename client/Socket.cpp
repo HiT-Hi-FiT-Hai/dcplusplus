@@ -143,7 +143,7 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
  * Reads zero to aBufLen characters from this socket, 
  * @param aBuffer A buffer to store the data in.
  * @param aBufLen Size of the buffer.
- * @return Number of bytes read.
+ * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
  * @throw SocketException On any failure.
  */
 int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
@@ -183,9 +183,12 @@ void Socket::write(const string& aData) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.8 2001/12/05 19:40:13 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.8  2001/12/05 19:40:13  arnetheduck
+ * More bugfixes.
+ *
  * Revision 1.7  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

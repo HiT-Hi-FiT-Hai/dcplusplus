@@ -175,16 +175,16 @@ IDR_MDIDIRECTORY        ICON    DISCARDABLE     "res\\idr_mdid.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 187, 102
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 180, 103
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "DCPlusPlus Application v0.01\n\n(c) Copyright 2001",
-                    IDC_STATIC,25,57,78,32
-    ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
-    GROUPBOX        "",IDC_STATIC,7,7,115,88
+    DEFPUSHBUTTON   "OK",IDOK,65,82,50,14
+    CTEXT           "DC++ v0.04\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
+                    IDC_STATIC,18,38,143,36
+    ICON            IDR_MAINFRAME,IDC_STATIC,79,15,21,20
+    GROUPBOX        "",IDC_STATIC,7,7,166,69
 END
 
 IDD_HUBS DIALOG DISCARDABLE  0, 0, 456, 306
@@ -256,9 +256,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 180
+        RIGHTMARGIN, 173
         TOPMARGIN, 7
-        BOTTOMMARGIN, 95
+        BOTTOMMARGIN, 96
     END
 
     IDD_HUBS, DIALOG

@@ -17,14 +17,17 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.03"
-#define VERSIONINT 3
+#define VERSIONSTRING "0.04"
+#define VERSIONINT 4
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
+ * $Id: version.h,v 1.3 2001/12/05 19:40:13 arnetheduck Exp $
  * @if LOG
  * $Log: version.h,v $
+ * Revision 1.3  2001/12/05 19:40:13  arnetheduck
+ * More bugfixes.
+ *
  * Revision 1.2  2001/11/26 23:40:37  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

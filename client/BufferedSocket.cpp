@@ -91,11 +91,15 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	BYTE buf[BUFSIZE];
 	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		if(bs->getAvailable() == 0)
-			continue;
 		try {
 			//dcdebug("Available bytes: %d\n", bs->getAvailable());
 			int i = bs->read(buf, BUFSIZE);
+			if(i == -1) {
+				continue;
+			} else if(i == 0) {
+				// This socket has been closed...
+				break;
+			}
 			string l;
 			switch(bs->mode) {
 			case MODE_LINE:
@@ -152,9 +156,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.9 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.10 2001/12/05 19:40:13 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.10  2001/12/05 19:40:13  arnetheduck
+ * More bugfixes.
+ *
  * Revision 1.9  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

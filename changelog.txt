@@ -1,3 +1,13 @@
+ -- 0.04 2001-12-05 --
+* Downloads
+* Uploads (file sharing)
+* A bit better thread handling
+* Transfer list
+* Upload/Download statistics
+* Automatic reconnection attempts when no slots are available
+* Bug fixes
+* New about box =)
+
  -- 0.03 2001-11-27 --
 * Hub list sorting.
 * Users get deleted from user list when logging off

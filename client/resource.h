@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by E:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by C:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   128
