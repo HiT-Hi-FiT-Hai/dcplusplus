@@ -199,7 +199,7 @@ public:
 			
 			ctrlStatus.SetParts(3, w);
 			
-			char buf[512];
+			char buf[64];
 			sprintf(buf, "Files: %d", files);
 			ctrlStatus.SetText(1, buf);
 			sprintf(buf, "Size: %s", size.c_str());
@@ -239,9 +239,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.14 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.15 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.15  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.14  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

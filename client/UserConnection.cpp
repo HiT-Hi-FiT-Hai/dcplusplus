@@ -35,11 +35,10 @@ void UserConnection::accept(const ServerSocket& aServer) {
 	dcassert(!socket.isConnected());
 	
 	socket.accept(aServer);
-	TimerManager::getInstance()->addListener(this);
 }
 
 void UserConnection::onLine(const string& aLine) throw () {
-	lastActivity = TimerManager::getTick();
+	TimerManager::getTick();
 
 	
 	if(aLine.length() == 0)
@@ -97,9 +96,12 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.11 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.12 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.12  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.11  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

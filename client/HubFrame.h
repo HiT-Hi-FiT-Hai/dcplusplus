@@ -419,6 +419,7 @@ private:
 			x = new string(line);
 			if(SETTING(FILTER_KICKMSGS)) {
 				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
+					delete x;
 					// Do nothing...
 				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
 					PostMessage(WM_SPEAKER, CLIENT_STATUS, (LPARAM)x); 
@@ -443,12 +444,13 @@ private:
 	}
 
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
-		User::Ptr* x = new User::Ptr();
-		*x = user;
+		User::Ptr* x;
 		switch(type) {
 		case ClientListener::MY_INFO:
+			x = new User::Ptr(user);
 			PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x); break;
 		case ClientListener::QUIT:
+			x = new User::Ptr(user);
 			PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x); break;
 			
 		}
@@ -512,9 +514,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.49 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.50 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.50  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.49  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

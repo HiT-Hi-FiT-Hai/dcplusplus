@@ -83,6 +83,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			ConnectionQueueItem::QueueIter i = connections.find(aSource);
 			aSource->setStatus(UserConnection::IDLE);
 			downPool[aSource] = i->second;
+			aSource->setLastActivity(TimerManager::getTick());
 			cs.leave();
 
 			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
@@ -167,6 +168,12 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 			delete *l;
 		}
 		
+	} else if(type == TimerManagerListener::MINUTE) {
+		for(ConnectionQueueItem::QueueIter j = connections.begin(); j != connections.end(); ++j) {
+			if((j->first->getLastActivity() + 180*1000) < aTick) {
+				j->first->disconnect();
+			}
+		}
 	}
 }
 
@@ -392,7 +399,6 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 	dcassert(aCqi);
 	UserConnection* uc = aCqi->getConnection();
 	dcassert(uc);
-	TimerManager::getInstance()->removeListener(aCqi->getConnection());
 	{
 		Lock l(cs);
 		connections.erase(aCqi->getConnection());
@@ -406,9 +412,12 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.28 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.29 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.29  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.28  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

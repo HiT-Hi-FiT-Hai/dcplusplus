@@ -57,7 +57,6 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_ENTER, onEnter)
@@ -65,6 +64,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
@@ -94,6 +94,7 @@ public:
 		}
 	}
 
+	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
@@ -121,14 +122,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
-			delete (LONGLONG*)ctrlResults.GetItemData(i);
-		}
-		bHandled = FALSE;
-		return 0;
-	}				
-
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		downloadSelected(SETTING(DOWNLOAD_DIRECTORY));
 		return 0;
@@ -324,9 +317,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.28  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.27  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

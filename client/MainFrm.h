@@ -122,28 +122,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
-	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		if (wParam== SC_MINIMIZE && BOOLSETTING(MINIMIZE_TRAY)) {
-				NOTIFYICONDATA nid;
-				nid.cbSize = sizeof(NOTIFYICONDATA);
-				nid.hWnd = m_hWnd;
-				nid.uID = 0;
-				nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
-				nid.uCallbackMessage = WM_USER + 242;
-				nid.hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
-				strncpy(nid.szTip, "DC++",64);
-				nid.szTip[63] = '\0';
-
-				::Shell_NotifyIcon(NIM_ADD, &nid);
-				ShowWindow(SW_HIDE);
-				return 0;
-		}
-
-		bHandled = FALSE;
-		return 0;
-	}
-
+	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		if (lParam == WM_LBUTTONUP)
@@ -191,20 +170,7 @@ public:
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-		int i = -1;
-		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			try {
-				QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
-			} catch(QueueException e) {
-				ctrlStatus.SetText(0, e.getError().c_str());
-			} catch(FileException e) {
-				dcdebug("MainFrm::onGetList caught %s\n", e.getError().c_str());
-			}
-		}
-		return 0;
-	}
-	
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
@@ -490,9 +456,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.42 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.43 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.43  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.42  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

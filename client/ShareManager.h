@@ -74,18 +74,16 @@ public:
 		return -1;
 	}
 	string getShareSizeString() {
-		char buf[24];
-		return _i64toa(getShareSize(), buf, 10);
+		return Util::toString(getShareSize());
 	}
 	string getShareSizeString(const string& aDir) {
-		char buf[24];
-		return _i64toa(getShareSize(aDir), buf, 10);
+		return Util::toString(getShareSize(aDir));
 	}
 	
 	LONGLONG getListLen() { return listLen; };
+
 	string getListLenString() {
-		char buf[24];
-		return _i64toa(getListLen(), buf, 10);
+		return Util::toString(getListLen());
 	}
 	
 	const string& getListFile() {
@@ -184,9 +182,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.18 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.19 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.19  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.18  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

@@ -71,6 +71,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getFavoriteHubs();
 	
+	int n = 0;
 	hubsMenu.CreatePopupMenu();
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_TYPE;
@@ -78,28 +79,29 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	mi.cch = 7;
 	mi.dwTypeData = "Connect";
 	mi.wID = IDC_CONNECT;
-	hubsMenu.InsertMenuItem(0, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 21;
-	mi.dwTypeData = "Remove from favorites";
-	mi.wID = IDC_REMOVE;
-	hubsMenu.InsertMenuItem(1, TRUE, &mi);
+	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.cch = 6;
 	mi.dwTypeData = "New...";
 	mi.wID = IDC_NEWFAV;
-	hubsMenu.InsertMenuItem(1, TRUE, &mi);
-	
+	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
+
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
 	mi.cch = 13;
 	mi.dwTypeData = "Properties...";
 	mi.wID = IDC_EDIT;
-	hubsMenu.InsertMenuItem(1, TRUE, &mi);
+	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 21;
+	mi.dwTypeData = "Remove from favorites";
+	mi.wID = IDC_REMOVE;
+	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
+	
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -154,7 +156,7 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		FavoriteHubEntry* e = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
 		dcassert(e != NULL);
 		FavHubProperties dlg(e);
-		if(dlg.DoModal((HWND)*this))
+		if(dlg.DoModal(m_hWnd) == IDOK)
 		{
 			ctrlHubs.SetItemText(i, COLUMN_NAME, e->getName().c_str());
 			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, e->getDescription().c_str());
@@ -178,9 +180,12 @@ LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.6 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.7 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.7  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.6  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

@@ -55,9 +55,9 @@ extern CAppModule _Module;
 #include <map>
 #include <list>
 #include <deque>
-
+#include <stdio.h>
 #ifdef HAS_HASH
-#include <hash_map>
+//#include <hash_map>
 #endif
 
 using namespace _STL;
@@ -69,9 +69,12 @@ using namespace _STL;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.19 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.20 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.20  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.19  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

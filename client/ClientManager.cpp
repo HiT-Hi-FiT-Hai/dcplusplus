@@ -97,14 +97,15 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				string name = aSeeker.substr(4);
 				// Good, we have a passive seeker, those are easier...
 				string str;
+				char* buf = new char[1024];
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-					char buf[512];
 					SearchResult* sr = *i;
 					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
 					str += buf;
 					delete sr;
 				}
+				delete buf;
 				
 				if(str.size() > 0)
 					aClient->searchResults(str);
@@ -116,14 +117,15 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				short port = 412;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				s.connect(ip, port);
+				char* buf = new char[1024];
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-					char buf[512];
 					SearchResult* sr = *i;
 					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
 					s.write(buf, strlen(buf));
 					delete sr;
 				}
+				delete buf;
 			}
 		}
 	}
@@ -131,9 +133,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.7 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.8 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.8  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.7  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

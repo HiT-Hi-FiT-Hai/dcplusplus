@@ -67,7 +67,10 @@
 #	define EDQUOT                  WSAEDQUOT
 #	define ESTALE                  WSAESTALE
 #	define EREMOTE                 WSAEREMOTE
-
+#	ifdef EACCES
+#		undef EACCES
+#	endif
+#	define EACCES					WSAEACCES
 #	ifdef errno
 #		undef errno
 #	endif
@@ -223,9 +226,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Socket.h,v 1.21 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.21  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.20  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

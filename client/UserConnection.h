@@ -100,7 +100,7 @@ public:
 
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
-	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
+	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 
 	Transfer(ConnectionQueueItem* aQI) : cqi(aQI), total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) delete file; };
@@ -119,7 +119,7 @@ private:
 };
 class ServerSocket;
 
-class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, private TimerManagerListener, public Flags
+class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, public Flags
 {
 public:
 	friend class ConnectionManager;
@@ -153,9 +153,10 @@ public:
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
 	
 	void get(const string& aFile, LONGLONG aResume) { 
-		char buf[512];
+		char* buf = new char[aFile.length() + 24 + 10];
 		sprintf(buf, "$Get %s$%I64d|", aFile.c_str(), aResume+1);
 		send(buf);
+		delete buf;
 	}
 	
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + "|"); }
@@ -196,7 +197,7 @@ public:
 	GETSET(Status, status, Status);
 	GETSETREF(string, server, Server);
 	GETSET(short, port, Port);
-	GETSET(DWORD, lastActivity, lastActivity);
+	GETSET(DWORD, lastActivity, LastActivity);
 private:
 	string nick;
 	BufferedSocket socket;
@@ -215,16 +216,13 @@ private:
 	UserConnection(const UserConnection&) { dcassert(0); };
 
 	virtual ~UserConnection() {
-		TimerManager::getInstance()->removeListener(this);
-		dcdebug("UserConnection destroyer\n", this );
 	};
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type) {
+		lastActivity = TimerManager::getTick();
 		switch(type) {
 		case BufferedSocketListener::CONNECTED:
-			TimerManager::getInstance()->addListener(this); 
-			lastActivity = TimerManager::getTick();
 			fire(UserConnectionListener::CONNECTED, this);
 			break;
 		case BufferedSocketListener::TRANSMIT_DONE:
@@ -232,14 +230,16 @@ private:
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, DWORD bytes) {
+		lastActivity = TimerManager::getTick();
 		switch(type) {
 		case BufferedSocketListener::BYTES_SENT:
-			lastActivity = TimerManager::getTick(); fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
+			fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
 		default:
 			dcassert(0);
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
+		lastActivity = TimerManager::getTick();
 		switch(type) {
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
@@ -250,6 +250,7 @@ private:
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, int mode) {
+		lastActivity = TimerManager::getTick();
 		switch(type) {
 		case BufferedSocketListener::MODE_CHANGE:
 			fire(UserConnectionListener::MODE_CHANGE, this, mode); break;
@@ -258,9 +259,10 @@ private:
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, const BYTE* buf, int len) {
+		lastActivity = TimerManager::getTick();
 		switch(type) {
 		case BufferedSocketListener::DATA:
-			lastActivity = TimerManager::getTick(); fire(UserConnectionListener::DATA, this, buf, len); break;
+			fire(UserConnectionListener::DATA, this, buf, len); break;
 		default:
 			dcassert(0);
 		}
@@ -268,20 +270,8 @@ private:
 
 	void onLine(const string& aLine) throw();
 
-	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
-		if(type == TimerManagerListener::SECOND) {
-			if((lastActivity + 180 * 1000) < aTick) {
-				// Nothing's happened for 180 seconds, fire error...
-				dcdebug("UserConnection::onTimerSecond Connection timeout\n");
-				fire(UserConnectionListener::FAILED, this, "Connection Timeout");
-				lastActivity = aTick;
-			}
-		}
-	}
-
 	void send(const string& aString) {
-		lastActivity = TimerManager::getTick();
+		TimerManager::getTick();
 		try {
 			socket.write(aString);
 		} catch(SocketException e) {
@@ -294,9 +284,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.32 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.33 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.33  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.32  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

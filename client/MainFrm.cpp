@@ -650,11 +650,50 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT MainFrame::onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if (wParam== SC_MINIMIZE && BOOLSETTING(MINIMIZE_TRAY)) {
+		NOTIFYICONDATA nid;
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = m_hWnd;
+		nid.uID = 0;
+		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+		nid.uCallbackMessage = WM_USER + 242;
+		nid.hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+		strncpy(nid.szTip, "DC++",64);
+		nid.szTip[63] = '\0';
+		
+		::Shell_NotifyIcon(NIM_ADD, &nid);
+		ShowWindow(SW_HIDE);
+		return 0;
+	}
+	
+	bHandled = FALSE;
+	return 0;
+}
+
+LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		try {
+			QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
+		} catch(QueueException e) {
+			ctrlStatus.SetText(0, e.getError().c_str());
+		} catch(FileException e) {
+			dcdebug("MainFrm::onGetList caught %s\n", e.getError().c_str());
+		}
+	}
+	return 0;
+}
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.60 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.61 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.61  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.60  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

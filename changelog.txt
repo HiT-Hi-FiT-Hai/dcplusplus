@@ -1,3 +1,16 @@
+ -- 0.153 2002-02-11 --
+* Fixed some potential deadlocks
+* Fixed some potential crashes
+* Code cleanup, no more level 4 warnings
+* New STL (STLport 4.5.1), to improve standards compatibility and stability (major change...)
+* Added new favorites properties dialog
+* Added possibility to add unlisted hubs to favorites
+* Fixed a lot of minor instability issues
+* Added a slot counter to the status bar, shows the number of taken slots
+* Fixed the memory leak
+* Fixed a search bug
+* Fixed a rollback bug
+
  -- 0.152 2002-02-07 --
 * Fixed a queue saving bug (resulting in overwritten resumes...yes, this is _the_ resume bug...)
 * Improved network efficiency and application responsivness

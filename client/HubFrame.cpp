@@ -28,10 +28,10 @@
 
 CImageList* HubFrame::images = NULL;
 
-char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://sourceforge.net/projects/dcplusplus",
-"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://sourceforge.net/projects/dcplusplus",
-"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://sourceforge.net/projects/dcplusplus",
-"\r\n-- I share, therefore I am.\r\n-- http://sourceforge.net/projects/dcplusplus"
+char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://sourceforge.net/projects/dcplusplus <DC++ " VERSIONSTRING ">",
+"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://sourceforge.net/projects/dcplusplus <DC++ " VERSIONSTRING ">",
+"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://sourceforge.net/projects/dcplusplus  <DC++ " VERSIONSTRING ">",
+"\r\n-- I share, therefore I am.\r\n-- http://sourceforge.net/projects/dcplusplus  <DC++ " VERSIONSTRING ">"
 };
 
 #define MSGS 4
@@ -345,7 +345,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		addClientLine(*(string*)lParam);
 		delete (string*)lParam;
 	} else if(wParam == CLIENT_MYINFO) {
-		User::Ptr& u = *(User::Ptr*)lParam;
+		User::Ptr u = *(User::Ptr*)lParam;
+		delete (User::Ptr*)lParam;
+		
 		LV_FINDINFO fi;
 		fi.flags = LVFI_STRING;
 		fi.psz = u->getNick().c_str();
@@ -386,7 +388,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 		}
 		
-		delete (User::Ptr*)lParam;
 	} else if(wParam==STATS) {
 		Lock l(cs);
 		if(client) {
@@ -395,14 +396,14 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 
 	} else if(wParam == CLIENT_QUIT) {
-		User::Ptr& u = *(User::Ptr*)lParam;
+		User::Ptr u = *(User::Ptr*)lParam;
+		delete (User::Ptr*)lParam;
 		
 		int item = ctrlUsers.find(u->getNick());
 		if(item != -1) {
 			delete (UserInfo*)ctrlUsers.GetItemData(item);
 			ctrlUsers.DeleteItem(item);
 		}
-		delete (User::Ptr*)lParam;
 	} else if(wParam == CLIENT_GETPASSWORD) {
 		Lock l(cs);
 		if(client) {
@@ -470,9 +471,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.34 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.35 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.35  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.34  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

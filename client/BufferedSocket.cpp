@@ -45,19 +45,20 @@ void BufferedSocket::threadSendFile() {
 	}
 	{
 		Lock l(cs);
+		
+		// Check the task queue that we don't have a pending shutdown / disconnect...
 		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-			if(*i == SHUTDOWN) {
-				return;
-			} else if(*i == DISCONNECT){
-				// Let threadrun handle it...
+			if(*i == SHUTDOWN || *i == DISCONNECT) {
 				return;
 			} else {
 				// Should never happen...
-				dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
-			}
+				dcdebug("Bad tasks in BufferedSocket in threadSendFile, %d\n", *i);
+				dcassert(0);
+			} 
 		}
+		
 	}
-
+	
 	while(WaitForSingleObject(commandEvent, 0) == WAIT_TIMEOUT) {
 		try {
 
@@ -94,24 +95,21 @@ bool BufferedSocket::threadConnect() {
 
 	{
 		Lock l(cs);
-
+		
 		// Check the task queue that we don't have a pending shutdown / disconnect...
 		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-			if(*i == SHUTDOWN) {
-				return false;
-			} else if(*i == DISCONNECT){
-				// Let threadrun handle it...
+			if(*i == SHUTDOWN || *i == DISCONNECT) {
 				return false;
 			} else {
 				// Should never happen...
-				dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+				dcdebug("Bad tasks in BufferedSocket in threadConnect, %d\n", *i);
+				dcassert(0);
 			} 
 		}
-		
-		s = server;
-		p = port;
+		s=server;
+		p=port;
 	}
-
+	
 	try {
 		Socket::create();
 		h[0] = commandEvent;
@@ -131,14 +129,12 @@ bool BufferedSocket::threadConnect() {
 				
 				// Check the task queue that we don't have a pending shutdown / disconnect...
 				for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-					if(*i == SHUTDOWN) {
-						return false;
-					} else if(*i == DISCONNECT){
-						// Let threadrun handle it...
+					if(*i == SHUTDOWN || *i == DISCONNECT) {
 						return false;
 					} else {
 						// Should never happen...
-						dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+						dcdebug("Bad tasks in BufferedSocket in threadConnect 2, %d\n", *i);
+						dcassert(0);
 					} 
 				}
 				
@@ -330,17 +326,8 @@ void BufferedSocket::threadRun() {
 
 					case SEND_FILE: threadSendFile(); break;
 					case SEND_DATA: threadSendData(); break;
-					case CONNECT:
-						if(threadConnect()) {
-							h[1] = getEvent();
-						}
-						break;
-						
-					case BIND:
-						if(threadBind()) {
-							h[1] = getEvent();
-						}
-						break;
+					case CONNECT: threadConnect(); break;
+					case BIND: threadBind(); break;
 						
 					default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 					}
@@ -356,9 +343,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.28  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.27  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

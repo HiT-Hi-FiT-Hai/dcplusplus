@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/
+ */
 
 #include "stdafx.h"
 #include "DCPlusPlus.h"
@@ -138,6 +138,8 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) {
 	if(d->getTotal() + aLen >= d->getRollbackSize()) {
 		BYTE* buf = new BYTE[d->getRollbackSize()];
 		int len = d->getRollbackSize() - (int)d->getTotal();
+		dcassert(len > 0);
+		dcassert(len <= d->getRollbackSize());
 		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, len);
 		
 		d->getFile()->read(buf, d->getRollbackSize());
@@ -156,7 +158,7 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) {
 		d->getFile()->write(aData+len, aLen - len);
 		
 	} else {
-		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen - (int)d->getTotal());
+		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen);
 	}
 
 	return true;
@@ -355,9 +357,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.44 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.45 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.45  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.44  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

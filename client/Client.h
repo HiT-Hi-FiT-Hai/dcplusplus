@@ -134,7 +134,7 @@ public:
 	}
 	
 	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
-		char buf[512];
+		char* buf;
 		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
 		string tmp = aString;
@@ -143,11 +143,14 @@ public:
 			tmp.replace(i, 1, 1, '$');
 		}
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			buf = new char[SETTING(SERVER).length() + aString.length() + 64];
 			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", SETTING(SERVER).c_str(), SETTING(PORT), c1, c2, aSize, aFileType+1, tmp.c_str());
 		} else {
+			buf = new char[getNick().length() + aString.length() + 64];
 			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
 		}
 		send(buf);
+		delete buf;
 	}
 
 	void searchResults(const string& aResults) {
@@ -359,9 +362,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.37 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Client.h,v 1.38 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.38  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.37  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -453,11 +453,22 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
+LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
+		delete (SearchResult*)ctrlResults.GetItemData(i);
+	}
+	bHandled = FALSE;
+	return 0;
+}
+
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.28  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.27  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

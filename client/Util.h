@@ -255,7 +255,7 @@ public:
 	
 	static string formatSeconds(LONGLONG aSec) {
 		char buf[64];
-		sprintf(buf, "%01d:%02d:%02d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
+		sprintf(buf, "%01I64d:%02I64d:%02I64d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
 		return buf;
 	}
 
@@ -415,9 +415,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Util.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.28  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.27  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

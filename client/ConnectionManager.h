@@ -206,8 +206,8 @@ private:
 	 * we might as well reuse them instead of always deleting and creating new ones...
 	 */
 	void putConnection(UserConnection* aConn) {
-		TimerManager::getInstance()->removeListener(aConn);
 		aConn->removeListeners();
+		aConn->disconnect();
 		ConnectionQueueItem* cqi = NULL;
 		{
 			Lock l(cs);
@@ -234,9 +234,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.26 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.27 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.27  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.26  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

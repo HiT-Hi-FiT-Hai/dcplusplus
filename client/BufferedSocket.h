@@ -210,6 +210,7 @@ private:
 	}
 
 	void stopWorker() {
+		Socket::disconnect();
 		addTask(SHUTDOWN);
 
 		if(WaitForSingleObject(workerThread, 5000) == WAIT_TIMEOUT) {
@@ -223,9 +224,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.27 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.28  2002/02/12 00:35:37  arnetheduck
+ * 0.153
+ *
  * Revision 1.27  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *
