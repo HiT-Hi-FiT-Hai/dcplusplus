@@ -64,7 +64,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_POPUP_PMS },
 	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_IGNORE_OFFLINE },
 	{ SettingsManager::POPUP_OFFLINE, ResourceManager::SETTINGS_POPUP_OFFLINE },
-	{ SettingsManager::REMOVE_DUPES, ResourceManager::SETTINGS_REMOVE_DUPES },
+	{ SettingsManager::LIST_DUPES, ResourceManager::SETTINGS_LIST_DUPES },
 	{ SettingsManager::URL_HANDLER, ResourceManager::SETTINGS_URL_HANDLER },
 	{ SettingsManager::SMALL_SEND_BUFFER, ResourceManager::SETTINGS_SMALL_SEND_BUFFER },
 	{ SettingsManager::KEEP_LISTS, ResourceManager::SETTINGS_KEEP_LISTS },
@@ -101,6 +101,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.26 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.27 2004/03/28 00:22:07 arnetheduck Exp $
  */
 

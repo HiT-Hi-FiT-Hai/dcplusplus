@@ -1,3 +1,9 @@
+ -- 0.401 2004-03-28 --
+* Fixed the dupe file issue
+* Hopefully fixed the dupe op issue
+* Rephrased remove dupes option (thanks garg)
+
+
  -- 0.400 2004-03-27 --
 * Fixed escape in user commands (thanks garg)
 * Probably fixed search frame hang

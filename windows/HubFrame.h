@@ -311,6 +311,10 @@ private:
 
 	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
 	typedef UpdateList::iterator UpdateIter;
+	typedef HASH_MAP<User::Ptr, UserInfo*, User::HashFunction> UserMap;
+	typedef UserMap::iterator UserMapIter;
+
+	UserMap userMap;
 	UpdateList updateList;
 	CriticalSection updateCS;
 	bool updateUsers;
@@ -334,6 +338,7 @@ private:
 			updateList.clear();
 		}
 
+		userMap.clear();
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
 			delete (UserInfo*) ctrlUsers.GetItemData(i);
@@ -386,6 +391,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.40 2004/03/26 19:23:28 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.41 2004/03/28 00:22:07 arnetheduck Exp $
  */
 

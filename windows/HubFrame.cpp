@@ -244,36 +244,22 @@ void HubFrame::onEnter() {
 
 struct CompareItems {
 	CompareItems(int aCol) : col(aCol) { }
-	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) {
+	bool operator()(const HubFrame::UserInfo& a, const HubFrame::UserInfo& b) const {
 		return HubFrame::UserInfo::compareItems(&a, &b, col) == -1;
 	}
-	int col;
+	const int col;
 };
 
 int HubFrame::findUser(const User::Ptr& aUser) {
+	UserMapIter i = userMap.find(aUser);
+	if(i == userMap.end())
+		return -1;
+
 	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
 		// Sort order of the other columns changes too late when the user's updated
-		UserInfo ui(aUser);
-		{
-			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-				if(i->getUser() == aUser)
-					return i - ctrlUsers.begin();
-			}
-		}
-		if(aUser->isSet(User::OP)) {
-			// Might still be sorted as a non-op...search again...
-			ui.setOp(false);
-			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-				if(i->getUser() == aUser)
-					return i - ctrlUsers.begin();
-			}
-
-		}
-		return -1;
+		UserInfo* ui = i->second;
+		dcassert(ctrlUsers.getItemData(ctrlUsers.getSortPos(ui)) == ui);
+		return ctrlUsers.getSortPos(ui);
 	}
 	return ctrlUsers.findItem(aUser->getNick());
 }
@@ -321,13 +307,18 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 bool HubFrame::updateUser(const User::Ptr& u) {
 	int i = findUser(u);
 	if(i == -1) {
-		ctrlUsers.insertItem(new UserInfo(u), getImage(u));
+		UserInfo* ui = new UserInfo(u);
+		userMap.insert(make_pair(u, ui));
+		ctrlUsers.insertItem(ui, getImage(u));
 		return true;
 	} else {
+		UserInfo* ui = ctrlUsers.getItemData(i);
+		bool resort = (ui->getOp() != u->isSet(User::OP));
 		ctrlUsers.getItemData(i)->update();
 		ctrlUsers.updateItem(i);
 		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-		
+		if(resort)
+			ctrlUsers.resort();
 		return false;
 	}
 }
@@ -335,6 +326,7 @@ bool HubFrame::updateUser(const User::Ptr& u) {
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
 		ctrlUsers.SetRedraw(FALSE);
+		bool resort = false;
 		{
 			Lock l(updateCS);
 			for(UpdateIter i = updateList.begin(); i != updateList.end(); ++i) {
@@ -344,10 +336,14 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if(updateUser(u)) {
 						if(showJoins)
 							addLine("*** " + STRING(JOINS) + u->getNick());
+					} else {
+						resort = true;
 					}
 					break;
 				case UPDATE_USERS:
-					updateUser(u);
+					if(!updateUser(u))
+						resort = true;
+					
 					break;
 				case REMOVE_USER:
 					int j = findUser(u);
@@ -357,6 +353,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 						if(showJoins) {
 							addLine("*** " + STRING(PARTS) + u->getNick());
 						}
+						dcassert(userMap[u] == ui);
+						userMap.erase(u);
 						delete ui;
 					}
 					break;
@@ -364,6 +362,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
+		if(ctrlUsers.getSortColumn() != COLUMN_NICK)
+			ctrlUsers.resort();
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -487,6 +487,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
+
+		userMap.clear();
 
 		int i = 0;
 		int j = ctrlUsers.GetItemCount();
@@ -1113,5 +1115,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.56 2004/03/27 11:51:34 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.57 2004/03/28 00:22:07 arnetheduck Exp $
  */

@@ -43,7 +43,7 @@ const string SettingsManager::settingTags[] =
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "AutoAutoSearchString", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
-	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
+	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
@@ -96,7 +96,7 @@ SettingsManager::SettingsManager()
 	setDefault(CONFIRM_EXIT, false);
 	setDefault(IGNORE_OFFLINE, false);
 	setDefault(POPUP_OFFLINE, false);
-	setDefault(REMOVE_DUPES, true);
+	setDefault(LIST_DUPES, false);
 	setDefault(BUFFER_SIZE, 64);
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.config.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
@@ -293,6 +293,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.69 2004/03/19 08:48:57 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.70 2004/03/28 00:22:07 arnetheduck Exp $
  */
 

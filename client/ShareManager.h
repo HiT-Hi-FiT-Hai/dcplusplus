@@ -143,6 +143,11 @@ private:
 		~Directory() {
 			for(MapIter i = directories.begin(); i != directories.end(); ++i)
 				delete i->second;
+			for(File::Iter i = files.begin(); i != files.end(); ++i) {
+				if(i->getTTH() != NULL) {
+					ShareManager::getInstance()->tthIndex.erase(i->getTTH());
+				}
+			}
 		}
 
 		bool hasType(u_int32_t type) throw() {
@@ -168,7 +173,7 @@ private:
 		}
 		u_int32_t getSearchTypes() throw() {
 			return searchTypes;
-		} 
+		}
 
 		string getFullName() throw() {
 			Directory* x = this;
@@ -269,6 +274,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.45 2004/03/27 16:32:57 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.46 2004/03/28 00:22:07 arnetheduck Exp $
  */
 
