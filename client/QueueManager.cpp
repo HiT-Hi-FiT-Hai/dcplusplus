@@ -917,6 +917,16 @@ void QueueManager::setSearchString(const string& aTarget, const string& searchSt
 	}
 }
 
+static const string& escaper(const string& n, string& tmp) {
+	if(SimpleXML::needsEscape(n, true)) {
+		tmp = n;
+		escape(tmp, true);
+		return tmp;
+	} else {
+		return n;
+	}
+}
+
 void QueueManager::saveQueue() throw() {
 	if(!dirty)
 		return;
@@ -926,7 +936,7 @@ void QueueManager::saveQueue() throw() {
 	try {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
-#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? SimpleXML::escape(tmp, true),tmp : n
+#define CHECKESCAPE(n) escaper(n, tmp)
 		
 		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write(STRINGLEN("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n"));
@@ -1033,6 +1043,8 @@ void QueueManager::load(SimpleXML* aXml) {
 				continue;
 			try {
 				target = checkTarget(aXml->getChildAttrib(sTarget), size);
+				if(target.empty())
+					continue;
 			} catch(const Exception&) {
 				continue;
 			}
@@ -1051,7 +1063,11 @@ void QueueManager::load(SimpleXML* aXml) {
 			aXml->stepIn();
 			while(aXml->findChild(sSource)) {
 				const string& nick = aXml->getChildAttrib(sNick);
+				if(nick.empty())
+					continue;
 				const string& path = aXml->getChildAttrib(sPath);
+				if(path.empty())
+					continue;
 				User::Ptr user = ClientManager::getInstance()->getUser(nick);
 				try {
 					if(addSource(qi, path, user, false) && user->isOnline())
@@ -1066,8 +1082,14 @@ void QueueManager::load(SimpleXML* aXml) {
 		aXml->resetCurrentChild();
 		while(aXml->findChild(sDirectory)) {
 			const string& name = aXml->getChildAttrib(sSource);
+			if(name.empty())
+				continue;
 			const string& target = aXml->getChildAttrib(sTarget);
+			if(target.empty())
+				continue;
 			const string& nick = aXml->getChildAttrib(sNick);
+			if(nick.empty())
+				continue;
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
 			
 			addDirectory(name, ClientManager::getInstance()->getUser(nick), target, p);
@@ -1224,5 +1246,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.58 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.59 2003/11/21 01:56:37 arnetheduck Exp $
  */
