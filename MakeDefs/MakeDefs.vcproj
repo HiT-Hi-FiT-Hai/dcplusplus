@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="MakeDefs"
+	ProjectGUID="{AEF82786-9DA2-4CDF-8602-02643CAFC727}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>

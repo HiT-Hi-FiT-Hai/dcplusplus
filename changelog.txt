@@ -51,6 +51,8 @@
 * Fixed a tab moving issue (thanks farcry)
 * Sources with rollback errors are now automatically removed (thanks garg)
 * Fixed compile.txt and readme.txt (thanks garg)
+* Magnet handler included in installer (thanks garg & magnethandler author)
+
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug
