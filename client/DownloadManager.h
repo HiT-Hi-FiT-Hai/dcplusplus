@@ -34,6 +34,8 @@ class ZDecompressor;
 
 class Download : public Transfer, public Flags {
 public:
+	static const string ANTI_FRAG_EXT;
+
 	typedef Download* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
@@ -77,6 +79,11 @@ public:
 		}
 	};
 
+	string getDownloadTarget() {
+		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
+		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
+	}
+
 	GETSETREF(string, source, Source);
 	GETSETREF(string, target, Target);
 	GETSETREF(string, tempTarget, TempTarget);
@@ -84,8 +91,10 @@ public:
 
 	int64_t bytesLeft;
 private:
-
 	Download() { };
+	Download(const Download&);
+
+	Download& operator=(const Download&);
 
 	u_int8_t* rollbackBuffer;
 	int rollbackSize;
@@ -213,5 +222,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.53 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.54 2003/12/14 20:41:38 arnetheduck Exp $
  */

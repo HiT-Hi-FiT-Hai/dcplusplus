@@ -96,16 +96,9 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 				
 	ctrlUsers.SetImageList(WinUtil::userImages, LVSIL_SMALL);
 
-	TOOLINFO ti;
-	ZeroMemory(&ti, sizeof(ti));
-	ti.cbSize = sizeof(ti);
-	ti.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
-	ti.hwnd = m_hWnd;
-	ti.lpszText = LPSTR_TEXTCALLBACK;
-	ti.uId = (UINT_PTR)ctrlStatus.m_hWnd;
+	CToolInfo ti(TTF_SUBCLASS, ctrlStatus.m_hWnd);
 	
-	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TRANSPARENT | WS_EX_TOPMOST);
-	ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+	ctrlLastLines.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
 	ctrlLastLines.AddTool(&ti);
 
 	userMenu.CreatePopupMenu();
@@ -438,6 +431,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		CRect sr;
 		int w[4];
 		ctrlStatus.GetClientRect(sr);
+
 		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
 		
 		w[0] = sr.right - tmp;
@@ -447,13 +441,14 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		
 		ctrlStatus.SetParts(4, w);
 
+		ctrlLastLines.SetMaxTipWidth(w[0]);
+		ctrlLastLines.SetWindowPos(HWND_TOPMOST, sr.left, sr.top, sr.Width(), sr.Height(), SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
 		// Strange, can't get the correct width of the last field...
 		ctrlStatus.GetRect(2, sr);
 		sr.left = sr.right + 2;
 		sr.right = sr.left + 16;
 		ctrlShowUsers.MoveWindow(sr);
-		ctrlLastLines.SetMaxTipWidth(w[0]);
-		ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 	int h = WinUtil::fontHeight + 4;
 
@@ -1114,5 +1109,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.46 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.47 2003/12/14 20:41:38 arnetheduck Exp $
  */

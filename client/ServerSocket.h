@@ -61,6 +61,9 @@ public:
 	}
 	
 private:
+	ServerSocket(const ServerSocket&);
+	ServerSocket& operator=(const ServerSocket&);
+
 	socket_t sock;
 };
  
@@ -68,6 +71,6 @@ private:
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.19 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.20 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

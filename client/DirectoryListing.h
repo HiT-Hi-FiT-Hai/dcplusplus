@@ -33,6 +33,8 @@ public:
 	/** Auxiliary class to ease searching in File::List and Directory::List */
 	struct Name {
 		Name(const string& aName) : name(aName) { };
+		virtual ~Name() { };
+
 		GETSETREF(string, name, Name);
 	};
 
@@ -51,7 +53,7 @@ public:
 
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
-		GETSET(bool, adls, Adls);		
+		GETSET(bool, adls, Adls);
 	};
 
 	class Directory : public Name {
@@ -71,7 +73,7 @@ public:
 		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
 			: Name(aName), parent(aParent), adls(_adls) { };
 		
-		~Directory() {
+		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
 			for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
@@ -90,7 +92,10 @@ public:
 		}
 		
 		GETSET(Directory*, parent, Parent);		
-		GETSET(bool, adls, Adls);		
+		GETSET(bool, adls, Adls);
+	private:
+		Directory(const Directory&);
+		Directory& operator=(const Directory&);
 	};
 	class AdlDirectory : public Directory {
 	public:
@@ -99,8 +104,7 @@ public:
 		GETSETREF(string, fullPath, FullPath);
 	};
 
-	DirectoryListing(const User::Ptr& aUser) : user(aUser) {
-		root = new Directory();
+	DirectoryListing(const User::Ptr& aUser) : user(aUser), root(new Directory()) {
 	};
 	
 	~DirectoryListing() {
@@ -122,6 +126,9 @@ public:
 	GETSETREF(User::Ptr, user, User);
 
 private:
+	DirectoryListing(const DirectoryListing&);
+	DirectoryListing& operator=(const DirectoryListing&);
+
 	Directory* root;
 		
 	Directory* find(const string& aName, Directory* current);
@@ -132,5 +139,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.18 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.19 2003/12/14 20:41:38 arnetheduck Exp $
  */

@@ -1,4 +1,13 @@
- -- 0.305 --
+ -- 0.306 --
+* Fixed an issue with UNC paths (those starting with "\\")
+* Changed autosearch so that it only searches if less than 5 sources are online, this should stop galloping
+  filelist downloads as well
+* Upgraded to WTL 7.1, should fix a few UI issues
+* Fixed brightness of compressed transfer progress bars
+* Fixed a crash with badly formatted compressed transfer requests
+
+
+ -- 0.305 2003-12-04 --
 * Fixed disappearing queue items bug
 * Fixed displaying of upload compression in progress bar
 * Added compression ratio column and %[actualsize] and %[actualsizeshort] to log formats available

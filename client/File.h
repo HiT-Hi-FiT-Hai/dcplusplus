@@ -321,12 +321,15 @@ protected:
 	CRC32 crc32;
 	bool calcCRC;
 
+private:
+	File(const File&);
+	File& operator=(const File&);
 };
 
 class BufferedFile : public File {
 public:
 	BufferedFile(const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
-		File(aFileName, access, mode, aCrc32), pos(0), size(bufSize*1024) {
+		File(aFileName, access, mode, aCrc32), buf(NULL), pos(0), size(bufSize*1024) {
 		
 		buf = new u_int8_t[size];
 	}
@@ -384,6 +387,9 @@ private:
 	u_int8_t* buf;
 	size_t pos;
 	size_t size;
+
+	BufferedFile(const BufferedFile&);
+	BufferedFile& operator=(const BufferedFile&);
 };
 
 class SizedFile : public BufferedFile {
@@ -406,11 +412,14 @@ public:
 			BufferedFile::close();
 		}
 	}
+private:
+	SizedFile(const SizedFile&);
+	SizedFile& operator=(const SizedFile&);
 };
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file
- * $Id: File.h,v 1.24 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: File.h,v 1.25 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

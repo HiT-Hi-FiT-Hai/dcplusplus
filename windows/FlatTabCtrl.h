@@ -522,34 +522,57 @@ public:
 		MESSAGE_HANDLER(WM_SETTEXT, onSetText)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
-		
-	// Fix window maximization state issues...code taken from www.codeproject.com, article by david bowen
-	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+	
+	HWND Create(HWND hWndParent, ATL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 	DWORD dwStyle = 0, DWORD dwExStyle = 0,
 	UINT nMenuID = 0, LPVOID lpCreateParam = NULL)
 	{
-		// NOTE: hWndParent is going to become m_hWndMDIClient
-		//  in CMDIChildWindowImpl::Create
-		ATLASSERT(::IsWindow(hWndParent));
-		
+		ATOM atom = T::GetWndClassInfo().Register(&m_pfnSuperWindowProc);
+
+		if(nMenuID != 0)
+#if (_ATL_VER >= 0x0700)
+			m_hMenu = ::LoadMenu(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(nMenuID));
+#else //!(_ATL_VER >= 0x0700)
+			m_hMenu = ::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(nMenuID));
+#endif //!(_ATL_VER >= 0x0700)
+
+		dwStyle = T::GetWndStyle(dwStyle);
+		dwExStyle = T::GetWndExStyle(dwExStyle);
+
+		dwExStyle |= WS_EX_MDICHILD;   // force this one
+		m_pfnSuperWindowProc = ::DefMDIChildProc;
+		m_hWndMDIClient = hWndParent;
+		ATLASSERT(::IsWindow(m_hWndMDIClient));
+
+		if(rect.m_lpRect == NULL)
+			rect.m_lpRect = &TBase::rcDefault;
+
+		// If the currently active MDI child is maximized, we want to create this one maximized too
+		ATL::CWindow wndParent = hWndParent;
 		BOOL bMaximized = FALSE;
-		if(::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized) == NULL)
+
+		if(MDIGetActive(&bMaximized) == NULL)
 			bMaximized = BOOLSETTING(MDI_MAXIMIZED);
-		
-		if(bMaximized == TRUE) {
-			::SendMessage(hWndParent, WM_SETREDRAW, FALSE, 0);
+
+		if(bMaximized)
+			wndParent.SetRedraw(FALSE);
+
+		HWND hWnd = CFrameWindowImplBase<TBase, TWinTraits >::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (UINT)0U, atom, lpCreateParam);
+
+		if(bMaximized)
+		{
+			// Maximize and redraw everything
+			if(hWnd != NULL)
+				MDIMaximize(hWnd);
+			wndParent.SetRedraw(TRUE);
+			wndParent.RedrawWindow(NULL, NULL, RDW_INVALIDATE | RDW_ALLCHILDREN);
+			::SetFocus(GetMDIFrame());   // focus will be set back to this window
 		}
-		
-		HWND hWnd = baseClass::Create(hWndParent, rect, szWindowName, dwStyle, dwExStyle, nMenuID, lpCreateParam);
-		
-		if(bMaximized == TRUE) {
-			::ShowWindow(hWnd, SW_SHOWMAXIMIZED);
-			
-			::SendMessage(hWndParent, WM_SETREDRAW, TRUE, 0);
-			::RedrawWindow(hWndParent, NULL, NULL,
-				RDW_INVALIDATE | RDW_ALLCHILDREN);
+		else if(hWnd != NULL && ::IsWindowVisible(m_hWnd) && !::IsChild(hWnd, ::GetFocus()))
+		{
+			::SetFocus(hWnd);
 		}
-		
+
 		return hWnd;
 	}
 
@@ -613,5 +636,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.22 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.23 2003/12/14 20:41:38 arnetheduck Exp $
  */

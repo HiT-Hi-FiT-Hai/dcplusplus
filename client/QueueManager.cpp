@@ -113,6 +113,9 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
         // No paused downloads
 		if(q->getPriority() == QueueItem::PAUSED)
 			continue;
+		// No files that already have more than 5 online sources
+		if(q->countOnlineUsers() >= 5)
+			continue;
 		// Check that we have a search string
 		if(!BOOLSETTING(AUTO_SEARCH_AUTO_STRING) && q->getSearchString().empty())
 			continue;
@@ -722,8 +725,10 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 					File::deleteFile(fname);
 				}
 			}
-		} else if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
-			File::deleteFile(aDownload->getTempTarget());
+		} else {
+			string tgt = aDownload->getDownloadTarget();
+			if(!tgt.empty() && Util::stricmp(tgt, aDownload->getTarget()) != 0)
+				File::deleteFile(tgt);
 		}
 		aDownload->setUserConnection(NULL);
 		delete aDownload;
@@ -791,7 +796,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 			if(q->getStatus() == QueueItem::STATUS_RUNNING) {
 				x = q->getTarget();
 			} else if(!q->getTempTarget().empty() && q->getTempTarget() != q->getTarget()) {
-				File::deleteFile(q->getTempTarget() + ".antifrag");
+				File::deleteFile(q->getTempTarget() + Download::ANTI_FRAG_EXT);
 				File::deleteFile(q->getTempTarget());
 			}
 
@@ -1089,15 +1094,15 @@ void QueueManager::load(SimpleXML* aXml) {
 			const string& name = aXml->getChildAttrib(sSource);
 			if(name.empty())
 				continue;
-			const string& target = aXml->getChildAttrib(sTarget);
-			if(target.empty())
+			const string& targetd = aXml->getChildAttrib(sTarget);
+			if(targetd.empty())
 				continue;
 			const string& nick = aXml->getChildAttrib(sNick);
 			if(nick.empty())
 				continue;
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
 			
-			addDirectory(name, ClientManager::getInstance()->getUser(nick), target, p);
+			addDirectory(name, ClientManager::getInstance()->getUser(nick), targetd, p);
 		}
 
 		aXml->stepOut();
@@ -1254,5 +1259,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.64 2003/12/04 10:31:41 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.65 2003/12/14 20:41:38 arnetheduck Exp $
  */

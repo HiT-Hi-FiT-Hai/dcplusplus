@@ -135,14 +135,16 @@ public:
 		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
 	};
 
-	bool hasOnlineUsers() const {
+	int countOnlineUsers() const {
+		int n = 0;
 		Source::List::const_iterator i = sources.begin();
 		for(; i != sources.end(); ++i) {
 			if((*i)->getUser()->isOnline())
-				return true;
+				n++;
 		}
-		return false;
+		return n;
 	}
+	bool hasOnlineUsers() const { return countOnlineUsers() > 0; };
 
 	const string& getSourcePath(const User::Ptr& aUser) { 
 		dcassert(isSource(aUser)); 
@@ -213,7 +215,12 @@ private:
 		sources.erase(i);
 	}
 
-	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst) { return find(lst.begin(), lst.end(), aUser); };
+	static Source::Iter getSource(const User::Ptr& aUser, Source::List& lst) { 
+		for(Source::Iter i = lst.begin(); i != lst.end(); ++i)
+			if((*i)->getUser() == aUser)
+				return i;
+		return lst.end();
+	}
 	static bool isSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) {
 		for(Source::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
 			Source* s = *i;
@@ -225,11 +232,10 @@ private:
 	}
 
 };
-inline bool operator ==(const QueueItem::Source* a, const User::Ptr& b) { return a->getUser() == b; };
 
 #endif // !defined(AFX_QUEUEITEM_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.2 2003/11/11 13:16:09 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.3 2003/12/14 20:41:38 arnetheduck Exp $
 */

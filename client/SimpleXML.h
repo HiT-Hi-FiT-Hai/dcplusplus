@@ -189,7 +189,13 @@ private:
 				delete *i;
 			}
 		}
+	private:
+		Tag(const Tag&);
+		Tag& operator=(Tag&);
 	};
+
+	SimpleXML(const SimpleXML&);
+	SimpleXML& operator=(const SimpleXML&);
 
 	/** Bogus root tag, should be only one child! */
 	Tag::Ptr root;
@@ -212,6 +218,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.23 2003/11/07 16:38:22 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.24 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

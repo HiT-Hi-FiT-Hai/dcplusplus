@@ -170,11 +170,13 @@ private:
 	};
 
 	// Dummy...
-	BufferedSocket(const BufferedSocket&) throw() : Socket(), Thread() { dcassert(0); };
+	BufferedSocket(const BufferedSocket&);
+	BufferedSocket& operator=(const BufferedSocket&);
+
+	virtual ~BufferedSocket();
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
-	virtual ~BufferedSocket();
 
 	CriticalSection cs;
 
@@ -234,5 +236,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.53 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.54 2003/12/14 20:41:37 arnetheduck Exp $
  */

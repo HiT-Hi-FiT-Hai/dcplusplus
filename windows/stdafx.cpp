@@ -25,12 +25,20 @@
 #endif
 
 // Basic sanity check
-#if (_WTL_VER < 0x700) || (defined(HAS_STLPORT) && (_STLPORT_VERSION < 0x455))
-#error Read compile.txt and do as it says before asking stupid questions at the forums
+#if (_WTL_VER < 0x710)
+#error WTL not correctly installed, read compile.txt
+#endif
+
+#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x460)
+#error STLPort not correctly installed, read compile.txt
+#endif
+
+#ifndef _STLP_NO_IOSTREAMS
+#error You're not using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Remove this line only if you know what you're doing.
 #endif
 
 /**
  * @file
- * $Id: stdafx.cpp,v 1.8 2003/11/04 20:18:16 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.9 2003/12/14 20:41:39 arnetheduck Exp $
  */
 

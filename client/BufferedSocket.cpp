@@ -127,7 +127,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 	dcassert(bufLen > 0);
 	
 	int bytesIn = 0;
-	int start = GET_TICK();
+	u_int32_t startTime = GET_TICK();
 
 	while(bytesIn < bufLen) {
 		while(!wait(POLL_TIMEOUT, WAIT_READ)) {
@@ -139,7 +139,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 					return false;
 				}
 			}
-			if((timeout != 0) && ((start + timeout) < GET_TICK())) {
+			if((timeout != 0) && ((startTime + timeout) < GET_TICK())) {
 				// Connection timeout
 				throw SocketException(STRING(CONNECTION_TIMEOUT));
 			}
@@ -161,7 +161,7 @@ void BufferedSocket::threadConnect() {
 
 	fire(BufferedSocketListener::CONNECTING);
 
-	u_int32_t start = GET_TICK();
+	u_int32_t startTime = GET_TICK();
 	string s;
 	short p;
 	{
@@ -193,7 +193,7 @@ void BufferedSocket::threadConnect() {
 					return;
 				}
 			}
-			if((start + 30000) < GET_TICK()) {
+			if((startTime + 30000) < GET_TICK()) {
 				// Connection timeout
 				fail(STRING(CONNECTION_TIMEOUT));
 				return;
@@ -460,5 +460,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.60 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.61 2003/12/14 20:41:37 arnetheduck Exp $
  */

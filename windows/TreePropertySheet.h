@@ -29,7 +29,7 @@ class TreePropertySheet : public CPropertySheetImpl<TreePropertySheet> {
 public:
 	enum { WM_USER_INITDIALOG = WM_APP + 501 };
 	enum { TAB_MESSAGE_MAP = 13 };
-	TreePropertySheet(WTL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uStartPage = 0, HWND hWndParent = NULL) :
+	TreePropertySheet(ATL::_U_STRINGorID title = (LPCTSTR)NULL, UINT uStartPage = 0, HWND hWndParent = NULL) :
 		CPropertySheetImpl<TreePropertySheet>(title, uStartPage, hWndParent), tabContainer(WC_TABCONTROL, this, TAB_MESSAGE_MAP) {
 
 		m_psh.pfnCallback = &PropSheetProc;
@@ -85,5 +85,5 @@ private:
 
 /**
 * @file
-* $Id: TreePropertySheet.h,v 1.1 2003/10/07 00:38:39 arnetheduck Exp $
+* $Id: TreePropertySheet.h,v 1.2 2003/12/14 20:41:39 arnetheduck Exp $
 */

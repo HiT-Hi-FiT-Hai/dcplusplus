@@ -204,7 +204,7 @@ private:
 	/** The queue needs to be saved */
 	bool dirty;
 	/** Next search */
-	int32_t nextSearch;
+	u_int32_t nextSearch;
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
@@ -241,6 +241,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.49 2003/12/04 10:31:41 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.50 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

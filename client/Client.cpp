@@ -494,9 +494,9 @@ void Client::onLine(const string& aLine) throw() {
 		if(!param.empty()) {
 			User::List v;
 			StringTokenizer t(param, "$$");
-			StringList& l = t.getTokens();
+			StringList& sl = t.getTokens();
 
-			for(StringIter it = l.begin(); it != l.end(); ++it) {
+			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 			}
 
@@ -513,8 +513,8 @@ void Client::onLine(const string& aLine) throw() {
 		if(!param.empty()) {
 			User::List v;
 			StringTokenizer t(param, "$$");
-			StringList& l = t.getTokens();
-			for(StringIter it = l.begin(); it != l.end(); ++it) {
+			StringList& sl = t.getTokens();
+			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 				v.back()->setFlag(User::OP);
 			}
@@ -728,6 +728,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.65 2003/12/02 15:40:23 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.66 2003/12/14 20:41:37 arnetheduck Exp $
  */
 

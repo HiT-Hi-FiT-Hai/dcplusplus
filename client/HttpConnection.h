@@ -60,7 +60,8 @@ public:
 
 private:
 
-	HttpConnection(const HttpConnection&) { dcassert(0); };
+	HttpConnection(const HttpConnection&);
+	HttpConnection& operator=(const HttpConnection&);
 
 	string currentUrl;
 	string file;
@@ -87,6 +88,6 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.16 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.17 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

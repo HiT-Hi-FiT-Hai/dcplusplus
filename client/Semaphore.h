@@ -90,11 +90,14 @@ private:
 	CriticalSection cs;
 	int count;
 #endif
+	Semaphore(const Semaphore&);
+	Semaphore& operator=(const Semaphore&);
+
 };
 
 #endif // !defined(AFX_SEMAPHORE_H__99141DD0_FECE_4131_BC9B_7BE4CF216874__INCLUDED_)
 
 /**
  * @file
- * $Id: Semaphore.h,v 1.9 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.10 2003/12/14 20:41:38 arnetheduck Exp $
  */

@@ -32,6 +32,10 @@
 #define _ATL_NO_COM
 #define _ATL_NO_HOSTING
 #define _ATL_NO_OLD_NAMES
+#define _ATL_NO_COM_SUPPORT
+#define _ATL_NO_PERF_SUPPORT
+#define _ATL_NO_SERVICE
+#define _ATL_NO_DOCHOSTUIHANDLER
 
 #include <winsock2.h>
 
@@ -59,6 +63,6 @@ extern CAppModule _Module;
 
 /**
  * @file
- * $Id: stdafx.h,v 1.5 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.6 2003/12/14 20:41:39 arnetheduck Exp $
  */
 

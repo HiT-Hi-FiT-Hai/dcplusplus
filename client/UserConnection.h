@@ -255,6 +255,9 @@ private:
 	};
 	friend struct DeleteFunction<UserConnection*>;
 
+	UserConnection(const UserConnection&);
+	UserConnection& operator=(const UserConnection&);
+
 	void setUser(const User::Ptr& aUser) {
 		user = aUser;
 	};
@@ -279,6 +282,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.61 2003/11/21 17:00:55 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.62 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

@@ -157,4 +157,4 @@ Usage: This indicates that the client doesn't need neither $Hello nor $NickList
 when connecting to a hub and receiving its users (i e $myinfo for each user is
 enough). It still accepts $Hello though (to add bots to the user list),
 and will still send getnicklist to indicate that it indeed is interested
-in the user list.
+in the user list. It still requires a $hello to be sent about itself during login!

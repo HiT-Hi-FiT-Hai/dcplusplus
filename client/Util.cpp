@@ -234,8 +234,8 @@ string Util::validateFileName(string tmp) {
 		tmp.erase(i+1, 2);
 	}
 
-	// Remove any double \\ ...
-	i = 0;
+	// Remove any double \\ that are not at the beginning of the path...
+	i = 1;
 	while( (i = tmp.find("\\\\", i)) != string::npos) {
 		tmp.erase(i+1, 1);
 	}
@@ -394,19 +394,25 @@ string Util::formatParams(const string& msg, StringMap& params) {
 	return result;
 }
 
-string Util::formatTime(const string &msg, const time_t tm) {
-	int bufsize = msg.size() + 64;
-	char* buf = new char[bufsize];
+string Util::formatTime(const string &msg, const time_t t) {
+	if (!msg.empty()) {
+		size_t bufsize = msg.size() + 64;
+		struct tm* loc = localtime(&t);
 
-	while(!strftime(buf, bufsize-1, msg.c_str(), localtime(&tm))) {
-		delete buf;
-		bufsize+=64;
-		buf = new char[bufsize];
+		if(!loc) {
+			return Util::emptyString;
+		}
+
+		AutoArray<char> buf(new char[bufsize]);
+
+		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
+			bufsize+=64;
+			buf = new char[bufsize];
+		}
+
+		string result(buf);
 	}
-
-	string result = buf;
-	delete buf;
-	return result;
+	return Util::emptyString;
 }
 
 /* Below is a high-speed random number generator with much
@@ -544,6 +550,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.38 2003/11/21 17:00:55 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.39 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

@@ -91,6 +91,9 @@ public:
 	u_int32_t decompress(const void* inbuf, int& inbytes) throw(CryptoException);
 	GETSET(u_int8_t*, outbuf, Outbuf);
 private:
+	ZDecompressor(const ZDecompressor&);
+	ZDecompressor& operator=(const ZDecompressor&);
+
 	z_stream zs;
 	int32_t outbufSize;
 };
@@ -132,6 +135,9 @@ private:
 	int64_t maxBytes;
 
 	int level;
+
+	ZCompressor(const ZCompressor&);
+	ZCompressor& operator=(const ZCompressor&);
 
 	void setStrength(int str) throw(CryptoException);
 };
@@ -199,5 +205,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.27 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.28 2003/12/14 20:41:38 arnetheduck Exp $
  */

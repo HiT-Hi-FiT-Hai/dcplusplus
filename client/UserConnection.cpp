@@ -103,7 +103,11 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(j == string::npos)
 			return;
 		int64_t bytes = Util::toInt64(param.substr(i, j-i));
-		fire(UserConnectionListener::GET_ZBLOCK, this, param.substr(j+1), start, bytes);
+		if(bytes < 0) {
+			disconnect();
+		} else {
+			fire(UserConnectionListener::GET_ZBLOCK, this, param.substr(j+1), start, bytes);
+		}
 	} else if(cmd == "$Key") {
 		if(!param.empty())
 			fire(UserConnectionListener::KEY, this, param);
@@ -193,5 +197,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.32 2003/11/21 17:00:55 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.33 2003/12/14 20:41:38 arnetheduck Exp $
  */

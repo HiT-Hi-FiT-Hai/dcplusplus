@@ -165,9 +165,6 @@ private:
 		features.push_back("UserIP2");
 	};
 
-	// Dummy...
-	ClientManager(const ClientManager&) throw() { dcassert(0); };
-
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
@@ -192,6 +189,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.41 2003/12/03 22:48:02 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.42 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

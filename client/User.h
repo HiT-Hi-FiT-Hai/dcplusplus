@@ -117,9 +117,11 @@ public:
 	GETSETREF(string, ip, Ip);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
-
 	mutable RWLock cs;
-	
+
+	User(const User&);
+	User& operator=(const User&);
+
 	Client* client;
 	FavoriteUser* favoriteUser;
 };
@@ -128,6 +130,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.35 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: User.h,v 1.36 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

@@ -231,9 +231,9 @@ protected:
 	static short udpPort;
 
 private:
-	Socket(const Socket&) {
-		// Copies not allowed
-	}
+	Socket(const Socket&);
+	Socket& operator=(const Socket&);
+
 	int type;
 
 	class Stats {
@@ -248,6 +248,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.47 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: Socket.h,v 1.48 2003/12/14 20:41:38 arnetheduck Exp $
  */
 

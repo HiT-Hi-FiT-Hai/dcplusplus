@@ -48,11 +48,15 @@ public:
 	}
 protected:
 	static T* instance;
+private:
+	Singleton(const Singleton&);
+	Singleton& operator=(const Singleton&);
+
 };
 
 #endif // !defined(AFX_SINGLETON_H__3B62D311_53B4_42E9_8522_D890E70BDFE3__INCLUDED_)
 
 /**
  * @file
- * $Id: Singleton.h,v 1.4 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: Singleton.h,v 1.5 2003/12/14 20:41:38 arnetheduck Exp $
  */

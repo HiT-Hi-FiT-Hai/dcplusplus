@@ -92,13 +92,14 @@ class AutoArray {
 	typedef T* TPtr;
 	typedef T& TRef;
 public:
-	AutoArray(size_t size) : p(new T[size]) { };
+	explicit AutoArray(TPtr t) : p(t) { };
+	explicit AutoArray(size_t size) : p(new T[size]) { };
 	~AutoArray() { delete[] p; };
 	operator TPtr() { return p; };
-
+	AutoArray& operator=(TPtr t) { delete[] p; p = t; return *this; };
 private:
-	AutoArray(const AutoArray&) { };
-	void operator=(const AutoArray&) { };
+	AutoArray(const AutoArray&);
+	AutoArray& operator=(const AutoArray&);
 
 	TPtr p;
 };
@@ -273,7 +274,7 @@ public:
 	}
 
 	static string formatParams(const string& msg, StringMap& params);
-	static string formatTime(const string &msg, const time_t tm);
+	static string formatTime(const string &msg, const time_t t);
 
 	static string formatNumber(int64_t aNumber) {
 		char buf[64];
@@ -519,5 +520,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.72 2003/11/21 17:00:55 arnetheduck Exp $
+ * $Id: Util.h,v 1.73 2003/12/14 20:41:38 arnetheduck Exp $
  */

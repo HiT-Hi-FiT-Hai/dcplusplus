@@ -61,14 +61,16 @@ public:
 private:
 	pthread_mutex_t mtx;
 #endif
+	CriticalSection(const CriticalSection&);
+	CriticalSection& operator=(const CriticalSection&);
 };
 
 class Lock {
-private:
-	CriticalSection& cs;
 public:
 	Lock(CriticalSection& aCs) throw() : cs(aCs)  { cs.enter(); };
 	~Lock() throw() { cs.leave(); };
+private:
+	CriticalSection& cs;
 };
 
 class RWLock
@@ -124,5 +126,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.16 2003/12/14 20:41:38 arnetheduck Exp $
  */

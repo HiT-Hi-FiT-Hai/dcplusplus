@@ -25,8 +25,7 @@
 #pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion
 #pragma warning(disable: 4786) // identifier was truncated to '255' characters in the debug information
 #pragma warning(disable: 4290) // C++ Exception Specification ignored
-#pragma warning(disable: 4127) // constant expression
-#pragma warning(disable: 4512) // can't generate assignment operator (so what?)
+#pragma warning(disable: 4512) // can't generate assignment operator
 #pragma warning(disable: 4710) // function not inlined
 
 #ifndef CDECL
@@ -105,5 +104,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.16 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: config.h,v 1.17 2003/12/14 20:41:38 arnetheduck Exp $
  */

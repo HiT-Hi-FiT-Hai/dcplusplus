@@ -289,6 +289,11 @@ private:
 
 	Client();	
 	virtual ~Client() throw();
+
+	// Dummy
+	Client(const Client&);
+	Client& operator=(const Client&);
+
 	void connect();
 
 	void clearUsers();
@@ -307,6 +312,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.74 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: Client.h,v 1.75 2003/12/14 20:41:37 arnetheduck Exp $
  */
 

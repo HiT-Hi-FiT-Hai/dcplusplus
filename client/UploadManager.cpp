@@ -72,7 +72,14 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		userlist = true;
 	}
 
-	if( File::getSize(file) < (int64_t)(32 * 1024) ) {
+	int64_t sz = File::getSize(file);
+	if(aResume >= sz) {
+		// Can't do...
+		aSource->disconnect();
+		return false;
+	}
+
+	if( sz < (int64_t)(32 * 1024) ) {
 		smallfile = true;
 	}
 
@@ -180,6 +187,11 @@ void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, in
 		if(prepareFile(aSource, aFile, aResume)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
+			if(u->getFile()->getPos() + aBytes >= u->getFile()->getSize()) {
+				// Can't do...
+				aSource->disconnect();
+				return;
+			}
 
 			u->setStart(GET_TICK());
 			u->setFlag(Upload::FLAG_ZUPLOAD);
@@ -211,7 +223,7 @@ void UploadManager::onBytesSent(UserConnection* aSource, u_int32_t aBytes, u_int
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 	u->addPos(aBytes);
-	u->addActual(aBytes);
+	u->addActual(aActual);
 }
 
 void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
@@ -373,5 +385,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.46 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.47 2003/12/14 20:41:38 arnetheduck Exp $
  */

@@ -32,7 +32,7 @@
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
 static const string DOWNLOAD_AREA = "Downloads";
-static const string ANTI_FRAG_EXT = ".antifrag";
+const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 	target(qi->getTarget()), tempTarget(qi->getTempTarget()), 
@@ -127,8 +127,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			int64_t start = File::getSize(target);
 
 			// Only use antifrag if we don't have a previous non-antifrag part
-			if( BOOLSETTING(ANTI_FRAG) && (start == -1) ) {
-				int64_t aSize = File::getSize(target + ANTI_FRAG_EXT);
+			if( BOOLSETTING(ANTI_FRAG) && (start == -1) && d->getSize() != -1 ) {
+				int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
 
 				if(aSize == d->getSize())
 					start = d->getPos();
@@ -151,17 +151,15 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		} else {
 			d->setPos(0);
 		}
+
 		if(d->isSet(Download::FLAG_USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
 			d->setSource("MyList.bz2");
 		}
 
-		if(BOOLSETTING(COMPRESS_TRANSFERS) && !d->isSet(Download::FLAG_USER_LIST) && 
-			aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK)) {
-
+		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
-			d->setComp(new ZDecompressor());
 			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft);
 		} else {
 			aConn->get(d->getSource(), d->getPos());
@@ -205,8 +203,8 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	if(newSize != -1)
 		d->setSize(newSize);
 
-	// Strange...bail out...
-	if(d->getSize() <= d->getPos()) {
+	if(d->getPos() >= d->getSize()) {
+		// Already finished?
 		aSource->setDownload(NULL);
 		removeDownload(d, true);
 		removeConnection(aSource);
@@ -215,27 +213,38 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 	dcassert(d->getSize() != -1);
 
-	string target = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+	string target = d->getDownloadTarget();
 	Util::ensureDirectory(target);
 	if(d->isSet(Download::FLAG_USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
 		target.replace(target.size() - 5, 5, "bz2");
 	}
-	File* file;
+	File* file = NULL;
 	try {
 		// Let's check if we can find this file in a any .SFV...
 		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
 		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 		
 		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
-			// Anti-frag file... Continue on the previous .antifrag-file
-			file = new SizedFile(d->getSize(), target + ANTI_FRAG_EXT, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
+			file = new SizedFile(d->getSize(), target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
 		} else {
 			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);			
 		}
 
 		file->setPos(d->getPos());
+
+		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+			d->setComp(new ZDecompressor);
+		}
+
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
+		aSource->setDownload(NULL);
+		removeDownload(d);
+		removeConnection(aSource);
+		return false;
+	} catch(const CryptoException& e) {
+		delete file;
+		fire(DownloadManagerListener::FAILED, d, e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
@@ -244,6 +253,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 	dcassert(d->getPos() != -1);
 	d->setFile(file);
+
 	
 	{
 		d->setStart(GET_TICK());
@@ -397,7 +407,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 			// Ok, rename the file to what we expect it to be...
 			try {
 				const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
-				File::renameFile(tgt + ANTI_FRAG_EXT, tgt);
+				File::renameFile(d->getDownloadTarget(), tgt);
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
 			} catch(const FileException& e) {
 				dcdebug("AntiFrag: %s\n", e.getError().c_str());
@@ -424,7 +434,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		SFVReader sfv(d->getTarget());
 		if(sfv.hasCRC()) {
 			bool crcMatch;
-			const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+			string tgt = d->getDownloadTarget();
 			if(d->getFile()->hasCRC32()) {
 				crcMatch = (d->getFile()->getCRC32() == sfv.getCRC());
 			} else {
@@ -668,5 +678,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.85 2003/12/04 10:31:40 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.86 2003/12/14 20:41:38 arnetheduck Exp $
  */
