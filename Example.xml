@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1252" standalone="yes"?>
+<?xml version="1.0" encoding="windows-1252"?>
 <Language Name="Example Language">
 	<Strings>
 		<String Name="Active">Active</String>
@@ -91,6 +91,8 @@
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteUsers">Favorite Users</String>
 		<String Name="FavoriteUserAdded">Favorite user added</String>
+		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
+		<String Name="FavJoinShowingOn">Join/part of favorite users showing on</String>
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
 		<String Name="FileListRefreshFinished">File list refresh finished</String>
@@ -104,6 +106,8 @@
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>
+		<String Name="ForbiddenDollarDirectory">Directory with '$' cannot be downloaded and will not be shared: </String>
+		<String Name="ForbiddenDollarFile">File with '$' cannot be downloaded and will not be shared: </String>
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GiB</String>
 		<String Name="GetFileList">Get file list</String>
@@ -297,6 +301,7 @@
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (kB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate $$$:s! (well, €€€ preferably =) (see help menu)</String>
+		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>

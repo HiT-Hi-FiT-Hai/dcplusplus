@@ -56,6 +56,11 @@ no_backup:
   WriteUninstaller "uninstall.exe"
 SectionEnd
 
+Section "IP -> Country mappings"
+  SetOutPath $INSTDIR
+  File "GeoIPCountryWhois.csv"
+SectionEnd
+
 Section "Debug Information (recommended, helps finding bugs)"
   SetOutPath $INSTDIR
   File "/oname=DCPlusPlus.pdb" "App\DCPlusPlus.pdb"
@@ -89,6 +94,7 @@ Section "un.Uninstall"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\ReadMe.txt"
   Delete "$INSTDIR\Example.xml"
+  Delete "$INSTDIR\GeoIPCountryWhois.csv"
 
   ; MUST REMOVE UNINSTALLER, too
   Delete $INSTDIR\uninstall.exe

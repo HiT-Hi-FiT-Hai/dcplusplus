@@ -118,7 +118,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+	if(MessageBox(NULL, "DC++ just encountered a fatal bug and should have written an exceptioninfo.txt the same directory as the executable. You can upload this file at http://dcplusplus.sf.net/crash/ to help us find out what happened (please do not report this bug in the bug tracker unless you know the exact steps to reproduce it...). Go there now?", "DC++ Has Crashed", MB_YESNO | MB_ICONERROR) == IDYES) {
+		WinUtil::openLink("http://dcplusplus.sf.net/crash/");
+	}
 
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
@@ -375,5 +377,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.21 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: main.cpp,v 1.22 2004/06/27 12:46:32 arnetheduck Exp $
  */

@@ -487,6 +487,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
 			SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -889,5 +890,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.53 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.54 2004/06/27 12:46:32 arnetheduck Exp $
  */

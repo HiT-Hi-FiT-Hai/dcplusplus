@@ -290,6 +290,8 @@ public:
 	
 	static string formatBytes(int64_t aBytes);
 
+	static string formatExactSize(int64_t aBytes);
+
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
 #ifdef _WIN32
@@ -585,5 +587,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.85 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: Util.h,v 1.86 2004/06/27 12:46:32 arnetheduck Exp $
  */

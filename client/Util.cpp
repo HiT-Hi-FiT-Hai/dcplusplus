@@ -274,6 +274,34 @@ string Util::formatBytes(int64_t aBytes) {
 	return buf;
 }
 
+string Util::formatExactSize(int64_t aBytes) {
+	char buf[64];
+#ifdef _WIN32
+		char number[64];
+		NUMBERFMT nf;
+		sprintf(number, "%I64d", aBytes);
+		char Dummy[16];
+    
+		/*No need to read these values from the system because they are not
+		used to format the exact size*/
+		nf.NumDigits = 0;
+		nf.LeadingZero = 0;
+		nf.NegativeOrder = 0;
+		nf.lpDecimalSep = ",";
+
+		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_SGROUPING, Dummy, 16 );
+		nf.Grouping = atoi(Dummy);
+		GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_STHOUSAND, Dummy, 16 );
+		nf.lpThousandSep = Dummy;
+
+		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
+#else
+		sprintf(buf, "%lld", aNumber);
+#endif
+		sprintf(buf, "%s %s", buf, CSTRING(B));
+		return buf;
+}
+
 string Util::getLocalIp() {
 	string tmp;
 	
@@ -661,6 +689,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.52 2004/06/26 13:11:50 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.53 2004/06/27 12:46:32 arnetheduck Exp $
  */
 

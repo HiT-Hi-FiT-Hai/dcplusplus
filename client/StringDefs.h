@@ -110,6 +110,8 @@ enum Strings { // @DontAdd
 	FIND, // "Find"
 	FINISHED_DOWNLOADS, // "Finished Downloads"
 	FINISHED_UPLOADS, // "Finished Uploads"
+	FORBIDDEN_DOLLAR_DIRECTORY, // "Directory with '$' cannot be downloaded and will not be shared: "
+	FORBIDDEN_DOLLAR_FILE, // "File with '$' cannot be downloaded and will not be shared: "
 	FORCE_ATTEMPT, // "Force attempt"
 	GB, // "GiB"
 	GET_FILE_LIST, // "Get file list"

@@ -72,6 +72,7 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctxMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
+	ctxMenu.SetMenuDefaultItem(IDC_OPEN_FILE);
 
 	m_hMenu = WinUtil::mainMenu;
 
@@ -150,6 +151,7 @@ LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_UL_ORDER, 
 			SettingsManager::FINISHED_UL_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -191,5 +193,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.17 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.18 2004/06/27 12:46:32 arnetheduck Exp $
  */

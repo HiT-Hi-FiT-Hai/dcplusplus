@@ -66,7 +66,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	WinUtil::splitTokens(columnSizes, SETTING(QUEUEFRAME_WIDTHS), COLUMN_LAST);
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE || j == COLUMN_DOWNLOADED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		int fmt = (j == COLUMN_SIZE || j == COLUMN_DOWNLOADED || j == COLUMN_EXACT_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlQueue.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
@@ -199,7 +199,7 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 		if(colMask & MASK_SIZE) {
 			display->columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
-			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::toString(getSize());
+			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatExactSize(getSize());
 		}
 		if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)
@@ -893,6 +893,12 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				readdItems++;
 			}
 
+			if(ii->getTTH() == NULL) {
+				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			} else {
+				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			}
+			
 			singleMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		} else {
 			multiMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -1231,6 +1237,7 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -1289,7 +1296,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.52 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.53 2004/06/27 12:46:32 arnetheduck Exp $
  */
 
 

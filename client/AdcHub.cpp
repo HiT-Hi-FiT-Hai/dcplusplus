@@ -283,7 +283,7 @@ void AdcHub::info() {
 void AdcHub::on(Connected) throw() { 
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
 	lastInfo.clear();
-	send("HSUP +BASE\n");
+	send("HSUP +BAS0\n");
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -293,9 +293,8 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 		ClientManager::getInstance()->putUserOffline(getMe());
 	setMe(NULL);
 	fire(ClientListener::Failed(), this, aLine);
-	
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.9 2004/06/26 18:16:54 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.10 2004/06/27 12:46:32 arnetheduck Exp $
  */

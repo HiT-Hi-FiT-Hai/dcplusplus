@@ -1,4 +1,4 @@
- -- 0.402 --
+ -- 0.402 2004-06-27 --
 * Fixed transfer view crash (thanks garg)
 * Removed default sort in search frame
 * Window sizes / positions of favorite hubs saved (thanks trem)
@@ -49,6 +49,14 @@
 * Added download by TTH root instead of share path. This feature enables
   the downloading client to find the file even if the uploader has reorganized
   its share.
+* Fixed number formatting in search and queue frames (thanks slowmo)
+* Workaround for WTL75 bug with menus (thanks garg)
+* .mkv and .flac added as file formats (thanks garg)
+* Added warning about non-shared files with $ in them (thanks garg)
+* Fixed a rare deadlock when autosearching
+* Search by TTH greyed out for items that don't have a TTH root (thanks slowmo)
+* Added default menu items to finished frames (thanks slowmo)
+
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
@@ -674,7 +682,7 @@ Minor:
 * Right-click menu works for joins and parts as well now (changed the format of the join/part message =)
 * Fixed a lockup bug (transfer speeds would not update among other things...)
 
- -- 0.20 --
+ -- 0.20 2002-12-06 --
 * Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they
   actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents
   and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in 

@@ -306,7 +306,7 @@ private:
 				if(!type.empty() && type[0] == '.')
 					type.erase(0, 1);
 				size = Util::formatBytes(sr->getSize());
-				exactSize = Util::formatNumber(sr->getSize());
+				exactSize = Util::formatExactSize(sr->getSize());
 			} else {
 				fileName = sr->getFileName();
 				path = sr->getFile();
@@ -444,6 +444,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.38 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.39 2004/06/27 12:46:32 arnetheduck Exp $
  */
 

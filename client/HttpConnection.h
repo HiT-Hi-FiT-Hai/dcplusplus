@@ -38,7 +38,7 @@ public:
 	typedef X<4> TypeNormal;
 	typedef X<5> TypeBZ2;
 
-	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw() { }
+	virtual void on(Data, HttpConnection*, const u_int8_t*, size_t) throw() =0;
 	virtual void on(Failed, HttpConnection*, const string&) throw() { }
 	virtual void on(Complete, HttpConnection*, const string&) throw() { }
 	virtual void on(Redirected, HttpConnection*, const string&) throw() { }
@@ -89,6 +89,6 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.20 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.21 2004/06/27 12:46:32 arnetheduck Exp $
  */
 

@@ -79,6 +79,7 @@ public:
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
+			m_hMenu = NULL;
 			MDIDestroy(m_hWnd);
 			return 0;
 		}
@@ -131,6 +132,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.14 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.15 2004/06/27 12:46:32 arnetheduck Exp $
  */
 

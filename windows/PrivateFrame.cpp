@@ -220,6 +220,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		Lock l(cs);
 		frames.erase(user);
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -334,7 +335,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.25 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.26 2004/06/27 12:46:32 arnetheduck Exp $
  */
 
 

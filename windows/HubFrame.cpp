@@ -536,6 +536,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			HubManager::getInstance()->save();
 		}
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -1140,5 +1141,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.62 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.63 2004/06/27 12:46:32 arnetheduck Exp $
  */

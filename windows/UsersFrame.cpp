@@ -154,6 +154,7 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			delete ctrlUsers.getItemData(i);
 		}
 
+		m_hMenu = NULL;
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -161,6 +162,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.21 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.22 2004/06/27 12:46:32 arnetheduck Exp $
  */
 

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\temp\dc\dcplusplustoggle\DCPlusPlus.rc
+// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -252,7 +252,7 @@
 #define IDC_MAX_HASH_SPEED              1223
 #define IDC_SETTINGS_MAX_HASH_SPEED     1225
 #define IDC_SETTINGS_MBS                1226
-#define IDC_SETTINGS_GET_USER_COUNTRY	1227
+#define IDC_SETTINGS_GET_USER_COUNTRY   1227
 #define IDC_SETTINGS_LOG_STATUS_MESSAGES 1228
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500

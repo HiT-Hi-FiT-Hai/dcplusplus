@@ -287,8 +287,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			string name = data.cFileName;
 			if(name == "." || name == "..")
 				continue;
-			if(name.find('$') != string::npos)
+			if(name.find('$') != string::npos) {
+				LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_FILE) + name + " (" + STRING(SIZE) + ": " + Util::toString(File::getSize(name)) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
 				continue;
+			}
 			if(!BOOLSETTING(SHARE_HIDDEN) && ((data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || (name[0] == '.')) )
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -329,8 +331,10 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if (name == "." || name == "..") {
 				continue;
 			}
-			if(name.find('$') != string::npos)
+			if(name.find('$') != string::npos) {
+				LogManager::getInstance()->message(STRING(FORBIDDEN_DOLLAR_DIRECTORY) + name + " (" + STRING(DIRECTORY) + ": \"" + aName + "\")");
 				continue;
+			}
 			if (name[0] == '.' && !BOOLSETTING(SHARE_HIDDEN)) {
 				continue;
 			}
@@ -556,9 +560,9 @@ static const char* typeCompressed[] = { ".zip", ".ace", ".rar" };
 static const char* typeDocument[] = { ".htm", ".doc", ".txt", ".nfo" };
 static const char* typeExecutable[] = { ".exe" };
 static const char* typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".img", ".pct", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
-static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp", ".wmv", ".ogm" };
+static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp", ".wmv", ".ogm", ".mkv" };
 
-static const string type2Audio[] = { ".au", ".aiff" };
+static const string type2Audio[] = { ".au", ".aiff", ".flac" };
 static const string type2Picture[] = { ".ai", ".ps", ".pict" };
 static const string type2Video[] = { ".rm", ".divx", ".mpeg" };
 
@@ -1015,6 +1019,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.89 2004/06/26 18:16:54 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.90 2004/06/27 12:46:32 arnetheduck Exp $
  */
 
