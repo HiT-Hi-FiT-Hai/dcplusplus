@@ -32,7 +32,8 @@ public:
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus");
+		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/");
+		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the first and (so far) only mirror...more thanks go out to the people testing the application and to all those who have been discussing it on sourceforge and all over the world...you probably know who you are...");
 		CenterWindow(GetParent());
 		return TRUE;
 	}
@@ -48,9 +49,13 @@ public:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.3 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.4 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: AboutDlg.h,v $
+ * Revision 1.4  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.3  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

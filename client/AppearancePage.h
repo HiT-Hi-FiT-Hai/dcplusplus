@@ -33,9 +33,11 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		COMMAND_HANDLER(IDC_SELTEXT, BN_CLICKED, onClickedText)
 		COMMAND_HANDLER(IDC_SELWINCOLOR, BN_CLICKED, onClickedBackground)
+		COMMAND_HANDLER(IDC_BROWSE, BN_CLICKED, onBrowse)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onBrowse(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onCtlColor(UINT, WPARAM, LPARAM, BOOL&);
@@ -60,9 +62,13 @@ protected:
 
 /**
  * @file AppearancePage.h
- * $Id: AppearancePage.h,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.3 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.h,v $
+ * Revision 1.3  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.2  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

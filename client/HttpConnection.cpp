@@ -45,7 +45,7 @@ void HttpConnection::downloadFile(const string& aUrl) {
 
 void HttpConnection::onConnected() {
 	socket.write("GET " + file + " HTTP/1.1\r\n");
-	socket.write("User-Agent: DC++\r\n");
+	socket.write("User-Agent: DC++ v" VERSIONSTRING "\r\n");
 	socket.write("Host: " + server + "\r\n");
 	socket.write("Cache-Control: no-cache\r\n\r\n");
 }
@@ -66,9 +66,13 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.6 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.7 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.7  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.6  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

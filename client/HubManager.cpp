@@ -84,11 +84,34 @@ void HubManager::load(SimpleXML* aXml) {
 	}
 }
 
+void HubManager::refresh() {
+	{
+		Lock l(cs);
+		publicHubs.clear();
+		running = true;
+		downloaded = false;
+		
+	}
+	
+	reset();
+	
+	conn = new HttpConnection();
+	conn->addListener(this);
+	StringList l = StringTokenizer(SETTING(HUBLIST_SERVERS), ';').getTokens();
+	string server = l[(lastServer++) % l.size()];
+	fire(HubManagerListener::MESSAGE, "Connecting to " + server + "...");
+	conn->downloadFile(server);
+}
+
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.16 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.17 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.17  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.16  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

@@ -32,7 +32,9 @@ public:
 
 	enum StrSetting { STR_FIRST,
 		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOAD_DIRECTORY, EMAIL, NICK, SERVER,
-		CLIENTVERSION, TEXT_FONT, MAINFRAME_ORDER, MAINFRAME_WIDTHS, HUBFRAME_ORDER, HUBFRAME_WIDTHS, STR_LAST };
+		CLIENTVERSION, TEXT_FONT, MAINFRAME_ORDER, MAINFRAME_WIDTHS, HUBFRAME_ORDER, HUBFRAME_WIDTHS, 
+		LANGUAGE_FILE, SEARCHFRAME_ORDER, SEARCHFRAME_WIDTHS, FAVORITESFRAME_ORDER, FAVORITESFRAME_WIDTHS, 
+		HUBLIST_SERVERS, STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT, REMOVE_NOT_AVAILABLE, 
@@ -125,9 +127,13 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.19 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.20 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.20  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.19  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

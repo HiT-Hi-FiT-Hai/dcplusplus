@@ -29,7 +29,6 @@
 
 #include "DirectoryListing.h"
 #include "ExListViewCtrl.h"
-
 class User;
 
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
@@ -77,66 +76,38 @@ public:
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	END_MSG_MAP()
 
-	static int sortFile(LPARAM a, LPARAM b) {
-		LVITEM* c = (LVITEM*)a;
-		LVITEM* d = (LVITEM*)b;
-		
-		if(c->iImage == IMAGE_DIRECTORY) {
-			if(d->iImage == IMAGE_FILE) {
-				return -1;
-			}
-			dcassert(c->iImage == IMAGE_DIRECTORY);
-
-			DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
-			DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
-			
-			return stricmp(e->getName().c_str(), f->getName().c_str());
-		} else {
-			if(d->iImage == IMAGE_DIRECTORY) {
-				return 1;
-			}
-			dcassert(c->iImage == IMAGE_FILE);
-			
-			DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
-			DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
-			
-			return stricmp(e->getName().c_str(), f->getName().c_str());
-		}
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
+	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
+	LRESULT onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	
+	void downloadList(const string& aTarget);
+	static int sortFile(LPARAM a, LPARAM b);
+	static int sortSize(LPARAM a, LPARAM b);
+	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+	
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 0;
 	}
 	
-	static int sortSize(LPARAM a, LPARAM b) {
-		LVITEM* c = (LVITEM*)a;
-		LVITEM* d = (LVITEM*)b;
-		
-		if(c->iImage == IMAGE_DIRECTORY) {
-			if(d->iImage == IMAGE_FILE) {
-				return -1;
-			}
-			dcassert(c->iImage == IMAGE_DIRECTORY);
-			
-			DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
-			DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
-			LONGLONG g = e->getTotalSize();
-			LONGLONG h = f->getTotalSize();
-			
-			return (g < h) ? -1 : ((g == h) ? 0 : 1);
-		} else {
-			if(d->iImage == IMAGE_DIRECTORY) {
-				return 1;
-			}
-			dcassert(c->iImage == IMAGE_FILE);
-			
-			DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
-			DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
-			LONGLONG g = e->getSize();
-			LONGLONG h = f->getSize();
-			return (g < h) ? -1 : ((g == h) ? 0 : 1);
-		}
+	void setWindowTitle() {
+		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+	}
+
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		return 1;
 	}
 
 	LRESULT onColumnClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-
+		
 		if(l->iSubItem == ctrlList.getSortColumn()) {
 			ctrlList.setSortDirection(!ctrlList.getSortDirection());
 		} else {
@@ -147,66 +118,6 @@ public:
 			}
 		}
 		return 0;
-	}
-	
-	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
-	void downloadList(const string& aTarget);
-	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		return 0;
-	}
-	
-	void setWindowTitle() {
-		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
-	}
-
-	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	LRESULT onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	
-	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
-
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		// handled, no background painting needed
-		return 1;
-	}
-	
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-			
-			char buf[64];
-			sprintf(buf, "Files: %d", files);
-			ctrlStatus.SetText(1, buf);
-			sprintf(buf, "Size: %s", size.c_str());
-			ctrlStatus.SetText(2, buf);
-		}
-		
-		SetSplitterRect(&rect);
 	}
 	
 private:
@@ -239,9 +150,13 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.16 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.17 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.17  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.16  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

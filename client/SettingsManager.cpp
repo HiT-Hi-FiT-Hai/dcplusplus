@@ -32,7 +32,9 @@ const string SettingsManager::settingTags[] =
 {
 	// Strings
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
-	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", "SENTRY", 
+	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
+	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
+	"HublistServers", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
@@ -77,6 +79,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
+	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config;http://dcplusplus.sourceforge.net/PublicHubList.config;http://www.neo-modus.com/PublicHubList.config");
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -199,9 +202,13 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.23 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.24 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.24  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.23  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

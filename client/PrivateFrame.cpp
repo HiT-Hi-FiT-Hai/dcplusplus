@@ -23,6 +23,7 @@
 #include "Client.h"
 #include "ClientManager.h"
 #include "Util.h"
+#include "ResourceManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -48,7 +49,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	if(user->isOnline()) {
 		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
 	} else {
-		SetWindowText((user->getNick() + " (Offline)").c_str());
+		SetWindowText((user->getNick() + " (" + STRING(OFFLINE) + ")").c_str());
 	}
 	
 	created = true;
@@ -134,15 +135,19 @@ void PrivateFrame::onEnter()
 			ctrlMessage.SetWindowText("");
 		} 
 	} else {
-		ctrlStatus.SetText(0, "User went offline");
+		ctrlStatus.SetText(0, CSTRING(USER_WENT_OFFLINE));
 	}
 }
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.19 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.20 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.20  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.19  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

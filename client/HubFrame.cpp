@@ -27,6 +27,7 @@
 #include "Util.h"
 #include "UploadManager.h"
 #include "StringTokenizer.h"
+#include "ResourceManager.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -104,36 +105,36 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	LV_COLUMN lvc;
 	ZeroMemory(&lvc, sizeof(lvc));
 	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	lvc.pszText = "Nick";
+
+	lvc.pszText = const_cast<char*>(CSTRING(NICK));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_NICK];
 	lvc.iOrder = columnIndexes[COLUMN_NICK];
 	lvc.iSubItem = COLUMN_NICK;
 	ctrlUsers.InsertColumn(0, &lvc);
 
-	lvc.pszText = "Shared";
+	lvc.pszText = const_cast<char*>(CSTRING(SHARED));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_SHARED];
 	lvc.iOrder = columnIndexes[COLUMN_SHARED];
 	lvc.iSubItem = COLUMN_SHARED;
 	ctrlUsers.InsertColumn(1, &lvc);
 	
-	lvc.pszText = "Description";
+	lvc.pszText = const_cast<char*>(CSTRING(DESCRIPTION));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_DESCRIPTION];
 	lvc.iOrder = columnIndexes[COLUMN_DESCRIPTION];
 	lvc.iSubItem = COLUMN_DESCRIPTION;
 	ctrlUsers.InsertColumn(2, &lvc);
 	
-	lvc.pszText = "Connection";
+	lvc.pszText = const_cast<char*>(CSTRING(CONNECTION));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_CONNECTION];
 	lvc.iOrder = columnIndexes[COLUMN_CONNECTION];
 	lvc.iSubItem = COLUMN_CONNECTION;
 	ctrlUsers.InsertColumn(3, &lvc);
 	
-	lvc.pszText = "E-Mail";
+	lvc.pszText = const_cast<char*>(CSTRING(EMAIL));
 	lvc.fmt = LVCFMT_LEFT;
 	lvc.cx = columnSizes[COLUMN_EMAIL];
 	lvc.iOrder = columnIndexes[COLUMN_EMAIL];
@@ -158,21 +159,21 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Get File List";
+	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.wID = IDC_GETLIST;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Private Message";
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
 	mi.wID = IDC_PRIVATEMESSAGE;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Grant extra slot";
+	mi.dwTypeData = const_cast<char*>(CSTRING(GRANT_EXTRA_SLOT));
 	mi.wID = IDC_GRANTSLOT;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -183,7 +184,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Refresh User List";
+	mi.dwTypeData = const_cast<char*>(CSTRING(REFRESH_USER_LIST));
 	mi.wID = IDC_REFRESH;
 	userMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -194,13 +195,13 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Kick User";
+	mi.dwTypeData = const_cast<char*>(CSTRING(KICK_USER));
 	mi.wID = IDC_KICK;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Redirect";
+	mi.dwTypeData = const_cast<char*>(CSTRING(REDIRECT));
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
@@ -234,7 +235,7 @@ void HubFrame::onEnter() {
 				try {
 					ShareManager::getInstance()->setDirty();
 					ShareManager::getInstance()->refresh(true);
-					ctrlStatus.SetText(0, "File list refreshed");
+					ctrlStatus.SetText(0, CSTRING(FILE_LIST_REFRESHED));
 				} catch(ShareException e) {
 					ctrlStatus.SetText(0, e.getError().c_str());
 				}
@@ -242,25 +243,25 @@ void HubFrame::onEnter() {
 				int j = Util::toInt(param);
 				if(j > 0) {
 					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
-					ctrlStatus.SetText(0, "Slots set");
+					ctrlStatus.SetText(0, CSTRING(SLOTS_SET));
 				} else {
-					ctrlStatus.SetText(0, "Invalid number of slots");
+					ctrlStatus.SetText(0, CSTRING(INVALID_NUMBER_OF_SLOTS));
 				}
 			} else if(stricmp(s.c_str(), "join")==0) {
 				if(!param.empty()) {
 					if(client)
 						client->connect(param);
 				} else {
-					ctrlStatus.SetText(0, "Specify a server to connect to");
+					ctrlStatus.SetText(0, CSTRING(SPECIFY_SERVER));
 				}
 			} else if(stricmp(s.c_str(), "search") == 0) {
 				if(!param.empty()) {
 					SearchFrame* pChild = new SearchFrame();
 					pChild->setTab(getTab());
-					pChild->setInitial(param, 0, 1);
+					pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST);
 					pChild->CreateEx(m_hWndMDIClient);
 				} else {
-					ctrlStatus.SetText(0, "Specify a search string");
+					ctrlStatus.SetText(0, CSTRING(SPECIFY_SEARCH_STRING));
 				}
 			} else if(stricmp(s.c_str(), "dc++") == 0) {
 				if(client)
@@ -270,16 +271,16 @@ void HubFrame::onEnter() {
 			} else if(stricmp(s.c_str(), "away") == 0) {
 				Util::setAway(true);
 				Util::setAwayMessage(param);
-				addClientLine("Away mode on: " + Util::getAwayMessage());
+				addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
 			} else if(stricmp(s.c_str(), "back") == 0) {
 				Util::setAway(false);
-				addClientLine("Away mode off");
+				addClientLine(STRING(AWAY_MODE_OFF));
 			} else if(stricmp(s.c_str(), "ts") == 0) {
 				timeStamps = !timeStamps;
 				if(timeStamps) {
-					addClientLine("Timestamps enabled");
+					addClientLine(STRING(TIMESTAMPS_ENABLED));
 				} else {
-					addClientLine("Timestamps disabled");
+					addClientLine(STRING(TIMESTAMPS_DISABLED));
 				}
 			}
 		} else {
@@ -342,8 +343,8 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 	LineDlg dlg;
-	dlg.title = "Kick user(s)";
-	dlg.description = "Please enter a reason";
+	dlg.title = STRING(KICK_USER);
+	dlg.description = STRING(ENTER_REASON);
 	dlg.line = lastKick;
 	if(dlg.DoModal() == IDOK) {
 		lastKick = dlg.line;
@@ -375,14 +376,14 @@ LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 	LineDlg dlg1, dlg2;
-	dlg1.title = "Redirect user(s)";
-	dlg1.description = "Please enter a reason";
+	dlg1.title = STRING(REDIRECT_USER);
+	dlg1.description = STRING(ENTER_REASON);
 	dlg1.line = lastRedir;
 
 	if(dlg1.DoModal() == IDOK) {
 		lastRedir = dlg1.line;
-		dlg2.title = "Redirect user(s)";
-		dlg2.description = "Please enter destination server";
+		dlg2.title = STRING(REDIRECT_USER);
+		dlg2.description = STRING(ENTER_SERVER);
 		dlg2.line = lastServer;
 		if(dlg2.DoModal() == IDOK) {
 			lastServer = dlg2.line;
@@ -391,7 +392,7 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 				char buf[256];
 				ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 				if(client) {
-					client->opForceMove(ClientManager::getInstance()->getUser(buf, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+					client->opForceMove(ClientManager::getInstance()->getUser(buf, client->getIp()), dlg2.line, STRING(YOU_ARE_BEING_REDIRECTED) + dlg2.line + ": " + dlg1.line);
 				}
 			}
 		}
@@ -444,7 +445,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 	} else if(wParam==STATS) {
 		if(client) {
-			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " users").c_str());
+			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(USERS)).c_str());
 			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
 		}
 
@@ -463,8 +464,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				client->password(client->getPassword());
 			} else {
 				LineDlg dlg;
-				dlg.title = "Hub Password - " + client->getName();
-				dlg.description = "Please enter your password";
+				dlg.title = STRING(HUB_PASSWORD) + " - " + client->getName();
+				dlg.description = STRING(ENTER_PASSWORD);
 				dlg.password = true;
 				
 				if(dlg.DoModal() == IDOK) {
@@ -477,7 +478,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		}
 	} else if(wParam == CLIENT_CONNECTING) {
 		if(client) {
-			addClientLine("Connecting to " + client->getServer() + "...");
+			addClientLine(STRING(CONNECTING_TO) + client->getServer() + "...");
 			SetWindowText(client->getServer().c_str());
 		}
 	} else if(wParam == CLIENT_FAILED) {
@@ -488,10 +489,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if(wParam == CLIENT_HUBNAME) {
 		if(client) {
 			SetWindowText( (client->getName() + " (" + client->getServer() + ")").c_str());
-			addClientLine("Connected");
+			addClientLine(STRING(CONNECTED));
 		}
 	} else if(wParam == CLIENT_VALIDATEDENIED) {
-		addClientLine("Your nick was already taken, please change to something else!");
+		addClientLine(STRING(NICK_TAKEN));
 		if(client)
 			client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
@@ -500,11 +501,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
-				addClientLine("Ignored message: " + i->msg);
+				addClientLine(STRING(IGNORED_MESSAGE) + i->msg);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 			} else {
-				addLine("Private message from " + i->user->getNick() + ": \r\n" + i->msg);
+				addLine(STRING(PRIVATE_MESSAGE_FROM) + i->user->getNick() + ": \r\n" + i->msg);
 			}
 		}
 		delete i;
@@ -592,9 +593,13 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.44 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.45 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.45  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.44  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

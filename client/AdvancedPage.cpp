@@ -41,6 +41,7 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_POPUPOFFLINE, SettingsManager::POPUP_OFFLINE, PropPage::T_BOOL },
 	{ IDC_REMOVEDUPES, SettingsManager::REMOVE_DUPES, PropPage::T_BOOL },
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
+	{ IDC_PUBLIC_HUBS, SettingsManager::HUBLIST_SERVERS, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -70,9 +71,13 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.12 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.13 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.13  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.12  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

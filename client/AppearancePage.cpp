@@ -34,6 +34,7 @@ PropPage::Item AppearancePage::items[] = {
 	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
 	{ IDC_TIMESTAMPS, SettingsManager::TIME_STAMPS, PropPage::T_BOOL },
 	{ IDC_CONFIRMEXIT, SettingsManager::CONFIRM_EXIT, PropPage::T_BOOL },
+	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -119,11 +120,27 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 		return FALSE;
 }
 
+LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	char buf[MAX_PATH];
+
+	GetDlgItemText(IDC_LANGUAGE, buf, MAX_PATH);
+	string x = buf;
+
+	if(Util::browseFile(x, m_hWnd, false) == IDOK) {
+		SetDlgItemText(IDC_LANGUAGE, x.c_str());
+	}
+	return 0;
+}
+
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.4 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.5 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.5  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.4  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -21,8 +21,6 @@
 
 #include "UserConnection.h"
 
-#include "ServerSocket.h"
-
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
@@ -83,9 +81,13 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.13 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.14 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.14  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.13  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

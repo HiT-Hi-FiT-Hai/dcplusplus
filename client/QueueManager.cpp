@@ -76,7 +76,7 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 					}
 					if(!online) {
 						dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
-						SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, 0, SearchManager::SIZE_ATLEAST);
+						SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
 						search.erase(k);
 						break;
 					} else {
@@ -392,9 +392,13 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.13 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.13  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.12  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

@@ -37,8 +37,8 @@ private:
 	ResourceManager() { };
 	virtual ~ResourceManager() { };
 	
-	static const string strings[LAST];
-	static const string names[LAST];
+	static string strings[LAST];
+	static string names[LAST];
 };
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
@@ -48,9 +48,13 @@ private:
 
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.h,v 1.2 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.3 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: ResourceManager.h,v $
+ * Revision 1.3  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.2  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

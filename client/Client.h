@@ -26,8 +26,8 @@
 #include "BufferedSocket.h"
 #include "User.h"
 #include "Util.h"
-#include "SearchManager.h"
 #include "TimerManager.h"
+#include "CriticalSection.h"
 
 class Client;
 
@@ -79,11 +79,6 @@ class Client : public Speaker<ClientListener>, private BufferedSocketListener, p
 {
 	friend class ClientManager;
 public:
-	enum {
-		SEARCH_PLAIN,
-		SEARCH_ATLEAST,
-		SEARCH_ATMOST
-	};
 	typedef Client* Ptr;
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
@@ -91,68 +86,20 @@ public:
 	bool isConnected() { return socket.isConnected(); };
 
 	void disconnect(bool rl = true) throw();
-	void validateNick(const string& aNick) {
-		dcdebug("validateNick %s\n", aNick.c_str());
-		send("$ValidateNick " + aNick + "|");
-	}
-	
-	void key(const string& aKey) {
-		dcdebug("key xxx\n");
-		send("$Key " + aKey + "|");
-	}
-	
-	void version(const string& aVersion) {
-		dcdebug("version %s\n", aVersion.c_str());
-		send("$Version " + aVersion + "|");
-	}
-	
-	void getNickList() {
-		dcdebug("getNickList\n");
-		send("$GetNickList|");
-	}
 
-	void password(const string& aPass) {
-		dcdebug("password");
-		send("$MyPass " + aPass + "|");
-	}
+	void validateNick(const string& aNick) { send("$ValidateNick " + aNick + "|"); }
+	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
+	void version(const string& aVersion) { send("$Version " + aVersion + "|"); };
+	void getNickList() { send("$GetNickList|"); };
+	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
+	void getInfo(User::Ptr aUser) { send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+	void getInfo(User* aUser) { send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+//	void getInfo(const string& aNick) { send("$GetINFO " + aNick + " " +getNick() + "|"); };
+	void sendMessage(const string& aMessage) { 	send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
+
+	void search(int aSizeType, LONGLONG aSize, int aFileType, const string& aString);
+	void searchResults(const string& aResults) { send(aResults); }
 	
-	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
-		char* buf;
-		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
-		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
-		string tmp = aString;
-		string::size_type i;
-		while((i = tmp.find(' ')) != string::npos) {
-			tmp.replace(i, 1, 1, '$');
-		}
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			buf = new char[SETTING(SERVER).length() + aString.length() + 64];
-			sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", SETTING(SERVER).c_str(), SETTING(PORT), c1, c2, aSize, aFileType+1, tmp.c_str());
-		} else {
-			buf = new char[getNick().length() + aString.length() + 64];
-			sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
-		}
-		send(buf);
-		delete buf;
-	}
-
-	void searchResults(const string& aResults) {
-		send(aResults);
-	}
-
-	void sendMessage(const string& aMessage) {
-		dcdebug("sendMessage ...\n");
-		send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|");
-	}
-	void getInfo(User::Ptr aUser) {
-		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
-	}
-	void getInfo(User* aUser) {
-		send("$GetINFO " + aUser->getNick() + " " + getNick() + "|");
-	}
-	void getInfo(const string& aNick) {
-		send("$GetINFO " + aNick + " " +getNick() + "|");
-	}
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
@@ -366,9 +313,13 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.42 2002/03/07 19:07:51 arnetheduck Exp $
+ * $Id: Client.h,v 1.43 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.43  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.42  2002/03/07 19:07:51  arnetheduck
  * Minor fixes + started code review
  *

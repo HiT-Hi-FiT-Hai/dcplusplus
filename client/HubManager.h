@@ -26,6 +26,7 @@
 #include "Util.h"
 #include "CriticalSection.h"
 #include "HttpConnection.h"
+#include "TimerManager.h"
 
 class HubEntry {
 public:
@@ -97,7 +98,7 @@ public:
 
 class SimpleXML;
 
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>
+class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>, private TimerManagerListener
 {
 public:
 	
@@ -122,7 +123,7 @@ public:
 			if(i != favoriteHubs.end()) {
 				return;
 			}
-			FavoriteHubEntry* f = new FavoriteHubEntry(aEntry);
+			f = new FavoriteHubEntry(aEntry);
 			favoriteHubs.push_back(f);
 		}
 		fire(HubManagerListener::FAVORITE_ADDED, f);
@@ -155,21 +156,7 @@ public:
 		return downloaded;
 	}
 	
- 	void refresh() {
-		{
-			Lock l(cs);
-			publicHubs.clear();
-			running = true;
-			downloaded = false;
-			
-		}
-		
-		reset();
-
-		conn = new HttpConnection();
-		conn->addListener(this);
-		conn->downloadFile("http://www.neo-modus.com/PublicHubList.config");
-	}
+ 	void refresh();
 	
 	void reset() {
 		if(conn) {
@@ -187,13 +174,18 @@ private:
 	HttpConnection* conn;
 	bool running;
 	bool downloaded;
+	bool pendingConnect;
+
+	int lastServer;
 
 	friend class Singleton<HubManager>;
 	
-	HubManager() : downloaded(false), conn(NULL), running(false) {
+	HubManager() : downloaded(false), conn(NULL), running(false), pendingConnect(false), lastServer(0) {
+		TimerManager::getInstance()->addListener(this);
 	}
 
 	~HubManager() {
+		TimerManager::getInstance()->removeListener(this);
 		if(conn) {
 			conn->removeListener(this);
 			delete conn;
@@ -231,6 +223,7 @@ private:
 			conn->removeListener(this);
 			running = false;
 			fire(HubManagerListener::MESSAGE, "Unable to download public server list. Check your internet connection!");
+			pendingConnect = true;
 		}
 	}
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn) {
@@ -246,15 +239,26 @@ private:
 	
  	void onHttpFinished() throw();
 
+	// TimerManagerListener
+	virtual void onAction(TimerManagerListener::Types type, DWORD) {
+		if(pendingConnect && type == TimerManagerListener::MINUTE) {
+			pendingConnect = false;
+			refresh();
+		}
+	}
 };
 
 #endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.22 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.23 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.23  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.22  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

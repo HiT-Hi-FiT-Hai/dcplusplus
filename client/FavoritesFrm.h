@@ -37,7 +37,8 @@ public:
 		COLUMN_DESCRIPTION,
 		COLUMN_NICK,
 		COLUMN_PASSWORD,
-		COLUMN_SERVER
+		COLUMN_SERVER,
+		COLUMN_LAST
 	};
 	
 	FavoriteHubsFrame() : stopperThread(NULL), users(0), hubs(0) {
@@ -215,6 +216,9 @@ private:
 	ExListViewCtrl ctrlHubs;
 	HANDLE stopperThread;
 	
+	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[COLUMN_LAST];
+	
 	static DWORD WINAPI stopper(void* p) {
 		FavoriteHubsFrame* frm = (FavoriteHubsFrame*)p;
 		HubManager::getInstance()->removeListener(frm);
@@ -268,9 +272,13 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.4 2002/02/10 12:25:24 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.5 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.h,v $
+ * Revision 1.5  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.4  2002/02/10 12:25:24  arnetheduck
  * New properties for favorites, and some minor performance tuning...
  *

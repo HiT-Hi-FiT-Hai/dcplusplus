@@ -65,12 +65,12 @@ public:
 		return false;
 	}
 	
-	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString) {
+	void search(int aSizeMode, LONGLONG aSize, int aFileType, const string& aString) {
 		Lock l(cs);
 
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 			if((*i)->isConnected()) {
-				(*i)->search(aSearchType, aSize, aFileType, aString);
+				(*i)->search(aSizeMode, aSize, aFileType, aString);
 			}
 		}
 	}
@@ -182,9 +182,13 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.17 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.18 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.18  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.17  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

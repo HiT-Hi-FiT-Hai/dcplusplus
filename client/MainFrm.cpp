@@ -373,6 +373,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	TimerManager::getInstance()->start();
 	
+	if(!SETTING(LANGUAGE_FILE).empty()) {
+		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
+	}
+
 	Util::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	Util::textColor = SETTING(TEXT_COLOR);
 	Util::bgColor = SETTING(BACKGROUND_COLOR);
@@ -801,9 +805,13 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.68 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.69 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.69  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.68  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

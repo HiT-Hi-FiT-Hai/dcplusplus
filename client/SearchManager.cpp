@@ -24,8 +24,8 @@
 
 SearchManager* SearchManager::instance = NULL;
 
-void SearchManager::search(const string& aName, LONGLONG aSize, DWORD /*aFlags*/ /* = 0 */, int aType /* = 0 */ ) {
-	ClientManager::getInstance()->search(aType, aSize, 0, aName);
+void SearchManager::search(const string& aName, LONGLONG aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
+	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
 }
 
 void SearchManager::onData(const BYTE* buf, int aLen) {
@@ -82,9 +82,13 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.16 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.17 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.17  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.16  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

@@ -87,13 +87,13 @@ public:
 class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener, public Singleton<SearchManager>
 {
 public:
-	enum {
+	enum SizeModes {
 		SIZE_DONTCARE = 0x00,
 		SIZE_ATLEAST = 0x01,
 		SIZE_ATMOST = 0x02,
 	};
 
-	enum {
+	enum TypeModes {
 		TYPE_ANY = 0,
 		TYPE_AUDIO,
 		TYPE_COMPRESSED,
@@ -104,9 +104,9 @@ public:
 		TYPE_FOLDER
 	};
 	
-	void search(const string& aName, LONGLONG aSize = 0, DWORD aFlags = 0, int aType = 0);
-	void search(const string& aName, const string& aSize, DWORD aFlags = 0, int aType = 0) {
-		search(aName, Util::toInt64(aSize), aFlags, aType);
+	void search(const string& aName, LONGLONG aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
+	void search(const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
+		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
 	
 	static string clean(const string& aSearchString) {
@@ -115,7 +115,7 @@ public:
 		string::size_type i = 0;
 
 		while( (i = tmp.find_first_of("$|.[]()-_+")) != string::npos) {
-			tmp.replace(i, 1, 1, ' ');
+			tmp[i] = ' ';
 		}
 		return tmp;
 	}
@@ -165,9 +165,13 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.16 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.17 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.17  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.16  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

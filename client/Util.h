@@ -153,56 +153,8 @@ public:
 		return res;
 	}
 	
-	static bool browseSaveFile(string& target, HWND owner = NULL) {
-		char buf[MAX_PATH];
-		OPENFILENAME ofn;       // common dialog box structure
-		
-		memcpy(buf, target.c_str(), target.length() + 1);
-		// Initialize OPENFILENAME
-		ZeroMemory(&ofn, sizeof(OPENFILENAME));
-		ofn.lStructSize = sizeof(OPENFILENAME);
-		ofn.hwndOwner = owner;
-		ofn.lpstrFile = buf;
-		ofn.nMaxFile = sizeof(buf);
-		ofn.Flags = OFN_PATHMUSTEXIST;
-		
-		// Display the Open dialog box. 
-		if (GetSaveFileName(&ofn)==TRUE) {
-			target = ofn.lpstrFile;
-			return true;
-		}
-		return false;
-	}
-
-	static bool browseDirectory(string& target, HWND owner = NULL) {
-		char buf[MAX_PATH];
-		BROWSEINFO bi;
-		LPMALLOC ma;
-		
-		ZeroMemory(&bi, sizeof(bi));
-		
-		bi.hwndOwner = owner;
-		bi.pszDisplayName = buf;
-		bi.lpszTitle = "Choose folder";
-		bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-		bi.lParam = (LPARAM)target.c_str();
-		bi.lpfn = &browseCallbackProc;
-		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
-		if(pidl != NULL) {
-			SHGetPathFromIDList(pidl, buf);
-			target = buf;
-
-			if(target.size() > 0 && target[target.size()-1] != '\\')
-				target+='\\';
-
-			if(SHGetMalloc(&ma) != E_FAIL) {
-				ma->Free(pidl);
-				ma->Release();
-			}
-			return true;
-		}
-		return false;
-	}
+	static bool browseFile(string& target, HWND owner = NULL, bool save = true);
+	static bool browseDirectory(string& target, HWND owner = NULL);
 			
 	static void ensureDirectory(const string& aFile)
 	{
@@ -384,9 +336,13 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.34 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: Util.h,v 1.35 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.35  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.34  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

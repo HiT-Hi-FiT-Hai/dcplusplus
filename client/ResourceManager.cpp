@@ -20,14 +20,50 @@
 #include "DCPlusPlus.h"
 
 #include "ResourceManager.h"
+#include "SimpleXML.h"
+#include "File.h"
 
 ResourceManager* ResourceManager::instance;
 
+void ResourceManager::loadLanguage(const string& aFile) {
+	try {
+		File f(aFile, File::READ, File::OPEN);
+		SimpleXML xml;
+		xml.fromXML(f.read());
+
+		HASH_MAP<string, int> h;
+		
+		for(int i = 0; i < LAST; ++i) {
+			h[names[i]] = i;
+		}
+
+		if(xml.findChild("Language")) {
+			xml.stepIn();
+			if(xml.findChild("Strings")) {
+				xml.stepIn();
+
+				while(xml.findChild("String")) {
+					HASH_MAP<string, int>::iterator j = h.find(xml.getChildAttrib("Name"));
+
+					if(j != h.end()) {
+						strings[j->second] = xml.getChildData();
+					}
+				}
+			}
+		}
+	} catch(Exception e) {
+		// ...
+	}
+}
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.cpp,v 1.1 2002/03/10 22:41:43 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.2 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: ResourceManager.cpp,v $
+ * Revision 1.2  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.1  2002/03/10 22:41:43  arnetheduck
  * First go at the new resource managment...
  *

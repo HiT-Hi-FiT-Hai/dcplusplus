@@ -361,16 +361,18 @@ IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 180, 103
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 180, 172
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,65,82,50,14
-    CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
+    DEFPUSHBUTTON   "OK",IDOK,65,151,50,14
+    CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
                     IDC_VERSION,18,38,143,36
     ICON            IDR_MAINFRAME,IDC_STATIC,79,15,20,20
     GROUPBOX        "",IDC_STATIC,7,7,166,69
+    GROUPBOX        "",IDC_STATIC,7,81,166,63
+    LTEXT           "",IDC_THANKS,13,89,154,51
 END
 
 IDD_LINE DIALOG DISCARDABLE  0, 0, 239, 46
@@ -452,6 +454,8 @@ BEGIN
     LTEXT           "Write buffer size",IDC_STATIC,15,38,52,8
     LTEXT           "B",IDC_STATIC,124,22,8,8
     LTEXT           "kB (0 to disable)",IDC_STATIC,124,38,52,8
+    EDITTEXT        IDC_PUBLIC_HUBS,16,198,246,14,ES_AUTOHSCROLL
+    LTEXT           "Download public hublist from:",IDC_STATIC,15,187,93,8
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -498,7 +502,7 @@ BEGIN
                     SS_SUNKEN | WS_BORDER | NOT WS_GROUP
     CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,73,81,10
-    GROUPBOX        "Options",IDC_STATIC,7,60,261,158
+    GROUPBOX        "Options",IDC_STATIC,7,60,261,103
     CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,85,79,10
     CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
@@ -508,6 +512,11 @@ BEGIN
     CONTROL         "Automatically enable timestamps in chat windows",
                     IDC_TIMESTAMPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,
                     107,170,10
+    GROUPBOX        "Language file",IDC_STATIC,7,167,261,32
+    EDITTEXT        IDC_LANGUAGE,16,178,188,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSE,210,178,50,14
+    LTEXT           "Note; most of these options require that you restart DC++",
+                    IDC_STATIC,7,210,179,8
 END
 
 
@@ -524,7 +533,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 173
         TOPMARGIN, 7
-        BOTTOMMARGIN, 96
+        BOTTOMMARGIN, 165
     END
 
     IDD_LINE, DIALOG

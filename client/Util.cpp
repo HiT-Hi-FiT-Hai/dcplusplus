@@ -139,11 +139,66 @@ int CALLBACK Util::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARA
 	return 0;
 }
 
+bool Util::browseDirectory(string& target, HWND owner /* = NULL */) {
+	char buf[MAX_PATH];
+	BROWSEINFO bi;
+	LPMALLOC ma;
+	
+	ZeroMemory(&bi, sizeof(bi));
+	
+	bi.hwndOwner = owner;
+	bi.pszDisplayName = buf;
+	bi.lpszTitle = "Choose folder";
+	bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+	bi.lParam = (LPARAM)target.c_str();
+	bi.lpfn = &browseCallbackProc;
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+	if(pidl != NULL) {
+		SHGetPathFromIDList(pidl, buf);
+		target = buf;
+		
+		if(target.size() > 0 && target[target.size()-1] != '\\')
+			target+='\\';
+		
+		if(SHGetMalloc(&ma) != E_FAIL) {
+			ma->Free(pidl);
+			ma->Release();
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Util::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */) {
+	char buf[MAX_PATH];
+	OPENFILENAME ofn;       // common dialog box structure
+	
+	memcpy(buf, target.c_str(), target.length() + 1);
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = owner;
+	ofn.lpstrFile = buf;
+	ofn.nMaxFile = sizeof(buf);
+	ofn.Flags = OFN_PATHMUSTEXIST;
+	
+	// Display the Open dialog box. 
+	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
+		target = ofn.lpstrFile;
+		return true;
+	}
+	return false;
+}
+
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.9 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.10 2002/03/13 20:35:26 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.10  2002/03/13 20:35:26  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.9  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

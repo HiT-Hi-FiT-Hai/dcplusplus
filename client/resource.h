@@ -102,6 +102,10 @@
 #define IDC_FORCE                       1050
 #define IDC_REMOVEDUPES                 1050
 #define IDC_BUFFERSIZE                  1051
+#define IDC_LANGUAGE                    1052
+#define IDC_BROWSE                      1053
+#define IDC_PUBLIC_HUBS                 1054
+#define IDC_THANKS                      1055
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -118,7 +122,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1052
+#define _APS_NEXT_CONTROL_VALUE         1056
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

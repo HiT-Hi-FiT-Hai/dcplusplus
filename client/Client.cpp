@@ -21,8 +21,8 @@
 
 #include "Socket.h"
 #include "Client.h"
-#include "CriticalSection.h"
 #include "ClientManager.h"
+#include "SearchManager.h"
 
 void Client::connect(const string& aServer) {
 	
@@ -337,11 +337,35 @@ void Client::disconnect(bool rl /* = true */) throw() {
 	}
 }
 
+void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& aString){
+	char* buf;
+	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
+	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
+	string tmp = aString;
+	string::size_type i;
+	while((i = tmp.find(' ')) != string::npos) {
+		tmp.replace(i, 1, 1, '$');
+	}
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		buf = new char[SETTING(SERVER).length() + aString.length() + 64];
+		sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", SETTING(SERVER).c_str(), SETTING(PORT), c1, c2, aSize, aFileType+1, tmp.c_str());
+	} else {
+		buf = new char[getNick().length() + aString.length() + 64];
+		sprintf(buf, "$Search Hub:%s %c?%c?%I64d?%d?%s|", getNick().c_str(), c1, c2, aSize, aFileType+1, tmp.c_str());
+	}
+	send(buf);
+	delete buf;
+}
+
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.31 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.32 2002/03/13 20:35:25 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.32  2002/03/13 20:35:25  arnetheduck
+ * Release canditate...internationalization done as far as 0.155 is concerned...
+ * Also started using mirrors of the public hub lists
+ *
  * Revision 1.31  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *
