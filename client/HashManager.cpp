@@ -426,7 +426,7 @@ dataFile(Util::getAppPath() + "HashData.dat"), dirty(false)
 			// ?
 		}
 	}
-};
+}
 
 /**
  * Creates the data files for storing hash values.
@@ -673,5 +673,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.45 2005/02/04 17:17:10 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.46 2005/03/14 10:37:23 arnetheduck Exp $
  */

@@ -40,7 +40,7 @@ NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),
 {
 	TimerManager::getInstance()->addListener(this);
 
-};
+}
 
 NmdcHub::~NmdcHub() throw() {
 	TimerManager::getInstance()->removeListener(this);
@@ -48,7 +48,7 @@ NmdcHub::~NmdcHub() throw() {
 
 	Lock l(cs);
 	clearUsers();
-};
+}
 
 void NmdcHub::connect() {
 	setRegistered(false);
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.30 2005/03/12 16:45:36 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.31 2005/03/14 10:37:22 arnetheduck Exp $
  */
 

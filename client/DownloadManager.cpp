@@ -59,7 +59,7 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_RESUME);
 	if(qi->getCurrent()->isSet(QueueItem::Source::FLAG_UTF8))
 		setFlag(Download::FLAG_UTF8);
-};
+}
 
 AdcCommand Download::getCommand(bool zlib, bool tthf) {
 	AdcCommand cmd(AdcCommand::CMD_GET);
@@ -887,5 +887,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.147 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.148 2005/03/14 10:37:23 arnetheduck Exp $
  */

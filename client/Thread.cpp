@@ -37,10 +37,10 @@ void Thread::start() throw(ThreadException) {
 	if(pthread_create(&threadHandle, NULL, &starter, this) != 0) {
 		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
 	}
-};
+}
 #endif
 /**
  * @file
- * $Id: Thread.cpp,v 1.8 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: Thread.cpp,v 1.9 2005/03/14 10:37:21 arnetheduck Exp $
  */
 

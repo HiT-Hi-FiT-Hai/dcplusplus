@@ -18,6 +18,7 @@
 
 #include "Client.h"
 #include "AdcCommand.h"
+#include "User.h"
 
 class ClientManager;
 
@@ -101,5 +102,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.27 2005/03/12 17:42:52 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.28 2005/03/14 10:37:21 arnetheduck Exp $
  */

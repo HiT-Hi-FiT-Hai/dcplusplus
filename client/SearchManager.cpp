@@ -103,7 +103,7 @@ string SearchResult::getFileName() const {
 		return getFile();
 
 	return getFile().substr(i + 1);
-};
+}
 
 void SearchManager::setPort(short aPort) throw(SocketException) {
 	port = aPort;
@@ -339,6 +339,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.51 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.52 2005/03/14 10:37:23 arnetheduck Exp $
  */
 

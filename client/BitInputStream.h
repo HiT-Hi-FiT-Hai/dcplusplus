@@ -57,6 +57,9 @@ public:
 		return ;
 	}
 private:
+	BitInputStream(const BitInputStream&);
+	BitInputStream& operator=(const BitInputStream&);
+	
 	size_t bitPos;
 	size_t endPos;
 	const u_int8_t* is;
@@ -66,5 +69,5 @@ private:
 
 /**
  * @file
- * $Id: BitInputStream.h,v 1.15 2005/02/04 17:17:10 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.16 2005/03/14 10:37:22 arnetheduck Exp $
  */

@@ -51,7 +51,7 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	HashManager::getInstance()->addListener(this);
-};
+}
 
 ShareManager::~ShareManager() {
 	SettingsManager::getInstance()->removeListener(this);
@@ -1479,6 +1479,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.130 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.131 2005/03/14 10:37:22 arnetheduck Exp $
  */
 

@@ -57,7 +57,7 @@ public:
 		FLAG_UTF8 = 0x80,
 		FLAG_TREE_DOWNLOAD = 0x100,
 		FLAG_TREE_TRIED = 0x200,
-		FLAG_PARTIAL_LIST = 0x400,
+		FLAG_PARTIAL_LIST = 0x400
 	};
 
 	Download() throw();
@@ -277,5 +277,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.80 2005/03/12 13:36:33 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.81 2005/03/14 10:37:21 arnetheduck Exp $
  */

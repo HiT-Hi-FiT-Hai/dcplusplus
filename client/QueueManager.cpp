@@ -319,7 +319,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 	ClientManager::getInstance()->addListener(this);
 
 	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
-};
+}
 
 QueueManager::~QueueManager() throw() { 
 	SearchManager::getInstance()->removeListener(this);
@@ -366,7 +366,7 @@ QueueManager::~QueueManager() throw() {
 		}		
 #endif
 	}
-};
+}
 
 void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	string fn;
@@ -1359,5 +1359,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.124 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.125 2005/03/14 10:37:23 arnetheduck Exp $
  */

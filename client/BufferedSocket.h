@@ -145,7 +145,7 @@ public:
 		addTask(SEND_FILE);
 	}
 
-	GETSET(char, separator, Separator);
+	GETSET(char, separator, Separator)
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException);
 
@@ -214,5 +214,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.66 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.67 2005/03/14 10:37:22 arnetheduck Exp $
  */

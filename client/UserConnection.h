@@ -139,6 +139,9 @@ public:
 	GETSET(u_int32_t, lastTick, LastTick);
 	GETSET(int64_t, runningAverage, RunningAverage);
 private:
+	Transfer(const Transfer&);
+	Transfer& operator=(const Transfer&);
+	
 	/** Bytes on last avg update */
 	int64_t last;
 	/** Total actual bytes transfered this session (compression?) */
@@ -195,7 +198,7 @@ public:
 		FLAG_SUPPORTS_ADCGET = FLAG_SUPPORTS_XML_BZLIST << 1,
 		FLAG_SUPPORTS_ZLIB_GET = FLAG_SUPPORTS_ADCGET << 1,
 		FLAG_SUPPORTS_TTHL = FLAG_SUPPORTS_ZLIB_GET << 1,
-		FLAG_SUPPORTS_TTHF = FLAG_SUPPORTS_TTHL << 1,
+		FLAG_SUPPORTS_TTHF = FLAG_SUPPORTS_TTHL << 1
 	};
 	
 	enum States {
@@ -216,7 +219,7 @@ public:
 		STATE_DONE,
 		// DownloadManager
 		STATE_FILELENGTH,
-		STATE_TREE,
+		STATE_TREE
 
 	};
 
@@ -270,11 +273,11 @@ public:
 	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
 	void setLineMode() { dcassert(socket); socket->setLineMode(); };
 
-	void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
+	void connect(const string& aServer, short aPort) throw(SocketException) { 
 		socket->connect(aServer, aPort);
 	}
 	
-	void UserConnection::accept(const ServerSocket& aServer) throw(SocketException) {
+	void accept(const ServerSocket& aServer) throw(SocketException) {
 		socket->accept(aServer);
 	}
 	
@@ -397,6 +400,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.91 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.92 2005/03/14 10:37:22 arnetheduck Exp $
  */
 

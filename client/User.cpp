@@ -134,7 +134,7 @@ void User::setClient(Client* aClient) {
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
 	}
-};
+}
 
 void User::getParams(StringMap& ucParams) {
 	ucParams["nick"] = getNick();
@@ -213,6 +213,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.40 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: User.cpp,v 1.41 2005/03/14 10:37:22 arnetheduck Exp $
  */
 

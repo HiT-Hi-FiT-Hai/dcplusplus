@@ -82,7 +82,7 @@ public:
 		/** The source being added has its filename in utf-8 */
 		FLAG_SOURCE_UTF8 = 0x100,
 		/** The file list downloaded was actually an .xml.bz2 list */
-		FLAG_XML_BZLIST = 0x200,
+		FLAG_XML_BZLIST = 0x200
 	};
 
 	class Source : public Flags, public FastAlloc<Source> {
@@ -222,6 +222,8 @@ public:
 	GETSET(u_int32_t, added, Added);
 	GETSET(TTHValue*, tthRoot, TTH);
 private:
+	QueueItem& operator=(const QueueItem&);
+
 	friend class QueueManager;
 	Source::List sources;
 	Source::List badSources;	
@@ -282,5 +284,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.19 2005/01/12 23:16:20 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.20 2005/03/14 10:37:21 arnetheduck Exp $
 */

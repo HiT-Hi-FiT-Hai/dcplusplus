@@ -136,9 +136,9 @@ public:
 		TYPE_UDP
 	};
 
-	Socket::Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
-	Socket::Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
-	Socket::Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
+	Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
+	Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
+	Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); }
 	virtual ~Socket() throw() { Socket::disconnect(); };
 
 	virtual void create(int aType = TYPE_TCP) throw(SocketException);
@@ -226,5 +226,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.58 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: Socket.h,v 1.59 2005/03/14 10:37:22 arnetheduck Exp $
  */

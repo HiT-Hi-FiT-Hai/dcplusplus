@@ -227,7 +227,7 @@ public:
 	enum {
 		READ = 0x01,
 		WRITE = 0x02,
-		RW = READ | WRITE,
+		RW = READ | WRITE
 	};
 	File(const string& aFileName, int access, int mode) throw(FileException) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
@@ -421,6 +421,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.50 2005/01/14 13:46:04 arnetheduck Exp $
+ * $Id: File.h,v 1.51 2005/03/14 10:37:22 arnetheduck Exp $
  */
 

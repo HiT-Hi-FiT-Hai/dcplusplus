@@ -56,7 +56,7 @@ public:
 		QUIT_HUB = 1<<QUIT_HUB_BIT,
 		HIDDEN = 1<<HIDDEN_BIT,
 		HUB = 1<<HUB_BIT,
-		BOT = 1<<BOT_BIT,
+		BOT = 1<<BOT_BIT
 	};
 
 	typedef Pointer<User> Ptr;
@@ -146,5 +146,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.51 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: User.h,v 1.52 2005/03/14 10:37:23 arnetheduck Exp $
  */

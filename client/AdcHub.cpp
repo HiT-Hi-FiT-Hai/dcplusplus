@@ -32,7 +32,7 @@ const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
 }
 
-AdcHub::~AdcHub() {
+AdcHub::~AdcHub() throw() {
 	Lock l(cs);
 	clearUsers();
 }
@@ -425,5 +425,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.42 2005/03/12 17:42:52 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.43 2005/03/14 10:37:22 arnetheduck Exp $
  */

@@ -36,7 +36,7 @@ static const string UPLOAD_AREA = "Uploads";
 UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
-};
+}
 
 UploadManager::~UploadManager() throw() {
 	TimerManager::getInstance()->removeListener(this);
@@ -419,5 +419,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.90 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.91 2005/03/14 10:37:23 arnetheduck Exp $
  */

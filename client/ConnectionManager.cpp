@@ -41,7 +41,7 @@ ConnectionManager::ConnectionManager() : port(0), floodCounter(0), shuttingDown(
 	features.push_back(UserConnection::FEATURE_TTHF);
 
 	adcFeatures.push_back("+BASE");
-};
+}
 
 /**
  * Request a connection for downloading.
@@ -681,5 +681,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.92 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.93 2005/03/14 10:37:22 arnetheduck Exp $
  */

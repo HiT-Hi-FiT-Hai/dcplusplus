@@ -45,7 +45,7 @@ public:
 		WAITING,					// Waiting to send request to connect
 		NO_DOWNLOAD_SLOTS,			// Bot needed right now
 		IDLE,						// In the download pool
-		ACTIVE,						// In one up/downmanager
+		ACTIVE						// In one up/downmanager
 	};
 
 	ConnectionQueueItem(const User::Ptr& aUser, bool aDownload) : state(WAITING), connection(NULL), lastAttempt(0), download(aDownload), user(aUser) { };
@@ -57,10 +57,13 @@ public:
 	GETSET(u_int32_t, lastAttempt, LastAttempt);
 	GETSET(bool, download, Download);
 private:
+	ConnectionQueueItem(const ConnectionQueueItem&);
+	ConnectionQueueItem& operator=(const ConnectionQueueItem&);
+	
 	User::Ptr user;
 };
 // Comparing with a user...
-inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; };
+inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; }
 
 class ConnectionManager : public Speaker<ConnectionManagerListener>, 
 	public UserConnectionListener, ServerSocketListener, TimerManagerListener, 
@@ -156,5 +159,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.66 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.67 2005/03/14 10:37:21 arnetheduck Exp $
  */

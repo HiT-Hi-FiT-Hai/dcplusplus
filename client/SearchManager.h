@@ -125,7 +125,7 @@ public:
 	enum SizeModes {
 		SIZE_DONTCARE = 0x00,
 		SIZE_ATLEAST = 0x01,
-		SIZE_ATMOST = 0x02,
+		SIZE_ATMOST = 0x02
 	};
 
 	enum TypeModes {
@@ -202,5 +202,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.52 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.53 2005/03/14 10:37:21 arnetheduck Exp $
  */

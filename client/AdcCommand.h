@@ -54,13 +54,13 @@ public:
 		ERROR_TRANSFER_GENERIC = 50,
 		ERROR_FILE_NOT_AVAILABLE = 51,
 		ERROR_FILE_PART_NOT_AVAILABLE = 52,
-		ERROR_SLOTS_FULL = 53,
+		ERROR_SLOTS_FULL = 53
 	};
 
 	enum Severity {
 		SEV_SUCCESS = 0,
 		SEV_RECOVERABLE = 1,
-		SEV_FATAL = 2,
+		SEV_FATAL = 2
 	};
 
 	static const char TYPE_ACTIVE = 'A';
@@ -72,7 +72,7 @@ public:
 	static const char TYPE_PASSIVE = 'P';
 	static const char TYPE_UDP = 'U';
 
-#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n;
+#define CMD(n, a, b, c) static const u_int32_t CMD_##n = (((u_int32_t)a) | (((u_int32_t)b)<<8) | (((u_int32_t)c)<<16)); typedef Type<CMD_##n> n
 	CMD(SUP, 'S','U','P');
 	CMD(STA, 'S','T','A');
 	CMD(INF, 'I','N','F');
@@ -203,5 +203,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.19 2005/03/12 16:45:35 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.20 2005/03/14 10:37:22 arnetheduck Exp $
 */

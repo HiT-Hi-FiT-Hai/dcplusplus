@@ -123,7 +123,7 @@ public:
 	}
 
 private:
-	static const size_t BUF_SIZE = 64*1024;
+	enum { BUF_SIZE = 64*1024 };
 
 	OutputStream* f;
 	Filter filter;
@@ -173,7 +173,7 @@ public:
 	}
 
 private:
-	static const size_t BUF_SIZE = 64*1024;
+	enum { BUF_SIZE = 64*1024 };
 
 	InputStream* f;
 	Filter filter;
@@ -187,5 +187,5 @@ private:
 
 /**
 * @file
-* $Id: FilteredFile.h,v 1.11 2005/01/18 15:53:30 arnetheduck Exp $
+* $Id: FilteredFile.h,v 1.12 2005/03/14 10:37:21 arnetheduck Exp $
 */
