@@ -38,7 +38,7 @@
 #define SHOWUI_MESSAGE_MAP 7
 
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
-	private SearchManagerListener, private ClientListener, private ClientManagerListener, 
+	private SearchManagerListener, private ClientManagerListener, 
 	public UCHandler<SearchFrame>, public UserInfoBaseHandler<SearchFrame>
 {
 public:
@@ -207,6 +207,7 @@ private:
 		COLUMN_CONNECTION,
 		COLUMN_HUB,
 		COLUMN_EXACT_SIZE,
+		COLUMN_IP,
 		COLUMN_TTH,
 		COLUMN_LAST
 	};
@@ -260,6 +261,7 @@ private:
 				case COLUMN_CONNECTION: return sr->getUser()->getConnection();
 				case COLUMN_HUB: return sr->getHubName();
 				case COLUMN_EXACT_SIZE: return exactSize;
+				case COLUMN_IP: return ip;
 				case COLUMN_TTH: return tth;
 				default: return Util::emptyString;
 			}
@@ -285,6 +287,7 @@ private:
 				case COLUMN_CONNECTION: return Util::stricmp(a->sr->getUser()->getConnection(), b->sr->getUser()->getConnection());
 				case COLUMN_HUB: return Util::stricmp(a->sr->getHubName(), b->sr->getHubName());
 				case COLUMN_EXACT_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
+				case COLUMN_IP: return Util::stricmp(a->getIP(), b->getIP());
 				case COLUMN_TTH: return Util::stricmp(a->getTTH(), b->getTTH());
 				default: return 0;
 			}
@@ -310,6 +313,7 @@ private:
 				type = STRING(DIRECTORY);
 			}
 			slots = sr->getSlotString();
+			ip = sr->getIP();
 			if(sr->getTTH() != NULL)
 				setTTH(sr->getTTH()->toBase32());
 		}
@@ -320,6 +324,7 @@ private:
 		GETSETREF(string, size, Size);
 		GETSETREF(string, slots, Slots);
 		GETSETREF(string, exactSize, ExactSize);
+		GETSETREF(string, ip, IP);
 		GETSETREF(string, tth, TTH);
 	};
 
@@ -420,53 +425,19 @@ private:
 	
 	void onSearchResult(SearchResult* aResult);
 
-	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client) throw() {
-		switch(type) {
-		case ClientListener::CONNECTED:
-			speak(HUB_ADDED, client); break;
-		case ClientListener::HUB_NAME:
-			speak(HUB_CHANGED, client); break;
-		default:
-			break;
-		}
-	}
-
-	virtual void onAction(ClientListener::Types type, Client* client, const string& /*line*/) throw() {
-		switch(type) {
-			case ClientListener::FAILED:
-				speak(HUB_REMOVED, client); break;
-			default:
-				break;
-		}
-	}
-
-	virtual void onAction(ClientListener::Types type, Client* client, const User::List& /* aList */) throw() {
-		switch(type) {
-		case ClientListener::OP_LIST:
-			speak(HUB_CHANGED, client); break;
-		default:
-			break;
-		}
-	}
-
-	//virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw() {}
-	//virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) throw() {}
-
 	// ClientManagerListener
 	virtual void onAction(ClientManagerListener::Types type, Client* client) throw() {
 		switch(type) {
-			case ClientManagerListener::CLIENT_ADDED:
-				client->addListener(this); break;
-			case ClientManagerListener::CLIENT_REMOVED:
+			case ClientManagerListener::CLIENT_CONNECTED:
+				speak(HUB_ADDED, client); break;
+			case ClientManagerListener::CLIENT_DISCONNECTED:
 				speak(HUB_REMOVED, client); break;
+			case ClientManagerListener::CLIENT_UPDATED:
+				speak(HUB_CHANGED, client); break;
 			default:
 				break;
 		}
 	}
-
-	//virtual void onAction(ClientManagerListener::Types, const User::Ptr&) throw(;
-	//virtual void onAction(ClientManagerListener::Types, const string&) throw();
 
 	void initHubs();
 	void onHubAdded(HubInfo* info);
@@ -490,6 +461,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.34 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.35 2004/03/12 08:21:04 arnetheduck Exp $
  */
 

@@ -51,8 +51,7 @@ Socket::Stats Socket::stats = { 0, 0 };
 string Socket::getRemoteIp() const {
 	sockaddr_in sock_addr_rem = { 0 };
 	if(type == TYPE_TCP) {
-		sockaddr_in sock_addr;
-		socklen_t len = sizeof(sock_addr);
+		socklen_t len = sizeof(sock_addr_rem);
 		if(getpeername(sock, (sockaddr*)&sock_addr_rem, &len) == SOCKET_ERROR)
 			return Util::emptyString;
 	}
@@ -185,6 +184,28 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	} else if(type == TYPE_UDP) {
 		checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL));
 	}
+	stats.totalDown += len;
+	return len;
+}
+
+/**
+ * Reads zero to aBufLen characters from this socket, 
+ * @param aBuffer A buffer to store the data in.
+ * @param aBufLen Size of the buffer.
+ * @param aIP Remote IP address
+ * @return Number of bytes read, 0 if disconnected and -1 if the call would block.
+ * @throw SocketException On any failure.
+ */
+int Socket::read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException) {
+	checkconnected();
+	int len = 0;
+
+	sockaddr_in remote_addr = { 0 };
+	int addr_length = sizeof(remote_addr);
+
+	checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, (sockaddr*)&remote_addr, &addr_length)); //
+	aIP = string(inet_ntoa(remote_addr.sin_addr));
+
 	stats.totalDown += len;
 	return len;
 }
@@ -528,6 +549,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.54 2004/03/08 10:13:52 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.55 2004/03/12 08:20:59 arnetheduck Exp $
  */
 

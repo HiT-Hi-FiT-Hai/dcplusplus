@@ -178,6 +178,7 @@ private:
 		COLUMN_PRIORITY,
 		COLUMN_USERS,
 		COLUMN_PATH,
+		COLUMN_EXACT_SIZE,
 		COLUMN_ERRORS,
 		COLUMN_SEARCHSTRING,
 		COLUMN_ADDED,
@@ -254,7 +255,7 @@ private:
 		}
 		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
 			switch(col) {
-				case COLUMN_SIZE: return compare(a->getSize(), b->getSize());
+				case COLUMN_SIZE: case COLUMN_EXACT_SIZE: return compare(a->getSize(), b->getSize());
 				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
 				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
 				case COLUMN_ADDED: return compare(a->getAdded(), b->getAdded());
@@ -446,5 +447,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.35 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.36 2004/03/12 08:21:04 arnetheduck Exp $
  */

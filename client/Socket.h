@@ -153,6 +153,7 @@ public:
 	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
 
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
+	int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
 	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
 	
 	int wait(u_int32_t millis, int waitFor) throw(SocketException);
@@ -250,6 +251,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.50 2004/03/08 10:13:52 arnetheduck Exp $
+ * $Id: Socket.h,v 1.51 2004/03/12 08:20:59 arnetheduck Exp $
  */
 

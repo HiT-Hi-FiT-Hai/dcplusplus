@@ -102,9 +102,10 @@ int SearchManager::run() {
 
 	while(true) {
 
+		string remoteAddr;
 		try {
-			while( (len = socket->read((u_int8_t*)buf, BUFSIZE)) != 0) {
-				onData(buf, len);
+			while( (len = socket->read((u_int8_t*)buf, BUFSIZE, remoteAddr)) != 0) {
+				onData(buf, len, remoteAddr);
 			}
 		} catch(const SocketException& e) {
 			dcdebug("SearchManager::run Error: %s\n", e.getError().c_str());
@@ -127,7 +128,7 @@ int SearchManager::run() {
 	return 0;
 }
 
-void SearchManager::onData(const u_int8_t* buf, int aLen) {
+void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address) {
 	string x((char*)buf, aLen);
 	if(x.find("$SR") != string::npos) {
 		string::size_type i, j;
@@ -198,7 +199,7 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
-			file, hubName, hubIpPort);
+			file, hubName, hubIpPort, address);
 		fire(SearchManagerListener::SEARCH_RESULT, sr);
 		sr->decRef();
 	}
@@ -222,6 +223,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.35 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.36 2004/03/12 08:20:59 arnetheduck Exp $
  */
 

@@ -166,6 +166,7 @@ private:
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw();
@@ -187,6 +188,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.43 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.44 2004/03/12 08:20:59 arnetheduck Exp $
  */
 

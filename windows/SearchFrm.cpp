@@ -30,12 +30,12 @@
 StringList SearchFrame::lastSearches;
 
 int SearchFrame::columnIndexes[] = { COLUMN_FILENAME, COLUMN_NICK, COLUMN_TYPE, COLUMN_SIZE,
-	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_TTH };
-int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 125 };
+	COLUMN_PATH, COLUMN_SLOTS, COLUMN_CONNECTION, COLUMN_HUB, COLUMN_EXACT_SIZE, COLUMN_IP, COLUMN_TTH };
+int SearchFrame::columnSizes[] = { 200, 100, 50, 80, 100, 40, 70, 150, 80, 100, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::USER, ResourceManager::TYPE, ResourceManager::SIZE, 
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, 
-	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::TTH_ROOT };
+	ResourceManager::HUB, ResourceManager::EXACT_SIZE, ResourceManager::IP_BARE, ResourceManager::TTH_ROOT };
 
 void SearchFrame::openWindow(const string& str /* = Util::emptyString */, LONGLONG size /* = 0 */, SearchManager::SizeModes mode /* = SearchManager::SIZE_ATLEAST */, SearchManager::TypeModes type /* = SearchManager::TYPE_ANY */) {
 	SearchFrame* pChild = new SearchFrame();
@@ -476,7 +476,6 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		SearchManager::getInstance()->removeListener(this);
  		ClientManager* clientMgr = ClientManager::getInstance();
  		clientMgr->removeListener(this);
- 		clientMgr->removeClientListener(this);
 
 		closed = true;
 		PostMessage(WM_CLOSE);
@@ -821,7 +820,6 @@ void SearchFrame::initHubs() {
 	Client::List::iterator endIt = clients.end();
 	for(it = clients.begin(); it != endIt; ++it) {
 		Client* client = *it;
-		client->addListener(this);
 		if (!client->isConnected())
 			continue;
 
@@ -897,5 +895,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.47 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.48 2004/03/12 08:21:04 arnetheduck Exp $
  */

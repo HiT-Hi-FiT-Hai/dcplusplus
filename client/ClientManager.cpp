@@ -36,13 +36,12 @@ Client* ClientManager::getClient() {
 	}
 
 	c->addListener(this);
-	fire(ClientManagerListener::CLIENT_ADDED, c);
 	return c;
 }
 
 void ClientManager::putClient(Client* aClient) {
 	aClient->disconnect();
-	fire(ClientManagerListener::CLIENT_REMOVED, aClient);
+	fire(ClientManagerListener::CLIENT_DISCONNECTED, aClient);
 	aClient->removeListeners();
 
 	{
@@ -275,11 +274,21 @@ void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 }
 
 // ClientListener
+void ClientManager::onAction(ClientListener::Types type, Client* client) throw() {
+	if(type == ClientListener::CONNECTED) {
+		fire(ClientManagerListener::CLIENT_CONNECTED, client);
+	}
+}
+
 void ClientManager::onAction(ClientListener::Types type, Client* client, const string& /*line*/) throw() {
 	if(type == ClientListener::FAILED) {
 		HubManager::getInstance()->removeUserCommand(client->getAddressPort());
+		fire(ClientManagerListener::CLIENT_DISCONNECTED, client);
+	} else if(type == ClientListener::HUB_NAME) {
+		fire(ClientManagerListener::CLIENT_UPDATED, client);
 	}
 }
+
 void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(type == ClientListener::USER_COMMAND) {
 		if(BOOLSETTING(HUB_USER_COMMANDS)) {
@@ -331,6 +340,7 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 			}
 		} break;
 	case ClientListener::OP_LIST:
+		fire(ClientManagerListener::CLIENT_UPDATED, client);
 		break;
 	default:
 		break;
@@ -358,5 +368,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.49 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.50 2004/03/12 08:20:59 arnetheduck Exp $
  */

@@ -51,9 +51,9 @@ public:
 	
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
-		const string& aHubIpPort) :
+		const string& aHubIpPort, const string& aIp = Util::emptyString) :
 	file(aFile), hubName(isTTH(aHubName) ? Util::emptyString : aHubName), hubIpPort(aHubIpPort), user(aUser), 
-		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
+		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), IP(aIp), 
 		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), ref(1) { }
 
 	string getFileName() const;
@@ -69,6 +69,7 @@ public:
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
+	const string& getIP() const { return IP; }
 	TTHValue* getTTH() const { return tth; }
 
 	void incRef() { Thread::safeInc(&ref); }
@@ -93,6 +94,7 @@ private:
 	Types type;
 	int slots;
 	int freeSlots;
+	string IP;
 	TTHValue* tth;
 
 	long ref;
@@ -137,7 +139,7 @@ public:
 	void setPort(short aPort) throw(SocketException);
 	void disconnect() throw();
 	void onSearchResult(const string& aLine) {
-		onData((const u_int8_t*)aLine.data(), aLine.length());
+		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 	
 private:
@@ -160,12 +162,12 @@ private:
 		}
 	};
 
-	void onData(const u_int8_t* buf, int aLen);
+	void onData(const u_int8_t* buf, int aLen, const string& address);
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.34 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.35 2004/03/12 08:20:59 arnetheduck Exp $
  */
