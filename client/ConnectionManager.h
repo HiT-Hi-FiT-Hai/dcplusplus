@@ -132,10 +132,10 @@ private:
 	};
 	
 	virtual ~ConnectionManager() {
+		TimerManager::getInstance()->removeListener(this);
 
 		socket.removeListener(this);
 		socket.disconnect();
-		TimerManager::getInstance()->removeListener(this);
 		
 		{
 			Lock l(cs);
@@ -240,5 +240,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.35 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.36 2002/05/03 18:52:59 arnetheduck Exp $
  */

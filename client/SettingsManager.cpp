@@ -87,7 +87,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
 	setDefault(LOG_MAIN_CHAT, false);
-	setDefault(STATUS_IN_CHAT, false);
+	setDefault(STATUS_IN_CHAT, true);
 	setDefault(SHOW_JOINS, false);
 	setDefault(CONNECTION, connectionSpeeds[0]);
 	setDefault(PRIVATE_MESSAGE_BEEP, false);
@@ -202,6 +202,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.34 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.35 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

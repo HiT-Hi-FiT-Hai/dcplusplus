@@ -38,7 +38,8 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 			Lock l(cs);
 			
 			if(queue.size() > 0) {
-				for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+				// No real need to keep more than 100 searches in the queue...
+				for(QueueItem::Iter i = queue.begin(); (search.size() < 100) && (i != queue.end()); ++i) {
 					QueueItem* q = *i;
 					
 					if(q->getStatus() == QueueItem::RUNNING) {
@@ -53,10 +54,16 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 								break;
 							}
 						}
-						
+
 						if(!online) {
-							if(search.find(q->getTarget()) == search.end()) {
-								search[q->getTarget()] = GET_TICK();
+							SearchIter si;
+							for(si = search.begin(); si != search.end(); ++si) {
+								if(si->first == q->getTarget())
+									break;
+							}
+
+							if(si == search.end()) {
+								search.push_back(make_pair(q->getTarget(), GET_TICK()));
 							}
 						}
 					}
@@ -64,32 +71,24 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 			}
 		}
 		
-		for(SearchMap::iterator k = search.begin(); k != search.end();) {
-			if( (k->second + 3*60*1000) < GET_TICK() ) {
-				QueueItem* q = findByTarget(k->first);
-				if(q != NULL) {
-					bool online = false;
-					for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
-						if((*j)->getUser()->isOnline()) {
-							online = true;
-							break;
-						}
-					}
-					if(!online) {
-						dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
-						SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
-						search.erase(k);
+		while(search.size() > 0 && search.front().second + 3*60*1000 < GET_TICK()) {
+			QueueItem* q = findByTarget(search.front().first);
+			search.pop_front();
+			if(q != NULL) {
+				bool online = false;
+				for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+					if((*j)->getUser()->isOnline()) {
+						online = true;
 						break;
-					} else {
-						search.erase(k++);
 					}
-				} else {
-					++k;
 				}
-			} else {
-				++k;
-			}
-		}
+				if(!online) {
+					dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
+					SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
+					break;
+				} 
+			} 
+		} 
 	}
 
 	if( !(((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
@@ -448,7 +447,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.21 2002/04/22 15:50:51 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.22 2002/05/03 18:53:02 arnetheduck Exp $
  */
 
 

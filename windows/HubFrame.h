@@ -153,7 +153,6 @@ public:
 	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		clearUserList();
-		client->disconnect();
 		client->addListener(this);
 		client->connect(server);
 		return 0;
@@ -398,6 +397,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.5 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.6 2002/05/03 18:53:03 arnetheduck Exp $
  */
 

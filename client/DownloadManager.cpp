@@ -75,12 +75,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		if(d->isSet(Download::RESUME)) {
 			int64_t size = File::getSize(d->getTarget());
 			int rollback = SETTING(ROLLBACK);
+			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
 
-			dcassert(d->getSize() != -1);
-			if( (rollback*2) > min(size, d->getSize()) ) {
+			// dcassert(d->getSize() != -1);
+			if( (rollback + cutoff) > min(size, d->getSize()) ) {
 				d->setPos(0);
 			} else {
-				d->setPos(size - (rollback*2));
+				d->setPos(size - rollback - cutoff);
 				d->setRollbackBuffer(rollback);
 				d->setFlag(Download::ROLLBACK);
 			}
@@ -172,7 +173,7 @@ bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen
 		if(cmp != 0) {
 			return false;
 		}
-		
+		d->getFile()->setEOF();
 		// Write the rest...the file pointer should have been moved to the correct position by now...
 		d->getFile()->write(aData+len, aLen - len);
 	} else {
@@ -311,5 +312,5 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.58 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.59 2002/05/03 18:53:01 arnetheduck Exp $
  */

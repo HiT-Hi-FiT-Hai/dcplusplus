@@ -75,10 +75,10 @@
 #		undef errno
 #	endif
 #	define errno WSAGetLastError()
-#	define checksocket(x) if((x) == INVALID_SOCKET) { throw SocketException(WSAGetLastError()); }
-#	define checksend(x, len) if((x) != len) { throw SocketException(WSAGetLastError()); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return -1; else throw SocketException(WSAGetLastError()); }
-#	define checksockerr(x) if((x) == SOCKET_ERROR) { throw SocketException(WSAGetLastError()); }
+#	define checksocket(x) if((x) == INVALID_SOCKET) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
+#	define checksend(x, len) if((x) != len) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
+#	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(WSAGetLastError()); } }
+#	define checksockerr(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
 typedef int socklen_t;
 #else
 #include <sys/ioctl.h>
@@ -93,13 +93,12 @@ typedef int SOCKET;
 #define INVALID_SOCKET -1
 #	define closesocket(x) close(x)
 #	define ioctlsocket(a, b, c) ioctl(a, b, c)
-#	define checksocket(x) if((x) < 0) { throw SocketException(errno); }
-#	define checkconnect(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
-#	define checksend(x, len) if((x) != len) { throw SocketException(errno); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
-#	define checksockerr(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
+#	define checksocket(x) if((x) < 0) { Socket::disconnect(); throw SocketException(errno); }
+#	define checkconnect(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
+#	define checksend(x, len) if((x) != len) { Socket::disconnect(); throw SocketException(errno); }
+#	define checkrecv(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
+#	define checksockerr(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
 #endif
-
 
 class SocketException : public Exception {
 public:
@@ -120,32 +119,20 @@ class ServerSocket;
 class Socket
 {
 public:
-#ifdef WIN32
-	Socket::Socket() throw(SocketException) : event(NULL), sock(INVALID_SOCKET) { }
+	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
 	
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET) {
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
 		connect(ip, port);	
 	}
 	
-	Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET) {
+	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
 		connect(ip, port);	
 	}
-#else
-	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET) { }
-	
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET) {
-		connect(ip, port);	
-	}
-	
-	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET) {
-		connect(ip, port);	
-	}
-#endif
 	
 	virtual ~Socket() {
 		Socket::disconnect();
-		
 	};
+
 	virtual void bind(short aPort) throw(SocketException);
 	
 	virtual void connect(const string& ip, short port) throw(SocketException);
@@ -154,16 +141,12 @@ public:
 	}
 	
 	virtual void disconnect() {
-		if(sock != INVALID_SOCKET)
+		if(sock != INVALID_SOCKET) {
 			closesocket(sock);
-		
-		sock = INVALID_SOCKET;
-#ifdef WIN32
-		if(event) {
-			CloseHandle(event);
-			event = NULL;
 		}
-#endif
+		connected = false;
+
+		sock = INVALID_SOCKET;
 	}
 	enum {
 		TYPE_TCP = 0,
@@ -192,54 +175,22 @@ public:
 		ioctlsocket(sock, FIONREAD, &i);
 		return i;
 	}
+
 	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
 	virtual void write(const char* buffer, int len) throw(SocketException);
 	virtual void write(const string& aData) throw(SocketException) {
 		write(aData.data(), aData.length());
 	}
 
-	bool isConnected() {
-		if(sock == INVALID_SOCKET) 
-			return false;
-		
-		struct timeval tv = { 0, 0 };
-		fd_set fd;
-		FD_ZERO(&fd);
-		FD_SET(sock, &fd);
-		select(1, NULL, &fd, NULL, &tv);
-		return FD_ISSET(sock, &fd) > 0;
-	}
-#ifdef WIN32
-	/**
-	 * Returns a handle to an event that fires whenever there is data available in the read buffer.
-	 * Note; The socket will automatically be put in non-blocking mode after returning from this 
-	 * function, and there's no way back!
-	 * @return An event to be user with WaitForSingleObject och MultiObjects
-	 * @todo This is pretty windows-specific...put it someplace else...
-	 */
-	HANDLE getEvent() throw(SocketException) {
-		if(event == NULL) {
-			event = CreateEvent(NULL, FALSE, FALSE, NULL);
-			if(event == NULL)
-				throw SocketException(WSAGetLastError());
-			
-			checksockerr(WSAEventSelect(sock, event, FD_CONNECT | FD_ACCEPT | FD_READ | FD_WRITE | FD_CLOSE));
-		}
-		return event;
-	}
+	bool isConnected() { return connected; };
 
+	bool waitForData(u_int32_t millis) throw(SocketException);
+	bool waitForConnect(u_int32_t millis) throw(SocketException);
+
+#ifdef WIN32
 	void setBlocking(bool block) throw(SocketException) {
 		u_long b = block ? 0 : 1;
-		if(block) {
-			if(event != NULL) {
-				checksockerr(WSAEventSelect(sock, event, 0));
-				CloseHandle(event);
-				event = NULL;
-			}
-			ioctlsocket(sock, FIONBIO, &b);
-		} else {
-			ioctlsocket(sock, FIONBIO, &b);
-		}
+		ioctlsocket(sock, FIONBIO, &b);
 	}
 #else
 	void setBlocking(bool block) throw(SocketException) {
@@ -249,7 +200,6 @@ public:
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
 	
 	string getLocalIp() {
-		
 		sockaddr_in sock_addr;
 		socklen_t len = sizeof(sock_addr);
 		if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
@@ -266,14 +216,13 @@ public:
 	GETSETREF(string, ip, Ip);
 protected:
 	SOCKET sock;
+	bool connected;
+
 private:
 	Socket(const Socket&) {
 		// Copies not allowed
 	}
 	int type;
-#ifdef WIN32
-	HANDLE event;
-#endif
 
 	class Stats {
 	public:
@@ -289,6 +238,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.32 2002/05/01 21:33:12 arnetheduck Exp $
+ * $Id: Socket.h,v 1.33 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

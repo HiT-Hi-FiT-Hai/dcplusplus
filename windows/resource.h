@@ -145,6 +145,7 @@
 #define IDC_OPEN_FILE_LIST              1077
 #define IDC_SEARCH                      1078
 #define IDC_HELP_README					1079
+#define IDC_CLOSE_WINDOW				1080
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

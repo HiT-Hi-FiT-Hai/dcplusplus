@@ -88,7 +88,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		COMMAND_ID_HANDLER(IDCLOSE, onClose)
+		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_CHEVRON, onChevron)
 		COMMAND_RANGE_HANDLER(IDC_SELECT_WINDOW, IDC_SELECT_WINDOW+tabs.size(), onSelectWindow)
 	END_MSG_MAP()
@@ -97,7 +97,6 @@ public:
 		int pos = 0;
 		int xPos = GET_X_LPARAM(lParam); 
 //		int yPos = GET_Y_LPARAM(lParam); 
-	
 		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* t = *i;
 			if(xPos > pos && xPos < pos + t->getWidth()) {
@@ -112,7 +111,36 @@ public:
 		}
 		return 0;
 	}
-		
+
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+		ScreenToClient(&pt); 
+		int xPos = pt.x;
+		int pos = 0;
+
+		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
+			TabInfo* t = *i;
+			if(xPos > pos && xPos < pos + t->getWidth()) {
+				// Bingo, this was clicked
+				closing = t->hWnd;
+				ClientToScreen(&pt);
+				CMenu mnu;
+				mnu.CreatePopupMenu();
+				mnu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
+				mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				break;
+			}
+			pos += t->getWidth();
+		}
+		return 0;
+	}
+
+	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		::SendMessage(closing, WM_CLOSE, 0, 0);
+		return 0;
+	}
+
 	int getTabHeight() { return 15; };
 	int getHeight() { return getTabHeight()+1; };
 
@@ -184,32 +212,6 @@ public:
 		return 0;
 	}
 
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		int w = 0;
-
-		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
-			TabInfo* t = *i;
-			if( (pt.x > w) && (pt.x < w + t->getWidth() + t->getFill())) {
-				closing = t->hWnd;
-
-				CMenu mnu;
-				mnu.CreatePopupMenu();
-				mnu.AppendMenu(MF_STRING, IDCLOSE, CSTRING(CLOSE));
-				mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-				break;
-			} else {
-				w+=t->getWidth() + t->getFill();
-			}
-		}
-		return FALSE; 
-	}
-
-	LRESULT onClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		::SendMessage(closing, WM_CLOSE, 0, 0);
-		return 0;
-	}
-
 	LRESULT onChevron(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		while(mnu.GetMenuItemCount() > 0) {
 			mnu.RemoveMenu(0, MF_BYPOSITION);
@@ -223,9 +225,9 @@ public:
 		mi.fType = MFT_STRING;
 		
 		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
-			pos += (*i)->getWidth() + (*i)->getFill();
+			pos += (*i)->getWidth();
 
-			if(pos > rc.right) {
+			if(pos + (*i)->getFill() > rc.right) {
 				mi.dwTypeData = (LPSTR)(*i)->name;
 				mi.dwItemData = (DWORD)(*i)->hWnd;
 				mi.wID = IDC_SELECT_WINDOW + n;
@@ -459,5 +461,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.6 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
  */

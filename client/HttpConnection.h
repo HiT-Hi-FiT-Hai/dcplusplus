@@ -80,13 +80,17 @@ private:
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
 		case BufferedSocketListener::FAILED:
+			socket->removeListener(this);
 			fire(HttpConnectionListener::FAILED, this, aLine); break;
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/) {
 		switch(type) {
 		case BufferedSocketListener::MODE_CHANGE:
-			fire(HttpConnectionListener::COMPLETE, this); socket->disconnect(); break;
+			socket->removeListener(this);
+			socket->disconnect();
+			fire(HttpConnectionListener::COMPLETE, this); 
+			break;
 		default:
 			dcassert(0);
 		}
@@ -109,6 +113,6 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.9 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.10 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

@@ -304,8 +304,9 @@ private:
 	
 	CriticalSection cs;
 	QueueItem::List queue;
-	typedef hash_map<string, u_int32_t> SearchMap;
-	SearchMap search;
+	typedef deque<pair<string, u_int32_t> > SearchList;
+	typedef SearchList::iterator SearchIter;
+	SearchList search;
 
 	static const string USER_LIST_NAME;
 	
@@ -347,6 +348,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.19 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.20 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

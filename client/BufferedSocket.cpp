@@ -18,6 +18,7 @@
 
 #include "stdinc.h"
 #include "DCPlusPlus.h"
+#include "TimerManager.h"
 
 #include "BufferedSocket.h"
 #include "File.h"
@@ -51,7 +52,6 @@ void BufferedSocket::threadSendFile() {
 	}
 
 	try{
-		setBlocking(true);
 		while(!taskSem.wait(0)) {
 
 			if( (len = file->read(inbuf, inbufSize)) == 0) {
@@ -98,73 +98,58 @@ bool BufferedSocket::threadBind() {
 	return true;
 }
 
-bool BufferedSocket::threadConnect() {
-#ifdef WIN32
-	HANDLE h[2];
+void BufferedSocket::threadConnect() {
+
+	u_int32_t start = GET_TICK();
 	string s;
 	short p;
-
 	{
 		Lock l(cs);
-		
+
 		s=server;
 		p=port;
 	}
-	
+
 	try {
+		setBlocking(false);
 		Socket::create();
-		h[0] = taskSem;
-		h[1] = getEvent();
-		
 		Socket::connect(s, p);
 
-		switch(WaitForMultipleObjects(2, h, FALSE, 20000)) {
-		case WAIT_TIMEOUT:
-			Socket::disconnect();
-			fire(BufferedSocketListener::FAILED, STRING(CONNECTION_TIMEOUT));
-			return false;
-		case WAIT_OBJECT_0:
-			// Signal the task again since we don't handle it here...
-			taskSem.signal();
-			
-			dcdebug("BufferedSocket::threadConnect: Received task\n");
-#ifdef _DEBUG
-			{
-				Lock l(cs);
-				
-				// Check the task queue that we don't have a pending shutdown / disconnect...
-				for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-					if(*i != SHUTDOWN && *i != DISCONNECT && *i != CONNECT) {
-						// Should never happen...
-						dcdebug("BufferedSocket::threadConnect Bad task %d\n", *i);
-						dcassert("BufferedSocket::threadConnect Bad task\n" == NULL);
-					} 
-				}
+		while(!waitForConnect(200)) {
+			if(taskSem.wait(0)) {
+				// We don't want to handle tasks here, push it back and return...
+				taskSem.signal();
+				Socket::disconnect();
+				return;
 			}
-#endif
-			return false;
-		case WAIT_OBJECT_0 + 1:
-			// Update the default local ip...this one should in any case be better than 
-			// whatever we might have guessed from the beginning...
-			SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
-			fire(BufferedSocketListener::CONNECTED);
-			return true;
-		default: dcassert("BufferedSocket::threadConnect WaitForMultipleObjects failed" == NULL);
+			if((start + 30000) < GET_TICK()) {
+				// Connection timeout
+				Socket::disconnect();
+				fire(BufferedSocketListener::FAILED, STRING(CONNECTION_TIMEOUT));
+				return;
+			}
 		}
-	} catch(SocketException e) {
-		dcdebug("BufferedSocket::threadConnect caught: %s\n", e.getError().c_str());
-		// Release all resources
-		fail(e.getError());
-	}
 
-#endif
-	// ?
-	return false;
+		// We're connected! Clear the buffers...
+		for(int k = 0; k < BUFFERS; k++) {
+			outbufPos[k] = 0;
+		}
+		// Update the default local ip...this one should in any case be better than 
+		// whatever we might have guessed from the beginning...
+		SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
+		fire(BufferedSocketListener::CONNECTED);
+
+		setBlocking(true);
+	} catch(SocketException e) {
+		Socket::disconnect();
+		fire(BufferedSocketListener::FAILED, e.getError());
+		return;
+	}
 }	
 
 void BufferedSocket::threadRead() {
 	try {
-		while(true) {
+		while(waitForData(0)) {
 			int i = read(inbuf, inbufSize);
 			if(i == -1) {
 				// EWOULDBLOCK, no data recived...
@@ -275,65 +260,58 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 	}
 }
 
+/**
+ * Main task dispatcher for the buffered socket abstraction.
+ * @todo Fix the polling...
+ */
 void BufferedSocket::threadRun() {
-#ifdef WIN32	
-	HANDLE h[2];
-	
-	h[0] = taskSem;
 
-	int handles = 1;
-	int i = 0;
 	while(true) {
-		handles = isConnected() ? 2 : 1;
-		if(handles == 2) {
-			try {
-				h[1] = getEvent();
-			} catch (SocketException e) {
-				handles = 1;
-			}
-		}
-		
-		switch( (i = WaitForMultipleObjects(handles, h, FALSE, INFINITE))) {
-		case WAIT_OBJECT_0:
+		while(isConnected() ? taskSem.wait(0) : taskSem.wait()) {
+			Tasks t;
 			{
-				Tasks t;
-				{
-					Lock l(cs);
-					dcassert(tasks.size() > 0);
+				Lock l(cs);
+				if(tasks.size() > 0) {
 					t = tasks.front();
 					tasks.erase(tasks.begin());
-				}
-				switch(t) {
-				case SHUTDOWN: threadShutDown(); return;
-				case DISCONNECT:
-					{
-						Socket::disconnect(); 
-						fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
-						
-						for(int k = 0; k < BUFFERS; k++) {
-							outbufPos[k] = 0;
-						}
-					}
+				} else {
 					break;
-
-				case SEND_FILE: threadSendFile(); break;
-				case SEND_DATA: threadSendData(); break;
-				case CONNECT: threadConnect(); break;
-				case BIND: threadBind(); break;
-					
-				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
 			}
-			break;
-		case WAIT_OBJECT_0 + 1: threadRead(); break;
-		default: dcassert("Bad return value from WaitForMultipleObjects" == NULL);
 
+			switch(t) {
+			case SHUTDOWN: threadShutDown(); return;
+			case DISCONNECT:
+				{
+					Socket::disconnect(); 
+					fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
+
+					for(int k = 0; k < BUFFERS; k++) {
+						outbufPos[k] = 0;
+					}
+				}
+				break;
+
+			case SEND_FILE: if(isConnected()) threadSendFile(); break;
+			case SEND_DATA: if(isConnected()) threadSendData(); break;
+			case CONNECT: threadConnect(); break;
+			case BIND: threadBind(); break;
+
+			default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
+			}
+		}
+		// Now check if there's any activity on the socket
+		try {
+			if(isConnected() && waitForData(200)) {
+				threadRead();
+			}
+		} catch(SocketException e) {
+			fail(e.getError());
 		}
 	}
-#endif
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.38 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.39 2002/05/03 18:52:59 arnetheduck Exp $
  */

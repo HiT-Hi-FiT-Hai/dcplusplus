@@ -84,7 +84,6 @@ void startup() {
 
 void shutdown() {
 	TimerManager::getInstance()->removeListeners();
-	
 	SettingsManager::getInstance()->save();
 	
 	ShareManager::deleteInstance();
@@ -104,6 +103,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.13 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.14 2002/05/03 18:52:59 arnetheduck Exp $
  */
 

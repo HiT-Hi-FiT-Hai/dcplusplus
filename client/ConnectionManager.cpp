@@ -450,13 +450,11 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 }
 
 void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
-	bool found = false;
 	{
 		Lock l(cs);
 
 		if(pendingDown.find(aCqi) != pendingDown.end()) {
 			pendingDown.erase(aCqi);
-			found = true;
 			fire(ConnectionManagerListener::REMOVED, aCqi);
 			delete aCqi;
 		} else {
@@ -467,7 +465,6 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 			}
 
 			if(i!=connections.end()) {
-				found = true;
 				dcassert(aCqi->getConnection());
 				aCqi->getConnection()->disconnect();
 			} else {
@@ -479,5 +476,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.42 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.43 2002/05/03 18:52:59 arnetheduck Exp $
  */

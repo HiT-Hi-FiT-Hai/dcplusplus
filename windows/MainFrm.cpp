@@ -513,8 +513,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
 
-	c.addListener(this);
-	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+	c->addListener(this);
+	c->downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
 	if(BOOLSETTING(OPEN_PUBLIC))
 		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
@@ -654,10 +654,6 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void MainFrame::onHttpData(HttpConnection* /*aConn*/, const BYTE* aBuf, int aLen) {
-	versionInfo += string((const char*)aBuf, aLen);
-}
-
 void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 	try {
 		SimpleXML xml;
@@ -770,10 +766,18 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 }
 
 LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(c != NULL) {
+		c->removeListener(this);
+		delete c;
+		c = NULL;
+	}
+
 	DWORD id;
 	if(stopperThread) {
 		if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
+
 			// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
+			Thread::yield();
 			PostMessage(WM_CLOSE);
 			return 0;
 		}
@@ -926,6 +930,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.6 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
  */
 

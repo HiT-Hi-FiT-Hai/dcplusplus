@@ -127,6 +127,7 @@ int __cdecl main(int argc, char* argv[])
 		tgt.write(varStr);
 		tgt.write(varName);
 
+		example.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
 		example.write(ex.toXML());
 	} catch(Exception e) {
 		printf("%s\n", e.getError().c_str());

@@ -133,6 +133,12 @@ public:
 			throw FileException(STRING(DISC_FULL));
 		}
 	}
+	virtual void setEOF() throw(FileException) {
+		dcassert(h != NULL);
+		if(!SetEndOfFile(h)) {
+			throw FileException(Util::translateError(GetLastError()));
+		}
+	}
 
 	static void deleteFile(const string& aFileName) { ::DeleteFile(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) { ::MoveFile(source.c_str(), target.c_str()); };
@@ -150,7 +156,7 @@ public:
 			return ((int64_t)fd.nFileSizeHigh << 32 | (int64_t)fd.nFileSizeLow);
 		}
 	}
-
+	
 #else // WIN32
 	
 	File(const string& aFileName, int access = WRITE, int mode = OPEN) throw(FileException) {
@@ -212,6 +218,13 @@ public:
 			throw FileException("Write error");
 		if(x < (ssize_t)len)
 			throw FileException("Disk full(?)");
+	}
+
+	/**
+	 * @todo fix for unix...
+	 */
+	virtual void setEOF() throw(FileException) {
+
 	}
 
 	static void deleteFile(const string& aFileName) { ::unlink(aFileName.c_str()); };
@@ -292,7 +305,7 @@ public:
 	virtual void write(const void* aBuf, u_int32_t len) throw(FileException) {
 		dcassert(pos >= 0);
 
-		if( (size == 0) || ((pos == 0) && (len > (u_int32_t)size)) ) {
+		if( (size == 0) || ((pos == 0) && (len > size)) ) {
 			File::write(aBuf, len);
 			return;
 		}
@@ -322,17 +335,18 @@ public:
 	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
 	virtual string read(int32_t len) throw(FileException) { flush(); return File::read(len); };	
 	virtual string read() throw(FileException) {  flush(); return File::read(); };
-	
+	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
+
 private:
 	u_int8_t* buf;
-	int pos;
-	int size;
+	u_int32_t pos;
+	u_int32_t size;
 };
 
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file File.h
- * $Id: File.h,v 1.12 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: File.h,v 1.13 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

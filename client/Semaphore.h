@@ -25,7 +25,7 @@ public:
 		ReleaseSemaphore(h, 1, NULL);
 	}
 
-	void wait() { WaitForSingleObject(h, INFINITE); };
+	bool wait() { return WaitForSingleObject(h, INFINITE) == WAIT_OBJECT_0; };
 	bool wait(u_int32_t millis) { return WaitForSingleObject(h, millis) == WAIT_OBJECT_0; };
 
 	~Semaphore() {
@@ -39,7 +39,7 @@ public:
 	Semaphore() { };
 	~Semaphore() { };
 	void signal() { };
-	void wait() { };
+	bool wait() { };
 	bool wait(u_int32_t) { return false; };
 
 #endif
@@ -49,5 +49,5 @@ public:
 
 /**
  * @file Semaphore.h
- * $Id: Semaphore.h,v 1.3 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.4 2002/05/03 18:53:02 arnetheduck Exp $
  */

@@ -154,7 +154,7 @@ private:
 	
 	virtual ~ShareManager() {
 		SettingsManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->addListener(this);
+		TimerManager::getInstance()->removeListener(this);
 		
 		join();
 
@@ -212,6 +212,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.27 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.28 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

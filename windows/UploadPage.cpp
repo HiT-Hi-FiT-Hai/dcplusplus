@@ -67,6 +67,7 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	CUpDownCtrl updown;
 	updown.Attach(GetDlgItem(IDC_SLOTSPIN));
 	updown.SetRange(1, 100);
+	updown.Detach();
 	updown.Attach(GetDlgItem(IDC_MIN_UPLOAD_SPIN));
 	updown.SetRange32(0, 30000);
 	return TRUE;
@@ -128,6 +129,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.4 2002/05/03 18:53:03 arnetheduck Exp $
  */
 

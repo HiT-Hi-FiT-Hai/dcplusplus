@@ -46,8 +46,8 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	
 	if(!socket) {
 		socket = BufferedSocket::getSocket();
-		socket->addListener(this);
 	}
+	socket->addListener(this);
 	socket->connect(server, port);
 }
 
@@ -62,6 +62,7 @@ void HttpConnection::onConnected() {
 void HttpConnection::onLine(const string& aLine) {
 	if(!ok) {
 		if(aLine.find("200") == string::npos) {
+			socket->removeListener(this);
 			socket->disconnect();
 			fire(HttpConnectionListener::FAILED, this, aLine);
 		}
@@ -75,6 +76,6 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.10 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.11 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

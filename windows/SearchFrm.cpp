@@ -313,7 +313,9 @@ void SearchFrame::onEnter() {
 		while(lastSearches.size() >= 10) {
 			lastSearches.erase(lastSearches.begin());
 		}
-		lastSearches.push_back(s);
+
+		if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
+			lastSearches.push_back(s);
 		
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + s + "...").c_str());
 		search = StringTokenizer(s, ' ').getTokens();	
@@ -754,6 +756,6 @@ void SearchFrame::onTab() {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.6 2002/05/03 18:53:03 arnetheduck Exp $
  */
 

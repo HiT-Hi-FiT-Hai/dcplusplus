@@ -152,6 +152,12 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 		return u;
 	}
 
+	if(aHint.empty()) {
+		// No hint, return the first user with this nick...
+		return p.first->second;
+	}
+
+	// Since we have a hint, make sure we use it...
 	UserIter i;
 	for(i = p.first; i != p.second; ++i) {
 		if(i->second->getLastHubIp() == aHint) {
@@ -242,6 +248,6 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.21 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.22 2002/05/03 18:52:59 arnetheduck Exp $
  */
 

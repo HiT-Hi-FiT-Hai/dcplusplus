@@ -438,7 +438,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
 		
-		StringList tok = StringTokenizer(qi->getTargetFileName(), ' ').getTokens();
+		StringList tok = StringTokenizer(SearchManager::clean(qi->getTargetFileName()), ' ').getTokens();
 		
 		for(StringIter si = tok.begin(); si != tok.end(); ++si) {
 			bool found = false;
@@ -623,7 +623,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.6 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
  */
 
 

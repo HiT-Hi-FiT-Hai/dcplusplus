@@ -201,7 +201,7 @@ private:
 
 	void threadRun();
 	bool threadBind();
-	bool threadConnect();
+	void threadConnect();
 
 	void threadRead();
 	void threadSendFile();
@@ -211,9 +211,6 @@ private:
 	void fail(const string& aError) {
 		Socket::disconnect();
 		fire(BufferedSocketListener::FAILED, aError);
-		for(int i = 0; i < BUFFERS; i++) {
-			outbufPos[i] = 0;
-		}
 	}
 
 	/**
@@ -221,7 +218,6 @@ private:
 	 * calling threadShutDown, the thread function should exit as soon as possible
 	 */
 	void threadShutDown() {
-		fire(BufferedSocketListener::FAILED, STRING(CLOSING_CONNECTION));
 		removeListeners();
 		Socket::disconnect();
 		delete this;
@@ -237,5 +233,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.37 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.38 2002/05/03 18:52:59 arnetheduck Exp $
  */

@@ -79,7 +79,7 @@ string SocketException::errorToString(int aError) {
 }
 
 /**
- * Binds an UDP socket to a certain port.
+ * Binds an UDP socket to a certain local port.
  */
 void Socket::bind(short aPort) throw (SocketException){
 	dcassert(type == TYPE_UDP);
@@ -90,6 +90,7 @@ void Socket::bind(short aPort) throw (SocketException){
 	sock_addr.sin_port = htons(aPort);
 	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     checksockerr(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
+	connected = true;
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
@@ -99,6 +100,7 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
+	connected = true;
 }
 
 /**
@@ -134,12 +136,17 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 	setIp(inet_ntoa(serv_addr.sin_addr));
 //	dcdebug("Server %s = %s\n", aip.c_str(), getIp().c_str());
 	
+	bool blocking = true;
     if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
 		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
 		if(errno != EWOULDBLOCK) {
 			checksockerr(SOCKET_ERROR);
+		} else {
+			blocking = true;
 		}
 	}
+	if(blocking)
+		connected = true;
 }
 
 /**
@@ -225,9 +232,60 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	}
 }
 
+/**
+ * Blocks until timeout is reached or data is available on the socket
+ * @return True if there's data, false if there was a timeout
+ * @throw SocketException Select fails
+ */
+bool Socket::waitForData(u_int32_t millis) throw(SocketException) {
+	timeval tv;
+	fd_set fd;
+
+	tv.tv_sec = millis/1000;
+	tv.tv_usec = (millis%1000)*1000; 
+
+	FD_ZERO(&fd);
+	FD_SET(sock, &fd);
+	int x = select(sock+1, &fd, NULL, NULL, &tv);
+	checksockerr(x);
+	return FD_ISSET(sock, &fd) > 0;
+}
+
+/**
+ * Blocks until timeout is reached or data is available on the socket
+ * @return True if the socket connected successfully, false if there was a timeout
+ * @throw SocketException Select or the connection attempt failed
+ */
+bool Socket::waitForConnect(u_int32_t millis) throw(SocketException) {
+	timeval tv;
+	fd_set wfd, efd;
+
+	tv.tv_sec = millis/1000;
+	tv.tv_usec = (millis%1000)*1000; 
+
+	FD_ZERO(&wfd);
+	FD_ZERO(&efd);
+
+	FD_SET(sock, &wfd);
+	FD_SET(sock, &efd);
+	int x = select(sock+1, NULL, &wfd, &efd, &tv);
+	checksockerr(x);
+
+	if(FD_ISSET(sock, &wfd) || FD_ISSET(sock, &efd)) {
+		int y = 0;
+		socklen_t z = sizeof(y);
+		x = getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&y, &z);
+		checksockerr(x);
+		if(y != 0)
+			throw SocketException(y);
+		// No errors! We're connected (?)...
+		return true;
+	}
+	return false;
+}
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.35 2002/05/01 21:36:13 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.36 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

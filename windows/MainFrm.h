@@ -40,7 +40,8 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private ConnectionManagerListener
 {
 public:
-	MainFrame() : trayIcon(false), lastUpload(-1), stopperThread(NULL) { 
+	MainFrame() : trayIcon(false), lastUpload(-1), stopperThread(NULL), c(NULL) { 
+		c = new HttpConnection();
 	};
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
@@ -174,9 +175,10 @@ public:
 	}
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		::ShowWindow((HWND)wParam, SW_RESTORE);
-		MDIActivate((HWND)wParam);
-		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
+		HWND hWnd = (HWND)wParam;
+		if(::IsIconic(hWnd))
+			::ShowWindow(hWnd, SW_RESTORE);
+		MDIActivate(hWnd);
 		return 0;
 	}
 	
@@ -290,7 +292,7 @@ private:
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;
-	HttpConnection c;
+	HttpConnection* c;
 	string versionInfo;
 	CImageList images;
 	CImageList largeImages;
@@ -402,15 +404,14 @@ private:
 			onHttpComplete(conn); break;
 		}
 	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const BYTE* buf, int len) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
 		switch(type) {
 		case HttpConnectionListener::DATA:
-			onHttpData(conn, buf, len); break;
+			versionInfo += string((const char*)buf, len); break;
 		}
 	}
 	
 	void onHttpComplete(HttpConnection* aConn);
-	void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
 
 	// HubManagerListener
 	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl);
@@ -421,7 +422,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.3 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.4 2002/05/03 18:53:03 arnetheduck Exp $
  */
 
  

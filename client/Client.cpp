@@ -53,7 +53,6 @@ void Client::connect(const string& aServer) {
 }
 
 void Client::connect() {
-	
 	registered = false;
 
 	if(!socket) {
@@ -63,6 +62,8 @@ void Client::connect() {
 	if(socket->isConnected()) {
 		disconnect();
 	}
+
+	state = STATE_LOCK;
 
 	socket->addListener(this);
 	fire(ClientListener::CONNECTING, this);
@@ -92,6 +93,9 @@ void Client::onLine(const string& aLine) throw() {
 	}
 
 	if(cmd == "$Search") {
+		if(state != STATE_CONNECTED) {
+			return;
+		}
 		string::size_type i = 0;
 		string::size_type j = param.find(' ', i);
 		if(j == string::npos)
@@ -218,10 +222,16 @@ void Client::onLine(const string& aLine) throw() {
 			ClientManager::getInstance()->putUserOffline(u);
 		}
 	} else if(cmd == "$ConnectToMe") {
+		if(state != STATE_CONNECTED) {
+			return;
+		}
 		param = param.substr(param.find(' ') + 1);
 		string server = param.substr(0, param.find(':'));
 		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(param.find(':')+1));
 	} else if(cmd == "$RevConnectToMe") {
+		if(state != STATE_CONNECTED) {
+			return;
+		}
 		User::Ptr u;
 		bool up = false;
 		{
@@ -254,6 +264,11 @@ void Client::onLine(const string& aLine) throw() {
 		name = param;
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Lock") {
+		if(state != STATE_LOCK) {
+			return;
+		}
+		state = STATE_HELLO;
+
 		if(!param.empty()) {
 			string::size_type j = param.find(" Pk=");
 			string lock, pk;
@@ -279,6 +294,10 @@ void Client::onLine(const string& aLine) throw() {
 			}
 			
 			if(u->getNick() == getNick()) {
+				if(state != STATE_HELLO) {
+					return;
+				}
+				state = STATE_CONNECTED;
 				if(registered) {
 					if(counted) {
 						Thread::safeDec(&hubs);
@@ -369,6 +388,7 @@ void Client::onLine(const string& aLine) throw() {
 }
 
 void Client::disconnect() throw() {	
+	state = STATE_CONNECT;
 	socket->disconnect();
 	{ 
 		Lock l(cs);
@@ -381,6 +401,7 @@ void Client::disconnect() throw() {
 }
 
 void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& aString){
+	checkstate(); 
 	char* buf;
 	char c1 = (aSizeType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
 	char c2 = (aSizeType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
@@ -402,6 +423,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.41 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.42 2002/05/03 18:52:59 arnetheduck Exp $
  */
 

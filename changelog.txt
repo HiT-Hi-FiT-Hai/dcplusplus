@@ -9,7 +9,10 @@
   at least once (this should lead to a more stable hub count, especially when connecting the first time...)
 * Fixed automatic redirect following
 * Improved user list performance and fixed a few user list bugs
-
+* Fixed various user and share counting bugs
+* Added file searching to directory listings
+* Improved the autosearch algorithm a little bit
+* Fixed some issues with autoconnecting to favorite hubs
 
  -- 0.172 2002-04-28 --
 * Changed so that only bz-lists can be downloaded using the extra slot (since they're smaller...)

@@ -63,7 +63,7 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		int w[3];
 		ctrlStatus.GetClientRect(sr);
 
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		int tmp = (sr.Width()) > 366 ? 266 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
 
 		w[0] = sr.right - tmp;
 		w[1] = w[0] + (tmp-16)*1/2;
@@ -121,5 +121,5 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.5 2002/05/03 18:53:03 arnetheduck Exp $
  */

@@ -27,14 +27,21 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	disconnect();
 	
 	sockaddr_in tcpaddr;
-    checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
-	
+    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if(sock == -1) {
+		throw SocketException(errno);
+	}
+
 	tcpaddr.sin_family = AF_INET;
 	tcpaddr.sin_port = htons(aPort);
 	tcpaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	
-	checksockerr(bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)));
-	checksockerr(listen(sock, MAX_CONNECTIONS));
+	if(bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)) == SOCKET_ERROR) {
+		throw SocketException(errno);
+	}
+	if(listen(sock, MAX_CONNECTIONS) == SOCKET_ERROR) {
+		throw SocketException(errno);
+	}
 	
 	start();
 }
@@ -59,6 +66,6 @@ int ServerSocket::run() {
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.10 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.11 2002/05/03 18:53:02 arnetheduck Exp $
  */
 

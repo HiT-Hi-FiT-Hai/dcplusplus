@@ -85,19 +85,23 @@ public:
 
 	void disconnect() throw();
 
+#define checkstate() if(state != STATE_CONNECTED) return
+
 	void validateNick(const string& aNick) { send("$ValidateNick " + aNick + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); };	
 	void version(const string& aVersion) { send("$Version " + aVersion + "|"); };
-	void getNickList() { send("$GetNickList|"); };
+	void getNickList() { checkstate(); send("$GetNickList|"); };
 	void password(const string& aPass) { send("$MyPass " + aPass + "|"); };
-	void getInfo(User::Ptr aUser) { send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
-	void getInfo(User* aUser) { send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
-	void sendMessage(const string& aMessage) { 	send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
+	void getInfo(User::Ptr aUser) { checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+	void getInfo(User* aUser) {  checkstate(); send("$GetINFO " + aUser->getNick() + " " + getNick() + "|"); };
+	void sendMessage(const string& aMessage) { checkstate(); send("<" + getNick() + "> " + Util::validateMessage(aMessage) + "|"); }
 
 	void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	void searchResults(const string& aResults) { send(aResults); }
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
+		checkstate();
+
 		dcdebug("MyInfo %s...\n", aNick.c_str());
 		lastHubs = hubs;
 		lastUpdate = GET_TICK();
@@ -121,29 +125,36 @@ public:
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
+		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void connectToMe(User* aUser) {
+		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
+		checkstate(); 
 		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
 	}
 	void privateMessage(User* aUser, const string& aMessage) {
+		checkstate(); 
 		send("$To: " + aUser->getNick() + " From: " + getNick() + " $" + Util::validateMessage(aMessage) + "|");
 	}
 	void revConnectToMe(const User::Ptr& aUser) {
+		checkstate(); 
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
 	void revConnectToMe(User* aUser) {
+		checkstate(); 
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
 	
 	void kick(const User::Ptr& aUser, const string& aMsg) {
+		checkstate(); 
 		dcdebug("Client::kick\n");
 		static const char str[] = 
 			"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
@@ -163,6 +174,7 @@ public:
 	}
 
 	void kick(User* aUser, const string& aMsg) {
+		checkstate(); 
 		dcdebug("Client::kick\n");
 		
 		static const char str[] = 
@@ -183,6 +195,7 @@ public:
 	}
 	
 	void opForceMove(const User::Ptr& aUser, const string& aServer, const string& aMsg) {
+		checkstate(); 
 		dcdebug("Client::opForceMove\n");
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
@@ -230,6 +243,12 @@ public:
 	GETSET(bool, registered, Registered);
 	GETSETREF(string, defpassword, Password);
 private:
+	enum States {
+		STATE_CONNECT,
+		STATE_LOCK,
+		STATE_HELLO,
+		STATE_CONNECTED
+	} state;
 	string nick;
 	string server;
 	short port;
@@ -250,7 +269,7 @@ private:
 	typedef FloodMap::iterator FloodIter;
 	FloodMap searchFlood;
 	
-	Client() : op(false), registered(false), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
+	Client() : op(false), registered(false), state(STATE_CONNECT), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
@@ -295,6 +314,7 @@ private:
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
 		case BufferedSocketListener::FAILED:
+			state = STATE_CONNECT;
 			fire(ClientListener::FAILED, this, aLine); break;
 		default:
 			dcassert(0);
@@ -322,6 +342,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.51 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: Client.h,v 1.52 2002/05/03 18:52:59 arnetheduck Exp $
  */
 
