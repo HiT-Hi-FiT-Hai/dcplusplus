@@ -1,8 +1,13 @@
  -- 0.307 --
 * Fixed full name being displayed in user commands with submenus
 * Bloom filters dramatically improve search efficiency (if you have a large share)
-* Merkle trees and tiger hashing added
+* Merkle trees and tiger hashing added TTH support
 * Auto match results shown in status bar
+* Added option to match autosearch filenames exactly to further avoid the wrong file being downloaded (default on)
+* End of zlib transfer test period ($GetTestZBlock -> $GetZBlock)
+* Speed increase when loading shares with many files of the same size (thanks farcry)
+* Added file hashing, turn it on in advanced settings (experimental)
+
 
  -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")
