@@ -64,6 +64,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ SettingsManager::TAB_DIRTY, ResourceManager::SETTINGS_TAB_DIRTY },
 	{ SettingsManager::GET_USER_COUNTRY, ResourceManager::SETTINGS_GET_USER_COUNTRY },
+	{ SettingsManager::CONFIRM_HUB_REMOVAL, ResourceManager::SETTINGS_CONFIRM_HUB_REMOVAL },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -201,5 +202,5 @@ LRESULT AppearancePage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.21 2004/09/27 12:02:42 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.22 2004/10/24 11:25:41 arnetheduck Exp $
  */

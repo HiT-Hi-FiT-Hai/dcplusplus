@@ -112,7 +112,7 @@ public:
 	void onTab();
 	void runUserCommand(::UserCommand& uc);
 
-	static void openWindow(const tstring& server, const tstring& nick = Util::emptyStringT, const tstring& password = Util::emptyStringT, const tstring& description = Util::emptyStringT);
+	static void openWindow(const tstring& server);
 	static void closeDisconnected();
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -234,7 +234,7 @@ private:
 		tstring msg;
 	};
 
-	HubFrame(const tstring& aServer, const tstring& aNick, const tstring& aPassword, const tstring& aDescription) : 
+	HubFrame(const tstring& aServer) : 
 	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
 		updateUsers(false), curCommandPosition(0),
 		ctrlMessageContainer(WC_EDIT, this, EDIT_MESSAGE_MAP), 
@@ -242,11 +242,6 @@ private:
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP)
 	{
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
-		client->setNick(aNick.empty() ? SETTING(NICK) : Text::fromT(aNick));
-			
-		if (!aDescription.empty())
-			client->setDescription(Text::fromT(aDescription));
-		client->setPassword(Text::fromT(aPassword));
 		client->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
 	}
@@ -391,6 +386,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.53 2004/09/26 18:54:09 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.54 2004/10/24 11:25:41 arnetheduck Exp $
  */
 

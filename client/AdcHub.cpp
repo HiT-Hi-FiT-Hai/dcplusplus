@@ -373,6 +373,10 @@ string AdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
+string AdcHub::getHubURL() {
+	return "adc://" + getAddressPort();
+}
+
 void AdcHub::on(Connected) throw() { 
 	dcassert(state == STATE_PROTOCOL);
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
@@ -392,5 +396,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.20 2004/10/21 10:27:15 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.21 2004/10/24 11:25:40 arnetheduck Exp $
  */

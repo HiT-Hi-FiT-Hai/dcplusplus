@@ -40,6 +40,7 @@ public:
 	virtual void password(const string& pwd);
 	virtual void info();
 	virtual string checkNick(const string& nick);
+	virtual string getHubURL();
 
 	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
@@ -95,5 +96,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.15 2004/10/21 10:27:15 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.16 2004/10/24 11:25:40 arnetheduck Exp $
  */

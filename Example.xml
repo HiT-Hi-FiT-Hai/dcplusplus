@@ -292,6 +292,7 @@
 		<String Name="Ratio">Ratio</String>
 		<String Name="ReaddSource">Re-add source</String>
 		<String Name="ReallyExit">Really exit?</String>
+		<String Name="ReallyRemove">Really remove?</String>
 		<String Name="Redirect">Redirect</String>
 		<String Name="RedirectAlreadyConnected">Redirect request received to a hub that's already connected</String>
 		<String Name="RedirectUser">Redirect user(s)</String>
@@ -340,6 +341,7 @@
 		<String Name="SettingsCommand">Command</String>
 		<String Name="SettingsCompressTransfers">Enable safe and compressed transfers</String>
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
+		<String Name="SettingsConfirmHubRemoval">Confirm favorite hub removal</String>
 		<String Name="SettingsConnectionSettings">Connection Settings (see the readme / newbie help if unsure)</String>
 		<String Name="SettingsConnectionType">Connection Type</String>
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>

@@ -23,6 +23,8 @@
 
 #include "BufferedSocket.h"
 
+#include "HubManager.h"
+
 Client::Counts Client::counts;
 
 Client::Client(const string& hubURL, char separator, bool usesEscapes) : 
@@ -38,6 +40,22 @@ Client::~Client() {
 	socket->removeListener(this);
 
 	updateCounts(true);
+}
+
+void Client::reloadSettings() {
+	FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(getHubURL());
+	if(hub) {
+		setNick(hub->getNick(true));
+		setDescription(hub->getUserDescription());
+		setPassword(hub->getPassword());
+	} else {
+		setNick(SETTING(NICK));
+	}
+}
+
+void Client::connect() {
+	reloadSettings();
+	socket->connect(address, port);
 }
 
 void Client::updateCounts(bool aRemove) {
@@ -82,5 +100,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.76 2004/10/21 10:27:15 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.77 2004/10/24 11:25:40 arnetheduck Exp $
  */

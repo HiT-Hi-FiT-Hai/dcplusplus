@@ -99,6 +99,7 @@ public:
 	virtual void unlockUserList() = 0;
 
 	virtual string checkNick(const string& nick) = 0;
+	virtual string getHubURL() = 0;
 
 	const string& getAddress() const { return address; }
 	const string& getAddressPort() const { return addressPort; }
@@ -108,7 +109,7 @@ public:
 	string getIpPort() const { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
 	string getLocalIp() const;
 
-	virtual void connect() { socket->connect(address, port); }
+	virtual void connect();
 	bool isConnected() const { return socket->isConnected(); }
 	void disconnect() { socket->disconnect(); }
 
@@ -138,10 +139,6 @@ public:
 		return sm;
 	}
 
-	GETSET(string, nick, Nick);
-	GETSET(string, defpassword, Password);
-	GETSET(bool, registered, Registered);
-	GETSET(u_int32_t, reconnDelay, ReconnDelay);
 protected:
 	struct Counts {
 		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
@@ -160,6 +157,14 @@ protected:
 	void updateCounts(bool aRemove);
 
 	void setPort(short aPort) { port = aPort; }
+
+	// reload nick from settings, other details from hubmanager
+	void reloadSettings();
+
+	GETSET(string, nick, Nick);
+	GETSET(string, defpassword, Password);
+	GETSET(bool, registered, Registered);
+	GETSET(u_int32_t, reconnDelay, ReconnDelay);
 private:
 
 	enum CountType {
@@ -190,5 +195,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.90 2004/10/21 10:27:15 arnetheduck Exp $
+ * $Id: Client.h,v 1.91 2004/10/24 11:25:40 arnetheduck Exp $
  */

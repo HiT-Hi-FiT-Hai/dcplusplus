@@ -756,7 +756,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect()) {
 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
-				HubFrame::openWindow(Text::toT(entry->getServer()), Text::toT(entry->getNick()), Text::toT(entry->getPassword()), Text::toT(entry->getUserDescription()));
+				HubFrame::openWindow(Text::toT(entry->getServer()));
 			else
 				missedAutoConnect = true;
 		}
@@ -1147,5 +1147,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.69 2004/09/27 12:02:42 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.70 2004/10/24 11:25:42 arnetheduck Exp $
  */

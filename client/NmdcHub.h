@@ -136,6 +136,7 @@ public:
 	virtual void unlockUserList() { cs.leave(); };
 
 	virtual string checkNick(const string& aNick);
+	virtual string getHubURL();
 
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
@@ -263,6 +264,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.13 2004/10/05 16:46:42 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.14 2004/10/24 11:25:40 arnetheduck Exp $
  */
 

@@ -61,6 +61,8 @@ void NmdcHub::connect() {
 		disconnect();
 	}
 
+	reloadSettings();
+
 	state = STATE_LOCK;
 
 	if(getPort() == 0) {
@@ -592,6 +594,10 @@ string NmdcHub::checkNick(const string& aNick) {
 	return tmp;
 }
 
+string NmdcHub::getHubURL() {
+	return getAddressPort();
+}
+
 void NmdcHub::myInfo() {
 	checkstate();
 	
@@ -704,6 +710,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.16 2004/10/21 10:27:16 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.17 2004/10/24 11:25:40 arnetheduck Exp $
  */
 

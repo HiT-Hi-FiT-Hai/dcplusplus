@@ -127,10 +127,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 1;
 }
 
-void HubFrame::openWindow(const tstring& aServer, const tstring& aNick /* = Util::emptyString */, const tstring& aPassword /* = Util::emptyString */, const tstring& aDescription /* = Util::emptyString */) {
+void HubFrame::openWindow(const tstring& aServer) {
 	FrameIter i = frames.find(aServer);
 	if(i == frames.end()) {
-		HubFrame* frm = new HubFrame(aServer, aNick, aPassword, aDescription);
+		HubFrame* frm = new HubFrame(aServer);
 		frames[aServer] = frm;
 		frm->CreateEx(WinUtil::mdiClient);
 	} else {
@@ -953,17 +953,13 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		server = redirect;
 		frames[server] = this;
 
-		// Is the redirect hub a favorite? Then honor settings for it.
-		FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
-		if(hub) {
-			client->setNick(hub->getNick(true));
-			client->setDescription(hub->getUserDescription());
-			client->setPassword(hub->getPassword());
-		}
-		// else keep current settings
-
+		// the client is dead, long live the client!
+		client->removeListener(this);
+		ClientManager::getInstance()->putClient(client);
+		clearUserList();
+		client = ClientManager::getInstance()->getClient(Text::fromT(server));
 		client->addListener(this);
-		//client->connect(redirect);
+		client->connect();
 	}
 	return 0;
 }
@@ -1113,5 +1109,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.80 2004/10/17 12:51:31 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.81 2004/10/24 11:25:41 arnetheduck Exp $
  */
