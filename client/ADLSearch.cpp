@@ -199,7 +199,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 			destDirVector[is->ddIndex].fileAdded = true;
 
 			if(is->isAutoQueue){
-				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTH(), Util::emptyString, QueueItem::FLAG_RESUME);
+				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTH());
 			}
 
 			if(breakOnFirst) {
@@ -287,6 +287,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.14 2004/09/11 06:46:46 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.15 2004/09/24 20:48:27 arnetheduck Exp $
 */
 

@@ -120,16 +120,16 @@ public:
 		User::Ptr user;
 	};
 
-	QueueItem(const string& aTarget, int64_t aSize, const string& aSearchString, 
+	QueueItem(const string& aTarget, int64_t aSize, 
 		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* tth) : 
-	Flags(aFlag), target(aTarget), searchString(aSearchString), 
+	Flags(aFlag), target(aTarget), 
 		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
 		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded),
 		tthRoot(tth == NULL ? NULL : new TTHValue(*tth))
 	{ };
 
 	QueueItem(const QueueItem& rhs) : 
-	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), searchString(rhs.searchString),
+	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), 
 		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority), 
 		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot))
 	{
@@ -207,9 +207,10 @@ public:
 		}
 	}
 
+	string getSearchString() const;
+
 	GETSET(string, target, Target);
 	GETSET(string, tempTarget, TempTarget);
-	GETSET(string, searchString, SearchString);
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, downloadedBytes, DownloadedBytes);
 	GETSET(Status, status, Status);
@@ -279,5 +280,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.14 2004/09/23 09:06:26 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.15 2004/09/24 20:48:27 arnetheduck Exp $
 */

@@ -151,11 +151,32 @@ public:
 	static tstring commands;
 	static HHOOK hook;
 	static tstring tth;
+	static StringPairList initialDirs;
 
 	static void init(HWND hWnd);
 	static void uninit();
 
 	static void decodeFont(const tstring& setting, LOGFONT &dest);
+
+	static void addInitalDir(const User::Ptr& user, string dir) {
+		// Clear out previos initial dirs, just in case
+		getInitialDir(user);
+		while(initialDirs.size() > 30) {
+			initialDirs.erase(initialDirs.begin());
+		}
+		initialDirs.push_back(make_pair(user->getNick(), dir));
+	}
+
+	static string getInitialDir(const User::Ptr& user) {
+		for(StringPairIter i = initialDirs.begin(); i != initialDirs.end(); ++i) {
+			if(i->first == user->getNick()) {
+				string dir = i->second;
+				initialDirs.erase(i);
+				return dir;
+			}
+		}
+		return Util::emptyString;
+	}
 
 	static bool getVersionInfo(OSVERSIONINFOEX& ver);
 
@@ -268,5 +289,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.32 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.33 2004/09/24 20:48:28 arnetheduck Exp $
  */

@@ -77,19 +77,19 @@ public:
 	
 	/** Add a file to the queue. */
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
-		const string& aTarget, const TTHValue* root, const string& aSearchString = Util::emptyString, 
+		const string& aTarget, const TTHValue* root, 
 		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
 		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags, const string& startDir = Util::emptyString) throw(QueueException, FileException) {
+	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
 		string x = aUser->getNick();
 		string::size_type i = 0;
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
 		string file = Util::getAppPath() + "FileLists\\" + x;
 		// We use the searchString to store the start viewing directory for file lists
-		add(USER_LIST_NAME, -1, aUser, file, NULL, startDir,
+		add(USER_LIST_NAME, -1, aUser, file, NULL, 
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
 	}
@@ -111,8 +111,6 @@ public:
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
-	void setSearchString(const string& aTarget, const string& searchString) throw();
-
 	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
 		Lock l(cs);
 		QueueItem::List ql;
@@ -158,7 +156,7 @@ private:
 				delete i->second;
 		}
 		void add(QueueItem* qi);
-		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
+		QueueItem* add(const string& aTarget, int64_t aSize, 
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
 			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
 
@@ -264,6 +262,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.60 2004/09/23 09:06:26 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.61 2004/09/24 20:48:27 arnetheduck Exp $
  */
 

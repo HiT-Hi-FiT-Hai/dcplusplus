@@ -288,10 +288,10 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 	if(getUtf8()) {
 		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), Util::emptyString, flags);
+			aFile->getTTH(), flags);
 	} else {
 		QueueManager::getInstance()->add(Text::acpToUtf8(getPath(aFile) + aFile->getName()), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), Util::emptyString, flags);
+			aFile->getTTH(), flags);
 	}
 }
 
@@ -330,5 +330,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.35 2004/09/13 14:58:30 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.36 2004/09/24 20:48:27 arnetheduck Exp $
  */

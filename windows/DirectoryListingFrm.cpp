@@ -30,8 +30,8 @@
 #include "LineDlg.h"
 #include "../client/MerkleTree.h"
 
-void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser, const tstring& start) {
-	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
+void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
+	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
 	if(BOOLSETTING(POPUNDER_FILELIST))
 		WinUtil::hiddenCreateEx(frame);
 	else
@@ -39,9 +39,9 @@ void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aU
 		
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser, const tstring& s) :
+DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
-	treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(s)
+		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser)))
 {
 	tstring tmp;
 	if(aFile.size() < 4) {
@@ -813,5 +813,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.40 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.41 2004/09/24 20:48:28 arnetheduck Exp $
  */

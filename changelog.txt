@@ -41,7 +41,8 @@ international filenames in it - they will not be correctly converted.
 * Fixed an issue with invalid TTH inconsistencies due to files being downloaded to the same
   target filename as a previously downloaded file (.nfo's usually)
 * Some memory savings for people with large queues
-
+* Fixed a bug with autosearch repeating the same search needlessly (this should result in fewer
+  autosearches, good for the hubs)
 
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists

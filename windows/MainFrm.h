@@ -277,7 +277,6 @@ private:
 		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		User::Ptr user;
 		tstring file;
-		tstring start;
 		LPARAM lParam;
 	};
 	
@@ -358,7 +357,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.44 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.45 2004/09/24 20:48:28 arnetheduck Exp $
  */
 
  

@@ -38,7 +38,7 @@
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, public CSplitterImpl<DirectoryListingFrame>
 {
 public:
-	static void openWindow(const tstring& aFile, const User::Ptr& aUser, const tstring& start = Util::emptyStringT);
+	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 
@@ -50,7 +50,7 @@ public:
 		COLUMN_LAST
 	};
 	
-	DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser, const tstring& s);
+	DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser);
 	~DirectoryListingFrame() { 
 		delete dl; 
 	}
@@ -298,5 +298,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.41 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.42 2004/09/24 20:48:28 arnetheduck Exp $
  */
