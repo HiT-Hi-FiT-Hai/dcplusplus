@@ -13,7 +13,7 @@
 * Added link to change log in help menu (thanks todd)
 * Fixed link to faq (thanks todd)
 * Fixed public hub list mouse clicks and list reviewing (thanks todd)
-
+* Implemented a faster substring search algorithm for share searches (the QuickSearch variant of the Boyer-Moore)
 
  -- 0.242 2003-04-19 --
 * Updated compile.txt with some notes on submitting patches

@@ -545,6 +545,20 @@ u_int32_t ShareManager::getMask(StringList& l) {
 	return (mask == 0) ? 1 : mask;	
 }
 
+u_int32_t ShareManager::getMask(StringSearch::List& l) {
+	u_int32_t mask = 0;
+	int n = 1;
+
+	for(StringIter i = words.begin(); i != words.end(); ++i, n++) {
+		for(StringSearch::Iter j = l.begin(); j != l.end(); ++j) {
+			if(Util::findSubString(j->getPattern(), *i) != string::npos) {
+				mask |= (1 << n);
+			}
+		}
+	}
+	return (mask == 0) ? 1 : mask;	
+}
+
 /**
  * Alright, the main point here is that when searching, a search string is most often found in 
  * the filename, not directory name, so we want to make that case faster. Also, we want to
@@ -552,7 +566,7 @@ u_int32_t ShareManager::getMask(StringList& l) {
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) {
 	// Skip everything if there's nothing to find here (doh! =)
 	if(!hasType(aFileType))
 		return;
@@ -560,32 +574,26 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 	if(!hasSearchType(mask))
 		return;
 
-	StringList* cur = &aStrings;
-	StringList newStr;
+	StringSearch::List* cur = &aStrings;
+	auto_ptr<StringSearch::List> newStr;
 
 	// Find any matches in the directory name
-	for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
-		if(Util::findSubString(name, *k) != string::npos) {
-			newStr.push_back(*k);
-			u_int32_t xmask = ShareManager::getInstance()->getMask(*k);
+	for(StringSearch::Iter k = aStrings.begin(); k != aStrings.end(); ++k) {
+		if(k->match(name)) {
+			if(!newStr.get()) {
+				newStr = auto_ptr<StringSearch::List>(new StringSearch::List(aStrings));
+			}
+			dcassert(find(newStr->begin(), newStr->end(), *k) != newStr->end());
+			newStr->erase(find(newStr->begin(), newStr->end(), *k));
+			u_int32_t xmask = ShareManager::getInstance()->getMask(k->getPattern());
 			if(xmask != 1) {
 				mask &= ~xmask;
 			}
 		}
 	}
 
-	if(newStr.size() > 0) {
-		// Alright, we want to put the strings not found in newStr, and remove those already found
-		// to avoid using another stringlist...
-		for(StringIter m = aStrings.begin(); m != aStrings.end(); ++m) {
-			StringIter n = find(newStr.begin(), newStr.end(), *m);
-			if(n == newStr.end()) {
-				newStr.push_back(*m);
-			} else {
-				newStr.erase(n);
-			}
-		}
-		cur = &newStr;
+	if(newStr.get() != 0) {
+		cur = newStr.get();
 	}
 
 	if(cur->empty() && ((aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_DIRECTORY))) {
@@ -602,7 +610,6 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
 
-	bool found = true;
 	if(aFileType != SearchManager::TYPE_DIRECTORY) {
 		for(FileIter i = files.begin(); i != files.end(); ++i) {
 			
@@ -611,16 +618,11 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
 				continue;
 			}	
+			StringSearch::Iter j = cur->begin();
+			for(; j != cur->end() && j->match(i->first); ++j) 
+				;	// Empty
 			
-			found = true;
-			for(StringIter j = cur->begin(); (j != cur->end()); ++j) {
-				if(Util::findSubString(i->first, *j) == string::npos) {
-					found = false;
-					break;
-				}
-			}
-			
-			if(!found)
+			if(j != cur->end())
 				continue;
 			
 			// Check file type...
@@ -654,11 +656,18 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 	RLock l(cs);
 	StringTokenizer t(aString, '$');
 	StringList& sl = t.getTokens();
+	StringSearch::List ssl;
+
+	for(StringList::iterator i = sl.begin(); i != sl.end(); ++i) {
+		if(!i->empty()) {
+			ssl.push_back(StringSearch(*i));
+		}
+	}
 	u_int32_t mask = getMask(sl);
 	SearchResult::List results;
 
 	for(Directory::MapIter i = directories.begin(); (i != directories.end()) && (results.size() < maxResults); ++i) {
-		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
+		i->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
 	}
 	
 	return results;
@@ -687,6 +696,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.49 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.50 2003/05/09 09:57:47 arnetheduck Exp $
  */
 

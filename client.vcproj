@@ -338,6 +338,9 @@
 				RelativePath=".\client\StringDefs.h">
 			</File>
 			<File
+				RelativePath="client\StringSearch.h">
+			</File>
+			<File
 				RelativePath=".\client\StringTokenizer.h">
 			</File>
 			<File

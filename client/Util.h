@@ -241,6 +241,7 @@ public:
 		return tmp;
 	}
 	static char toLower(char c) { return lower[(u_int8_t)c]; };
+	static u_int8_t toLower(u_int8_t c) { return lower[c]; };
 	static void toLower2(string& aString) {
 		for(string::size_type i = 0; i < aString.length(); ++i) {
 			aString[i] = toLower(aString[i]);
@@ -303,22 +304,34 @@ public:
 	 * @return First position found or string::npos
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString, string::size_type start = 0) {
-		if(start >= aString.size())
+		if(aString.length() < start)
 			return (string::size_type)string::npos;
 
-		string::size_type blen = aSubString.size();
-		if(blen == 0)
-			return 0;
-		string::size_type alen = aString.size();
+		if(aString.length() < aSubString.length())
+			return (string::size_type)string::npos;
 
-		if(alen >= blen) {
-			const char* a = aString.c_str();
-			const char* b = aSubString.c_str();
-			char c = lower[(u_int8_t)*b];
-			for(string::size_type pos = start; pos < (alen - blen + 1); pos++) {
-				if((c == lower[(u_int8_t)*(a+pos)]) && strnicmp(a+pos+1, b+1, blen-1) == 0)
-					return pos;
+		if(aSubString.empty())
+			return 0;
+
+		u_int8_t* tx = (u_int8_t*)aString.c_str();
+		u_int8_t* px = (u_int8_t*)aSubString.c_str();
+
+		u_int8_t p = Util::toLower(px[0]);
+
+		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
+
+		while(tx < end) {
+			if(p == Util::toLower(tx[0])) {
+				int i = 1;
+
+				for(; px[i] && Util::toLower(px[i]) == Util::toLower(tx[i]); ++i)
+					;	// Empty
+
+				if(px[i] == 0)
+					return tx - (u_int8_t*)aString.c_str();
 			}
+
+			tx++;
 		}
 		return (string::size_type)string::npos;
 	}
@@ -405,5 +418,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.55 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: Util.h,v 1.56 2003/05/09 09:57:47 arnetheduck Exp $
  */

@@ -28,6 +28,7 @@
 #include "TimerManager.h"
 #include "SearchManager.h"
 #include "SettingsManager.h"
+#include "StringSearch.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -86,6 +87,7 @@ public:
 	SearchManager::TypeModes getType(const string& fileName);
 	u_int32_t getMask(const string& fileName);
 	u_int32_t getMask(StringList& l);
+	u_int32_t getMask(StringSearch::List& l);
 	
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
@@ -160,7 +162,7 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
+		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
 		
 		void toString(string& tmp, DupeMap& dupes, int ident = 0);
 		
@@ -218,6 +220,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.35 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.36 2003/05/09 09:57:47 arnetheduck Exp $
  */
 
