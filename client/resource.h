@@ -43,6 +43,7 @@
 #define IDC_GETLIST                     1022
 #define IDC_KICK                        1023
 #define IDC_REDIRECT                    1024
+#define IDC_REMOVESOURCE				1025
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

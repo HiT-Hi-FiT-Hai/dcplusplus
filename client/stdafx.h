@@ -51,10 +51,7 @@ extern CAppModule _Module;
 #include <string>
 #include <map>
 #include <list>
-#include <set>
-#include <deque>
 
-//#include <iosfwd>
 using namespace std;
 
 //{{AFX_INSERT_LOCATION}}
@@ -64,9 +61,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.10 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.11 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.11  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.10  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

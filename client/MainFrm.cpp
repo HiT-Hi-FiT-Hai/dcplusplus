@@ -25,6 +25,7 @@
 #include "SearchFrm.h"
 #include "PublicHubsFrm.h"
 #include "SettingsDlg.h"
+#include "SimpleXML.h"
 
 #include "ConnectionManager.h"
 #include "DownloadManager.h"
@@ -170,7 +171,9 @@ void MainFrame::onDownloadAdded(Download* p) {
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
+		cs.enter();
 		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Preparing file list...");
+		cs.leave();
 		HANDLE h = CreateFile(p->getTarget().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		if(h==INVALID_HANDLE_VALUE) {
 			return;
@@ -360,7 +363,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			MessageBox("Port 412 is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++");
 		}
 	}
+
+	transferMenu.CreatePopupMenu();
 	// We want to pass this one on to the splitter...hope it get's there...
+
+	c.addListener(this);
+	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 	bHandled = FALSE;
 	return 0;
 }
@@ -447,11 +455,80 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
+LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	int cmd = (wID - IDC_TRANSFERITEM) % 3;
+	if(ctrlTransfers.GetSelectedCount() == 1) {
+		
+		LVITEM lvi;
+		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
+		
+		ctrlTransfers.GetItem(&lvi);
+		
+		if(lvi.iImage == IMAGE_DOWNLOAD) {
+			Download* d = (Download*)lvi.lParam;
+			CMenuItemInfo mi;
+			mi.fMask = MIIM_DATA;
+			
+			transferMenu.GetMenuItemInfo(wID, FALSE, &mi);
+			Download::Source* s = (Download::Source*)mi.dwItemData;
+			switch(cmd) {
+			case 0:
+				DownloadManager::getInstance()->downloadList(s->getNick());
+				break;
+			case 1:
+				d->removeSource(s);
+				break;
+			case 2:
+				if(s->getUser() && s->getUser()->isOnline()) {
+					PrivateFrame* frm = PrivateFrame::getFrame(s->getUser(), m_hWndClient);
+					frm->setTab(&ctrlTab);
+					frm->CreateEx(m_hWndClient);
+				}
+				break;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+void MainFrame::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
+	versionInfo += string((const char*)aBuf, aLen);
+}
+
+void MainFrame::onHttpComplete(HttpConnection* aConn)  {
+	try {
+		SimpleXML xml;
+		xml.fromXML(versionInfo);
+		xml.stepIn();
+		if(xml.findChild("Version")) {
+			if(atof(xml.getChildData().c_str()) > VERSIONFLOAT) {
+				xml.resetCurrentChild();
+				if(xml.findChild("Message")) {
+					const string& msg = xml.getChildData();
+					xml.resetCurrentChild();
+					if(xml.findChild("Title")) {
+						MessageBox(msg.c_str(), xml.getChildData().c_str());
+					}
+				}
+			}
+		}
+	} catch (Exception e) {
+		// ...
+	}
+}
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.29 2002/01/02 16:55:56 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.30 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.30  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.29  2002/01/02 16:55:56  arnetheduck
  * Time for 0.09
  *

@@ -39,7 +39,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 	hEvent[1] = hm->downloadEvent;
 	if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
 		ATLTRACE("Hub Lister Thread ended");
-		hm->fireFinished();
 		return 0;
 	}
 	
@@ -54,7 +53,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
 			ATLTRACE("Hub Lister Thread ended");
 			hm->publicCS.leave();
-			hm->fireFinished();
 			return 0;
 		}
 		hm->fireHub(i->name, i->server, i->description, i->users);
@@ -99,9 +97,12 @@ void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.7 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.8 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.8  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.7  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

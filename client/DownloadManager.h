@@ -23,12 +23,14 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Exception.h"
 #include "UserConnection.h"
-#include "CryptoManager.h"
 #include "Util.h"
 #include "TimerManager.h"
 
 class SimpleXML;
+
+STANDARD_EXCEPTION(DownloadException);
 
 class Download : public Transfer {
 public:
@@ -96,6 +98,15 @@ public:
 		return s;
 	}
 
+	void removeSource(Source* aSource) {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			if(*i == aSource) {
+				sources.erase(i);
+				break;
+			}
+		}
+	}
+	
 	Source::Ptr getSource(const User::Ptr& aUser) {
 		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser)
@@ -144,10 +155,12 @@ public:
 	typedef List::iterator Iter;
 	
 	virtual void onDownloadAdded(Download* aDownload) { };
-	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource) { };
 	virtual void onDownloadComplete(Download* aDownload) { };
 	virtual void onDownloadConnecting(Download* aDownload) { };
 	virtual void onDownloadFailed(Download* aDownload, const string& aReason) { };
+	virtual void onDownloadRemoved(Download* aDownload) { };
+	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource) { };
+	virtual void onDownloadSourceRemoved(Download* aDownload, Download::Source* aSource) { };
 	virtual void onDownloadStarting(Download* aDownload) { };
 	virtual void onDownloadTick(Download* aDownload) { };
 };
@@ -155,17 +168,17 @@ public:
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener
 {
 public:
-	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) {
+	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
 		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
-	void download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true);
+	void download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
 
-	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) {
+	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
 		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
-	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true);
-	void downloadList(User::Ptr& aUser);
-	void downloadList(const string& aUser);
+	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
+	void downloadList(User::Ptr& aUser) throw(DownloadException);
+	void downloadList(const string& aUser) throw(DownloadException);
 	void connectFailed(const User::Ptr& aUser);
 	
 	void removeDownload(Download* aDownload);
@@ -287,6 +300,24 @@ private:
 			(*i)->onDownloadSourceAdded(aPtr, aSource);
 		}
 	}
+	void fireSourceRemoved(Download::Ptr aPtr, Download::Source::Ptr aSource) {
+		listenerCS.enter();
+		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
+		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onDownloadSourceRemoved(aPtr, aSource);
+		}
+	}
+	void fireRemoved(Download::Ptr aPtr) {
+		listenerCS.enter();
+		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
+		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onDownloadRemoved(aPtr);
+		}
+	}
 	void fireStarting(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
@@ -320,9 +351,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.19 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.20 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.20  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.19  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

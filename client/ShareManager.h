@@ -24,8 +24,8 @@
 #endif // _MSC_VER > 1000
 
 #include "Exception.h"
-#include "DirectoryListing.h"
 #include "CriticalSection.h"
+#include "Util.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -184,9 +184,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.8 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.8  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.7  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

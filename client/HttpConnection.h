@@ -42,7 +42,7 @@ public:
 class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
 {
 public:
-	void DownloadFile(const string& aUrl);
+	void downloadFile(const string& aUrl);
 	HttpConnection() : ok(false), port(false), size(-1) { 	socket.addListener(this); };
 	virtual ~HttpConnection() { socket.removeListener(this); };
 
@@ -95,9 +95,12 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.3 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.4 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
+ * Revision 1.4  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.3  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -58,157 +58,9 @@ public:
 	virtual void onUploadTick(Upload* aUpload) { };
 };
 
-class UploadManager : public UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener
+class UploadManager : private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener
 {
 public:
-	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
-		Upload* u;
-		cs.enter();
-		Upload::MapIter i = uploads.find(aSource);
-		if(i == uploads.end()) {
-			// Something strange happened?
-			dcdebug("onBytesSent: Upload not found???\n");
-			cs.leave();
-			removeConnection(aSource);
-			return;
-		}
-		u = i->second;
-		cs.leave();
-		u->addPos(aBytes);
-		//fireTick(u);
-	}
-
-	virtual void onError(UserConnection* aSource, const string& aError) {
-		Upload* u;
-		aSource->disconnect();
-		cs.enter();
-		Upload::MapIter i = uploads.find(aSource);
-		if(i != uploads.end()) {
-			u = i->second;
-			fireFailed(u, aError);
-			dcdebug("onError: Removing upload\n");
-			uploads.erase(i);
-			delete u;
-		}
-		cs.leave();
-		removeConnection(aSource);
-	}
-
-	/**
-	 * Transfer finished, release the Upload and wait for the next command.
-	 */
-	virtual void onTransmitDone(UserConnection* aSource) {
-		Upload * u;
-		cs.enter();
-		Upload::MapIter i = uploads.find(aSource);
-		if(i == uploads.end()) {
-			// Something strange happened?
-			dcdebug("onTransmitDone: Upload not found???\n");
-			
-			cs.leave();
-			removeConnection(aSource);
-			return;
-		}
-		u = i->second;
-		fireComplete(u);
-		dcdebug("onTransmitDone: Removing upload\n");
-		uploads.erase(i);
-		cs.leave();
-		delete u;
-
-	}
-
-	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
-		Upload* u;
-		HANDLE h;
-		cs.enter();
-
-		try {
-			if(uploads.size() >= Settings::getSlots()) {
-				aSource->maxedOut();
-				removeConnection(aSource);
-				cs.leave();
-				return;
-			}
-			// We only give out one connection / user...
-			for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
-				if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
-					aSource->maxedOut();
-					removeConnection(aSource);
-					cs.leave();
-					return;					
-				}
-			}
-			string file = ShareManager::getInstance()->translateFileName(aFile);
-			Upload::MapIter i = uploads.find(aSource);
-			if(i != uploads.end()) {
-				// This is bad!
-				
-				dcdebug("UploadManager::onGet Unexpected command\n");				
-				fireFailed(i->second, "Unexpected command");
-				delete i->second;
-				dcdebug("onGet: Removing upload\n");
-				uploads.erase(i);
-				cs.leave();
-				removeConnection(aSource);
-				return;
-			} 
-			h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-			if(h == INVALID_HANDLE_VALUE) {
-				aSource->error("File Not Available");
-				cs.leave();
-				return;
-			}
-
-			u = new Upload();
-			u->setFile(h, true);
-			u->setPos(aResume, true);
-			u->setFileName(aFile);
-			u->setUser(aSource->getUser());
-			
-			char buf[24];
-			aSource->fileLength(_i64toa(u->getSize(), buf, 10));
-			uploads[aSource] = u;
-
-		} catch (ShareException e) {
-			aSource->error("File Not Available");
-		} catch(SocketException e) {
-			dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
-		}
-
-		cs.leave();
-	}
-	
-	virtual void onSend(UserConnection* aSource) {
-		Upload* u;
-		cs.enter();
-		Upload::MapIter i = uploads.find(aSource);
-		if(i==uploads.end()) {
-			// Huh? Where did this come from?
-			removeConnection(aSource);
-			cs.leave();
-			return;
-		}
-
-		u = i->second;
-		try {
-			u->setStart(TimerManager::getTick());
-			aSource->transmitFile(u->getFile());
-			fireStarting(u);
-		} catch(Exception e) {
-			dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
-			dcdebug("onSend: Removing upload\n");
-			uploads.erase(i);
-			delete u;
-			removeConnection(aSource);
-		}
-		cs.leave();
-	}
-	
-	virtual void onGetListLen(UserConnection* aSource) {
-		aSource->listLen(ShareManager::getInstance()->getListLenString());
-	}
-
 	void removeUpload(Upload* aUpload) {
 		cs.enter();
 		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
@@ -288,6 +140,71 @@ private:
 			fireTick(i->second);
 		}
 	}
+	
+	// UserConnectionListener
+	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
+		Upload* u;
+		cs.enter();
+		Upload::MapIter i = uploads.find(aSource);
+		if(i == uploads.end()) {
+			// Something strange happened?
+			dcdebug("onBytesSent: Upload not found???\n");
+			cs.leave();
+			removeConnection(aSource);
+			return;
+		}
+		u = i->second;
+		cs.leave();
+		u->addPos(aBytes);
+		//fireTick(u);
+	}
+
+	virtual void onError(UserConnection* aSource, const string& aError) {
+		Upload* u;
+		aSource->disconnect();
+		cs.enter();
+		Upload::MapIter i = uploads.find(aSource);
+		if(i != uploads.end()) {
+			u = i->second;
+			fireFailed(u, aError);
+			dcdebug("onError: Removing upload\n");
+			uploads.erase(i);
+			delete u;
+		}
+		cs.leave();
+		removeConnection(aSource);
+	}
+
+	/**
+	 * Transfer finished, release the Upload and wait for the next command.
+	 */
+	virtual void onTransmitDone(UserConnection* aSource) {
+		Upload * u;
+		cs.enter();
+		Upload::MapIter i = uploads.find(aSource);
+		if(i == uploads.end()) {
+			// Something strange happened?
+			dcdebug("onTransmitDone: Upload not found???\n");
+			
+			cs.leave();
+			removeConnection(aSource);
+			return;
+		}
+		u = i->second;
+		fireComplete(u);
+		dcdebug("onTransmitDone: Removing upload\n");
+		uploads.erase(i);
+		cs.leave();
+		delete u;
+
+	}
+
+	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume);
+	virtual void onSend(UserConnection* aSource);
+	
+	virtual void onGetListLen(UserConnection* aSource) {
+		aSource->listLen(ShareManager::getInstance()->getListLenString());
+	}
 
 	void fireComplete(Upload::Ptr aPtr) {
 		listenerCS.enter();
@@ -331,9 +248,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.20 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.21 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.21  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.20  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

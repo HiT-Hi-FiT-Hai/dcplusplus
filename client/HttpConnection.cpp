@@ -29,7 +29,7 @@
  * @param aUrl Full URL of file
  * @return A string with the content, or empty if download failed
  */
-void HttpConnection::DownloadFile(const string& aUrl) {
+void HttpConnection::downloadFile(const string& aUrl) {
 
 	Util::decodeUrl(aUrl, server, port, file);
 
@@ -66,9 +66,12 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.2 2001/12/07 20:03:06 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.3 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.3  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.2  2001/12/07 20:03:06  arnetheduck
  * More work done towards application stability
  *

@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "PrivateFrame.h"
+#include "Client.h"
 
 CriticalSection PrivateFrame::cs;
 map<User::Ptr, PrivateFrame*> PrivateFrame::frames;
@@ -42,8 +43,11 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlClient.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
-	
-	SetWindowText(user->getNick().c_str());
+	if(user->isOnline()) {
+		SetWindowText((user->getNick() + " (" + user->getClient()->getName() + ")").c_str());
+	} else {
+		SetWindowText((user->getNick() + " (Offline)").c_str());
+	}
 	
 	created = true;
 
@@ -66,11 +70,37 @@ PrivateFrame* PrivateFrame::getFrame(User::Ptr& aUser, HWND aParent) {
 	return p;
 }
 
+LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(user->isOnline()) {
+		char* message;
+		
+		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
+			message = new char[ctrlMessage.GetWindowTextLength()+1];
+			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
+			string s = "<" + Settings::getNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
+			delete message;
+			user->getClient()->privateMessage(user, s);
+			ctrlMessage.SetWindowText("");
+			addLine(s);
+		} else {
+			bHandled = FALSE;
+		}
+	} else {
+		ctrlStatus.SetText(0, "User went offline");
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.1 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.2 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.2  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.1  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

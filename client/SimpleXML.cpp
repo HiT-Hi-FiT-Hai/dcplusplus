@@ -168,7 +168,8 @@ string SimpleXML::cleanUp(const string& aString) {
 	string tmp = aString;
 	string ret;
 
-	while(!tmp.empty()) {
+	while(!tmp.empty() && tmp.find('<') != -1) {
+
 		tmp = tmp.substr(tmp.find('<'));
 		if(tmp[1] == '?') {
 			// Directive, skip
@@ -251,9 +252,12 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.4 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.5 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.5  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.4  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

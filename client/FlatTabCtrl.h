@@ -99,7 +99,7 @@ public:
 		int pos = 0;
 		int activepos = -1;
 		RECT rc;
-		if(GetUpdateRect(&rc, TRUE)) {
+		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
 			HFONT oldfont = dc.SelectFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 			ATLTRACE("%d, %d\n", rc.left, rc.right);
@@ -299,9 +299,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.1 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.2 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.2  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.1  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

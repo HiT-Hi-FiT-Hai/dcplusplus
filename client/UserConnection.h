@@ -106,7 +106,7 @@ public:
 	friend class ConnectionManager;
 	
 	typedef UserConnection* Ptr;
-	typedef deque<Ptr> List;
+	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	typedef map<string, Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
@@ -179,11 +179,11 @@ private:
 	static const string UPLOAD, DOWNLOAD;
 	
 	void reset() {
-		TimerManager::getInstance()->removeListener(this);
-		
 		dcdebug("UserConnection(%p)::reset\n", this );
-		disconnect();
+
+		TimerManager::getInstance()->removeListener(this);
 		removeListeners();
+		disconnect();
 		user = User::nuser;
 		flags = 0;
 		state = LOGIN;
@@ -380,9 +380,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.20 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.21 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.21  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.20  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

@@ -23,10 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Client.h"
 #include "User.h"
 #include "CriticalSection.h"
-#include "ClientManager.h"
 
 #include "FlatTabCtrl.h"
 
@@ -132,28 +130,7 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-	{
-		if(user->isOnline()) {
-			char* message;
-			
-			if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
-				message = new char[ctrlMessage.GetWindowTextLength()+1];
-				ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-				string s = "<" + Settings::getNick() + "> " + string(message, ctrlMessage.GetWindowTextLength());
-				delete message;
-				user->getClient()->privateMessage(user, s);
-				ctrlMessage.SetWindowText("");
-				addLine(s);
-			} else {
-				bHandled = FALSE;
-			}
-		} else {
-			ctrlStatus.SetText(0, "User went offline");
-			bHandled = FALSE;
-		}
-		return 0;
-	}
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	static PrivateFrame* getFrame(User::Ptr& aUser, HWND aParent = NULL);
 	
@@ -181,9 +158,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.2 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.3 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.3  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.2  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

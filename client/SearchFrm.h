@@ -50,6 +50,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
+		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
@@ -58,6 +59,33 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	static int sortSize(LPARAM a, LPARAM b) {
+		LONGLONG* c = (LONGLONG*)a;
+		LONGLONG* d = (LONGLONG*)b;
+		
+		if(*c < *d) {
+			return -1;
+		} else if(*c == *d) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+	LRESULT onColumnClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		if(l->iSubItem == ctrlResults.getSortColumn()) {
+			ctrlResults.setSortDirection(!ctrlResults.getSortDirection());
+		} else {
+			if(l->iSubItem == 2) {
+				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
+			} else {
+				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			}
+		}
+		return 0;
+	}
+	
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
 			delete (LONGLONG*)ctrlResults.GetItemData(i);
@@ -98,15 +126,15 @@ public:
 	
 	void downloadSelected(const string& aDir) {
 		int i=-1;
-		char buf[512];
+		char buf[256];
 		
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlResults.GetItemText(i, 0, buf, 512);
+			ctrlResults.GetItemText(i, 0, buf, 256);
 			string user = buf;
-			ctrlResults.GetItemText(i, 1, buf, 512);
+			ctrlResults.GetItemText(i, 1, buf, 256);
 			string file = buf;
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, 3, buf, 512);
+			ctrlResults.GetItemText(i, 3, buf, 256);
 			string path = buf;
 			
 			DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
@@ -144,11 +172,18 @@ public:
 
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-		char buf[1024];
+		char buf[256];
 		
 		if(item->iItem != -1) {
-			ctrlResults.GetItemText(item->iItem, 0, buf, 1024);
-			DownloadManager::getInstance()->downloadList(buf);
+			ctrlResults.GetItemText(item->iItem, 0, buf, 256);
+			string user = buf;
+			ctrlResults.GetItemText(item->iItem, 1, buf, 256);
+			string file = buf;
+			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(item->iItem);
+			ctrlResults.GetItemText(item->iItem, 3, buf, 256);
+			string path = buf;
+			
+			DownloadManager::getInstance()->download(path + file, size, user, Settings::getDownloadDirectory() + file);
 		}
 		return 0;
 		
@@ -292,9 +327,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.8 2002/01/02 16:55:56 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.9 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.9  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.8  2002/01/02 16:55:56  arnetheduck
  * Time for 0.09
  *

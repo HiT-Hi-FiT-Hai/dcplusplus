@@ -28,8 +28,6 @@
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 
-STANDARD_EXCEPTION(HubException);
-
 class HubManagerListener {
 public:
 	typedef HubManagerListener* Ptr;
@@ -86,7 +84,7 @@ public:
 		
 		conn = new HttpConnection();
 		conn->addListener(this);
-		conn->DownloadFile("http://www.neo-modus.com/PublicHubList.config");
+		conn->downloadFile("http://www.neo-modus.com/PublicHubList.config");
 		
 	}
 	
@@ -204,9 +202,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.10 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.11 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.11  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.10  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

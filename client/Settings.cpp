@@ -22,6 +22,7 @@
 
 #include "Settings.h"
 #include "ShareManager.h"
+#include "DownloadManager.h"
 
 string Settings::nick;
 string Settings::email;
@@ -112,9 +113,12 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.8 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.9 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.9  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.8  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

@@ -42,7 +42,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		if(d->isSet(Download::RUNNING)) {
 			continue;
 		}
-
+		bool online = false;
 		for(Download::Source::Iter j = d->getSources().begin(); j != d->getSources().end(); ++j) {
 			Download::Source::Ptr s = *j;
 
@@ -63,6 +63,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 				for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 					if((*k)->getUser() == s->getUser()) {
 						found = true;
+						online = true;
 					}
 				}
 				if(!found) {
@@ -71,11 +72,28 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 				}
 				continue;
 			}
-			
+
+			online = true;
+
+			// Check if we already have a connection to this fellow...
+			for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
+				if((*k)->getUser() == s->getUser()) {
+					continue;
+				}
+			}
+
 			// Alright, we've made it this far, add the user to the waiting queue (unless he's there already...)
 			map<User::Ptr, DWORD>::iterator i = waiting.find(s->getUser());
 			if(i == waiting.end()) {
 				waiting[s->getUser()] = 0;
+			}
+		}
+
+		if(!online) {
+			if(d->getSources().size() > 1) {
+				fireFailed(d, "All users offline");
+			} else {
+				fireFailed(d, "User is offline");
 			}
 		}
 	}
@@ -95,6 +113,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 			i->second = aTick;
 
 			Download* d = getNextDownload(i->first);
+			
 			if(d && i->first->isOnline()) {
 				int status = ConnectionManager::getInstance()->getDownloadConnection(i->first);
 				if(status==UserConnection::CONNECTING) {
@@ -106,7 +125,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 				}
 				
 			} else {
-				// Duuh...no downloads for this user...remove him/her from the waiting queue...
+				// Duuh...user has gone offline or there's nothing more for him/her, remove from the waiting list...
 				i = waiting.erase(i);
 				continue;
 			}
@@ -114,6 +133,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 		++i;
 	}
 
+	// Tick each ongoing download
 	for(Download::MapIter m = running.begin(); m != running.end(); ++m) {
 		if(m->second->getPos() > 0) {
 			fireTick(m->second);
@@ -146,7 +166,7 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
  * @param aTarget Target location of a file.
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
-void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) {
+void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) throw(DownloadException) {
 
 	cs.enter();
 	
@@ -157,13 +177,13 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 			if(dd->getSize() != aSize) {
 				// Same target, but different sizes...not good...
 				cs.leave();
-				return;
+				throw DownloadException("A download with the same target but different size already exists in the queue");
 			}
 
 			if(!dd->getSources().empty() && dd->getSources()[0]->getFileName() == USER_LIST_NAME) {
 				// Only one source for user listings...
 				cs.leave();
-				return;
+				throw DownloadException("Already downloading that user's file list");
 			}
 
 			// Same download it seems, add this user / path as a source
@@ -197,7 +217,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 	if(aResume && (aSize != -1) ) {
 		if(Util::getFileSize(aTarget) >= aSize) {
 			cs.leave();
-			return;
+			throw DownloadException("Target file is larger than the source");
 		}
 	}
 
@@ -221,15 +241,15 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 		d->setFlag(Download::RESUME);
 
 	queue.push_back(d);
-
+	
 	if(waiting.find(aUser) == waiting.end()) {
 		waiting[aUser] = 0;
 	}
 	
+	cs.leave();
+	
 	fireAdded(d);
 	fireSourceAdded(d, s);
-
-	cs.leave();
 	
 }
 
@@ -243,7 +263,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
  * @param aTarget Target location of a file.
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
-void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) {
+void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) throw(DownloadException) {
 
 	User::Ptr& user = ClientManager::getInstance()->findUser(aUser);
 	if(user) {
@@ -260,13 +280,13 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 			if(dd->getSize() != aSize) {
 				// Same target, but different sizes...not good...
 				cs.leave();
-				return;
+				throw DownloadException("A download with the same target but different size already exists in the queue");
 			}
 			
 			if(!dd->getSources().empty() && dd->getSources()[0]->getFileName() == USER_LIST_NAME) {
 				// Only one source for user listings...
 				cs.leave();
-				return;
+				throw DownloadException("Already downloading that user's file list");
 			}
 			
 			// Same download it seems, add this user / path as a source
@@ -287,6 +307,14 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 		}
 	}
 	
+	// No such download, check if the target file is smaller than the one being downloaded...
+	if(aResume && (aSize != -1) ) {
+		if(Util::getFileSize(aTarget) >= aSize) {
+			cs.leave();
+			throw DownloadException("Target file is larger than the source");
+		}
+	}
+	
 	Download* d = new Download();
 
 	string fileName, path;
@@ -308,19 +336,20 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 		d->setFlag(Download::RESUME);
 
 	queue.push_back(d);
+	cs.leave();
+
 	fireAdded(d);
 	fireSourceAdded(d, s);
 
-	cs.leave();
 }
 
-void DownloadManager::downloadList(User::Ptr& aUser) {
+void DownloadManager::downloadList(User::Ptr& aUser) throw(DownloadException) {
 	string file = Settings::getAppPath() + aUser->getNick() + ".DcLst";
 	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
 }
 
-void DownloadManager::downloadList(const string& aUser) {
+void DownloadManager::downloadList(const string& aUser) throw(DownloadException) {
 	string file = Settings::getAppPath() + aUser + ".DcLst";
 	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
@@ -336,34 +365,34 @@ void DownloadManager::removeDownload(Download* aDownload) {
 			UserConnection* conn = j->first;
 			running.erase(j);
 			removeConnection(conn);
+			break;
 		}
 	}
 	
 	// Search the queue
-	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(*i == aDownload) {
-			// Good! It's in the queue, we can simply remove it...
-			queue.erase(i);
-			delete aDownload;
-			cs.leave();
-			return;
-		}
+	Download::Iter i = find(queue.begin(), queue.end(), aDownload);
+
+	if(i != queue.end()) {
+		queue.erase(i);
+		fireRemoved(aDownload);
+		delete aDownload;
+	} else {
+		dcassert(0);
 	}
 
-	dcassert(0);
-	// Not found...
 	cs.leave();
 }
 
 void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
 	cs.enter();
-	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-		if(*i == aConn) {
-			aConn->removeListener(this);
-			connections.erase(i);
-			ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
-			break;
-		}
+
+	UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
+	if(i != connections.end()) {
+		aConn->removeListener(this);
+		connections.erase(i);
+		ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
+	} else {
+		dcassert(0);
 	}
 	cs.leave();
 }
@@ -605,9 +634,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.21 2002/01/02 16:55:56 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.22 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.22  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.21  2002/01/02 16:55:56  arnetheduck
  * Time for 0.09
  *

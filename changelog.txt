@@ -1,3 +1,10 @@
+ -- 0.10 --
+* Search results sorting
+* Multiple selections in search results
+* Removed some diagnostic messages
+* Default action in search window is now file download, not list download
+* Only one downloading connection per user now
+
  -- 0.09 2002-01-02 --
 * Right-button menu in search window
 * Download queue saving

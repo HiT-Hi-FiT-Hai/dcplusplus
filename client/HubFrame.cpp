@@ -62,13 +62,13 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mi.wID = IDC_GETLIST;
 	userMenu.InsertMenuItem(0, TRUE, &mi);
 	opMenu.InsertMenuItem(0, TRUE, &mi);
-
+	
 	mi.fMask = MIIM_ID | MIIM_STRING;
 	mi.dwTypeData = "Private Message";
 	mi.wID = IDC_PRIVATEMESSAGE;
 	userMenu.InsertMenuItem(1, TRUE, &mi);
 	opMenu.InsertMenuItem(1, TRUE, &mi);
-
+	
 	mi.fMask = MIIM_TYPE;
 	mi.fType = MFT_SEPARATOR;
 	userMenu.InsertMenuItem(2, TRUE, &mi);
@@ -108,9 +108,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.12 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.13 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.13  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.12  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

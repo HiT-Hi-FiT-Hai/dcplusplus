@@ -33,7 +33,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlSearchContainer.SubclassWindow(ctrlSearch.m_hWnd);
 	
 	ctrlResults.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_RESULTS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_RESULTS);
 
 	ctrlSearch.SetFont(ctrlResults.GetFont());
 	
@@ -71,9 +71,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.6 2002/01/05 10:13:40 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.6  2002/01/05 10:13:40  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.5  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

@@ -51,27 +51,8 @@ public:
 	}
 
 	int getDownloadConnection(const User::Ptr& aUser);
-	
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false) {
-		cs.enter();
-		UserConnection::Iter i = find(downloaders.begin(), downloaders.end(), aSource);
-		if(i != downloaders.end()) {
-			downloaders.erase(i);
-		}
-		// Pool it for later usage...
-		if(reuse) {
-			if(find(downPool.begin(), downPool.end(), aSource) == downPool.end()) {
-				dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection to %s\n", aSource->getUser()->getNick().c_str());
-				
-				aSource->addListener(this);
-				downPool.push_back(aSource);
-			}
-			cs.leave();
-		} else {
-			cs.leave();		
-			putConnection(aSource);
-		}
-	}
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
+
 	void putUploadConnection(UserConnection* aSource) {
 		cs.enter();
 		UserConnection::Iter i = find(uploaders.begin(), uploaders.end(), aSource);
@@ -114,7 +95,7 @@ private:
 	virtual void onTimerSecond(DWORD aTick);
 	
 	/**
-	 * Returns an unused connection, either from the pool or a brand new fresh one.
+	 * Returns an connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
 		UserConnection* uc;
@@ -125,7 +106,7 @@ private:
 			uc->addListener(this);
 		} else {
 			uc = pool.front();
-			pool.pop_front();
+			pool.erase(pool.begin());
 			dcdebug("ConnectionManager::getConnection %p, %d listeners\n", uc, uc->listeners.size());
 			uc->addListener(this);
 		}
@@ -133,21 +114,19 @@ private:
 		return uc;
 	}
 	/**
-	 * Put a connection back into the pool. Note; As it seems, this function might be called multiple times
-	 * for the same connection, once when the reader dies, and once when some other thread tries to recover...
+	 * Put a connection back into the pool. There are a few reasons for pooling user connections, the
+	 * most notable one is that it is possible that the connection's own socket thread will call this function,
+	 * and therefore, it cannot be removed at once. And since we have to store the connections on in a pool
+	 * we might as well reuse them instead of always deleting and creating new ones...
 	 */
 	void putConnection(UserConnection* aConn) {
 		aConn->reset();
 		cs.enter();
-		bool found = false;
-		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
-			if(*i == aConn) {
-				found = true;
-				break;
-			}
-		}
-		if(!found)
+		if(find(pool.begin(), pool.end(), aConn) == pool.end()) {
 			pool.push_back(aConn);
+		} else {
+			dcassert(0);
+		}
 		cs.leave();
 	}
 	static ConnectionManager* instance;
@@ -172,9 +151,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.16 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.17 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.17  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.16  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

@@ -29,12 +29,13 @@
 #include "TimerManager.h"
 #include "CriticalSection.h"
 #include "FlatTabCtrl.h"
+#include "HttpConnection.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		public TimerManagerListener, public UploadManagerListener
+		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener
 {
 public:
 	MainFrame() : stopperThread(NULL) { };
@@ -62,37 +63,6 @@ public:
 		IMAGE_UPLOAD
 	};
 
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	// UploadManagerListener
-	virtual void onUploadComplete(Upload* aUpload) { PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); };
-	virtual void onUploadFailed(Upload* aUpload, const string& aReason) { PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); };
-	virtual void onUploadStarting(Upload* aUpload);
-	virtual void onUploadTick(Upload* aUpload);
-	
-	// DownloadManagerListener
-	virtual void onDownloadAdded(Download* aDownload);
-	virtual void onDownloadComplete(Download* aDownload);
-	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
-	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
-	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
-	virtual void onDownloadStarting(Download* aDownload);
-	virtual void onDownloadTick(Download* aDownload);
-	
-	virtual void onTimerSecond(DWORD aTick) {
-		if(ctrlStatus.IsWindow()) {
-			char buf[128];
-			sprintf(buf, "D: %s", Util::formatBytes(Socket::getTotalDown()).c_str());
-			ctrlStatus.SetText(1, buf);
-			sprintf(buf, "U: %s", Util::formatBytes(Socket::getTotalUp()).c_str());
-			ctrlStatus.SetText(2, buf);
-			sprintf(buf, "D: %s/s", Util::formatBytes(Socket::getDown()).c_str());
-			ctrlStatus.SetText(3, buf);
-			sprintf(buf, "U: %s/s", Util::formatBytes(Socket::getUp()).c_str());
-			ctrlStatus.SetText(4, buf);
-		}
-		Socket::resetStats();
-	}
-
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -118,6 +88,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -128,6 +99,8 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + (menuItems / 3)), onTransferItem)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -152,27 +125,113 @@ public:
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 
 		if(kd->wVKey == VK_DELETE) {
-			LVITEM item;
-			item.iItem = -1;
-			item.iSubItem = 0;
-			item.mask = LVIF_PARAM | LVIF_IMAGE;
-
-			while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
-				ctrlTransfers.GetItem(&item);
-
-				if(item.iImage == IMAGE_DOWNLOAD)
-					DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
-				else
-					UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
-				ctrlTransfers.DeleteItem(item.iItem);
-				item.iItem--;
-
-			}
+			removeSelected();
 		}
 		return 0;
 	}
-		
 
+	LRESULT onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		removeSelected();
+		return 0;
+	}
+	
+	void removeSelected() {
+		LVITEM item;
+		item.iItem = -1;
+		item.iSubItem = 0;
+		item.mask = LVIF_PARAM | LVIF_IMAGE;
+		cs.enter();
+		while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
+			ctrlTransfers.GetItem(&item);
+			
+			if(item.iImage == IMAGE_DOWNLOAD)
+				DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
+			else
+				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
+			ctrlTransfers.DeleteItem(item.iItem);
+			item.iItem--;
+		}
+		cs.leave();
+	}
+
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		
+		// Get the bounding rectangle of the client area. 
+		ctrlTransfers.GetClientRect(&rc);
+		ctrlTransfers.ScreenToClient(&pt); 
+		cs.enter();
+		if (PtInRect(&rc, pt)) 
+		{ 
+			// Remove all old items
+			while(transferMenu.GetMenuItemCount() > 0) {
+				transferMenu.DeleteMenu(0, MF_BYPOSITION);
+			}
+
+			int n = 0;
+			CMenuItemInfo mi;
+			
+			mi.fMask = MIIM_ID | MIIM_STRING;
+			mi.dwTypeData = "Remove Transfer";
+			mi.wID = IDC_REMOVE;
+			transferMenu.InsertMenuItem(n++, TRUE, &mi);
+
+			if(ctrlTransfers.GetSelectedCount() == 1) {
+
+				mi.fMask = MIIM_TYPE;
+				mi.fType = MFT_SEPARATOR;
+				transferMenu.InsertMenuItem(n++, TRUE, &mi);
+				
+				
+				LVITEM lvi;
+				lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+				lvi.iSubItem = 0;
+				lvi.mask = LVIF_IMAGE | LVIF_PARAM;
+
+				ctrlTransfers.GetItem(&lvi);
+
+				if(lvi.iImage == IMAGE_DOWNLOAD) {
+					Download* d = (Download*)lvi.lParam;
+					menuItems = 0;
+					for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
+						string str = "Browse " + (*i)->getNick() + "'s files";
+						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
+						mi.dwTypeData = (LPSTR)str.c_str();
+						mi.dwItemData = (DWORD)*i;
+						mi.wID = IDC_TRANSFERITEM + menuItems++;
+						transferMenu.InsertMenuItem(n++, TRUE, &mi);
+
+						str = "Remove " + (*i)->getNick() + " from this transfer";
+						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
+						mi.dwTypeData = (LPSTR)str.c_str();
+						mi.dwItemData = (DWORD)*i;
+						mi.wID = IDC_TRANSFERITEM + menuItems++;
+						transferMenu.InsertMenuItem(n++, TRUE, &mi);
+						
+						str = "Send Message To " + (*i)->getNick();
+						mi.fMask = MIIM_ID | MIIM_STRING | MIIM_DATA;
+						mi.dwTypeData = (LPSTR)str.c_str();
+						mi.dwItemData = (DWORD)*i;
+						mi.wID = IDC_TRANSFERITEM + menuItems++;
+						transferMenu.InsertMenuItem(n++, TRUE, &mi);
+					}
+				}
+			}
+			
+			
+			
+			ctrlTransfers.ClientToScreen(&pt);
+
+			transferMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			
+			return TRUE; 
+		}
+		cs.leave();
+		return FALSE; 
+	}
+	
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
@@ -199,7 +258,7 @@ public:
 		PostMessage(WM_CLOSE);
 		return 0;
 	}
-
+	
 	/**
 	 * This is called from CMDIFrameWindowImpl, and is a copy of what I found in CFrameWindowImplBase,
 	 * plus a few additions of my own...
@@ -279,7 +338,13 @@ public:
 		MDIIconArrange();
 		return 0;
 	}
-protected:
+private:
+
+	enum {
+		IDC_TRANSFERITEM = 3000
+	};
+	int menuItems;
+	
 	map<LPARAM, StringList> uploadStarting;
 	map<LPARAM, string> uploadTick;
 	map<LPARAM, StringList> downloadAdded;
@@ -299,10 +364,49 @@ protected:
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;
-
+	HttpConnection c;
+	string versionInfo;
+	
+	CMenu transferMenu;
+	
 	CImageList arrows;
 	HANDLE stopperThread;
 
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	// UploadManagerListener
+	virtual void onUploadComplete(Upload* aUpload) { PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); };
+	virtual void onUploadFailed(Upload* aUpload, const string& aReason) { PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); };
+	virtual void onUploadStarting(Upload* aUpload);
+	virtual void onUploadTick(Upload* aUpload);
+	
+	// DownloadManagerListener
+	virtual void onDownloadAdded(Download* aDownload);
+	virtual void onDownloadComplete(Download* aDownload);
+	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
+	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
+	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
+	virtual void onDownloadStarting(Download* aDownload);
+	virtual void onDownloadTick(Download* aDownload);
+	
+	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick) {
+		if(ctrlStatus.IsWindow()) {
+			char buf[128];
+			sprintf(buf, "D: %s", Util::formatBytes(Socket::getTotalDown()).c_str());
+			ctrlStatus.SetText(1, buf);
+			sprintf(buf, "U: %s", Util::formatBytes(Socket::getTotalUp()).c_str());
+			ctrlStatus.SetText(2, buf);
+			sprintf(buf, "D: %s/s", Util::formatBytes(Socket::getDown()).c_str());
+			ctrlStatus.SetText(3, buf);
+			sprintf(buf, "U: %s/s", Util::formatBytes(Socket::getUp()).c_str());
+			ctrlStatus.SetText(4, buf);
+		}
+		Socket::resetStats();
+	}
+	
+	// HttpConnectionListener
+	virtual void onHttpComplete(HttpConnection* aConn);
+	virtual void onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -314,9 +418,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.21 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.22 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.22  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.21  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

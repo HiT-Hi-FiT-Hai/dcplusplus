@@ -65,18 +65,15 @@ protected:
 	};
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-
+		cs.enter();
 		// First some specials to handle those messages that have to initialize variables...
 		if(wParam == CLIENT_MESSAGE) {
-			cs.enter();
 			StringIter i = clientMessages.begin();
 			while(i != clientMessages.end()) {
 				addLine(*i);
 				i = clientMessages.erase(i);
 			}
-			cs.leave();
 		} else if(wParam == CLIENT_MYINFO) {
-			cs.enter();
 			User::Iter i = clientMyInfo.begin();
 			while(i != clientMyInfo.end()) {
 				User::Ptr& u = *i;
@@ -104,9 +101,7 @@ protected:
 				updateStatusBar();
 				i = clientMyInfo.erase(i);
 			}
-			cs.leave();
 		} else if(wParam == CLIENT_QUIT) {
-			cs.enter();
 			User::Iter i = clientQuit.begin();
 			while(i != clientQuit.end()) {
 				int item = ctrlUsers.find((*i)->getNick());
@@ -117,7 +112,6 @@ protected:
 				updateStatusBar();		
 				i = clientQuit.erase(i);
 			}
-			cs.leave();
 		} else if(wParam == CLIENT_GETPASSWORD) {
 			LineDlg dlg;
 			dlg.title = "Hub Password";
@@ -133,9 +127,7 @@ protected:
 			addClientLine("Connecting to " + client->getServer() + "...");
 			SetWindowText(client->getServer().c_str());
 		} else if(wParam == CLIENT_ERROR) {
-			cs.enter();
-			addClientLine("Connection failed: " + clientError);
-			cs.leave();
+			addClientLine(clientError);
 		} else if(wParam == CLIENT_HUBNAME) {
 			SetWindowText(client->getName().c_str());
 			addClientLine("Connected");
@@ -147,6 +139,7 @@ protected:
 			((PrivateFrame*)lParam)->addLine(clientPrivateMessage[(PrivateFrame*)lParam]);
 			clientPrivateMessage.erase((PrivateFrame*)lParam);
 		}
+		cs.leave();
 		return 0;
 	};
 
@@ -184,6 +177,7 @@ protected:
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
 		cs.enter();
 		PrivateFrame* frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
+		frm->setTab(getTab());
 		clientPrivateMessage[frm] = aMessage;
 		cs.leave();
 		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)frm);
@@ -293,7 +287,7 @@ public:
 				string user = buf;
 				User::Ptr& u = client->getUser(user);
 				if(u) {
-					PrivateFrame* frm = PrivateFrame::getFrame(u);
+					PrivateFrame* frm = PrivateFrame::getFrame(u, m_hWndMDIClient);
 					frm->setTab(getTab());
 					frm->CreateEx(m_hWndMDIClient);
 				}
@@ -555,9 +549,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.24 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.25 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.25  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.24  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

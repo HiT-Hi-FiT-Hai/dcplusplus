@@ -78,6 +78,27 @@ int ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	return UserConnection::CONNECTING;
 }
 
+void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
+	cs.enter();
+	UserConnection::Iter i = find(downloaders.begin(), downloaders.end(), aSource);
+	if(i != downloaders.end()) {
+		downloaders.erase(i);
+	}
+	// Pool it for later usage...
+	if(reuse) {
+		if(find(downPool.begin(), downPool.end(), aSource) == downPool.end()) {
+			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection to %s\n", aSource->getUser()->getNick().c_str());
+			
+			aSource->addListener(this);
+			downPool.push_back(aSource);
+		}
+		cs.leave();
+	} else {
+		cs.leave();		
+		putConnection(aSource);
+	}
+}
+
 void ConnectionManager::onTimerSecond(DWORD aTick) {
 	cs.enter();
 	map<User::Ptr, DWORD>::iterator i = pendingDown.begin();
@@ -155,11 +176,6 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) {
 	try {
-/*		if(aSource->flags & UserConnection::FLAG_INCOMING) {
-			aSource->myNick(Settings::getNick());
-			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-		}
-*/
 		aSource->direction(aSource->getDirectionString(), "666");
 		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 	} catch(SocketException e) {
@@ -224,9 +240,12 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.14 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.15 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.15  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.14  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

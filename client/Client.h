@@ -237,7 +237,8 @@ private:
 			// Try to send something for the fun of it...
 			if(isConnected()) {
 				try {
-					socket.write("|", 0);
+					dcdebug("Testing writing...\n");
+					socket.write("|", 1);
 				} catch(Exception e) {
 					dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
 					fireError(e.getError());
@@ -475,9 +476,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.18 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: Client.h,v 1.19 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.19  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.18  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

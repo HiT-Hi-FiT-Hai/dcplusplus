@@ -28,8 +28,6 @@ typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef map<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
-typedef set<string> StringSet;
-typedef StringSet::iterator StringSetIter;
 
 #include "resource.h"
 #include "Settings.h"
@@ -45,9 +43,12 @@ typedef StringSet::iterator StringSetIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.5 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.6 2002/01/05 10:13:39 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.6  2002/01/05 10:13:39  arnetheduck
+ * Automatic version detection and some other updates
+ *
  * Revision 1.5  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *
