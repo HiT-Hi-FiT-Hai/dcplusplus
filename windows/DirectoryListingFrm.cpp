@@ -505,19 +505,13 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 	}
 }
 
-HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
 
-	// Get the bounding rectangle of the client area. 
-	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-
-	if (PtInRect(&rc, pt) && ctrlList.GetSelectedCount() > 0) {
+	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
 		int n = 0;
-		ctrlList.ClientToScreen(&pt);
 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
 
@@ -526,13 +520,13 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		}
 
 		if (ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE && ii->file->getTTH() != NULL) {
-			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
-			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
-			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_ENABLED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_ENABLED);
 		} else {
-			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
-			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
-			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_GRAYED);
+			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_GRAYED);
+			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_GRAYED);
 		}
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
@@ -602,52 +596,44 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		}
 		
 		return TRUE; 
-	} else { 
+	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
+		// Strange, windows doesn't change the selection on right-click... (!)
+		UINT a = 0;
+		HTREEITEM ht = ctrlTree.HitTest(pt, &a);
+		if(ht != NULL && ht != ctrlTree.GetSelectedItem())
+			ctrlTree.SelectItem(ht);
 		
-		ctrlList.ClientToScreen(&pt);
+		while(targetDirMenu.GetMenuItemCount() > 0) {
+			targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+
+		int n = 0;
+		//Append Favorite download dirs
+		StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
+		if (spl.size() > 0) {
+			for(StringPairIter i = spl.begin(); i != spl.end(); i++) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
+				n++;
+			}
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
+		}
+
+		n = 0;
+		targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
+
+		if(WinUtil::lastDirs.size() > 0) {
+			targetDirMenu.AppendMenu(MF_SEPARATOR);
+			for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (++n), i->c_str());
+			}
+		}
 		
-		ctrlTree.GetClientRect(&rc);
-		ctrlTree.ScreenToClient(&pt); 
+		directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		
-		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) { 
-			// Strange, windows doesn't change the selection on right-click... (!)
-			UINT a = 0;
-			HTREEITEM ht = ctrlTree.HitTest(pt, &a);
-			if(ht != NULL && ht != ctrlTree.GetSelectedItem())
-				ctrlTree.SelectItem(ht);
-			
-			while(targetDirMenu.GetMenuItemCount() > 0) {
-				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
-			}
+		return TRUE; 
+	} 
 
-			int n = 0;
-			//Append Favorite download dirs
-			StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
-			if (spl.size() > 0) {
-				for(StringPairIter i = spl.begin(); i != spl.end(); i++) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
-					n++;
-				}
-				targetDirMenu.AppendMenu(MF_SEPARATOR);
-			}
-
-			n = 0;
-			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CTSTRING(BROWSE));
-
-			if(WinUtil::lastDirs.size() > 0) {
-				targetDirMenu.AppendMenu(MF_SEPARATOR);
-				for(TStringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
-					targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (++n), i->c_str());
-				}
-			}
-			
-			ctrlTree.ClientToScreen(&pt);
-			directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
-		} 
-	}
-	
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -991,5 +977,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.56 2005/03/14 14:04:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.57 2005/03/19 16:17:42 arnetheduck Exp $
  */

@@ -739,14 +739,10 @@ void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
 	}			
 }
 
-LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
-	// Get the bounding rectangle of the client area. 
-	ctrlQueue.GetClientRect(&rc);
-	ctrlQueue.ScreenToClient(&pt); 
-	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) { 
+	if ((HWND)wParam == ctrlQueue && ctrlQueue.GetSelectedCount() > 0) { 
 		usingDirMenu = false;
 		CMenuItemInfo mi;
 		
@@ -766,8 +762,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			readdMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
 
-		ctrlQueue.ClientToScreen(&pt);
-		
 		if(ctrlQueue.GetSelectedCount() == 1) {
 			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 			menuItems = 0;
@@ -805,36 +799,36 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			}
 
 			if(menuItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MF_GRAYED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MF_GRAYED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MF_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_GRAYED);
 			}
 			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MF_ENABLED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MF_ENABLED);
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MF_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)browseMenu, MFS_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeMenu, MFS_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)removeAllMenu, MFS_ENABLED);
 			}
 
 			if(pmItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MF_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MFS_GRAYED);
 			}
 			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MF_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)pmMenu, MFS_ENABLED);
 			}
 
 			if(readdItems == 0) {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MF_GRAYED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_GRAYED);
 			}
 			else {
-				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MF_ENABLED);
+				singleMenu.EnableMenuItem((UINT_PTR)(HMENU)readdMenu, MFS_ENABLED);
  			}
 
 			if(ii->getTTH() == NULL) {
-				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
-				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
+				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_GRAYED);
+				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_GRAYED);
 			} else {
-				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
-				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_ENABLED);
+				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_ENABLED);
 			}
 			
 			singleMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -843,14 +837,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		}
 		
 		return TRUE; 
-	}
-
-	ctrlQueue.ClientToScreen(&pt);
-
-	ctrlDirs.GetClientRect(&rc);
-	ctrlDirs.ScreenToClient(&pt);
-
-	if (PtInRect(&rc, pt) && ctrlDirs.GetSelectedItem() != NULL) { 
+	} else if ((HWND)wParam == ctrlDirs && ctrlDirs.GetSelectedItem() != NULL) { 
 		usingDirMenu = true;
 		// Strange, windows doesn't change the selection on right-click... (!)
 		UINT a = 0;
@@ -858,12 +845,12 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
 			ctrlDirs.SelectItem(ht);
 		
-		ctrlDirs.ClientToScreen(&pt);
 		dirMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	
 		return TRUE;
 	}
 
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -1263,7 +1250,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.71 2005/03/12 13:36:50 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.72 2005/03/19 16:17:42 arnetheduck Exp $
  */
 
 

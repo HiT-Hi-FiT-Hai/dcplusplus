@@ -74,23 +74,16 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 }
 
-LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
-	// Get the bounding rectangle of the client area. 
-	ctrlUsers.GetClientRect(&rc);
-	ctrlUsers.ScreenToClient(&pt); 
-
-	if (ctrlUsers.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
-	{ 
-		ctrlUsers.ClientToScreen(&pt);
+	if ((HWND)wParam == ctrlUsers && ctrlUsers.GetSelectedCount() > 0 ) { 
 		checkAdcItems(usersMenu);
 		usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
 		return TRUE; 
 	}
-
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -202,6 +195,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.29 2005/03/14 14:04:45 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.30 2005/03/19 16:17:42 arnetheduck Exp $
  */
 

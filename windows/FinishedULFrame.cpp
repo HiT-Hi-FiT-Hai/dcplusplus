@@ -78,20 +78,15 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	return TRUE;
 }
 
-LRESULT FinishedULFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT FinishedULFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
-	// Get the bounding rectangle of the client area. 
-	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-
-	if (ctrlList.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
-	{ 
-		ctrlList.ClientToScreen(&pt);
+	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) { 
 		ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
 		return TRUE; 
 	}
+
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -254,5 +249,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.24 2005/01/05 19:30:22 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.25 2005/03/19 16:17:42 arnetheduck Exp $
  */

@@ -216,22 +216,19 @@ LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	return 0;
 }
 	
-LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 {
 	// Get the bounding rectangle of the client area. 
-	RECT rc;
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-	
-	// Hit-test
-	if(PtInRect(&rc, pt)) 
-	{ 
-		ctrlList.ClientToScreen(&pt);
+
+	if((HWND)wParam == ctrlList) { 
+		int status = ctrlList.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_GRAYED;
+		contextMenu.EnableMenuItem(IDC_EDIT, status);
+		contextMenu.EnableMenuItem(IDC_REMOVE, status);
 		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		return TRUE; 
 	}
-	
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -550,5 +547,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.20 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.21 2005/03/19 16:17:42 arnetheduck Exp $
  */

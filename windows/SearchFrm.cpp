@@ -916,16 +916,10 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
-LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
-	// Get the bounding rectangle of the client area. 
-	ctrlResults.GetClientRect(&rc);
-	ctrlResults.ScreenToClient(&pt); 
-
-	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) {
-		ctrlResults.ClientToScreen(&pt);
+	if ((HWND)wParam == ctrlResults && ctrlResults.GetSelectedCount() > 0) {
 
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
@@ -998,13 +992,13 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 		if (ctrlResults.GetSelectedCount() == 1 && sr->getTTH() != NULL) {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
-			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
-			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_ENABLED);
 		} else {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
-			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
-			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MFS_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MFS_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MFS_GRAYED);
 		}
 		
 		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, cs.hub, cs.op);
@@ -1013,6 +1007,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		cleanMenu(resultsMenu);
 		return TRUE; 
 	}
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -1117,5 +1112,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.87 2005/03/14 14:04:46 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.88 2005/03/19 16:17:42 arnetheduck Exp $
  */

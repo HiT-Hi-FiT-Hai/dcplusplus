@@ -171,15 +171,10 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	return 0;
 }
 
-LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
-	// Get the bounding rectangle of the client area. 
-	ctrlSearches.GetClientRect(&rc);
-	ctrlSearches.ScreenToClient(&pt); 
-
-	if (PtInRect(&rc, pt) && ctrlSearches.GetSelectedCount() == 1) {
+	if (GetFocus() == ctrlSearches && ctrlSearches.GetSelectedCount() == 1) {
 		int i = ctrlSearches.GetNextItem(-1, LVNI_SELECTED);
 
 		CMenu mnu;
@@ -189,12 +184,12 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		ctrlSearches.GetItemText(i, COLUMN_STRING, buf, 256);
 		searchString = buf;
 
-		ctrlSearches.ClientToScreen(&pt);
 		mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		
 		return TRUE; 
 	}
 
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -231,5 +226,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.32 2005/02/04 14:40:50 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.33 2005/03/19 16:17:42 arnetheduck Exp $
  */

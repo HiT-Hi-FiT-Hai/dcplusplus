@@ -78,20 +78,14 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	return TRUE;
 }
 
-LRESULT FinishedFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
+LRESULT FinishedFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 
-	// Get the bounding rectangle of the client area. 
-	ctrlList.GetClientRect(&rc);
-	ctrlList.ScreenToClient(&pt); 
-
-	if (ctrlList.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
-	{ 
-		ctrlList.ClientToScreen(&pt);
+	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) { 
 		ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
 		return TRUE; 
 	}
+	bHandled = FALSE;
 	return FALSE; 
 }
 
@@ -254,5 +248,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.31 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.32 2005/03/19 16:17:42 arnetheduck Exp $
  */

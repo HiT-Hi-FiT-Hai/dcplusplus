@@ -656,17 +656,17 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	RECT rc; 
 	POINT pt; 
 	GetCursorPos(&pt);			//need cursor pos
 	ctrlClient.GetWindowRect(&rc);
+	ctrlClient.ClientToScreen(&pt);
 
 	bool doMenu = false;
 
 	if (PtInRect(&rc, pt)) {
 		tstring x;
-		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
@@ -688,29 +688,20 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 			ctrlUsers.SetRedraw(TRUE);
 			ctrlUsers.EnsureVisible(pos, FALSE);
 
-			ctrlClient.ClientToScreen(&pt);
 			doMenu = true; 
-		} else {
-			bHandled = FALSE;
-		}
-	} else {
-		// Get the bounding rectangle of the client area. 
-		ctrlUsers.GetWindowRect(&rc);
-
-		if (PtInRect(&rc, pt)) { 
-			doMenu = true;
-		}else{
-			bHandled = FALSE; //needed to popup context menu under userlist
-		}
-	}
-
-	if(doMenu) {
+		} 
+	} 
+	ctrlClient.ScreenToClient(&pt);
+	
+	if((doMenu || ((HWND)wParam == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
 		checkAdcItems(userMenu);
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
 		return TRUE;
+	} else {
+		bHandled = FALSE; //needed to popup context menu under userlist
 	}
 	return FALSE;
 }
@@ -1140,5 +1131,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.100 2005/03/19 13:00:53 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.101 2005/03/19 16:17:42 arnetheduck Exp $
  */
