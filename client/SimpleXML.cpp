@@ -33,17 +33,17 @@ static string escape(const string& aString, bool aAttrib, bool aReverse = false)
 			tmp.replace(i, 4, 1, '<');
 		}
 		while( (i=tmp.find("&amp;")) != string::npos) {
-			tmp.replace(i, 4, 1, '&');
+			tmp.replace(i, 5, 1, '&');
 		}
 		while( (i=tmp.find("&gt;")) != string::npos) {
 			tmp.replace(i, 4, 1, '>');
 		}
 		if(aAttrib) {
 			while( (i=tmp.find("&apos;")) != string::npos) {
-				tmp.replace(i, 4, 1, '\'');
+				tmp.replace(i, 6, 1, '\'');
 			}
 			while( (i=tmp.find("&quot;")) != string::npos) {
-				tmp.replace(i, 4, 1, '"');
+				tmp.replace(i, 6, 1, '"');
 			}
 		}
 		if( (i = tmp.find('\n')) != string::npos) {
@@ -59,14 +59,15 @@ static string escape(const string& aString, bool aAttrib, bool aReverse = false)
 			}
 		}
 	} else {
-		while( (i = tmp.find_first_of(chars)) != string::npos) {
+		i = 0;
+		while( (i = tmp.find_first_of(chars, i)) != string::npos) {
 			
 			switch(tmp[i]) {
-			case '<': tmp.replace(i, 1, "&lt;"); break;
-			case '&': tmp.replace(i, 1, "&amp;"); break;
-			case '>': tmp.replace(i, 1, "&gt;"); break;
-			case '\'': tmp.replace(i, 1, "&apos;"); break;
-			case '"': tmp.replace(i, 1, "&quot;"); break;
+			case '<': tmp.replace(i, 1, "&lt;"); i+=4; break;
+			case '&': tmp.replace(i, 1, "&amp;"); i+=5; break;
+			case '>': tmp.replace(i, 1, "&gt;"); i+=4; break;
+			case '\'': tmp.replace(i, 1, "&apos;"); i+=6; break;
+			case '"': tmp.replace(i, 1, "&quot;"); i+=6; break;
 			default: dcassert(0);
 			}
 		}
@@ -252,9 +253,9 @@ void SimpleXML::fromXML(const string& aXML) {
 		
 		if(!data.empty() && data[0] == '<') {
 			child = new Tag(name, "", NULL);
-			child->fromXML(escape(data, false, true));
+			child->fromXML(data);
 		} else {
-			child = new Tag(name, data, NULL);
+			child = new Tag(name, escape(data, false, true), NULL);
 		}
 	}
 	
@@ -264,9 +265,12 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.6 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.7 2002/01/06 13:24:53 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.7  2002/01/06 13:24:53  arnetheduck
+ * Fixed an XML parsing bug
+ *
  * Revision 1.6  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *
