@@ -763,7 +763,7 @@ void HubFrame::runUserCommand(UserCommand& uc) {
 };
 
 void HubFrame::onTab() {
-	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd) && !(GetAsyncKeyState(VK_SHIFT) & 0x8000)) {
+	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd)) {
 		int n = ctrlMessage.GetWindowTextLength();
 		AutoArray<char> buf(n+1);
 		ctrlMessage.GetWindowText(buf, n+1);
@@ -802,13 +802,21 @@ void HubFrame::onTab() {
 			UserInfo* ui = ctrlUsers.getItemData(i);
 			const string& nick = ui->user->getNick();
 			bool found = (Util::strnicmp(nick, complete, complete.length()) == 0);
+			string::size_type x = string::npos;
 			if(!found) {
-				// Check if there's a [ISP] tag to ignore...
-				if(nick[0] == '[') {
-					string::size_type x = nick.find(']');
+				// Check if there's one or more [ISP] tags to ignore...
+				string::size_type y = 0;
+				while(nick[y] == '[') {
+					x = nick.find(']', y);
 					if(x != string::npos) {
-						found = (Util::strnicmp(nick.c_str() + x + 1, complete.c_str(), complete.length()) == 0);
+						if(Util::strnicmp(nick.c_str() + x + 1, complete.c_str(), complete.length()) == 0) {
+							found = true;
+							break;
+						}
+					} else {
+						break;
 					}
+					y = x + 1; // assuming that nick[y] == '\0' is legal
 				}
 			}
 			if(found) {
@@ -1073,5 +1081,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.39 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.40 2003/11/06 18:54:39 arnetheduck Exp $
  */

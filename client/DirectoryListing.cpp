@@ -175,12 +175,11 @@ int DirectoryListing::Directory::getTotalFileCount(bool adls) {
 }
 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
-	string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? Util::getFileName(aTarget) : Util::emptyString);
 	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-		searchString, (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME));
+		Util::emptyString, (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME));
 }
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.19 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.20 2003/11/06 18:54:39 arnetheduck Exp $
  */

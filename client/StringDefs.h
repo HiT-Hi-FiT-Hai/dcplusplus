@@ -260,7 +260,7 @@ enum Strings { // @DontAdd
 	SETTINGS_AUTO_FOLLOW, // "Automatically follow redirects"
 	SETTINGS_AUTO_KICK, // "Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)"
 	SETTINGS_AUTO_SEARCH, // "Automatically search for alternative download locations"
-	SETTINGS_AUTO_SEARCH_AUTO_STRING, // "Automatically add search string for alternative download locations"
+	SETTINGS_AUTO_SEARCH_AUTO_STRING, // "Use default search strings in auto search when no string is specified"
 	SETTINGS_AUTO_UPDATE_LIST, // "Automatically refresh share list every hour"
 	SETTINGS_CHANGE, // "&Change"
 	SETTINGS_CLEAR_SEARCH, // "Clear search box after each search"

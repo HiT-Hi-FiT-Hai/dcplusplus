@@ -488,7 +488,8 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
-			targets = QueueManager::getInstance()->getTargetsBySize(ii->file->getSize(), Util::getFileExt(ii->file->getName()));
+			targets.clear();
+			QueueManager::getInstance()->getTargetsBySize(targets, ii->file->getSize(), Util::getFileExt(ii->file->getName()));
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -863,5 +864,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.23 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.24 2003/11/06 18:54:39 arnetheduck Exp $
  */

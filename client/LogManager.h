@@ -32,7 +32,7 @@ public:
 	void log(const string& area, const string& msg) throw() {
 		Lock l(cs);
 		try {
-			File f(SETTING(LOG_DIRECTORY) + area + ".log", File::WRITE, File::OPEN | File::CREATE);
+			File f(Util::validateFileName(SETTING(LOG_DIRECTORY) + area + ".log"), File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
 			f.write(msg + "\r\n");
 		} catch (const FileException&) {
@@ -63,5 +63,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.5 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.6 2003/11/06 18:54:39 arnetheduck Exp $
  */

@@ -230,11 +230,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			if(WinUtil::browseFile(target, m_hWnd)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				try {
-					// maybe sr->getFileName() is a more accurate search string since there was a source!
-					string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
-						Util::getFileName(target) : Util::emptyString);
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target, 
-						searchString);
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
 				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
@@ -444,9 +440,8 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 		try {
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				string fileName = sr->getFileName();
-				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? fileName : Util::emptyString);
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
-					SETTING(DOWNLOAD_DIRECTORY) + fileName, searchString);
+					SETTING(DOWNLOAD_DIRECTORY) + fileName);
 			} else {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + Util::getLastDir(sr->getFile()));
@@ -466,9 +461,8 @@ void SearchFrame::downloadSelected(const string& aDir, bool view /* = false */) 
 		try { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				string fileName = sr->getFileName();
-				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? fileName : Util::emptyString);
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + fileName,
-					searchString, (view ? (QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT) : QueueItem::FLAG_RESUME));
+					Util::emptyString, (view ? (QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT) : QueueItem::FLAG_RESUME));
 			} else if(!view) {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), aDir);
@@ -852,7 +846,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
-				targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize(), Util::getFileExt(sr->getFile()));
+				targets.clear();
+				QueueManager::getInstance()->getTargetsBySize(targets, sr->getSize(), Util::getFileExt(sr->getFile()));
 				if(targets.size() > 0) {
 					targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 					for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -916,7 +911,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			
 			if(cmpSize != 0) {
 				// All selected files are same size, see if we have a match in queue
-				targets = QueueManager::getInstance()->getTargetsBySize(cmpSize, ext);
+				targets.clear();
+				QueueManager::getInstance()->getTargetsBySize(targets, cmpSize, ext);
 				if(targets.size() > 0) {
 					targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 					for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -967,10 +963,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		try {
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				dcassert(newId < (int)targets.size());
-				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
-					Util::getFileName(targets[newId]) : Util::emptyString);
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId],
-					searchString);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId]);
 			} else {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				dcassert(newId < (int)WinUtil::lastDirs.size());
@@ -992,10 +985,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 				dcassert(sr->getType() == SearchResult::TYPE_FILE);
 				try {				
 					dcassert((newId < (int)targets.size()) && (newId >= 0));
-					string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
-						Util::getFileName(targets[newId]) : Util::emptyString);
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId],
-						searchString);
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId]);
 				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
@@ -1092,5 +1082,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.32 2003/11/04 20:18:15 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.33 2003/11/06 18:54:39 arnetheduck Exp $
  */

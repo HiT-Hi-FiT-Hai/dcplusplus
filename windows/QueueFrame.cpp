@@ -727,6 +727,8 @@ void QueueFrame::setSearchStringForSelected() {
 		// Single item, fill in the current search string
 		QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 		dlg.line = ii->getSearchString();
+		if(dlg.line.empty() && BOOLSETTING(AUTO_SEARCH_AUTO_STRING))
+			dlg.line = SearchManager::getInstance()->clean(ii->getTargetFileName());
 		if(dlg.DoModal() == IDOK)
 			QueueManager::getInstance()->setSearchString(ii->getTarget(), dlg.line);
 	} else if(n > 1) {
@@ -1264,7 +1266,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.33 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.34 2003/11/06 18:54:39 arnetheduck Exp $
  */
 
 

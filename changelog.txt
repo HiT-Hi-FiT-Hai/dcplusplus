@@ -1,10 +1,15 @@
  -- 0.302 --
 * Added a small menu to the tray icon (thanks orkblutt)
 * Added port to hub log files
-* Some fixes so that \client will compile fine under linux (thanks christer palm)
+* Some fixes so that \client will compile better under linux (thanks christer palm, he's working on
+  a linux version using dc++ as base...)
 * Speedups code cleanup to GUI list handling
-* New STLPort again (5.0-1031) (a lot of the match queue crashes are probably STLPort's fault, 
-  so I'm changing again, to see if the latest is better)
+* New STLPort again (4.6) (a lot of the match queue crashes are probably STLPort's fault, 
+  so I'm changing again, to see if the latest is better, + that I changed two lines in it)
+* Fixed some bugs in the &-translation
+* Can be compiled in MSVC 7.1 without stlport, make sure to undefine HAS_STLPORT in config.h
+* Updated the antifrag feature to recover from crashes (thanks distiller)
+* Fixed so that tab completion works with multiple [xxx] tags
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

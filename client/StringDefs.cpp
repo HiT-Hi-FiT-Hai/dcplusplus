@@ -257,7 +257,7 @@ string ResourceManager::strings[] = {
 "Automatically follow redirects", 
 "Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)", 
 "Automatically search for alternative download locations", 
-"Automatically add search string for alternative download locations", 
+"Use default search strings in auto search when no string is specified", 
 "Automatically refresh share list every hour", 
 "&Change", 
 "Clear search box after each search", 

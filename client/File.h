@@ -401,7 +401,6 @@ public:
 
 	virtual void close() throw(FileException) {
 		if(isOpen()) {
-			setEOF();
 			BufferedFile::close();
 		}
 	}
@@ -411,6 +410,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.21 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: File.h,v 1.22 2003/11/06 18:54:39 arnetheduck Exp $
  */
 

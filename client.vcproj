@@ -75,7 +75,7 @@
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			WholeProgramOptimization="FALSE">
+			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
@@ -308,6 +308,9 @@
 			</File>
 			<File
 				RelativePath=".\client\Pointer.h">
+			</File>
+			<File
+				RelativePath=".\client\QueueItem.h">
 			</File>
 			<File
 				RelativePath=".\client\QueueManager.h">

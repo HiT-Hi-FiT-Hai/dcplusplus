@@ -148,6 +148,7 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			tmp.replace(i, 6, "|");
 			i++;
 		}
+		i = 0;
 		while( (i = tmp.find("&amp;", i)) != string::npos) {
 			tmp.replace(i, 5, "&");
 			i++;
@@ -166,18 +167,22 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			}
 		}
 	} else {
+		i = 0;
 		while( (i = tmp.find("&amp;", i)) != string::npos) {
 			tmp.replace(i, 1, "&amp;");
 			i += 4;
 		}
+		i = 0;
 		while( (i = tmp.find("&#36;", i)) != string::npos) {
 			tmp.replace(i, 1, "&amp;");
 			i += 4;
 		}
+		i = 0;
 		while( (i = tmp.find("&#124;", i)) != string::npos) {
 			tmp.replace(i, 1, "&amp;");
 			i += 4;
 		}
+		i = 0;
 		while( (i = tmp.find('$', i)) != string::npos) {
 			tmp.replace(i, 1, "&#36;");
 			i += 4;
@@ -522,6 +527,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.32 2003/11/04 20:18:12 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.33 2003/11/06 18:54:39 arnetheduck Exp $
  */
 

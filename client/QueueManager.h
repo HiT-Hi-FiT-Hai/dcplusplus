@@ -30,194 +30,15 @@
 #include "TimerManager.h"
 #include "SearchManagerListener.h"
 #include "ClientManagerListener.h"
+#include "DirectoryListing.h"
 
 #include "QueueManagerListener.h"
+#include "QueueItem.h"
 
 STANDARD_EXCEPTION(QueueException);
 
-class QueueManager;
-class Download;
 class UserConnection;
 class DirectoryListing;
-
-class QueueItem : public Flags {
-public:
-#if 0
-	// These are for the hash map type of indexing in the queue manager, resulting
-	// in more efficient lookups of names but no sorting on save...
-#endif
-
-	typedef QueueItem* Ptr;
-	// Strange, the vc7 optimizer won't take a deque here...
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	typedef map<string, Ptr, noCaseStringLess> StringMap;
-//	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
-	typedef StringMap::iterator StringIter;
-	typedef HASH_MAP_X(User::Ptr, Ptr, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
-	typedef UserMap::iterator UserIter;
-	typedef HASH_MAP_X(User::Ptr, List, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserListMap;
-	typedef UserListMap::iterator UserListIter;
-
-	enum Status {
-		/** The queue item is waiting to be downloaded and can be found in userQueue */
-		STATUS_WAITING,
-		/** This item is being downloaded and can be found in running */
-		STATUS_RUNNING
-	};
-
-	enum Priority {
-		DEFAULT = -1,
-		PAUSED = 0,
-		LOWEST,
-		LOW,
-		NORMAL,
-		HIGH,
-		HIGHEST,
-		LAST
-	};
-
-	enum FileFlags {
-		/** Normal download, no flags set */
-		FLAG_NORMAL = 0x00, 
-		/** This download should be resumed if possible */
-		FLAG_RESUME = 0x01,
-		/** This is a user file listing download */
-		FLAG_USER_LIST = 0x02,
-		/** The file list is downloaded to use for directory download (used with USER_LIST) */
-		FLAG_DIRECTORY_DOWNLOAD = 0x04,
-		/** The file is downloaded to be viewed in the gui */
-		FLAG_CLIENT_VIEW = 0x08,
-		/** The file list downloaded was actually BZ compressed (MyList.bz2, only available in FINISHED message) */
-		FLAG_BZLIST = 0x10,
-		/** Flag to indicate that file should be viewed as a text file */
-		FLAG_TEXT = 0x20,
-		/** This file exists on the hard disk and should be prioritised */
-		FLAG_EXISTS = 0x40,
-		/** Match the queue against this list */
-		FLAG_MATCH_QUEUE = 0x80
-	};
-
-	class Source : public Flags {
-	public:
-		typedef Source* Ptr;
-		typedef vector<Ptr> List;
-		typedef List::iterator Iter;
-		enum {
-			FLAG_FILE_NOT_AVAILABLE = 0x01,
-			FLAG_ROLLBACK_INCONSISTENCY = 0x02,
-			FLAG_PASSIVE = 0x04,
-			FLAG_REMOVED = 0x08,
-			FLAG_CRC_FAILED = 0x10,
-			FLAG_CRC_WARN = 0x20,
-		};
-
-		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
-		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
-
-		User::Ptr& getUser() { return user; };
-		const User::Ptr& getUser() const { return user; };
-		void setUser(const User::Ptr& aUser) { user = aUser; };
-		string getFileName() { return Util::getFileName(path); };
-
-		GETSETREF(string, path, Path);
-	private:
-		User::Ptr user;
-	};
-
-	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, int aFlag) : Flags(aFlag), target(aTarget), size(aSize),
-		status(STATUS_WAITING), priority(aPriority), current(NULL) { };
-	
-	QueueItem(const QueueItem& aQi) : Flags(aQi), target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
-		current(aQi.current), searchString(aQi.searchString) {
-		Source::List::const_iterator i;
-		for(i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
-			sources.push_back(new Source(*(*i)));
-		}
-		for(i = aQi.badSources.begin(); i != aQi.badSources.end(); ++i) {
-			badSources.push_back(new Source(*(*i)));
-		}
-		
-	}
-
-	virtual ~QueueItem() { 
-		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
-		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
-	};
-	
-	bool hasOnlineUsers() {
-		Source::Iter i = sources.begin();
-		for(; i != sources.end(); ++i) {
-			if((*i)->getUser()->isOnline())
-				break;
-		}
-		return (i != sources.end());
-	}
-
-	const string& getSourcePath(const User::Ptr& aUser) { 
-		dcassert(isSource(aUser)); 
-		return (*getSource(aUser))->getPath();
-	}
-
-	Source::List& getSources() { return sources; };
-	Source::List& getBadSources() { return badSources; };
-	void getUsers(User::List& l) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i)
-			if((*i)->getUser()->isOnline())
-				l.push_back((*i)->getUser());
-	}
-
-	string getTargetFileName() { return Util::getFileName(getTarget()); };
-
-	bool isSource(const User::Ptr& aUser) { return (getSource(aUser) != sources.end()); };
-	bool isBadSource(const User::Ptr& aUser) { return (getBadSource(aUser) != badSources.end()); };
-
-	void setCurrent(const User::Ptr& aUser) {
-		dcassert(isSource(aUser));
-		current = *getSource(aUser);
-	}
-	
-	GETSETREF(string, tempTarget, TempTarget);
-	GETSETREF(string, target, Target);
-	GETSETREF(string, searchString, SearchString);
-	GETSET(int64_t, size, Size);
-	GETSET(Status, status, Status);
-	GETSET(Priority, priority, Priority);
-	GETSET(Source*, current, Current);
-private:
-	friend class QueueManager;
-	Source::List sources;
-	Source::List badSources;
-	
-	Source* addSource(const User::Ptr& aUser, const string& aPath) {
-		dcassert(!isSource(aUser));
-		Source* s = NULL;
-		Source::Iter i = getBadSource(aUser);
-		if(i != badSources.end()) {
-			s = *i;
-			badSources.erase(i);
-			s->setPath(aPath);
-		} else {
-			s = new Source(aUser, aPath);
-		}
-
-		sources.push_back(s);
-		return s;
-	}
-
-	void removeSource(const User::Ptr& aUser, int reason) {
-		Source::Iter i = getSource(aUser);
-		dcassert(i != sources.end());
-		(*i)->setFlag(reason);
-		badSources.push_back(*i);
-		sources.erase(i);
-	}
-
-	Source::Iter getSource(const User::Ptr& aUser) { return find(sources.begin(), sources.end(), aUser); };
-	Source::Iter getBadSource(const User::Ptr& aUser) { return find(badSources.begin(), badSources.end(), aUser); };
-};
-
-inline bool operator==(QueueItem::Source* s, const User::Ptr& u) { return s->getUser() == u; };
 
 class DirectoryItem {
 public:
@@ -252,10 +73,10 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	
 	/** Add a file to the queue. */
-	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-		const string& aSearchString = Util::emptyString, int aFlags = QueueItem::FLAG_RESUME, 
-		QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString, 
-		bool addBad = true) throw(QueueException, FileException);
+	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
+		const string& aTarget, const string& aSearchString = Util::emptyString, 
+		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
+		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
@@ -285,22 +106,12 @@ public:
 	
 	void setSearchString(const string& aTarget, const string& searchString) throw();
 
-	StringList getTargetsBySize(int64_t aSize, const string& suffix) throw() {
+	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
 		Lock l(cs);
-		StringList sl;
-		
-		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
-			if(i->second->getSize() == aSize) {
-				const string& t = i->second->getTarget();
-				if(suffix.empty() || (suffix.length() < t.length() &&
-					Util::stricmp(suffix.c_str(), t.c_str() + (t.length() - suffix.length())) == 0) )
-					sl.push_back(t);
-			}
-		}
-		return sl;
+		fileQueue.find(sl, aSize, suffix);
 	}
 
-	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return queue; } ;
+	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); };
 
 	Download* getDownload(User::Ptr& aUser) throw();
@@ -319,22 +130,57 @@ public:
 	GETSETREF(string, queueFile, QueueFile);
 private:
 
+	/** All queue items by target */
+	class FileQueue {
+	public:
+		FileQueue() : lastInsert(queue.end()) { };
+		~FileQueue() {
+			for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i)
+				delete i->second;
+		}
+		void add(QueueItem* qi);
+		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
+			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded);
+		QueueItem* find(const string& target);
+		void find(StringList& sl, int64_t aSize, const string& ext);
+		QueueItem* findAutoSearch(StringList& recent);
+		size_t getSize() { return queue.size(); };
+		QueueItem::StringMap& getQueue() { return queue; };
+		void move(QueueItem* qi, const string& aTarget);
+		void remove(QueueItem* qi) {
+			if(lastInsert != queue.end() && lastInsert->first == qi->getTarget())
+				lastInsert = queue.end();
+			queue.erase(qi->getTarget());
+			delete qi;
+		}
+
+	private:
+		QueueItem::StringMap queue;
+		/** A hint where to insert an item... */
+		QueueItem::StringIter lastInsert;
+	};
+
+	/** All queue items indexed by user (this is a cache for the FileQueue really...) */
 	class UserQueue {
 	public:
 		void add(QueueItem* qi);
 		void add(QueueItem* qi, const User::Ptr& aUser);
 		QueueItem* getNext(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
 		QueueItem* getRunning(const User::Ptr& aUser);
-		bool isRunning(const User::Ptr& aUser) const;
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; };
 		void remove(QueueItem* qi);
 		void remove(QueueItem* qi, const User::Ptr& aUser);
+
+		QueueItem::UserMap& getRunning() { return running; };
+		bool isRunning(const User::Ptr& aUser) const { 
+			return (running.find(aUser) != running.end());
+		};
 	private:
 		/** QueueItems by priority and user (this is where the download order is determined) */
 		QueueItem::UserListMap userQueue[QueueItem::LAST];
-		/** Currently running downloads, a QueueItem is always either here or in the queue */
+		/** Currently running downloads, a QueueItem is always either here or in the userQueue */
 		QueueItem::UserMap running;
 	};
 
@@ -346,33 +192,28 @@ private:
 	CriticalSection cs;
 	
 	/** QueueItems by target */
-	QueueItem::StringMap queue;
-	
+	FileQueue fileQueue;
 	/** QueueItems by user */
 	UserQueue userQueue;
-
 	/** Directories queued for downloading */
 	DirectoryItem::DirectoryMap directories;
-
 	/** Recent searches list, to avoid searching for the same thing too often */
 	StringList recent;
-
-	/** A hint where to insert an item... */
-	QueueItem::StringIter lastInsert;
-
 	/** The queue needs to be saved */
 	bool dirty;
-
-	/** Minutes until next auto search */
-	int minutesUntilSearch;
-	
-	// Last search time
-	u_int32_t lastSearch;
+	/** Next search */
+	int32_t nextSearch;
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
-	QueueItem* getQueueItem(const string& aTarget, int64_t aSize, int aFlags, bool& newItem) throw(QueueException, FileException);
-	
+
+	/** Sanity check for the target filename */
+	string checkTarget(const string& aTarget, int64_t aSize) throw(QueueException, FileException);
+	/** Add a source to an existing queue item */
+	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad) throw(QueueException, FileException);
+
+	void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
+
 	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
 
@@ -382,10 +223,6 @@ private:
 			lastSave = GET_TICK();
 		}
 	}
-
-	QueueItem* findByTarget(const string& aTarget);
-
-	bool isDownloadingFromSources(QueueItem* qi, int& onlineUserCount) const;
 
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
@@ -402,6 +239,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.43 2003/11/04 20:18:11 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.44 2003/11/06 18:54:39 arnetheduck Exp $
  */
 

@@ -317,7 +317,7 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LIN
 
 #define MSGS 14
 
-string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>";
+string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>";
 
 bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& status) {
 	string::size_type i = cmd.find(' ');
@@ -473,5 +473,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.28 2003/11/04 20:18:15 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.29 2003/11/06 18:54:39 arnetheduck Exp $
  */

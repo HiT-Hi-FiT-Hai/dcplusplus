@@ -322,6 +322,11 @@ private:
 	void addAsFavorite();
 
 	void clearUserList() {
+		{
+			Lock l(updateCS);
+			updateList.clear();
+		}
+
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
 			delete (UserInfo*) ctrlUsers.GetItemData(i);
@@ -374,6 +379,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.30 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.31 2003/11/06 18:54:39 arnetheduck Exp $
  */
 

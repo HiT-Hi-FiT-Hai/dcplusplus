@@ -118,7 +118,23 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 		
 		if(d->isSet(Download::FLAG_RESUME)) {
-			int64_t size = File::getSize(d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
+			int64_t size=0;
+			if( BOOLSETTING(ANTI_FRAG) ) {
+				const string& target = (d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
+				string atarget = target + ANTI_FRAG_EXT;
+
+				size = d->getPos();
+
+				int64_t sizeTarget = File::getSize(target);
+				int64_t sizeaTarget = File::getSize(atarget);
+				if( (sizeTarget < size) && (sizeaTarget < size) ) { //Just make sure we have a file big enough already
+					size = 0;
+				}
+			}
+			else {
+				size = File::getSize(d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget()); 
+			}
+			
 			int rollback = SETTING(ROLLBACK);
 			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
 
@@ -187,17 +203,9 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 		
 		if(BOOLSETTING(ANTI_FRAG) && !d->isSet(Download::FLAG_USER_LIST)) {
-			// Anti-frag file...First, remove any old attempt that might have existed
-			// and rename any partial file alread downloaded...
+			// Anti-frag file... Continue on the previous .antifrag-file
 			string atarget = target + ANTI_FRAG_EXT;
-			try {
-				File::deleteFile(atarget);
-				File::renameFile(target, atarget);
-			} catch(const FileException& e) {
-				dcdebug("AntiFrag: %s\n", e.getError().c_str());
-			}
 			file = new SizedFile(d->getSize(), atarget, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
-
 			d->setFlag(Download::FLAG_ANTI_FRAG);
 		} else {
 			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);			
@@ -533,8 +541,6 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
 				d->getFile()->close();
-				const string& tgt = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
-				File::renameFile(tgt + ANTI_FRAG_EXT, tgt);
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
 			} else {
 				d->getFile()->close();
@@ -653,5 +659,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.76 2003/10/07 15:46:26 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.77 2003/11/06 18:54:39 arnetheduck Exp $
  */

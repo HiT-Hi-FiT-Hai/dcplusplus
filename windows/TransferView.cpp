@@ -351,11 +351,11 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 					ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
 				}
 			}
+			if(ctrlTransfers.getSortColumn() != COLUMN_USER)
+				ctrlTransfers.resort();
 			ctrlTransfers.SetRedraw(TRUE);
 		}
 
-		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
-			ctrlTransfers.resort();
 
 		delete l;
 	} else if(wParam == SET_TEXTS) {
@@ -374,7 +374,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			delete l;
 		}
 
-		if(ctrlTransfers.getSortColumn() != COLUMN_USER && ctrlTransfers.getSortColumn() != COLUMN_STATUS)
+		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
 			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
 		
@@ -629,7 +629,7 @@ void TransferView::onAction(DownloadManagerListener::Types type, Download* aDown
 
 void TransferView::onAction(UploadManagerListener::Types type, Upload* aUpload) throw() {
 	switch(type) {
-		case UploadManagerListener::COMPLETE: onTransferComplete(aUpload, false); break;
+		case UploadManagerListener::COMPLETE: onTransferComplete(aUpload, true); break;
 		case UploadManagerListener::STARTING: onUploadStarting(aUpload); break;
 		default: dcassert(0);
 	}
@@ -640,3 +640,7 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 	}
 }
 
+/**
+ * @file
+ * $Id: TransferView.cpp,v 1.7 2003/11/06 18:54:39 arnetheduck Exp $
+ */

@@ -124,6 +124,5 @@ private:
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.3 2003/10/22 09:26:30 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.4 2003/11/06 18:54:39 arnetheduck Exp $
  */
-

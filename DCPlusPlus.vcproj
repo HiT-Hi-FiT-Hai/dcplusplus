@@ -89,7 +89,7 @@
 			UseOfMFC="0"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			WholeProgramOptimization="FALSE">
+			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm150 "
