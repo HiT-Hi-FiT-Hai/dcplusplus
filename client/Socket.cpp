@@ -112,8 +112,6 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 	sockaddr_in  serv_addr;
 	hostent* host;
 
-	dcassert(!isConnected());
-	
 	if(sock == INVALID_SOCKET) {
 		create();
 	}
@@ -230,6 +228,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.34 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.35 2002/05/01 21:36:13 arnetheduck Exp $
  */
 
