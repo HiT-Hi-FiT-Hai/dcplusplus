@@ -27,6 +27,7 @@
 #pragma warning(disable: 4290) // C++ Exception Specification ignored
 #pragma warning(disable: 4512) // can't generate assignment operator
 #pragma warning(disable: 4710) // function not inlined
+#pragma warning(disable: 4127) // conditional expression is constant
 
 #ifndef CDECL
 #define CDECL _cdecl
@@ -97,10 +98,12 @@ typedef unsigned __int64 u_int64_t;
 #endif
 
 #ifdef _MSC_VER
-#define _LL(x) x##I64
+#define _LL(x) x##ll
+#define _ULL(x) x##ull
 #define I64_FMT "%I64d"
 #else
-#define _LL(x) x##LL
+#define _LL(x) x##ll
+#define _ULL(x) x##ull
 #define I64_FMT "%lld"
 #endif
 
@@ -114,5 +117,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.21 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: config.h,v 1.22 2004/04/18 12:51:14 arnetheduck Exp $
  */

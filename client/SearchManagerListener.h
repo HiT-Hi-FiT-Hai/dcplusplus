@@ -27,18 +27,15 @@ class SearchResult;
 
 class SearchManagerListener {
 public:
-	typedef SearchManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		SEARCH_RESULT
-	};
-	virtual void onAction(Types, SearchResult*) throw() = 0;
+	template<int I>	struct X { static const int TYPE = I; };
+
+	typedef X<0> SR;
+	virtual void on(SR, SearchResult*) throw() = 0;
 };
 
 #endif
 
 /**
  * @file
- * $Id: SearchManagerListener.h,v 1.3 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: SearchManagerListener.h,v 1.4 2004/04/18 12:51:14 arnetheduck Exp $
  */

@@ -34,23 +34,21 @@
 
 class TimerManagerListener {
 public:
-	typedef TimerManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		SECOND,
-		MINUTE
-	};
+	template<int I>	struct X { static const int TYPE = I; };
+
+	typedef X<0> Second;
+	typedef X<1> Minute;
 
 	// We expect everyone to implement this...
-	virtual void onAction(Types, u_int32_t) throw() = 0;
+	virtual void on(Second, u_int32_t) throw() { }
+	virtual void on(Minute, u_int32_t) throw() { }
 };
 
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
-	static u_int32_t getTime() {
-		return (u_int32_t)time(NULL);
+	static time_t getTime() {
+		return (time_t)time(NULL);
 	}
 	static u_int32_t getTick() { 
 #ifdef _WIN32
@@ -92,6 +90,6 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.21 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.22 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

@@ -111,7 +111,7 @@ public:
 	void addClientLine(const string& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
-	void runUserCommand(UserCommand& uc);
+	void runUserCommand(::UserCommand& uc);
 
 	static void openWindow(const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString, const string& description = Util::emptyString);
 	static void closeDisconnected();
@@ -364,14 +364,23 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) throw();
+	virtual void on(TimerManagerListener::Second, DWORD /*aTick*/) throw();
 
 	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client) throw();
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line) throw();
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw();
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) throw();
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) throw();
+	virtual void on(Connecting, Client*) throw();
+	virtual void on(Connected, Client*) throw();
+	virtual void on(BadPassword, Client*) throw();
+	virtual void on(UserUpdated, Client*, const User::Ptr&) throw();
+	virtual void on(UsersUpdated, Client*, const User::List&) throw();
+	virtual void on(UserRemoved, Client*, const User::Ptr&) throw();
+	virtual void on(Redirect, Client*, const string&) throw();
+	virtual void on(Failed, Client*, const string&) throw();
+	virtual void on(GetPassword, Client*) throw();
+	virtual void on(HubUpdated, Client*) throw();
+	virtual void on(Message, Client*, const string&) throw();
+	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw() ;
+	virtual void on(NickTaken, Client*) throw() ;
+	virtual void on(SearchFlood, Client*, const string&) throw() ;
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
@@ -392,6 +401,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.42 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.43 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

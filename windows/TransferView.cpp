@@ -369,7 +369,7 @@ void TransferView::ItemInfo::update() {
 	}
 }
 
-void TransferView::onConnectionAdded(ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
 	ItemInfo::Types t = aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD) ? ItemInfo::TYPE_UPLOAD : ItemInfo::TYPE_DOWNLOAD;
 	ItemInfo* i = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
 
@@ -383,7 +383,7 @@ void TransferView::onConnectionAdded(ConnectionQueueItem* aCqi) {
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
-void TransferView::onConnectionStatus(ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::StatusChanged, ConnectionQueueItem* aCqi) {
 	ItemInfo* i;
 	{
 		Lock l(cs);
@@ -396,7 +396,7 @@ void TransferView::onConnectionStatus(ConnectionQueueItem* aCqi) {
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onConnectionRemoved(ConnectionQueueItem* aCqi) {
+void TransferView::on(ConnectionManagerListener::Removed, ConnectionQueueItem* aCqi) {
 	ItemInfo* i;
 	{
 		Lock l(cs);
@@ -408,7 +408,7 @@ void TransferView::onConnectionRemoved(ConnectionQueueItem* aCqi) {
 	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason) {
+void TransferView::on(ConnectionManagerListener::Failed, ConnectionQueueItem* aCqi, const string& aReason) {
 	ItemInfo* i;
 	{
 		Lock l(cs);
@@ -420,7 +420,7 @@ void TransferView::onConnectionFailed(ConnectionQueueItem* aCqi, const string& a
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onDownloadStarting(Download* aDownload) {
+void TransferView::on(DownloadManagerListener::Starting, Download* aDownload) {
 	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
 	ItemInfo* i;
 	{
@@ -443,7 +443,7 @@ void TransferView::onDownloadStarting(Download* aDownload) {
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onDownloadTick(const Download::List& dl) {
+void TransferView::on(DownloadManagerListener::Tick, const Download::List& dl) {
 	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(dl.size());
 
@@ -479,7 +479,7 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
 }
 
-void TransferView::onDownloadFailed(Download* aDownload, const string& aReason) {
+void TransferView::on(DownloadManagerListener::Failed, Download* aDownload, const string& aReason) {
 	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
 	ItemInfo* i;
 	{
@@ -499,7 +499,7 @@ void TransferView::onDownloadFailed(Download* aDownload, const string& aReason) 
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onUploadStarting(Upload* aUpload) {
+void TransferView::on(UploadManagerListener::Starting, Upload* aUpload) {
 	ConnectionQueueItem* aCqi = aUpload->getUserConnection()->getCQI();
 	ItemInfo* i;
 	{
@@ -525,7 +525,7 @@ void TransferView::onUploadStarting(Upload* aUpload) {
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
-void TransferView::onUploadTick(const Upload::List& ul) {
+void TransferView::on(UploadManagerListener::Tick, const Upload::List& ul) {
 	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(ul.size());
 
@@ -583,55 +583,7 @@ void TransferView::ItemInfo::disconnect() {
 	ConnectionManager::getInstance()->removeConnection(user, (type == TYPE_DOWNLOAD));
 }
 
-void TransferView::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) throw() { 
-	switch(type) {
-		case ConnectionManagerListener::ADDED: onConnectionAdded(aCqi); break;
-		case ConnectionManagerListener::CONNECTED: onConnectionConnected(aCqi); break;
-		case ConnectionManagerListener::REMOVED: onConnectionRemoved(aCqi); break;
-		case ConnectionManagerListener::STATUS_CHANGED: onConnectionStatus(aCqi); break;
-		default: dcassert(0); break;
-	}
-};
-void TransferView::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) throw() { 
-	switch(type) {
-		case ConnectionManagerListener::FAILED: onConnectionFailed(aCqi, aLine); break;
-		default: dcassert(0); break;
-	}
-}
-
-void TransferView::onAction(DownloadManagerListener::Types type, Download* aDownload) throw() {
-	switch(type) {
-	case DownloadManagerListener::COMPLETE: onTransferComplete(aDownload, false); break;
-	case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
-	default: dcassert(0); break;
-	}
-}
-void TransferView::onAction(DownloadManagerListener::Types type, const Download::List& dl) throw() {
-	switch(type) {	
-	case DownloadManagerListener::TICK: onDownloadTick(dl); break;
-	}
-}
-void TransferView::onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) throw() {
-	switch(type) {
-	case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
-	default: dcassert(0); break;
-	}
-}
-
-void TransferView::onAction(UploadManagerListener::Types type, Upload* aUpload) throw() {
-	switch(type) {
-		case UploadManagerListener::COMPLETE: onTransferComplete(aUpload, true); break;
-		case UploadManagerListener::STARTING: onUploadStarting(aUpload); break;
-		default: dcassert(0);
-	}
-}
-void TransferView::onAction(UploadManagerListener::Types type, const Upload::List& ul) throw() {
-	switch(type) {	
-		case UploadManagerListener::TICK: onUploadTick(ul); break;
-	}
-}
-
 /**
  * @file
- * $Id: TransferView.cpp,v 1.28 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.29 2004/04/18 12:51:15 arnetheduck Exp $
  */

@@ -39,7 +39,7 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FINISHED);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FINISHED_UL);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
@@ -176,22 +176,6 @@ LRESULT FinishedULFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 	return 0;
 }
 
-void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry)  throw() {
-	switch(type) {
-		case FinishedManagerListener::ADDED_UL: PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (LPARAM)entry); break;
-		case FinishedManagerListener::REMOVED_ALL_UL: 
-			PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
-			totalBytes = 0;
-			totalTime = 0;
-			break;
-		case FinishedManagerListener::REMOVED_UL:
-			totalBytes -= entry->getChunkSize();
-			totalTime -= entry->getMilliSeconds();
-			PostMessage(WM_SPEAKER, SPEAK_REMOVE);
-			break;
-	}
-};
-
 void FinishedULFrame::addEntry(FinishedItem* entry) {
 	StringList l;
 	l.push_back(Util::getFileName(entry->getTarget()));
@@ -212,5 +196,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.15 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.16 2004/04/18 12:51:15 arnetheduck Exp $
  */

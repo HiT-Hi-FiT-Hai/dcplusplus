@@ -49,7 +49,7 @@ Client* ClientManager::getClient(const string& aHubURL) {
 
 void ClientManager::putClient(Client* aClient) {
 	aClient->disconnect();
-	fire(ClientManagerListener::CLIENT_DISCONNECTED, aClient);
+	fire(ClientManagerListener::ClientDisconnected(), aClient);
 	aClient->removeListeners();
 
 	{
@@ -201,7 +201,7 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 		{
 			if(putOnline) {
 				i->second->setClient(aClient);
-				fire(ClientManagerListener::USER_UPDATED, i->second);
+				fire(ClientManagerListener::UserUpdated(), i->second);
 			}
 			return i->second;
 		}
@@ -212,7 +212,7 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 		if( (!i->second->isOnline()) ) {
 			if(putOnline) {
 				i->second->setClient(aClient);
-				fire(ClientManagerListener::USER_UPDATED, i->second);
+				fire(ClientManagerListener::UserUpdated(), i->second);
 			}
 			return i->second;
 		}
@@ -222,7 +222,7 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 	i = users.insert(make_pair(aNick, new User(aNick)));
 	if(putOnline) {
 		i->second->setClient(aClient);
-		fire(ClientManagerListener::USER_UPDATED, i->second);
+		fire(ClientManagerListener::UserUpdated(), i->second);
 	}
 	return i->second;
 }
@@ -238,18 +238,18 @@ void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub /*= false*/) {
 			aUser->setFlag(User::QUIT_HUB);
 		aUser->setClient(NULL);
 	}
-	fire(ClientManagerListener::USER_UPDATED, aUser);
+	fire(ClientManagerListener::UserUpdated(), aUser);
 }
 
 
-User::Ptr ClientManager::getUser(const CID& cid) {
+User::Ptr ClientManager::getUser(const CID& cid, bool createUser) {
 	Lock l(cs);
 	dcassert(!cid.isZero());
 	AdcIter i = adcUsers.find(cid);
 	if(i != adcUsers.end())
 		return i->second;
 
-	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
+	return createUser ? adcUsers.insert(make_pair(cid, new User(cid)))->second : User::Ptr();
 }
 
 User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline /* = true */) {
@@ -275,7 +275,7 @@ User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline
 			up = adcUsers.insert(make_pair(cid, new User(cid)))->second;
 
 		up->setClient(aClient);
-		fire(ClientManagerListener::USER_UPDATED, up);
+		fire(ClientManagerListener::UserUpdated(), up);
 		return up;
 	}
 
@@ -283,7 +283,7 @@ User::Ptr ClientManager::getUser(const CID& cid, Client* aClient, bool putOnline
 	return adcUsers.insert(make_pair(cid, new User(cid)))->second;
 }
 
-void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
+void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) {
 	Lock l(cs);
 
 	// Collect some garbage...
@@ -309,40 +309,17 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 	}
 }
 
-// ClientListener
-void ClientManager::onAction(ClientListener::Types type, Client* client) throw() {
-	if(type == ClientListener::CONNECTED) {
-		fire(ClientManagerListener::CLIENT_CONNECTED, client);
-	}
+void ClientManager::on(Failed, Client* client, const string&) throw() { 
+	HubManager::getInstance()->removeUserCommand(client->getAddressPort());
+	fire(ClientManagerListener::ClientDisconnected(), client);
 }
 
-void ClientManager::onAction(ClientListener::Types type, Client* client, const string& /*line*/) throw() {
-	if(type == ClientListener::FAILED) {
-		HubManager::getInstance()->removeUserCommand(client->getAddressPort());
-		fire(ClientManagerListener::CLIENT_DISCONNECTED, client);
-	} else if(type == ClientListener::HUB_NAME) {
-		fire(ClientManagerListener::CLIENT_UPDATED, client);
+void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const string& name, const string& command) throw() { 
+	if(BOOLSETTING(HUB_USER_COMMANDS)) {
+		HubManager::getInstance()->addUserCommand(aType, ctx, ::UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
 	}
 }
-
-void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
-	if(type == ClientListener::USER_COMMAND) {
-		if(BOOLSETTING(HUB_USER_COMMANDS)) {
-			HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
-		}
-	}
-}
-
-void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List&) throw() {
-	switch(type) {
-	case ClientListener::USERS_UPDATED:
-		fire(ClientManagerListener::CLIENT_UPDATED, client);
-		break;
-	default:
-		break;
-	}
-}
-
+/*
 void ClientManager::onAction(ClientListener::Types type, Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 					  int aFileType, const string& aString) throw() {
 	switch(type) {
@@ -354,15 +331,9 @@ void ClientManager::onAction(ClientListener::Types type, Client* aClient, const 
 		break;
 	}
 }
-
-// TimerManagerListener
-void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
-	if(type == TimerManagerListener::MINUTE) {
-		onTimerMinute(aTick);
-	}
-}
+*/
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.54 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.55 2004/04/18 12:51:13 arnetheduck Exp $
  */

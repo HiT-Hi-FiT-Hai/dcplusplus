@@ -11,13 +11,21 @@
 * Fixed a bug with hanging queue display
 * When searching by hash, size mode set to normal (don't care)
 * Hash speed tweaks, check if it's any better.
+* Fixed a crash when moving files
+* Fixed directory sorting in directory listings
+* Fixed an unnecessary disconnect on file not available
+* Fixed missing write buffering
+* Added drag-drop of directories onto the shared dirs view (thanks trem)
+* Added option for specifying max hashing speed
+* Updated installer to optionally create a backup of the settings when upgrading
+* Changed to a more convenient observer implementation (no, not a functor (or something more fancy) based one)
+* Fixed an invalid XML file list crash
 
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
 * Hopefully fixed the dupe op issue
 * Rephrased remove dupes option (thanks garg)
-
 
  -- 0.400 2004-03-27 --
 * Fixed escape in user commands (thanks garg)

@@ -299,7 +299,7 @@ void SearchFrame::onEnter() {
 
 }
 
-void SearchFrame::onSearchResult(SearchResult* aResult) {
+void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	// Check that this is really a relevant search result...
 	{
 		Lock l(cs);
@@ -465,7 +465,7 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 	return 0;
 }
 
-LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 	ctrlResults.forEachSelectedT(SearchInfo::Download(SETTING(DOWNLOAD_DIRECTORY)));
 	return 0;
 }
@@ -895,5 +895,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.51 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.52 2004/04/18 12:51:15 arnetheduck Exp $
  */

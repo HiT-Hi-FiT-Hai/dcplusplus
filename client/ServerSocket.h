@@ -28,13 +28,10 @@
 
 class ServerSocketListener {
 public:
-	typedef ServerSocketListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		INCOMING_CONNECTION
-	};
-	virtual void onAction(Types) throw() = 0;
+	template<int I>	struct X { static const int TYPE = I; };
+
+	typedef X<0> IncomingConnection;
+	virtual void on(IncomingConnection) throw() = 0;
 };
 
 class ServerSocket : public Speaker<ServerSocketListener> {
@@ -57,7 +54,7 @@ public:
 
 	/** This is called by windows whenever an "FD_ACCEPT" is sent...doesn't work with unix... */
 	void incoming() {
-		fire(ServerSocketListener::INCOMING_CONNECTION);
+		fire(ServerSocketListener::IncomingConnection());
 	}
 	
 private:
@@ -71,6 +68,6 @@ private:
 
 /**
  * @file
- * $Id: ServerSocket.h,v 1.20 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.21 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

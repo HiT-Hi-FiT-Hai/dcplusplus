@@ -527,7 +527,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
+void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, const string&) throw() {
 	try {
 		SimpleXML xml;
 		xml.fromXML(versionInfo);
@@ -568,7 +568,7 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 				if(xml.findChild("BadVersions")) {
 					xml.stepIn();
 					while(xml.findChild("BadVersion")) {
-						float v = atof(xml.getChildAttrib("Version").c_str());
+						double v = atof(xml.getChildAttrib("Version").c_str());
 						if(v == VERSIONFLOAT) {
 							string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
 							MessageBox((msg + "\r\nPlease get a new one at " + url).c_str());
@@ -924,61 +924,49 @@ LRESULT MainFrame::onCloseDisconnected(WORD , WORD , HWND , BOOL& ) {
 	return 0;
 }
 
-void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
-	if(type == TimerManagerListener::SECOND) {
-		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
-		int64_t updiff = Socket::getTotalUp() - lastUp;
-		int64_t downdiff = Socket::getTotalDown() - lastDown;
+void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
+	int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
+	int64_t updiff = Socket::getTotalUp() - lastUp;
+	int64_t downdiff = Socket::getTotalDown() - lastDown;
 
-		StringList* str = new StringList();
-		str->push_back(Util::getAway() ? STRING(AWAY) : "");
-		str->push_back("H: " + Client::getCounts());
-		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
-		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
-		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-		str->push_back("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
-		str->push_back("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
-		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
-		SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
-		SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
-		lastUpdate = aTick;
-		lastUp = Socket::getTotalUp();
-		lastDown = Socket::getTotalDown();
-	}
+	StringList* str = new StringList();
+	str->push_back(Util::getAway() ? STRING(AWAY) : "");
+	str->push_back("H: " + Client::getCounts());
+	str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
+	str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
+	str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
+	str->push_back("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+	str->push_back("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
+	PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
+	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
+	lastUpdate = aTick;
+	lastUp = Socket::getTotalUp();
+	lastDown = Socket::getTotalDown();
 }
 
-// HttpConnectionListener
-void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* conn, string const& /*aLine*/) throw() {
-	switch(type) {
-		case HttpConnectionListener::COMPLETE: onHttpComplete(conn); break;
-	}
-}
-void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) throw() {
-	switch(type) {
-		case HttpConnectionListener::DATA: versionInfo += string((const char*)buf, len); break;
-	}
+void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const BYTE* buf, int len) throw() {
+	versionInfo += string((const char*)buf, len);
 }
 
-void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw() {
-	if(type == QueueManagerListener::FINISHED) {
-		if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
-			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
-				// This is a file listing, show it...
+void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
+	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
+		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
+			// This is a file listing, show it...
 
-				DirectoryListInfo* i = new DirectoryListInfo();
-				i->file = qi->getListName();
-				i->user = qi->getCurrent()->getUser();
-				i->start = qi->getSearchString();
+			DirectoryListInfo* i = new DirectoryListInfo();
+			i->file = qi->getListName();
+			i->user = qi->getCurrent()->getUser();
+			i->start = qi->getSearchString();
 
-				PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
-			} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
-				PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new string(qi->getTarget()));
-			}
+			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
+		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
+			PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new string(qi->getTarget()));
 		}
 	}
 }
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.50 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.51 2004/04/18 12:51:15 arnetheduck Exp $
  */

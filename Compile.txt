@@ -8,28 +8,32 @@ How to compile in 4 easy steps:
    you know what you're doing, I've modified it a little bit). Mind the version (download the latest
    one from the source extras).
    
-   * Note; This step may not be required if you use MSVC 7.x, i e it might work without STLPort,
+   * Note; This step may not be required, i e it might work without STLPort,
      but I don't recommend this as it's completely untested, and the original distribution uses it.
-     See client\config.h for further details
+     See client\config.h for further details.
 
-3) Make sure you have a fairly recent platform sdk (November 2001 or newer has worked for me)
+3) Make sure you have a fairly recent platform sdk (The one from msvc 7.1 works for me)
    The sdk is freely available from ms: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
    You need the core sdk at least (not the 64-bit edition...)
    Make sure that this sdk is included _before_ the standard vc directories.
 
-4) Open the project workspace and press your build button.
+4) Open the project workspace and press your build button. If you find your executable unreasonably large,
+   you probably compiled in debug mode - switch to release once you're done testing the code.
 
-Note 1;	you'll probably get a whole bunch of warnings, ignore those, it's a bug in the compiler...
+Note 1;	I now use vc7.1 (2003). I don't care particularily if you use an older MS compiler (6.0, 7.0),
+	because these don't even come close to supporting the c++ standard. If you want to try anyway,
+	you're on your own. 
+	That said, the client part usually compiles fine with g++ 3.x, although there's a bug in 3.3
+	(and perhaps other versions) that prevents a few files from being compiled. Wait for 3.4 to
+	become mature for release, it's fixed there. 
 
-Note 2;	I now use vc7.1 (2003). If you're using vc7.0(2002) you'll have to copy the old project 
-        files from the vc7.0-project folder and then add all missing files. VC6 is no longer supported.
-
-Note 3;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
+Note 2;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
         you'll get errors saying symbols are missing when running your compiled executable. My copy 
         says version 5.1.2600.1106 right now.
 
-Note 4;	If you have problems, read the forum posts before posting. Somebody else has probably done your mistake
-	already.
+Note 3;	If you have problems, read the forum posts before posting. Somebody else has probably made your 
+	mistake already. The word to note in the last sentence is 'your', so let me articulate a bit more,
+	it works on my computer, so it's yours that is not correctly set up.
 
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...

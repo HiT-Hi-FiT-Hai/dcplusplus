@@ -86,6 +86,26 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	return TRUE;
 }
 
+LRESULT UploadPage::onDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/){
+	HDROP drop = (HDROP)wParam;
+	TCHAR buf[MAX_PATH];
+	UINT nrFiles;
+	
+	nrFiles = DragQueryFile(drop, (UINT)-1, NULL, 0);
+	
+	for(UINT i = 0; i < nrFiles; ++i){
+		if(DragQueryFile(drop, i, buf, MAX_PATH)){
+			if(PathIsDirectory(buf))
+				addDirectory(buf);
+		}
+	}
+
+	DragFinish(drop);
+
+	return 0;
+}
+
+
 void UploadPage::write()
 {
 	PropPage::write((HWND)*this, items);
@@ -108,14 +128,7 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 {
 	string target;
 	if(WinUtil::browseDirectory(target, (HWND) *this)) {
-		try {
-			ShareManager::getInstance()->addDirectory(target);
-			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), target);
-			ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
-			ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
-		} catch(const ShareException& e) {
-			MessageBox(e.getError().c_str(), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
-		}
+		addDirectory(target);
 	}
 	
 	return 0;
@@ -167,8 +180,19 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+void UploadPage::addDirectory(string path){
+	try {
+		ShareManager::getInstance()->addDirectory(path);
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
+		ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(path)).c_str());
+		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+	} catch(const ShareException& e) {
+		MessageBox(e.getError().c_str(), APPNAME " " VERSIONSTRING, MB_ICONSTOP | MB_OK);
+	}
+}
+
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.14 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.15 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

@@ -52,7 +52,7 @@ const string SettingsManager::settingTags[] =
 	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
-	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands",
+	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands", "MaxHashSpeed",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -151,6 +151,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH_EXACT, true);
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
+	setDefault(MAX_HASH_SPEED, 0);
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
@@ -225,7 +226,7 @@ void SettingsManager::load(string const& aFileName)
 			
 			xml.stepOut();
 		}
-		fire(SettingsManagerListener::LOAD, &xml);
+		fire(SettingsManagerListener::Load(), &xml);
 
 		xml.stepOut();
 
@@ -275,7 +276,7 @@ void SettingsManager::save(string const& aFileName) {
 	}
 	xml.stepOut();
 	
-	fire(SettingsManagerListener::SAVE, &xml);
+	fire(SettingsManagerListener::Save(), &xml);
 
 	try {
 		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
@@ -293,6 +294,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.71 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.72 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

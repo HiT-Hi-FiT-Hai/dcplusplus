@@ -34,42 +34,49 @@ class UserConnection;
 
 class UserConnectionListener {
 public:
-	typedef UserConnectionListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		BYTES_SENT,
-		CONNECTED,
-		DATA,
-		FAILED,
-		C_LOCK,
-		KEY,
-		DIRECTION,
-		GET,
-		GET_ZBLOCK,
-		GET_BLOCK,
-		SENDING,
-		FILE_LENGTH,
-		SEND,
-		GET_LIST_LENGTH,
-		MAXED_OUT,
-		MODE_CHANGE,
-		MY_NICK,
-		TRANSMIT_DONE,
-		SUPPORTS,
-		FILE_NOT_AVAILABLE
-	};
+	template<int I>	struct X { static const int TYPE = I; };
 
-	virtual void onAction(Types, UserConnection*) throw() { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
-	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };	// BYTES_SENT
-	virtual void onAction(Types, UserConnection*, const string&) throw() { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
-	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) throw() { };	// DATA
-	virtual void onAction(Types, UserConnection*, const string&, const string&) throw() { };	// DIRECTION, LOCK
-	virtual void onAction(Types, UserConnection*, const string&, int64_t) throw() { };	// GET
-	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) throw() { };	// GET_ZBLOCK, GET_BLOCK
-	virtual void onAction(Types, UserConnection*, int) throw() { };						// MODE_CHANGE
-	virtual void onAction(Types, UserConnection*, const StringList&) throw() { };		// SUPPORTS
-	virtual void onAction(Types, UserConnection*, int64_t) { }							// SENDING
+	typedef X<0> BytesSent;
+	typedef X<1> Connected;
+	typedef X<2> Data;
+	typedef X<3> Failed;
+	typedef X<4> CLock;
+	typedef X<5> Key;
+	typedef X<6> Direction;
+	typedef X<7> Get;
+	typedef X<8> GetBlock;
+	typedef X<9> GetZBlock;
+	typedef X<10> Sending;
+	typedef X<11> FileLength;
+	typedef X<12> Send;
+	typedef X<13> GetListLength;
+	typedef X<14> MaxedOut;
+	typedef X<15> ModeChange;
+	typedef X<16> MyNick;
+	typedef X<17> TransmitDone;
+	typedef X<18> Supports;
+	typedef X<19> FileNotAvailable;
+
+	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
+	virtual void on(Connected, UserConnection*) throw() { }
+	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw() { }
+	virtual void on(Failed, UserConnection*, const string&) throw() { }
+	virtual void on(CLock, UserConnection*, const string&, const string&) throw() { }
+	virtual void on(Key, UserConnection*, const string&) throw() { }
+	virtual void on(Direction, UserConnection*, const string&, const string&) throw() { }
+	virtual void on(Get, UserConnection*, const string&, int64_t) throw() { }
+	virtual void on(GetBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
+	virtual void on(GetZBlock, UserConnection*, const string&, int64_t, int64_t) throw() { }
+	virtual void on(Sending, UserConnection*, int64_t) throw() { }
+	virtual void on(FileLength, UserConnection*, int64_t) throw() { }
+	virtual void on(Send, UserConnection*) throw() { }
+	virtual void on(GetListLength, UserConnection*) throw() { }
+	virtual void on(MaxedOut, UserConnection*) throw() { }
+	virtual void on(ModeChange, UserConnection*) throw() { }
+	virtual void on(MyNick, UserConnection*, const string&) throw() { }
+	virtual void on(TransmitDone, UserConnection*) throw() { }
+	virtual void on(Supports, UserConnection*, const StringList&) throw() { }
+	virtual void on(FileNotAvailable, UserConnection*) throw() { }
 };
 
 class ConnectionQueueItem;
@@ -268,19 +275,19 @@ private:
 		socket->write(aString);
 	}
 
-	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type) throw();
-	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes, u_int32_t actual) throw();
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
-	virtual void onAction(BufferedSocketListener::Types type, int mode) throw();
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) throw();
-
+	virtual void on(Connected) throw() { fire(UserConnectionListener::Connected(), this); }
+	virtual void on(Line, const string&) throw();
+	virtual void on(Data, u_int8_t* data, size_t len) throw() { lastActivity = GET_TICK(); fire(UserConnectionListener::Data(), this, data, len); }
+	virtual void on(BytesSent, size_t bytes, size_t actual) throw() { fire(UserConnectionListener::BytesSent(), this, bytes, actual); }
+	virtual void on(ModeChange) throw() { lastActivity = GET_TICK(); fire(UserConnectionListener::ModeChange(), this); }
+	virtual void on(TransmitDone) throw() { fire(UserConnectionListener::TransmitDone(), this); }
+	virtual void on(Failed, const string&) throw();
 };
 
 #endif // !defined(AFX_USERCONNECTION_H__52BFD1A0_9924_4C07_BAFA_FB9682884841__INCLUDED_)
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.68 2004/03/08 10:13:53 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.69 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

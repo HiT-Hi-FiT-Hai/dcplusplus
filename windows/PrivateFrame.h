@@ -184,13 +184,15 @@ private:
 	}
 	
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr&) throw() {
+		PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
 };
 
 #endif // !defined(AFX_PRIVATEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.16 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.17 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

@@ -644,7 +644,7 @@ public:
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
-	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		if(wParam == SC_NEXTWINDOW) {
 			HWND next = getTab()->getNext();
 			if(next != NULL) {
@@ -691,12 +691,12 @@ public:
 		return 0;
 	}
 
-	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled */) {
 		PostMessage(WM_REALLY_CLOSE);
 		return 0;
 	}
@@ -744,5 +744,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.26 2004/03/26 19:23:28 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.27 2004/04/18 12:51:15 arnetheduck Exp $
  */

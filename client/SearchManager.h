@@ -65,6 +65,7 @@ public:
 
 	string getFileName() const;
 	string toSR() const;
+	string toRES() const;
 
 	User::Ptr& getUser() { return user; }
 	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
@@ -176,5 +177,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.38 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.39 2004/04/18 12:51:14 arnetheduck Exp $
  */

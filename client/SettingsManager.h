@@ -27,16 +27,13 @@ class SimpleXML;
 
 class SettingsManagerListener {
 public:
-	typedef SettingsManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		LOAD,
-		SAVE
-	};
-	
-	virtual void onAction(Types, SimpleXML*) throw() = 0;
+	template<int I>	struct X { static const int TYPE = I; };
+
+	typedef X<0> Load;
+	typedef X<1> Save;
+
+	virtual void on(Load, SimpleXML*) throw() { }
+	virtual void on(Save, SimpleXML*) throw() { }
 };
 
 class SettingsManager : public Singleton<SettingsManager>, public Speaker<SettingsManagerListener>
@@ -70,7 +67,7 @@ public:
 		MAX_COMPRESSION, FINISHED_DIRTY, QUEUE_DIRTY, ANTI_FRAG, MDI_MAXIMIZED, NO_AWAYMSG_TO_BOTS,
 		SKIP_ZERO_BYTE, ADLS_BREAK_ON_FIRST, TAB_COMPLETION, OPEN_FAVORITE_HUBS, OPEN_FINISHED_DOWNLOADS,
 		HUB_USER_COMMANDS, AUTO_SEARCH_AUTO_MATCH, UPLOAD_BAR_COLOR, DOWNLOAD_BAR_COLOR, LOG_SYSTEM,
-		LOG_FILELIST_TRANSFERS, AUTO_SEARCH_EXACT, SEND_UNKNOWN_COMMANDS,
+		LOG_FILELIST_TRANSFERS, AUTO_SEARCH_EXACT, SEND_UNKNOWN_COMMANDS, MAX_HASH_SPEED,
 		INT_LAST };
 
 	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
@@ -186,6 +183,6 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.56 2004/04/10 20:54:26 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.57 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

@@ -827,36 +827,26 @@ ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 	return NULL;
 }
 
-void ShareManager::onAction(HashManagerListener::Types type, const string& fname, TTHValue* root) throw() {
-	if(type == HashManagerListener::TTH_DONE) {
-		WLock l(cs);
-		Directory* d = getDirectory(fname);
-		if(d != NULL) {
-			Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
-			if(i != d->files.end()) {
-				if(i->getTTH() != NULL) {
-					dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
-					tthIndex.erase(i->getTTH());
-				}
-				// Get rid of false constness...
-				Directory::File* f = const_cast<Directory::File*>(&(*i));
-				f->setTTH(root);
-				tthIndex.insert(make_pair(root, i));
+void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw() {
+	WLock l(cs);
+	Directory* d = getDirectory(fname);
+	if(d != NULL) {
+		Directory::File::Iter i = find_if(d->files.begin(), d->files.end(), Directory::File::StringComp(Util::getFileName(fname)));
+		if(i != d->files.end()) {
+			if(i->getTTH() != NULL) {
+				dcassert(tthIndex.find(i->getTTH()) != tthIndex.end());
+				tthIndex.erase(i->getTTH());
 			}
+			// Get rid of false constness...
+			Directory::File* f = const_cast<Directory::File*>(&(*i));
+			f->setTTH(root);
+			tthIndex.insert(make_pair(root, i));
 		}
 	}
 }
 
-// SettingsManagerListener
-void ShareManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
-	switch(type) {
-	case SettingsManagerListener::LOAD: load(xml); break;
-	case SettingsManagerListener::SAVE: save(xml); break;
-	}
-}
-
-void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) throw() {
-	if(type == TimerManagerListener::MINUTE && BOOLSETTING(AUTO_UPDATE_LIST)) {
+void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
+	if(BOOLSETTING(AUTO_UPDATE_LIST)) {
 		if(lastUpdate + 60 * 60 * 1000 < tick) {
 			try {
 				dirty = true;
@@ -870,6 +860,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.83 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.84 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

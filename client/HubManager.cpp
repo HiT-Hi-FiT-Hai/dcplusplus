@@ -31,6 +31,50 @@
 
 #define FAVORITES_FILE "Favorites.xml"
 
+void HubManager::addFavoriteUser(User::Ptr& aUser) { 
+	if(find(users.begin(), users.end(), aUser) == users.end()) {
+		users.push_back(aUser);
+		aUser->setFavoriteUser(new FavoriteUser());
+		fire(HubManagerListener::UserAdded(), aUser);
+		save();
+	}
+}
+
+void HubManager::removeFavoriteUser(User::Ptr& aUser) {
+	User::Iter i = find(users.begin(), users.end(), aUser);
+	if(i != users.end()) {
+		aUser->setFavoriteUser(NULL);
+		fire(HubManagerListener::UserRemoved(), aUser);
+		users.erase(i);
+		save();
+	}
+}
+
+void HubManager::addFavorite(const FavoriteHubEntry& aEntry) {
+	FavoriteHubEntry* f;
+
+	FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+	if(i != favoriteHubs.end()) {
+		return;
+	}
+	f = new FavoriteHubEntry(aEntry);
+	favoriteHubs.push_back(f);
+	fire(HubManagerListener::FavoriteAdded(), f);
+	save();
+}
+
+void HubManager::removeFavorite(FavoriteHubEntry* entry) {
+	FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
+	if(i == favoriteHubs.end()) {
+		return;
+	}
+
+	fire(HubManagerListener::FavoriteRemoved(), entry);
+	favoriteHubs.erase(i);
+	delete entry;
+	save();
+}
+
 void HubManager::onHttpFinished() throw() {
 	string::size_type i, j;
 	string* x;
@@ -219,10 +263,10 @@ void HubManager::load(SimpleXML* aXml) {
 			e->setPassword(aXml->getChildAttrib("Password"));
 			e->setServer(aXml->getChildAttrib("Server"));
 			e->setUserDescription(aXml->getChildAttrib("UserDescription"));
-			e->setBottom(aXml->getIntChildAttrib("Bottom") );
-			e->setTop(aXml->getIntChildAttrib("Top"));
-			e->setRight(aXml->getIntChildAttrib("Right"));
-			e->setLeft(aXml->getIntChildAttrib("Left"));
+			e->setBottom((u_int16_t)aXml->getIntChildAttrib("Bottom") );
+			e->setTop((u_int16_t)aXml->getIntChildAttrib("Top"));
+			e->setRight((u_int16_t)aXml->getIntChildAttrib("Right"));
+			e->setLeft((u_int16_t)aXml->getIntChildAttrib("Left"));
 			favoriteHubs.push_back(e);
 		}
 		aXml->stepOut();
@@ -264,7 +308,7 @@ void HubManager::refresh() {
 		return;
 	}
 
-	fire(HubManagerListener::DOWNLOAD_STARTING, server);
+	fire(HubManagerListener::DownloadStarting(), server);
 	if(!running) {
 		if(!c)
 			c = new HttpConnection();
@@ -296,56 +340,33 @@ UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool o
 }
 
 // HttpConnectionListener
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
-	switch(type) {
-	case HttpConnectionListener::DATA:
-		downloadBuf.append((char*)buf, len); break;
-	default:
-		dcassert(0);
-	}
+void HubManager::on(Data, HttpConnection*, u_int8_t* buf, size_t len) throw() { 
+	downloadBuf.append((char*)buf, len);
 }
 
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
-	switch(type) {
-	case HttpConnectionListener::COMPLETE:
-		dcassert(c);
-		c->removeListener(this);
-		onHttpFinished();
-		running = false;
-		fire(HubManagerListener::DOWNLOAD_FINISHED, aLine);
-		break;
-	case HttpConnectionListener::FAILED:
-		dcassert(c);
-		c->removeListener(this);
-		lastServer++;
-		running = false;
-		fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
-		break;
-	case HttpConnectionListener::REDIRECTED:
-		fire(HubManagerListener::DOWNLOAD_STARTING, aLine);
-		break;
-	default:
-		break;
-	}
+void HubManager::on(Failed, HttpConnection* c, const string& aLine) throw() { 
+	lastServer++;
+	running = false;
+	c->removeListener(this);
+	fire(HubManagerListener::DownloadFailed(), aLine);
 }
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
-	switch(type) {
-	case HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2:
-		listType = TYPE_BZIP2; break;
-	case HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL:
-		listType = TYPE_NORMAL; break;
-	default:
-		break;
-	}
+void HubManager::on(Complete, HttpConnection* c, const string& aLine) throw() {
+	onHttpFinished();
+	running = false;
+	c->removeListener(this);
+	fire(HubManagerListener::DownloadFinished(), aLine);
 }
-
-void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
-	if(type == SettingsManagerListener::LOAD) {
-		load(xml); 
-	}
+void HubManager::on(Redirected, HttpConnection*, const string& aLine) throw() { 
+	fire(HubManagerListener::DownloadStarting(), aLine);
+}
+void HubManager::on(TypeNormal, HttpConnection*) throw() { 
+	listType = TYPE_NORMAL; 
+}
+void HubManager::on(TypeBZ2, HttpConnection*) throw() { 
+	listType = TYPE_BZIP2; 
 }
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.47 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.48 2004/04/18 12:51:14 arnetheduck Exp $
  */

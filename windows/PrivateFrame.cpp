@@ -332,16 +332,9 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
-// ClientManagerListener
-void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
-	if(type == ClientManagerListener::USER_UPDATED && aUser == user) {
-		PostMessage(WM_SPEAKER, USER_UPDATED);
-	}
-}
-
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.24 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.25 2004/04/18 12:51:15 arnetheduck Exp $
  */
 
 

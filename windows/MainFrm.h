@@ -330,25 +330,24 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void onAction(LogManagerListener::Types, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new string(m)); };
+	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new string(m)); };
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();
 	
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, string const& /*aLine*/) throw();
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) throw();	
-	void onHttpComplete(HttpConnection* aConn);
+	virtual void on(HttpConnectionListener::Complete, HttpConnection* conn, string const& /*aLine*/) throw();
+	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const BYTE* buf, int len) throw();	
 
 	// QueueManagerListener
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* qi) throw();
+	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
 };
 
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.32 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.33 2004/04/18 12:51:15 arnetheduck Exp $
  */
 
  

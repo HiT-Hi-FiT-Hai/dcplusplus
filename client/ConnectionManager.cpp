@@ -76,7 +76,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		cqi->setState(ConnectionQueueItem::WAITING);
 		pendingDown.insert(make_pair(cqi, 0));
 
-		fire(ConnectionManagerListener::ADDED, cqi);
+		fire(ConnectionManagerListener::Added(), cqi);
 	}
 }
 
@@ -150,12 +150,12 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 		pendingDelete.push_back(aConn);
 	}
 	if(cqi) {
-		fire(ConnectionManagerListener::REMOVED, cqi);
+		fire(ConnectionManagerListener::Removed(), cqi);
 		delete cqi;
 	}
 }
 
-void ConnectionManager::onTimerSecond(u_int32_t aTick) {
+void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) {
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
 	ConnectionQueueItem::List removed;
@@ -225,17 +225,17 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					if(startDown) {
 						cqi->setState(ConnectionQueueItem::CONNECTING);
 						cqi->getUser()->connect();
-						fire(ConnectionManagerListener::STATUS_CHANGED, cqi);
+						fire(ConnectionManagerListener::StatusChanged(), cqi);
 						attempts++;
 					} else {
 						cqi->setState(ConnectionQueueItem::NO_DOWNLOAD_SLOTS);
-						fire(ConnectionManagerListener::FAILED, cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
+						fire(ConnectionManagerListener::Failed(), cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
 					}
 				} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
 					cqi->setState(ConnectionQueueItem::WAITING);
 				}
 			} else if(((i->second + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
-				fire(ConnectionManagerListener::FAILED, cqi, STRING(CONNECTION_TIMEOUT));
+				fire(ConnectionManagerListener::Failed(), cqi, STRING(CONNECTION_TIMEOUT));
 				cqi->setState(ConnectionQueueItem::WAITING);
 			}
 			++i;
@@ -244,12 +244,12 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 
 	ConnectionQueueItem::Iter m;
 	for(m = removed.begin(); m != removed.end(); ++m) {
-		fire(ConnectionManagerListener::REMOVED, *m);
+		fire(ConnectionManagerListener::Removed(), *m);
 		delete *m;
 	}
 	for(m = failPassive.begin(); m != failPassive.end(); ++m) {
 		QueueManager::getInstance()->removeSources((*m)->getUser(), QueueItem::Source::FLAG_PASSIVE);
-		fire(ConnectionManagerListener::REMOVED, *m);
+		fire(ConnectionManagerListener::Removed(), *m);
 		delete *m;
 	}
 	for(User::Iter n = getDown.begin(); n != getDown.end(); ++n) {
@@ -257,9 +257,8 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 	}
 }
 
-void ConnectionManager::onTimerMinute(u_int32_t aTick) {
+void ConnectionManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {	
 	Lock l(cs);
-
 	{
 		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
 			if(((*j)->getLastActivity() + 180*1000) < aTick) {
@@ -279,7 +278,7 @@ static const u_int32_t FLOOD_ADD = 2000;
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
-void ConnectionManager::onIncomingConnection() throw() {
+void ConnectionManager::on(ServerSocketListener::IncomingConnection) throw() {
 	UserConnection* uc = NULL;
 	u_int32_t now = GET_TICK();
 
@@ -329,7 +328,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	}
 }
 
-void ConnectionManager::onConnected(UserConnection* aSource) throw() {
+void ConnectionManager::on(UserConnectionListener::Connected, UserConnection* aSource) throw() {
 	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	aSource->myNick(aSource->getNick());
 	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
@@ -339,7 +338,7 @@ void ConnectionManager::onConnected(UserConnection* aSource) throw() {
 /**
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
-void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
+void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSource, const string& aNick) throw() {
 
 	if(aSource->getState() != UserConnection::STATE_NICK) {
 		// Already got this once, ignore...
@@ -384,7 +383,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 	aSource->setState(UserConnection::STATE_LOCK);
 }
 
-void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw() {
+void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSource, const string& aLock, const string& aPk) throw() {
 	if(aSource->getState() != UserConnection::STATE_LOCK) {
 		dcdebug("CM::onLock %p received lock twice, ignoring\n", aSource);
 		return;
@@ -410,7 +409,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 }
 
-void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& num) throw() {
+void ConnectionManager::on(UserConnectionListener::Direction, UserConnection* aSource, const string& dir, const string& num) throw() {
 	if(aSource->getState() != UserConnection::STATE_DIRECTION) {
 		dcdebug("CM::onDirection %p received direction twice, ignoring\n", aSource);
 		return;
@@ -444,7 +443,7 @@ void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, 
 	aSource->setState(UserConnection::STATE_KEY);
 }
 
-void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) throw() {
+void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource, const string&/* aKey*/) throw() {
 	if(aSource->getState() != UserConnection::STATE_KEY) {
 		dcdebug("CM::onKey Bad state, ignoring");
 		return;
@@ -452,7 +451,6 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
 	dcassert(aSource->getUser());
-
 	{
 		Lock l(cs);
 
@@ -486,7 +484,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 			dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
 			cqi = new ConnectionQueueItem(aSource->getUser());
 			cqi->setConnection(aSource);
-			fire(ConnectionManagerListener::ADDED, cqi);			
+			fire(ConnectionManagerListener::Added(), cqi);			
 		}
 
 		aSource->setCQI(cqi);
@@ -494,8 +492,8 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 		dcassert(find(active.begin(), active.end(), cqi) == active.end());
 		active.push_back(cqi);
 
-		fire(ConnectionManagerListener::CONNECTED, cqi);
-
+		fire(ConnectionManagerListener::Connected(), cqi);
+		
 		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
 			dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 			DownloadManager::getInstance()->addConnection(aSource);
@@ -507,7 +505,7 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	}
 }
 
-void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError*/) throw() {
+void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSource, const string& /*aError*/) throw() {
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD) && aSource->getCQI()) {
 		{
 			Lock l(cs);
@@ -522,18 +520,15 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 			}
 		}
 	}
-	putConnection(aSource);
 }
 
 void ConnectionManager::removeConnection(const User::Ptr& aUser, int isDownload) {
-	{
-		Lock l(cs);
-		for(UserConnection::Iter i = userConnections.begin(); i != userConnections.end(); ++i) {
-			UserConnection* uc = *i;
-			if(uc->getUser() == aUser && uc->isSet(isDownload ? UserConnection::FLAG_DOWNLOAD : UserConnection::FLAG_UPLOAD)) {
-				uc->disconnect();
-				break;
-			}
+	Lock l(cs);
+	for(UserConnection::Iter i = userConnections.begin(); i != userConnections.end(); ++i) {
+		UserConnection* uc = *i;
+		if(uc->getUser() == aUser && uc->isSet(isDownload ? UserConnection::FLAG_DOWNLOAD : UserConnection::FLAG_UPLOAD)) {
+			uc->disconnect();
+			break;
 		}
 	}
 }
@@ -560,78 +555,23 @@ void ConnectionManager::shutdown() {
 	}
 }		
 
-// ServerSocketListener
-void ConnectionManager::onAction(ServerSocketListener::Types type) throw() {
-	switch(type) {
-	case ServerSocketListener::INCOMING_CONNECTION:
-		onIncomingConnection();
-	}
-}
-
 // UserConnectionListener
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn) throw() {
-	switch(type) {
-	case UserConnectionListener::CONNECTED:
-		onConnected(conn); break;
-	default:
-		break;
-	}
-}
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw() {
-	switch(type) {
-	case UserConnectionListener::MY_NICK:
-		onMyNick(conn, line); break;
-	case UserConnectionListener::KEY:
-		onKey(conn, line); break;
-	case UserConnectionListener::FAILED:
-		onFailed(conn, line); break;
-	default:
-		break;
-	}
-}
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) throw() {
-	switch(type) {
-	case UserConnectionListener::C_LOCK:
-		onLock(conn, line1, line2); break;
-	case UserConnectionListener::DIRECTION:
-		onDirection(conn, line1, line2); break;
-	default:
-		break;
-	}
-}
-// UserConnectionListener
-void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) throw() {
-	switch(type) {
-	case UserConnectionListener::SUPPORTS:
-		{
-			for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-				if(*i == "BZList")
-					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
-				else if(*i == "GetTestZBlock")
-					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK);
-				else if(*i == "GetZBlock")
-					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-				else if(*i == "MiniSlots")
-					conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
-				else if(*i == "XmlBZList")
-					conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
-			}
-		}
-		break;
-	default:
-		break;
-	}
-}
-
-// TimerManagerListener
-void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
-	switch(type) {
-	case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
-	case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
+void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
+	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+		if(*i == "BZList")
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
+		else if(*i == "GetTestZBlock")
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK);
+		else if(*i == "GetZBlock")
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
+		else if(*i == "MiniSlots")
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
+		else if(*i == "XmlBZList")
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
 	}
 }
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.69 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.70 2004/04/18 12:51:13 arnetheduck Exp $
  */

@@ -31,7 +31,7 @@ public:
 #include "StringDefs.h"
 
 	void loadLanguage(const string& aFile);
-	const string& getString(Strings x) const { dcassert(x != -1); return strings[x]; };
+	const string& getString(Strings x) const { dcassert(x >= 0 && x < Strings::LAST); return strings[x]; };
 
 private:
 	friend class Singleton<ResourceManager>;
@@ -57,5 +57,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.10 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.11 2004/04/18 12:51:14 arnetheduck Exp $
  */

@@ -200,8 +200,9 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
 				ADLSearchManager::getInstance()->MatchesFile(destDirs, f, fullPath);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName, 0);
-			if(n.empty())
-				return;
+			if(n.empty()) {
+				throw SimpleXMLException("Directory missing name attribute");
+			}
 			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
 			cur->directories.push_back(d);
 			cur = d;
@@ -327,5 +328,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.29 2004/03/27 11:51:33 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.30 2004/04/18 12:51:13 arnetheduck Exp $
  */

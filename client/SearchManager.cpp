@@ -22,6 +22,7 @@
 #include "SearchManager.h"
 
 #include "ClientManager.h"
+#include "AdcCommand.h"
 
 string SearchResult::toSR() const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
@@ -51,6 +52,31 @@ string SearchResult::toSR() const {
 	tmp.append(" (", 2);
 	tmp.append(hubIpPort);
 	tmp.append(")|", 2);
+	return tmp;
+}
+
+string SearchResult::toRES() const {
+	string tmp;
+	tmp.reserve(128);
+	tmp.append(user->getCID().toBase32());
+	tmp.append(" SI");
+	tmp.append(Util::toString(size));
+	tmp.append(" SL");
+	tmp.append(Util::toString(freeSlots));
+	tmp.append(" FN");
+	string fn = file;
+	string::size_type i = 0;
+	while( (i = fn.find('\\', i)) != string::npos ) {
+		fn[i] = '/';
+	}
+	fn.insert(0, "/");
+
+	if(getTTH() != NULL) {
+		tmp.append(" TR");
+		tmp.append(getTTH()->toBase32());
+	}
+
+	tmp.append(1, '\n');
 	return tmp;
 }
 
@@ -134,7 +160,7 @@ int SearchManager::run() {
 
 void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address) {
 	string x((char*)buf, aLen);
-	if(x.find("$SR") != string::npos) {
+	if(x.compare(0, 4, "$SR ") == 0) {
 		string::size_type i, j;
 		// Directories: $SR <nick><0x20><directory><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
 		// Files:       $SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
@@ -204,8 +230,38 @@ void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address)
 
 		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
 			file, hubName, hubIpPort, address);
-		fire(SearchManagerListener::SEARCH_RESULT, sr);
+		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
+	} else if(x.compare(1, 4, "RES ")) {
+		Command c(x);
+		if(c.getParameters().empty())
+			return;
+
+		User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
+		if(!p)
+			return;
+
+		int freeSlots = -1;
+		int64_t size = -1;
+		string name;
+
+		for(StringIter i = (c.getParameters().begin() + 1); i != c.getParameters().end(); ++i) {
+			string& str = *i;
+			if(str.compare(0, 2, "FN") == 0) {
+				name = str.substr(2);
+			} else if(str.compare(0, 2, "SL")) {
+				freeSlots = Util::toInt(str.substr(2));
+			} else if(str.compare(0, 2, "SI")) {
+				size = Util::toInt64(str.substr(2));
+			}
+		}
+
+		if(!name.empty() && freeSlots != -1 && size != -1) {
+			SearchResult::Types type = (name[name.length() - 1] == '/' ? SearchResult::TYPE_DIRECTORY : SearchResult::TYPE_FILE);
+			SearchResult* sr = new SearchResult(p, type, 0, freeSlots, size, name, p->getClientName(), "0.0.0.0", NULL);
+			fire(SearchManagerListener::SR(), sr);
+			sr->decRef();
+		}
 	}
 }
 
@@ -227,6 +283,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.37 2004/03/24 20:22:13 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.38 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

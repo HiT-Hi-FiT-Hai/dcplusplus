@@ -25,26 +25,24 @@
 
 class ClientManagerListener {
 public:
-	typedef ClientManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		USER_UPDATED,
-		INCOMING_SEARCH,
-		CLIENT_CONNECTED,
-		CLIENT_UPDATED,
-		CLIENT_DISCONNECTED,
-	};
+	template<int I>	struct X { static const int TYPE = I; };
 
-	virtual void onAction(Types, const User::Ptr&) throw() { };
-	virtual void onAction(Types, const string&) throw() { };
-	virtual void onAction(Types, Client*) throw() { };
+	typedef X<0> UserUpdated;
+	typedef X<1> IncomingSearch;
+	typedef X<2> ClientConnected;
+	typedef X<3> ClientUpdated;
+	typedef X<4> ClientDisconnected;
+
+	virtual void on(UserUpdated, const User::Ptr&) throw() { }
+	virtual void on(IncomingSearch, const string&) throw() { }
+	virtual void on(ClientConnected, Client*) throw() { }
+	virtual void on(ClientUpdated, Client*) throw() { }
+	virtual void on(ClientDisconnected, Client*) throw() { }
 };
 
 #endif
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.5 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.6 2004/04/18 12:51:13 arnetheduck Exp $
  */

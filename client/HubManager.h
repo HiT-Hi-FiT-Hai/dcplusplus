@@ -86,23 +86,23 @@ private:
 
 class HubManagerListener {
 public:
-	typedef HubManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		DOWNLOAD_STARTING,
-		DOWNLOAD_FAILED,
-		DOWNLOAD_FINISHED,
-		FAVORITE_ADDED,
-		FAVORITE_REMOVED,
-		USER_ADDED,
-		USER_REMOVED
-	};
+	template<int I>	struct X { static const int TYPE = I; };
 
-	virtual void onAction(Types, FavoriteHubEntry*) throw() { };
-	virtual void onAction(Types, const string&) throw() { };
-	virtual void onAction(Types, const User::Ptr&) throw() { };
-	virtual void onAction(Types) throw() { };
+	typedef X<0> DownloadStarting;
+	typedef X<1> DownloadFailed;
+	typedef X<2> DownloadFinished;
+	typedef X<3> FavoriteAdded;
+	typedef X<4> FavoriteRemoved;
+	typedef X<5> UserAdded;
+	typedef X<6> UserRemoved;
+
+	virtual void on(DownloadStarting, const string&) throw() { }
+	virtual void on(DownloadFailed, const string&) throw() { }
+	virtual void on(DownloadFinished, const string&) throw() { }
+	virtual void on(FavoriteAdded, const FavoriteHubEntry*) throw() { }
+	virtual void on(FavoriteRemoved, const FavoriteHubEntry*) throw() { }
+	virtual void on(UserAdded, const User::Ptr&) throw() { }
+	virtual void on(UserRemoved, const User::Ptr&) throw() { }
 };
 
 class SimpleXML;
@@ -121,56 +121,11 @@ public:
 
 	User::List& getFavoriteUsers() { return users; };
 	
-	void addFavoriteUser(User::Ptr& aUser) { 
-		if(find(users.begin(), users.end(), aUser) == users.end()) {
-			users.push_back(aUser);
-			aUser->setFavoriteUser(new FavoriteUser());
-			fire(HubManagerListener::USER_ADDED, aUser);
-			save();
-		}
-	}
+	void addFavoriteUser(User::Ptr& aUser);
+	void removeFavoriteUser(User::Ptr& aUser);
 
-	void removeFavoriteUser(User::Ptr& aUser) {
-		User::Iter i = find(users.begin(), users.end(), aUser);
-		if(i != users.end()) {
-			aUser->setFavoriteUser(NULL);
-			fire(HubManagerListener::USER_REMOVED, aUser);
-			users.erase(i);
-			save();
-		}
-	}
-
-/* user holds this information now
-	bool isFavoriteUser(const User::Ptr& aUser) {
-		return (find(users.begin(), users.end(), aUser) != users.end());
-	}
-*/
-	
-	//void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
-	void addFavorite(const FavoriteHubEntry& aEntry) {
-		FavoriteHubEntry* f;
-
-		FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
-		if(i != favoriteHubs.end()) {
-			return;
-		}
-		f = new FavoriteHubEntry(aEntry);
-		favoriteHubs.push_back(f);
-		fire(HubManagerListener::FAVORITE_ADDED, f);
-		save();
-	}
-
-	void removeFavorite(FavoriteHubEntry* entry) {
-		FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
-		if(i == favoriteHubs.end()) {
-			return;
-		}
-		
-		fire(HubManagerListener::FAVORITE_REMOVED, entry);
-		favoriteHubs.erase(i);
-		delete entry;
-		save();
-	}
+	void addFavorite(const FavoriteHubEntry& aEntry);
+	void removeFavorite(FavoriteHubEntry* entry);
 	
 	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
@@ -315,14 +270,19 @@ private:
 	}
 
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw();
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw();
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw();
-	
- 	void onHttpFinished() throw();
+	virtual void on(Data, HttpConnection*, u_int8_t*, size_t) throw();
+	virtual void on(Failed, HttpConnection*, const string&) throw();
+	virtual void on(Complete, HttpConnection*, const string&) throw();
+	virtual void on(Redirected, HttpConnection*, const string&) throw();
+	virtual void on(TypeNormal, HttpConnection*) throw();
+	virtual void on(TypeBZ2, HttpConnection*) throw();
+
+	void onHttpFinished() throw();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML*) throw();
+	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+		load(xml);
+	}
 
 	void load(SimpleXML* aXml);
 	
@@ -332,6 +292,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.50 2004/04/08 18:18:00 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.51 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

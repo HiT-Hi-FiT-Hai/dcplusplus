@@ -55,9 +55,9 @@ bool BufferedSocket::threadSendFile() {
 			size_t valid = file->read(inbuf, s);
 			if(valid > 0) {
 				Socket::write((char*)inbuf, valid);
-				fire(BufferedSocketListener::BYTES_SENT, s, valid);
+				fire(BufferedSocketListener::BytesSent(), s, valid);
 			} else {
-				fire(BufferedSocketListener::TRANSMIT_DONE);
+				fire(BufferedSocketListener::TransmitDone());
 				return true;
 			}
 		}
@@ -104,7 +104,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 void BufferedSocket::threadConnect() {
 	dcdebug("threadConnect()\n");
 
-	fire(BufferedSocketListener::CONNECTING);
+	fire(BufferedSocketListener::Connecting());
 
 	u_int32_t startTime = GET_TICK();
 	string s;
@@ -241,7 +241,7 @@ void BufferedSocket::threadConnect() {
 		line.clear();
 		setBlocking(true);
 
-		fire(BufferedSocketListener::CONNECTED);
+		fire(BufferedSocketListener::Connected());
 	} catch(const SocketException& e) {
 		if(!getNoproxy() && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			fail("Socks5: " + e.getError());
@@ -274,10 +274,10 @@ void BufferedSocket::threadRead() {
 
 				if( (pos = l.find(separator)) != string::npos) {
 					if(!line.empty()) {
-						fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
+						fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
 						line.clear();
 					} else {
-						fire(BufferedSocketListener::LINE, l.substr(0, pos));
+						fire(BufferedSocketListener::Line(), l.substr(0, pos));
 					}
 					i-=(pos + sizeof(separator));
 					bufpos += (pos + sizeof(separator));
@@ -287,19 +287,19 @@ void BufferedSocket::threadRead() {
 				}
 			} else if(mode == MODE_DATA) {
 				if(dataBytes == -1) {
-					fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
+					fire(BufferedSocketListener::Data(), inbuf+bufpos, i);
 					bufpos+=i;
 					i = 0;
 				} else {
 					int high = (int)min(dataBytes, (int64_t)i);
-					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
+					fire(BufferedSocketListener::Data(), inbuf+bufpos, high);
 					bufpos += high;
 					i-=high;
 
 					dataBytes -= high;
 					if(dataBytes == 0) {
 						mode = MODE_LINE;
-						fire(BufferedSocketListener::MODE_CHANGE, MODE_LINE);
+						fire(BufferedSocketListener::ModeChange());
 					}
 				}
 			}
@@ -405,5 +405,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.66 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.67 2004/04/18 12:51:13 arnetheduck Exp $
  */

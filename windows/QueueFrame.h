@@ -436,18 +436,17 @@ private:
 	bool isItemCountAtLeast(HTREEITEM ht, unsigned int minItemCount);
 	bool isItemCountAtLeastRecursive(HTREEITEM ht, unsigned int& minItemCount);
 
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) throw();
-
-	void onQueueAdded(QueueItem* aQI);
-	void onQueueMoved(QueueItem* aQI);
-	void onQueueRemoved(QueueItem* aQI);
-	void onQueueUpdated(QueueItem* aQI);
-	void onQueueSearchStringUpdated(QueueItem* aQI);
+	virtual void on(QueueManagerListener::Added, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Moved, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::Removed, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) throw();
+	virtual void on(QueueManagerListener::StatusUpdated, QueueItem* aQI) throw() { on(QueueManagerListener::SourcesUpdated(), aQI); }
+	virtual void on(QueueManagerListener::SearchStringUpdated, QueueItem* aQI) throw();
 };
 
 #endif // !defined(AFX_QUEUEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.37 2004/03/26 19:23:28 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.38 2004/04/18 12:51:15 arnetheduck Exp $
  */

@@ -1,10 +1,17 @@
-SetCompressor "lzma"
+;SetCompressor "lzma"
 
 ; The name of the installer
 Name "DC++"
 
 ShowInstDetails show
 ShowUninstDetails show
+
+Page license
+Page components
+Page directory
+Page instfiles
+UninstPage uninstConfirm
+UninstPage instfiles
 
 ; The file to write
 OutFile "DCPlusPlus.exe"
@@ -17,6 +24,7 @@ InstallDirRegKey HKLM SOFTWARE\DC++ "Install_Dir"
 
 LicenseText "DC++ is licensed under the GPL, here's the full text!"
 LicenseData "License.txt"
+LicenseForceSelection checkbox
 
 ; The text to prompt the user to enter a directory
 ComponentText "Welcome to the DC++ installer."
@@ -27,6 +35,13 @@ DirText "Choose a directory to install in to:"
 Section "DC++ (required)"
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR
+  
+  IfFileExists "$INSTDIR\*.xml" 0 no_backup
+  MessageBox MB_YESNO|MB_ICONQUESTION "A previous installation of DC++ has been found, backup settings and queue? (You can find it in $INSTDIR\BACKUP later)" IDNO no_backup
+  CreateDirectory "$INSTDIR\BACKUP\"
+  CopyFiles "$INSTDIR\*.xml" "$INSTDIR\BACKUP\"
+
+no_backup:
   ; Put file there
   File "/oname=DCPlusPlus.exe" "App\DCPlusPlus.exe"
   File "Readme.txt"
@@ -62,7 +77,7 @@ SectionEnd
 UninstallText "This will uninstall DC++. Hit next to continue."
 
 ; special uninstall section.
-Section "Uninstall"
+Section "un.Uninstall"
   ; remove registry keys
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++"
   DeleteRegKey HKLM SOFTWARE\DC++
@@ -81,7 +96,15 @@ Section "Uninstall"
   Delete "$SMPROGRAMS\DC++\*.*"
   ; remove directories used.
   RMDir "$SMPROGRAMS\DC++"
+
+  MessageBox MB_YESNO|MB_ICONQUESTION "Also remove queue and settings?" IDYES kill_dir
+
   RMDir "$INSTDIR"
+  goto end_uninstall
+kill_dir:
+  RMDir /r "$INSTDIR"
+end_uninstall:
+
 SectionEnd
 
 ; eof

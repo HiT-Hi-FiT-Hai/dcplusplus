@@ -244,7 +244,7 @@ private:
 	class TagReader : public SimpleXMLReader::CallBack {
 	public:
 		TagReader(Tag* root) : cur(root) { };
-		virtual bool getData(string&n) { return false; }
+		virtual bool getData(string&) { return false; }
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) {
 			cur->children.push_back(new Tag(name, attribs, cur));
 			if(!simple)
@@ -283,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.33 2004/03/19 08:48:57 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.34 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

@@ -27,27 +27,28 @@ class QueueItem;
 
 class QueueManagerListener {
 public:
-	typedef QueueManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 
-	enum Types {
-		ADDED,
-		FINISHED,
-		REMOVED,
-		MOVED,
-		SOURCES_UPDATED,
-		STATUS_UPDATED,
-		SEARCH_STRING_UPDATED,
-		QUEUE_ITEM
-	};
+	typedef X<0> Added;
+	typedef X<1> Finished;
+	typedef X<2> Removed;
+	typedef X<3> Moved;
+	typedef X<4> SourcesUpdated;
+	typedef X<5> StatusUpdated;
+	typedef X<6> SearchStringUpdated;
 
-	virtual void onAction(Types, QueueItem*) throw() = 0;
+	virtual void on(Added, QueueItem*) throw() { }
+	virtual void on(Finished, QueueItem*) throw() { }
+	virtual void on(Removed, QueueItem*) throw() { }
+	virtual void on(Moved, QueueItem*) throw() { }
+	virtual void on(SourcesUpdated, QueueItem*) throw() { }
+	virtual void on(StatusUpdated, QueueItem*) throw() { }
+	virtual void on(SearchStringUpdated, QueueItem*) throw() { }
 };
 
 #endif
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.4 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.5 2004/04/18 12:51:14 arnetheduck Exp $
  */

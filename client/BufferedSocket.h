@@ -33,26 +33,25 @@ class InputStream;
 
 class BufferedSocketListener {
 public:
-	typedef BufferedSocketListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		CONNECTING,
-		CONNECTED,
-		LINE,
-		DATA,
-		BYTES_SENT,
-		MODE_CHANGE,
-		TRANSMIT_DONE,
-		FAILED
-	};
-	
-	virtual void onAction(Types) throw() { };
-	virtual void onAction(Types, u_int32_t, u_int32_t) throw() { };
-	virtual void onAction(Types, const string&) throw() { };
-	virtual void onAction(Types, const u_int8_t*, int) throw() { };
-	virtual void onAction(Types, int) throw() { };
+	template<int I>	struct X { static const int TYPE = I; };
+
+	typedef X<0> Connecting;
+	typedef X<1> Connected;
+	typedef X<2> Line;
+	typedef X<3> Data;
+	typedef X<4> BytesSent;
+	typedef X<5> ModeChange;
+	typedef X<6> TransmitDone;
+	typedef X<7> Failed;
+
+	virtual void on(Connecting) throw() { }
+	virtual void on(Connected) throw() { }
+	virtual void on(Line, const string&) throw() { }
+	virtual void on(Data, u_int8_t*, size_t) throw() { }
+	virtual void on(BytesSent, size_t, size_t) throw() { }
+	virtual void on(ModeChange) throw() { }
+	virtual void on(TransmitDone) throw() { }
+	virtual void on(Failed, const string&) throw() { }
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
@@ -82,7 +81,6 @@ public:
 	};
 
 	static void putSocket(BufferedSocket* aSock) { 
-		aSock->removeListeners(); 
 		aSock->Socket::disconnect();
 		Lock l(aSock->cs);
 		aSock->addTask(SHUTDOWN); 
@@ -207,7 +205,7 @@ private:
 	
 	void fail(const string& aError) {
 		Socket::disconnect();
-		fire(BufferedSocketListener::FAILED, aError);
+		fire(BufferedSocketListener::Failed(), aError);
 	}
 
 	/**
@@ -229,5 +227,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.56 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.57 2004/04/18 12:51:13 arnetheduck Exp $
  */

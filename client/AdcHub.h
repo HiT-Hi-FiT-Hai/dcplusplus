@@ -25,28 +25,10 @@
 class AdcHub;
 class ClientManager;
 
-class AdcHubListener {
-public:
-	typedef AdcHubListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-
-	enum Types {
-		CONNECTING,
-		CONNECTED,
-		COMMAND,
-		FAILED,
-	};
-	virtual void onAction(Types, AdcHub*) throw() { };
-	virtual void onAction(Types, AdcHub*, const Command&) throw() { };
-	virtual void onAction(Types, AdcHub*, const string&) throw() { };
-
-};
-
-class AdcHub : public Client, Speaker<AdcHubListener>, CommandHandler<AdcHub> {
+class AdcHub : public Client, CommandHandler<AdcHub> {
 public:
 
-	virtual void connect(const User* user) { };
+	virtual void connect(const User* user);
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const User* user, const string& aMessage);
@@ -66,8 +48,8 @@ public:
 	virtual User::NickMap& lockUserList() { return nickMap; };
 	virtual void unlockUserList() { };
 
-	template<typename T> void handle(Command& c, T) { 
-		Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+	template<typename T> void handle(Command& , T ) { 
+		//Speaker<AdcHubListener>::fire(t, this, c);
 	}
 
 	void handle(Command& c, Command::SUP);
@@ -78,27 +60,6 @@ public:
 	void handle(Command& c, Command::QUI);
 
 private:
-	struct ClientAdapter : public AdcHubListener {
-		ClientAdapter(AdcHub* aClient) : c(aClient) { aClient->Speaker<AdcHubListener>::addListener(this); }
-		Client* c;
-		virtual void onAction(AdcHubListener::Types type, AdcHub*) throw() {
-			switch(type) {
-				case AdcHubListener::CONNECTING: c->fire(ClientListener::CONNECTING, c); break;
-				case AdcHubListener::CONNECTED: c->fire(ClientListener::CONNECTED, c); break;
-				default: break;
-			}
-		};
-
-		virtual void onAction(AdcHubListener::Types type, AdcHub*, const string& line1) throw() { 
-			switch(type) {
-				case AdcHubListener::FAILED: c->fire(ClientListener::FAILED, c, line1); break;
-				default: break;
-			}
-		};
-
-		virtual void onAction(Types, AdcHub*, const Command& cmd) throw();
-	} adapter;
-
 	friend class ClientManager;
 
 	AdcHub(const string& aHubURL);
@@ -112,11 +73,16 @@ private:
 
 	string salt;
 
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
-	virtual void onAction(BufferedSocketListener::Types type) throw();
+	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
+	virtual void on(Connected) throw();
+	virtual void on(Line, const string& aLine) throw() { 
+		fire(ClientListener::Message(), this, "CMD: " + aLine +"\r\n");
+		dispatch(aLine); 
+	}
+	virtual void on(Failed, const string& aLine) throw();
 };
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.3 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.4 2004/04/18 12:51:13 arnetheduck Exp $
  */

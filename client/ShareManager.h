@@ -258,13 +258,18 @@ private:
 	virtual int run();
 
 	// HashManagerListener
-	virtual void onAction(HashManagerListener::Types type, const string& fname, TTHValue* root) throw();
+	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();
+	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
+		save(xml);
+	}
+	virtual void on(SettingsManagerListener::Load, SimpleXML* xml) throw() {
+		load(xml);
+	}
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -274,6 +279,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.46 2004/03/28 00:22:07 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.47 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

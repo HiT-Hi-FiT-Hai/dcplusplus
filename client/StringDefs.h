@@ -318,6 +318,7 @@ enum Strings { // @DontAdd
 	SETTINGS_LOG_SYSTEM_MESSAGES, // "Log system messages"
 	SETTINGS_LOGGING, // "Logging"
 	SETTINGS_LOGS, // "Logs and Sound"
+	SETTINGS_MAX_HASH_SPEED, // "Max hash speed"
 	SETTINGS_MAX_TAB_ROWS, // "Max tab rows"
 	SETTINGS_MINIMIZE_TRAY, // "Minimize to tray"
 	SETTINGS_NAME, // "Name"

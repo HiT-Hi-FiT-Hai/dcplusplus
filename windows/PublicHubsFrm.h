@@ -176,16 +176,12 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 	
-	virtual void onAction(HubManagerListener::Types type, const string& line) throw() {
-		string* x = new string(line);
-		switch(type) {
-		case HubManagerListener::DOWNLOAD_STARTING:
-			PostMessage(WM_SPEAKER, STARTING, (LPARAM)x); break;
-		case HubManagerListener::DOWNLOAD_FINISHED:
-			PostMessage(WM_SPEAKER, FINISHED, (LPARAM)x); break;
-		case HubManagerListener::DOWNLOAD_FAILED:
-			PostMessage(WM_SPEAKER, FAILED, (LPARAM)x); break;
-		}
+	virtual void on(DownloadStarting, const string& l) throw() { speak(STARTING, l); }
+	virtual void on(DownloadFailed, const string& l) throw() { speak(FINISHED, l); }
+	virtual void on(DownloadFinished, const string& l) throw() { speak(FAILED, l); }
+
+	void speak(int x, const string& l) {
+		PostMessage(WM_SPEAKER, x, (LPARAM)new string(l));
 	}
 	
 	void updateStatus();
@@ -196,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.17 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.18 2004/04/18 12:51:15 arnetheduck Exp $
  */

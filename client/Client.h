@@ -32,38 +32,41 @@ class Client;
 class ClientListener  
 {
 public:
-	typedef ClientListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 
-	enum Types {
-		CONNECTING,
-		CONNECTED,
-		BAD_PASSWORD,
-		USER_UPDATED,
-		USERS_UPDATED,
-		USER_REMOVED,
-		FAILED,
-		FORCE_MOVE,
-		GET_PASSWORD,
-		HUB_NAME,
-		HUB_FULL,
-		MESSAGE,
-		PRIVATE_MESSAGE,
-		USER_COMMAND,
-		SEARCH,
-		NICK_TAKEN,
-		SEARCH_FLOOD,
+	typedef X<0> Connecting;
+	typedef X<1> Connected;
+	typedef X<2> BadPassword;
+	typedef X<3> UserUpdated;
+	typedef X<4> UsersUpdated;
+	typedef X<5> UserRemoved;
+	typedef X<6> Redirect;
+	typedef X<7> Failed;
+	typedef X<8> GetPassword;
+	typedef X<9> HubUpdated;
+	typedef X<11> Message;
+	typedef X<12> PrivateMessage;
+	typedef X<13> UserCommand;
+	typedef X<14> HubFull;
+	typedef X<15> NickTaken;
+	typedef X<16> SearchFlood;
 
-	};
-
-	virtual void onAction(Types, Client*) throw() { };						// BAD_PASSWORD,CONNECTING,CONNECTED,GET_PASSWORD,HUB_FULL,NICK_TAKEN
-	virtual void onAction(Types, Client*, const User::Ptr&) throw() { };	// USER_UPDATED
-	virtual void onAction(Types, Client*, const string&) throw() { };		// FAILED, FORCE_MOVE, HUB_NAME
-	virtual void onAction(Types, Client*, const User::Ptr&, const string&) throw() { };	// PRIVATE_MESSAGE
-	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) throw() { };	// SEARCH
-	virtual void onAction(Types, Client*, const User::List&) throw() { };		// USER_IP,OP_LIST
-	virtual void onAction(Types, Client*, int, int, const string&, const string&) throw() { }; // USER_COMMAND
+	virtual void on(Connecting, Client*) throw() { }
+	virtual void on(Connected, Client*) throw() { }
+	virtual void on(BadPassword, Client*) throw() { }
+	virtual void on(UserUpdated, Client*, const User::Ptr&) throw() { }
+	virtual void on(UsersUpdated, Client*, const User::List&) throw() { }
+	virtual void on(UserRemoved, Client*, const User::Ptr&) throw() { }
+	virtual void on(Redirect, Client*, const string&) throw() { }
+	virtual void on(Failed, Client*, const string&) throw() { }
+	virtual void on(GetPassword, Client*) throw() { }
+	virtual void on(HubUpdated, Client*) throw() { }
+	virtual void on(Message, Client*, const string&) throw() { }
+	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw() { }
+	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw() { }
+	virtual void on(HubFull, Client*) throw() { }
+	virtual void on(NickTaken, Client*) throw() { }
+	virtual void on(SearchFlood, Client*, const string&) throw() { }
 };
 
 /** Yes, this should probably be called a Hub */
@@ -108,7 +111,7 @@ public:
 	void disconnect() { socket->disconnect(); }
 
 	void updated(User::Ptr& aUser) { 
-		fire(ClientListener::USER_UPDATED, this, aUser);
+		fire(ClientListener::UserUpdated(), this, aUser);
 	}
 
 	static string getCounts() {
@@ -146,7 +149,7 @@ protected:
 	void setPort(short aPort) { port = aPort; }
 private:
 
-	enum {
+	enum CountType {
 		COUNT_UNCOUNTED,
 		COUNT_NORMAL,
 		COUNT_REGISTERED,
@@ -162,12 +165,12 @@ private:
 	string addressPort;
 	short port;
 
-	int countType;
+	CountType countType;
 
 };
 
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.78 2004/04/08 18:17:59 arnetheduck Exp $
+ * $Id: Client.h,v 1.79 2004/04/18 12:51:13 arnetheduck Exp $
  */

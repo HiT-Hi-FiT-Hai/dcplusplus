@@ -37,48 +37,62 @@ class NmdcHub;
 class NmdcHubListener  
 {
 public:
-	typedef NmdcHubListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 	
-	enum Types {
-		BAD_PASSWORD,
-		CONNECT_TO_ME,
-		CONNECTED,
-		CONNECTING,
-		FAILED,
-		FORCE_MOVE,
-		GET_PASSWORD,
-		HELLO,
-		HUB_NAME,
-		HUB_FULL,
-		SUPPORTS,
-		C_LOCK,
-		LOGGED_IN,
-		MESSAGE,
-		MY_INFO,
-		NICK_LIST,
-		OP_LIST,
-		USER_IP,
-		PRIVATE_MESSAGE,
-		REV_CONNECT_TO_ME,
-		SEARCH,
-		QUIT,
-		UNKNOWN,
-		USER_COMMAND,
-		VALIDATE_DENIED,
-		SEARCH_FLOOD
-	};
-	
-	virtual void onAction(Types, NmdcHub*) throw() { };
-	virtual void onAction(Types, NmdcHub*, const string&) throw() { };
-	virtual void onAction(Types, NmdcHub*, const string&, const string&) throw() { };
-	virtual void onAction(Types, NmdcHub*, const User::Ptr&) throw() { };
-	virtual void onAction(Types, NmdcHub*, const User::List&) throw() { };		// USER_IP
-	virtual void onAction(Types, NmdcHub*, const User::Ptr&, const string&) throw() { };
-	virtual void onAction(Types, NmdcHub*, const string&, int, const string&, int, const string&) throw() { };
-	virtual void onAction(Types, NmdcHub*, int, int, const string&, const string&) throw() { }; // USER_COMMAND
-	virtual void onAction(Types, NmdcHub*, const StringList&) throw() { };		// SUPPORTS
+	typedef X<0> Connecting;
+	typedef X<1> Connected;
+	typedef X<2> BadPassword;
+	typedef X<3> MyInfo;
+	typedef X<4> NickList;
+	typedef X<5> OpList;
+	typedef X<6> Redirect;
+	typedef X<7> Failed;
+	typedef X<8> GetPassword;
+	typedef X<9> HubName;
+	typedef X<11> Message;
+	typedef X<12> PrivateMessage;
+	typedef X<13> UserCommand;
+	typedef X<14> HubFull;
+	typedef X<15> NickTaken;
+	typedef X<16> SearchFlood;
+	typedef X<17> ConnectToMe;
+	typedef X<18> Hello;
+	typedef X<19> Supports;
+	typedef X<20> CLock;
+	typedef X<21> LoggedIn;
+	typedef X<22> UserIp;
+	typedef X<23> RevConnectToMe;
+	typedef X<24> Search;
+	typedef X<25> Unknown;
+	typedef X<26> ValidateDenied;
+	typedef X<26> Quit;
+
+	virtual void on(Connecting, NmdcHub*) throw() { }
+	virtual void on(Connected, NmdcHub*) throw() { }
+	virtual void on(BadPassword, NmdcHub*) throw() { }
+	virtual void on(MyInfo, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(NickList, NmdcHub*, const User::List&) throw() { }
+	virtual void on(OpList, NmdcHub*, const User::List&) throw() { }
+	virtual void on(Quit, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(Redirect, NmdcHub*, const string&) throw() { }
+	virtual void on(Failed, NmdcHub*, const string&) throw() { }
+	virtual void on(GetPassword, NmdcHub*) throw() { }
+	virtual void on(HubName, NmdcHub*) throw() { }
+	virtual void on(Message, NmdcHub*, const string&) throw() { }
+	virtual void on(PrivateMessage, NmdcHub*, const User::Ptr&, const string&) throw() { }
+	virtual void on(UserCommand, NmdcHub*, int, int, const string&, const string&) throw() { }
+	virtual void on(HubFull, NmdcHub*) throw() { }
+	virtual void on(NickTaken, NmdcHub*) throw() { }
+	virtual void on(SearchFlood, NmdcHub*, const string&) throw() { }
+	virtual void on(ValidateDenied, NmdcHub*) throw() { }
+	virtual void on(Search, NmdcHub*, const string&, int, int64_t, int, const string&) throw() { }
+	virtual void on(ConnectToMe, NmdcHub*, const string&, short) throw() { }
+	virtual void on(RevConnectToMe, NmdcHub*, const User::Ptr&) throw() { }
+	virtual void on(Supports, NmdcHub*, const StringList&) throw() { }
+	virtual void on(CLock, NmdcHub*, const string&, const string&) throw() { }
+	virtual void on(UserIp, NmdcHub*, const User::List&) throw() { }
+	virtual void on(LoggedIn, NmdcHub*) throw() { }
+	virtual void on(Hello, NmdcHub*, const User::Ptr&) throw() { }
 };
 
 class NmdcHub : public Client, public Speaker<NmdcHubListener>, private TimerManagerListener, private Flags
@@ -168,7 +182,7 @@ public:
 	void kick(const User::Ptr& aUser, const string& aMsg);
 	void kick(const User* aUser, const string& aMsg);
 
-	virtual void ban(const User* user, const string& aMessage, time_t seconds) {
+	virtual void ban(const User*, const string&, time_t) {
 		// Unimplemented...
 	}
 	void opForceMove(const User::Ptr& aUser, const string& aServer, const string& aMsg) {
@@ -206,67 +220,27 @@ private:
 	struct ClientAdapter : public NmdcHubListener {
 		ClientAdapter(NmdcHub* aClient) : c(aClient) { aClient->Speaker<NmdcHubListener>::addListener(this); }
 		Client* c;
-
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*) throw() { 
-			switch(type) {
-				case NmdcHubListener::CONNECTING: c->fire(ClientListener::CONNECTING, c); break;
-				case NmdcHubListener::CONNECTED: c->fire(ClientListener::CONNECTED, c); break;
-				case NmdcHubListener::BAD_PASSWORD: c->fire(ClientListener::BAD_PASSWORD, c); break;
-				case NmdcHubListener::GET_PASSWORD: c->fire(ClientListener::GET_PASSWORD, c); break;
-				case NmdcHubListener::HUB_FULL: c->fire(ClientListener::HUB_FULL, c); break;
-				case NmdcHubListener::VALIDATE_DENIED: c->fire(ClientListener::NICK_TAKEN, c); break;
-				case NmdcHubListener::HUB_NAME: c->fire(ClientListener::HUB_NAME, c); break;
-				default: break;
-			}
-		};
-
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, const string& line1) throw() { 
-			switch(type) {
-				case NmdcHubListener::MESSAGE: c->fire(ClientListener::MESSAGE, c, line1); break;
-				case NmdcHubListener::FORCE_MOVE: c->fire(ClientListener::FORCE_MOVE, c, line1); break;
-				case NmdcHubListener::FAILED: c->fire(ClientListener::FAILED, c, line1); break;
-				case NmdcHubListener::SEARCH_FLOOD: c->fire(ClientListener::SEARCH_FLOOD, c, line1); break;
-				default: break;
-			}
-		};
-		virtual void onAction(NmdcHubListener::Types, NmdcHub*, const string&, const string&) throw() { };
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, const User::Ptr& u) throw() { 
-			switch(type) {
-				case NmdcHubListener::MY_INFO:	// fallthrough
-				case NmdcHubListener::HELLO: c->fire(ClientListener::USER_UPDATED, c, u); break;
-				case NmdcHubListener::QUIT: c->fire(ClientListener::USER_REMOVED, c, u); break;
-				default: break;
-			}
-		};
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, const User::List& u) throw() {
-			switch(type) {
-				case NmdcHubListener::OP_LIST: c->fire(ClientListener::USERS_UPDATED, c, u); break;
-				case NmdcHubListener::NICK_LIST: c->fire(ClientListener::USERS_UPDATED, c, u); break;
-				default: break;
-			}
-		};		// USER_IP
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, const User::Ptr& u, const string& line1) throw() { 
-			switch(type) {
-				case NmdcHubListener::PRIVATE_MESSAGE: c->fire(ClientListener::PRIVATE_MESSAGE, c, u, line1);
-				default: break;
-			}
-		};
-
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, const string& line1, int a, const string& line2, int b, const string& line3) throw() { 
-			switch(type) {
-				case NmdcHubListener::SEARCH: c->fire(ClientListener::SEARCH, c, line1, a, line2, b, line3); break;
-				default: break;
-			}
-		};
-		virtual void onAction(NmdcHubListener::Types type, NmdcHub*, int a, int b, const string& line1, const string& line2) throw() { 
-			switch(type) {
-				case NmdcHubListener::USER_COMMAND: c->fire(ClientListener::USER_COMMAND, c, a, b, line1, line2); break;
-				default: break;
-			}
-		}; // USER_COMMAND
-		virtual void onAction(NmdcHubListener::Types, NmdcHub*, const StringList&) throw() { };		// SUPPORTS
-
+		virtual void on(Connecting, NmdcHub*) throw() { c->fire(ClientListener::Connecting(), c); }
+		virtual void on(Connected, NmdcHub*) throw() { c->fire(ClientListener::Connected(), c); }
+		virtual void on(BadPassword, NmdcHub*) throw() { c->fire(ClientListener::BadPassword(), c); }
+		virtual void on(MyInfo, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
+		virtual void on(NickList, NmdcHub*, const User::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
+		virtual void on(OpList, NmdcHub*, const User::List& l) throw() { c->fire(ClientListener::UsersUpdated(), c, l); }
+		virtual void on(Quit, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserRemoved(), c, u); }
+		virtual void on(Redirect, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Redirect(), c, aLine); }
+		virtual void on(Failed, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Failed(), c, aLine); }
+		virtual void on(GetPassword, NmdcHub*) throw() { c->fire(ClientListener::GetPassword(), c); }
+		virtual void on(HubName, NmdcHub*) throw() { c->fire(ClientListener::HubUpdated(), c); }
+		virtual void on(Message, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::Message(), c, aLine); }
+		virtual void on(PrivateMessage, NmdcHub*, const User::Ptr& u, const string& aLine) throw() { c->fire(ClientListener::PrivateMessage(), c, u, aLine); }
+		virtual void on(UserCommand, NmdcHub*, int a, int b, const string& l1, const string& l2) throw() { c->fire(ClientListener::UserCommand(), c, a, b, l1, l2); }
+		virtual void on(HubFull, NmdcHub*) throw() { c->fire(ClientListener::HubFull(), c); }
+		virtual void on(NickTaken, NmdcHub*) throw() { }
+		virtual void on(SearchFlood, NmdcHub*, const string& aLine) throw() { c->fire(ClientListener::SearchFlood(), c, aLine); }
+		virtual void on(ValidateDenied, NmdcHub*) throw() { c->fire(ClientListener::NickTaken(), c); }
+		virtual void on(Hello, NmdcHub*, const User::Ptr& u) throw() { c->fire(ClientListener::UserUpdated(), c, u); }
 	} adapter;
+
 	enum States {
 		STATE_CONNECT,
 		STATE_LOCK,
@@ -285,7 +259,6 @@ private:
 	bool reconnect;
 	u_int32_t lastUpdate;
 	string lastMyInfo;
-
 	
 	typedef list<pair<string, u_int32_t> > FloodMap;
 	typedef FloodMap::iterator FloodIter;
@@ -305,11 +278,12 @@ private:
 	void onLine(const string& aLine) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 
-	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
-	virtual void onAction(BufferedSocketListener::Types type) throw();
+	virtual void on(Connecting) throw() { Speaker<NmdcHubListener>::fire(NmdcHubListener::Connecting(), this); }
+	virtual void on(Connected) throw() { lastActivity = GET_TICK(); Speaker<NmdcHubListener>::fire(NmdcHubListener::Connected(), this); }
+	virtual void on(Line, const string& l) throw() { onLine(l); }
+	virtual void on(Failed, const string&) throw();
 
 };
 
@@ -317,6 +291,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.2 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

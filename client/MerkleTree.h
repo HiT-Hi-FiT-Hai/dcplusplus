@@ -59,7 +59,7 @@ public:
 		fileSize(aFileSize), timeStamp(aTimeStamp), blockSize(aBlockSize) 
 	{
 		size_t n = calcBlocks(aFileSize, aBlockSize);
-		for(int i = 0; i < n; i++)
+		for(size_t i = 0; i < n; i++)
 			leaves.push_back(MerkleValue(aData + i * Hasher::HASH_SIZE));
 
 		calcRoot();
@@ -213,5 +213,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.8 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.9 2004/04/18 12:51:14 arnetheduck Exp $
  */

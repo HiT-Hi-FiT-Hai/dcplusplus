@@ -45,9 +45,9 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	size = -1;
 	// set download type
 	if(Util::stricmp(currentUrl.substr(currentUrl.size() - 4), ".bz2") == 0) {
-		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);
+		fire(HttpConnectionListener::TypeBZ2(), this);
 	} else {
-		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL, this);
+		fire(HttpConnectionListener::TypeNormal(), this);
 	}
 
 	if(SETTING(HTTP_PROXY).empty()) {
@@ -70,7 +70,7 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	socket->connect(server, port);
 }
 
-void HttpConnection::onConnected() { 
+void HttpConnection::on(BufferedSocketListener::Connected) throw() { 
 	dcassert(socket); 
 	socket->write("GET " + file + " HTTP/1.1\r\n"); 
 	socket->write("User-Agent: " APPNAME " v" VERSIONSTRING "\r\n"); 
@@ -86,17 +86,17 @@ void HttpConnection::onConnected() {
 	socket->write("Cache-Control: no-cache\r\n\r\n"); 
 } 
 
-void HttpConnection::onLine(const string& aLine) {
+void HttpConnection::on(BufferedSocketListener::Line, const string& aLine) {
 	if(!ok) {
 		if(aLine.find("200") == string::npos) {
 			if(aLine.find("302") != string::npos){
 				moved302 = true;
 			} else {
-				socket->removeListener(this);
 				socket->disconnect();
+				socket->removeListener(this);
 				BufferedSocket::putSocket(socket);
 				socket = NULL;
-				fire(HttpConnectionListener::FAILED, this, aLine + " (" + currentUrl + ")");
+				fire(HttpConnectionListener::Failed(), this, aLine + " (" + currentUrl + ")");
 				return;
 			}
 		}
@@ -123,7 +123,7 @@ void HttpConnection::onLine(const string& aLine) {
 				location302 = currentUrl.substr(0, i + 1) + location302;
 			}
 		}
-		fire(HttpConnectionListener::REDIRECTED, this, location302);
+		fire(HttpConnectionListener::Redirected(), this, location302);
 
 		downloadFile(location302); 		
 	} else if(aLine == "\x0d") {
@@ -132,56 +132,30 @@ void HttpConnection::onLine(const string& aLine) {
 		size = Util::toInt(aLine.substr(16, aLine.length() - 17));
 	} else if(Util::findSubString(aLine, "Content-Encoding") != string::npos) {
 		if(aLine.substr(18, aLine.length() - 19) == "x-bzip2")
-			fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);            
+			fire(HttpConnectionListener::TypeBZ2(), this);            
 	}
 }
 
-// BufferedSocketListener
-void HttpConnection::onAction(BufferedSocketListener::Types type) throw() {
-	switch(type) {
-	case BufferedSocketListener::CONNECTED:
-		onConnected(); break;
-	default:
-		break;
-	}
+void HttpConnection::on(BufferedSocketListener::Failed, const string& aLine) {
+	socket->removeListener(this);
+	BufferedSocket::putSocket(socket);
+	socket = NULL;
+	fire(HttpConnectionListener::Failed(), this, aLine + " (" + currentUrl + ")");
 }
-void HttpConnection::onAction(BufferedSocketListener::Types type, const string& aLine) throw() {
-	switch(type) {
-	case BufferedSocketListener::LINE:
-		onLine(aLine); break;
-	case BufferedSocketListener::FAILED:
-		socket->removeListener(this);
-		BufferedSocket::putSocket(socket);
-		socket = NULL;
-		fire(HttpConnectionListener::FAILED, this, aLine + " (" + currentUrl + ")"); break;
-	default:
-		break;
-	}
+
+void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
+	socket->disconnect();
+	socket->removeListener(this);
+	BufferedSocket::putSocket(socket);
+	socket = NULL;
+	fire(HttpConnectionListener::Complete(), this, currentUrl); 
 }
-void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) throw() {
-	switch(type) {
-	case BufferedSocketListener::MODE_CHANGE:
-		socket->removeListener(this);
-		socket->disconnect();
-		BufferedSocket::putSocket(socket);
-		socket = NULL;
-		fire(HttpConnectionListener::COMPLETE, this, currentUrl); 
-		break;
-	default:
-		dcasserta(0);
-	}
-}
-void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) throw() {
-	switch(type) {
-	case BufferedSocketListener::DATA:
-		fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
-	default:
-		dcasserta(0);
-	}
+void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLen) throw() {
+	fire(HttpConnectionListener::Data(), this, aBuf, aLen);
 }
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.22 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.23 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

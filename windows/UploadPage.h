@@ -39,6 +39,7 @@ public:
 
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
 		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
@@ -46,6 +47,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onDropFiles(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -61,12 +63,14 @@ protected:
 	static TextItem texts[];
 	ExListViewCtrl ctrlDirectories;
 	CStatic ctrlTotal;
+
+	void addDirectory(string path);
 };
 
 #endif //UPLOADPAGE_H
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.8 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.9 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

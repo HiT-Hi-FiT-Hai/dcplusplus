@@ -42,7 +42,7 @@ bool HashManager::getTree(const string& aFileName, TigerTree& tmp) {
 	return store.getTree(aFileName, tmp);
 }
 
-void HashManager::hashDone(const string& aFileName, TigerTree& tth) {
+void HashManager::hashDone(const string& aFileName, TigerTree& tth, int64_t speed) {
 	TTHValue* root = NULL;
 	{
 		Lock l(cs);
@@ -51,9 +51,21 @@ void HashManager::hashDone(const string& aFileName, TigerTree& tth) {
 	}
 
 	if(root != NULL) {
-		fire(HashManagerListener::TTH_DONE, aFileName, root);
+		fire(HashManagerListener::TTHDone(), aFileName, root);
 	}
-	LogManager::getInstance()->message(STRING(HASHING_FINISHED) + aFileName);
+
+	string fn = aFileName;
+	if(count(fn.begin(), fn.end(), PATH_SEPARATOR)) {
+		string::size_type i = fn.rfind(PATH_SEPARATOR);
+		i = fn.rfind(PATH_SEPARATOR, i-1);
+		fn.erase(0, i);
+		fn.insert(0, "...");
+	}
+	if(speed > 0) {
+		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn + " (" + Util::formatBytes(speed) + "/s)");
+	} else {
+		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn);
+	}
 }
 
 void HashManager::HashStore::addFile(const string& aFileName, TigerTree& tth, bool aUsed) {
@@ -241,7 +253,7 @@ static const string sBlockSize = "LeafSize";
 static const string sTimeStamp = "TimeStamp";
 static const string sRoot = "Root";
 
-void HashLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
+void HashLoader::startTag(const string& name, StringPairList& attribs, bool) {
 	if(name == sFile) {
 		file = getAttrib(attribs, sName, 0);
 		size = Util::toInt64(getAttrib(attribs, sSize, 1));
@@ -258,7 +270,7 @@ void HashLoader::startTag(const string& name, StringPairList& attribs, bool simp
 	}
 }
 
-void HashLoader::endTag(const string& name, const string& data) {
+void HashLoader::endTag(const string& name, const string&) {
 	if(name == sFile) {
 		file.clear();
 	}
@@ -327,6 +339,7 @@ static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
 	
 	bool ok = false;
 
+	u_int32_t lastRead = GET_TICK();
 	if(!::ReadFile(h, hbuf, BUF_SIZE, &hn, &over)) {
 		if(GetLastError() == ERROR_HANDLE_EOF) {
 			hn = 0;
@@ -350,6 +363,17 @@ static bool fastHash(const string& fname, u_int8_t* buf, TigerTree& tth) {
 		if(hn != 0) {
 			// Start a new overlapped read
 			ResetEvent(over.hEvent);
+			if(SETTING(MAX_HASH_SPEED) > 0) {
+				u_int32_t now = GET_TICK();
+				u_int32_t minTime = hn * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+				if(lastRead + minTime > now) {
+					u_int32_t diff = now - lastRead;
+					Thread::sleep(minTime - diff);
+				} 
+				lastRead = lastRead + minTime;
+			} else {
+				lastRead = GET_TICK();
+			}
 			res = ReadFile(h, rbuf, BUF_SIZE, &rn, &over);
 		}
 
@@ -435,6 +459,8 @@ int HashManager::Hasher::run() {
 			try {
 				File f(fname, File::READ, File::OPEN);
 				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
+				int64_t size = f.getSize();
+				u_int32_t start = GET_TICK();
 
 				TigerTree slowTTH(bs, f.getLastModified());
 				TigerTree* tth = &slowTTH;
@@ -445,16 +471,29 @@ int HashManager::Hasher::run() {
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH)) {
 					tth = &slowTTH;
 #endif
+					u_int32_t lastRead = GET_TICK();
 					do {
 						size_t bufSize = BUF_SIZE;
+						if(SETTING(MAX_HASH_SPEED) > 0) {
+							u_int32_t now = GET_TICK();
+							u_int32_t minTime = n * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
+							if(lastRead + minTime > now) {
+								Thread::sleep(minTime - (now - lastRead));
+							}
+						}
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
 					} while (n > 0 && !stop);
 				}
 
 				f.close();
-				tth->finalize();			
-				HashManager::getInstance()->hashDone(fname, *tth);
+				tth->finalize();
+				u_int32_t end = GET_TICK();
+				int64_t speed = 0;
+				if(end > start) {
+					speed = size * 1000LL / (end - start);
+				}
+				HashManager::getInstance()->hashDone(fname, *tth, speed);
 			} catch(const FileException&) {
 				// Ignore, it'll be readded on the next share refresh...
 			}
@@ -475,5 +514,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.14 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.15 2004/04/18 12:51:14 arnetheduck Exp $
  */

@@ -34,15 +34,11 @@
 
 class HashManagerListener {
 public:
-	typedef HashManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 
-	enum Types {
-		TTH_DONE
-	};
+	typedef X<0> TTHDone;
 
-	virtual void onAction(Types, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
+	virtual void on(TTHDone, const string& /* fileName */, TTHValue* /* root */) throw() = 0;
 };
 
 class HashLoader;
@@ -186,13 +182,11 @@ private:
 
 	CriticalSection cs;
 
-	void hashDone(const string& aFileName, TigerTree& tth);
+	void hashDone(const string& aFileName, TigerTree& tth, int64_t speed);
 
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw() {
-		if(type == TimerManagerListener::MINUTE) {
-			Lock l(cs);
-			store.save();
-		}
+	virtual void on(TimerManagerListener::Minute, u_int32_t) throw() {
+		Lock l(cs);
+		store.save();
 	}
 };
 
@@ -200,5 +194,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.9 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.10 2004/04/18 12:51:14 arnetheduck Exp $
  */

@@ -96,7 +96,7 @@ public:
 
 	void infoUpdated();
 
-	User::Ptr getUser(const CID& cid);
+	User::Ptr getUser(const CID& cid, bool createUser);
 	User::Ptr getUser(const CID& cid, Client* aClient, bool putOnline = true);
 	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
 	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
@@ -158,24 +158,23 @@ private:
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
-	virtual void onAction(ClientListener::Types type, Client* client) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, const string& line) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) throw();
-	virtual void onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw();
+	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
+	virtual void on(UsersUpdated, Client* c, const User::List&) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
+	virtual void on(Failed, Client*, const string&) throw();
+	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
+	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
 
 	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
-	void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
-	void onTimerMinute(u_int32_t aTick);
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.46 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.47 2004/04/18 12:51:13 arnetheduck Exp $
  */
 

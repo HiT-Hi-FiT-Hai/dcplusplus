@@ -86,24 +86,21 @@ private:
 
 class DownloadManagerListener {
 public:
-	typedef DownloadManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 
-	enum Types {
-		/** This is the last message sent before a download is deleted. No more messages will be sent after it. */
-		COMPLETE,
-		/** This indicates some sort of failure with a particular download. No more messages will be sent after it */
-		FAILED,
-		/** This is the first message sent before a download starts. No other messages will be sent before. */
-		STARTING,
-		/** Sent once a second if something has actually been downloaded. */
-		TICK
-	};
+	typedef X<0> Complete;
+	typedef X<1> Failed;
+	typedef X<2> Starting;
+	typedef X<3> Tick;
 
-	virtual void onAction(Types, Download*) throw() { };
-	virtual void onAction(Types, Download*, const string&) throw() { };
-	virtual void onAction(Types, const Download::List&) throw() { };
+	/** This is the first message sent before a download starts. No other messages will be sent before. */
+	virtual void on(Starting, Download*) throw() { };
+	/** Sent once a second if something has actually been downloaded. */
+	virtual void on(Tick, const Download::List&) throw() { };
+	/** This is the last message sent before a download is deleted. No more messages will be sent after it. */
+	virtual void on(Complete, Download*) throw() { };
+	/** This indicates some sort of failure with a particular download. No more messages will be sent after it */
+	virtual void on(Failed, Download*, const string&) throw() { };
 };
 
 class DownloadManager : public Speaker<DownloadManagerListener>, 
@@ -180,30 +177,22 @@ private:
 	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) throw();
-	
-	void onFileNotAvailable(UserConnection* aSource) throw();
-	void onFailed(UserConnection* aSource, const string& aError);
-	void onData(UserConnection* aSource, const u_int8_t* aData, int aLen);
-	void onFileLength(UserConnection* aSource, const string& aFileLength);
-	void onMaxedOut(UserConnection* aSource);
-	void onModeChange(UserConnection* aSource, int aNewMode);
-	void onSending(UserConnection* aSource, int64_t aBytes);
+	virtual void on(Data, UserConnection*, const u_int8_t*, size_t) throw();
+	virtual void on(Failed, UserConnection*, const string&) throw();
+	virtual void on(Sending, UserConnection*, int64_t) throw();
+	virtual void on(FileLength, UserConnection*, int64_t) throw();
+	virtual void on(MaxedOut, UserConnection*) throw();
+	virtual void on(ModeChange, UserConnection* aSource) throw() { handleEndData(aSource);}
+	virtual	void on(FileNotAvailable, UserConnection*) throw();
 	
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
-	void onTimerSecond(u_int32_t aTick);
-
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 };
 
 #endif // !defined(AFX_DOWNLOADMANAGER_H__D6409156_58C2_44E9_B63C_B58C884E36A3__INCLUDED_)
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.57 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.58 2004/04/18 12:51:13 arnetheduck Exp $
  */

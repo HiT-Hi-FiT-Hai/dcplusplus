@@ -264,7 +264,7 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 }
 
-void QueueFrame::onQueueAdded(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Added, QueueItem* aQI) {
 	QueueItemInfo* ii = new QueueItemInfo(aQI);
 	{
 		Lock l(cs);
@@ -511,7 +511,7 @@ void QueueFrame::removeDirectories(HTREEITEM ht) {
 	ctrlDirs.DeleteItem(ht);
 }
 
-void QueueFrame::onQueueRemoved(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Removed, QueueItem* aQI) {
 	QueueItemInfo* qi = NULL;
 	{
 		Lock l(cs);
@@ -532,7 +532,7 @@ void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 	speak(REMOVE_ITEM, qi);
 }
 
-void QueueFrame::onQueueMoved(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::Moved, QueueItem* aQI) {
 	QueueItemInfo* qi = NULL;
 	QueueItemInfo* qi2 = new QueueItemInfo(aQI);
 	{
@@ -547,7 +547,7 @@ void QueueFrame::onQueueMoved(QueueItem* aQI) {
 	speak(ADD_ITEM,	qi2);
 }
 
-void QueueFrame::onQueueUpdated(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::SourcesUpdated, QueueItem* aQI) {
 	QueueItemInfo* ii = NULL;
 	{
 		Lock l(cs);
@@ -593,7 +593,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 	speak(UPDATE_ITEM, ii);
 }
 
-void QueueFrame::onQueueSearchStringUpdated(QueueItem* aQI) {
+void QueueFrame::on(QueueManagerListener::SearchStringUpdated, QueueItem* aQI) {
 	QueueItemInfo* ii = NULL;
 	{
 		Lock l(cs);
@@ -1289,22 +1289,9 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 	ctrlDirs.DeleteItem(item);
 }
 
-void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) throw() { 
-	switch(type) {
-	case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
-	case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); break;
-	case QueueManagerListener::REMOVED: onQueueRemoved(aQI); break;
-	case QueueManagerListener::MOVED: onQueueMoved(aQI); break;
-	case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
-	case QueueManagerListener::STATUS_UPDATED: onQueueUpdated(aQI); break;
-	case QueueManagerListener::SEARCH_STRING_UPDATED: onQueueSearchStringUpdated(aQI); break;
-	default: break;
-	}
-};
-
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.49 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.50 2004/04/18 12:51:15 arnetheduck Exp $
  */
 
 

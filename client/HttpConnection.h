@@ -29,21 +29,21 @@ class HttpConnection;
 
 class HttpConnectionListener {
 public:
-	typedef HttpConnectionListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		DATA,
-		FAILED,
-		COMPLETE,
-		REDIRECTED,
-		SET_DOWNLOAD_TYPE_NORMAL,
-		SET_DOWNLOAD_TYPE_BZIP2
-	};
+	template<int I>	struct X { static const int TYPE = I; };
 
-	virtual void onAction(Types, HttpConnection*) throw() { };	
-	virtual void onAction(Types, HttpConnection*, const string&) throw() { };
-	virtual void onAction(Types, HttpConnection*, const u_int8_t*, int) throw() { };
+	typedef X<0> Data;
+	typedef X<1> Failed;
+	typedef X<2> Complete;
+	typedef X<3> Redirected;
+	typedef X<4> TypeNormal;
+	typedef X<5> TypeBZ2;
+
+	virtual void on(Data, HttpConnection*, u_int8_t*, size_t) throw() { }
+	virtual void on(Failed, HttpConnection*, const string&) throw() { }
+	virtual void on(Complete, HttpConnection*, const string&) throw() { }
+	virtual void on(Redirected, HttpConnection*, const string&) throw() { }
+	virtual void on(TypeNormal, HttpConnection*) throw() { }
+	virtual void on(TypeBZ2, HttpConnection*) throw() { }
 };
 
 class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
@@ -74,10 +74,11 @@ private:
 	BufferedSocket* socket;
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type) throw();
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
-	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/) throw();
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) throw();
+	virtual void on(Connected) throw();
+	virtual void on(Line, const string&) throw();
+	virtual void on(Data, u_int8_t*, size_t) throw();
+	virtual void on(ModeChange) throw();
+	virtual void on(Failed, const string&) throw();
 
 	void onConnected(); 
 	void onLine(const string& aLine);
@@ -88,6 +89,6 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.17 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.18 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

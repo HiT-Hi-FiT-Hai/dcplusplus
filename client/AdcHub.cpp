@@ -55,7 +55,7 @@ void Command::parse(const string& aLine) {
 	}
 }
 
-AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), adapter(this) {
+AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n') {
 }
 
 void AdcHub::handle(Command& c, Command::INF) {
@@ -131,7 +131,7 @@ void AdcHub::handle(Command& c, Command::INF) {
 			Util::toString(sl) + ">" );
 	}
 
-	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+	fire(ClientListener::UserUpdated(), this, u);
 }
 
 void AdcHub::handle(Command& c, Command::SUP) {
@@ -140,30 +140,39 @@ void AdcHub::handle(Command& c, Command::SUP) {
 		return;
 	}
 	info();
-	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
 }
 
 void AdcHub::handle(Command& c, Command::MSG) {
 	if(c.getParameters().size() < 2)
 		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]));
-	if(!p->isOnline())
+	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
+	if(!p)
 		return;
-	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+	string msg = '<' + p->getNick() + "> " + c.getParameters()[1];
+	fire(ClientListener::Message(), this, msg);
 }
 
 void AdcHub::handle(Command& c, Command::GPA) {
 	if(c.getParameters().size() < 1)
 		return;
 	salt = c.getParameters()[0];
-	
-	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+
+	fire(ClientListener::GetPassword(), this);
 }
 
 void AdcHub::handle(Command& c, Command::QUI) {
-	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]));
+	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
+	if(!p)
+		return;
 	ClientManager::getInstance()->putUserOffline(p);
-	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+	fire(ClientListener::UserRemoved(), this, p);
+}
+
+void AdcHub::connect(const User* user) {
+	string tmp = (SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? "DCTM " : "DRCM ";
+	tmp += user->getCID().toBase32();
+	tmp += " 0 NMDC/1.0\n";
+	send(tmp);
 }
 
 void AdcHub::hubMessage(const string& aMessage) {
@@ -248,53 +257,22 @@ void AdcHub::info() {
 
 }
 
-void AdcHub::onAction(BufferedSocketListener::Types type) throw() {
-	switch(type) {
-		case BufferedSocketListener::CONNECTING: 
-			Speaker<AdcHubListener>::fire(AdcHubListener::CONNECTING, this); break;
-		case BufferedSocketListener::CONNECTED:
-			setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
-			lastInfo.clear();
-			send("HSUP +BASE\n");
-			Speaker<AdcHubListener>::fire(AdcHubListener::CONNECTED, this); break;
-		default:
-			break;
-	}
+void AdcHub::on(Connected) throw() { 
+	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
+	lastInfo.clear();
+	send("HSUP +BASE\n");
+	
+	fire(ClientListener::Connected(), this);
 }
 
-void AdcHub::onAction(BufferedSocketListener::Types type, const string& aLine) throw() {
-	switch(type) {
-		case BufferedSocketListener::LINE: dispatch(aLine); break;
-		case BufferedSocketListener::FAILED: 
-			if(getMe())
-				ClientManager::getInstance()->putUserOffline(getMe());
-			setMe(NULL);
-			Speaker<AdcHubListener>::fire(AdcHubListener::FAILED, this, aLine); break;
-		default: break;
-	}
+void AdcHub::on(Failed, const string& aLine) throw() { 
+	if(getMe())
+		ClientManager::getInstance()->putUserOffline(getMe());
+	setMe(NULL);
+	fire(ClientListener::Failed(), this, aLine);
+	
 }
-
-void AdcHub::ClientAdapter::onAction(Types, AdcHub*, const Command& cmd) throw() { 
-	switch(cmd.getCommand()) {
-		case Command::CMD_MSG: c->fire(ClientListener::MESSAGE, c, "<" + cmd.getParameters()[0] + "> " + cmd.getParameters()[1]); break;
-		case Command::CMD_INF: c->fire(ClientListener::USER_UPDATED, c, ClientManager::getInstance()->getUser(CID(cmd.getParameters()[0]))); break;
-		case Command::CMD_GPA: c->fire(ClientListener::GET_PASSWORD, c);
-		case Command::CMD_QUI: c->fire(ClientListener::USER_REMOVED, c, ClientManager::getInstance()->getUser(CID(cmd.getParameters()[0]))); break;
-		default: break;
-	}
-	string tmp = "Command: ";
-	tmp += cmd.getType();
-	u_int32_t x = cmd.getCommand();
-	tmp += (char*)&x;
-	tmp += " ";
-	for(StringIterC i = cmd.getParameters().begin(); i != cmd.getParameters().end(); ++i) {
-		tmp += Command::escape(*i) + " ";
-	}
-	c->fire(ClientListener::MESSAGE, c, tmp + "\r\n");
-
-};
-
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.3 2004/04/10 20:54:25 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.4 2004/04/18 12:51:13 arnetheduck Exp $
  */

@@ -241,20 +241,20 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
-	void onTimerMinute(u_int32_t aTick);
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
 	
 	// SearchManagerListener
-	virtual void onAction(SearchManagerListener::Types, SearchResult*) throw();
+	virtual void on(SearchManagerListener::SR, SearchResult*) throw();
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.54 2004/04/08 18:18:00 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.55 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

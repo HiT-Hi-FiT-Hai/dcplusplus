@@ -378,7 +378,7 @@ private:
 template<bool managed>
 class LimitedInputStream : public InputStream {
 public:
-	LimitedInputStream(InputStream* is, int aMaxBytes) : s(is), maxBytes(aMaxBytes) {
+	LimitedInputStream(InputStream* is, int64_t aMaxBytes) : s(is), maxBytes(aMaxBytes) {
 	}
 	virtual ~LimitedInputStream() { if(managed) delete s; }
 
@@ -414,10 +414,11 @@ public:
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
 		u_int8_t* b = (u_int8_t*)wbuf;
-		size_t written = 0;
+		size_t l2 = len;
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
-				return written + s->write(b, len);
+				s->write(b, len);
+				return len;
 			} else {
 				size_t n = min(bufSize - pos, len);
 				memcpy(buf + pos, b, n);
@@ -425,12 +426,12 @@ public:
 				pos += n;
 				len -= n;
 				if(pos == bufSize) {
-					written += s->write(buf, bufSize);
+					s->write(buf, bufSize);
 					pos = 0;
 				}
 			}
 		}
-		return written;
+		return l2;
 	}
 private:
 	OutputStream* s;
@@ -454,6 +455,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.31 2004/03/09 21:40:49 arnetheduck Exp $
+ * $Id: File.h,v 1.32 2004/04/18 12:51:14 arnetheduck Exp $
  */
 

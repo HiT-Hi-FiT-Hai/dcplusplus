@@ -283,15 +283,8 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 }
 
-void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntry* entry) throw() {
-	switch(type) {
-		case HubManagerListener::FAVORITE_ADDED: addEntry(entry, ctrlHubs.GetItemCount()); break;
-		case HubManagerListener::FAVORITE_REMOVED: ctrlHubs.DeleteItem(ctrlHubs.find((LPARAM)entry)); break;
-	}
-};
-
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.19 2004/03/24 20:38:17 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.20 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

@@ -230,7 +230,14 @@ private:
 
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
 			if(a->type == DIRECTORY) {
-				return (b->type == DIRECTORY ? Util::stricmp(a->columns[COLUMN_FILENAME], b->columns[COLUMN_FILENAME]) : -1);
+				if(b->type == DIRECTORY) {
+					switch(col) {
+					case COLUMN_SIZE: return compare(a->dir->getSize(), b->dir->getSize());
+					default: return Util::stricmp(a->columns[col], b->columns[col]);
+					}
+				} else {
+					return -1;
+				}
 			} else if(b->type == DIRECTORY) {
 				return 1;
 			} else {
@@ -283,5 +290,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.30 2004/03/27 16:32:57 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.31 2004/04/18 12:51:15 arnetheduck Exp $
  */

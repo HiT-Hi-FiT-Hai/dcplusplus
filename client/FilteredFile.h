@@ -72,7 +72,7 @@ class FilteredOutputStream : public OutputStream {
 public:
 	using OutputStream::write;
 
-	FilteredOutputStream(OutputStream* aFile) : f(aFile), pos(0), flushed(false) { }
+	FilteredOutputStream(OutputStream* aFile) : f(aFile), flushed(false) { }
 	~FilteredOutputStream() { if(manage) delete f; }
 
 	size_t flush() throw(Exception) {
@@ -83,12 +83,11 @@ public:
 		size_t written = 0;
 
 		for(;;) {
-			size_t n = BUF_SIZE - pos;
+			size_t n = BUF_SIZE;
 			size_t zero = 0;
-            bool more = filter(NULL, zero, buf + pos, n);
+            bool more = filter(NULL, zero, buf, n);
 
-			written += f->write(buf, pos + n);
-			pos = 0;
+			written += f->write(buf, n);
 
 			if(!more)
 				break;
@@ -103,44 +102,36 @@ public:
 		u_int8_t* wb = (u_int8_t*)wbuf;
 		size_t written = 0;
 		while(len > 0) {
-			size_t n = BUF_SIZE - pos;
+			size_t n = BUF_SIZE;
 			size_t m = len;
 
-			bool more = filter(wb, m, buf + pos, n);
-			pos += n;
+			bool more = filter(wb, m, buf, n);
 			wb += m;
 			len -= m;
-			
+
+			written += f->write(buf, n);
+
 			if(!more) {
 				// We've reached the end of the stream so we might as well flush any
 				// buffers below to return the correct number of bytes we'll actually
 				// write if there's more buffering being done at lower levels...
-				written += f->write(buf, pos);
 				written += f->flush();
-				pos = 0;
 				if(len > 0) {
 					throw Exception("Garbage data after end of stream");
 				}
-				flushed = true;
 				return written;
-			}
-
-			if(pos == BUF_SIZE) {
-				written += f->write(buf, pos);
-				pos = 0;
 			}
 		}
 		return written;
 	}
 
 private:
-	enum { BUF_SIZE = 64*1024 };
+	static const size_t BUF_SIZE = 64*1024;
 
 	OutputStream* f;
 	Filter filter;
 
 	u_int8_t buf[BUF_SIZE];
-	u_int32_t pos;
 	bool flushed;
 };
 
@@ -185,7 +176,7 @@ public:
 	}
 
 private:
-	enum { BUF_SIZE = 64*1024 };
+	static const size_t BUF_SIZE = 64*1024;
 
 	InputStream* f;
 	Filter filter;

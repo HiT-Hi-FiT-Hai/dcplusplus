@@ -184,20 +184,13 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 
 	// HubManagerListener
-	virtual void onAction(HubManagerListener::Types type, const User::Ptr& aUser) throw() {
-		switch(type) {
-		case HubManagerListener::USER_ADDED: addUser(aUser); break;
-		case HubManagerListener::USER_REMOVED: removeUser(aUser); break;
-		}
-	}
+	virtual void on(UserAdded, const User::Ptr& aUser) throw() { addUser(aUser); }
+	virtual void on(UserRemoved, const User::Ptr& aUser) throw() { removeUser(aUser); }
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
-		switch(type) {
-		case ClientManagerListener::USER_UPDATED:
-			if(aUser->isFavoriteUser()) {
-				PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
-			}
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+		if(aUser->isFavoriteUser()) {
+			PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
 		}
 	}
 
@@ -210,6 +203,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.14 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.15 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

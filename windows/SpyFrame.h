@@ -121,16 +121,16 @@ private:
 	bool closed;
 	
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const string& s) throw();
+	virtual void on(ClientManagerListener::IncomingSearch, const string& s) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t) throw();
 };
 
 #endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.13 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.14 2004/04/18 12:51:15 arnetheduck Exp $
  */
 

@@ -55,20 +55,17 @@ public:
 
 class UploadManagerListener {
 public:
-	typedef UploadManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
+	template<int I>	struct X { static const int TYPE = I; };
 	
-	enum Types {
-		COMPLETE,
-		FAILED,
-		STARTING,
-		TICK
-	};
+	typedef X<0> Complete;
+	typedef X<1> Failed;
+	typedef X<2> Starting;
+	typedef X<3> Tick;
 
-	virtual void onAction(Types, Upload*) throw() { };
-	virtual void onAction(Types, const Upload::List&) throw() { };
-	virtual void onAction(Types, Upload*, const string&) throw() { };
+	virtual void on(Starting, Upload*) throw() { };
+	virtual void on(Tick, const Upload::List&) throw() { };
+	virtual void on(Complete, Upload*) throw() { };
+	virtual void on(Failed, Upload*, const string&) throw() { };
 
 };
 
@@ -126,27 +123,23 @@ private:
 	}
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
-	void onTimerMinute(u_int32_t aTick);
+	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
+	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes, u_int32_t actual) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw();
+	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw();
+	virtual void on(Failed, UserConnection*, const string&) throw();
+	virtual void on(Get, UserConnection*, const string&, int64_t) throw();
+	virtual void on(GetBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, false); }
+	virtual void on(GetZBlock, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() { onGetBlock(conn, line, resume, bytes, true); }
+	virtual void on(Send, UserConnection*) throw();
+	virtual void on(GetListLength, UserConnection* conn) throw();
+	virtual void on(TransmitDone, UserConnection*) throw();
 	
-	void onBytesSent(UserConnection* aSource, u_int32_t aBytes, u_int32_t aActual);
-	void onFailed(UserConnection* aSource, const string& aError);
-	void onTransmitDone(UserConnection* aSource);
-	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
-	void onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
-	void onSend(UserConnection* aSource);
-
 	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 };
 
@@ -154,5 +147,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.60 2004/03/09 21:40:49 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.61 2004/04/18 12:51:14 arnetheduck Exp $
  */

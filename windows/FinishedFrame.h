@@ -209,12 +209,24 @@ private:
 
 	void addEntry(FinishedItem* entry);
 	
-	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw();
+	virtual void on(AddedDl, FinishedItem* entry) throw() {
+		PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry);
+	}
+	virtual void on(RemovedDl, FinishedItem* entry) throw() { 
+		totalBytes -= entry->getChunkSize();
+		totalTime -= entry->getMilliSeconds();
+		PostMessage(WM_SPEAKER, SPEAK_REMOVE);
+	}
+	virtual void on(RemovedAllDl) throw() { 
+		PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
+		totalBytes = 0;
+		totalTime = 0;
+	}
 };
 
 #endif // FINISHEDFRAME_H
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.15 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.16 2004/04/18 12:51:15 arnetheduck Exp $
  */
