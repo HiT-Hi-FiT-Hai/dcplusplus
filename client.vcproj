@@ -68,7 +68,8 @@
 			IntermediateDirectory=".\Release/client"
 			ConfigurationType="4"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
@@ -76,7 +77,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
+				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,_REENTRANT,BZ_NO_STDIO"

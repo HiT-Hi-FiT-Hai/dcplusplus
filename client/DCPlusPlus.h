@@ -51,6 +51,7 @@ inline void debugTrace(const char*) { };
 template<class T1> inline void debugTrace(const char*, T1) { };
 template<class T1,class T2> inline void debugTrace(const char*, T1, T2) { };
 template<class T1,class T2, class T3> inline void debugTrace(const char*, T1, T2, T3) { };
+template<class T1,class T2, class T3, class T4> inline void debugTrace(const char*, T1, T2, T3, T4) { };
 #define dcdebug debugTrace
 #define dcassert(exp) 
 #define dcdrun(exp)
@@ -86,6 +87,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.24 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.25 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

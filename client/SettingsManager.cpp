@@ -34,7 +34,7 @@ const string SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
-	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", 
+	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
@@ -96,6 +96,8 @@ SettingsManager::SettingsManager()
 	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
+	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[user], %[size] (%[chunksize]), %[speed], %[time])");
+
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -202,6 +204,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.36 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.37 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

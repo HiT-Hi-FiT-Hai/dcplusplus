@@ -233,10 +233,20 @@ void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 	}
 	
 	if(BOOLSETTING(LOG_DOWNLOADS)) {
-		LOGDT(DOWNLOAD_AREA, d->getTarget() + STRING(DOWNLOADED_FROM) + aSource->getUser()->getNick() + 
+		StringMap params;
+		params["filename"] = d->getTarget();
+		params["user"] = aSource->getUser()->getNick();
+		params["size"] = Util::toString(d->getSize()) + " " + STRING(B);
+		params["sizeshort"] = Util::formatBytes(d->getSize());
+		params["chunksize"] = Util::toString(d->getTotal()) + " " + STRING(B);
+		params["chunksizeshort"] = Util::formatBytes(d->getTotal());
+		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
+		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
+		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
+/*		LOGDT(DOWNLOAD_AREA, d->getTarget() + STRING(DOWNLOADED_FROM) + aSource->getUser()->getNick() + 
 			", " + Util::toString(d->getSize()) + " b, " + Util::formatBytes(d->getAverageSpeed()) + 
-			"/s, " + Util::formatSeconds((GET_TICK() - d->getStart()) / 1000));
-	}
+			"/s, " + Util::formatSeconds((GET_TICK() - d->getStart()) / 1000) );
+*/	}
 
 	fire(DownloadManagerListener::COMPLETE, d);
 	
@@ -291,8 +301,20 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 
 	{
 		Lock l(cs);
+		// Either I'm stupid or the msvc7 optimizer is doing something _very_ strange here...
+		// STL-port -D_STL_DEBUG complains that .begin() and .end() don't have the same owner (!),
+		// but only in release build
+
 		dcassert(find(downloads.begin(), downloads.end(), d) != downloads.end());
-		downloads.erase(find(downloads.begin(), downloads.end(), d));
+
+		//		downloads.erase(find(downloads.begin(), downloads.end(), d));
+		
+		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
+			if(*i == d) {
+				downloads.erase(i);
+				break;
+			}
+		}
 	}
 	QueueManager::getInstance()->putDownload(d, finished);
 	
@@ -312,5 +334,5 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.59 2002/05/03 18:53:01 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.60 2002/05/09 15:26:46 arnetheduck Exp $
  */

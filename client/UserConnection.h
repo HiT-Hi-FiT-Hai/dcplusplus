@@ -78,8 +78,27 @@ public:
 			file->setPos(aPos);
 		}
 	};
-	void addPos(int64_t aPos) { pos += aPos; last+=aPos; total+=aPos; };
+
+	void addPos(int64_t aPos) {
+		pos += aPos; last+=aPos; total+=aPos; 
+	};
 	
+	void updateRunningAverage() {
+		u_int32_t tick = GET_TICK();
+		if(tick > lastTick) {
+			int64_t diff = (int64_t)(tick - lastTick);
+			if(runningAverage == 0) {
+				runningAverage = last * 1000 / diff;
+			} else if( (tick - getStart()) < 30000) {
+				runningAverage = getAverageSpeed();
+			} else {
+				runningAverage = ( (runningAverage * ((int64_t)30000 - diff) ) + (last*diff)) / (int64_t)30000;
+			}
+			last = 0;
+		}
+		lastTick = tick;
+	}
+
 	int64_t getTotal() { return total; };
 	void resetTotal() { total = 0; };
 	
@@ -88,22 +107,25 @@ public:
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 
 	int64_t getAverageSpeed() {
-		int64_t dif = (int64_t)(GET_TICK() - getStart());
-		return (dif > 0) ? (getTotal() * (int64_t)1000 / dif) : 0;
+		int64_t diff = (int64_t)(GET_TICK() - getStart());
+		return (diff > 0) ? (getTotal() * (int64_t)1000 / diff) : 0;
 	}
 
 	int64_t getSecondsLeft() {
-		int64_t avg = getAverageSpeed();
+		updateRunningAverage();
+		int64_t avg = getRunningAverage();
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
 	Transfer() : file(NULL), userConnection(NULL), start(0), last(0), total(0), 
-		pos(-1), size(-1) { };
+		pos(-1), size(-1), lastTick(GET_TICK()), runningAverage(0) { };
 	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
 
 	GETSET(File*, file, File);
 	GETSET(UserConnection*, userConnection, UserConnection);
 	GETSET(u_int32_t, start, Start);
+	GETSET(u_int32_t, lastTick, LastTick);
+	GETSET(int64_t, runningAverage, RunningAverage);
 private:
 	int64_t last;
 	int64_t total;
@@ -303,5 +325,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.42 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.43 2002/05/09 15:26:46 arnetheduck Exp $
  */

@@ -206,7 +206,7 @@ void MainFrame::onUploadTick(const Upload::List ul) {
 
 		char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
 		sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
-			(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getAverageSpeed()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
+			(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getRunningAverage()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
 
 		StringListInfo* i = new StringListInfo((LPARAM)u->getUserConnection()->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
@@ -262,7 +262,7 @@ void MainFrame::onDownloadTick(const Download::List dl) {
 		Download* d = *j;
 		char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
 		sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
-			(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getAverageSpeed()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
+			(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getRunningAverage()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
 		
 		StringListInfo* i = new StringListInfo((LPARAM)d->getUserConnection()->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
@@ -736,7 +736,7 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		::Shell_NotifyIcon(NIM_ADD, &nid);
 		ShowWindow(SW_HIDE);
 		trayIcon = true;
-	} else if(wParam == SIZE_RESTORED && trayIcon) {
+	} else if( ((wParam == SIZE_RESTORED) || wParam == SIZE_MAXIMIZED) && trayIcon) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
 		nid.hWnd = m_hWnd;
@@ -930,6 +930,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.8 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

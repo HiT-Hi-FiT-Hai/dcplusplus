@@ -115,7 +115,49 @@ string Util::getLocalIp() {
 }
 
 /**
+* This function takes a sting and a set of parameters and transforms them accoring to
+* a simple formatting rule, similar to strftime. In the message, every parameter should be
+* represented by %[name]. It will then be replaced by the corresponding item in 
+* the params stringmap. After that, the string is passed through strftime with the current
+* date/time and then finally written to the log file. If the parameter is not present at all,
+* it is removed from the string completely...
+*/
+string Util::formatParams(const string& msg, StringMap& params) {
+	string result = msg;
+
+	string::size_type i, j, k;
+	i = 0;
+	while (( j = result.find("%[", i)) != string::npos) {
+		if( (result.size() < j + 2) || ((k = result.find(']', j + 2)) == string::npos) ) {
+			break;
+		}
+		string name = result.substr(j + 2, k - j - 2);
+		StringMapIter smi = params.find(name);
+		if(smi == params.end()) {
+			result.erase(j, k);
+		} else {
+			result.replace(j, k-j, smi->second);
+		}
+		i = k + 1;
+	}
+
+	int bufsize = result.size() + 64;
+	char* buf = new char[bufsize];
+	time_t now = time(NULL);
+
+	while(!strftime(buf, bufsize-1, result.c_str(), localtime(&now))) {
+		delete buf;
+		bufsize+=64;
+		buf = new char[bufsize];
+	}
+
+	result = buf;
+	delete buf;
+	return result;
+}
+
+/**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.15 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.16 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

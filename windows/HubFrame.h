@@ -359,6 +359,7 @@ private:
 				server = line;
 				client->connect(line);
 			} else {
+				client->disconnect();
 				speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
 			}
 			break;
@@ -397,6 +398,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.6 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.7 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

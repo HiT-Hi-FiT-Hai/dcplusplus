@@ -1,3 +1,12 @@
+ -- 0.174 --
+* Fixed a tray icon bug (thanks andreas kronquist)
+* Fixed a minor search results bug (thanks to andreas kronquist)
+* Fixed a redirection bug
+* Changed so that the average speed is calculated as a running average over the last 30 seconds (instead of
+  the whole transfer time...the value in the log file is still a whole file average)
+* Added a lot of advanced logging options (log format now customizable)
+* Found a bug in the msvc7 optimizer...after a small workaround, my vc7-compiled build seems quite stable
+
  -- 0.173 2002-04-29 --
 * Fixed some minor debug mode bugs
 * Fixed some vc7 compatibility issues, but some initial experiments show that there are stability problems

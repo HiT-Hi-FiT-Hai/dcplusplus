@@ -189,7 +189,7 @@ public:
 	static string formatBytes(int64_t aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
-			sprintf(buf, "%d %s", (int)aBytes, CSTRING(B));
+			sprintf(buf, "%d %s", (int)(aBytes&0xffffffff), CSTRING(B));
 		} else if(aBytes < 1024*1024) {
 			sprintf(buf, "%.02f %s", (double)aBytes/(1024.0), CSTRING(KB));
 		} else if(aBytes < 1024*1024*1024) {
@@ -212,6 +212,8 @@ public:
 #endif		
 		return buf;
 	}
+
+	static string formatParams(const string& msg, StringMap& params);
 
 	static string toLower(const string& aString) {
 		string tmp = aString;
@@ -323,6 +325,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.41 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: Util.h,v 1.42 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

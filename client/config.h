@@ -32,6 +32,8 @@
 #endif
 
 // This enables stlport's debug mode (and slows it down to a crawl...)
+# define _STLP_DEBUG 1
+
 # ifdef _DEBUG
 //# define _STLP_DEBUG 1
 # else
@@ -75,5 +77,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file config.h
- * $Id: config.h,v 1.6 2002/04/09 18:43:28 arnetheduck Exp $
+ * $Id: config.h,v 1.7 2002/05/09 15:26:46 arnetheduck Exp $
  */

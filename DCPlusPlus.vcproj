@@ -83,7 +83,8 @@
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm150 "
@@ -92,7 +93,7 @@
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
-				OmitFramePointers="TRUE"
+				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"

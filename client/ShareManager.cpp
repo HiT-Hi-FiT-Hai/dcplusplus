@@ -387,6 +387,7 @@ bool checkType(const string& aString, int aType) {
 	}
 	return found;		
 }
+
 /**
  * Alright, the main point here is that when searching, a search string is most often found in 
  * the filename, not directory name, so we want to make that case faster. Also, we want to
@@ -458,7 +459,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 		}
 	}
 
-	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() <= maxResults); ++l) {
+	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < maxResults); ++l) {
 		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 }
@@ -470,7 +471,7 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 	StringList& sl = t.getTokens();
 	SearchResult::List results;
 
-	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() <= maxResults; ++i) {
+	for(Directory::MapIter i = directories.begin(); (i != directories.end()) && (results.size() < maxResults); ++i) {
 		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 	
@@ -479,6 +480,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.37 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.38 2002/05/09 15:26:46 arnetheduck Exp $
  */
 

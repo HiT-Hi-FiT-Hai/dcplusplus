@@ -71,18 +71,17 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 			}
 		}
 		
-		while(search.size() > 0 && search.front().second + 3*60*1000 < GET_TICK()) {
+		while((search.size() > 0) && ((search.front().second + 3*60*1000) < GET_TICK()) ) {
 			QueueItem* q = findByTarget(search.front().first);
 			search.pop_front();
 			if(q != NULL) {
-				bool online = false;
-				for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+				QueueItem::Source::Iter j;
+				for(j = q->getSources().begin(); j != q->getSources().end(); ++j) {
 					if((*j)->getUser()->isOnline()) {
-						online = true;
 						break;
 					}
 				}
-				if(!online) {
+				if(j == q->getSources().end()) {
 					dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
 					SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
 					break;
@@ -94,17 +93,18 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	if( !(((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
 		((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) )) ) {
 		
-			{
-				Lock l(cs);
-				for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-					if(((*i)->getStatus() == QueueItem::WAITING) && ((*i)->getPriority() != QueueItem::PAUSED) )
-						for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
-							if((*j)->getUser()->isOnline()) {
-								ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
-							}
+		{
+			Lock l(cs);
+			for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+				if(((*i)->getStatus() == QueueItem::WAITING) && ((*i)->getPriority() != QueueItem::PAUSED) ) {
+					for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
+						if((*j)->getUser()->isOnline()) {
+							ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
 						}
+					}
 				}
 			}
+		}
 	}
 	
 	if(dirty) {
@@ -431,8 +431,8 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 			continue;
 
 		for(StringIter j = records.begin(); j != records.end(); ++j) {
-			j++; // filename
-			
+			++j; // filename
+
 			const string& size   = *(++j);
 			const string& target = *(++j);
 			const string& file   = *(++j);
@@ -452,7 +452,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.23 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.24 2002/05/09 15:26:46 arnetheduck Exp $
  */
 
 
