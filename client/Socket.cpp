@@ -90,13 +90,9 @@ Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL
  * Binds an UDP socket to a certain port.
  */
 void Socket::bind(short aPort) throw (SocketException){
-	if(type != TYPE_UDP) {
-		throw SocketException("Only UDP Sockets supported by bind()");
-	}
+	dcassert(type == TYPE_UDP);
+	dcassert(!isConnected());
 
-	if(isConnected()) {
-		disconnect();
-	}
 	SOCKADDR_IN sock_addr;
 		
 	sock_addr.sin_family = AF_INET;
@@ -108,11 +104,9 @@ void Socket::bind(short aPort) throw (SocketException){
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
-	if(isConnected())
-		disconnect();
-	
+	dcassert(type == TYPE_TCP);
+	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
-	type = TYPE_TCP;
 	connected = true;
 }
 
@@ -131,9 +125,8 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 	SOCKADDR_IN  serv_addr;
 	hostent* host;
 
-	if(connected) {
-		disconnect();
-	}
+	dcassert(!isConnected());
+	
 	if(sock == -1) {
 		create();
 	}
@@ -196,12 +189,20 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	checkconnected();
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
-	dcassert(aLen > 0);			
+	dcassert(aLen > 0);
+	int sendSize = aLen;
 	while(aLen) {
-		int i = ::send(sock, aBuffer, aLen, 0);
+		int i = ::send(sock, aBuffer, sendSize, 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
 				Sleep(10);
+			} else if(errno == ENOBUFS) {
+				Sleep(10);
+				if(sendSize > 32) {
+					sendSize /= 2;
+				} else {
+					throw SocketException("Ran out of buffer space");
+				}
 			} else {
 				checksockerr(SOCKET_ERROR);
 			}
@@ -217,9 +218,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.17 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.18 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.18  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.17  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

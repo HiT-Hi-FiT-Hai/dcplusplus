@@ -283,7 +283,7 @@ void QueueManager::removeSource(const string& aTarget, const string& aUser)  {
 	}
 }
 
-void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) throw(QueueException) {
+void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) throw() {
 	
 	{
 		Lock l(cs);
@@ -306,7 +306,7 @@ void QueueManager::save(SimpleXML* aXml) {
 		if(!d->isSet(QueueItem::USER_LIST)) {
 			aXml->addTag("Download");
 			aXml->addChildAttrib("Target", d->getTarget());
-			aXml->addChildAttrib("Resume", d->isSet(Download::RESUME));
+			aXml->addChildAttrib("Resume", d->isSet(QueueItem::RESUME));
 			aXml->addChildAttrib("Size", d->getSize());
 			aXml->addChildAttrib("Priority", d->getPriority());
 

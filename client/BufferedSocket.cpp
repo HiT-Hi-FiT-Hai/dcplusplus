@@ -23,212 +23,338 @@
 #include "File.h"
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
+	if(isConnected()) {
+		Socket::disconnect();
+	}
 	Socket::accept(aSocket);
 
 	dcdebug("Socket accepted\n");
-	startReader();
 }
 
 /**
  * Write a file to the socket, stops reading from the socket until the transfer's finished.
  * @return True if everythings ok and the thread should continue reading, false on error
  */
-bool BufferedSocket::writer(BufferedSocket* bs) {
+void BufferedSocket::threadSendFile() {
 	DWORD len;
-
-	HANDLE h = bs->readerEvent;
-	File* file = bs->file;
 	dcassert(file != NULL);
 	
-	if(!bs->isConnected()) {
-		bs->fire(BufferedSocketListener::FAILED, "Not connected");
-		return false;
+	if(!isConnected()) {
+		fire(BufferedSocketListener::FAILED, "Not connected");
+		return;
+	}
+	{
+		Lock l(cs);
+		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+			if(*i == SHUTDOWN) {
+				return;
+			} else if(*i == DISCONNECT){
+				// Let threadrun handle it...
+				return;
+			} else {
+				// Should never happen...
+				dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+			}
+		}
 	}
 
-	while(WaitForSingleObject(h, 0) == WAIT_TIMEOUT) {
+	while(WaitForSingleObject(commandEvent, 0) == WAIT_TIMEOUT) {
 		try {
-			if( (len = file->read(bs->inbuf, bs->inbufSize)) == 0) {
-				bs->fire(BufferedSocketListener::TRANSMIT_DONE);
-				return true;
+
+			if( (len = file->read(inbuf, inbufSize)) == 0) {
+				fire(BufferedSocketListener::TRANSMIT_DONE);
+				return;
 			}
-			bs->write((char*)bs->inbuf, len);
-			bs->fire(BufferedSocketListener::BYTES_SENT, len);
+			Socket::write((char*)inbuf, len);
+			fire(BufferedSocketListener::BYTES_SENT, len);
 		} catch(Exception e) {
 			dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
-			bs->fire(BufferedSocketListener::FAILED, e.getError());
-			return false;
+			fire(BufferedSocketListener::FAILED, e.getError());
+			return;
 		}
 	}
-	// Hm, to fire or not to fire, that is the question...
-//	fire(BufferedSocketListener::FAILED, "File not finished");
-	return false;
 }
 
-DWORD WINAPI BufferedSocket::reader(void* p) {
-	ATLASSERT(p);
-	
-	BufferedSocket* bs = (BufferedSocket*) p;
-	
-	HANDLE h[3];
-	
-	h[0] = bs->readerEvent;
-	h[1] = bs->writerEvent;
+bool BufferedSocket::threadBind() {
+	try {
+		Socket::create(TYPE_UDP);
+		Socket::bind(port);
+	} catch(SocketException e) {
+		dcdebug("BufferedSocket::threadBind caught: %s\n", e.getError().c_str());
+		fail(e.getError());
+		return false;
+	}
+	return true;
+}
+
+bool BufferedSocket::threadConnect() {
+	HANDLE h[2];
+	string s;
+	short p;
+
+	{
+		Lock l(cs);
+
+		// Check the task queue that we don't have a pending shutdown / disconnect...
+		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+			if(*i == SHUTDOWN) {
+				return false;
+			} else if(*i == DISCONNECT){
+				// Let threadrun handle it...
+				return false;
+			} else {
+				// Should never happen...
+				dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+			} 
+		}
+		
+		s = server;
+		p = port;
+	}
 
 	try {
-		if(!bs->isConnected()) {
-			bs->create();
-			h[2] = bs->getEvent();
+		Socket::create();
+		h[0] = commandEvent;
+		h[1] = getEvent();
+		
+		Socket::connect(s, p);
 
-			bs->Socket::connect(bs->server, bs->port);
-			switch(WaitForMultipleObjects(3, h, FALSE, 10000)) {
-			case WAIT_TIMEOUT:
-				bs->disconnect();
-				bs->fire(BufferedSocketListener::FAILED, "Connection Timeout");
-				return 0x01;
-			case WAIT_OBJECT_0:
-				bs->disconnect();
-				dcdebug("BufferedSocket::reader stopped while connecting\n");
-				return 0x00;
-			case WAIT_OBJECT_0 + 1:
-				// Ignore it?
-				dcdebug("BufferedSocket::reader Writer event while connecting!\n");
-				bs->disconnect();
-				bs->fire(BufferedSocketListener::FAILED, "Not connected");
-				return 0x02;
-			case WAIT_OBJECT_0 + 2:
-				// We're connected!
-				break;
-			case WAIT_FAILED:
-				bs->disconnect();
-				bs->fire(BufferedSocketListener::FAILED, "Connection failed");
-				dcdebug("BufferedSocket::reader Wait failed (0x%x)\n", GetLastError());
-				return 0x03;
-			default:
-				bs->disconnect();
-				bs->fire(BufferedSocketListener::FAILED, "Connection failed");
-				dcdebug("BufferedSocket::reader Unknown Wait response (0x%x)\n", GetLastError());
-				return 0x04;
-			}
+		switch(WaitForMultipleObjects(2, h, FALSE, 10000)) {
+		case WAIT_TIMEOUT:
+			Socket::disconnect();
+			fire(BufferedSocketListener::FAILED, "Connection Timeout");
+			return false;
+		case WAIT_OBJECT_0:
+			dcdebug("BufferedSocket::threadConnect: Received task\n");
+			{
+				Lock l(cs);
 				
-			bs->fire(BufferedSocketListener::CONNECTED);
-		} else {
-			h[2] = bs->getEvent();
+				// Check the task queue that we don't have a pending shutdown / disconnect...
+				for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+					if(*i == SHUTDOWN) {
+						return false;
+					} else if(*i == DISCONNECT){
+						// Let threadrun handle it...
+						return false;
+					} else {
+						// Should never happen...
+						dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+					} 
+				}
+				
+			}
+			return 0x00;
+		case WAIT_OBJECT_0 + 1:
+			// We're connected!
+			fire(BufferedSocketListener::CONNECTED);
+			return true;
+		default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 		}
-	} catch (SocketException e) {
-		dcdebug("BufferedSocket::Reader caught: %s\n", e.getError().c_str());
-		bs->disconnect();
-		bs->fire(BufferedSocketListener::FAILED, e.getError());
-		return 0x05;
+	} catch(SocketException e) {
+		dcdebug("BufferedSocket::threadConnect caught: %s\n", e.getError().c_str());
+		// Release all resources
+		fail(e.getError());
 	}
 
-	string line;
-	if(bs->inbuf == NULL) {
-		bs->inbuf = new BYTE[bs->inbufSize];
-	}
+	// ?
+	return false;
+}	
 
-	while(true) {
-		switch( WaitForMultipleObjects(3, h, FALSE, INFINITE) ) {
-		case WAIT_OBJECT_0:				// readerEvent, time to stop
-			dcdebug("BufferedSocket::reader stopped\n");
-			return 0;
-		case WAIT_OBJECT_0 + 1:			// writerEvent, send the file
-			dcdebug("BufferedSocket::reader Writer event\n");
-			if(!writer(bs)) {
-				return 0x06;
-			}
-			break;
-		case WAIT_OBJECT_0 + 2:
 
-			try {
-				//dcdebug("Available bytes: %d\n", bs->getAvailable());
-				if(bs->getAvailable() > bs->inbufSize) {
-					// We grow the buffer according to how much is actually available...
-					delete bs->inbuf;
-					bs->inbufSize *= 2;
-					bs->inbuf = new BYTE[bs->inbufSize];
-					dcdebug("BufferedSocket::reader: Grown %p's buffer to %d\n", bs, bs->inbufSize);
-				}
-				int i = bs->read(bs->inbuf, bs->inbufSize);
-				if(i == -1) {
-					// EWOULDBLOCK, no data recived, most probably a read event...
-					continue;
-				} else if(i == 0) {
-					// This socket has been closed...
-					bs->disconnect();
-					bs->fire(BufferedSocketListener::FAILED, "Disconnected");
-					return 0x07;
-				}
-				int bufpos = 0;
-				string l;
+void BufferedSocket::threadRead() {
+	try {
+		//dcdebug("Available bytes: %d\n", bs->getAvailable());
+		while(getAvailable() > inbufSize) {
+			// We grow the buffer according to how much is actually available...
+			delete inbuf;
+			inbufSize *= 2;
+			inbuf = new BYTE[inbufSize];
+			dcdebug("BufferedSocket::reader: Grown %p's buffer to %d\n", this, inbufSize);
+		}
+		int i = read(inbuf, inbufSize);
+		if(i == -1) {
+			// EWOULDBLOCK, no data recived...
+			return;
+		} else if(i == 0) {
+			// This socket has been closed...
+			disconnect();
+			return;
+		}
 
-				if(bs->mode == MODE_LINE) {
-					// We might as well create the string, at least one part will be sent as a string...
-					l = string((char*)bs->inbuf, i);
+		int bufpos = 0;
+		string l;
+		
+		if(mode == MODE_LINE) {
+			// We might as well create the string, at least one part will be sent as a string...
+			l = string((char*)inbuf, i);
+		}
+		
+		while(i) {
+			if(mode == MODE_LINE) {
+				string::size_type pos;
+				if( (pos = l.find(separator)) != string::npos) {
+					bufpos += sizeof(separator) + pos;
+					if(!line.empty()) {
+						fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
+						line = "";
+					} else {
+						fire(BufferedSocketListener::LINE, l.substr(0, pos));
+					}
+					l = l.substr(pos+1);
+					i-=(pos+1);
+				} else {
+					line += l;
+					i = 0;
 				}
-				
-				while(i) {
-					if(bs->mode == MODE_LINE) {
-						string::size_type pos;
-						if( (pos = l.find(bs->separator)) != string::npos) {
-							bufpos += sizeof(bs->separator) + pos;
-							if(!line.empty()) {
-								bs->fire(BufferedSocketListener::LINE, line + l.substr(0, pos));
-								line = "";
-							} else {
-								bs->fire(BufferedSocketListener::LINE, l.substr(0, pos));
-							}
-							l = l.substr(pos+1);
-							i-=(pos+1);
-						} else {
-							line += l;
-							i = 0;
-						}
-					} else if(bs->mode == MODE_DATA) {
-						if(bs->dataBytes == -1) {
-							bs->fire(BufferedSocketListener::DATA, bs->inbuf+bufpos, i);
-							i = 0;
-						} else {
-							int high = bs->dataBytes < i ? bs->dataBytes - i : i;
-							bs->fire(BufferedSocketListener::DATA, bs->inbuf+bufpos, high);
-							i-=high;
-							
-							bs->dataBytes -= high;
-							if(bs->dataBytes == 0) {
-								bs->fire(BufferedSocketListener::MODE_CHANGE, MODE_LINE);
-								bs->mode = MODE_LINE;
-							}
-						}
-					} else if(bs->mode == MODE_DGRAM) {
-						bs->fire(BufferedSocketListener::DATA, bs->inbuf, i);
-						i = 0;
+			} else if(mode == MODE_DATA) {
+				if(dataBytes == -1) {
+					fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
+					i = 0;
+				} else {
+					int high = dataBytes < i ? dataBytes - i : i;
+					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
+					i-=high;
+					
+					dataBytes -= high;
+					if(dataBytes == 0) {
+						fire(BufferedSocketListener::MODE_CHANGE, MODE_LINE);
+						mode = MODE_LINE;
 					}
 				}
-			} catch(SocketException e) {
-				dcdebug("BufferedSocket::Reader caught(2): %s\n", e.getError().c_str());
-				// Ouch...
-				bs->disconnect();
-				bs->fire(BufferedSocketListener::FAILED, e.getError());
-				return 0x08;
+			} else if(mode == MODE_DGRAM) {
+				fire(BufferedSocketListener::DATA, inbuf, i);
+				i = 0;
+			}
+		}
+	} catch(SocketException e) {
+		dcdebug("BufferedSocket::threadRead caught: %s\n", e.getError().c_str());
+		// Ouch...
+		fail(e.getError());
+		return;
+	}
+}
+
+void BufferedSocket::threadSendData() {
+
+	if(outbufPos[curBuf] == 0)
+		return;
+	
+	int pos = 0;
+	try {
+		BYTE* buf;
+		int len;
+		{
+			Lock l(cs);
+			buf = outbuf[curBuf];
+			len = outbufPos[curBuf];
+			outbufPos[curBuf] = 0;
+			curBuf = (curBuf + 1) % BUFFERS;
+		}
+		
+		Socket::write((char*)buf, len);
+	} catch(SocketException e) {
+		dcdebug("BufferedSocket::threadSendData caught: %s\n", e.getError().c_str());
+		// Ouch...
+		fail(e.getError());
+	}
+}
+
+void BufferedSocket::write(const char* aBuf, int aLen) throw(SocketException) {
+	int pos = 0;
+
+	if(!isConnected()) {
+		throw("Not connected");
+	}
+	{
+		Lock l(cs);
+		int mybuf = curBuf;
+		
+		while(outbufSize[mybuf] < (aLen + outbufPos[mybuf])) {
+			// Need to grow...
+			outbufSize[mybuf]*=2;
+			dcdebug("Growing outbuf[%d] to %d bytes\n", mybuf, outbufSize[mybuf]);
+			BYTE* tmp = new BYTE[outbufSize[mybuf]];
+			memcpy(tmp, outbuf[mybuf], outbufPos[mybuf]);
+			delete outbuf[mybuf];
+			outbuf[mybuf] = tmp;
+		}
+
+		memcpy(outbuf[mybuf] + outbufPos[mybuf], aBuf, aLen);
+		outbufPos[mybuf] += aLen;
+		addTask(SEND_DATA);
+	}
+}
+
+void BufferedSocket::threadRun() {
+	
+	HANDLE h[2];
+	
+	h[0] = commandEvent;
+
+	int handles = 1;
+	int i = 0;
+	while(true) {
+		handles = isConnected() ? 2 : 1;
+		switch( (i = WaitForMultipleObjects(handles, h, FALSE, INFINITE))) {
+		case WAIT_OBJECT_0:
+			{
+				while(true) {
+					Tasks t;
+					{
+						Lock l(cs);
+						if(tasks.size() == 0)
+							break;
+						t = tasks.front();
+						tasks.pop_front();
+					}
+					switch(t) {
+					case SHUTDOWN: threadShutDown(); return;
+					case DISCONNECT:
+						{
+							Socket::disconnect(); 
+							fire(BufferedSocketListener::FAILED, "Disconnected");
+							handles = 1;
+							
+							for(int k = 0; k < BUFFERS; k++) {
+								outbufPos[k] = 0;
+							}
+						}
+						break;
+
+					case SEND_FILE: threadSendFile(); break;
+					case SEND_DATA: threadSendData(); break;
+					case CONNECT:
+						if(threadConnect()) {
+							h[1] = getEvent();
+						}
+						break;
+						
+					case BIND:
+						if(threadBind()) {
+							h[1] = getEvent();
+						}
+						break;
+						
+					default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
+					}
+				}
 			}
 			break;
-		case WAIT_FAILED:
-			// Duuhhh???
-			dcdebug("BufferedSocket::reader Wait failed (%x)\n", GetLastError());
-			bs->disconnect();
-			bs->fire(BufferedSocketListener::FAILED, "Disconnected");
-			return 0x09;
-		default:
-			dcassert(0);
+		case WAIT_OBJECT_0 + 1: threadRead(); break;
+		default: dcassert("Bad return value from WaitForMultipleObjects" == NULL);
+
 		}
 	}
-	return 0;
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.24 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.25 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.25  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.24  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -52,7 +52,7 @@ extern CAppModule _Module;
 #include <string>
 #include <map>
 #include <list>
-
+#include <deque>
 using namespace std;
 
 //{{AFX_INSERT_LOCATION}}
@@ -62,9 +62,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.16 2002/01/22 00:10:38 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.17 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.17  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.16  2002/01/22 00:10:38  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

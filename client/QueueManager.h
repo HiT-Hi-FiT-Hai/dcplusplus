@@ -244,7 +244,7 @@ public:
 
 	void removeSource(const string& aTarget, const string& aUser);
 	
-	void setPriority(const string& aTarget, QueueItem::Priority p);
+	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
 	StringList getTargetsBySize(LONGLONG aSize) {
 		Lock l(cs);

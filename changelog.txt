@@ -1,3 +1,9 @@
+ -- 0.152 --
+* Fixed a queue saving bug (resulting in overwritten resumes)
+* Improved network efficiency and application responsivness
+* Started improving the threading, which will result in less crashes.
+
+
  -- 0.151 2001-02-03 --
 * Fixed stupid resume file bug (abnormal progam termination...)
 

@@ -20,7 +20,6 @@
 #define SETTINGSMANAGER_H
 
 #include "stdafx.h"
-#include "DCPlusPlus.h"
 #include "Util.h"
 
 class SimpleXML;
@@ -169,9 +168,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.12 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.13 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.13  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.12  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

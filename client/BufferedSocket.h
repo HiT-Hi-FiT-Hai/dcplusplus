@@ -54,12 +54,54 @@ public:
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
 {
 public:
+
 	enum {	
 		MODE_LINE,
 		MODE_DATA,
 		MODE_DGRAM
 	};
 
+	enum Tasks {
+		CONNECT,
+		DISCONNECT,
+		SEND_DATA,
+		SEND_FILE,
+		SHUTDOWN,
+		BIND
+	};
+
+	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : inbufSize(4096), curBuf(0),
+		file(NULL), separator(aSeparator), workerThread(NULL), mode(MODE_LINE), dataBytes(0) {
+		
+		if( (commandEvent = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL) {
+			throw SocketException(Util::translateError(GetLastError()));
+		}
+
+		if( (workerThread = CreateThread(NULL, 0, &worker, this, 0, &threadId)) == NULL) {
+			throw SocketException(Util::translateError(GetLastError()));
+		}
+
+		inbuf = new BYTE[inbufSize];
+		for(int i = 0; i < BUFFERS; i++) {
+			outbuf[i] = new BYTE[inbufSize];
+			outbufPos[i] = 0;
+			outbufSize[i] = inbufSize;
+		}
+	};
+	
+	virtual ~BufferedSocket() {
+		stopWorker();
+		
+		CloseHandle(commandEvent);
+		delete inbuf;
+		for(int i = 0; i < BUFFERS; i++) {
+			delete outbuf[i];
+		}
+	}
+	
+	/**
+	 * Sets data mode for aBytes bytes long. Must be called within an action method...
+	 */
 	void setDataMode(LONGLONG aBytes = -1) {
 		mode = MODE_DATA;
 		dataBytes = aBytes;
@@ -68,51 +110,38 @@ public:
 	int getMode() { return mode; };
 	
 	virtual void bind(short aPort) {
-		Socket::bind(aPort);
+		Lock l(cs);
 		mode = MODE_DGRAM;
-		startReader();
+		port = aPort;
+		addTask(BIND);
 	}
 
 	virtual void connect(const string& aServer, short aPort) {
+		Lock l(cs);
+		mode = MODE_LINE;
 		server = aServer;
 		port = aPort;
-		startReader();
+		addTask(CONNECT);
 	}
 	
 	virtual void accept(const ServerSocket& aSocket);
-	char getSeparator() { return separator; };
-	void setSeparator(char aSeparator) { separator = aSeparator; };
-
 	virtual void write(const string& aData) throw(SocketException) {
+		dcassert(isConnected());
 		write(aData.data(), aData.length());
 	}
-	virtual void write(const char* aBuf, int aLen) throw(SocketException) {
-		Lock l(cs);
-		Socket::write(aBuf, aLen);
-	}
-	
-	BufferedSocket(char aSeparator = 0x0a) : inbuf(NULL), inbufSize(4096), outbufPos(0), outbuf(NULL), outbufSize(4096), file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
-		dataBytes(0) {
-		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	};
-
-	virtual ~BufferedSocket() {
-		stopReader();
-		CloseHandle(writerEvent);
-		CloseHandle(readerEvent);
-		delete inbuf;
-		delete outbuf;
-	}
+	virtual void write(const char* aBuf, int aLen) throw(SocketException);
 
 	/**
 	 * Send the file f over this socket. Note; reading is suspended until the whole file has
 	 * been sent.
 	 */
 	void transmitFile(File* f) throw() {
+		Lock l(cs);
 		file = f;
-		SetEvent(writerEvent);
+		addTask(SEND_FILE);
 	}
+
+	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(const BufferedSocket& aSocket) {
 		// Copy still not allowed
@@ -120,47 +149,67 @@ private:
 
 	CriticalSection cs;
 	
+	deque<Tasks> tasks;
 	string server;
 	short port;
 	int mode;
 	LONGLONG dataBytes;
-
+	
+	string line;
 	BYTE* inbuf;
 	int inbufSize;
-
-	BYTE* outbuf;
-	int outbufSize;
-	int outbufPos;
-
-	char separator;
-
+	enum {BUFFERS = 2};
+	BYTE* outbuf[BUFFERS];
+	int outbufSize[BUFFERS];
+	int outbufPos[BUFFERS];
+	int curBuf;
+	
 	File* file;
 
-	HANDLE fileWriterEvent;
-	HANDLE writerEvent;
-	HANDLE readerEvent;
-	HANDLE readerThread;
-	static DWORD WINAPI reader(void* p);
-	static bool writer(BufferedSocket* bs);
+	HANDLE commandEvent;
+
+	HANDLE workerThread;
+	DWORD threadId;
+
+	static DWORD WINAPI worker(void* p) {
+		BufferedSocket* bs = (BufferedSocket*)p;
+		bs->threadRun();
+		return 0;
+	}
 	
-	void startReader() {
-		DWORD threadId;
-		stopReader();
-		
-		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
+	void threadRun();
+	bool threadBind();
+	bool threadConnect();
+
+	void threadRead();
+	void threadSendFile();
+	void threadSendData();
+	void threadDisconnect();
+	
+	void fail(const string& aError) {
+		Socket::disconnect();
+		fire(BufferedSocketListener::FAILED, aError);
+		for(int i = 0; i < BUFFERS; i++) {
+			outbufPos[i] = 0;
+		}
 	}
 
-	void stopReader() {
-		if(readerThread != NULL) {
-			SetEvent(readerEvent);
-			
-			if(WaitForSingleObject(readerThread, 5000) == WAIT_TIMEOUT) {
-				dcassert(0);
-			}
-			// Make sure the event is reset in case the thread had already stopped...
-			ResetEvent(readerEvent);
-			CloseHandle(readerThread);			
-			readerThread = NULL;
+	void threadShutDown() {
+		fire(BufferedSocketListener::FAILED, "Closing connection...");
+		removeListeners();
+		Socket::disconnect();
+	}
+	
+	void addTask(Tasks task) {
+		tasks.push_back(task);
+		SetEvent(commandEvent);
+	}
+
+	void stopWorker() {
+		addTask(SHUTDOWN);
+
+		if(WaitForSingleObject(workerThread, 5000) == WAIT_TIMEOUT) {
+			dcassert("BufferedSocket::stopWorker: Waiting for thread failed!" == NULL);
 		}
 	}
 	
@@ -170,9 +219,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.23 2002/01/26 14:59:22 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.24 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.24  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.23  2002/01/26 14:59:22  arnetheduck
  * Fixed disconnect crash
  *

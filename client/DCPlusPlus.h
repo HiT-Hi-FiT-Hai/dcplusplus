@@ -16,6 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+
+#ifndef _DCPLUSPLUS_H
+#define _DCPLUSPLUS_H
+
 #ifdef _DEBUG
 #define dcdebug ATLTRACE
 #define dcassert(exp) ATLASSERT(exp)
@@ -26,6 +30,17 @@
 #define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
+
+// Replace with templates...
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
+template<typename T> T min(T a, T b) { return (a < b) ? a : b; };
+template<typename T> T max(T a, T b) { return (a > b) ? a : b; };
 
 typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
@@ -54,11 +69,16 @@ typedef StringMap::iterator StringMapIter;
 
 #define IDC_DOWNLOAD_TARGET 5000
 
+#endif // _DCPLUSPLUS_H
+
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.13 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.14 2002/02/06 12:29:06 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.14  2002/02/06 12:29:06  arnetheduck
+ * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
+ *
  * Revision 1.13  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...
