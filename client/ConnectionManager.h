@@ -28,6 +28,7 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "TimerManager.h"
+#include "ConnectionManagerListener.h"
 
 class ConnectionQueueItem {
 public:
@@ -55,23 +56,6 @@ private:
 };
 // Comparing with a user...
 inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; };
-
-class ConnectionManagerListener {
-public:
-	typedef ConnectionManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		ADDED,
-		CONNECTED,
-		REMOVED,
-		FAILED,
-		STATUS_CHANGED
-	};
-	virtual void onAction(Types, ConnectionQueueItem*) throw() { };
-	virtual void onAction(Types, ConnectionQueueItem*, const string&) throw() { };
-};
 
 class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
 {
@@ -164,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.51 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.52 2003/10/07 00:35:08 arnetheduck Exp $
  */

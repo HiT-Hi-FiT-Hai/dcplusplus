@@ -29,8 +29,13 @@
 class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 {
 public:
-	UploadPage(SettingsManager *s) : PropPage(s) { };
-	~UploadPage() { };
+	UploadPage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CSTRING(SETTINGS_UPLOADS));
+	};
+	~UploadPage() {
+		ctrlDirectories.Detach();
+		ctrlTotal.Detach();
+	};
 
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -59,6 +64,6 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.5 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.6 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

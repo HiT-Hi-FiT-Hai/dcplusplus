@@ -960,6 +960,16 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		frames.erase(server);
 		server = redirect;
 		frames[server] = this;
+
+		// Is the redirect hub a favorite? Then honor settings for it.
+		FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(server);
+		if(hub) {
+			client->setNick(hub->getNick(true));
+			client->setDescription(hub->getUserDescription());
+			client->setPassword(hub->getPassword());
+		}
+		// else keep current settings
+
 		client->addListener(this);
 		client->connect(redirect);
 	}
@@ -1089,5 +1099,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.29 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.30 2003/10/07 00:35:08 arnetheduck Exp $
  */

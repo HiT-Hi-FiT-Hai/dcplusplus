@@ -23,31 +23,25 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "../client/ConnectionManager.h"
-#include "../client/DownloadManager.h"
-#include "../client/UploadManager.h"
 #include "../client/TimerManager.h"
-#include "../client/CriticalSection.h"
 #include "../client/HttpConnection.h"
 #include "../client/HubManager.h"
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
 #include "SingleInstance.h"
+#include "TransferView.h"
 
 #define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener,
-		private ConnectionManagerListener, private QueueManagerListener
+		public CMessageFilter, public CIdleHandler, public CSplitterImpl<MainFrame, false>,
+		private TimerManagerListener, private HttpConnectionListener, private QueueManagerListener
 {
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
-		oldshutdown(false), stopperThread(NULL), c(NULL), closing(false) { 
-		c = new HttpConnection();
+		oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), closing(false) { 
 		memset(statusSizes, 0, sizeof(statusSizes));
 	};
 	virtual ~MainFrame();
@@ -56,11 +50,6 @@ public:
 	CMDICommandBarCtrl m_CmdBar;
 
 	enum {
-		ADD_UPLOAD_ITEM,
-		ADD_DOWNLOAD_ITEM,
-		REMOVE_ITEM,
-		SET_TEXT,
-		SET_TEXTS,
 		DOWNLOAD_LISTING,
 		STATS,
 		AUTO_CONNECT,
@@ -68,11 +57,6 @@ public:
 		VIEW_TEXT
 	};
 
-	enum {
-		IMAGE_DOWNLOAD = 0,
-		IMAGE_UPLOAD
-	};
-	
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -98,7 +82,6 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
 		MESSAGE_HANDLER(FTN_ROWS_CHANGED, onRowsChanged)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
@@ -116,15 +99,12 @@ public:
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
+		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_FAVUSERS, onFavoriteUsers)
-		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
-		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
 		COMMAND_ID_HANDLER(IDC_FILE_ADL_SEARCH, onFileADLSearch)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
@@ -142,13 +122,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
-		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
-		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
-		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
-		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -167,10 +141,6 @@ public:
 	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavoriteUsers(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
-	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -188,12 +158,9 @@ public:
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCloseDisconnected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -203,50 +170,10 @@ public:
 		return WMU_WHERE_ARE_YOU;
 	}
 
-	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		ConnectionManager::getInstance()->getServerSocket().incoming();
-		return 0;
-	}
-
 	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
 		updateTray(true); 
 		return 0;
 	};
-
-	static int sortSize(LPARAM a, LPARAM b);
-	static int sortStatus(LPARAM a, LPARAM b);
-	static int sortSpeed(LPARAM a, LPARAM b);
-	static int sortTimeLeft(LPARAM a, LPARAM b);
-	static int sortItem(LPARAM a, LPARAM b);
-
-	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
-			if (!ctrlTransfers.getSortDirection())
-				ctrlTransfers.setSort(-1, ctrlTransfers.getSortType());
-			else
-				ctrlTransfers.setSortDirection(false);
-		} else {
-			switch(l->iSubItem) {
-			case COLUMN_TIMELEFT:
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortTimeLeft); 
-				break;
-			case COLUMN_SPEED:
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSpeed); 
-				break;
-			case COLUMN_SIZE:
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSize); 
-				break;
-			case COLUMN_STATUS:
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortStatus); 
-				break;
-			default:
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortItem); 
-				break;
-			}
-		}
-		return 0;
-	}
 
 	LRESULT onRowsChanged(UINT /*uMsg*/, WPARAM /* wParam */, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		UpdateLayout();
@@ -270,29 +197,6 @@ public:
 		bHandled = FALSE;
 		return 0;
 	}
-	
-	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-
-		if(kd->wVKey == VK_DELETE) {
-			removeSelected();
-		}
-		return 0;
-	}
-
-	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		removeSelected();
-		return 0;
-	}
-	
-	void removeSelected() {
-		int i = -1;
-		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ItemInfo* ii = (ItemInfo*)ctrlTransfers.GetItemData(i);
-			ConnectionManager::getInstance()->removeConnection(ii->user, ii->type == ItemInfo::TYPE_DOWNLOAD);
-		}
-	}
-	
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
@@ -323,6 +227,11 @@ public:
 		return 0;
 	}
 
+	LRESULT OnWindowTileVert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		MDITile(MDITILE_VERTICAL);
+		return 0;
+	}
+
 	LRESULT OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		MDIIconArrange();
 		return 0;
@@ -339,52 +248,6 @@ public:
 	}	
 
 private:
-	enum {
-		COLUMN_FIRST,
-		COLUMN_USER = COLUMN_FIRST,
-		COLUMN_STATUS,
-		COLUMN_TIMELEFT,
-		COLUMN_SPEED,
-		COLUMN_FILE,
-		COLUMN_SIZE,
-		COLUMN_PATH,
-		COLUMN_LAST
-	};
-
-	class ItemInfo {
-	public:
-		typedef HASH_MAP<ConnectionQueueItem*, ItemInfo*, PointerHash<ConnectionQueueItem> > Map;
-		typedef Map::iterator MapIter;
-
-		enum Status {
-			STATUS_RUNNING,
-			STATUS_WAITING
-		};
-		enum Types {
-			TYPE_DOWNLOAD,
-			TYPE_UPLOAD
-		};
-
-		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
-			int64_t p = 0, int64_t sz = 0) : user(u), type(t), status(s), pos(p), size(sz), speed(0), timeLeft(0) { };
-		User::Ptr user;
-		Types type;
-		Status status;
-		int64_t pos;
-		int64_t size;
-		int64_t speed;
-		int64_t timeLeft;
-	};
-
-	class StringListInfo;
-	friend class StringListInfo;
-
-	class StringListInfo {
-	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
-		LPARAM lParam;
-		string columns[COLUMN_LAST];
-	};
 
 	class DirectoryListInfo {
 	public:
@@ -393,8 +256,9 @@ private:
 		string file;
 		LPARAM lParam;
 	};
-	CriticalSection cs;
-	ExListViewCtrl ctrlTransfers;
+	
+	TransferView transferView;
+
 	CStatusBarCtrl ctrlStatus;
 	FlatTabCtrl ctrlTab;
 	HttpConnection* c;
@@ -402,10 +266,6 @@ private:
 	CImageList images;
 	CImageList largeImages;
 	
-	ItemInfo::Map transferItems;
-	
-	CMenu transferMenu;
-
 	UINT trayMessage;
 	/** Is the tray icon visible? */
 	bool trayIcon;
@@ -418,12 +278,9 @@ private:
 	bool closing;
 
 	int lastUpload;
-	static int columnIndexes[];
-	static int columnSizes[];
 
 	int statusSizes[7];
 	
-	CImageList arrows;
 	HANDLE stopperThread;
 
 	HWND createToolbar();
@@ -434,30 +291,6 @@ private:
 	void startSocket();
 
 	MainFrame(const MainFrame&) { dcassert(0); };
-	// UploadManagerListener
-	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) throw();
-	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul) throw();
-	void onUploadStarting(Upload* aUpload);
-	void onUploadTick(const Upload::List& aUpload);
-	void onUploadComplete(Upload* aUpload);
-	
-	// DownloadManagerListener
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload) throw();
-	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl) throw();
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) throw();
-	void onDownloadComplete(Download* aDownload);
-	void onDownloadFailed(Download* aDownload, const string& aReason);
-	void onDownloadStarting(Download* aDownload);
-	void onDownloadTick(const Download::List& aDownload);
-
-	// ConnectionManagerListener
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) throw();
-	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) throw();	
-	void onConnectionAdded(ConnectionQueueItem* aCqi);
-	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
-	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
-	void onConnectionRemoved(ConnectionQueueItem* aCqi);
-	void onConnectionStatus(ConnectionQueueItem* aCqi);
 
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
@@ -475,7 +308,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.21 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.22 2003/10/07 00:35:08 arnetheduck Exp $
  */
 
  

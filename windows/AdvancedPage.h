@@ -29,8 +29,13 @@
 class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 {
 public:
-	AdvancedPage(SettingsManager *s) : PropPage(s) { };
-	virtual ~AdvancedPage() { };
+	AdvancedPage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CSTRING(SETTINGS_ADVANCED));
+	};
+
+	virtual ~AdvancedPage() { 
+		ctrlCommands.Detach();
+	};
 
 	BEGIN_MSG_MAP(AdvancedPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -54,7 +59,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 	
 protected:
 	ExListViewCtrl ctrlCommands;
@@ -67,6 +71,6 @@ protected:
 
 /**
  * @file
- * $Id: AdvancedPage.h,v 1.5 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: AdvancedPage.h,v 1.6 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

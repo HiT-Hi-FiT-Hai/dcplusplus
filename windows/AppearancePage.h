@@ -29,7 +29,10 @@
 class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
 {
 public:
-	AppearancePage(SettingsManager *s) : PropPage(s) { };
+	AppearancePage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CSTRING(SETTINGS_APPEARANCE));
+	};
+
 	virtual ~AppearancePage();
 
 	BEGIN_MSG_MAP(AppearancePage)
@@ -49,7 +52,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 	
 protected:
 	string EncodeFont(LOGFONT const& font);
@@ -69,5 +71,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.6 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.7 2003/10/07 00:35:08 arnetheduck Exp $
  */

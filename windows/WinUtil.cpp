@@ -50,6 +50,7 @@ string WinUtil::lastKick;
 string WinUtil::lastRedirect;
 string WinUtil::lastServer;
 HWND WinUtil::mainWnd = NULL;
+HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
 
 void WinUtil::init(HWND hWnd) {
@@ -95,7 +96,8 @@ void WinUtil::init(HWND hWnd) {
 	window.CreatePopupMenu();
 
 	window.AppendMenu(MF_STRING, ID_WINDOW_CASCADE, CSTRING(MENU_CASCADE));
-	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_TILE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_HORIZONTAL_TILE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_VERT, CSTRING(MENU_VERTICAL_TILE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CSTRING(MENU_ARRANGE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CSTRING(MENU_MINIMIZE_ALL));
 	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -154,7 +156,7 @@ void WinUtil::init(HWND hWnd) {
 	lf.lfWeight = FW_BOLD;
 	boldFont = ::CreateFontIndirect(&lf);
 	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
-	monoFont = (HFONT)::CreateFontIndirect(&lf);
+	monoFont = (HFONT)::CreateFontIndirect(&lf2);
 }
 
 void WinUtil::uninit() {
@@ -417,5 +419,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.20 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.21 2003/10/07 00:35:08 arnetheduck Exp $
  */

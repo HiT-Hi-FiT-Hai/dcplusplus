@@ -249,6 +249,30 @@ public:
 	static string formatParams(const string& msg, StringMap& params);
 	static string formatTime(const string &msg, const time_t tm);
 
+	static string formatNumber(int64_t aNumber) {
+		char buf[64];
+#ifdef WIN32
+		char number[64];
+		sprintf(number, "%I64d", aNumber);
+		SetLocaleInfoA(GetUserDefaultLCID(), LOCALE_IDIGITS, "0");
+		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, NULL, buf, sizeof(buf)/sizeof(buf[0]));
+#else
+		sprintf(buf, "%lld", aNumber);
+#endif		
+		return buf;
+	}
+
+	static string formatNumber(const string& aString) {
+#ifdef WIN32
+		char buf[64];
+		SetLocaleInfoA(GetUserDefaultLCID(), LOCALE_IDIGITS, "0");
+		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, aString.c_str(), NULL, buf, sizeof(buf)/sizeof(buf[0]));
+#else
+		return aString; //formatNumber(toInt64(aString));
+#endif
+	}
+
+
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
 	static string toLower(const char* aString, int len = -1) {
 		string tmp;
@@ -454,5 +478,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.60 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: Util.h,v 1.61 2003/10/07 00:35:08 arnetheduck Exp $
  */

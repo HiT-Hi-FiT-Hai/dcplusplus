@@ -24,14 +24,18 @@
 #endif // _MSC_VER > 1000
 
 #include "PropPage.h"
+#include "TreePropertySheet.h"
 
-class PropertiesDlg : public CPropertySheet
+class PropertiesDlg : public TreePropertySheet
 {
 public:
 	enum { numPages = 6 };
 
 	BEGIN_MSG_MAP(PropertiesDlg)
 		COMMAND_ID_HANDLER(IDOK, onOK)
+		CHAIN_MSG_MAP(TreePropertySheet)
+	ALT_MSG_MAP(TreePropertySheet::TAB_MESSAGE_MAP)
+		MESSAGE_HANDLER(TCM_SETCURSEL, TreePropertySheet::onSetCurSel)
 	END_MSG_MAP()
 
 	PropertiesDlg(SettingsManager *s);
@@ -49,5 +53,5 @@ protected:
 
 /**
  * @file
- * $Id: PropertiesDlg.h,v 1.5 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: PropertiesDlg.h,v 1.6 2003/10/07 00:35:08 arnetheduck Exp $
  */

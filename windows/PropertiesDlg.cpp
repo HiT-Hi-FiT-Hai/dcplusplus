@@ -38,7 +38,7 @@ ResourceManager::Strings titles[] = {
 	ResourceManager::SETTINGS_ADVANCED
 };
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet("Settings")
 {
 	pages[0] = new GeneralPage(s);
 	pages[1] = new DownloadPage(s);
@@ -48,7 +48,6 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 	pages[5] = new AdvancedPage(s);
 
 	for(int i=0; i<numPages; i++) {
-		pages[i]->setTitle(ResourceManager::getInstance()->getString(titles[i]));
 		AddPage(pages[i]->getPSP());
 	}
 
@@ -85,6 +84,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.5 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.6 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

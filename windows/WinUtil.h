@@ -53,6 +53,7 @@ public:
 	static string lastRedirect;
 	static string lastServer;
 	static HWND mainWnd;
+	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
 	static string commands;
 
@@ -149,5 +150,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.14 2003/09/30 13:36:54 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.15 2003/10/07 00:35:08 arnetheduck Exp $
  */

@@ -35,7 +35,6 @@ public:
 
 	virtual PROPSHEETPAGE *getPSP() = 0;
 	virtual void write() = 0;
-	virtual void setTitle(const string& t) = 0;
 
 	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
 
@@ -61,6 +60,6 @@ protected:
 
 /**
  * @file
- * $Id: PropPage.h,v 1.4 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.5 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

@@ -29,7 +29,9 @@
 class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
-	GeneralPage(SettingsManager *s) : PropPage(s) { };
+	GeneralPage(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CSTRING(SETTINGS_GENERAL));
+	};
 	virtual ~GeneralPage() { };
 
 	BEGIN_MSG_MAP(GeneralPage)
@@ -49,7 +51,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 	
 private:
 	static Item items[];
@@ -63,6 +64,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.8 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

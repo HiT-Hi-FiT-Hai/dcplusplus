@@ -162,11 +162,10 @@ void AdvancedPage::write()
 	}
 	HubManager::getInstance()->save();
 
-	ctrlCommands.Detach();
 }
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.15 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.16 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

@@ -165,9 +165,10 @@
 		<String Name="MenuWindow">&amp;Window</String>
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
+		<String Name="MenuHorizontalTile">Horizontal Tile</String>
+		<String Name="MenuVerticalTile">Vertical Tile</String>
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuMinimizeAll">Minimize &amp;All</String>
-		<String Name="MenuTile">Tile</String>
 		<String Name="Move">Move/Rename</String>
 		<String Name="MoveDown">Move Down</String>
 		<String Name="MoveUp">Move Up</String>
@@ -238,7 +239,7 @@
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Server">Server</String>
 		<String Name="SetPriority">Set priority</String>
-		<String Name="SettingsAdvanced">Advanced</String>
+		<String Name="SettingsAdvanced">Advanced\XXX</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAutoAway">Auto-away on minimize (and back on restore)</String>
@@ -277,7 +278,7 @@
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsGeneral">General</String>
-		<String Name="SettingsLogs">Logs and Sound</String>
+		<String Name="SettingsLogs">Advanced\Logs and Sound</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

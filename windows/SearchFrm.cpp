@@ -375,7 +375,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 		l->push_back(Util::emptyString);
 	}
 	l->push_back(aResult->getHubName());
-	l->push_back((aResult->getType() == SearchResult::TYPE_FILE) ? Util::toString(aResult->getSize()) : Util::emptyString);
+	l->push_back((aResult->getType() == SearchResult::TYPE_FILE) ? Util::formatNumber(aResult->getSize()) : Util::emptyString);
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
 }
 
@@ -1041,5 +1041,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.23 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.24 2003/10/07 00:35:08 arnetheduck Exp $
  */

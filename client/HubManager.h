@@ -172,6 +172,16 @@ public:
 		save();
 	}
 	
+	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer) {
+		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+			FavoriteHubEntry* hub = *i;
+			if(Util::stricmp(hub->getServer(), aServer) == 0) {
+				return hub;
+			}
+		}
+		return NULL;
+	}
+
 	HubEntry::List getPublicHubs() {
 		Lock l(cs);
 		return publicHubs;
@@ -227,7 +237,7 @@ private:
 	
 	FavoriteHubEntry::Iter getFavoriteHub(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
-			if((*i)->getServer() == aServer) {
+			if(Util::stricmp((*i)->getServer(), aServer) == 0) {
 				return i;
 			}
 		}
@@ -253,6 +263,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.39 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.40 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

@@ -216,6 +216,7 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
 	Directory* dir = new Directory(aName.substr(aName.rfind('\\') + 1), aParent);
+	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 	dir->addSearchType(getMask(dir->getName()));
 
 #ifdef WIN32
@@ -232,7 +233,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
-					dir->addType(SearchManager::TYPE_DIRECTORY);
+					//dir->addType(SearchManager::TYPE_DIRECTORY);
 					dir->directories[name] = buildTree(aName + '\\' + name, dir);
 					dir->addSearchType(dir->directories[name]->getSearchTypes()); 
 				}
@@ -704,6 +705,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.55 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.56 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

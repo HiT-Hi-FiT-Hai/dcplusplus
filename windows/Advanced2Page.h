@@ -28,7 +28,10 @@
 class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
 {
 public:
-	Advanced2Page(SettingsManager *s) : PropPage(s) { };
+	Advanced2Page(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CSTRING(SETTINGS_LOGS));
+	};
+
 	virtual ~Advanced2Page() { };
 
 	BEGIN_MSG_MAP(Advanced2Page)
@@ -51,8 +54,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
-
 
 protected:
 	static Item items[];
@@ -62,6 +63,6 @@ protected:
 
 /**
  * @file
- * $Id: Advanced2Page.h,v 1.6 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.7 2003/10/07 00:35:08 arnetheduck Exp $
  */
 

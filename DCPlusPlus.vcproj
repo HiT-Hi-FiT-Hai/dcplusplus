@@ -298,6 +298,12 @@
 				RelativePath="windows\TextFrame.cpp">
 			</File>
 			<File
+				RelativePath="windows\TransferView.cpp">
+			</File>
+			<File
+				RelativePath="windows\TreePropertySheet.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\UploadPage.cpp">
 			</File>
 			<File
@@ -348,6 +354,9 @@
 			</File>
 			<File
 				RelativePath="windows\CommandDlg.h">
+			</File>
+			<File
+				RelativePath="client\ConnectionManagerListener.h">
 			</File>
 			<File
 				RelativePath=".\windows\DirectoryListingFrm.h">
@@ -417,6 +426,12 @@
 			</File>
 			<File
 				RelativePath="windows\TextFrame.h">
+			</File>
+			<File
+				RelativePath="windows\TransferView.h">
+			</File>
+			<File
+				RelativePath="windows\TreePropertySheet.h">
 			</File>
 			<File
 				RelativePath=".\windows\UploadPage.h">

@@ -28,7 +28,10 @@
 class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 {
 public:
-	DownloadPage(SettingsManager *s) : PropPage(s) { };
+	DownloadPage(SettingsManager *s) : PropPage(s) { 
+		m_psp.dwFlags |= PSP_USETITLE;
+		m_psp.pszTitle = CSTRING(SETTINGS_DOWNLOADS);
+	};
 	virtual ~DownloadPage() { };
 
 	BEGIN_MSG_MAP(DownloadPage)
@@ -44,7 +47,6 @@ public:
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const string& t) { SetTitle(t.c_str()); };
 	
 protected:
 	static Item items[];
@@ -54,5 +56,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.8 2003/10/07 00:35:08 arnetheduck Exp $
  */

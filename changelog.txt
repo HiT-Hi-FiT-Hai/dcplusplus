@@ -1,3 +1,12 @@
+ -- 0.264 --
+* Some code cleanup
+* Added vertical tiling of windows
+* Nick and password are now taken from favorite hubs on redirect (thanks saurod)
+* Fixed a case sensitivity bug in favorite hubs (thanks saurod)
+* Locale formatting of exact size in search (thanks saurod)
+* Fixed a bug where directories were not correctly returned (thanks saurod)
+
+
  -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)
 * Fixed so that donating is done in euro's from the help menu (why don't you try it out =)

@@ -29,16 +29,33 @@ public:
 #include "StringDefs.h"
 
 	void loadLanguage(const string& aFile);
-	const string& getString(Strings x) const { return strings[x]; };
+	const string& getString(Strings x) const { dcassert(x != -1); return strings[x]; };
+	int getStringNumber(const string& aName) {
+		NameIter i = nameMap.find(aName);
+		return ((i==nameMap.end()) ? -1 : (int)i->second);
+	}
 
 private:
-
 	friend class Singleton<ResourceManager>;
-	ResourceManager() { };
+	
+	typedef HASH_MAP<string, Strings> NameMap;
+	typedef NameMap::iterator NameIter;
+
+	ResourceManager() { 
+		buildMap();
+	};
+
 	virtual ~ResourceManager() { };
 	
 	static string strings[LAST];
 	static string names[LAST];
+	NameMap nameMap;
+
+	void buildMap() {
+		for(int i = 0; i < LAST; ++i) {
+			nameMap.insert(make_pair(names[i], Strings(i)));
+		}
+	}
 };
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
@@ -50,5 +67,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.7 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.8 2003/10/07 00:35:08 arnetheduck Exp $
  */
