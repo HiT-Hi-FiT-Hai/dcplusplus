@@ -66,13 +66,15 @@ LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	PropPage::read((HWND)*this, items);
 
 	// Prepare shared dir list
-	ctrlDirectories.InsertColumn(0, CTSTRING(DIRECTORY), LVCFMT_LEFT, 277, 0);
-	ctrlDirectories.InsertColumn(1, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 1);
+	ctrlDirectories.InsertColumn(0, CTSTRING(VIRTUAL_NAME), LVCFMT_LEFT, 80, 0);
+	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
+	ctrlDirectories.InsertColumn(2, CTSTRING(SIZE), LVCFMT_RIGHT, 90, 2);
 	StringPairList directories = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
+		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
+		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 	}
 	
 	ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
@@ -176,8 +178,9 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	StringPairList directories = ShareManager::getInstance()->getDirectories();
 	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
-		ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->first));
+		ctrlDirectories.SetItemText(i, 1, Text::toT(j->second).c_str() );
+		ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(j->second))).c_str());
 	}
 
 	// Display the new total share size
@@ -197,8 +200,9 @@ void UploadPage::addDirectory(const tstring& aPath){
 		virt.line = Util::getLastDir(path);
 		if(virt.DoModal(m_hWnd) == IDOK) {
 			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(virt.line));
-			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
-			ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
+			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
+			ctrlDirectories.SetItemText(i, 1, path.c_str());
+			ctrlDirectories.SetItemText(i, 2, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
 			ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
 		}
 	} catch(const ShareException& e) {
@@ -208,6 +212,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.24 2004/09/13 14:58:33 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.25 2004/09/21 08:19:56 arnetheduck Exp $
  */
 

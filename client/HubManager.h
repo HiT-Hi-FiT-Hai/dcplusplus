@@ -38,7 +38,8 @@ public:
 	typedef List::iterator Iter;
 	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) throw() : 
-	name(aName), server(aServer), description(aDescription), users(Util::toInt(aUsers)) { };
+	name(aName), server(aServer), description(aDescription), users(Util::toInt(aUsers)), country(Util::emptyString), 
+	rating(Util::emptyString), reliability(0.0), shared(0), minShare(0), minSlots(0), maxHubs(0), maxUsers(0) { };
 
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers, const string& aCountry,
 		const string& aShared, const string& aMinShare, const string& aMinSlots, const string& aMaxHubs, const string& aMaxUsers,
@@ -326,6 +327,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.57 2004/09/13 23:02:43 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.58 2004/09/21 08:19:55 arnetheduck Exp $
  */
 

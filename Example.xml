@@ -441,6 +441,7 @@
 		<String Name="TimeLeft">Time left</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
+		<String Name="TooMuchData">More data was sent than was expected</String>
 		<String Name="Total">Total: </String>
 		<String Name="TthInconsistency">TTH inconsistency</String>
 		<String Name="TthRoot">TTH Root</String>

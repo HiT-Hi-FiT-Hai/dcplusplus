@@ -69,7 +69,7 @@ public:
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
-	int64_t getListLen() { return listLen; };
+	int64_t getListLen() { return generateNmdcList(), listLen; };
 	string getListLenString() { return Util::toString(getListLen()); };
 	
 	SearchManager::TypeModes getType(const string& fileName);
@@ -283,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.56 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.57 2004/09/21 08:19:55 arnetheduck Exp $
  */
 

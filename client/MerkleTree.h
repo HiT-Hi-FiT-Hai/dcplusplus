@@ -214,34 +214,26 @@ template<class T>
 class TreeInputStream : public InputStream {
 public:
 	
-	TreeInputStream(const MerkleTree<T>& aTree) : tree(aTree), pos(0), n(0) {
+	TreeInputStream(const MerkleTree<T>& aTree) : leaves(aTree.getLeaves().size() * Value::SIZE, 0),  pos(0) {
+		u_int8_t* p = &leaves[0];
+		for(size_t i = 0; i < aTree.getLeaves().size(); ++i) {
+			memcpy(p + i * Value::SIZE, &aTree.getLeaves()[i], Value::SIZE);
+		}
 	}
+
 	virtual ~TreeInputStream() {
 	}
 
 	virtual size_t read(void* buf, size_t& len) throw(Exception) {
-		size_t total = 0;
-		while(n < tree.getLeaves().size() && total < len) {
-			Value& v = tree.getLeaves()[n];
-			size_t left = Value::SIZE - pos;
-			size_t bytes = min(len, left);
-			memcpy((u_int8_t*)buf + total, v.data, bytes);
-			total += bytes;
-
-			if(bytes == left) {
-				pos = 0;
-				n++;
-			}
-		}
-		len = total;
-		return total;
+		len = min(len, leaves.size() - pos);
+		memcpy(buf, &leaves[pos], len);
+		pos += len;
+		return len;
 	}
 private:
 	typedef typename MerkleTree<T>::MerkleValue Value;
-	MerkleTree<T> tree;
+	vector<u_int8_t> leaves;
 	size_t pos;
-	typename MerkleTree<T>::MerkleList::size_type n;
-
 };
 struct TTFilter {
 	TTFilter(size_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
@@ -255,5 +247,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.16 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.17 2004/09/21 08:19:55 arnetheduck Exp $
  */

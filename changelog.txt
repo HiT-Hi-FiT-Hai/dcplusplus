@@ -3,6 +3,8 @@
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version
 once the update has been done!!!
+Also, finish your queue file before upgrading if you care for your
+international filenames in it - they will not be correctly converted.
 *** WARNING ***
 
 * Fixed a rare download crash (thanks farcry)

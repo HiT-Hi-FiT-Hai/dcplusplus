@@ -445,6 +445,7 @@ enum Strings { // @DontAdd
 	TIME_LEFT, // "Time left"
 	TIMESTAMPS_DISABLED, // "Timestamps disabled"
 	TIMESTAMPS_ENABLED, // "Timestamps enabled"
+	TOO_MUCH_DATA, // "More data was sent than was expected"
 	TOTAL, // "Total: "
 	TTH_INCONSISTENCY, // "TTH inconsistency"
 	TTH_ROOT, // "TTH Root"
