@@ -12,11 +12,14 @@ echo.
 exit 1
 
 :compile
+copy ..\res\users.bmp .
 "%ProgramFiles%\HTML Help Workshop\hhc.exe" DCPlusPlus.hhp
 if errorlevel 1 goto okay
 
 :bad
+del users.bmp
 exit 1
 
 :okay
+del users.bmp
 exit 0

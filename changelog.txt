@@ -49,6 +49,10 @@
 * Added advanced resume that detects and tries to repair rollback inconsistencies
   using tiger trees
 * Fixed a rare invalid zlib decompression error
+* Autosearch and automatch queue is now done by tth only (!) (thanks garg)
+* Automatch search done by tth only, should make things slightly faster
+* Search for alternates automatically uses tth if available (thanks garg)
+
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

@@ -96,7 +96,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.CreatePopupMenu();
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
-	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
 	singleMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CTSTRING(LOOKUP_AT_BITZI));
 	singleMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CTSTRING(COPY_MAGNET));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CTSTRING(MOVE));
@@ -826,11 +825,9 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
  			}
 
 			if(ii->getTTH() == NULL) {
-				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
 				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
 				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
 			} else {
-				singleMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
 				singleMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
 				singleMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
 			}
@@ -869,31 +866,22 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		
-		tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
-		
-		if(!searchString.empty()) {
-			bool bigFile = (ii->getSize() > 10*1024*1024);
-			if(bigFile) {
-				SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
-			} else {
-				SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
-			}
-		}
-	} 
-	
-	return 0;
-}
-
-LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
-		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
 		if(ii->getTTH() != NULL) {
 			WinUtil::searchHash(ii->getTTH());
+		} else {
+			tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
+
+			if(!searchString.empty()) {
+				bool bigFile = (ii->getSize() > 10*1024*1024);
+				if(bigFile) {
+					SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
+				} else {
+					SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
+				}
+			}
 		}
-	} 
+	}
 	return 0;
 }
 
@@ -1270,7 +1258,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.67 2005/01/06 20:21:08 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.68 2005/01/20 15:42:14 arnetheduck Exp $
  */
 
 

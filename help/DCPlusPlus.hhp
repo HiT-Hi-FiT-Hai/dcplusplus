@@ -42,6 +42,10 @@ faq_activemode.html
 faq_university.html
 faq_nosearch.html
 faq_slowdownload.html
+faq_different_icons.html
+faq_units.html
+dev_createpatch.html
+dev_applypatch.html
 
 [ALIAS]
 IDC_HELP_CHANGELOG=changelog.html

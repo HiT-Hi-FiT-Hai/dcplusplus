@@ -192,7 +192,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetDirMenu, CTSTRING(DOWNLOAD_WHOLE_DIR_TO));
 	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR);
-	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	resultsMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	resultsMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CTSTRING(LOOKUP_AT_BITZI));
 	resultsMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CTSTRING(COPY_MAGNET));
 	resultsMenu.AppendMenu(MF_SEPARATOR);
@@ -978,11 +978,11 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 		if (ctrlResults.GetSelectedCount() == 1 && sr->getTTH() != NULL) {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
 			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
 		} else {
-			resultsMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			resultsMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
 			resultsMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
 			resultsMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
 		}
@@ -1084,5 +1084,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.80 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.81 2005/01/20 15:42:14 arnetheduck Exp $
  */

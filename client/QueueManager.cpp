@@ -130,10 +130,10 @@ void QueueManager::FileQueue::find(QueueItem::List& sl, int64_t aSize, const str
 	}
 }
 
-void QueueManager::FileQueue::find(QueueItem::List& ql, const TTHValue* tth) {
+void QueueManager::FileQueue::find(QueueItem::List& ql, const TTHValue& tth) {
 	for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
 		QueueItem* qi = i->second;
-		if(qi->getTTH() != NULL && *qi->getTTH() == *tth) {
+		if(qi->getTTH() != NULL && *qi->getTTH() == tth) {
 			ql.push_back(qi);
 		}
 	}
@@ -155,6 +155,9 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 			continue;
 		// No files that already have more than 5 online sources
 		if(q->countOnlineUsers() >= 5)
+			continue;
+		// No files without TTH
+		if(q->getTTH() == NULL)
 			continue;
 		// Did we search for it recently?
         if(find(recent.begin(), recent.end(), q->getTarget()) != recent.end())
@@ -358,10 +361,7 @@ QueueManager::~QueueManager() throw() {
 void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	string fn;
 	string searchString;
-	int64_t sz = 0;
 	bool online = false;
-
-	bool hasTTH = false;
 
 	{
 		Lock l(cs);
@@ -383,14 +383,8 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 
 			QueueItem* qi = fileQueue.findAutoSearch(recent);
 			if(qi != NULL) {
-				if(qi->getTTH()) {
-					hasTTH = true;
-					searchString = qi->getTTH()->toBase32();
-				} else {
-					fn = qi->getTargetFileName();
-					sz = qi->getSize() - 1;
-					searchString = qi->getSearchString();
-				}
+				dcassert(qi->getTTH());
+				searchString = qi->getTTH()->toBase32();
 				online = qi->hasOnlineUsers();
 				recent.push_back(qi->getTarget());
 				nextSearch = aTick + (online ? 120000 : 300000);
@@ -398,11 +392,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 		}
 	}
 
-	if(hasTTH) {
-		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
-	} else if(!fn.empty()) {
-		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
-	}
+	SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
@@ -420,8 +410,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 	// Check if we're not downloading something already in our share
 	if (BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
-		TTHValue* r = const_cast<TTHValue*>(root);
-		if (ShareManager::getInstance()->isTTHShared(r)){
+		if (ShareManager::getInstance()->isTTHShared(*root)){
 			throw QueueException(STRING(TTH_ALREADY_SHARED));
 		}
 	}
@@ -609,11 +598,6 @@ typedef pair<SizeIter, SizeIter> SizePair;
 
 static DirectoryListing* curDl = NULL;
 static SizeMap sizeMap;
-static string utfTmp;
-
-static const string& utfEscaper(const string& x) {
-	return curDl->getUtf8() ? x : (utfTmp.clear(), Text::acpToUtf8(x, utfTmp));
-}
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 	int matches = 0;
@@ -630,17 +614,7 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			QueueItem* qi = j->second;
 			bool equal = false;
 			if(qi->getTTH() != NULL && df->getTTH() != NULL) {
-				equal = (*qi->getTTH() == *df->getTTH());
-			} else {
-				if(Util::stricmp(utfEscaper(df->getName()), qi->getTargetFileName()) == 0) {
-					dcassert(df->getSize() == qi->getSize());	
-					equal = true;
-
-					if(df->getTTH() != NULL) {
-						dcassert(qi->getTTH() == NULL);
-						qi->setTTH(new TTHValue(*df->getTTH()));
-					}
-				}
+				equal = (*qi->getTTH() == *df->getTTH()) && (qi->getSize() == df->getSize());
 			}
 			if(equal) {
 				try {
@@ -733,7 +707,7 @@ void QueueManager::getTargetsBySize(StringList& sl, int64_t aSize, const string&
 void QueueManager::getTargetsByRoot(StringList& sl, const TTHValue& tth) {
 	Lock l(cs);
 	QueueItem::List ql;
-	fileQueue.find(ql, &tth);
+	fileQueue.find(ql, tth);
 	for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
 		sl.push_back((*i)->getTarget());
 	}
@@ -1267,24 +1241,18 @@ void QueueLoader::endTag(const string& name, const string&) {
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 	bool added = false;
 
-	if(BOOLSETTING(AUTO_SEARCH)) {
+	if(BOOLSETTING(AUTO_SEARCH) && sr->getTTH() != NULL) {
 		Lock l(cs);
 		QueueItem::List matches;
 
-		fileQueue.find(matches, sr->getSize(), Util::getFileExt(sr->getFile()));
-
-		if(sr->getTTH() != NULL) {
-			fileQueue.find(matches, sr->getTTH());
-		}
+		fileQueue.find(matches, *sr->getTTH());
 
 		for(QueueItem::Iter i = matches.begin(); i != matches.end(); ++i) {
 			QueueItem* qi = *i;
-			bool found = false;
-			if(qi->getTTH()) {
-				found = sr->getTTH() && (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
-			} else {
-				found = (Util::stricmp(qi->getTargetFileName(), sr->getFileName()) == 0);
-			}
+			dcassert(qi->getTTH());
+
+			// Size compare to avoid popular spoof
+			bool found = (*qi->getTTH() == *sr->getTTH()) && (qi->getSize() == sr->getSize());
 
 			if(found) {
 				try {
@@ -1334,5 +1302,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.117 2005/01/14 13:46:04 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.118 2005/01/20 15:42:14 arnetheduck Exp $
  */

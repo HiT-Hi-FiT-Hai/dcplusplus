@@ -70,7 +70,37 @@
 				RelativePath=".\credits.html">
 			</File>
 			<File
+				RelativePath=".\dev_applypatch.html">
+			</File>
+			<File
+				RelativePath=".\dev_createpatch.html">
+			</File>
+			<File
 				RelativePath=".\faq.html">
+			</File>
+			<File
+				RelativePath=".\faq_activemode.html">
+			</File>
+			<File
+				RelativePath=".\faq_different_icons.html">
+			</File>
+			<File
+				RelativePath=".\faq_keyboard_commands.html">
+			</File>
+			<File
+				RelativePath=".\faq_nosearch.html">
+			</File>
+			<File
+				RelativePath=".\faq_slowdownload.html">
+			</File>
+			<File
+				RelativePath=".\faq_units.html">
+			</File>
+			<File
+				RelativePath=".\faq_university.html">
+			</File>
+			<File
+				RelativePath=".\faq_upnp.html">
 			</File>
 			<File
 				RelativePath=".\favorite_hubs.html">
@@ -106,16 +136,22 @@
 				RelativePath=".\settings_appearance.html">
 			</File>
 			<File
+				RelativePath=".\settings_colors_and_sounds.html">
+			</File>
+			<File
+				RelativePath=".\settings_connection.html">
+			</File>
+			<File
 				RelativePath=".\settings_downloads.html">
+			</File>
+			<File
+				RelativePath=".\settings_expert.html">
 			</File>
 			<File
 				RelativePath=".\settings_favoritedirs.html">
 			</File>
 			<File
 				RelativePath=".\settings_general.html">
-			</File>
-			<File
-				RelativePath=".\settings_connection.html">
 			</File>
 			<File
 				RelativePath=".\settings_logs.html">
@@ -125,12 +161,6 @@
 			</File>
 			<File
 				RelativePath=".\settings_usercommands.html">
-			</File>
-			<File
-				RelativePath=".\settings_expert.html">
-			</File>
-			<File
-				RelativePath=".\settings_colors_and_sounds.html">
 			</File>
 		</Filter>
 	</Files>

@@ -321,7 +321,6 @@ enum Strings { // @DontAdd
 	ROLLBACK_INCONSISTENCY, // "Rollback inconsistency, existing file does not match the one being downloaded"
 	RUNNING, // "Running..."
 	SEARCH, // "Search"
-	SEARCH_BY_TTH, // "Search by TTH"
 	SEARCH_FOR, // "Search for"
 	SEARCH_FOR_ALTERNATES, // "Search for alternates"
 	SEARCH_FOR_FILE, // "Search for file"

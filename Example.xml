@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.668" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.6685" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>
@@ -317,7 +317,6 @@
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
 		<String Name="Running">Running...</String>
 		<String Name="Search">Search</String>
-		<String Name="SearchByTth">Search by TTH</String>
 		<String Name="SearchFor">Search for</String>
 		<String Name="SearchForAlternates">Search for alternates</String>
 		<String Name="SearchForFile">Search for file</String>

@@ -77,7 +77,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearchByTTH)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchByTTH)
 		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
@@ -479,6 +479,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.50 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.51 2005/01/20 15:42:14 arnetheduck Exp $
  */
 

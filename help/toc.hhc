@@ -65,6 +65,14 @@
 			<param name="Name" value="Which keyboard commands can I use?">
 			<param name="Local" value="faq_keyboard_commands.html">
 			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="What do the different icons mean?">
+			<param name="Local" value="faq_different_icons.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="What do the units mean?">
+			<param name="Local" value="faq_units.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Settings">
@@ -118,6 +126,19 @@
 				<param name="Local" value="settings_usercommands.html">
 				</OBJECT>
 		</UL>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Development">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Applying patches">
+			<param name="Local" value="dev_applypatch.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Creating patches">
+			<param name="Local" value="dev_createpatch.html">
+			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Etiquette">

@@ -96,8 +96,8 @@ public:
 		return getBZXmlFile();
 	}
 
-	bool isTTHShared(TTHValue* tth){
-		HashFileIter i = tthIndex.find(tth);
+	bool isTTHShared(const TTHValue& tth){
+		HashFileIter i = tthIndex.find(const_cast<TTHValue*>(&tth));
 		return (i != tthIndex.end());
 	}
 
@@ -320,6 +320,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.75 2005/01/06 18:19:48 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.76 2005/01/20 15:42:14 arnetheduck Exp $
  */
 

@@ -142,7 +142,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	fileMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)targetMenu, CTSTRING(DOWNLOAD_TO));
 	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CTSTRING(VIEW_AS_TEXT));
 	fileMenu.AppendMenu(MF_SEPARATOR);
-	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_BY_TTH, CTSTRING(SEARCH_BY_TTH));
+	fileMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CTSTRING(SEARCH_FOR_ALTERNATES));
 	fileMenu.AppendMenu(MF_STRING, IDC_BITZI_LOOKUP, CTSTRING(LOOKUP_AT_BITZI));
 	fileMenu.AppendMenu(MF_STRING, IDC_COPY_MAGNET, CTSTRING(COPY_MAGNET));
 	fileMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
@@ -481,11 +481,11 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 		tstring hash = ii->getText(COLUMN_TTH);
 		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
-			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_ENABLED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
 			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
 		} else {
-			fileMenu.EnableMenuItem(IDC_SEARCH_BY_TTH, MF_GRAYED);
+			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_GRAYED);
 			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_GRAYED);
 			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_GRAYED);
 		}
@@ -946,5 +946,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.50 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.51 2005/01/20 15:42:14 arnetheduck Exp $
  */

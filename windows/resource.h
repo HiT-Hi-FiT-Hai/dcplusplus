@@ -259,7 +259,6 @@
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1206
 #define IDC_SETTINGS_FORMAT             1207
 #define IDC_LOG_SYSTEM                  1211
-#define IDC_SEARCH_BY_TTH               1212
 #define IDC_SETTINGS_HASH_SPEED         1213
 #define IDC_MAX_HASH_SPEED              1214
 #define IDC_SETTINGS_MAX_HASH_SPEED     1215

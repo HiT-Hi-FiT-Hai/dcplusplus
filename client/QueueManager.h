@@ -146,7 +146,7 @@ private:
 
 		QueueItem* find(const string& target);
 		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
-		void find(QueueItem::List& ql, const TTHValue* tth);
+		void find(QueueItem::List& ql, const TTHValue& tth);
 
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); };
@@ -244,6 +244,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.67 2005/01/14 13:46:04 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.68 2005/01/20 15:42:14 arnetheduck Exp $
  */
 
