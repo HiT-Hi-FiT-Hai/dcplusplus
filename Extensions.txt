@@ -149,3 +149,12 @@ Usage: This indicates that hub doesn't need $GetINFO's to send out $MyINFO's
 at connect. This is a sort of light-weight QuickList that's very easy to
 implement and does half of QuickList's job.
 
+--------------------------------------------------------------------
+
+Feature: NoHello
+
+Usage: This indicates that the client doesn't need neither $Hello nor $NickList
+when connecting to a hub and receiving its users (i e $myinfo for each user is
+enough). It still accepts $Hello though (to add bots to the user list),
+and will still send getnicklist to indicate that it indeed is interested
+in the user list.
