@@ -188,10 +188,13 @@ void Client::onLine(const string& aLine) {
 		fireOpList(v);
 	} else if(cmd == "$To:") {
 		string tmp = param.substr(param.find("From:") + 6);
-		User::Ptr& user = getUser(tmp.substr(0, tmp.find("$") - 1));
+		string from = tmp.substr(0, tmp.find("$") - 1);
+		User::Ptr& user = getUser(from);
 		if(user) {
-			tmp = tmp.substr(tmp.find("$") + 1);
-			firePrivateMessage(user, tmp);
+			
+			firePrivateMessage(user, tmp.substr(tmp.find("$") + 1));
+		} else {
+			firePrivateMessage(from, tmp.substr(tmp.find("$") + 1));
 		}
 	} else if(cmd == "$GetPass") {
 		fireGetPassword();
@@ -209,9 +212,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.14 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.15 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.15  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.14  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *

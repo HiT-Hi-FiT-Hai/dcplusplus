@@ -124,8 +124,6 @@ private:
 		cs.enter();
 		if(find(pool.begin(), pool.end(), aConn) == pool.end()) {
 			pool.push_back(aConn);
-		} else {
-			dcassert(0);
 		}
 		cs.leave();
 	}
@@ -151,9 +149,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.17 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.18 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.18  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.17  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

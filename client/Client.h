@@ -428,6 +428,14 @@ private:
 			(*i)->onClientPrivateMessage(this, aUser, aMessage);
 		}
 	}
+	void firePrivateMessage(const string& aUser, const string& aMessage) {
+		listenerCS.enter();
+		ClientListener::List tmp = listeners;
+		listenerCS.leave();
+		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onClientPrivateMessage(this, aUser, aMessage);
+		}
+	}
 	void fireQuit(User::Ptr& aUser) {
 		//dcdebug("fireQuit %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
@@ -480,9 +488,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.22 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: Client.h,v 1.23 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.23  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.22  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

@@ -79,7 +79,13 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		StringListInfo* i = (StringListInfo*)lParam;
 		ctrlTransfers.insert(i->l, IMAGE_DOWNLOAD, i->lParam);
 		delete i;
-	} else if(wParam == UPLOAD_TICK || wParam == DOWNLOAD_FAILED || wParam == DOWNLOAD_TICK) {
+	} else if(wParam == DOWNLOAD_FAILED) {
+		StringListInfo* i = (StringListInfo*)lParam;
+		int j = ctrlTransfers.find(i->lParam);
+		ctrlTransfers.SetItemText(j, 1, i->l[0].c_str());
+		ctrlTransfers.SetItemText(j, 3, i->l[1].c_str());
+		delete i;
+	} else if(wParam == UPLOAD_TICK || wParam == DOWNLOAD_TICK) {
 		StringInfo* i = (StringInfo*)lParam;
 		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, i->str.c_str());
 		delete i;
@@ -185,7 +191,24 @@ void MainFrame::onDownloadComplete(Download* p) {
 }
 
 void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason) {
-	StringInfo* i = new StringInfo((LPARAM)aDownload, aReason);
+	StringListInfo* i = new StringListInfo((LPARAM)aDownload);
+	i->l.push_back(aReason);
+	i->l.push_back("");
+	for(Download::Source::Iter j = aDownload->getSources().begin(); j != aDownload->getSources().end(); ++j) {
+		if(i->l[1].size() > 0)
+			i->l[1] += ", ";
+		
+		Download::Source::Ptr sr = *j;
+		if(sr->getUser()) {
+			if(sr->getUser()->isOnline()) {
+				i->l[1] += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
+			} else {
+				i->l[1] += sr->getUser()->getNick() + " (Offline)";
+			}
+		} else {
+			i->l[1] += sr->getNick() + " (Offline)";
+		}
+	}
 	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)i);
 }
 void MainFrame::onDownloadRemoved(Download* aDownload) {
@@ -344,6 +367,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
+
+	PostMessage(WM_COMMAND, ID_FILE_CONNECT);
+	
 	bHandled = FALSE;
 	return 0;
 }
@@ -378,8 +404,7 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 			mi.fMask = MIIM_TYPE;
 			mi.fType = MFT_SEPARATOR;
 			transferMenu.InsertMenuItem(n++, TRUE, &mi);
-			
-			
+	
 			LVITEM lvi;
 			lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
 			lvi.iSubItem = 0;
@@ -392,7 +417,7 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 				menuItems = 0;
 				for(Download::Source::Iter i = d->getSources().begin(); i != d->getSources().end(); ++i) {
 					string str = "Browse " + (*i)->getNick() + "'s files";
-					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.cch = str.size();
 					mi.dwTypeData = (LPSTR)str.c_str();
@@ -401,7 +426,7 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 					transferMenu.InsertMenuItem(n++, TRUE, &mi);
 					
 					str = "Remove " + (*i)->getNick() + " from this transfer";
-					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.cch = str.size();
 					mi.dwTypeData = (LPSTR)str.c_str();
@@ -410,13 +435,18 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 					transferMenu.InsertMenuItem(n++, TRUE, &mi);
 					
 					str = "Send Message To " + (*i)->getNick();
-					mi.fMask = MIIM_ID | MIIM_TYPE;
+					mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 					mi.fType = MFT_STRING;
 					mi.cch = str.size();
 					mi.dwTypeData = (LPSTR)str.c_str();
 					mi.dwItemData = (DWORD)*i;
 					mi.wID = IDC_TRANSFERITEM + menuItems++;
 					transferMenu.InsertMenuItem(n++, TRUE, &mi);
+
+					mi.fMask = MIIM_TYPE;
+					mi.fType = MFT_SEPARATOR;
+					transferMenu.InsertMenuItem(n++, TRUE, &mi);
+					
 				}
 			}
 		}
@@ -546,8 +576,12 @@ LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 			case 2:
 				if(s->getUser() && s->getUser()->isOnline()) {
 					PrivateFrame* frm = PrivateFrame::getFrame(s->getUser(), m_hWndClient);
-					frm->setTab(&ctrlTab);
-					frm->CreateEx(m_hWndClient);
+					if(frm->m_hWnd == NULL) {
+						frm->setTab(&ctrlTab);
+						frm->CreateEx(m_hWndClient);
+					} else {
+						frm->MDIActivate(frm->m_hWnd);
+					}
 				}
 				break;
 			}
@@ -585,9 +619,12 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.33 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.34 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.34  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.33  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

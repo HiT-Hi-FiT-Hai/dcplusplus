@@ -98,6 +98,10 @@ private:
 			}
 		}
 	}
+	virtual void onClientPrivateMessage(Client* aClient, const string& aUser, const string& aMessage) {
+		string* msg = new string("Private message from " + aUser + " (unrecognized user)\r\n" + aMessage);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
+	}
 	
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
 		PMInfo* i = new PMInfo();
@@ -391,9 +395,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.29 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.30 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.30  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.29  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

@@ -501,7 +501,8 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 					// We have a problem...
 					running.erase(i);
 					d->unsetFlag(Download::RUNNING);
-					d->unsetFlag(Download::ROLLBACK); // Just in case
+					d->unsetFlag(Download::ROLLBACK);
+					d->setRollbackBuffer(0);
 					d->resetTotal();
 					cs.leave();
 					
@@ -727,9 +728,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.26 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.27 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.27  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.26  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

@@ -149,8 +149,12 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			User::Ptr& u = client->getUser(user);
 			if(u) {
 				PrivateFrame* frm = PrivateFrame::getFrame(u, m_hWndMDIClient);
-				frm->setTab(getTab());
-				frm->CreateEx(m_hWndMDIClient);
+				if(frm->m_hWnd == NULL) {
+					frm->setTab(getTab());
+					frm->CreateEx(m_hWndMDIClient);
+				} else {
+					frm->MDIActivate(frm->m_hWnd);
+				}
 			}
 		}
 	}
@@ -304,7 +308,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		if(i->frm->m_hWnd == NULL) {
 			i->frm->setTab(getTab());
 			i->frm->Create(m_hWndMDIClient);
-		}
+		} 
 		i->frm->addLine(i->msg);
 		delete i;
 	}
@@ -314,9 +318,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.17 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.18 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.18  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.17  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

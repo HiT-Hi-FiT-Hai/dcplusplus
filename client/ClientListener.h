@@ -96,6 +96,7 @@ public:
 	virtual void onClientConnected(Client* aClient) { };
 	virtual void onClientError(Client* aClient, const string& aReason) { };
 	virtual void onClientOpList(Client* aClient, StringList& aOps) { };
+	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) { };
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aFrom, const string& aMessage) { };
 	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
@@ -107,9 +108,12 @@ public:
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.10 2001/12/30 15:03:44 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.11 2002/01/08 00:24:10 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.11  2002/01/08 00:24:10  arnetheduck
+ * Last bugs fixed before 0.11
+ *
  * Revision 1.10  2001/12/30 15:03:44  arnetheduck
  * Added framework to handle incoming searches
  *
