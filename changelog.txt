@@ -1,4 +1,4 @@
-﻿-- 0.673 --
+﻿-- 0.673 2005-03-21 --
 * Added auto-prio by file size settings (thanks paka)
 * Fixed yet another context menu fix (in case anyone wondered, it should now
   be possible to use the context menu key for all context menus)
@@ -6,6 +6,7 @@
 * Updated unicows W95 unicode support
 * Updated to latest WTL
 * Fixed directory listing total sizes (thanks trem)
+* Fixed empty oplist issue
 
 -- 0.672 2005-03-20 --
 * Fixed an issue when loading pre-671 file lists

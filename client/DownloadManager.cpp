@@ -239,7 +239,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			d->setFlag(Download::FLAG_UTF8);
+			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
+				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
@@ -886,5 +887,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.149 2005/03/19 09:02:45 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.150 2005/03/22 21:51:31 arnetheduck Exp $
  */

@@ -513,9 +513,11 @@ BEGIN
     EDITTEXT        IDC_BIND_ADDRESS,208,58,41,14,ES_AUTOHSCROLL
     RTEXT           "Rollback",IDC_SETTINGS_ROLLBACK,7,10,57,8
     LTEXT           "B",IDC_SETTINGS_B,117,10,8,8
-    RTEXT           "Write buffer size",IDC_SETTINGS_WRITE_BUFFER,139,10,65,8
+    RTEXT           "Write buffer size",IDC_SETTINGS_WRITE_BUFFER,139,10,65,
+                    8
     LTEXT           "KiB",IDC_SETTINGS_KB,252,10,10,8
-    RTEXT           "Max Hash Speed",IDC_SETTINGS_MAX_HASH_SPEED,7,27,57,8,0,WS_EX_RIGHT
+    RTEXT           "Max Hash Speed",IDC_SETTINGS_MAX_HASH_SPEED,7,27,57,8,0,
+                    WS_EX_RIGHT
     LTEXT           "MiB/s",IDC_SETTINGS_MBS,117,27,20,8
     RTEXT           "Max tab rows",IDC_SETTINGS_MAX_TAB_ROWS,139,27,65,8
     RTEXT           "PM history",IDC_SETTINGS_PM_HISTORY,7,44,57,8
@@ -589,11 +591,13 @@ BEGIN
     EDITTEXT        IDC_PRIO_NORMAL_SIZE,84,24,41,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_PRIO_LOW_SIZE,208,24,41,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_PRIO_LOWEST,84,41,41,14,ES_AUTOHSCROLL
-    RTEXT           "Highest prio max size",IDC_SETTINGS_PRIO_HIGHEST,7,10,72,8
+    RTEXT           "Highest prio max size",IDC_SETTINGS_PRIO_HIGHEST,7,10,
+                    72,8
     LTEXT           "KiB",IDC_SETTINGS_KB3,128,10,10,8
     RTEXT           "High prio max size",IDC_SETTINGS_PRIO_HIGH,147,10,57,8
     LTEXT           "KiB",IDC_SETTINGS_KB4,252,10,10,8
-    RTEXT           "Normal prio max size",IDC_SETTINGS_PRIO_NORMAL,7,27,72,8
+    RTEXT           "Normal prio max size",IDC_SETTINGS_PRIO_NORMAL,7,27,72,
+                    8
     LTEXT           "KiB",IDC_SETTINGS_KB5,128,27,10,8
     RTEXT           "Low prio max size",IDC_SETTINGS_PRIO_LOW,147,27,57,8
     LTEXT           "KiB",IDC_SETTINGS_KB6,252,27,10,8
@@ -808,8 +812,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,7,2
- PRODUCTVERSION 0,6,7,2
+ FILEVERSION 0,6,7,3
+ PRODUCTVERSION 0,6,7,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -826,12 +830,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 7, 2"
+            VALUE "FileVersion", "0, 6, 7, 3"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2005 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 7, 2"
+            VALUE "ProductVersion", "0, 6, 7, 3"
         END
     END
     BLOCK "VarFileInfo"

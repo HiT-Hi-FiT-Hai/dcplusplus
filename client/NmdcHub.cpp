@@ -513,6 +513,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			StringList& sl = t.getTokens();
 
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
+				if(it->empty())
+					continue;
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 			}
 
@@ -546,6 +548,8 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			StringTokenizer<string> t(fromNmdc(param), "$$");
 			StringList& sl = t.getTokens();
 			for(StringIter it = sl.begin(); it != sl.end(); ++it) {
+				if(it->empty())
+					continue;
 				v.push_back(ClientManager::getInstance()->getUser(*it, this));
 				v.back()->setFlag(User::OP);
 			}
@@ -714,6 +718,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.31 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.32 2005/03/22 21:51:31 arnetheduck Exp $
  */
 
