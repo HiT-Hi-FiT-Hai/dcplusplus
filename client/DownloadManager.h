@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
-#include "Util.h"
 #include "TimerManager.h"
 
 class QueueItem;
@@ -190,5 +189,5 @@ private:
 
 /**
  * @file DownloadManager.h
- * $Id: DownloadManager.h,v 1.48 2003/03/13 13:31:20 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.49 2003/03/26 08:47:17 arnetheduck Exp $
  */

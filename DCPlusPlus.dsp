@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 comctl32.lib Ws2_32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib vc6\Debug\client\client.lib vc6\Debug\bzip\bzip2.lib vc6\Debug\zlib\zlib.lib /nologo /version:0.171 /subsystem:windows /pdb:"App/DCPlusPlus6.pdb" /debug /machine:I386
-# SUBTRACT LINK32 /profile /map
+# SUBTRACT LINK32 /profile /pdb:none /map
 
 !ENDIF 
 
@@ -189,6 +189,10 @@ SOURCE=.\res\users.bmp
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\windows\ADLSearchFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\windows\Advanced2Page.cpp
 # End Source File
 # Begin Source File
@@ -226,6 +230,10 @@ SOURCE=.\windows\FavoritesFrm.cpp
 # Begin Source File
 
 SOURCE=.\windows\FinishedFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FinishedULFrame.cpp
 # End Source File
 # Begin Source File
 
@@ -302,6 +310,10 @@ SOURCE=.\windows\AboutDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\windows\ADLSearchFrame.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\windows\Advanced2Page.h
 # End Source File
 # Begin Source File
@@ -339,6 +351,10 @@ SOURCE=.\windows\FavoritesFrm.h
 # Begin Source File
 
 SOURCE=.\windows\FinishedFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FinishedULFrame.h
 # End Source File
 # Begin Source File
 

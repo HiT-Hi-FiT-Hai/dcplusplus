@@ -71,8 +71,8 @@ ShareManager::~ShareManager() {
 		File::deleteFile(Util::getAppPath() + "MyList" + Util::toString(i) + ".bz2");
 	}
 
-	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-		delete i->second;
+	for(Directory::MapIter j = directories.begin(); j != directories.end(); ++j) {
+		delete j->second;
 	}
 }
 
@@ -417,11 +417,11 @@ static const char* typeAudio[] = { ".mp3", ".mp2", ".mid", ".wav", ".ogg", ".wma
 static const char* typeCompressed[] = { ".zip", ".ace", ".rar" };
 static const char* typeDocument[] = { ".htm", ".doc", ".txt", ".nfo" };
 static const char* typeExecutable[] = { ".exe" };
-static const char* typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".img", ".pct", ".pict", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
+static const char* typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".img", ".pct", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
 static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp" };
 
 static const string type2Audio[] = { ".au", ".aiff" };
-static const string type2Picture[] = { ".ai", ".ps", };
+static const string type2Picture[] = { ".ai", ".ps", ".pict" };
 static const string type2Video[] = { ".rm", ".divx", ".mpeg" };
 
 #define IS_TYPE(x) ( type == (*((u_int32_t*)x)) )
@@ -473,7 +473,7 @@ bool checkType(const string& aString, int aType) {
 					return true;
 				}
 			}
-			if( IS_TYPE2(type2Picture[0]) || IS_TYPE2(type2Picture[1]) ) {
+            if( IS_TYPE2(type2Picture[0]) || IS_TYPE2(type2Picture[1]) || IS_TYPE2(type2Picture[2]) ) {
 				return true;
 			}
 		}
@@ -485,7 +485,7 @@ bool checkType(const string& aString, int aType) {
 					return true;
 				}
 			}
-			if( IS_TYPE2(type2Video[0]) || IS_TYPE2(type2Video[1]) ) {
+            if( IS_TYPE2(type2Video[0]) || IS_TYPE2(type2Video[1]) || IS_TYPE2(type2Video[2]) ) {
 				return true;
 			}
 		}
@@ -690,6 +690,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.46 2003/03/13 13:31:31 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.47 2003/03/26 08:47:26 arnetheduck Exp $
  */
 

@@ -34,6 +34,8 @@
 #include "SpyFrame.h"
 #include "FinishedFrame.h"
 #include "ADLSearchFrame.h"
+#include "PrivateFrame.h"
+#include "FinishedULFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -146,10 +148,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 	m_CmdBar.m_arrCommand.Add(IDC_FINISHED); // adds icon to File menu
+	m_CmdBar.m_arrCommand.Add(IDC_FINISHED_UL); // Finished Upload 16 x 16 menu icon
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
+	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
-	m_CmdBar.m_arrCommand.Add(IDC_FILE_ADL_SEARCH);
 	
 	// remove old menu
 	SetMenu(NULL);
@@ -163,8 +166,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
-	int w[6] = { 0, 0, 0, 0, 0, 0 };
-	ctrlStatus.SetParts(6, w);
+	int w[7] = { 0, 0, 0, 0, 0, 0, 0 };
+	ctrlStatus.SetParts(7, w);
+	statusSizes[0] = WinUtil::getTextWidth(STRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
@@ -278,7 +282,7 @@ HWND MainFrame::createToolbar() {
 	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrl.SetImageList(largeImages);
 
-	TBBUTTON tb[10];
+	TBBUTTON tb[11];
 	memset(tb, 0, sizeof(tb));
 	int n = 0;
 	tb[n].iBitmap = n;
@@ -316,9 +320,21 @@ HWND MainFrame::createToolbar() {
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
+	n++; // Finished Upload 20x20 toolbar icon
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FINISHED_UL;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
 	n++;
 	tb[n].iBitmap = n;
 	tb[n].idCommand = ID_FILE_SEARCH;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
@@ -334,14 +350,8 @@ HWND MainFrame::createToolbar() {
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	n++;
-	tb[n].iBitmap = n;
-	tb[n].idCommand = IDC_FILE_ADL_SEARCH;
-	tb[n].fsState = TBSTATE_ENABLED;
-	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-
 	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(10, tb);
+	ctrl.AddButtons(11, tb);
 	ctrl.AutoSize();
 
 	return ctrl.m_hWnd;
@@ -423,7 +433,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(ctrlStatus.IsWindow()) {
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
-			for(int i = 0; i < 5; i++) {
+			for(int i = 0; i < 6; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
 				
 				if(statusSizes[i] < w) {
@@ -438,8 +448,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		delete &str;
 	} else if(wParam == AUTO_CONNECT) {
-		autoConnect(HubManager::getInstance()->lockFavoriteHubs());
-		HubManager::getInstance()->unlockFavoriteHubs();
+		autoConnect(HubManager::getInstance()->getFavoriteHubs());
 	} else if(wParam == PARSE_COMMAND_LINE) {
 		parseCommandLine(GetCommandLine());
 	}
@@ -899,6 +908,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_FILE_NOTEPAD; break;
 			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_FILE_ADL_SEARCH; break;
 			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break; // tooltip
+			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break; // Finished Uploads tooltip
 		}
 		if(stringId != -1) {
 			strncpy(pDispInfo->lpszText, ResourceManager::getInstance()->getString((ResourceManager::Strings)stringId).c_str(), 79);
@@ -1073,7 +1083,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		stopperThread = NULL;
 		bHandled = FALSE;
 	} else {
-		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), "", MB_YESNO) == IDYES) ) {
+		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), APPNAME " " VERSIONSTRING, MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES) ) {
 			string tmp1;
 			string tmp2;
 
@@ -1155,13 +1165,13 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[6];
+		int w[7];
 		ctrlStatus.GetClientRect(sr);
-		w[5] = sr.right - 16;
+		w[6] = sr.right - 16;
 #define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
-		setw(4); setw(3); setw(2); setw(1); setw(0);
+		setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
-		ctrlStatus.SetParts(6, w);
+		ctrlStatus.SetParts(7, w);
 	}
 	CRect rc = rect;
 	rc.top = rc.bottom - ctrlTab.getHeight();
@@ -1234,6 +1244,17 @@ LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
  		pChild->CreateEx(m_hWndClient);
  	} else {
  		MDIActivate(FinishedFrame::frame->m_hWnd);
+	}
+	return 0;
+}
+
+LRESULT MainFrame::onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+ 	if(FinishedULFrame::frame == NULL) {
+		FinishedULFrame* pChild = new FinishedULFrame();
+ 		pChild->setTab(&ctrlTab);
+ 		pChild->CreateEx(m_hWndClient);
+ 	} else {
+ 		MDIActivate(FinishedULFrame::frame->m_hWnd);
 	}
 	return 0;
 }
@@ -1365,6 +1386,7 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 
 		StringList* str = new StringList();
+		str->push_back(Util::getAway() ? STRING(AWAY) : "");
 		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
@@ -1409,6 +1431,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.19 2003/03/13 13:31:53 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.20 2003/03/26 08:47:45 arnetheduck Exp $
  */
 

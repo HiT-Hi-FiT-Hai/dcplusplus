@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "CriticalSection.h"
 #include "Exception.h"
 #include "User.h"
@@ -376,6 +375,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.33 2003/03/13 13:31:27 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.34 2003/03/26 08:47:23 arnetheduck Exp $
  */
 

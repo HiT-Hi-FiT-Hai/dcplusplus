@@ -400,4 +400,7 @@ private:
 
 #endif
 
-
+/**
+ * @file ADLSearch.h
+ * $Id: ADLSearch.h,v 1.2 2003/03/26 08:47:09 arnetheduck Exp $
+ */

@@ -25,7 +25,6 @@
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
-#include "PrivateFrame.h"
 
 #include "../client/Client.h"
 #include "../client/User.h"
@@ -275,6 +274,9 @@ private:
 	CEdit ctrlMessage;
 	ExListViewCtrl ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
+
+	/** Parameter map for user commands */
+	StringMap ucParams;
 	
 	static CImageList* images;
 	static int columnIndexes[COLUMN_LAST];
@@ -332,6 +334,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.17 2003/03/13 13:31:52 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.18 2003/03/26 08:47:44 arnetheduck Exp $
  */
 

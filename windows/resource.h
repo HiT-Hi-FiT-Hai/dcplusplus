@@ -40,6 +40,7 @@
 #define IDD_ADVANCED2PAGE               224
 #define IDD_USER_COMMAND                230
 #define IDR_FINISHED_DL                 231
+#define IDR_FINISHED_UL                 232
 #define IDR_ADLSEARCH                   233
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
@@ -198,6 +199,7 @@
 #define IDC_MOVE_UP                     1114
 #define IDC_MOVE_DOWN                   1115
 #define IDC_HUBUSERDESCR				1116
+#define IDC_FINISHED_UL					1117
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -217,7 +219,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        234
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1116
+#define _APS_NEXT_CONTROL_VALUE         1118
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

@@ -23,10 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "CriticalSection.h"
-#include "Exception.h"
 #include "DownloadManager.h"
+#include "UploadManager.h"
 
 class FinishedItem
 {
@@ -37,7 +36,7 @@ public:
 
 	FinishedItem(string const& aTarget, string const& aUser, string const& aHub, 
 		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, string const& aTime,
-		bool aCrc32) : 
+		bool aCrc32 = false) : 
 		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
 		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) {
 	}
@@ -65,62 +64,75 @@ public:
 
 	enum Types {
 		ADDED,
+		ADDED_UL,
 		REMOVED,
-		MAJOR_CHANGES
+		REMOVED_UL,
+		MAJOR_CHANGES,
+		MAJOR_CHANGES_UL
 	};
 
 	virtual void onAction(Types, FinishedItem*) throw() = 0;
 }; 
 
 class FinishedManager : public Singleton<FinishedManager>,
-	public Speaker<FinishedManagerListener>, private DownloadManagerListener
+	public Speaker<FinishedManagerListener>, private DownloadManagerListener, private UploadManagerListener
 {
 public:
-	FinishedItem::List& lockList() { cs.enter(); return list; };
+	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; };
 	void unlockList() { cs.leave(); };
 
-	void remove(FinishedItem *item)
+	void remove(FinishedItem *item, bool upload = false)
 	{
 		{
 			Lock l(cs);
-			FinishedItem::Iter it = find(list.begin(), list.end(), item);
+			FinishedItem::List *listptr = upload ? &uploads : &downloads;
+			FinishedItem::Iter it = find(listptr->begin(), listptr->end(), item);
 
-			if(it != list.end())
-				list.erase(it);
+			if(it != listptr->end())
+				listptr->erase(it);
 			else
 				return;
 		}
-
+		if (!upload)
 		fire(FinishedManagerListener::REMOVED, item);
+		else
+			fire(FinishedManagerListener::REMOVED_UL, item);
 		delete item;		
 	}
 
-	void removeAll()
+	void removeAll(bool upload = false)
 	{
 		{
 			Lock l(cs);
-			for_each(list.begin(), list.end(), DeleteFunction<FinishedItem*>());
-			list.clear();
+			FinishedItem::List *listptr = upload ? &uploads : &downloads;
+			for_each(listptr->begin(), listptr->end(), DeleteFunction<FinishedItem*>());
+			listptr->clear();
 		}
-
+		if (!upload)
 		fire(FinishedManagerListener::MAJOR_CHANGES, (FinishedItem *)0);
+		else
+			fire(FinishedManagerListener::MAJOR_CHANGES_UL, (FinishedItem *)0);
 	}
 
 private:
 	friend class Singleton<FinishedManager>;
 	
-	FinishedManager() { DownloadManager::getInstance()->addListener(this); }
+	FinishedManager() { 
+		DownloadManager::getInstance()->addListener(this);
+		UploadManager::getInstance()->addListener(this);
+	}
 	virtual ~FinishedManager();
 
-	virtual void onAction(DownloadManagerListener::Types type, Download* d) throw();
+	virtual void onAction(DownloadManagerListener::Types type, Download* d);
+	virtual void onAction(UploadManagerListener::Types type, Upload* u);
 
 	CriticalSection cs;
-	FinishedItem::List list;
+	FinishedItem::List downloads, uploads;
 };
 
 #endif // FINISHEDMANAGER_H
 
 /**
  * @file FinishedManager.h
- * $Id: FinishedManager.h,v 1.4 2003/03/13 13:31:21 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.5 2003/03/26 08:47:19 arnetheduck Exp $
  */

@@ -23,6 +23,7 @@
 #include "HubFrame.h"
 #include "LineDlg.h"
 #include "SearchFrm.h"
+#include "PrivateFrame.h"
 
 #include "../client/QueueManager.h"
 #include "../client/ShareManager.h"
@@ -791,8 +792,7 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 		UserCommand& uc = *ui;
 		if(uc.getName() == cmd) {
 			int sel = -1;
-			StringMap sm;
-			sm.insert(make_pair(string("mynick"), client->getNick()));
+			ucParams["mynick"] = client->getNick();
 
 			string::size_type i = 0;
 
@@ -806,8 +806,9 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 				LineDlg dlg;
 				dlg.title = uc.getName();
 				dlg.description = name;
+				dlg.line = ucParams["line:" + name];
 				if(dlg.DoModal() == IDOK) {
-					sm["line:" + name] = dlg.line;
+					ucParams["line:" + name] = dlg.line;
 				} else {
 					return 0;
 				}
@@ -816,11 +817,11 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 
 			while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 				UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
-				sm["nick"] = u->user->getNick();
+				ucParams["nick"] = u->user->getNick();
 				if(uc.getNick().empty()) {
-					client->sendMessage(Util::formatParams(uc.getCommand(), sm));
+					client->sendMessage(Util::formatParams(uc.getCommand(), ucParams));
 				} else {
-					client->privateMessage(Util::formatParams(uc.getNick(), sm), Util::formatParams(uc.getCommand(), sm));
+					client->privateMessage(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
 				}
 			}
 		}
@@ -890,7 +891,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		string s, f;
 		short p = 411;
 		Util::decodeUrl(redirect, s, p, f);
-		if(ClientManager::getInstance()->isConnected(s)) {
+		if(ClientManager::getInstance()->isConnected(s, p)) {
 			addClientLine(STRING(REDIRECT_ALREADY_CONNECTED));
 			return 0;
 		}
@@ -974,7 +975,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const st
 				string s, f;
 				short p = 411;
 				Util::decodeUrl(line, s, p, f);
-				if(ClientManager::getInstance()->isConnected(s)) {
+				if(ClientManager::getInstance()->isConnected(s, p)) {
 					speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
 					return;
 				}
@@ -1013,5 +1014,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.19 2003/03/13 13:31:51 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.20 2003/03/26 08:47:44 arnetheduck Exp $
  */

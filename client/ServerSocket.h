@@ -23,9 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "Socket.h"
-#include "Thread.h"
 
 class ServerSocketListener {
 public:
@@ -69,6 +67,6 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.16 2003/03/13 13:31:30 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.17 2003/03/26 08:47:24 arnetheduck Exp $
  */
 

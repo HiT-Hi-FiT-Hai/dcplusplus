@@ -625,7 +625,6 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	}
 }
 
-
 void QueueManager::remove(const string& aTarget) throw() {
 	string x;
 	{
@@ -770,35 +769,6 @@ void QueueManager::saveQueue() throw() {
 
 	try {
 		
-#if 0
-	// The old SimpleXML way, not very good because it uses a lot of memory for large
-	// queues when building the hashes for looking up items in the xml structures that will
-	// never be used anyway...
-		SimpleXML xml;
-
-		xml.addTag("Downloads");
-		xml.stepIn();
-		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
-			QueueItem::Ptr d = i->second;
-			if(!d->isSet(QueueItem::FLAG_USER_LIST)) {
-				xml.addTag("Download");
-				xml.addChildAttrib("Target", d->getTarget());
-				xml.addChildAttrib("Resume", d->isSet(QueueItem::FLAG_RESUME));
-				xml.addChildAttrib("Size", d->getSize());
-				xml.addChildAttrib("Priority", (int)d->getPriority());
-				xml.addChildAttrib("TempTarget", d->getTempTarget());
-				xml.stepIn();
-				for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
-					QueueItem::Source* s = *j;
-					xml.addTag("Source");
-					xml.addChildAttrib("Nick", s->getUser()->getNick());
-					xml.addChildAttrib("Path", s->getPath());
-				}
-				xml.stepOut();
-			}
-		}
-#endif // 0
-
 #define STRINGLEN(n) n, sizeof(n)-1
 #define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? SimpleXML::escape(n, true) : n
 		
@@ -1051,5 +1021,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.36 2003/03/13 13:31:27 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.37 2003/03/26 08:47:22 arnetheduck Exp $
  */

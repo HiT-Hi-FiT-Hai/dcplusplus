@@ -65,28 +65,26 @@ bool BufferedSocket::threadSendFile() {
 					if(!tasks.empty())
 						return false;
 				}
-				int waitFor = WAIT_READ | WAIT_WRITE;
-				wait(POLL_TIMEOUT, waitFor);
+				int waitFor = WAIT_READ;
+				wait(0, waitFor);
 				if(waitFor & WAIT_READ)
 					return false;
 
-				if(waitFor & WAIT_WRITE) {
-					u_int32_t br = 0;
-					bytes = comp->compress(inbuf, s, br);
-					if(bytes == 0) {
-						// Finished!
-						delete comp;
-						comp = NULL;
-						dcassert(size == 0);
-						fire(BufferedSocketListener::TRANSMIT_DONE);
-						return true;
-					} else {
-						Socket::write((char*) inbuf, bytes);
-						if(br > 0) {
-							fire(BufferedSocketListener::BYTES_SENT, br);
-							size -= br;
-							dcassert(size >= 0);
-						}
+				u_int32_t br = 0;
+				bytes = comp->compress(inbuf, s, br);
+				if(bytes == 0) {
+					// Finished!
+					delete comp;
+					comp = NULL;
+					dcassert(size == 0);
+					fire(BufferedSocketListener::TRANSMIT_DONE);
+					return true;
+				} else {
+					Socket::write((char*) inbuf, bytes);
+					if(br > 0) {
+						fire(BufferedSocketListener::BYTES_SENT, br);
+						size -= br;
+						dcassert(size >= 0);
 					}
 				}
 			}
@@ -98,25 +96,23 @@ bool BufferedSocket::threadSendFile() {
 						return false;
 				}
 
-				int waitFor = WAIT_READ | WAIT_WRITE;
-				wait(POLL_TIMEOUT, waitFor);
+				int waitFor = WAIT_READ;
+				wait(0, waitFor);
 				if(waitFor & WAIT_READ)
 					return false;
 
-				if(waitFor & WAIT_WRITE) {
-					dcassert(inbufSize >= 1024);
-					u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? (u_int32_t)min((int64_t)1024, size) : (u_int32_t)min((int64_t)inbufSize, size);
+				dcassert(inbufSize >= 1024);
+				u_int32_t s = BOOLSETTING(SMALL_SEND_BUFFER) ? (u_int32_t)min((int64_t)1024, size) : (u_int32_t)min((int64_t)inbufSize, size);
 
-					if( (len = file->read(inbuf, s)) == 0) {
-						// Premature EOF?
-						dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
-						disconnect();
-						return true;
-					}
-					Socket::write((char*)inbuf, len);
-					fire(BufferedSocketListener::BYTES_SENT, len);
-					size -= len;
+				if( (len = file->read(inbuf, s)) == 0) {
+					// Premature EOF?
+					dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
+					disconnect();
+					return true;
 				}
+				Socket::write((char*)inbuf, len);
+				fire(BufferedSocketListener::BYTES_SENT, len);
+				size -= len;
 			}
 		}
 	} catch(Exception e) {
@@ -474,5 +470,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.46 2003/03/13 13:31:12 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.47 2003/03/26 08:47:10 arnetheduck Exp $
  */

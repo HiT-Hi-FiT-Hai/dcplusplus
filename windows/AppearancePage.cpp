@@ -55,6 +55,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_STATUS_IN_CHAT },
 	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_APPEARANCE_SHOW_JOINS },
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_APPEARANCE_USE_SYSTEM_ICONS },
+	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_APPEARANCE_FINISHED_DIRTY },
 	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
@@ -150,5 +151,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.4 2003/03/13 13:31:45 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.5 2003/03/26 08:47:40 arnetheduck Exp $
  */

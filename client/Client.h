@@ -25,7 +25,6 @@
 
 #include "BufferedSocket.h"
 #include "User.h"
-#include "Util.h"
 #include "TimerManager.h"
 #include "CriticalSection.h"
 
@@ -168,6 +167,8 @@ public:
 	}
 
 	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
+	const short getPort() { return port; }
+	
 	string getLocalIp() { 
 		if(!SETTING(SERVER).empty()) {
 			return Socket::resolve(SETTING(SERVER));
@@ -265,6 +266,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.62 2003/03/13 13:31:14 arnetheduck Exp $
+ * $Id: Client.h,v 1.63 2003/03/26 08:47:11 arnetheduck Exp $
  */
 

@@ -36,6 +36,7 @@ const string SettingsManager::settingTags[] =
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
+	"FinishedULWidths", "FinishedULOrder",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
@@ -47,7 +48,7 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression",
+	"MaxCompression", "FinishedDirty",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -129,6 +130,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
+	setDefault(FINISHED_DIRTY, true);
 	
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -265,6 +267,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.47 2003/03/13 13:31:31 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.48 2003/03/26 08:47:24 arnetheduck Exp $
  */
 

@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
-#include "Util.h"
 #include "ClientManagerListener.h"
 
 class Upload : public Transfer, public Flags {
@@ -151,5 +150,5 @@ private:
 
 /**
  * @file UploadManager.h
- * $Id: UploadManager.h,v 1.52 2003/03/13 13:31:36 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.53 2003/03/26 08:47:34 arnetheduck Exp $
  */

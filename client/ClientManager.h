@@ -54,11 +54,11 @@ public:
 		return c;
 	}
 
-	bool isConnected(const string& aServer) {
+	bool isConnected(const string& aServer, short port) {
 		Lock l(cs);
 
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if((*i)->getServer() == aServer || (*i)->getIp() == aServer) {
+			if(((*i)->getServer() == aServer || (*i)->getIp() == aServer) && (*i)->getPort() == port) {
 				return true;
 			}
 		}
@@ -123,6 +123,9 @@ private:
 		TimerManager::getInstance()->addListener(this); 
 	};
 
+	// Dummy...
+	ClientManager(const ClientManager&) throw() { dcassert(0); };
+
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
@@ -144,6 +147,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.31 2003/03/13 13:31:15 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.32 2003/03/26 08:47:12 arnetheduck Exp $
  */
 

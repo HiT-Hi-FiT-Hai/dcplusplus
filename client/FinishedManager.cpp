@@ -21,16 +21,19 @@
 
 #include <time.h>
 #include "FinishedManager.h"
+#include "ShareManager.h"
 
 FinishedManager* Singleton<FinishedManager>::instance = NULL;
 
 FinishedManager::~FinishedManager()
 {
 	Lock l(cs);
-	for_each(list.begin(), list.end(), DeleteFunction<FinishedItem*>());
+	for_each(downloads.begin(), downloads.end(), DeleteFunction<FinishedItem*>());
+	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
 }
 
-void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d) throw() {
+void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
+{
 	switch(type) {
 	case DownloadManagerListener::COMPLETE:
 		{
@@ -48,10 +51,41 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 				dcdebug("Adding finished: \"%s\" - \"%s\" (user: \"%s\")", item->getTime().c_str(), 
 					item->getTarget().c_str(), item->getUser().c_str());
 				Lock l(cs);
-				list.push_back(item);
+				downloads.push_back(item);
 			}
 			
 			fire(FinishedManagerListener::ADDED, item);
+		}
+		break;
+		
+	default:
+		break;
+	}
+}
+
+void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
+{
+	switch(type) {
+	case UploadManagerListener::COMPLETE:
+		{
+			char buf[32];
+			time_t _tt;
+			time(&_tt);
+			tm* _tm = localtime(&_tt);
+			strftime(buf, 31, "%Y-%m-%d %H:%M:%S", _tm);
+			
+			FinishedItem *item = new FinishedItem(
+				ShareManager::getInstance()->translateFileName(u->getFileName()), u->getUserConnection()->getUser()->getNick(),
+				u->getUserConnection()->getUser()->getLastHubName(),
+				u->getSize(), u->getTotal(), (GET_TICK() - u->getStart()), buf);
+			{
+				dcdebug("Adding finished upload: \"%s\" - \"%s\" (user: \"%s\")", item->getTime().c_str(), 
+					item->getTarget().c_str(), item->getUser().c_str());
+				Lock l(cs);
+				uploads.push_back(item);
+			}
+			
+			fire(FinishedManagerListener::ADDED_UL, item);
 		}
 		break;
 		

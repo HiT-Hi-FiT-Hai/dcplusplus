@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "Socket.h"
-#include "Util.h"
 #include "Semaphore.h"
 #include "Thread.h"
 
@@ -164,6 +163,9 @@ private:
 		}
 	};
 
+	// Dummy...
+	BufferedSocket(const BufferedSocket&) throw() { dcassert(0); };
+
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
 	virtual ~BufferedSocket() {
@@ -235,5 +237,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.44 2003/03/13 13:31:13 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.45 2003/03/26 08:47:10 arnetheduck Exp $
  */

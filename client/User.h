@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "Pointer.h"
 
 class Client;
@@ -99,6 +98,6 @@ private:
 
 /**
  * @file User.h
- * $Id: User.h,v 1.23 2003/03/13 13:31:39 arnetheduck Exp $
+ * $Id: User.h,v 1.24 2003/03/26 08:47:34 arnetheduck Exp $
  */
 

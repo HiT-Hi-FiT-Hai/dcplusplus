@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "QueueManager.h"
+#include "User.h"
 
 class DirectoryListing  
 {
@@ -97,9 +97,7 @@ public:
 	int getTotalFileCount(bool nosymbolic = false) { return root->getTotalFileCount(nosymbolic); };
 	Directory* getRoot() { return root; };
 	
-	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
-		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
-	}
+	void download(File* aFile, const User::Ptr& aUser, const string& aTarget);
 
 private:
 	Directory* root;
@@ -112,5 +110,5 @@ private:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.14 2003/03/13 13:31:19 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.15 2003/03/26 08:47:17 arnetheduck Exp $
  */

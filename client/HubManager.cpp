@@ -69,8 +69,9 @@ void HubManager::onHttpFinished() throw() {
 	downloadBuf = Util::emptyString;
 }
 
-void HubManager::save(SimpleXML*) {
-	Lock l(cs);
+void HubManager::save() {
+	if(dontSave)
+		return;
 
 	try {
 		SimpleXML xml(8);
@@ -116,9 +117,9 @@ void HubManager::save(SimpleXML*) {
 
 		string fname = Util::getAppPath() + FAVORITES_FILE;
 
-		BufferedFile f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		File f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
-		xml.toXML(&f);
+		f.write(xml.toXML());
 		f.close();
 		File::deleteFile(fname);
 		File::renameFile(fname + ".tmp", fname);
@@ -144,8 +145,8 @@ void HubManager::load() {
 }
 
 void HubManager::load(SimpleXML* aXml) {
-	Lock l(cs);
-	
+	dontSave = true;
+
 	// Old names...load for compatibility.
 	aXml->resetCurrentChild();
 	if(aXml->findChild("Favorites")) {
@@ -204,6 +205,7 @@ void HubManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+	dontSave = false;
 }
 
 void HubManager::refresh() {
@@ -248,8 +250,8 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 		dcassert(c);
 		c->removeListener(this);
 		lastServer++;
-		fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
 		running = false;
+		fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
 	}
 }
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) throw() {
@@ -264,13 +266,13 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 }
 
 void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
-	switch(type) {
-	case SettingsManagerListener::LOAD: load(xml); load(); break;
-	case SettingsManagerListener::SAVE: save(xml); break;
+	if(type == SettingsManagerListener::LOAD) {
+		load(xml); 
+		load();
 	}
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.27 2003/03/13 13:31:23 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.28 2003/03/26 08:47:21 arnetheduck Exp $
  */

@@ -54,6 +54,7 @@ public:
 		ctrlLine.Attach(GetDlgItem(IDC_LINE));
 		ctrlLine.SetFocus();
 		ctrlLine.SetWindowText(line.c_str());
+		ctrlLine.SetSelAll(TRUE);
 		if(password) {
 			ctrlLine.SetWindowLong(GWL_STYLE, ctrlLine.GetWindowLong(GWL_STYLE) | ES_PASSWORD);
 		}
@@ -70,9 +71,11 @@ public:
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		if(wID == IDOK) {
-			char buf[256];
-			GetDlgItemText(IDC_LINE, buf, 256);
+			int len = ctrlLine.GetWindowTextLength() + 1;
+			char* buf = new char[len];
+			GetDlgItemText(IDC_LINE, buf, len);
 			line = buf;
+			delete[] buf;
 		}
 		EndDialog(wID);
 		return 0;
@@ -84,5 +87,5 @@ public:
 
 /**
  * @file LineDlg.h
- * $Id: LineDlg.h,v 1.3 2003/03/13 13:31:53 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.4 2003/03/26 08:47:45 arnetheduck Exp $
  */

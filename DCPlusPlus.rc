@@ -70,6 +70,8 @@ IDR_NOTEPAD             ICON                    "res\\notepad.ico"
 IDR_QUEUE               ICON                    "res\\queue.ico"
 IDR_FINISHED_DL         ICON                    "res\\FinishedDL.ico"
 IDR_ADLSEARCH           ICON                    "res\\ADLSearch.ico"
+IDR_FINISHED_UL         ICON                    "res\\FinishedUL.ico"
+IDR_USERS               ICON                    "res\\FavoriteUser.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -336,7 +336,7 @@ LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 		delete x;
 	} else if(wParam == FAILED) {
 		string* x = (string*)lParam;
-		ctrlStatus.SetText(0, (STRING(DOWNLOAD_FAILED) + ": " + (*x) ).c_str());
+		ctrlStatus.SetText(0, (STRING(DOWNLOAD_FAILED) + (*x) ).c_str());
 		delete x;
 	}
 	return 0;
@@ -380,6 +380,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.8 2003/03/13 13:32:00 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.9 2003/03/26 08:47:46 arnetheduck Exp $
  */
 

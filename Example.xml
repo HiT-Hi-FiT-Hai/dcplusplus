@@ -16,6 +16,7 @@
 		<String Name="Audio">Audio</String>
 		<String Name="AutoConnect">Auto connect / Name</String>
 		<String Name="Average">Average/s: </String>
+		<String Name="Away">AWAY</String>
 		<String Name="AwayModeOff">Away mode off</String>
 		<String Name="AwayModeOn">Away mode on: </String>
 		<String Name="B">B</String>
@@ -88,7 +89,8 @@
 		<String Name="Filename">Filename</String>
 		<String Name="Filter">Filter</String>
 		<String Name="Find">Find</String>
-		<String Name="FinishedDownloads">Finished downloads</String>
+		<String Name="FinishedDownloads">Finished Downloads</String>
+		<String Name="FinishedUploads">Finished Uploads</String>
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GB</String>
 		<String Name="GetFileList">Get file list</String>
@@ -248,6 +250,7 @@
 		<String Name="SettingsAdvancedSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
 		<String Name="SettingsAdvancedUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
 		<String Name="SettingsAppearance">Appearance</String>
+		<String Name="SettingsAppearanceFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsAppearanceFullRowSelect">Full row select in lists</String>
 		<String Name="SettingsAppearanceFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsAppearanceMinimizeTray">Minimize to tray</String>

@@ -20,12 +20,15 @@
 #include "../client/DCPlusPlus.h"
 
 #include "../client/CryptoManager.h"
+#include "../client/File.h"
+#include "../client/QueueManager.h"
 
 #include "Resource.h"
 
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
+
 
 DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
@@ -708,5 +711,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.13 2003/03/13 13:31:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.14 2003/03/26 08:47:40 arnetheduck Exp $
  */

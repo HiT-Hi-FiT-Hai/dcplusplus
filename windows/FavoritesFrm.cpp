@@ -82,8 +82,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlNew.SetFont(ctrlHubs.GetFont());
 
 	HubManager::getInstance()->addListener(this);
-	updateList(HubManager::getInstance()->lockFavoriteHubs());
-	HubManager::getInstance()->unlockFavoriteHubs();
+	updateList(HubManager::getInstance()->getFavoriteHubs());
 	
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
@@ -235,6 +234,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file FavoritesFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.7 2003/03/13 13:31:49 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.8 2003/03/26 08:47:42 arnetheduck Exp $
  */
 

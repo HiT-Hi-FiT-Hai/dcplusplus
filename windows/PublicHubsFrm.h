@@ -174,7 +174,7 @@ private:
 		case HubManagerListener::DOWNLOAD_STARTING:
 			PostMessage(WM_SPEAKER, STARTING, (LPARAM)x); break;
 		case HubManagerListener::DOWNLOAD_FAILED:
-			PostMessage(WM_SPEAKER, FINISHED, (LPARAM)x); break;
+			PostMessage(WM_SPEAKER, FAILED, (LPARAM)x); break;
 		}
 	}
 	
@@ -186,5 +186,5 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.5 2003/03/13 13:32:01 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.6 2003/03/26 08:47:46 arnetheduck Exp $
  */

@@ -153,12 +153,13 @@ void AdvancedPage::write()
 		pm = buf;
 		ul.push_back(UserCommand(name, command, hub, pm));
 	}
+	HubManager::getInstance()->save();
 
 	ctrlCommands.Detach();
 }
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.9 2003/03/13 13:31:45 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.10 2003/03/26 08:47:39 arnetheduck Exp $
  */
 

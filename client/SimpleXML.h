@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "Exception.h"
-#include "Util.h"
 
 #include "File.h"
 
@@ -211,6 +210,6 @@ private:
 
 /**
  * @file SimpleXML.h
- * $Id: SimpleXML.h,v 1.19 2003/03/13 13:31:32 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.20 2003/03/26 08:47:28 arnetheduck Exp $
  */
 

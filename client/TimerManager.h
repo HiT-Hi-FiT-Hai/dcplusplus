@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "Thread.h"
 #include "Semaphore.h"
 
@@ -86,6 +85,6 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.16 2003/03/13 13:31:36 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.17 2003/03/26 08:47:33 arnetheduck Exp $
  */
 

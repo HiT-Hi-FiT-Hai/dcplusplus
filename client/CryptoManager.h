@@ -23,9 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "Exception.h"
-#include "../bzip2/bzlib.h"
 #include "../zlib/zlib.h"
 
 STANDARD_EXCEPTION(CryptoException);
@@ -188,5 +186,5 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.19 2003/03/13 13:31:16 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.20 2003/03/26 08:47:15 arnetheduck Exp $
  */

@@ -28,8 +28,6 @@
 #include "User.h"
 #include "CriticalSection.h"
 #include "TimerManager.h"
-#include "Util.h"
-#include "Thread.h"
 
 class ConnectionQueueItem {
 public:
@@ -161,5 +159,5 @@ private:
 
 /**
  * @file ConnectionManager.h
- * $Id: ConnectionManager.h,v 1.47 2003/03/13 13:31:15 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.48 2003/03/26 08:47:12 arnetheduck Exp $
  */

@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "BufferedSocket.h"
-#include "Util.h"
 
 class HttpConnection;
 
@@ -48,7 +47,7 @@ class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionList
 {
 public:
 	void downloadFile(const string& aUrl);
-	HttpConnection() : ok(false), port(80), size(-1), socket(NULL) { };
+	HttpConnection() : ok(false), port(80), size(-1), socket(NULL), moved302(false) { };
 	virtual ~HttpConnection() { 
 		if(socket) {
 			socket->removeListener(this); 
@@ -65,7 +64,9 @@ private:
 	bool ok;
 	short port;
 	int64_t size;
-	
+	bool moved302;
+	string location302;
+
 	BufferedSocket* socket;
 
 	// BufferedSocketListener
@@ -83,6 +84,6 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.12 2003/03/13 13:31:22 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.13 2003/03/26 08:47:21 arnetheduck Exp $
  */
 

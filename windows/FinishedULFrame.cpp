@@ -20,21 +20,21 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
-#include "FinishedFrame.h"
+#include "FinishedULFrame.h"
 #include "WinUtil.h"
 
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 
-FinishedFrame* FinishedFrame::frame = NULL;
+FinishedULFrame* FinishedULFrame::frame = NULL;
 
-int FinishedFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED, COLUMN_CRC32 };
-int FinishedFrame::columnSizes[] = { 110, 390, 125, 80, 80, 80 };
+int FinishedULFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED };
+int FinishedULFrame::columnSizes[] = { 110, 390, 125, 80, 80 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED, ResourceManager::CRC_CHECKED
+ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED
 };
 
-LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	// Only one of this window please...
 	dcassert(frame == NULL);
@@ -43,10 +43,10 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
-	SetWindowText(CSTRING(FINISHED_DOWNLOADS));
+	SetWindowText(CSTRING(FINISHED_UPLOADS));
 	
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_FINISHED);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_FINISHED_UL);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
@@ -59,8 +59,8 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctrlList.SetTextColor(WinUtil::textColor);
 	
 	// Create listview columns
-	WinUtil::splitTokens(columnIndexes, SETTING(FINISHED_ORDER), COLUMN_LAST);
-	WinUtil::splitTokens(columnSizes, SETTING(FINISHED_WIDTHS), COLUMN_LAST);
+	WinUtil::splitTokens(columnIndexes, SETTING(FINISHED_UL_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(FINISHED_UL_WIDTHS), COLUMN_LAST);
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
 		int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
@@ -72,7 +72,7 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	UpdateLayout();
 	
 	FinishedManager::getInstance()->addListener(this);
-	updateList(FinishedManager::getInstance()->lockList());
+	updateList(FinishedManager::getInstance()->lockList(true));
 	FinishedManager::getInstance()->unlockList();
 	
 	ctxMenu.CreatePopupMenu();
@@ -86,7 +86,7 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	return TRUE;
 }
 
-LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+LRESULT FinishedULFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	
 	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
 
@@ -97,7 +97,7 @@ LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	return 0;
 }
 
-LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT FinishedULFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
@@ -107,7 +107,7 @@ LRESULT FinishedFrame::onOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT FinishedULFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
@@ -117,26 +117,26 @@ LRESULT FinishedFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
-LRESULT FinishedFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT FinishedULFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	switch(wID)
 	{
 	case IDC_REMOVE:
 		{
 			int i = -1;
 			while((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-				FinishedManager::getInstance()->remove((FinishedItem*)ctrlList.GetItemData(i));
+				FinishedManager::getInstance()->remove((FinishedItem*)ctrlList.GetItemData(i), true);
 				ctrlList.DeleteItem(i);
 			}
 			break;
 		}
 	case IDC_TOTAL:
-		FinishedManager::getInstance()->removeAll();
+		FinishedManager::getInstance()->removeAll(true);
 		break;
 	}
 	return 0;
 }
 
-LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	FinishedManager::getInstance()->removeListener(this);
 	
 	string tmp1, tmp2;
@@ -150,27 +150,27 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	tmp1.erase(tmp1.size()-1, 1);
 	tmp2.erase(tmp2.size()-1, 1);
 	
-	SettingsManager::getInstance()->set(SettingsManager::FINISHED_ORDER, tmp1);
-	SettingsManager::getInstance()->set(SettingsManager::FINISHED_WIDTHS, tmp2);
+	SettingsManager::getInstance()->set(SettingsManager::FINISHED_UL_ORDER, tmp1);
+	SettingsManager::getInstance()->set(SettingsManager::FINISHED_UL_WIDTHS, tmp2);
 	
 	bHandled = FALSE;
 	return 0;
 }
 
-void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw() {
+void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry)  throw() {
 	switch(type) {
-		case FinishedManagerListener::ADDED: addEntry(entry); updateStatus();
+		case FinishedManagerListener::ADDED_UL: addEntry(entry); updateStatus();
 			break;
 
-		case FinishedManagerListener::MAJOR_CHANGES: 
-			updateList(FinishedManager::getInstance()->lockList());
+		case FinishedManagerListener::MAJOR_CHANGES_UL: 
+			updateList(FinishedManager::getInstance()->lockList(true));
 			totalBytes = 0;
 			totalTime = 0;
 			ctrlList.DeleteAllItems();
 			FinishedManager::getInstance()->unlockList();
 			updateStatus();
 			break;
-		case FinishedManagerListener::REMOVED:
+		case FinishedManagerListener::REMOVED_UL:
 			totalBytes -= entry->getChunkSize();
 			totalTime -= entry->getMilliSeconds();
 			updateStatus();
@@ -178,14 +178,13 @@ void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* 
 	}
 };
 
-void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
+void FinishedULFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 	StringList l;
 	l.push_back(entry->getTime());
 	l.push_back(entry->getTarget());
 	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
 	l.push_back(Util::formatBytes(entry->getSize()));
 	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-	l.push_back(entry->getCrc32Checked() ? STRING(YES) : STRING(NO));
 	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
 	ctrlList.EnsureVisible(loc, FALSE);
 
@@ -197,6 +196,6 @@ void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 
 /**
- * @file FinishedFrame.cpp
- * $Id: FinishedFrame.cpp,v 1.5 2003/03/26 08:47:43 arnetheduck Exp $
+ * @file FinishedULFrame.cpp
+ * $Id: FinishedULFrame.cpp,v 1.1 2003/03/26 08:47:43 arnetheduck Exp $
  */

@@ -25,7 +25,6 @@
 
 #include "Exception.h"
 #include "CriticalSection.h"
-#include "Util.h"
 #include "TimerManager.h"
 #include "SearchManager.h"
 
@@ -215,6 +214,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.32 2003/03/13 13:31:31 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.33 2003/03/26 08:47:27 arnetheduck Exp $
  */
 

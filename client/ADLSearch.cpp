@@ -184,4 +184,8 @@ void ADLSearchManager::Save()
 	}
 }
 
+/**
+ * @file ADLSearch.cpp
+ * $Id: ADLSearch.cpp,v 1.2 2003/03/26 08:47:09 arnetheduck Exp $
+ */
 

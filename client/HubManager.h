@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Util.h"
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 #include "User.h"
@@ -114,69 +113,65 @@ public:
 
 class SimpleXML;
 
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>, 
+/**
+ * Public hub list, favorites (hub&user). Assumed to be called only by UI thread.
+ */
+class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>,
 	private SettingsManagerListener
 {
 public:
 	
 	void refresh();
 
-	const FavoriteHubEntry::List& lockFavoriteHubs() { cs.enter(); return favoriteHubs; };
-	void unlockFavoriteHubs() { cs.leave(); };
+	const FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
-	User::List getFavoriteUsers() { Lock l(cs); return users; };
+	User::List& getFavoriteUsers() { return users; };
 	
 	void addFavoriteUser(const User::Ptr& aUser) { 
-		Lock l(cs);
 		if(find(users.begin(), users.end(), aUser) == users.end()) {
 			users.push_back(aUser);
 			fire(HubManagerListener::USER_ADDED, aUser);
+			save();
 		}
 	}
 
 	void removeFavoriteUser(const User::Ptr& aUser) {
-		Lock l(cs);
 		User::Iter i = find(users.begin(), users.end(), aUser);
 		if(i != users.end()) {
 			fire(HubManagerListener::USER_REMOVED, aUser);
 			users.erase(i);
+			save();
 		}
 	}
 
 	bool isFavoriteUser(const User::Ptr& aUser) {
-		Lock l(cs);
 		return (find(users.begin(), users.end(), aUser) != users.end());
 	}
 	
-	void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
+	//void addFavorite(const HubEntry& aEntry) { addFavorite(FavoriteHubEntry(aEntry)); };
 	void addFavorite(const FavoriteHubEntry& aEntry) {
 		FavoriteHubEntry* f;
 
-		{
-			Lock l(cs);
-			FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
-			if(i != favoriteHubs.end()) {
-				return;
-			}
-			f = new FavoriteHubEntry(aEntry);
-			favoriteHubs.push_back(f);
+		FavoriteHubEntry::Iter i = getFavoriteHub(aEntry.getServer());
+		if(i != favoriteHubs.end()) {
+			return;
 		}
+		f = new FavoriteHubEntry(aEntry);
+		favoriteHubs.push_back(f);
 		fire(HubManagerListener::FAVORITE_ADDED, f);
+		save();
 	}
 
 	void removeFavorite(FavoriteHubEntry* entry) {
-		{
-			Lock l(cs);
-			
-			FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
-			if(i == favoriteHubs.end()) {
-				return;
-			}
-			
-			favoriteHubs.erase(i);
+		FavoriteHubEntry::Iter i = find(favoriteHubs.begin(), favoriteHubs.end(), entry);
+		if(i == favoriteHubs.end()) {
+			return;
 		}
+		
 		fire(HubManagerListener::FAVORITE_REMOVED, entry);
+		favoriteHubs.erase(i);
 		delete entry;
+		save();
 	}
 	
 	HubEntry::List getPublicHubs() {
@@ -184,10 +179,6 @@ public:
 		return publicHubs;
 	}
 
-	/**
-	 * Return the list of installed user commands. Not thread protected,
-	 * I assume only the window thread plays around with this...
-	 */
 	UserCommand::List& getUserCommands() {
 		return userCommands;
 	}
@@ -195,6 +186,8 @@ public:
 	bool isDownloading() {
 		return running;
 	}
+
+	void save();
 private:
 	
 	enum {
@@ -212,24 +205,24 @@ private:
 	HttpConnection* c;
 	int lastServer;
 
+	/** Used during loading to prevent saving. */
+	bool dontSave;
+
 	friend class Singleton<HubManager>;
 	
-	HubManager() : running(false), c(NULL), lastServer(0) {
+	HubManager() : running(false), c(NULL), lastServer(0), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
 	virtual ~HubManager() {
-		SettingsManager::getInstance()->removeListener(this);
+		SettingsManager::getInstance()->addListener(this);
 		if(c) {
 			c->removeListener(this);
 			delete c;
 			c = NULL;
 		}
 		
-		{
-			Lock l(cs);
-			for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction<FavoriteHubEntry*>());
-		}
+		for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction<FavoriteHubEntry*>());
 	}
 	
 	string downloadBuf;
@@ -242,6 +235,7 @@ private:
 		}
 		return favoriteHubs.end();
 	}
+
 	// HttpConnectionListener
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw();
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw();
@@ -250,10 +244,10 @@ private:
  	void onHttpFinished() throw();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw();	
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML*) throw();
+
 	void load(SimpleXML* aXml);
 	void load();
-	void save(SimpleXML* aXml);
 	
 };
 
@@ -261,6 +255,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.35 2003/03/13 13:31:25 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.36 2003/03/26 08:47:22 arnetheduck Exp $
  */
 

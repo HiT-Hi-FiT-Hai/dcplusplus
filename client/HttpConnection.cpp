@@ -23,7 +23,6 @@
 
 /**
  * Downloads a file and returns it as a string
- * @todo Windows dependency
  * @todo Report exceptions
  * @todo Abort download
  * @param aUrl Full URL of file
@@ -31,9 +30,10 @@
  */
 void HttpConnection::downloadFile(const string& aUrl) {
 	dcassert(Util::findSubString(aUrl, "http://") == 0);
-	
+
 	if(SETTING(HTTP_PROXY).empty()) {
 		Util::decodeUrl(aUrl, server, port, file);
+		dcdebug("Server is %s\n", server);
 		if(file.empty())
 			file = "/";
 	} else {
@@ -54,7 +54,7 @@ void HttpConnection::downloadFile(const string& aUrl) {
 void HttpConnection::onConnected() { 
 	dcassert(socket); 
 	socket->write("GET " + file + " HTTP/1.1\r\n"); 
-	socket->write("User-Agent: DC++ v" VERSIONSTRING "\r\n"); 
+	socket->write("User-Agent: " APPNAME " v" VERSIONSTRING "\r\n"); 
 
 	string sRemoteServer = server; 
 	if(!SETTING(HTTP_PROXY).empty()) 
@@ -69,11 +69,34 @@ void HttpConnection::onConnected() {
 void HttpConnection::onLine(const string& aLine) {
 	if(!ok) {
 		if(aLine.find("200") == string::npos) {
-			socket->removeListener(this);
-			socket->disconnect();
-			fire(HttpConnectionListener::FAILED, this, aLine);
+			if(aLine.find("302") != string::npos){
+				moved302 = true;
+			} else {
+				socket->removeListener(this);
+				socket->disconnect();
+				BufferedSocket::putSocket(socket);
+				socket = NULL;
+				fire(HttpConnectionListener::FAILED, this, aLine);
+				return;
+			}
 		}
 		ok = true;
+	} else if(moved302 == true && aLine.find("Location") != string::npos){
+		socket->removeListener(this); 
+		socket->disconnect(); 
+		location302 = aLine.substr(10, aLine.length() - 11); 
+		// reset all settings (as in constructor) 
+		moved302 = false; 
+		ok = false;
+		port = 80; 
+		size = -1;
+
+		if(socket) {
+			socket->removeListener(this); 
+			BufferedSocket::putSocket(socket);
+			socket = NULL;
+		}
+		downloadFile(location302); 		
 	} else if(aLine == "\x0d") {
 		socket->setDataMode(size);
 	} else if(aLine.find("Content-Length") != string::npos) {
@@ -96,6 +119,8 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const string& 
 		onLine(aLine); break;
 	case BufferedSocketListener::FAILED:
 		socket->removeListener(this);
+		BufferedSocket::putSocket(socket);
+		socket = NULL;
 		fire(HttpConnectionListener::FAILED, this, aLine); break;
 	default:
 		break;
@@ -106,6 +131,8 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) 
 	case BufferedSocketListener::MODE_CHANGE:
 		socket->removeListener(this);
 		socket->disconnect();
+		BufferedSocket::putSocket(socket);
+		socket = NULL;
 		fire(HttpConnectionListener::COMPLETE, this); 
 		break;
 	default:
@@ -123,6 +150,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.14 2003/03/13 13:31:22 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.15 2003/03/26 08:47:20 arnetheduck Exp $
  */
 

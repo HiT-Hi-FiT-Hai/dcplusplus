@@ -501,6 +501,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete qi;
 			updateStatus();
+			setDirty();
 			
 		} else if(ti->first == SET_TEXT) {
 			QueueItem* qi = (QueueItem*)ti->second;
@@ -521,7 +522,6 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 	if(tasks.size() > 0) {
-		setDirty();
 		tasks.clear();
 	}
 
@@ -953,7 +953,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.17 2003/03/13 13:32:01 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.18 2003/03/26 08:47:47 arnetheduck Exp $
  */
 
 

@@ -139,6 +139,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
+		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
@@ -184,6 +185,7 @@ public:
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -423,7 +425,7 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 
-	int statusSizes[5];
+	int statusSizes[6];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -476,7 +478,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.13 2003/03/13 13:31:55 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.14 2003/03/26 08:47:46 arnetheduck Exp $
  */
 
  

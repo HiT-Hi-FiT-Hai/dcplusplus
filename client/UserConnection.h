@@ -28,7 +28,6 @@
 #include "File.h"
 #include "TimerManager.h"
 #include "User.h"
-#include "Util.h"
 
 class UserConnection;
 
@@ -294,6 +293,6 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.52 2003/03/13 13:31:40 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.53 2003/03/26 08:47:35 arnetheduck Exp $
  */
 

@@ -32,8 +32,6 @@
 
 STANDARD_EXCEPTION(FileException);
 
-#include "Util.h"
-
 class CRC32 {
 public:
 	CRC32() : value(0xffffffffL) { };
@@ -382,6 +380,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.17 2003/03/13 13:31:21 arnetheduck Exp $
+ * $Id: File.h,v 1.18 2003/03/26 08:47:18 arnetheduck Exp $
  */
 

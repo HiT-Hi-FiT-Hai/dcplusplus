@@ -22,6 +22,7 @@
 #include "DirectoryListing.h"
 #include "StringTokenizer.h"
 #include "ADLSearch.h"
+#include "QueueManager.h"
 
 void DirectoryListing::load(const string& in) 
 {
@@ -198,7 +199,11 @@ int DirectoryListing::Directory::getTotalFileCount(bool nosymbolic) {
 	return x;
 }
 
+void DirectoryListing::download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
+	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
+}
+
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.11 2003/03/13 13:31:19 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.12 2003/03/26 08:47:16 arnetheduck Exp $
  */

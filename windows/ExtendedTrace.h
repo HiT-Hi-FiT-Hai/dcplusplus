@@ -21,7 +21,7 @@
 #include <windows.h>
 #include <tchar.h>
 
-#pragma comment( lib, "imagehlp.lib" )
+#pragma comment( lib, "dbghelp.lib" )
 
 #define EXTENDEDTRACEINITIALIZE( IniSymbolPath )	InitSymInfo( IniSymbolPath )
 #define EXTENDEDTRACEUNINITIALIZE()			         UninitSymInfo()

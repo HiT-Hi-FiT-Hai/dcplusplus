@@ -23,7 +23,7 @@
 #include "../client/File.h"
 
 #include <tchar.h>
-#include <ImageHlp.h>
+#include <DbgHelp.h>
 #include "ExtendedTrace.h"
 
 #define BUFFERSIZE   0x200
@@ -101,12 +101,9 @@ BOOL UninitSymInfo() {
 // Initializes the symbol files
 BOOL InitSymInfo( PCSTR lpszInitialSymbolPath )
 {
-	CHAR     lpszSymbolPath[BUFFERSIZE];
-   DWORD    symOptions = SymGetOptions();
 
-	symOptions |= SYMOPT_LOAD_LINES; 
-	symOptions &= ~SYMOPT_UNDNAME;
-	SymSetOptions( symOptions );
+	SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_FAIL_CRITICAL_ERRORS | SYMOPT_LOAD_LINES );
+	CHAR     lpszSymbolPath[BUFFERSIZE];
 	InitSymbolPath( lpszSymbolPath, lpszInitialSymbolPath );
 
 	return SymInitialize( GetCurrentProcess(), lpszSymbolPath, TRUE);
@@ -138,23 +135,23 @@ static BOOL GetModuleNameFromAddress( UINT address, LPTSTR lpszModule )
 static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, LPTSTR lpszSymbol )
 {
 	BOOL              ret = FALSE;
-	DWORD             dwDisp = 0;
-	DWORD             dwSymSize = 10000;
+	DWORD64             dwDisp = 0;
+	DWORD             dwSymSize = 1024*16;
    TCHAR             lpszUnDSymbol[BUFFERSIZE]=_T("?");
 	CHAR              lpszNonUnicodeUnDSymbol[BUFFERSIZE]="?";
 	LPTSTR            lpszParamSep = NULL;
 	LPCTSTR           lpszParsed = lpszUnDSymbol;
-	PIMAGEHLP_SYMBOL  pSym = (PIMAGEHLP_SYMBOL)GlobalAlloc( GMEM_FIXED, dwSymSize );
+	PSYMBOL_INFO  pSym = (PSYMBOL_INFO)GlobalAlloc( GMEM_FIXED, dwSymSize );
 
 	::ZeroMemory( pSym, dwSymSize );
 	pSym->SizeOfStruct = dwSymSize;
-	pSym->MaxNameLength = dwSymSize - sizeof(IMAGEHLP_SYMBOL);
+	pSym->MaxNameLen = dwSymSize - sizeof(IMAGEHLP_SYMBOL);
 
    // Set the default to unknown
 	_tcscpy( lpszSymbol, _T("?") );
 
 	// Get symbol info for IP
-	if ( SymGetSymFromAddr( GetCurrentProcess(), (ULONG)fnAddress, &dwDisp, pSym ) )
+	if ( SymFromAddr( GetCurrentProcess(), (ULONG)fnAddress, &dwDisp, pSym ) )
 	{
 	   // Make the symbol readable for humans
 		UnDecorateSymbolName( pSym->Name, lpszNonUnicodeUnDSymbol, BUFFERSIZE, 
@@ -164,7 +161,6 @@ static BOOL GetFunctionInfoFromAddresses( ULONG fnAddress, ULONG stackAddress, L
 			UNDNAME_NO_MEMBER_TYPE |
 			UNDNAME_NO_MS_KEYWORDS |
 			UNDNAME_NO_ACCESS_SPECIFIERS );
-		
 		// Symbol information is ANSI string
 		PCSTR2LPTSTR( lpszNonUnicodeUnDSymbol, lpszUnDSymbol );
 
