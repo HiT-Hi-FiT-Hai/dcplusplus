@@ -406,10 +406,9 @@ public:
 	virtual ~BufferedOutputStream() { if(managed) delete s; delete buf; }
 
 	virtual size_t flush() throw(Exception) {
-		size_t x = 0;
 		if(pos > 0)
-			x = s->write(buf, pos);
-		return x + s->flush();
+			s->write(buf, pos);
+		return s->flush();
 	}
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
@@ -455,6 +454,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.32 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: File.h,v 1.33 2004/04/18 20:38:30 arnetheduck Exp $
  */
 
