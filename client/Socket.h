@@ -201,11 +201,12 @@ public:
 	bool isConnected() {
 		if(sock == INVALID_SOCKET) 
 			return false;
-
+		
+		struct timeval tv = { 0, 0 };
 		fd_set fd;
 		FD_ZERO(&fd);
 		FD_SET(sock, &fd);
-		select(1, NULL, &fd, NULL, NULL);
+		select(1, NULL, &fd, NULL, &tv);
 		return FD_ISSET(sock, &fd) > 0;
 	}
 #ifdef WIN32
@@ -288,6 +289,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.31 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: Socket.h,v 1.32 2002/05/01 21:33:12 arnetheduck Exp $
  */
 
