@@ -60,9 +60,9 @@ SettingsManager::SettingsManager()
 		intDefaults[j] = 0;
 		intSettings[j] = 0;
 	}
-	for(int k=0; j<INT64_LAST-INT64_FIRST; j++) {
-		int64Defaults[j] = 0;
-		int64Settings[j] = 0;
+	for(int k=0; k<INT64_LAST-INT64_FIRST; k++) {
+		int64Defaults[k] = 0;
+		int64Settings[k] = 0;
 	}
 	
 	setDefault(SLOTS, 1);
@@ -89,7 +89,7 @@ SettingsManager::SettingsManager()
 	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config.bz2;http://dcplusplus.sourceforge.net/PublicHubList.config");
 	setDefault(DOWNLOAD_SLOTS, 0);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
-	setDefault(LOG_DIRECTORY, Util::getAppPath() + "logs\\");
+	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
 	setDefault(LOG_UPLOADS, false);
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
@@ -231,6 +231,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.39 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.40 2002/05/18 13:47:53 arnetheduck Exp $
  */
 

@@ -1,3 +1,9 @@
+ -- 0.175 2002-05-18 --
+* Fixed a 100% cpu bug (thanks zc...stoopid nmdc hub, sending strange things...)
+* Fixed dupe search filter
+* Fixed bad total transfers info (you have to edit/remove dcplusplus.xml to make it display correct values
+  if 0.174 got it wrong)
+
  -- 0.174 2002-05-17 --
 * Fixed a tray icon bug (thanks andreas kronquist)
 * Fixed a minor search results bug (thanks andreas kronquist)

@@ -366,8 +366,10 @@ void Client::onLine(const string& aLine) throw() {
 			{
 				Lock l(cs);
 				while( (j=param.find("$$", k)) != string::npos) {
-					if(j == k)
+					if(j == k) {
+						k += 2;
 						continue;
+					}
 					string nick = param.substr(k, j-k);
 					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 
@@ -388,8 +390,10 @@ void Client::onLine(const string& aLine) throw() {
 			{
 				Lock l(cs);
 				while( (j=param.find("$$", k)) != string::npos) {
-					if(j == k)
+					if(j == k) {
+						k += 2;
 						continue;
+					}
 					string nick = param.substr(k, j-k);
 					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 					users[nick] = u;
@@ -463,6 +467,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.44 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.45 2002/05/18 13:47:53 arnetheduck Exp $
  */
 
