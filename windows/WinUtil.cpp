@@ -309,6 +309,7 @@ void WinUtil::init(HWND hWnd) {
 
 	if(BOOLSETTING(URL_HANDLER)) {
 		registerDchubHandler();
+		registerADChubHandler();
 	}
 	registerMagnetHandler();
 
@@ -680,6 +681,37 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 	}
 }
 
+ void WinUtil::registerADChubHandler() {
+	 HKEY hk;
+	 TCHAR Buf[512];
+	 tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
+	 Buf[0] = 0;
+
+	 if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
+		 DWORD bufLen = sizeof(Buf);
+		 DWORD type;
+		 ::RegQueryValueEx(hk, NULL, 0, &type, (LPBYTE)Buf, &bufLen);
+		 ::RegCloseKey(hk);
+	 }
+
+	 if(Util::stricmp(app.c_str(), Buf) != 0) {
+		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc"), &hk);
+		 TCHAR* tmp = _T("URL:Direct Connect Protocol");
+		 ::RegSetValueEx(hk, NULL, 0, REG_SZ, (LPBYTE)tmp, _tcslen(tmp) + 1);
+		 ::RegSetValueEx(hk, _T("URL Protocol"), 0, REG_SZ, (LPBYTE)_T(""), sizeof(TCHAR));
+		 ::RegCloseKey(hk);
+
+		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\Shell\\Open\\Command"), &hk);
+		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
+		 ::RegCloseKey(hk);
+
+		 ::RegCreateKey(HKEY_CLASSES_ROOT, _T("adc\\DefaultIcon"), &hk);
+		 app = Text::toT(Util::getAppName());
+		 ::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
+		 ::RegCloseKey(hk);
+	 }
+ }
+
  void WinUtil::registerMagnetHandler() {
 	HKEY hk;
 	TCHAR buf[512];
@@ -834,11 +866,22 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
 	}
 	if(!file.empty()) {
+		if(file[0] == '/') // Remove any '/' in from of the file
+			file = file.substr(1);
 		try {
 			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(file), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
 			// ...
 		}
+	}
+}
+
+void WinUtil::parseADChubUrl(const tstring& aUrl) {
+	string server, file;
+	short port = -1; //make sure we get a port since adc doesn't have a standard one
+	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
+	if(!server.empty() && port > 0) {
+		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));
 	}
 }
 
@@ -948,6 +991,9 @@ bool WinUtil::parseDBLClick(const tstring& aString, string::size_type start, str
 	} else if(Util::strnicmp(aString.c_str() + start, _T("magnet:?"), 8) == 0) {
 		parseMagnetUri(aString.substr(start, end-start));
 		return true;
+	} else if(Util::strnicmp(aString.c_str() + start, _T("adc://"), 6) == 0) {
+		parseADChubUrl(aString.substr(start, end-start));
+		return true;
 	}
 	return false;
 }
@@ -997,5 +1043,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.69 2004/12/05 15:51:03 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.70 2004/12/18 14:49:14 arnetheduck Exp $
  */

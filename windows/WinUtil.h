@@ -261,8 +261,10 @@ public:
 
 	// URL related
 	static void registerDchubHandler();
+	static void registerADChubHandler();
 	static void registerMagnetHandler();
 	static void parseDchubUrl(const tstring& /*aUrl*/);
+	static void parseADChubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
 	static bool parseDBLClick(const tstring& /*aString*/, string::size_type start, string::size_type end);
 	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
@@ -305,5 +307,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.37 2004/10/26 13:53:59 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.38 2004/12/18 14:49:14 arnetheduck Exp $
  */

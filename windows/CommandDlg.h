@@ -39,6 +39,7 @@ class CommandDlg : public CDialogImpl<CommandDlg>
 	CButton ctrlHubMenu;
 	CButton ctrlUserMenu;
 	CButton ctrlSearchMenu;
+	CButton ctrlFilelistMenu;
 	CButton ctrlOnce;
 	CEdit ctrlResult;
 
@@ -137,5 +138,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.10 2004/10/17 12:51:31 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.11 2004/12/18 14:49:14 arnetheduck Exp $
  */

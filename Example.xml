@@ -270,6 +270,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OnlyTth">Only results with TTH root</String>
 		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
 		<String Name="OpenDownloadPage">Open download page?</String>
@@ -332,6 +333,7 @@
 		<String Name="SettingsAddFolder">&amp;Add folder</String>
 		<String Name="SettingsAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvanced">Advanced</String>
+		<String Name="SettingsAdvanced3">Advanced\\Experts only</String>
 		<String Name="SettingsAdvancedSettings">Advanced settings</String>
 		<String Name="SettingsAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAppearance">Appearance</String>
@@ -392,6 +394,7 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
+		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenNewWindow">Open new window when using /join</String>
@@ -434,7 +437,7 @@
 		<String Name="SettingsSpeedsNotAccurate">Note; because of changing download speeds, this is not 100% accurate...</String>
 		<String Name="SettingsStatusInChat">View status messages in main chat</String>
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
-		<String Name="SettingsTabDirty">Set hub/PM tab bold when contents change</String>
+		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
@@ -443,7 +446,7 @@
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
-		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
+		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// and adc:// URL links</String>
 		<String Name="SettingsUrlMagnet">Register with Windows to handle magnet: URI links</String>
 		<String Name="SettingsUseCtrlForLineHistory">Use CTRL for line history</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
@@ -503,6 +506,7 @@
 		<String Name="UserCmdChat">Chat</String>
 		<String Name="UserCmdCommand">Command</String>
 		<String Name="UserCmdContext">Context</String>
+		<String Name="UserCmdFilelistMenu">Filelist Menu</String>
 		<String Name="UserCmdHub">Hub IP / DNS (empty = all, 'op' = where operator)</String>
 		<String Name="UserCmdHubMenu">Hub Menu</String>
 		<String Name="UserCmdOnce">Send once per nick</String>

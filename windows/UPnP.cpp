@@ -141,6 +141,12 @@ string UPnP::GetExternalIP()
 	pEnumVar->Next(1,&varCurMapping,NULL);
 	IStaticPortMapping *pITheMap=NULL;
 	IDispatch *pDispMap = V_DISPATCH(&varCurMapping);
+	if(pDispMap == NULL) {
+		pUnk->Release();
+		pIMaps->Release();
+		pIUN->Release();
+		return Util::emptyString;
+	}
 	hResult=pDispMap->QueryInterface(IID_IStaticPortMapping, (void **)&pITheMap);
 	if(!SUCCEEDED(hResult)) {
 		pUnk->Release();
@@ -178,5 +184,5 @@ UPnP::~UPnP()
 
 /**
  * @file
- * $Id: UPnP.cpp,v 1.3 2004/10/05 16:46:43 arnetheduck Exp $
+ * $Id: UPnP.cpp,v 1.4 2004/12/18 14:49:14 arnetheduck Exp $
  */

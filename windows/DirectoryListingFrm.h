@@ -29,6 +29,7 @@
 #include "FlatTabCtrl.h"
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
+#include "UCHandler.h"
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
@@ -36,12 +37,15 @@
 
 #define STATUS_MESSAGE_MAP 9
 
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, public CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>,
+	public CSplitterImpl<DirectoryListingFrame>, public UCHandler<DirectoryListingFrame>
+
 {
 public:
 	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
+	typedef UCHandler<DirectoryListingFrame> ucBase;
 
 	enum {
 		COLUMN_FILENAME,
@@ -88,6 +92,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -118,6 +123,7 @@ public:
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
+	void runUserCommand(UserCommand& uc);
 	
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
@@ -281,6 +287,9 @@ private:
 	CButton ctrlFind, ctrlFindNext;
 	CButton ctrlMatchQueue;
 
+	/** Parameter map for user commands */
+	StringMap ucParams;
+
 	string findStr;
 	tstring error;
 	string size;
@@ -303,5 +312,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.43 2004/11/02 11:03:05 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.44 2004/12/18 14:49:14 arnetheduck Exp $
  */

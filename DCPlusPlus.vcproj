@@ -304,6 +304,9 @@
 				RelativePath=".\windows\FinishedULFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\NetworkPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\GeneralPage.cpp">
 			</File>
 			<File
@@ -441,6 +444,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FlatTabCtrl.h">
+			</File>
+			<File
+				RelativePath=".\windows\NetworkPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\GeneralPage.h">

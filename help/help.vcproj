@@ -115,6 +115,9 @@
 				RelativePath=".\settings_general.html">
 			</File>
 			<File
+				RelativePath=".\settings_connection.html">
+			</File>
+			<File
 				RelativePath=".\settings_logs.html">
 			</File>
 			<File

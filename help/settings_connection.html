@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Connections settings</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+</head>
+<body>
+<h2><a name="connection"></a>Connection Settings</h2>
+There are three modes of connection in DC++: Active, Passive, or
+SOCKS5. If you have problems configuring them, or problems connecting
+please refer to the <a href="faq_activemode.html">FAQ</a>.<br>
+<dl style="margin-left: 40px;">
+  <dt style="text-decoration: underline;">Active</dt>
+  <dd> In active mode, DC++ needs to make outbound TCP connections and
+send UDP packets to other machines, as well as receive inbound TCP
+connections and inbound UDP packets. TCP is used for file transfers and
+UDP is used for file search results. Remote DC++ clients will return a
+maximum of 10 search hits to an active user. A user in active mode will
+have M:A in their <a href="plusplus_tag.html">DC++ tag</a>.&nbsp; Use <a
+ href="faq_activemode.html">this guide</a> to set up active mode.<dl>
+      <dt>IP</dt>
+      <dd>DC++ will automatically detect and use your local IP. If you
+are behind a router (or your IP is otherwise <a
+ href="non-routable.html">non-routable</a>) you will need to put in
+your external IP here. If you put a DNS name here, DC++ will try to
+resolve it into an IP address before use.</dd>
+      <dt>TCP Port</dt>
+      <dd>This is the port that DC++ listens on for incoming client
+connections. If this setting is blank, DC++ will use a random port
+between 1025 and 32000.</dd>
+      <dt>UDP Port</dt>
+      <dd>This is the port that DC++ listens on for incoming search
+results. If this setting is blank, DC++ will use a random port between
+1025 and 32000. </dd>
+    </dl>
+  </dd>
+  <dt style="text-decoration: underline;">Passive</dt>
+  <dd>In passive mode, DC++ will only make outbound connections to
+other users. All searches will be sent through the hub, and search
+results will be returned through the hub as well.&nbsp;Remote DC++
+clients will return a maximum of 5 search hits for a passive user.
+Passive users cannot download from other passive users. Passive mode is
+an extra strain on hubs, so please do not use it unless you must. DC++
+users in passive mode will have M:P in their <a
+ href="plusplus_tag.html">DC++ tag</a>.</dd>
+  <dt style="text-decoration: underline;">SOCKS5</dt>
+  <dd> In SOCKS mode, DC++ will make a connection to hub through an
+existing SOCKS5 proxy server. Connections to users will also be made
+through this proxy server. The caveats for passive mode also apply
+here. SOCKS5 proxies are not the same as HTTP proxies. DC++'s SOCKS5
+support does <span style="text-decoration: underline;">not</span>
+include GSSAPI.<br>
+    <dl>
+      <dt>Socks IP</dt>
+      <dd>This is the IP, not hostname, of your SOCKS5 server.</dd>
+      <dt>Port</dt>
+      <dd>The port that your SOCKS5 server runs on. The default value
+is 1080.</dd>
+      <dt>Username</dt>
+      <dd>Username for the SOCKS5 proxy; may be required. </dd>
+      <dt>Password</dt>
+      <dd>Password for the SOCKS5 proxy; may be required. </dd>
+      <dt>Use SOCKS5 server to resolve hostnames</dt>
+      <dd>When checked (the default), DC++ will use the SOCKS5 proxy to
+resolve hostnames into IP addresses. </dd>
+    </dl>
+  </dd>
+</dl>
+</body>
+</html>

@@ -520,6 +520,9 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 	if( (j = cmdLine.find(_T("dchub://"), i)) != string::npos) {
 		WinUtil::parseDchubUrl(cmdLine.substr(j));
 	}
+	if( (j = cmdLine.find(_T("adc://"), i)) != string::npos) {
+		WinUtil::parseADChubUrl(cmdLine.substr(j));
+	}
 	if( (j = cmdLine.find(_T("magnet:?"), i)) != string::npos) {
 		WinUtil::parseMagnetUri(cmdLine.substr(j));
 	}
@@ -608,6 +611,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		ClientManager::getInstance()->infoUpdated();
 		if(BOOLSETTING(URL_HANDLER)) {
 			WinUtil::registerDchubHandler();
+			WinUtil::registerADChubHandler();
 		}
 		WinUtil::registerMagnetHandler();
 	}
@@ -1178,5 +1182,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.77 2004/11/29 23:21:21 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.78 2004/12/18 14:49:14 arnetheduck Exp $
  */

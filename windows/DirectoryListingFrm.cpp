@@ -523,7 +523,9 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			cleanMenu(fileMenu);
 		} else {
 			//Append Favorite download dirs
 			StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
@@ -547,7 +549,9 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			   ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CTSTRING(GO_TO_DIRECTORY));
 			}
+			prepareMenu(fileMenu, UserCommand::CONTEXT_FILELIST, Text::toT(dl->getUser()->getClientAddressPort()), dl->getUser()->isClientOp());
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			cleanMenu(fileMenu);
 		}
 		
 		return TRUE; 
@@ -893,7 +897,52 @@ void DirectoryListingFrame::findFile(bool findNext)
 	}
 }
 
+void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+		return;
+	set<User::Ptr> nicks;
+
+	int sel = -1;
+	while((sel = ctrlList.GetNextItem(sel, LVNI_SELECTED)) != -1) {
+		ItemInfo* ii = (ItemInfo*)ctrlList.getItemData(sel);
+		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
+			if(nicks.find(dl->getUser()) != nicks.end())
+				continue;
+			nicks.insert(dl->getUser());
+		}
+		if(!dl->getUser()->isOnline())
+			return;
+		ucParams["mynick"] = dl->getUser()->getClientNick();
+		ucParams["mycid"] = dl->getUser()->getClientCID().toBase32();
+		ucParams["tth"] = "NONE";
+		if(ii->type == ItemInfo::FILE) {
+			ucParams["type"] = "File";
+			ucParams["file"] = ii->file->getName();
+			ucParams["filesize"] = Util::toString(ii->file->getSize());
+			ucParams["filesizeshort"] = Util::formatBytes(ii->file->getSize());
+			TTHValue *hash = ii->file->getTTH();
+			if(hash != NULL) {
+				ucParams["tth"] = hash->toBase32();
+			}
+		}
+		else
+		{
+			ucParams["type"] = "Directory";
+			ucParams["file"] = ii->dir->getName();
+			ucParams["filesize"] = Util::toString(ii->dir->getTotalSize());
+			ucParams["filesizeshort"] = Util::formatBytes(ii->dir->getTotalSize());
+		}
+
+		StringMap tmp = ucParams;
+		User::Ptr tmpPtr = dl->getUser();
+		tmpPtr->getParams(tmp);
+		tmpPtr->clientEscapeParams(tmp);
+		tmpPtr->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
+	}
+	return;
+}
+
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.46 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.47 2004/12/18 14:49:14 arnetheduck Exp $
  */

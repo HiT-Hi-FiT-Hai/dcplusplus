@@ -8,6 +8,7 @@
 #define IDC_COPY_HUB                    104
 #define ID_VIEW_TRANSFER_VIEW           105
 #define IDD_GENERALPAGE                 107
+#define IDD_NetworkPage                108
 #define IDR_MAINFRAME                   128
 #define IDR_HUB                         129
 #define IDC_HUBLIST                     131
@@ -327,6 +328,7 @@
 #define IDC_SETTINGS_FILE_NAME3         1275
 #define IDC_SETTINGS_FILE_NAME4         1276
 #define IDC_ONLYTTH                     1277
+#define IDC_SETTINGS_FILELIST_MENU      1278
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -365,7 +367,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1278
+#define _APS_NEXT_CONTROL_VALUE         1279
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

@@ -26,6 +26,9 @@ FinishedManager::~FinishedManager()
 	Lock l(cs);
 	for_each(downloads.begin(), downloads.end(), DeleteFunction<FinishedItem*>());
 	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
+	DownloadManager::getInstance()->removeListener(this);
+	UploadManager::getInstance()->removeListener(this);
+
 }
 
 void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {
@@ -93,5 +96,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.19 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.20 2004/12/18 14:49:19 arnetheduck Exp $
  */

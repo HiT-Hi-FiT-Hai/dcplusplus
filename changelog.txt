@@ -10,7 +10,9 @@
 * More preferences splitting (thanks ullner)
 * Small socket fix (thanks tremor)
 * Search tab goes bold if set to (thanks naga)
-
+* Hopefully fixed an UPnP crash
+* User commands in file lists (thanks joakim tosteberg)
+* ADC url's clickable (thanks naga)
 
 
 -- 0.668 2004-11-30 --

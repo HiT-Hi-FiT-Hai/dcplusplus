@@ -41,7 +41,8 @@ public:
 		CONTEXT_HUB = 0x01,
 		CONTEXT_CHAT = 0x02,
 		CONTEXT_SEARCH = 0x04,
-		CONTEXT_MASK = CONTEXT_HUB | CONTEXT_CHAT | CONTEXT_SEARCH,
+		CONTEXT_FILELIST = 0x08,
+		CONTEXT_MASK = CONTEXT_HUB | CONTEXT_CHAT | CONTEXT_SEARCH | CONTEXT_FILELIST,
 	};
 
 	enum {
@@ -77,6 +78,6 @@ public:
 
 /**
  * @file
- * $Id: UserCommand.h,v 1.9 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: UserCommand.h,v 1.10 2004/12/18 14:49:19 arnetheduck Exp $
  */
 
