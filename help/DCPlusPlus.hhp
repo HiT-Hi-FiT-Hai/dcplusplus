@@ -33,7 +33,12 @@ favorite_hubs.html
 favorite_users.html
 fdl.html
 settings_favoritedirs.html
-keyboard_commands.html
+faq_keyboard_commands.html
+faq_upnp.html
+faq_activemode.html
+faq_university.html
+faq_nosearch.html
+faq_slowdownload.html
 
 [ALIAS]
 IDD_ADVANCED2PAGE=settings_logs_and_sound.html
@@ -43,7 +48,7 @@ IDD_DOWNLOADPAGE=settings_downloads.html
 IDD_DOWNLOADPAGE=settings_sharing.html
 IDD_FAVORITE_DIRSPAGE=settings_favoritedirs.html
 IDD_GENERALPAGE=settings_general.html
-IDD_KEYBOARD=keyboard_commands.html
+IDD_KEYBOARD=faq_keyboard_commands.html
 IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
 IDD_UPLOADPAGE=settings_sharing.html

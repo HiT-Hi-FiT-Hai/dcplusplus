@@ -45,11 +45,11 @@ Client::~Client() {
 void Client::reloadSettings() {
 	FavoriteHubEntry* hub = HubManager::getInstance()->getFavoriteHubEntry(getHubURL());
 	if(hub) {
-		setNick(hub->getNick(true));
+		setNick(checkNick(hub->getNick(true)));
 		setDescription(hub->getUserDescription());
 		setPassword(hub->getPassword());
 	} else {
-		setNick(SETTING(NICK));
+		setNick(checkNick(SETTING(NICK)));
 	}
 }
 
@@ -100,5 +100,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.77 2004/10/24 11:25:40 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.78 2004/11/11 12:49:44 arnetheduck Exp $
  */

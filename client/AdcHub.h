@@ -39,8 +39,6 @@ public:
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& pwd);
 	virtual void info(bool alwaysSend);
-	virtual string checkNick(const string& nick);
-	virtual string getHubURL();
 
 	virtual size_t getUserCount() const { return 0;};
 	virtual int64_t getAvailable() const { return 0; };
@@ -85,6 +83,9 @@ private:
 
 	string salt;
 
+	virtual string checkNick(const string& nick);
+	virtual string getHubURL();
+
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw() { 
@@ -96,5 +97,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.17 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.18 2004/11/11 12:49:44 arnetheduck Exp $
  */

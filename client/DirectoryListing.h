@@ -47,15 +47,15 @@ public:
 		typedef List::iterator Iter;
 		
 		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH))
+			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)), adls(false)
 		{ 
 		};
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(NULL)
+			name(aName), size(aSize), parent(aDir), tthRoot(NULL), adls(false)
 		{ 
 		};
 			
-		File(const File& rhs) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot))
+		File(const File& rhs, bool _adls = false) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)), adls(_adls)
 		{
 		}
 
@@ -68,19 +68,11 @@ public:
 			delete tthRoot;
 		}
 
-		void setAdls(bool _adls) {
-			adls = _adls;
-		}
-
-		bool getAdls() {
-			return adls || getParent()->getAdls();
-		}
-
 		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 		GETSET(TTHValue*, tthRoot, TTH);
-		bool adls;
+		GETSET(bool, adls, Adls);
 	};
 
 	class Directory : public FastAlloc<Directory> {
@@ -180,5 +172,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.35 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.36 2004/11/11 12:49:44 arnetheduck Exp $
  */

@@ -324,11 +324,12 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
 				if((*j->begin() != _T('-') && Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) ||
 					(*j->begin() == _T('-') && j->size() != 1 && Util::findSubString(aResult->getFile(), Text::fromT(j->substr(1))) != -1)
-					) {
-						droppedResults++;
-						ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
-						return;
-					}
+					) 
+				{
+					droppedResults++;
+					ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
+					return;
+				}
 			}
 		}
 	}
@@ -403,16 +404,19 @@ void SearchFrame::SearchInfo::getList() {
 }
 
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
-
 	if(!si->getTTH().empty()) {
-		if(tth.empty()) {
+		if(firstTTH) {
 			tth = si->getTTH();
 			hasTTH = true;
+			firstTTH = false;
 		} else if(hasTTH) {
 			if(tth != si->getTTH()) {
 				hasTTH = false;
 			}
 		} 
+	} else {
+		firstTTH = false;
+		hasTTH = false;
 	}
 
 	if(si->sr->getType() == SearchResult::TYPE_FILE) {
@@ -878,7 +882,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 		SearchInfo::CheckSize cs = ctrlResults.forEachSelectedT(SearchInfo::CheckSize());
 
-		if(cs.size != -1) {
+		if(cs.size != -1 || cs.hasTTH) {
 			targets.clear();
 			if(cs.hasTTH) {
 				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(Text::fromT(cs.tth)));
@@ -1024,5 +1028,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.72 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.73 2004/11/11 12:49:47 arnetheduck Exp $
  */

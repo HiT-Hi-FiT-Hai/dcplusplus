@@ -8,8 +8,14 @@
 /* HYPERLINKS */ 
 	a:link, a:visited	{color: #0000FF; text-decoration: none; }
 	a:active, a:hover	{color: #990099; cursor:auto; text-decoration: underline; }
+	a.external   { color: #008080 }
 	.pop		{text-decoration: none; }
-
+	acronym	{ color: rgb(0, 128, 0);
+			text-decoration: none;
+			border-bottom-width: 1px;
+			border-bottom-style: dashed;
+			cursor: help; }
+	
 /* LISTS */ 
 	ol		{font-size: 100%; margin-top: .5em; margin-bottom: 0em; margin-left: 4em;}
 	ul		{font-size: 100%; margin-top: .5em; margin-bottom: 0em;}

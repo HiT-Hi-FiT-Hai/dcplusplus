@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link type="text/css" rel="stylesheet" href="office11.css">
+  <title>How to set up UPnP</title>
+</head>
+<body>
+<h1>Setting up UPnP</h1>
+<p>Universal Plug And Play (UPnP) is a technology to allow, among other
+things, Internet applications to configure home routers and gateways,
+bypassing manual port forwarding configuration. UPnP was introduced in
+Windows XP and is supported in that and later versions, including
+Windows Server 2003. To take advantage of UPnP, you must have support
+enabled in Windows and UPnP capable hardware (typically a broadband
+router using <acronym title="Network Address Translation">NAT</acronym>
+traversal). If you meet both of these requirements, setting up DC++ is
+normally a simple process. <span style="font-weight: bold;">UPnP
+support is only in DC++ 0.4033 and later.</span></p>
+<p>To enable UPnP on DC++, open the Settings panel, select Advanced,
+scroll down to the bottom, enable "Use UPnP Control". Restart
+DC++.&nbsp; If your UPnP system is setup correctly, DC++ will now
+automatically create the required port mappings for DC++ to operate in
+Active Mode. It will also detect your external IP address, and switch
+into Active Mode. </p>
+If UPnP works successfully or unsuccessfully, fill out <a
+ href="http://fp.mgillespie.plus.com/upnpresults.htm" target="_blank"
+ class="external">Mark Gillespie's UPnP feedback form</a> <img
+ title="External Link" src="external.png" border="0" height="10"
+ width="10"> so other users can know which configurations work.
+<h3>Troubleshooting</h3>
+<p>If you are having trouble getting this all to work (or see messages
+in the DC++ <a href="settings_logs_and_sound.html#system">system.log</a>
+like "Failed To Create Port Mappings"), and you are sure you meet the
+minimum requirements mentioned above, firstly, download a UPnP
+diagnostic tool. The recommended one is <a target="_blank"
+ href="http://www.mgillespie.plus.com/UPnPTest.exe" class="external">Mark
+Gillespie's UPnP test tool</a> <img title="External Link"
+ src="external.png" border="0" height="10" width="10">. This program
+will tell you what network
+interfaces on your computer support UPnP. If none of your network
+interfaces are reporting UPnP capabilities, try the following
+suggestions: </p>
+<ol>
+  <li>Ensure your UPnP hardware has the UPnP service switched on (some
+routers default to off), consult your manufacturer's documentation.</li>
+  <li>Ensure Windows UPnP services (Control Panel -&gt; Administrative
+Tools -&gt; Services) are running. "Universal Plug and Play Device
+Host" and "SSDP Discovery Service". Both of these XP services should be
+set to "Automatic" startup and "Started" status:</li>
+  <li>Switch on the UPnP User Interface. To do this: Open "My Network
+Places", and in the Network Tasks Panel, select "Show icons for
+networked UPnP devices".</li>
+  <li>Reboot both your PC and your UPnP device (router).</li>
+  <li>If the diagnostic tool is still not reporting any UPnP devices,
+considering more drastic actions like upgrading your router firmware,
+as many routers have UPnP implementation bugs.</li>
+  <li>If you do not see your router as a network device in "My Network
+Places" after several minutes, UPnPTest will fail to create an UPnP
+mapping to the router, resulting in something looking like: <span
+ style="font-style: italic;">INFO: Adapter #0 - 192.168.8.17 - UPnP
+Disabled</span><i>.</i> Make sure the windows firewall or your third
+party firewall is not blocking UPnP packets. To do this, go to Control
+Panels -&gt; Windows Firewall -&gt; Advanced Tab -&gt; Security Logging
+-&gt; Settings. Enable <span style="font-style: italic;">Log Dropped
+Packets</span>. The log file is located at: C:\WINDOWS\pfirewall.log
+If you see any packets being dropped with the port 1900 or 2869, the
+the firewall is misconfigured and <span style="font-weight: bold;">is</span>
+preventing UPnP from working.</li>
+</ol>
+<p>If you have done all of this, and are still having UPnP problems,
+send me an email, I will try to help. <a class="external"
+ href="mailto:mark.gillespie@gmail.com"> mark.gillespie@gmail.com</a> <img
+ title="External Link" src="external.png" border="0" height="10"
+ width="10"></p>
+<p><font size="1">Submitted by </font><font
+ style="font-weight: bold; font-style: italic;" size="1">mgillespie</font></p>
+</body>
+</html>

@@ -629,7 +629,7 @@ void NmdcHub::myInfo(bool alwaysSend) {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	string minf = 
-		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
+		"$MyINFO $ALL " + toNmdc(getNick()) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(CONNECTION) + "\x01$" + toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|";
@@ -672,7 +672,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 		chars = sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(IN_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getNick().length() + aString.length() + 64];
-		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		chars = sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", toNmdc(getNick()).c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	}
 	send(buf, chars);
 }
@@ -718,6 +718,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.20 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.21 2004/11/11 12:49:44 arnetheduck Exp $
  */
 

@@ -38,8 +38,28 @@
 		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to set up active mode?">
+			<param name="Local" value="faq_activemode.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="How to set up UPnP?">
+			<param name="Local" value="faq_upnp.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="My University blocks DC++">
+			<param name="Local" value="faq_university.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Why don't I get any search results?">
+			<param name="Local" value="faq_nosearch.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Why am I getting slow download speeds?">
+			<param name="Local" value="faq_slowdownload.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Which keyboard commands can I use?">
-			<param name="Local" value="keyboard_commands.html">
+			<param name="Local" value="faq_keyboard_commands.html">
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">

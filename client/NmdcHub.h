@@ -135,9 +135,6 @@ public:
 	virtual User::NickMap& lockUserList() { cs.enter(); return users; };
 	virtual void unlockUserList() { cs.leave(); };
 
-	virtual string checkNick(const string& aNick);
-	virtual string getHubURL();
-
 	virtual string escape(string const& str) const { return Util::validateMessage(str, false); };
 
 	void disconnect() throw();
@@ -250,7 +247,10 @@ private:
 
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
 	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
-	
+
+	virtual string checkNick(const string& aNick);
+	virtual string getHubURL();
+
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
 
@@ -265,6 +265,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.16 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.17 2004/11/11 12:49:44 arnetheduck Exp $
  */
 

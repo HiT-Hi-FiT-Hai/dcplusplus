@@ -11,6 +11,9 @@
 * Makedefs.py fixes (thanks garg)
 * A connection attempt is made when you grant a slot to potentially start the other 
   fella's transfers (thanks sed)
+* Fixed passive search results issue with international nicks (thanks garg)
+* Fixed search frame extension vs tth again
+* FAQ added to the help file (thanks bsod)
 
 -- 0.666 2004-11-03 --
 * [bug 173] Fixed copy nick to clipboard (thanks trem)
