@@ -125,27 +125,27 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == DOWNLOAD_LISTING) {
 		StringListInfo* i = (StringListInfo*)lParam;
 		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, "Preparing file list...");
-		
-		HANDLE h = CreateFile(i->l[0].c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		try {
+			File f(i->l[0], File::READ, File::OPEN);
 
-		if(h==INVALID_HANDLE_VALUE) {
-			return 0;
+			DirectoryListing* dl = new DirectoryListing();
+			DWORD size = (DWORD)f.getSize();
+
+			BYTE* buf = new BYTE[size];
+			f.read(buf, size);
+			string tmp;
+			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+			delete buf;
+			dl->load(tmp);
+			
+			DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->l[1]);
+			pChild->setTab(&ctrlTab);
+			pChild->CreateEx(m_hWndClient);
+			pChild->SetWindowText((i->l[1] + i->l[2]).c_str());
+			delete i;
+		} catch(FileException e) {
+			// ...
 		}
-		DirectoryListing* dl = new DirectoryListing();
-		DWORD size = GetFileSize(h, NULL);
-		BYTE* buf = new BYTE[size];
-		ReadFile(h, buf, size, &size, NULL);
-		CloseHandle(h);
-		string tmp;
-		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-		delete buf;
-		dl->load(tmp);
-		
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->l[1]);
-		pChild->setTab(&ctrlTab);
-		pChild->CreateEx(m_hWndClient);
-		pChild->SetWindowText((i->l[1] + i->l[2]).c_str());
-		delete i;
 	} else if(wParam == AUTO_CONNECT) {
 		HubManager::getInstance()->addListener(this);
 		HubManager::getInstance()->getFavoriteHubs();
@@ -612,7 +612,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.directory = SettingsManager::getInstance()->get(SettingsManager::DOWNLOAD_DIRECTORY, false);
 	dlg.port = SettingsManager::getInstance()->get(SettingsManager::PORT, false) == 0 ? "" : Util::toString(SettingsManager::getInstance()->get(SettingsManager::PORT, false));
 	dlg.connectionType = SettingsManager::getInstance()->get(SettingsManager::CONNECTION_TYPE, false);
-	dlg.slots = SettingsManager::getInstance()->get(SettingsManager::SLOTS, false);
+	dlg.slots = (SettingsManager::getInstance()->get(SettingsManager::SLOTS, false)< 1)  ? 1 : SettingsManager::getInstance()->get(SettingsManager::SLOTS, false);
 
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 
@@ -805,9 +805,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.41 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.42 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.42  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.41  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

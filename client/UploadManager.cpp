@@ -25,7 +25,6 @@ UploadManager* UploadManager::instance = NULL;
 
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 	Upload* u;
-	HANDLE h;
 
 	try {
 		if((getFreeSlots()<=0)) {
@@ -75,25 +74,26 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		} 
 		cs.leave();
 
-		h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		if(h == INVALID_HANDLE_VALUE) {
-			
+		File* f;
+		try {
+			f = new File(file, File::READ, File::OPEN);
+		} catch(FileException e) {
 			aSource->error("File Not Available");
 			return;
 		}
 		
 		u = new Upload();
-		u->setFile(h, true);
+		u->setFile(f, true);
 		u->setPos(aResume, true);
 		u->setFileName(aFile);
 		u->setUser(aSource->getUser());
 		
-		char buf[24];
-		aSource->fileLength(_i64toa(u->getSize(), buf, 10));
+		aSource->fileLength(Util::toString(u->getSize()));
 		
-		cs.enter();
-		uploads[aSource] = u;
-		cs.leave();
+		{
+			Lock l(cs);
+			uploads[aSource] = u;
+		}
 		
 	} catch(SocketException e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
@@ -187,9 +187,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.7 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.8 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.8  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.7  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "BufferedSocket.h"
+#include "File.h"
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
 	Socket::accept(aSocket);
@@ -36,7 +37,7 @@ bool BufferedSocket::writer(BufferedSocket* bs) {
 	DWORD len;
 
 	HANDLE h = bs->readerEvent;
-	HANDLE file = bs->file;
+	File* file = bs->file;
 	dcassert(file != NULL);
 	
 	if(!bs->isConnected()) {
@@ -45,21 +46,16 @@ bool BufferedSocket::writer(BufferedSocket* bs) {
 	}
 
 	while(WaitForSingleObject(h, 0) == WAIT_TIMEOUT) {
-		if(ReadFile(file, bs->inbuf, bs->inbufSize, &len, NULL)) {
-			if(len == 0) {
+		try {
+			if( (len = file->read(bs->inbuf, bs->inbufSize)) == 0) {
 				bs->fire(BufferedSocketListener::TRANSMIT_DONE);
 				return true;
 			}
-			try {
-				bs->write((char*)bs->inbuf, len);
-				bs->fire(BufferedSocketListener::BYTES_SENT, len);
-			} catch(SocketException e) {
-				dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
-				bs->fire(BufferedSocketListener::FAILED, e.getError());
-				return false;
-			}
-		} else {
-			bs->fire(BufferedSocketListener::FAILED, "Error reading file");
+			bs->write((char*)bs->inbuf, len);
+			bs->fire(BufferedSocketListener::BYTES_SENT, len);
+		} catch(Exception e) {
+			dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
+			bs->fire(BufferedSocketListener::FAILED, e.getError());
 			return false;
 		}
 	}
@@ -230,9 +226,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.22 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.23 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.23  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.22  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

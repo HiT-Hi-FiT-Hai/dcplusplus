@@ -46,15 +46,16 @@ public:\
 }
 #endif
 
-STANDARD_EXCEPTION(FileException);
-
 #endif // _EXCEPTION_H
 
 /**
  * @file Exception.h
- * $Id: Exception.h,v 1.3 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: Exception.h,v 1.4 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: Exception.h,v $
+ * Revision 1.4  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.3  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

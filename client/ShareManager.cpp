@@ -188,7 +188,6 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	ShareManager* sm = (ShareManager*)p;
 
 	string tmp, tmp2;
-	DWORD d;
 	sm->cs.enter();
 
 	for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
@@ -196,16 +195,15 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	}
 	
 	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
-	
-	HANDLE hf = CreateFile(sm->getListFile().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	
-	if(hf == INVALID_HANDLE_VALUE) {
+	try {
+		File f(sm->getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
+		f.write(tmp2);
+	} catch(Exception e) {
+		// ...
 		sm->cs.leave();
 		return 1;
 	}
 
-	WriteFile(hf, tmp2.c_str(), tmp2.length(), &d, NULL);
-	CloseHandle(hf);
 	sm->listLen = tmp2.length();
 	sm->dirty = false;
 
@@ -306,9 +304,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.13 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.14 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.14  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.13  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

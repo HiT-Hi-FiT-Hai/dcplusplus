@@ -27,9 +27,9 @@
 #include "CriticalSection.h"
 #include "TimerManager.h"
 #include "User.h"
+#include "File.h"
 
 class UserConnection;
-
 
 class UserConnectionListener {
 public:
@@ -67,12 +67,15 @@ public:
 
 class Transfer {
 public:
-	HANDLE getFile() { return file; };
-	void setFile(HANDLE aFile, bool aUpdate = false) { 
+	File* getFile() { return file; };
+	void setFile(File* aFile, bool aUpdate = false) { 
+		if(file) {
+			delete file;
+		}
+
 		file = aFile;
-		if(aUpdate) {
-			DWORD high =0;
-			size = (LONGLONG) GetFileSize(aFile, &high) | (((LONGLONG)high) << 32);
+		if(aUpdate && file) {
+			size = file->getSize();
 		}
 	}
 
@@ -81,8 +84,7 @@ public:
 	void setPos(LONGLONG aPos, bool aUpdate) { 
 		pos = aPos;
 		if(aUpdate) {
-			long high = pos >> 32;
-			SetFilePointer(file, (DWORD)pos, &high, FILE_BEGIN);
+			file->setPos(aPos);
 		}
 	};
 	void addPos(LONGLONG aPos) { pos += aPos; last+=aPos; total+=aPos; };
@@ -98,13 +100,13 @@ public:
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
 
 	Transfer() : total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
-	~Transfer() { if(file) CloseHandle(file); };
+	~Transfer() { if(file) delete file; };
 private:
 	DWORD start;
 	DWORD last;
 	LONGLONG total;
 	
-	HANDLE file;
+	File* file;
 	LONGLONG pos;
 	LONGLONG size;
 
@@ -166,7 +168,7 @@ public:
 		socket.disconnect();
 	}
 	
-	void transmitFile(HANDLE f) {
+	void transmitFile(File* f) {
 		socket.transmitFile(f);
 	}
 
@@ -306,9 +308,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.27 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.28 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.28  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.27  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

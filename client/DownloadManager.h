@@ -253,6 +253,25 @@ public:
 	void save(SimpleXML* aXml);
 private:
 
+	void failDownload(UserConnection* c, Download* d, const string& aReason) {
+		{
+			Lock l(cs);
+			running.erase(c);
+		}
+		
+		d->unsetFlag(Download::RUNNING);
+		d->resetTotal();
+		
+		d->setFile(NULL);
+		
+		fire(DownloadManagerListener::FAILED, d, aReason);
+		removeSource(d, d->getCurrentSource());
+		
+		d->setCurrentSource(NULL);
+
+		removeConnection(c);
+	}
+
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
@@ -351,9 +370,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.27 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.28 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.28  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.27  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

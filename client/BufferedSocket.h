@@ -26,6 +26,8 @@
 #include "Socket.h"
 #include "Util.h"
 
+class File;
+
 class BufferedSocketListener {
 public:
 	typedef BufferedSocketListener* Ptr;
@@ -107,7 +109,7 @@ public:
 	 * Send the file f over this socket. Note; reading is suspended until the whole file has
 	 * been sent.
 	 */
-	void transmitFile(HANDLE f) throw() {
+	void transmitFile(File* f) throw() {
 		file = f;
 		SetEvent(writerEvent);
 	}
@@ -132,7 +134,7 @@ private:
 
 	char separator;
 
-	HANDLE file;
+	File* file;
 
 	HANDLE fileWriterEvent;
 	HANDLE writerEvent;
@@ -168,9 +170,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.20 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.21 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.21  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.20  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

@@ -298,8 +298,19 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			mi.dwTypeData = "Browse...";
 			mi.wID = IDC_DOWNLOADTO;
 			targetMenu.InsertMenuItem(0, TRUE, &mi);
-
-			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			int pos = -1;
+			bool op = true;
+			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
+				SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(pos);
+				if(!sr->getUser() || !sr->getUser()->isClientOp()) {
+					op = false;
+					break;
+				}
+			}
+			if(op)
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			else
+				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}
 		
 		return TRUE; 
@@ -350,9 +361,12 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.16 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.17 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.17  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.16  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

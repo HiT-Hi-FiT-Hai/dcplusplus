@@ -275,6 +275,26 @@ public:
 		char buf[16];
 		return itoa(val, buf, 10);
 	}
+
+	static string translateError(int aError) {
+		LPVOID lpMsgBuf;
+		FormatMessage( 
+			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
+			FORMAT_MESSAGE_FROM_SYSTEM | 
+			FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL,
+			aError,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) &lpMsgBuf,
+			0,
+			NULL 
+			);
+		string tmp = (LPCTSTR)lpMsgBuf;
+		// Free the buffer.
+		LocalFree( lpMsgBuf );
+		return tmp;
+	}
+
 	static string getLocalIp() {
 		char buf[256];
 		gethostname(buf, 256);
@@ -343,9 +363,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.17 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: Util.h,v 1.18 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.18  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.17  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

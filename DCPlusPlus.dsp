@@ -158,6 +158,10 @@ SOURCE=.\client\FavoritesFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\File.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\FlatTabCtrl.cpp
 # End Source File
 # Begin Source File
@@ -320,6 +324,10 @@ SOURCE=.\client\ExListViewCtrl.h
 # Begin Source File
 
 SOURCE=.\client\FavoritesFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\File.h
 # End Source File
 # Begin Source File
 

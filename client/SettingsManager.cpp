@@ -53,7 +53,15 @@ SettingsManager::SettingsManager()
 
 void SettingsManager::load(string const& aFileName)
 {
-	string xmltext = ReadStringFromFile(aFileName);
+	string xmltext;
+	try {
+		File f(aFileName, File::READ, File::OPEN);
+		xmltext = f.read();		
+	} catch(FileException e) {
+		// ...
+		return;
+	}
+
 	if(xmltext.empty()) {
 		// Nothing to load...
 		return;
@@ -162,44 +170,11 @@ void SettingsManager::save(string const& aFileName) const
 	DownloadManager::getInstance()->save(&xml);
 	HubManager::getInstance()->save(&xml);
 
-	string xmltext = xml.toXML();
-	WriteStringToFile(aFileName, xmltext);
-}
-
-string SettingsManager::ReadStringFromFile(string const& aFileName)
-{
-	HANDLE h = ::CreateFile(aFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
-		OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-
-	if(h == INVALID_HANDLE_VALUE) {
-		dcdebug("Failed to open file \"%s\"", aFileName.c_str());
-		return "";
+	try {
+		File f(aFileName, File::WRITE, File::CREATE | File::TRUNCATE);
+		f.write(xml.toXML());
+	} catch(FileException e) {
+		// ...
 	}
-
-	DWORD fs = ::GetFileSize(h, NULL);
-	char* buf = new char[fs+1];
-	buf[fs] = 0;
-
-	::ReadFile(h, buf, fs, &fs, NULL);
-	::CloseHandle(h);
-
-	string text = buf;
-	delete buf;
-	return text;
 }
 
-bool SettingsManager::WriteStringToFile(string const& aFileName, string const& text)
-{
-	HANDLE h = ::CreateFile(aFileName.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, 
-		FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	
-	if(h != INVALID_HANDLE_VALUE)
-	{
-		DWORD fs;
-		BOOL status = ::WriteFile(h, text.c_str(), text.length(), &fs, NULL);
-		::CloseHandle(h);
-		return status == TRUE;
-	}
-	else
-		return false;
-}

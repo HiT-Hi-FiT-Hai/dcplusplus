@@ -529,47 +529,58 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 
 		if(d->isSet(Download::ROLLBACK)) {
 			dcassert(d->getRollbackBuffer());
-			if(d->getTotal() + aLen >= SETTING(ROLLBACK)) {
+			if(d->getTotal() + aLen >= d->getRollbackSize()) {
 				BYTE* buf = new BYTE[d->getRollbackSize()];
-				DWORD x;
 				
 				memcpy(d->getRollbackBuffer() + d->getTotal(), aData, d->getRollbackSize() - d->getTotal());
 
-				ReadFile(d->getFile(), buf, d->getRollbackSize(), &x, NULL);
+				d->getFile()->read(buf, d->getRollbackSize());
+
 				if(memcmp(d->getRollbackBuffer(), buf, d->getRollbackSize()) != 0) {
 					// We have a problem...
-					running.erase(i);
-					d->unsetFlag(Download::RUNNING);
+					cs.leave();
+
 					d->unsetFlag(Download::ROLLBACK);
 					d->setRollbackBuffer(0);
-					d->resetTotal();
-					cs.leave();
 					
-					if(d->getFile()) {
-						CloseHandle(d->getFile());
-						d->setFile(NULL);
-					}
-
-					fire(DownloadManagerListener::FAILED, d, "Rollback discovered resume inconsistency, removing download source from the queue");
-					removeSource(d, d->getCurrentSource());
-
-					d->setCurrentSource(NULL);
-					removeConnection(aSource);
+					failDownload(aSource, d, "Rollback discovered resume inconsistency, removing download source from the queue");
+					
+					delete buf;
 					return;
 				}
 
 				// Alright, write the rest...the file pointer should have been moved to the correct position by now...
-				WriteFile(d->getFile(), aData+d->getRollbackSize(), aLen-d->getRollbackSize(), &x, NULL);
+				try {
+					d->getFile()->write(aData+d->getRollbackSize(), aLen - d->getRollbackSize());
+				} catch(FileException e) {
+					cs.leave();
+
+					d->unsetFlag(Download::ROLLBACK);
+					d->setRollbackBuffer(0);
+					
+					failDownload(aSource, d, "File write failed: " + e.getError());
+
+					delete buf;
+					return;
+				}
+
 				d->unsetFlag(Download::ROLLBACK);
 				d->setRollbackBuffer(0);
+				delete buf;
+
 			} else {
 				memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen - d->getTotal());
 			}
 			cs.leave();
 		} else {
 			cs.leave();
-			DWORD len;
-			WriteFile(d->getFile(), aData, aLen, &len, NULL);
+
+			try {
+				d->getFile()->write(aData, aLen);
+			} catch(FileException e) {
+				failDownload(aSource, d, "File write failed: " + e.getError());
+				return;
+			}
 		}
 		
 		d->addPos(aLen);
@@ -585,32 +596,30 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	if(i != running.end()) {
 		Download* d = i->second;
 		
-		HANDLE file;
 		Util::ensureDirectory(d->getTarget());
-		if(d->isSet(Download::RESUME))
-			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		else
-			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		
-		if(file == INVALID_HANDLE_VALUE) {
+
+		File* file;
+		try {
+			file = new File(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
+		} catch(FileException e) {
 			running.erase(i);
 			d->unsetFlag(Download::RUNNING);
 			cs.leave();
 			removeConnection(aSource);
-			
-			fire(DownloadManagerListener::FAILED, d, "Could not open target file");
+			fire(DownloadManagerListener::FAILED, d, "Could not open target file:" + e.getError());
 			return;
 		}
-
+			
 		d->setFile(file, true);
 
-		if(fileLength > SETTING(ROLLBACK) && d->isSet(Download::ROLLBACK)) {
-			// Update the file pointer...yes, this is what they call ugly code in the books...
-			d->setPos(d->getPos(), true);
-			d->setRollbackBuffer(SETTING(ROLLBACK));
-		} else {
-			d->setPos(0, true);
-			dcassert(!d->isSet(Download::ROLLBACK));
+		if(d->isSet(Download::RESUME) && d->isSet(Download::ROLLBACK)) {
+			if(fileLength > SETTING(ROLLBACK)) {
+				d->setPos(file->getSize() - SETTING(ROLLBACK), true);
+				d->setRollbackBuffer(SETTING(ROLLBACK));
+			} else {
+				d->setPos(0, true);
+				d->setRollbackBuffer(fileLength);
+			}
 		}
 
 		d->setSize(fileLength);
@@ -656,7 +665,6 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 		if(p->getPos() != p->getSize())
 			dcdebug("Download incomplete??? : ");
 		
-		CloseHandle(p->getFile());
 		p->setFile(NULL);
 		
 		dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
@@ -706,10 +714,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	d->resetTotal();
 	cs.leave();
 	
-	if(d->getFile()) {
-		CloseHandle(d->getFile());
-		d->setFile(NULL);
-	}
+	d->setFile(NULL);
 	fire(DownloadManagerListener::FAILED, d, aError);
 	d->setCurrentSource(NULL);
 	removeConnection(aSource);
@@ -772,9 +777,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.33 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.34 2002/01/19 13:09:10 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.34  2002/01/19 13:09:10  arnetheduck
+ * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
+ *
  * Revision 1.33  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *
