@@ -55,7 +55,7 @@ bool BufferedSocket::threadSendFile() {
 			size_t valid = file->read(inbuf, s);
 			if(valid > 0) {
 				Socket::write((char*)inbuf, valid);
-				fire(BufferedSocketListener::BYTES_SENT, valid, s);
+				fire(BufferedSocketListener::BYTES_SENT, s, valid);
 			} else {
 				fire(BufferedSocketListener::TRANSMIT_DONE);
 				return true;
@@ -405,5 +405,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.65 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.66 2004/03/27 11:16:27 arnetheduck Exp $
  */

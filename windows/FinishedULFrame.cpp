@@ -27,10 +27,10 @@
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
 
-int FinishedULFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_SIZE, COLUMN_SPEED };
-int FinishedULFrame::columnSizes[] = { 110, 100, 290, 125, 80, 80 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::TIME, ResourceManager::FILENAME, ResourceManager::PATH, 
-ResourceManager::NICK, ResourceManager::SIZE, ResourceManager::SPEED
+int FinishedULFrame::columnIndexes[] = { COLUMN_DONE, COLUMN_FILE, COLUMN_PATH, COLUMN_NICK, COLUMN_HUB, COLUMN_SIZE, COLUMN_SPEED };
+int FinishedULFrame::columnSizes[] = { 100, 110, 290, 125, 80, 80, 80 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::TIME, ResourceManager::PATH, 
+ResourceManager::NICK, ResourceManager::HUB, ResourceManager::SIZE, ResourceManager::SPEED
 };
 
 LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -39,7 +39,7 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_FINISHED_UL);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FINISHED);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
@@ -47,6 +47,7 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 		ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 	
+	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
 	ctrlList.SetTextColor(WinUtil::textColor);
@@ -144,7 +145,7 @@ LRESULT FinishedULFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 }
 
 LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	if(!closed){
+	if(!closed) {
 		FinishedManager::getInstance()->removeListener(this);
 
 		closed = true;
@@ -193,21 +194,23 @@ void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem
 
 void FinishedULFrame::addEntry(FinishedItem* entry) {
 	StringList l;
-	l.push_back(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
 	l.push_back(Util::getFileName(entry->getTarget()));
+	l.push_back(Util::formatTime("%Y-%m-%d %H:%M:%S", entry->getTime()));
 	l.push_back(Util::getFilePath(entry->getTarget()));
-	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
+	l.push_back(entry->getUser());
+	l.push_back(entry->getHub());
 	l.push_back(Util::formatBytes(entry->getSize()));
 	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
 
-	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
+	int image = WinUtil::getIconIndex(entry->getTarget());
+	int loc = ctrlList.insert(l, image, (LPARAM)entry);
 	ctrlList.EnsureVisible(loc, FALSE);
 }
 
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.14 2004/03/24 20:38:17 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.15 2004/03/27 11:16:27 arnetheduck Exp $
  */

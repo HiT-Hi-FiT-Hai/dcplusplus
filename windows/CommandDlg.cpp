@@ -75,7 +75,8 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 	} else {
 		// More difficult, determine type by what it seems to be...
 		if((strncmp(command.c_str(), "$To: ", 5) == 0) &&
-			command.find(" From: %[mynick] $<%[mynick]> ") != string::npos) 
+			command.find(" From: %[mynick] $<%[mynick]> ") != string::npos &&
+			command.find('|') == string::npos) 
 		{
 			string::size_type i = command.find(' ', 5);
 			dcassert(i != string::npos);
@@ -148,5 +149,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.6 2004/01/04 16:34:38 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.7 2004/03/27 11:16:27 arnetheduck Exp $
 */

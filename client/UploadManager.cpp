@@ -343,7 +343,7 @@ void UploadManager::onAction(ClientManagerListener::Types type, const User::Ptr&
 				// But let's grant him/her a free slot just in case...
 				if (!u->getUserConnection()->isSet(UserConnection::FLAG_HASEXTRASLOT))
 					reserveSlot(aUser);
-				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getNick());
+				LogManager::getInstance()->message(STRING(DISCONNECTED_USER) + aUser->getFullNick());
 			}
 		}
 	}
@@ -401,5 +401,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.54 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.55 2004/03/27 11:16:27 arnetheduck Exp $
  */

@@ -14,6 +14,11 @@
 * Hub name more or less correct on TTH results in search frame
 * Added search by TTH to queue frame
 * Large speed improvement in user list loading when lists sorted on user name
+* Fixed inverted ratio of uploads
+* New icons in window menu (thanks garg)
+* SFV failure message (thanks garg)
+* Bolds for defaults in some menus (thanks garg)
+* Fixed random filelist crash
 
  -- 0.307 2004-03-10 --
 * Experimental release, lots and lots of core code has changed => high fatal bug probability.

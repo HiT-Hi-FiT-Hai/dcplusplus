@@ -151,7 +151,7 @@ public:
 			w[2] = sr.right - 16;
 			w[1] = max(w[2] - 100, 0);
 			w[0] = max(w[1] - 100, 0);
-			
+
 			ctrlStatus.SetParts(3, w);
 		}
 		
@@ -168,10 +168,11 @@ private:
 
 	enum {
 		COLUMN_FIRST,
-		COLUMN_DONE = COLUMN_FIRST,
-		COLUMN_FILE,
+		COLUMN_FILE = COLUMN_FIRST,
+		COLUMN_DONE,
 		COLUMN_PATH,
 		COLUMN_NICK,
+		COLUMN_HUB,
 		COLUMN_SIZE,
 		COLUMN_SPEED,
 		COLUMN_CRC32,
@@ -185,7 +186,7 @@ private:
 	
 	int64_t totalBytes;
 	int64_t totalTime;
-	
+
 	bool closed;
 
 	static int columnSizes[COLUMN_LAST];
@@ -215,5 +216,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.14 2003/11/14 15:37:36 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.15 2004/03/27 11:16:27 arnetheduck Exp $
  */

@@ -47,12 +47,20 @@ public:
 		typedef List::iterator Iter;
 		
 		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)) { };
+			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)) 
+		{ 
+		};
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			name(aName), size(aSize), parent(aDir), tthRoot(NULL) { };
-			~File() {
-				delete tthRoot;
-			}
+			name(aName), size(aSize), parent(aDir), tthRoot(NULL)
+		{ 
+		};
+			
+		File(const File& rhs) : name(rhs.name), size(rhs.size), parent(rhs.parent), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot)) 
+		{
+		}
+		~File() {
+			delete tthRoot;
+		}
 
 		bool getAdls() {
 			return getParent()->getAdls();
@@ -161,5 +169,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.24 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.25 2004/03/27 11:16:27 arnetheduck Exp $
  */

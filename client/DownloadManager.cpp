@@ -301,7 +301,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	d->setFile(file);
 
 	if(d->isSet(Download::FLAG_ROLLBACK)) {
-		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), SETTING(ROLLBACK)));
+		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), (size_t)min((int64_t)SETTING(ROLLBACK), d->getSize() - d->getPos())));
 	}
 
 	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
@@ -431,6 +431,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 			if(!crcMatch) {
 				File::deleteFile(tgt);
 				dcdebug("DownloadManager: CRC32 mismatch for %s\n", d->getTarget().c_str());
+				LogManager::getInstance()->message(STRING(SFV_INCONSISTENCY) + " (" + STRING(FILE) + ": " + d->getTarget() + ")");
 				fire(DownloadManagerListener::FAILED, d, STRING(SFV_INCONSISTENCY));
 				
 				string target = d->getTarget();
@@ -647,5 +648,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.96 2004/03/09 21:40:49 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.97 2004/03/27 11:16:27 arnetheduck Exp $
  */

@@ -167,6 +167,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	ctrlResults.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlResults.setSortColumn(COLUMN_FILENAME);
 
 	ctrlResults.SetBkColor(WinUtil::bgColor);
 	ctrlResults.SetTextBkColor(WinUtil::bgColor);
@@ -194,6 +195,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	appendUserItems(resultsMenu);
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	resultsMenu.SetMenuDefaultItem(IDC_DOWNLOAD);
 
 	if(!initialString.empty()) {
 		search = StringTokenizer(initialString, ' ').getTokens();
@@ -896,5 +898,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.49 2004/03/26 19:23:29 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.50 2004/03/27 11:16:28 arnetheduck Exp $
  */

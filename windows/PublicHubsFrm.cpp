@@ -64,7 +64,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
 	
-	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
+	ctrlHubs.setSort(COLUMN_USERS, ExListViewCtrl::SORT_INT, false);
 	ctrlHubs.SetFocus();
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -399,6 +399,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.19 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.20 2004/03/27 11:16:27 arnetheduck Exp $
  */
 

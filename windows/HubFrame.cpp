@@ -251,13 +251,27 @@ struct CompareItems {
 };
 
 int HubFrame::findUser(const User::Ptr& aUser) {
-	if(ctrlUsers.getSortColumn() != -1) {
+	if(ctrlUsers.getSortColumn() == COLUMN_NICK) {
+		// Sort order of the other columns changes too late when the user's updated
 		UserInfo ui(aUser);
-		pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
-			equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
-		for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
-			if(i->getUser() == aUser)
-				return i - ctrlUsers.begin();
+		{
+			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+				if(i->getUser() == aUser)
+					return i - ctrlUsers.begin();
+			}
+		}
+		if(aUser->isSet(User::OP)) {
+			// Might still be sorted as a non-op...search again...
+			ui->setOp(false);
+			pair<CtrlUsers::iterator, CtrlUsers::iterator> p = 
+				equal_range(ctrlUsers.begin(), ctrlUsers.end(), ui, CompareItems(ctrlUsers.getSortColumn()));
+			for(CtrlUsers::iterator i = p.first; i != p.second; ++i) {
+				if(i->getUser() == aUser)
+					return i - ctrlUsers.begin();
+			}
+
 		}
 		return -1;
 	}
@@ -1099,5 +1113,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.54 2004/03/26 19:23:28 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.55 2004/03/27 11:16:27 arnetheduck Exp $
  */

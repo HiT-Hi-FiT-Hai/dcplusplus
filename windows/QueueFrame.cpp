@@ -75,6 +75,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	
 	ctrlQueue.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	ctrlQueue.setSortColumn(COLUMN_PATH);
 	
 	ctrlQueue.SetBkColor(WinUtil::bgColor);
 	ctrlQueue.SetTextBkColor(WinUtil::bgColor);
@@ -1303,7 +1304,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.47 2004/03/26 19:23:28 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.48 2004/03/27 11:16:27 arnetheduck Exp $
  */
 
 
