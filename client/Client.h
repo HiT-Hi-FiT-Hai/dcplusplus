@@ -26,8 +26,9 @@
 #include "ClientListener.h"
 #include "BufferedSocket.h"
 #include "User.h"
+#include "Util.h"
 
-class Client : public BufferedSocketListener
+class Client : public Speaker<ClientListener>, public BufferedSocketListener
 {
 public:
 	enum {
@@ -52,30 +53,6 @@ public:
 			}				
 		}
 	};
-	
-	void addListener(ClientListener::Ptr aListener) {
-		listenerCS.enter();
-		listeners.push_back(aListener);
-		listenerCS.leave();
-	}
-	
-	void removeListener(ClientListener::Ptr aListener) {
-		listenerCS.enter();
-		for(ClientListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		listenerCS.leave();
-	}
-	
-	void removeListeners() {
-		listenerCS.enter();
-		listeners.clear();
-		listenerCS.leave();
-	}
-	
 	
 	static void addStaticListener(ClientListener::Ptr aListener) {
 		staticListenersCS.enter();
@@ -189,9 +166,6 @@ protected:
 	/** A list of listeners that receive all client messages (from all clients) */
 	static ClientListener::List staticListeners;
 	static CriticalSection staticListenersCS;
-
-	ClientListener::List listeners;
-	CriticalSection listenerCS;
 
 	string server;
 	short port;
@@ -394,9 +368,14 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: Client.h,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.3  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

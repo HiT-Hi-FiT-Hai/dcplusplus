@@ -53,7 +53,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 	string line = "";
 	BYTE buf[BUFSIZE];
-
+	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
 		try {
 			dcdebug("Available bytes: %d\n", bs->getAvailable());
@@ -101,18 +101,30 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				dcassert(0);
 			}
 		} catch(SocketException e) {
+			// Ouch...
 			bs->fireError(e.getError());
+			bs->readerThread = NULL;
+			bs->disconnect();
+			bs->connected = false;
 			return 0;
 		}
 	}
+	bs->readerThread = NULL;
+	bs->disconnect();
+	bs->connected = false;
 	return 0;
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.4 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.5 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.5  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -25,7 +25,6 @@
 
 #include "ClientListener.h"
 #include "Client.h"
-#include "ProtocolHandler.h"
 #include "ExListViewCtrl.h"
 #include "DownloadManager.h"
 
@@ -47,11 +46,11 @@ protected:
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
 		addClientLine("Unknown: " + aCommand);
 	}
-	virtual void onClientQuit(Client* aClient, const string& aNick) {
-		ctrlUsers.deleteItem(aNick);
+	virtual void onClientQuit(Client* aClient, User* aUser) {
+		ctrlUsers.deleteItem(aUser->getNick());
 	}
-	virtual void onClientHubName(Client* aClient, const string& aHubName) {
-		SetWindowText(aHubName.c_str());
+	virtual void onClientHubName(Client* aClient) {
+		SetWindowText(aClient->getName().c_str());
 	}
 	virtual void onClientError(Client* aClient, const string& aReason) {
 		addClientLine("Connection failed: " + aReason);
@@ -61,23 +60,6 @@ protected:
 		client->disconnect();
 	}
 
-	string convertBytes(const string& aString) {
-		char buf[64];
-		__int64 x = _atoi64(aString.c_str());
-		if(x < 1024) {
-			sprintf(buf, "%d B", x );
-		} else if(x < 1024*1024) {
-			sprintf(buf, "%.02f kB", (double)x/(1024.0) );
-		} else if(x < 1024*1024*1024) {
-			sprintf(buf, "%.02f MB", (double)x/(1024.0*1024.0) );
-		} else if(x < 1024I64*1024I64*1024I64*1024I64) {
-			sprintf(buf, "%.02f GB", (double)x/(1024.0*1024.0*1024.0) );
-		} else {
-			sprintf(buf, "%.02f TB", (double)x/(1024.0*1024.0*1024.0*1024.0));
-		}
-
-		return buf;
-	}
 	virtual void onClientMyInfo(Client* aClient, User* aUser) {
 		
 		LV_FINDINFO fi;
@@ -87,7 +69,7 @@ protected:
 		if(i == -1) {
 			i = ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), aUser->getNick().c_str());
 		}
-		ctrlUsers.SetItemText(i, 1, convertBytes(aUser->getBytesSharedString()).c_str());
+		ctrlUsers.SetItemText(i, 1, Util::shortenBytes(aUser->getBytesSharedString()).c_str());
 		ctrlUsers.SetItemText(i, 2, aUser->getDescription().c_str());
 		ctrlUsers.SetItemText(i, 3, aUser->getConnection().c_str());
 		ctrlUsers.SetItemText(i, 4, aUser->getEmail().c_str());
@@ -97,7 +79,6 @@ protected:
 	}
 
 	Client::Ptr client;
-	ProtocolHandler::Ptr ph;
 	string server;
 	CContainedWindow ctrlMessageContainer;
 
@@ -109,7 +90,6 @@ public:
 	}
 
 	~HubFrame() {
-		delete ph;
 		client->removeListeners();
 		delete client;
 	}
@@ -154,7 +134,8 @@ public:
 		char buf[1024];
 		if(item->iItem != -1) {
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
-			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(buf), Settings::getAppPath() + user + ".DcLst");
+			user = buf;
+			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), Settings::getAppPath() + user + ".DcLst");
 		}
 		return 0;
 	}
@@ -220,9 +201,14 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.6 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.7 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.7  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.6  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -27,11 +27,13 @@
 
 #include "DownloadManager.h"
 #include "ExListViewCtrl.h"
+#include "TimerManager.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>
+		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
+		public TimerManagerListener
 {
 public:
 	virtual ~MainFrame();
@@ -46,6 +48,15 @@ public:
 	virtual void onDownloadStarting(Download* aDownload);
 	virtual void onDownloadTick(Download* aDownload);
 	
+	virtual void onTimerSecond() {
+		if(ctrlStatus.IsWindow()) {
+			ctrlStatus.SetText(1, ("D: " + Util::shortenBytes(Socket::getTotalDown())).c_str());
+			ctrlStatus.SetText(2, ("U: " + Util::shortenBytes(Socket::getTotalUp())).c_str());
+			ctrlStatus.SetText(3, ("D: " + Util::shortenBytes(Socket::getDown()) + "/s").c_str());
+			ctrlStatus.SetText(4, ("U: " + Util::shortenBytes(Socket::getUp()) + "/s").c_str());
+		}
+		Socket::resetStats();
+	}
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -107,10 +118,23 @@ public:
 	{
 		RECT rect;
 		GetClientRect(&rect);
-		
 		// position bars and offset their dimensions
 		UpdateBarsPosition(rect, bResizeBars);
-		
+
+		if(ctrlStatus.IsWindow()) {
+			CRect sr;
+			int w[5];
+			ctrlStatus.GetClientRect(sr);
+			int tmp = (sr.Width()) > 416 ? 316 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+			
+			w[0] = sr.right - tmp;
+			w[1] = w[0] + (tmp-16)/4;
+			w[2] = w[0] + (tmp-16)*2/4;
+			w[3] = w[0] + (tmp-16)*3/4;
+			w[4] = w[0] + (tmp-16)*4/4;
+			
+			ctrlStatus.SetParts(5, w);
+		}
 		// resize client window
 /*		if(m_hWndClient != NULL)
 			::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
@@ -165,6 +189,8 @@ public:
 	}
 protected:
 	ExListViewCtrl ctrlDownloads;
+	CStatusBarCtrl ctrlStatus;		
+		
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -176,9 +202,14 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.5 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.6 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.6  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.5  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

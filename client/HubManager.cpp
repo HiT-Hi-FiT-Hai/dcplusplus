@@ -51,16 +51,19 @@ DWORD WINAPI HubManager::lister(void* p) {
 		hm->fireMessage("Download complete");
 	}
 	
+	hm->fireStarting();
 	for(HubManager::HubEntry::Iter i = hm->publicHubs.begin(); i != hm->publicHubs.end(); ++i) {
 		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
 			ATLTRACE("Hub Lister Thread ended");
 			hm->listerThread = NULL;
+			hm->fireFinished();
 			LeaveCriticalSection(&hm->publicCS);
 			return 0;
 		}
 		hm->fireHub(i->name, i->server, i->description, i->users);
 	}
-
+	hm->fireFinished();
+	
 	LeaveCriticalSection(&hm->publicCS);
 	hm->listerThread = NULL;
 	return 0;
@@ -107,9 +110,14 @@ DWORD WINAPI HubManager::reader(void *p) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.3  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.2  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

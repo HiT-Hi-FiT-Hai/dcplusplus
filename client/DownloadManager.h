@@ -25,7 +25,8 @@
 
 #include "UserConnection.h"
 #include "CryptoManager.h"
-#include "CriticalSection.h"
+#include "Util.h"
+#include "TimerManager.h"
 
 class User;
 
@@ -66,7 +67,7 @@ public:
 	virtual void onDownloadTick(Download* aDownload) { };
 };
 
-class DownloadManager : public UserConnectionListener
+class DownloadManager : public Speaker<DownloadManagerListener>, public UserConnectionListener, public TimerManagerListener
 {
 public:
 
@@ -127,29 +128,6 @@ public:
 		}
 	}
 
-	void addListener(DownloadManagerListener::Ptr aListener) {
-		listenerCS.enter();
-		listeners.push_back(aListener);
-		listenerCS.leave();
-	}
-	
-	void removeListener(DownloadManagerListener::Ptr aListener) {
-		listenerCS.enter();
-		for(DownloadManagerListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		listenerCS.leave();
-	}
-	
-	void removeListeners() {
-		listenerCS.enter();
-		listeners.clear();
-		listenerCS.leave();
-	}
-
 private:
 
 	Download::List queue;
@@ -157,9 +135,6 @@ private:
 	
 	static DownloadManager* instance;
 	StringList expectedNicks;
-	
-	DownloadManagerListener::List listeners;
-	CriticalSection listenerCS;
 	
 	UserConnection::List connections;
 	
@@ -228,9 +203,14 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.3 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.4  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.3  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

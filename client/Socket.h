@@ -114,6 +114,10 @@ public:
 	virtual void disconnect() {
 		closesocket(sock);
 		connected = false;
+		if(readEvent) {
+			CloseHandle(readEvent);
+			readEvent = NULL;
+		}
 	}
 
 	int getAvailable() {
@@ -148,6 +152,12 @@ public:
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
 	void writeLine(const string& aData) throw(SocketException);
 	virtual string readLine(int aTimeOut = -1, char separator = 0x0a) throw(SocketException, TimeOutException);
+
+	static void resetStats() { stats.up = stats.down = 0; };
+	static DWORD getDown() { return stats.down; };
+	static DWORD getUp() { return stats.up; };
+	static LONGLONG getTotalDown() { return stats.totalDown; };
+	static LONGLONG getTotalUp() { return stats.totalUp; };
 protected:
 	Socket(const Socket& aSocket) {
 		// Copies not allowed
@@ -155,17 +165,29 @@ protected:
 	HANDLE readEvent;
 	int sock;
 	bool connected;
-	string buffer;	
-
+	string buffer;
+	class Stats {
+	public:
+		DWORD down;
+		DWORD up;
+		LONGLONG totalDown;
+		LONGLONG totalUp;
+	};
+	static Stats stats;
 };
 
 #endif // _SOCKET_H
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: Socket.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.5  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

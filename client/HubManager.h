@@ -24,6 +24,8 @@
 #endif // _MSC_VER > 1000
 
 #include "Exception.h"
+#include "Util.h"
+
 STANDARD_EXCEPTION(HubException);
 
 class HubManagerListener {
@@ -32,39 +34,16 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	virtual void onMessage(const string& aMessage) { };
+	virtual void onHubMessage(const string& aMessage) { };
+	virtual void onHubStarting() { };
 	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) { };
-	virtual void onFinished() { };
+	virtual void onHubFinished() { };
 };
 
-class HubManager  
+class HubManager : public Speaker<HubManagerListener>
 {
 public:
 
-	/**
-	 * @todo A reliable way of handling more than one listener...
-	 */
-	void addListener(HubManagerListener::Ptr aListener) {
-		if(listeners.size() < 1)
-			listeners.push_back(aListener);
-	}
-	
-	void removeListener(HubManagerListener::Ptr aListener) {
-		for(HubManagerListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		if(listeners.size() == 0)
-			stopLister();
-	}
-	
-	void removeListeners() {
-		listeners.clear();
-		stopLister();
-	}
-	
 	static HubManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -89,7 +68,7 @@ public:
 	}
 
 	void stopListing() {
-		stopLister();
+		SetEvent(listerEvent);
 	}
 
 private:
@@ -105,8 +84,6 @@ private:
 		HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) : 
 		name(aName), server(aServer), description(aDescription), users(aUsers) { };
 	};
-	
-	HubManagerListener::List listeners;
 	
 	static HubManager* instance;
 	HubEntry::List publicHubs;
@@ -172,11 +149,12 @@ private:
 		}
 	}
 	
+
 	void fireMessage(const string& aMessage) {
 		HubManagerListener::List tmp = listeners;
 //		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onMessage(aMessage);
+			(*i)->onHubMessage(aMessage);
 		}
 	}
 
@@ -192,7 +170,14 @@ private:
 		HubManagerListener::List tmp = listeners;
 		//		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onFinished();
+			(*i)->onHubFinished();
+		}
+	}
+	void fireStarting() {
+		HubManagerListener::List tmp = listeners;
+		//		dcdebug("fireMessage\n");
+		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onHubStarting();
 		}
 	}
 };
@@ -201,9 +186,14 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.3 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.4  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.3  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

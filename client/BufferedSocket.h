@@ -24,7 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Socket.h"
-#include "CriticalSection.h"
+#include "Util.h"
 
 class BufferedSocketListener {
 public:
@@ -39,7 +39,7 @@ public:
 	virtual void onModeChange(int newMode) { };
 };
 
-class BufferedSocket : public Socket  
+class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
 {
 public:
 	enum {	
@@ -54,29 +54,6 @@ public:
 
 	int getMode() { return mode; };
 	
-	void addListener(BufferedSocketListener::Ptr aListener) {
-		listenerCS.enter();
-		listeners.push_back(aListener);
-		listenerCS.leave();
-	}
-
-	void removeListener(BufferedSocketListener::Ptr aListener) {
-		listenerCS.enter();
-		for(BufferedSocketListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		listenerCS.leave();
-	}
-
-	void removeListeners() {
-		listenerCS.enter();
-		listeners.clear();
-		listenerCS.leave();
-	}
-
 	virtual void connect(const string& aServer, short aPort) {
 		server = aServer;
 		port = aPort;
@@ -99,16 +76,13 @@ private:
 		// Copy not allowed
 	}
 	
-	BufferedSocketListener::List listeners;
-	CriticalSection listenerCS;
-	
 	string server;
 	short port;
 	int mode;
 	LONGLONG dataBytes;
 
 	char separator;
-	
+
 	HANDLE stopEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
@@ -186,9 +160,14 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.3  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.2  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

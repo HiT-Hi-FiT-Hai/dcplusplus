@@ -59,10 +59,17 @@ int ConnectionManager::getDownloadConnection(User* aUser) {
  * Someone's connecting, accept the connection and wait for identification...
  */
 void ConnectionManager::onIncomingConnection() {
-	UserConnection::Ptr uc = new UserConnection();
+	UserConnection::Ptr uc;
+
+	if(pool.size() == 0) {
+		uc = new UserConnection();
+		uc->addListener(this);
+	} else {
+		uc = pool.back();
+		pool.pop_back();
+	}
 	try { 
 		uc->accept(socket);
-		uc->addListener(this);
 	} catch(Exception e) {
 		dcdebug("Error creating connection\n");
 		delete uc;
@@ -127,9 +134,14 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.4  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

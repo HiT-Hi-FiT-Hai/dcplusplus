@@ -60,12 +60,10 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			ctrlList.insert(l, 0, (LPARAM)d);
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
-			char buf[20];
-			_i64toa((*j)->size, buf, 10);
 			
 			StringList l;
 			l.push_back((*j)->name);
-			l.push_back(buf);
+			l.push_back(Util::shortenBytes((*j)->size));
 			ctrlList.insert(l, 2);
 		}
 	}
@@ -81,13 +79,11 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		ctrlList.GetItemText(item->iItem, 0, buf, MAX_PATH);
 
-		if(item->lParam == NULL) {
+		if(ctrlList.GetItemData(item->iItem) == NULL) {
 
 			OPENFILENAME ofn;       // common dialog box structure
 
-			buf[0] = 0;
 			strcpy(buf2, buf);
-
 			// Initialize OPENFILENAME
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
@@ -142,9 +138,14 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.4  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

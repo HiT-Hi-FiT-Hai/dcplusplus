@@ -52,14 +52,20 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 		s->fireIncomingConnection();
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
+	s->waiterThread = NULL;
 	return 0;
 }
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.1 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.2 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.2  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.1  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

@@ -50,24 +50,22 @@ public:
 
 	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL) {
 
+		char buf[1024];
 		int loc;
 		if(sortColumn == -1) {
 			loc = GetItemCount();
 		} else {
-			string b = aList[sortColumn];
+			string& b = aList[sortColumn];
 			int c = atoi(b.c_str());
 			for(loc = 0; loc<GetItemCount(); loc++) {
 				int comp;
-				string b = aList[sortColumn];
-				char buf[1024];
 				GetItemText(loc, sortColumn, buf, 1024);
-				string a = buf;
-
+				
 				switch(sortType) {
 				case SORT_STRING:
-					comp = compare(a, b, ascending); break;
+					comp = compare(string(buf), b, ascending); break;
 				case SORT_INT:
-					comp = compare(atoi(a.c_str()), c, ascending); break;
+					comp = compare(atoi(buf), c, ascending); break;
 				default:
 					dcassert(0);
 				}
@@ -164,9 +162,14 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.5 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.5  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

@@ -50,18 +50,29 @@ public:
 	void putDownloadConnection(UserConnection* aSource) {
 		aSource->disconnect();
 		downloaders.erase(downloaders.find(aSource->user->getNick()));
-		//delete aSource;
+
+		// Pool it for later usage...
+		pool.push_back(aSource);
 	}
 	void putUploadConnection(UserConnection* aSource) {
 		aSource->disconnect();
 		uploaders.erase(downloaders.find(aSource->user->getNick()));
-		//delete aSource;
+
+		pool.push_back(aSource);
 	}
 	void connect(const string& aServer, short aPort);
 
+	/**
+	 * Set this ConnectionManager to listen at a different port.
+	 * @todo Multiple ports and something clever when the port is taken.
+	 */
 	void setPort(short aPort) {
-		socket.disconnect();
-		socket.waitForConnections(aPort);
+		try {
+			socket.disconnect();
+			socket.waitForConnections(aPort);
+		} catch(SocketException e) {
+			// Doh!...
+		}
 	}
 
 	virtual void onIncomingConnection();
@@ -74,6 +85,8 @@ private:
 	UserConnection::NickMap downloaders;
 	UserConnection::NickMap uploaders;
 	
+	UserConnection::List pool;
+
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		connections.push_back(conn);
@@ -96,9 +109,16 @@ private:
 
 	UserConnection::List connections;
 	static ConnectionManager* instance;
+	/**
+	 * @todo Something clever when the port is busy.
+	 */
 	ConnectionManager() {
-		socket.addListener(this);
-		socket.waitForConnections(atoi(Settings::getPort().c_str()));
+		try {
+			socket.addListener(this);
+			socket.waitForConnections(atoi(Settings::getPort().c_str()));
+		} catch(SocketException e) {
+			// Doh!
+		}
 	};
 
 	~ConnectionManager() {
@@ -113,9 +133,14 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.4 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.4  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

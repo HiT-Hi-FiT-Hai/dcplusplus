@@ -48,15 +48,24 @@ LRESULT PublicHubsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return TRUE;
 }
 
+LRESULT PublicHubsDlg::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	// Do nothing for now...
+	return 0;
+}
+
 LRESULT PublicHubsDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(wID == IDOK) {
 		char buf[1024];
 		GetDlgItemText(IDC_SERVER, buf, 1024);
 		server = buf;
 	}
-	wId = wID;
-	DWORD tId;
-	CreateThread(NULL, 0, &stopper, this, NULL, &tId);
+	if(listing) {
+		wId = wID;
+		HubManager::getInstance()->stopListing();
+	}
+	else
+		EndDialog(wID);
+	
 	return 0;
 }
 
@@ -72,26 +81,21 @@ LRESULT PublicHubsDlg::OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHan
 }
 
 LRESULT PublicHubsDlg::OnClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	ctrlHubs.DeleteAllItems();
-	listing = true;
 	HubManager::getInstance()->getPublicHubs(true);
 
 	return 0;
 }
 
-DWORD WINAPI PublicHubsDlg::stopper(void* p) {
-	PublicHubsDlg* phd = (PublicHubsDlg*) p;
-
-	HubManager::getInstance()->removeListener(phd);
-	if(phd->wId != -1)
-		phd->EndDialog(phd->wId);
-	return 0;
-}
 /**
  * @file PublicHubsDlg.cpp
- * $Id: PublicHubsDlg.cpp,v 1.4 2001/11/29 19:10:55 arnetheduck Exp $
+ * $Id: PublicHubsDlg.cpp,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.cpp,v $
+ * Revision 1.5  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/11/29 19:10:55  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -29,13 +29,13 @@
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "CryptoManager.h"
-
+#include "ProtocolHandler.h"
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
 
 MainFrame::~MainFrame() {
+	TimerManager::deleteInstance();
 	ProtocolHandler::deleteInstance();
-	DownloadManager::getInstance()->removeListener(this);
 	CryptoManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	DownloadManager::deleteInstance();
@@ -119,7 +119,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	CreateSimpleStatusBar();
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP | SBARS_TOOLTIPS);
+	
+	ctrlStatus.Attach(m_hWndStatusBar);
+	ctrlStatus.SetSimple(FALSE);
 	
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
@@ -148,9 +151,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	Settings::load();	
 	
+	TimerManager::newInstance();
+	TimerManager::getInstance()->addListener(this);
 	CryptoManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
+	TimerManager::getInstance()->addListener(DownloadManager::getInstance());
 	UploadManager::newInstance();
 	HubManager::newInstance();
 	ProtocolHandler::newInstance();
@@ -158,7 +164,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
-	
 	return 0;
 }
 	
@@ -210,9 +215,14 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.7 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.8 2001/12/02 11:16:46 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.8  2001/12/02 11:16:46  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.7  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

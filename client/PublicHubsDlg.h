@@ -31,11 +31,11 @@ class PublicHubsDlg : public CDialogImpl<PublicHubsDlg>, HubManagerListener
 private:
 
 	ExListViewCtrl ctrlHubs;
-	bool listing;
 	int wId;
-	
+	bool listing;
+
 public:
-	PublicHubsDlg() : listing(false), wId(-1) { };
+	PublicHubsDlg() : wId(-1) { };
 	~PublicHubsDlg() {
 		HubManager::getInstance()->removeListener(this);
 	}
@@ -50,23 +50,33 @@ public:
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, OnItemchangedHublist)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, OnClickedRefresh)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
-	END_MSG_MAP()
+		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
+		END_MSG_MAP()
 	
 	virtual void onMessage(const string& aMessage) {
 		SetWindowText(("Public Hub List - " + aMessage).c_str());
 	}
 
 	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
-	virtual void onFinished() {
+	virtual void onHubFinished() {
 		HubManager::getInstance()->removeListener(this);
 		listing = false;
+
+		if(wId != -1)
+			EndDialog(wId);
+	}
+	virtual void onHubStarting() {
+		ctrlHubs.DeleteAllItems();
+		listing = true;
 	}
 	
-	static DWORD WINAPI stopper(void* p);
+ 	static DWORD WINAPI stopper(void* p);
 	
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
 	LRESULT onColumnClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
@@ -87,9 +97,14 @@ public:
 
 /**
  * @file PublicHubsDlg.h
- * $Id: PublicHubsDlg.h,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: PublicHubsDlg.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.h,v $
+ * Revision 1.5  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

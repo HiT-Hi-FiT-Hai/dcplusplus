@@ -55,7 +55,7 @@ public:
 
 class ServerSocket;
 
-class UserConnection : public BufferedSocketListener
+class UserConnection : public Speaker<UserConnectionListener>, public BufferedSocketListener
 {
 public:
 	friend class ConnectionManager;
@@ -66,7 +66,8 @@ public:
 	typedef map<string, Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 	
-	enum {	MODE_COMMAND = BufferedSocket::MODE_LINE,
+	enum {	
+		MODE_COMMAND = BufferedSocket::MODE_LINE,
 		MODE_DATA = BufferedSocket::MODE_DATA
 	};
 
@@ -79,32 +80,8 @@ public:
 
 	enum {
 		FLAG_UPLOAD = 0x01,
-		FLAG_DELETE = 0x02
 	};
 
-	void addListener(UserConnectionListener::Ptr aListener) {
-		listenerCS.enter();
-		listeners.push_back(aListener);
-		listenerCS.leave();
-	}
-	
-	void removeListener(UserConnectionListener::Ptr aListener) {
-		listenerCS.enter();
-		for(UserConnectionListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		listenerCS.leave();
-	}
-	
-	void removeListeners() {
-		listenerCS.enter();
-		listeners.clear();
-		listenerCS.leave();
-	}
-	
 	virtual void onConnected() { fireConnected(); };
 	virtual void onLine(const string& aLine);
 	virtual void onError(const string& aError) { fireConnectionError(aError); };
@@ -136,16 +113,9 @@ public:
 	void accept(const ServerSocket& aSocket);
 	void waitForConnection(short aPort = 412);
 	void disconnect() {
-		socket.removeListener(this);
 		socket.disconnect();
 		fireDisconnected();
 	}
-
-	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0) { 
-		socket.addListener(this);
-	};
-	virtual ~UserConnection() {
-	};
 
 private:
 	string server;
@@ -155,15 +125,12 @@ private:
 	int state;
 	int flags;
 	
-	UserConnectionListener::List listeners;
-	CriticalSection listenerCS;
-
-	void checkFlags() {
-		if(flags && FLAG_DELETE) {
-			// Oh no! We're dying!!!
-//			delete this;
-		}
-	}
+	// We only want ConnectionManager to create this...
+	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0) { 
+		socket.addListener(this);
+	};
+	virtual ~UserConnection() {
+	};
 	
 	void send(const string& aString) {
 		socket.write(aString);
@@ -176,7 +143,6 @@ private:
 			(*i)->onConnected(this);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireConnecting(const string& aServer) {
 		listenerCS.enter();
@@ -186,7 +152,6 @@ private:
 			(*i)->onConnecting(this, aServer);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireConnectionError(const string& aError) {
 		listenerCS.enter();
@@ -196,7 +161,6 @@ private:
 			(*i)->onConnectionError(this, aError);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireData(BYTE* aData, int aLen) {
 		listenerCS.enter();
@@ -206,7 +170,6 @@ private:
 			(*i)->onData(this, aData, aLen);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireDirection(const string& aDirection, const string& aNumber) {
 		listenerCS.enter();
@@ -216,7 +179,6 @@ private:
 			(*i)->onDirection(this, aDirection, aNumber);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireDisconnected() {
 		listenerCS.enter();
@@ -226,7 +188,6 @@ private:
 			(*i)->onDisconnected(this);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireError(const string& aError) {
 		listenerCS.enter();
@@ -236,7 +197,6 @@ private:
 			(*i)->onError(this, aError);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireFileLength(const string& aLength) {
 		listenerCS.enter();
@@ -246,7 +206,6 @@ private:
 			(*i)->onFileLength(this, aLength);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireGet(const string& aFile, LONGLONG aResume) {
 		listenerCS.enter();
@@ -256,7 +215,6 @@ private:
 			(*i)->onGet(this, aFile, aResume);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireKey(const string& aKey) {
 		listenerCS.enter();
@@ -266,7 +224,6 @@ private:
 			(*i)->onKey(this, aKey);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireGetListLen() {
 		listenerCS.enter();
@@ -276,7 +233,6 @@ private:
 			(*i)->onGetListLen(this);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireLock(const string& aLock, const string& aPk) {
 		listenerCS.enter();
@@ -286,7 +242,6 @@ private:
 			(*i)->onLock(this, aLock, aPk);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireMaxedOut() {
 		listenerCS.enter();
@@ -296,7 +251,6 @@ private:
 			(*i)->onMaxedOut(this);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
@@ -306,7 +260,6 @@ private:
 			(*i)->onModeChange(this, aNewMode);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireMyNick(const string& aNick) {
 		listenerCS.enter();
@@ -316,7 +269,6 @@ private:
 			(*i)->onMyNick(this, aNick);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 	void fireSend() {
 		listenerCS.enter();
@@ -326,7 +278,6 @@ private:
 			(*i)->onSend(this);
 		}
 		listenerCS.leave();
-		checkFlags();
 	}
 };
 
@@ -334,9 +285,14 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.4 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.5  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

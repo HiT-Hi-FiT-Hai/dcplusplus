@@ -33,27 +33,11 @@ public:
 };
 
 #include "Socket.h"
+#include "Util.h"
 
-class ServerSocket  
+class ServerSocket : public Speaker<ServerSocketListener>  
 {
 public:
-	void addListener(ServerSocketListener::Ptr aListener) {
-		listeners.push_back(aListener);
-	}
-	
-	void removeListener(ServerSocketListener::Ptr aListener) {
-		for(ServerSocketListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-	}
-	
-	void removeListeners() {
-		listeners.clear();
-	}
-	
 	void waitForConnections(short aPort) throw(SocketException);
 
 	ServerSocket() : sock(NULL), waiterEvent(NULL), waiterThread(NULL), sockEvent(NULL) {
@@ -61,6 +45,8 @@ public:
 	void disconnect() {
 		stopWaiter();
 		closesocket(sock);
+		CloseHandle(sockEvent);
+		sockEvent = NULL;
 		sock = NULL;
 	}
 	virtual ~ServerSocket() {
@@ -88,8 +74,6 @@ private:
 	HANDLE waiterEvent;
 	HANDLE waiterThread;
 	static DWORD WINAPI waiter(void* p);
-
-	ServerSocketListener::List listeners;
 
 	void startWaiter() {
 		DWORD threadId;
@@ -125,9 +109,14 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.3 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.3  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

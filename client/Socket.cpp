@@ -29,6 +29,8 @@ SocketException::SocketException(int aError) {
 	error = errorToString(aError);
 }
 
+Socket::Stats Socket::stats = { 0, 0, 0, 0 };
+
 string SocketException::errorToString(int aError) {
 	switch(aError) {
 	case EWOULDBLOCK:
@@ -79,6 +81,9 @@ Socket::Socket(const string& ip, short port) throw(SocketException) : readEvent(
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
+	if(connected)
+		disconnect();
+	
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
 	connected = true;
 }
@@ -138,6 +143,8 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	checkconnected();
 	int len = 0;
 	checkrecv(len=::recv(sock, (char*)aBuffer, aBufLen, 0));
+	stats.down += len;
+	stats.totalDown += len;
 	return len;
 }
 
@@ -155,8 +162,12 @@ resend:
 		if(errno == EWOULDBLOCK) {
 			Sleep(10);
 			goto resend;
+		} else {
+			checksockerr(SOCKET_ERROR);
 		}
 	}
+	stats.up += aLen;
+	stats.totalUp += aLen;
 }
 
 void Socket::write(const string& aData) throw(SocketException) {
@@ -207,6 +218,8 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 		}
 		
 		checkrecv(len = ::recv(sock, buf, BUFSIZE, 0));
+		stats.down += len;
+		stats.totalDown += len;
 		if(len == 0) {
 			// We've lost our connection!!
 			connected = false;
@@ -224,9 +237,14 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.5  2001/12/02 11:16:47  arnetheduck
+ * Optimised hub listing, removed a few bugs and leaks, and added a few small
+ * things...downloads are now working, time to start writing the sharing
+ * code...
+ *
  * Revision 1.4  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
