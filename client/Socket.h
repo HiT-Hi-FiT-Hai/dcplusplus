@@ -198,6 +198,8 @@ public:
 	static LONGLONG getTotalDown() { return stats.totalDown; };
 	static LONGLONG getTotalUp() { return stats.totalUp; };
 	int sock;
+
+	GETSETREF(string, ip, Ip);
 private:
 	Socket(const Socket& aSocket) {
 		// Copies not allowed
@@ -220,9 +222,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Socket.h,v 1.17 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.17  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.16  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

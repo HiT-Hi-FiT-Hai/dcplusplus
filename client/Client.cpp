@@ -93,7 +93,7 @@ void Client::onLine(const string& aLine) throw() {
 		string size = param.substr(i, j-i);
 		i = j + 1;
 		j = param.find('?', i);
-		int type = Util::toInt(param.substr(i, j-i));
+		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
 		param = param.substr(i);
 		bool spam = false;
@@ -294,9 +294,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.23 2002/01/26 16:34:00 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.24 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.24  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.23  2002/01/26 16:34:00  arnetheduck
  * Colors dialog added, as well as some other options
  *

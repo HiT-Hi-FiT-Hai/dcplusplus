@@ -287,32 +287,89 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 	return tmp;
 }
 
+#define IS_TYPE(x) (Util::findSubString(aString, x) != -1)
+
+bool checkType(const string& aString, int aType) {
+	bool found = true;
+	switch(aType) {
+	case SearchManager::TYPE_ANY: break;
+	case SearchManager::TYPE_AUDIO:
+		if(!( IS_TYPE(".mp3") || IS_TYPE(".mp2") || IS_TYPE(".mid") ||
+			IS_TYPE(".wav") || IS_TYPE(".au") || IS_TYPE(".aiff") ) ) {
+			found = false;
+		}
+		break;
+	case SearchManager::TYPE_COMPRESSED:
+		if(!( IS_TYPE(".zip") || IS_TYPE(".ace") || IS_TYPE(".rar") ) ) {
+			found = false;
+		}
+		break;
+	case SearchManager::TYPE_DOCUMENT:
+		if(!( IS_TYPE(".htm") || IS_TYPE(".doc") ) ) {
+			found = false;
+		}
+		break;
+	case SearchManager::TYPE_EXECUTABLE:
+		if(!( IS_TYPE(".exe") ) ) {
+			found = false;
+		}
+		break;
+	case SearchManager::TYPE_FOLDER:
+		found = false;
+		break;
+	case SearchManager::TYPE_PICTURE:
+		if(!( IS_TYPE(".eps") || IS_TYPE(".ai") || IS_TYPE(".ps") ||
+			IS_TYPE(".img") || IS_TYPE(".pct") || IS_TYPE(".pict") ||
+			IS_TYPE(".psp") || IS_TYPE(".pic") || IS_TYPE(".png") ||
+			IS_TYPE(".tif") || IS_TYPE(".rle") || IS_TYPE(".bmp") ||
+			IS_TYPE(".pcx") ) ) {
+			found = false;
+		}
+		break;
+	case SearchManager::TYPE_VIDEO:
+		if(!( IS_TYPE(".mpg") || IS_TYPE(".mov") || IS_TYPE(".mpeg") ||
+			IS_TYPE(".asf") || IS_TYPE(".avi") || IS_TYPE(".rm") ||
+			IS_TYPE(".pxp") ) ) {
+			found = false;
+		}
+		break;
+	}
+	return found;		
+}
+
 void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
 	bool found = true;
-	for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
-		if(Util::findSubString(name, *k) == -1) {
-			found = false;
-			break;
+
+	if( (aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_FOLDER) ) {
+		for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
+			if(Util::findSubString(name, *k) == -1) {
+				found = false;
+				break;
+			}
 		}
+	} else {
+		found = false;
 	}
 
 	if(found && aSearchType == SearchManager::SIZE_DONTCARE) {
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end() && (aResults.size() < MAX_RESULTS); ++i) {
-			SearchResult* sr = new SearchResult();
-			sr->setFile(getFullName() + i->first);
-			sr->setSize(i->second);
-			int slots = UploadManager::getInstance()->getFreeSlots();
-			sr->setFreeSlots(slots <= 0 ? 0 : slots);
-			sr->setSlots(SETTING(SLOTS));
-			sr->setNick(aClient->getNick());
-			sr->setHubAddress(aClient->getServer());
-			sr->setHubName(aClient->getName());
-			aResults.push_back(sr);
+			if(checkType(i->first, aFileType)) {
+				SearchResult* sr = new SearchResult();
+				sr->setFile(getFullName() + i->first);
+				sr->setSize(i->second);
+				int slots = UploadManager::getInstance()->getFreeSlots();
+				sr->setFreeSlots(slots <= 0 ? 0 : slots);
+				sr->setSlots(SETTING(SLOTS));
+				sr->setNick(aClient->getNick());
+				sr->setHubAddress(aClient->getServer());
+				sr->setHubName(aClient->getName());
+				aResults.push_back(sr);
+			}
 		}	
 	} else {
 		
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end(); ++i) {
-			bool found = true;
+			found = true;
 			for(StringIter j = aStrings.begin(); (j != aStrings.end()); ++j) {
 				if(aSearchType == SearchManager::SIZE_ATLEAST && i->second < aSize) {
 					found = false;
@@ -325,8 +382,10 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 					break;
 				}
 			}
-			
-			if(found) {
+
+			// Check file type...
+			if(found && checkType(i->first, aFileType)) {
+
 				SearchResult* sr = new SearchResult();
 				sr->setFile(getFullName() + i->first);
 				sr->setSize(i->second);
@@ -335,7 +394,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				sr->setSlots(SETTING(SLOTS));
 				sr->setNick(SETTING(NICK));
 				sr->setNick(aClient->getNick());
-				sr->setHubAddress(aClient->getServer());
+				sr->setHubAddress(aClient->getIp());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 
@@ -365,9 +424,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.22 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.23 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.23  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.22  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

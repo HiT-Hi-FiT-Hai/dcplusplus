@@ -127,7 +127,7 @@ void Socket::connect(const string& ip, const string& port) throw(SocketException
 	connect(ip, atoi(port.c_str()));
 }
 
-void Socket::connect(const string& ip, short port) throw(SocketException) {
+void Socket::connect(const string& aip, short port) throw(SocketException) {
 	SOCKADDR_IN  serv_addr;
 	hostent* host;
 
@@ -142,17 +142,19 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
     serv_addr.sin_port = htons(port);
 	serv_addr.sin_family = AF_INET;
 	
-    if (isalpha(ip[0])) {   /* server address is a name */
-        host = gethostbyname(ip.c_str());
+	serv_addr.sin_addr.s_addr = inet_addr(aip.c_str());
+
+    if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
+        host = gethostbyname(aip.c_str());
         if (host == NULL) {
             throw SocketException("Unknown address");
         }
         serv_addr.sin_addr.s_addr = *((DWORD*)host->h_addr);
-		dcdebug("Server %s = %s\n", ip.c_str(), inet_ntoa(serv_addr.sin_addr));
 		
-    } else { /* Convert nnn.nnn address to a usable one */
-        serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
-    } 
+    }
+
+	setIp(inet_ntoa(serv_addr.sin_addr));
+	dcdebug("Server %s = %s\n", aip.c_str(), getIp().c_str());
 	
     if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
 		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
@@ -215,9 +217,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.17 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.17  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.16  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -5,9 +5,11 @@
 * The client now disconnects on a received redirect request (if the user's disabled automatic following of redirects). This should 
   be a reasonable tradeoff between users that don't want to be redirected and hub owners that are too lazy or feel too important
   to fix their scripts...
-* Added option to remove (keep) finished downloads in the queue
+* Added option to keep finished downloads in the queue
 * Fixed a small error with the rollback
-
+* Fixed incorrect search results for nm search by file type (oops, one less way of finding and banning dc++ users?)
+* Fixed lost slot problem, slots are now kept until the connection is broken (note; you do not get a slot for downloading the 
+  dc list, only when you start downloading real files...)
 
  -- 0.14 2002-01-26 --
 * Fixed upload slots bug

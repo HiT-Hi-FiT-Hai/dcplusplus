@@ -258,6 +258,10 @@ public:
 		nick = aNick;
 	}
 
+	const string& getIp() {
+		return socket.getIp();
+	}
+
 	GETSET(bool, op, Op);
 	GETSETREF(string, defpassword, Password);
 private:
@@ -355,9 +359,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.33 2002/01/26 16:34:00 arnetheduck Exp $
+ * $Id: Client.h,v 1.34 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.34  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.33  2002/01/26 16:34:00  arnetheduck
  * Colors dialog added, as well as some other options
  *

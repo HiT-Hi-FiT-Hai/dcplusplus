@@ -63,6 +63,10 @@ public:
 	}
 
 	void set(IntSetting key, int value) {
+		if(key == SLOTS) {
+			if(value <= 0)
+				value = 1;
+		}
 		intSettings[key - INT_FIRST] = value;
 		isSet[key] = true;
 	}
@@ -164,9 +168,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.10 2002/02/01 02:00:44 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.11 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.11  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.10  2002/02/01 02:00:44  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

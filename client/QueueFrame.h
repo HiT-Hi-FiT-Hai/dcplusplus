@@ -58,9 +58,38 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
+		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<QueueFrame>)
 	END_MSG_MAP()
 
+	LRESULT onKeyDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+		
+		if(kd->wVKey == VK_DELETE) {
+			removeSelected();
+		} 
+		return 0;
+	}
+
+	void removeSelected() {
+		int i = -1;
+		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			QueueManager::getInstance()->remove((QueueItem*)ctrlQueue.GetItemData(i));
+		}
+	}
+	
+	
+	LRESULT onColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		if(l->iSubItem == ctrlQueue.getSortColumn()) {
+			ctrlQueue.setSortDirection(!ctrlQueue.getSortDirection());
+		} else {
+			ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+		}
+		return 0;
+	}
+	
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		RECT rect;
@@ -170,6 +199,7 @@ private:
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
 		switch(type) {
 		case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
+		case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); onQueueUpdated(aQI); break;
 		case QueueManagerListener::REMOVED: onQueueRemoved(aQI); break;
 		case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
 		case QueueManagerListener::STATUS_UPDATED: onQueueStatus(aQI); break;
@@ -191,9 +221,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.1 2002/02/01 02:00:40 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.2 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.2  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.1  2002/02/01 02:00:40  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

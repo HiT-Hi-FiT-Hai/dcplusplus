@@ -190,7 +190,7 @@ Download* QueueManager::getDownload(UserConnection* aUserConnection) {
 		// Set the flag to running, so that we don't get the same download twice...
 		q->setStatus(QueueItem::RUNNING);
 	}
-	
+	fire(QueueManagerListener::STATUS_UPDATED, q);
 	return new Download(q, ConnectionManager::getInstance()->getQueueItem(aUserConnection));
 }
 
@@ -237,6 +237,23 @@ void QueueManager::remove(const string& aTarget) throw(QueueException) {
 
 			delete q;
 		}
+	}
+}
+
+void QueueManager::remove(QueueItem* qi) throw(QueueException) {
+	
+	Lock l(cs);
+	QueueItem::Iter i = find(queue.begin(), queue.end(), qi);
+
+	if(i != queue.end()) {
+		if(qi->getStatus() == QueueItem::RUNNING) {
+			DownloadManager::getInstance()->removeDownload(qi);
+		}
+		
+		queue.erase(i);
+		fire(QueueManagerListener::REMOVED, qi);
+		
+		delete qi;
 	}
 }
 

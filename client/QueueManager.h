@@ -88,6 +88,16 @@ public:
 
 	Source::List& getSources() { return sources; };
 
+	string getTargetFileName() {
+		int i = getTarget().rfind('\\');
+		if(i != string::npos) {
+			return getTarget().substr(i + 1);
+		} else {
+			return getTarget();
+		}
+	}
+	
+
 	GETSETREF(string, target, Target);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
@@ -171,10 +181,11 @@ public:
 		ADDED,
 		REMOVED,
 		SOURCES_UPDATED,
-		STATUS_UPDATED
+		STATUS_UPDATED,
+		QUEUE_ITEM
 	};
 
-	virtual void onAction(Types type, QueueItem* aDownload) { };
+	virtual void onAction(Types type, QueueItem* aQI) { };
 };
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener
@@ -208,7 +219,8 @@ public:
 		add(USER_LIST_NAME, -1, aUser, file, false);
 		userLists.push_back(file);
 	}
-	
+
+	void remove(QueueItem* aQI) throw(QueueException);
 	void remove(const string& aTarget) throw(QueueException);
 	void removeSource(const string& aTarget, const User::Ptr& aUser) {
 		removeSource(aTarget, aUser->getNick());
@@ -230,6 +242,13 @@ public:
 
 	Download* getDownload(UserConnection* aUserConnection);
 	void putDownload(Download* aDownload, bool finished = false);
+	
+	void getQueue() {
+		Lock l(cs);
+		for(QueueItem::Iter i = queue.begin(); i!= queue.end(); ++i) {
+			fire(QueueManagerListener::QUEUE_ITEM, *i);
+		}
+	}
 
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);

@@ -61,6 +61,7 @@ IDR_MAINFRAME MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -91,6 +92,7 @@ IDR_HUB MENU DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs\tCtrl+F",      IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -124,6 +126,7 @@ IDR_DIRECTORY MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -154,6 +157,7 @@ IDR_FAVORITES MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -184,6 +188,7 @@ IDR_PRIVATE MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -214,6 +219,7 @@ IDR_SEARCH MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -244,6 +250,7 @@ IDR_PUBLICHUBS MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -274,6 +281,7 @@ IDR_NOTEPAD MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -304,6 +312,7 @@ IDR_QUEUE MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
         MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
         MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
@@ -701,6 +710,7 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     IDC_NOTEPAD             "Open a notepad window where you can save short messages\nNotepad"
+    IDC_QUEUE               "Opens the Download Queue window\nDownload Queue"
 END
 
 #endif    // English (U.S.) resources

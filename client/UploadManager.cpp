@@ -49,7 +49,9 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		}
 
 		cs.enter();
-		if( (getFreeSlots()<=0) && !( (smallfile || userlist) && (getFreeExtraSlots() > 0) && (aSource->getUser()->isSet(User::DCPLUSPLUS)) ) ) {
+		UserConnection::Iter si = find(slots.begin(), slots.end(), aSource);
+
+		if( si == slots.end() && (getFreeSlots()<=0) && !( (smallfile || userlist) && (getFreeExtraSlots() > 0) && (aSource->getUser()->isSet(User::DCPLUSPLUS)) ) ) {
 			cs.leave();
 			aSource->maxedOut();
 			removeConnection(aSource);
@@ -109,15 +111,11 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			u->setFlag(Upload::SMALL_FILE);
 		if(userlist)
 			u->setFlag(Upload::USER_LIST);
-		
-		try {
-			aSource->fileLength(Util::toString(u->getSize()));
-		} catch (...) {
-			// Make sure we leave the critical section...
-			cs.leave();
-			throw;
+
+		if(!isExtra(u) && si == slots.end()) {
+			slots.push_back(aSource);
 		}
-		
+
 		uploads[aSource] = u;
 		if(isExtra(u)) {
 			extra++;
@@ -126,7 +124,9 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		}
 		
 		cs.leave();
-			
+
+		aSource->fileLength(Util::toString(u->getSize()));
+
 	} catch(SocketException e) {
 		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		removeConnection(aSource);
@@ -301,9 +301,12 @@ void UploadManager::removeUpload(UserConnection* aConn) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.13 2002/02/01 02:00:45 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.14 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.14  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.13  2002/02/01 02:00:45  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

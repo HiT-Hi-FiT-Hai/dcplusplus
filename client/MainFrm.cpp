@@ -199,7 +199,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
 void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
-	i->columns[COLUMN_USER] = aCqi->getUser()->getNick();
+	i->columns[COLUMN_USER] = aCqi->getUser()->getNick() + " (" + aCqi->getUser()->getClientName() + ")";
 	i->columns[COLUMN_STATUS] = "Connecting...";
 
 	if(aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD)) {
@@ -740,7 +740,6 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
-//#ifdef 1 // PELI
 
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -762,52 +761,6 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 	return 0;
 }
-//#else // PELI
-#if 0
-LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SettingsDlg dlg;
-	dlg.nick = SettingsManager::getInstance()->get(SettingsManager::NICK, false);
-	dlg.email = SettingsManager::getInstance()->get(SettingsManager::EMAIL, false);
-	dlg.description = SettingsManager::getInstance()->get(SettingsManager::DESCRIPTION, false);
-	dlg.connection = SettingsManager::getInstance()->get(SettingsManager::CONNECTION, false);
-	dlg.server = SettingsManager::getInstance()->get(SettingsManager::SERVER, false);
-	dlg.directory = SettingsManager::getInstance()->get(SettingsManager::DOWNLOAD_DIRECTORY, false);
-	dlg.port = SettingsManager::getInstance()->get(SettingsManager::PORT, false) == 0 ? "" : Util::toString(SettingsManager::getInstance()->get(SettingsManager::PORT, false));
-	dlg.connectionType = SettingsManager::getInstance()->get(SettingsManager::CONNECTION_TYPE, false);
-	dlg.slots = (SettingsManager::getInstance()->get(SettingsManager::SLOTS, false)< 1)  ? 1 : SettingsManager::getInstance()->get(SettingsManager::SLOTS, false);
-
-	if(dlg.DoModal(m_hWnd) == IDOK) {
-
-		if(dlg.directory.size() > 0 && dlg.directory[dlg.directory.size() - 1] != '\\') {
-			dlg.directory += '\\';
-		}
-		
-		SettingsManager::getInstance()->set(SettingsManager::NICK, Util::validateString(dlg.nick));
-		SettingsManager::getInstance()->set(SettingsManager::DESCRIPTION, Util::validateString(dlg.description));
-		SettingsManager::getInstance()->set(SettingsManager::EMAIL, Util::validateString(dlg.email));
-		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, dlg.connection);
-		SettingsManager::getInstance()->set(SettingsManager::SERVER, dlg.server);
-		SettingsManager::getInstance()->set(SettingsManager::PORT, dlg.port);
-		SettingsManager::getInstance()->set(SettingsManager::CONNECTION_TYPE, dlg.connectionType);
-		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, dlg.directory);
-		SettingsManager::getInstance()->set(SettingsManager::SLOTS, dlg.slots);
-		SettingsManager::getInstance()->save();
-
-		ShareManager::getInstance()->refresh();
-
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			try {
-				ConnectionManager::getInstance()->setPort(SETTING(PORT));
-				SearchManager::getInstance()->setPort(SETTING(PORT));
-			} catch(Exception e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
-			}
-		}
-	}
-	return 0;
-}
-#endif //PELI
 
 LRESULT MainFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
@@ -1031,9 +984,12 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.53 2002/02/01 02:00:31 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.54 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.54  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.53  2002/02/01 02:00:31  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

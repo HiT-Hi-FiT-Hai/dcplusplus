@@ -26,12 +26,15 @@ QueueFrame* QueueFrame::frame = NULL;
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+
+	dcassert(frame == NULL);
+	frame = this;
+	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-	
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
 	
 	ctrlQueue.InsertColumn(COLUMN_TARGET, "Target file", LVCFMT_LEFT, 200, COLUMN_TARGET);
 	ctrlQueue.InsertColumn(COLUMN_STATUS, "Status", LVCFMT_LEFT, 300, COLUMN_STATUS);
@@ -43,6 +46,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlQueue.SetTextBkColor(Util::bgColor);
 	ctrlQueue.SetTextColor(Util::textColor);
 	
+
+	QueueManager::getInstance()->getQueue();
+	
 	bHandled = FALSE;
 	return 1;
 }
@@ -50,7 +56,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 void QueueFrame::onQueueAdded(QueueItem* aQI) {
 	StringListInfo* i = new StringListInfo((LPARAM)aQI);
 
-	i->columns[COLUMN_TARGET] = aQI->getTarget();
+	i->columns[COLUMN_TARGET] = aQI->getTargetFileName();
 	i->columns[COLUMN_STATUS] = "Waiting to connect...";
 	i->columns[COLUMN_SIZE] = aQI->getSize() == -1 ? "Unknown" : Util::formatBytes(aQI->getSize());
 	switch(aQI->getPriority()) {
@@ -162,9 +168,12 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.1 2002/02/01 02:00:40 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.2 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.2  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.1  2002/02/01 02:00:40  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

@@ -99,6 +99,12 @@ public:
 		UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
 		if(i != connections.end()) {
 			connections.erase(i);
+
+			UserConnection::Iter j = find(slots.begin(), slots.end(), aConn);
+			if(j != slots.end()) {
+				slots.erase(j);
+			}
+
 			cs.leave();
 			aConn->removeListener(this);
 			ConnectionManager::getInstance()->putUploadConnection(aConn);
@@ -113,6 +119,7 @@ public:
 		cs.enter();
 		UserConnection::List tmp = connections;
 		connections.clear();
+		slots.clear();
 		cs.leave();
 
 		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
@@ -127,7 +134,8 @@ private:
 	UserConnection::List connections;
 	Upload::Map uploads;
 	CriticalSection cs;
-	
+	UserConnection::List slots;
+
 	friend class Singleton<UploadManager>;
 	UploadManager() : running(0), extra(0) { 
 		TimerManager::getInstance()->addListener(this);
@@ -211,9 +219,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.35 2002/02/01 02:00:46 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.36 2002/02/02 17:21:27 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.36  2002/02/02 17:21:27  arnetheduck
+ * Fixed search bugs and some other things...
+ *
  * Revision 1.35  2002/02/01 02:00:46  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...
