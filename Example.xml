@@ -77,6 +77,7 @@
 		<String Name="DisconnectedUser">Disconnected user leaving the hub: </String>
 		<String Name="Document">Document</String>
 		<String Name="Done">Done</String>
+		<String Name="DontRemoveSlashPassword">Don't remove /password before your password</String>
 		<String Name="DontShareTempDirectory">The temporary download directory cannot be shared</String>
 		<String Name="Download">Download</String>
 		<String Name="DownloadFailed">Download failed: </String>

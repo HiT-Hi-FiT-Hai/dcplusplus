@@ -40,6 +40,7 @@
 * Small pm fix (thanks garg)
 * Added password warning for n00bs (thanks sed)
 * Help file updates (thanks pretorian, garg)
+* Probably fixed the list redownloading bug
 
 
 -- 0.668 2004-11-30 --

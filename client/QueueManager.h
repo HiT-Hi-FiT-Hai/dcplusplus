@@ -106,34 +106,18 @@ public:
 	void move(const string& aSource, const string& aTarget) throw();
 
 	void remove(const string& aTarget) throw();
-	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true) throw();
+	void removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn = true, bool isTree = false) throw();
 	void removeSources(User::Ptr& aUser, int reason) throw();
-	
+
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
-	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
-		Lock l(cs);
-		QueueItem::List ql;
-		fileQueue.find(ql, aSize, suffix);
-		for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
-			sl.push_back((*i)->getTarget());
-		}
-	}
-
-	void getTargetsByRoot(StringList& sl, const TTHValue& tth) {
-		Lock l(cs);
-		QueueItem::List ql;
-		fileQueue.find(ql, &tth);
-		for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
-			sl.push_back((*i)->getTarget());
-		}
-	}
-
+	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw();
+	void getTargetsByRoot(StringList& sl, const TTHValue& tth);
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
 	void unlockQueue() throw() { cs.leave(); };
 
-	Download* getDownload(User::Ptr& aUser) throw();
-	void putDownload(Download* aDownload, bool finished = false) throw();
+	Download* getDownload(User::Ptr& aUser, bool supportsTrees) throw();
+	void putDownload(Download* aDownload, bool finished) throw();
 
 	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
 		Lock l(cs);
@@ -234,6 +218,7 @@ private:
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException);
 
 	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
+	void processList(const string& name, User::Ptr& user, int flags);
 
 	void load(SimpleXML* aXml);
 
@@ -259,6 +244,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.65 2005/01/06 20:21:11 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.66 2005/01/12 23:16:21 arnetheduck Exp $
  */
 

@@ -101,8 +101,10 @@ public:
 			FLAG_CRC_WARN = 0x20,
 			FLAG_UTF8 = 0x40,
 			FLAG_BAD_TREE = 0x80,
+			FLAG_NO_TREE = 0x100,
 			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
-				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 | FLAG_BAD_TREE
+				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 
+				| FLAG_BAD_TREE | FLAG_NO_TREE
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -280,5 +282,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.18 2005/01/05 19:30:25 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.19 2005/01/12 23:16:20 arnetheduck Exp $
 */

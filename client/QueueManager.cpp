@@ -34,6 +34,8 @@
 #include "StringTokenizer.h"
 #include "DirectoryListing.h"
 
+#include <limits>
+
 #ifdef _WIN32
 #define FILELISTS_DIR "FileLists\\"
 #else
@@ -719,11 +721,29 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 	}
 }
 
-Download* QueueManager::getDownload(User::Ptr& aUser) throw() {
+void QueueManager::getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
+	Lock l(cs);
+	QueueItem::List ql;
+	fileQueue.find(ql, aSize, suffix);
+	for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
+		sl.push_back((*i)->getTarget());
+	}
+}
+
+void QueueManager::getTargetsByRoot(StringList& sl, const TTHValue& tth) {
+	Lock l(cs);
+	QueueItem::List ql;
+	fileQueue.find(ql, &tth);
+	for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
+		sl.push_back((*i)->getTarget());
+	}
+}
+
+
+Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw() {
 	Lock l(cs);
 
 	QueueItem* q = userQueue.getNext(aUser);
-	Download *d;
 
 	if(q == NULL)
 		return NULL;
@@ -732,18 +752,38 @@ Download* QueueManager::getDownload(User::Ptr& aUser) throw() {
 
 	fire(QueueManagerListener::StatusUpdated(), q);
 	
-	d = new Download(q);
+	Download* d = new Download(q);
 
-	if( BOOLSETTING(ANTI_FRAG) ) {
+	if(d->getSize() != -1 && d->getTTH()) {
+		if(HashManager::getInstance()->getTree(*d->getTTH(), d->getTigerTree())) {
+			d->setTreeValid(true);
+		} else if(!q->getCurrent()->isSet(QueueItem::Source::FLAG_NO_TREE) && !q->getCurrent()->isSet(QueueItem::Source::FLAG_BAD_TREE) && supportsTrees) {
+			d->setFlag(Download::FLAG_TREE_DOWNLOAD);
+			d->getTigerTree().setFileSize(d->getSize());
+			d->setPos(0);
+			d->unsetFlag(Download::FLAG_RESUME);
+		} else if(d->getSize() < (int64_t)(int64_t)numeric_limits<size_t>::max()) {
+			// Use the root as tree to get some sort of validation at least...
+			d->getTigerTree().setFileSize(d->getSize());
+			d->getTigerTree().setBlockSize((size_t)d->getSize());
+
+			d->getTigerTree().getLeaves().push_back(*d->getTTH());
+			d->getTigerTree().calcRoot();
+			d->setTreeValid(true);
+		}
+	}
+
+	if(!d->isSet(Download::FLAG_TREE_DOWNLOAD) && BOOLSETTING(ANTI_FRAG) ) {
 		d->setStartPos(q->getDownloadedBytes());
 	}
+
 	q->setCurrentDownload(d);
 
 	return d;
 }
 
 
-void QueueManager::putDownload(Download* aDownload, bool finished /* = false */) throw() {
+void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 	User::List getConn;
  	string fname;
 	User::Ptr up;
@@ -762,30 +802,47 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				}
 			}
 
+			dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
+
 			if(finished) {
-				dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
-				userQueue.remove(q);
-				fire(QueueManagerListener::Finished(), q);
-				fire(QueueManagerListener::Removed(), q);
-				// Now, let's see if this was a directory download filelist...
-				if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
-					(q->isSet(QueueItem::FLAG_MATCH_QUEUE)) ) 
-				{
-					fname = q->getListName();
-                    up = q->getCurrent()->getUser();
-					flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
-						| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
-				} 
-				fileQueue.remove(q);
-				setDirty();
-			} else {
-				if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD))
-					q->setDownloadedBytes(aDownload->getPos());
-				q->setCurrentDownload(NULL);
-				if(q->getDownloadedBytes() > 0) {
-					q->setFlag(QueueItem::FLAG_EXISTS);
+				if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+					// Got a full tree, now add it to the HashManager
+					dcassert(aDownload->getTreeValid());
+					HashManager::getInstance()->addTree(aDownload->getTigerTree());
+
+					q->setCurrentDownload(NULL);
+					userQueue.setWaiting(q);
+
+					fire(QueueManagerListener::StatusUpdated(), q);
 				} else {
-					q->setTempTarget(Util::emptyString);
+					userQueue.remove(q);
+					fire(QueueManagerListener::Finished(), q);
+					fire(QueueManagerListener::Removed(), q);
+					// Now, let's see if this was a directory download filelist...
+					if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
+						(q->isSet(QueueItem::FLAG_MATCH_QUEUE)) ) 
+					{
+						fname = q->getListName();
+						up = q->getCurrent()->getUser();
+						flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
+							| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
+					} 
+					fileQueue.remove(q);
+					setDirty();
+				}
+			} else {
+				if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+					q->setDownloadedBytes(aDownload->getPos());
+
+					if(q->getDownloadedBytes() > 0) {
+						q->setFlag(QueueItem::FLAG_EXISTS);
+					} else {
+						q->setTempTarget(Util::emptyString);
+					}
+					if(q->isSet(QueueItem::FLAG_USER_LIST)) {
+						// Blah...no use keeping an unfinished file list...
+						File::deleteFile(q->getListName());
+					}
 				}
 
 				if(q->getPriority() != QueueItem::PAUSED) {
@@ -796,17 +853,15 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 					}
 				}
 
+				q->setCurrentDownload(NULL);
+
 				// This might have been set to wait by removesource already...
 				if(q->getStatus() == QueueItem::STATUS_RUNNING) {
 					userQueue.setWaiting(q);
 					fire(QueueManagerListener::StatusUpdated(), q);
 				}
-				if(q->isSet(QueueItem::FLAG_USER_LIST)) {
-					// Blah...no use keeping an unfinished file list...
-					File::deleteFile(q->getListName());
-				}
 			}
-		} else {
+		} else if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 			if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
 				File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
 				File::deleteFile(aDownload->getTempTarget());
@@ -821,36 +876,40 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	}
 
 	if(!fname.empty()) {
-		DirectoryListing dirList(up);
-		try {
-			dirList.loadFile(fname);
-		} catch(const Exception&) {
-			addList(up, flag);
-			return;
+		processList(fname, up, flag);
+	}
+}
+
+void QueueManager::processList(const string& name, User::Ptr& user, int flags) {
+	DirectoryListing dirList(user);
+	try {
+		dirList.loadFile(name);
+	} catch(const Exception&) {
+		/** @todo Log this */
+		return;
+	}
+
+	if(flags & QueueItem::FLAG_DIRECTORY_DOWNLOAD) {
+		DirectoryItem::List dl;
+		{
+			Lock l(cs);
+			DirectoryItem::DirectoryPair dp = directories.equal_range(user);
+			for(DirectoryItem::DirectoryIter i = dp.first; i != dp.second; ++i) {
+				dl.push_back(i->second);
+			}
+			directories.erase(user);
 		}
 
-		if(flag & QueueItem::FLAG_DIRECTORY_DOWNLOAD) {
-			DirectoryItem::List dl;
-			{
-				Lock l(cs);
-				DirectoryItem::DirectoryPair dp = directories.equal_range(up);
-				for(DirectoryItem::DirectoryIter i = dp.first; i != dp.second; ++i) {
-					dl.push_back(i->second);
-				}
-				directories.erase(up);
-			}
-
-			for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
-				DirectoryItem* di = *i;
-				dirList.download(di->getName(), di->getTarget(), false);
-				delete di;
-			}
+		for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
+			DirectoryItem* di = *i;
+			dirList.download(di->getName(), di->getTarget(), false);
+			delete di;
 		}
-		if(flag & QueueItem::FLAG_MATCH_QUEUE) {
-			AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
-			sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(&dirList));
-			LogManager::getInstance()->message(up->getNick() + ": " + string(tmp));			
-		}
+	}
+	if(flags & QueueItem::FLAG_MATCH_QUEUE) {
+		AutoArray<char> tmp(STRING(MATCHED_FILES).size() + 16);
+		sprintf(tmp, CSTRING(MATCHED_FILES), matchListing(&dirList));
+		LogManager::getInstance()->message(user->getNick() + ": " + string(tmp));			
 	}
 }
 
@@ -890,7 +949,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */) throw() {
+void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int reason, bool removeConn /* = true */, bool isTree /* = false */) throw() {
 	Lock l(cs);
 	QueueItem* q = fileQueue.find(aTarget);
 	string x;
@@ -900,6 +959,13 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 			remove(q->getTarget());
 			return;
 		}
+
+		if(isTree) {
+			QueueItem::Source* s = *q->getSource(aUser);
+			s->setFlag(QueueItem::Source::FLAG_NO_TREE);
+			return;
+		}
+
 		if(reason == QueueItem::Source::FLAG_CRC_WARN) {
 			// Already flagged?
 			QueueItem::Source* s = *q->getSource(aUser);
@@ -1270,5 +1336,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.114 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.115 2005/01/12 23:16:19 arnetheduck Exp $
  */

@@ -80,6 +80,10 @@ public:
 	void addTree(const string& aFileName, const TigerTree& tt) {
 		hashDone(aFileName, tt, -1);
 	}
+	void addTree(const TigerTree& tt) {
+		Lock l(cs);
+		store.addTree(tt);
+	}
 
 	void getStats(string& curFile, int64_t& bytesLeft, size_t& filesLeft) {
 		hasher.getStats(curFile, bytesLeft, filesLeft);
@@ -178,6 +182,7 @@ private:
 	public:
 		HashStore();
 		void addFile(const string& aFileName, const TigerTree& tth, bool aUsed);
+		bool addTree(const TigerTree& tt);
 
 		void load();
 		void save();
@@ -267,5 +272,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.27 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.28 2005/01/12 23:16:19 arnetheduck Exp $
  */
