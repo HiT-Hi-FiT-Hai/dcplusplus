@@ -154,7 +154,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setSource("MyList.bz2");
 		}
 
-		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
+		if(BOOLSETTING(COMPRESS_TRANSFERS) && (aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) || aConn->isSet(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK)) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
@@ -676,5 +676,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.89 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.90 2004/02/01 16:59:21 arnetheduck Exp $
  */

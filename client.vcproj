@@ -314,6 +314,9 @@
 				RelativePath=".\client\File.h">
 			</File>
 			<File
+				RelativePath=".\client\FilteredFile.h">
+			</File>
+			<File
 				RelativePath="client\FinishedManager.h">
 			</File>
 			<File

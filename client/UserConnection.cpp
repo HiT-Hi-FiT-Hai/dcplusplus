@@ -91,7 +91,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
-	} else if(cmd == "$GetTestZBlock" || cmd == "GetZBlock") {
+	} else if(cmd == "$GetTestZBlock" || cmd == "$GetZBlock") {
 		string::size_type i = param.find(' ');
 		if(i == string::npos)
 			return;
@@ -199,5 +199,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.35 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.36 2004/02/01 16:59:22 arnetheduck Exp $
  */
