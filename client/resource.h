@@ -15,6 +15,7 @@
 #define IDB_FOLDERS                     206
 #define IDB_ARROWS                      208
 #define IDD_PASSWORD                    209
+#define IDD_LINE                        209
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -36,11 +37,12 @@
 #define IDC_BROWSEDIR                   1018
 #define IDC_RESULTS                     1019
 #define IDC_PASSWORD                    1019
+#define IDC_LINE                        1019
 #define IDC_DOWNLOADDIRTO               1020
-#define IDC_PRIVATEMESSAGE				1021
-#define IDC_GETLIST						1022
-#define IDC_KICK						1023
-#define IDC_REDIRECT					1024
+#define IDC_PRIVATEMESSAGE              1021
+#define IDC_GETLIST                     1022
+#define IDC_KICK                        1023
+#define IDC_REDIRECT                    1024
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

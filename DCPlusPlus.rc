@@ -184,7 +184,7 @@ CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,65,82,50,14
-    CTEXT           "DC++ v0.07\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
+    CTEXT           "DC++ v0.08\n(c) Copyright 2001 Jacek Sieka\n\nhttp://sourceforge.net/projects/dcplusplus",
                     IDC_STATIC,18,38,143,36
     ICON            IDR_MAINFRAME,IDC_STATIC,79,15,20,20
     GROUPBOX        "",IDC_STATIC,7,7,166,69
@@ -236,6 +236,17 @@ BEGIN
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,334,234,50,14
 END
 
+IDD_LINE DIALOG DISCARDABLE  0, 0, 239, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Title"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,182,7,50,14
+    GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
+    EDITTEXT        IDC_LINE,13,18,156,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Cancel",IDCANCEL,182,25,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -268,6 +279,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 275
         HORZGUIDE, 213
+    END
+
+    IDD_LINE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 232
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -450,42 +469,6 @@ BEGIN
     "\0"
 END
 
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_PASSWORD DIALOG DISCARDABLE  0, 0, 239, 46
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Hub Password"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,182,7,50,14
-    GROUPBOX        "Please enter your password",IDC_STATIC,7,7,168,32
-    EDITTEXT        IDC_PASSWORD,13,18,156,14,ES_PASSWORD | ES_AUTOHSCROLL
-    PUSHBUTTON      "&Cancel",IDCANCEL,182,25,50,14
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_PASSWORD, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 232
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 39
-    END
-END
 #endif    // APSTUDIO_INVOKED
 
 #endif    // Swedish resources

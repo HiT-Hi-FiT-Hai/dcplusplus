@@ -149,17 +149,21 @@ public:
 	LRESULT onKeyDownTransfers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 
-		LVITEM item;
-		item.mask = LVIF_PARAM | LVIF_IMAGE;
+		if(kd->wVKey == VK_DELETE) {
+			LVITEM item;
+			item.iItem = -1;
+			item.mask = LVIF_PARAM | LVIF_IMAGE;
 
-		if(kd->wVKey == VK_DELETE && ctrlTransfers.GetSelectedItem(&item)) {
-			
-			if(item.iImage == IMAGE_DOWNLOAD)
-				DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
-			else
-				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
+			while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
+				ctrlTransfers.GetItem(&item);
 
-			ctrlTransfers.DeleteItem(item.iItem);
+				if(item.iImage == IMAGE_DOWNLOAD)
+					DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
+				else
+					UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
+				ctrlTransfers.DeleteItem(item.iItem);
+
+			}
 		}
 		return 0;
 	}
@@ -297,9 +301,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.17 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.18 2001/12/27 18:14:36 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.18  2001/12/27 18:14:36  arnetheduck
+ * Version 0.08, here we go...
+ *
  * Revision 1.17  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

@@ -105,6 +105,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 void MainFrame::onUploadStarting(Upload* aUpload) {
 	StringList l;
 	l.push_back(aUpload->getFileName());
+	l.push_back("Connecting...");
 	l.push_back(Util::shortenBytes(aUpload->getSize()));
 	l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
 	cs.enter();
@@ -232,7 +233,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 	
 	ctrlTransfers.InsertColumn(0, "File", LVCFMT_LEFT, 400, 0);
 	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
@@ -378,9 +379,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.23 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.24 2001/12/27 18:14:36 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.24  2001/12/27 18:14:36  arnetheduck
+ * Version 0.08, here we go...
+ *
  * Revision 1.23  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

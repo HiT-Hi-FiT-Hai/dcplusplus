@@ -149,6 +149,16 @@ public:
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
 	}
+
+	void kick(User::Ptr& aUser) {
+		dcdebug("Client::kick\n");
+		send("$Kick " + aUser->getNick() + "|");
+	}
+	
+	void opForceMove(User::Ptr& aUser, const string& aServer, const string& aMsg) {
+		dcdebug("Client::opForceMove\n");
+		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
+	}
 	void connect(const string& aServer, short aPort = 411);
 
 	bool userConnected(const string& aNick) {
@@ -461,9 +471,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.14 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: Client.h,v 1.15 2001/12/27 18:14:36 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.15  2001/12/27 18:14:36  arnetheduck
+ * Version 0.08, here we go...
+ *
  * Revision 1.14  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

@@ -17,6 +17,7 @@ public:
 	string line;
 	string description;
 	string title;
+	bool password;
 
 	enum { IDD = IDD_LINE };
 	
@@ -26,7 +27,9 @@ public:
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 	END_MSG_MAP()
-		
+	
+	LineDlg() : password(false) { };
+	
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlLine.SetFocus();
 		return FALSE;
@@ -37,10 +40,13 @@ public:
 		ctrlLine.Attach(GetDlgItem(IDC_LINE));
 		ctrlLine.SetFocus();
 		ctrlLine.SetWindowText(line.c_str());
-		
+		if(password) {
+			ctrlLine.SetWindowLong(GWL_STYLE, ctrlLine.GetWindowLong(GWL_STYLE) | ES_PASSWORD);
+		}
+
 		ctrlDescription.Attach(GetDlgItem(IDC_DESCRIPTION));
 		ctrlDescription.SetWindowText(description.c_str());
-
+		
 		SetWindowText(title.c_str());
 		
 		CenterWindow(GetParent());
@@ -51,8 +57,8 @@ public:
 	{
 		if(wID == IDOK) {
 			char buf[256];
-			GetDlgItemText(IDC_Line, buf, 256);
-			Line = buf;
+			GetDlgItemText(IDC_LINE, buf, 256);
+			line = buf;
 		}
 		EndDialog(wID);
 		return 0;
@@ -64,9 +70,12 @@ public:
 
 /**
  * @file LineDlg.h
- * $Id: LineDlg.h,v 1.1 2001/12/27 16:07:40 arnetheduck Exp $
+ * $Id: LineDlg.h,v 1.2 2001/12/27 18:14:36 arnetheduck Exp $
  * @if LOG
  * $Log: LineDlg.h,v $
+ * Revision 1.2  2001/12/27 18:14:36  arnetheduck
+ * Version 0.08, here we go...
+ *
  * Revision 1.1  2001/12/27 16:07:40  arnetheduck
  * Replaced PasswordDlg with LineDlg
  *

@@ -28,7 +28,7 @@
 #include "ExListViewCtrl.h"
 #include "DownloadManager.h"
 #include "User.h"
-#include "PasswordDlg.h"
+#include "LineDlg.h"
 #include "CriticalSection.h"
 #include "ClientManager.h"
 #include "PrivateFrame.h"
@@ -119,9 +119,13 @@ protected:
 			}
 			cs.leave();
 		} else if(wParam == CLIENT_GETPASSWORD) {
-			PasswordDlg dlg;
+			LineDlg dlg;
+			dlg.title = "Hub Password";
+			dlg.description = "Please enter your password";
+			dlg.password = true;
+			
 			if(dlg.DoModal() == IDOK) {
-				client->password(dlg.password);
+				client->password(dlg.line);
 			} else {
 				client->disconnect();
 			}
@@ -305,8 +309,50 @@ public:
 		return 0;
 	}
 
-	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { return 0; };
-	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { return 0; };
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		LineDlg dlg;
+		dlg.title = "Kick user(s)";
+		dlg.description = "Please enter a reason";
+		if(dlg.DoModal() == IDOK) {
+			int i = -1;
+			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				char buf[256];
+				ctrlUsers.GetItemText(i, 0, buf, 256);
+				string user = buf;
+				User::Ptr& u = client->getUser(user);
+				if(u) {
+					client->sendMessage(Settings::getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
+					client->privateMessage(u, "You are being kicked because: " + dlg.line);
+					client->kick(u);
+				}
+			}
+		}
+			
+		return 0; 
+	};
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		LineDlg dlg1, dlg2;
+		dlg1.title = "Redirect user(s)";
+		dlg1.description = "Please enter a reason";
+		if(dlg1.DoModal() == IDOK) {
+			dlg2.title = "Redirect user(s)";
+			dlg2.description = "Please enter destination server";
+			if(dlg2.DoModal() == IDOK) {
+				int i = -1;
+				while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+					char buf[256];
+					ctrlUsers.GetItemText(i, 0, buf, 256);
+					string user = buf;
+					User::Ptr& u = client->getUser(user);
+					if(u) {
+						client->opForceMove(u, dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+					}
+				}
+			}
+		}
+		
+		return 0; 
+	};
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		RECT rc;                    // client area of window 
@@ -501,9 +547,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.21 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.22 2001/12/27 18:14:36 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.22  2001/12/27 18:14:36  arnetheduck
+ * Version 0.08, here we go...
+ *
  * Revision 1.21  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *
