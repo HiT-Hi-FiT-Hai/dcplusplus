@@ -27,6 +27,8 @@ string Settings::email;
 string Settings::description;
 string Settings::connection;
 
+char* Settings::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", "Satellite", "Cable", "DSL", "Lan(T1)", "Lan(T3)" };
+
 void Settings::load(const string& aFileName) {
 	HANDLE h = CreateFile(aFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 
 		FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -85,9 +87,12 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.3  2001/11/22 20:42:18  arnetheduck
+ * Fixed Settings dialog (Speed setting actually works now!)
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -27,6 +27,7 @@
 
 class SettingsDlg : public CDialogImpl<SettingsDlg>  
 {
+	CComboBox ctrlConnection;
 public:
 	string nick;
 	string email;
@@ -43,10 +44,16 @@ public:
 		
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
+		ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
+
+		for(int i = 0; i < Settings::SPEED_LAST; i++) {
+			ctrlConnection.AddString(Settings::connectionSpeeds[i]);
+		}
 		SetDlgItemText(IDC_NICK, nick.c_str());
 		SetDlgItemText(IDC_EMAIL, email.c_str());
 		SetDlgItemText(IDC_DESCRIPTION, description.c_str());
-		SetDlgItemText(IDC_CONNECTION, connection.c_str());
+		
+		ctrlConnection.SetCurSel(ctrlConnection.FindString(0, connection.c_str()));
 
 		CenterWindow(GetParent());
 		return TRUE;
@@ -76,9 +83,12 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.1 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.2 2001/11/22 20:42:18 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.2  2001/11/22 20:42:18  arnetheduck
+ * Fixed Settings dialog (Speed setting actually works now!)
+ *
  * Revision 1.1  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

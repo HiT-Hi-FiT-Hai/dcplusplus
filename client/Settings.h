@@ -43,6 +43,19 @@ private:
 	}
 	
 public:
+	static char* connectionSpeeds[];
+	enum {	SPEED_288K,
+			SPEED_336K,
+			SPEED_576K,
+			SPEED_ISDN,
+			SPEED_SATELLITE,
+			SPEED_CABLE,
+			SPEED_DSL,
+			SPEED_T1,
+			SPEED_T3,
+			SPEED_LAST
+	};
+
 	static const string& getNick() { return nick; }
 	static const string& getEmail() { return email; }
 	static const string& getDescription() { return description; }
@@ -64,9 +77,12 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: Settings.h,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.3  2001/11/22 20:42:18  arnetheduck
+ * Fixed Settings dialog (Speed setting actually works now!)
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -88,7 +88,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.nick = Settings::getNick();
 	dlg.email = Settings::getEmail();
 	dlg.description = Settings::getDescription();
-	dlg.connection = Settings::getDescription();
+	dlg.connection = Settings::getConnection();
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 		Settings::setNick(dlg.nick);
 		Settings::setDescription(dlg.description);
@@ -101,9 +101,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.3  2001/11/22 20:42:18  arnetheduck
+ * Fixed Settings dialog (Speed setting actually works now!)
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.
