@@ -23,13 +23,12 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "AtlCmdBar2.h"
-
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "ExListViewCtrl.h"
 #include "TimerManager.h"
 #include "CriticalSection.h"
+#include "FlatTabCtrl.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
@@ -55,6 +54,11 @@ public:
 		DOWNLOAD_FAILED,
 		DOWNLOAD_STARTING,
 		DOWNLOAD_TICK
+	};
+
+	enum {
+		IMAGE_DOWNLOAD = 0,
+		IMAGE_UPLOAD
 	};
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -86,6 +90,7 @@ public:
 		}
 		Socket::resetStats();
 	}
+
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -110,6 +115,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -132,6 +138,11 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		SendMessage(m_hWndClient, WM_MDIACTIVATE, wParam, 0);
+		return 0;
+	}
+	
 	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	static DWORD WINAPI stopper(void* p);
 
@@ -139,10 +150,15 @@ public:
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 
 		LVITEM item;
-		item.mask = LVIF_PARAM;
+		item.mask = LVIF_PARAM | LVIF_IMAGE;
 
 		if(kd->wVKey == VK_DELETE && ctrlTransfers.GetSelectedItem(&item)) {
-			DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
+			
+			if(item.iImage == IMAGE_DOWNLOAD)
+				DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
+			else
+				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
+
 			ctrlTransfers.DeleteItem(item.iItem);
 		}
 		return 0;
@@ -200,8 +216,14 @@ public:
 			
 			ctrlStatus.SetParts(5, w);
 		}
-
-		SetSplitterRect(&rect);
+		CRect rc = rect;
+		rc.top = rc.bottom - ctrlTab.getHeight();
+		if(ctrlTab.IsWindow())
+			ctrlTab.MoveWindow(rc);
+		
+		CRect rc2 = rect;
+		rc2.bottom = rc.top;
+		SetSplitterRect(rc2);
 	}
 	
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -258,7 +280,9 @@ protected:
 
 	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
-	CStatusBarCtrl ctrlStatus;		
+	CStatusBarCtrl ctrlStatus;
+	FlatTabCtrl ctrlTab;
+
 	CImageList arrows;
 	HANDLE stopperThread;
 
@@ -273,9 +297,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.17 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.17  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.16  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

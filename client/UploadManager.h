@@ -53,17 +53,17 @@ class UploadManager : public UserConnectionListener, public Speaker<UploadManage
 public:
 	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
 		Upload* u;
-		uploadCS.enter();
+		cs.enter();
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
 			dcdebug("onBytesSent: Upload not found???\n");
-			uploadCS.leave();
+			cs.leave();
 			removeConnection(aSource);
 			return;
 		}
 		u = i->second;
-		uploadCS.leave();
+		cs.leave();
 		u->addPos(aBytes);
 		//fireTick(u);
 	}
@@ -71,7 +71,7 @@ public:
 	virtual void onError(UserConnection* aSource, const string& aError) {
 		Upload* u;
 		aSource->disconnect();
-		uploadCS.enter();
+		cs.enter();
 		Upload::MapIter i = uploads.find(aSource);
 		if(i != uploads.end()) {
 			u = i->second;
@@ -80,7 +80,7 @@ public:
 			uploads.erase(i);
 			delete u;
 		}
-		uploadCS.leave();
+		cs.leave();
 		removeConnection(aSource);
 	}
 
@@ -89,13 +89,13 @@ public:
 	 */
 	virtual void onTransmitDone(UserConnection* aSource) {
 		Upload * u;
-		uploadCS.enter();
+		cs.enter();
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
 			dcdebug("onTransmitDone: Upload not found???\n");
 			
-			uploadCS.leave();
+			cs.leave();
 			removeConnection(aSource);
 			return;
 		}
@@ -103,7 +103,7 @@ public:
 		fireComplete(u);
 		dcdebug("onTransmitDone: Removing upload\n");
 		uploads.erase(i);
-		uploadCS.leave();
+		cs.leave();
 		delete u;
 
 	}
@@ -111,13 +111,13 @@ public:
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 		Upload* u;
 		HANDLE h;
-		uploadCS.enter();
+		cs.enter();
 
 		try {
 			if(uploads.size() >= Settings::getSlots()) {
 				aSource->maxedOut();
 				removeConnection(aSource);
-				uploadCS.leave();
+				cs.leave();
 				return;
 			}
 			// We only give out one connection / user...
@@ -125,7 +125,7 @@ public:
 				if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
 					aSource->maxedOut();
 					removeConnection(aSource);
-					uploadCS.leave();
+					cs.leave();
 					return;					
 				}
 			}
@@ -139,14 +139,14 @@ public:
 				delete i->second;
 				dcdebug("onGet: Removing upload\n");
 				uploads.erase(i);
-				uploadCS.leave();
+				cs.leave();
 				removeConnection(aSource);
 				return;
 			} 
 			h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 			if(h == INVALID_HANDLE_VALUE) {
 				aSource->error("File Not Available");
-				uploadCS.leave();
+				cs.leave();
 				return;
 			}
 
@@ -166,17 +166,17 @@ public:
 			dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		}
 
-		uploadCS.leave();
+		cs.leave();
 	}
 	
 	virtual void onSend(UserConnection* aSource) {
 		Upload* u;
-		uploadCS.enter();
+		cs.enter();
 		Upload::MapIter i = uploads.find(aSource);
 		if(i==uploads.end()) {
 			// Huh? Where did this come from?
 			removeConnection(aSource);
-			uploadCS.leave();
+			cs.leave();
 			return;
 		}
 
@@ -191,11 +191,24 @@ public:
 			delete u;
 			removeConnection(aSource);
 		}
-		uploadCS.leave();
+		cs.leave();
 	}
 	
 	virtual void onGetListLen(UserConnection* aSource) {
 		aSource->listLen(ShareManager::getInstance()->getListLenString());
+	}
+
+	void removeUpload(Upload* aUpload) {
+		cs.enter();
+		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+			if(i->second == aUpload) {
+				removeConnection(i->first);
+				delete i->second;
+				uploads.erase(i);
+				break;
+			}
+		}
+		cs.leave();
 	}
 
 	void addConnection(UserConnection::Ptr conn) {
@@ -241,7 +254,7 @@ private:
 	static UploadManager* instance;
 	UserConnection::List connections;
 	Upload::Map uploads;
-	CriticalSection uploadCS;
+	CriticalSection cs;
 	
 	UploadManager() { 
 		TimerManager::getInstance()->addListener(this);
@@ -249,11 +262,11 @@ private:
 	~UploadManager() {
 		TimerManager::getInstance()->removeListener(this);
 		UserConnection::List tmp = connections;
-		uploadCS.enter();
+		cs.enter();
 		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
 			delete j->second;
 		}
-		uploadCS.leave();
+		cs.leave();
 
 		removeConnections();
 	}
@@ -307,9 +320,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.17 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.18 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.18  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.17  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

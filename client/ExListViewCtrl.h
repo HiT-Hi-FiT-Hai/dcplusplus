@@ -28,15 +28,19 @@ class ExListViewCtrl : public CListViewCtrl
 	int sortColumn;
 	int sortType;
 	bool ascending;
+	int (*fun)(LPARAM, LPARAM);
+
 public:
 	enum {	SORT_STRING,
 			SORT_STRING_NOCASE,
-			SORT_INT
+			SORT_INT,
+			SORT_FUNC
 	};
-	void setSort(int aColumn, int aType, bool aAscending = true) {
+	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		sortColumn = aColumn;
 		sortType = aType;
 		ascending = aAscending;
+		fun = aFun;
 		resort();
 	}
 
@@ -51,7 +55,7 @@ public:
 
 	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL) {
 
-		char buf[1024];
+		char buf[128];
 		int loc;
 		int count = GetItemCount();
 
@@ -61,27 +65,37 @@ public:
 			loc = 0;
 		} else {
 			string& b = aList[sortColumn];
-			int c = atoi(b.c_str());
-			
+			int c;
+			LPARAM data;			
 			int low = 0;
 			int high = count-1;
 			int comp = 0;
 			while(low <= high)
 			{
 				loc = (low + high)/2;
-				GetItemText(loc, sortColumn, buf, 1024);
 				
 				switch(sortType) {
 				case SORT_STRING:
-					comp = compare(b, string(buf), ascending); break;
+					GetItemText(loc, sortColumn, buf, 128);
+					comp = compare(b, string(buf)); break;
 				case SORT_STRING_NOCASE:
-					comp =  ascending ? strnicmp(b.c_str(), buf, min(b.length(), strlen(buf))) : -strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+					GetItemText(loc, sortColumn, buf, 128);
+					comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
 					break;
 				case SORT_INT:
-					comp = compare(c, atoi(buf), ascending); break;
+					GetItemText(loc, sortColumn, buf, 128);
+					c = atoi(b.c_str());
+					comp = compare(c, atoi(buf)); break;
+				case SORT_FUNC:
+					data = GetItemData(loc);
+					comp = fun(lParam, data); break; 
 				default:
 					dcassert(0);
 				}
+				
+				if(!ascending)
+					comp = -comp;
+
 				if(comp == -1) {
 					high = loc - 1;
 				} else if(comp == 1) {
@@ -93,15 +107,21 @@ public:
 
 			switch(sortType) {
 			case SORT_STRING:
-				comp = compare(b, string(buf), ascending); break;
+				comp = compare(b, string(buf)); break;
 			case SORT_STRING_NOCASE:
-				comp =  ascending ? strnicmp(b.c_str(), buf, min(b.length(), strlen(buf))) : -strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+				comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
 				break;
 			case SORT_INT:
-				comp = compare(c, atoi(buf), ascending); break;
+				comp = compare(c, atoi(buf)); break;
+			case SORT_FUNC:
+				comp = fun(lParam, data); break;
 			default:
 				dcassert(0);
 			}
+
+			if(!ascending)
+				comp = -comp;
+			
 			if(comp == 1)
 				loc++;
 			
@@ -144,46 +164,44 @@ public:
 			}
 		}
 	}
-	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending); };
+	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending, fun); };
 
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
-		
-		char buf[512];
+		char buf[128];
+		char buf2[128];
 		string a, b;
-		p->GetItemText(lParam1, p->sortColumn, buf, 512);
-		a = buf;
-		p->GetItemText(lParam2, p->sortColumn, buf, 512);
-		b = buf;
 
 		switch(p->sortType) {
 		case SORT_STRING:
-			return compare(a, b, p->ascending);
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			a = buf;
+			p->GetItemText(lParam2, p->sortColumn, buf, 128);
+			b = buf;
+			return p->ascending ? compare(a, b) : -compare(a, b);
 		case SORT_STRING_NOCASE:
-			return p->ascending ? strnicmp(a.c_str(), b.c_str(), min(a.length(), b.length())) : -strnicmp(a.c_str(), b.c_str(), min(a.length(), b.length()));
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			return p->ascending ? stricmp(buf,buf2) : -stricmp(buf, buf2);
 		case SORT_INT:
-			return compare(atoi(a.c_str()), atoi(b.c_str()), p->ascending);
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			return p->ascending ? compare(atoi(buf), atoi(buf2)) : -compare(atoi(buf), atoi(buf2));
+		case SORT_FUNC:
+			return p->ascending ? p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2)) : -p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
 		default:
 			return -1;
 		}
 	}
 	
-	template<class T> static int compare(const T& a, const T& b, bool d) {
-		if(d) {
-			if(a < b)
-				return -1;
-			else if(a == b)
-				return 0;
-			else
-				return 1;
-		} else {
-			if(a < b)
-				return 1;
-			else if(a == b)
-				return 0;
-			else
-				return -1;
-		}
+	template<class T> static int compare(const T& a, const T& b) {
+		if(a < b)
+			return -1;
+		else if(a == b)
+			return 0;
+		else
+			return 1;
+
 		dcassert(0);
 	}
 
@@ -196,9 +214,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.10 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.11 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.11  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.10  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

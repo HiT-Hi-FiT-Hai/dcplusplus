@@ -37,7 +37,7 @@
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
-class HubFrame : public CMDIChildWindowImpl2<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
+class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
 	enum {
@@ -58,6 +58,11 @@ protected:
 	User::List clientMyInfo;
 	User::List clientQuit;
 	map<PrivateFrame*, string> clientPrivateMessage;
+
+	class UserInfo {
+	public:
+		LONGLONG size;
+	};
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 
@@ -80,13 +85,15 @@ protected:
 				fi.psz = u->getNick().c_str();
 				int j = ctrlUsers.FindItem(&fi, -1);
 				if(j == -1) {
+					UserInfo* ui = new UserInfo;
+					ui->size = u->getBytesShared();
 					StringList l;
 					l.push_back(u->getNick());
 					l.push_back(Util::shortenBytes(u->getBytesSharedString()));
 					l.push_back(u->getDescription());
 					l.push_back(u->getConnection());
 					l.push_back(u->getEmail());
-					ctrlUsers.insert(l);
+					ctrlUsers.insert(l, 0, (LPARAM)ui);
 				} else {
 					ctrlUsers.SetItemText(j, 1, Util::shortenBytes(u->getBytesShared()).c_str());
 					ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
@@ -102,7 +109,11 @@ protected:
 			cs.enter();
 			User::Iter i = clientQuit.begin();
 			while(i != clientQuit.end()) {
-				ctrlUsers.deleteItem((*i)->getNick());
+				int item = ctrlUsers.find((*i)->getNick());
+				if(item != -1) {
+					delete (UserInfo*)ctrlUsers.GetItemData(item);
+					ctrlUsers.DeleteItem(item);
+				}
 				updateStatusBar();		
 				i = clientQuit.erase(i);
 			}
@@ -246,7 +257,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
+		CHAIN_MSG_MAP(MDITabChildWindowImpl<HubFrame>)
 		CHAIN_MSG_MAP(splitBase)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
@@ -391,7 +402,7 @@ public:
 	{
 		LPMSG pMsg = (LPMSG)lParam;
 		
-		return CMDIChildWindowImpl2<HubFrame>::PreTranslateMessage(pMsg);
+		return MDITabChildWindowImpl<HubFrame>::PreTranslateMessage(pMsg);
 	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -415,13 +426,26 @@ public:
 		return 0;
 	}
 		
+	static int sortSize(LPARAM a, LPARAM b) {
+		UserInfo* c = (UserInfo*)a;
+		UserInfo* d = (UserInfo*)b;
+
+		if(c->size < d->size) {
+			return -1;
+		} else if(c->size == d->size) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
 	LRESULT onColumnClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
 			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
 		} else {
-			if(l->iSubItem == 2) {
-				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			if(l->iSubItem == 1) {
+				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else {
 				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
@@ -477,9 +501,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.20 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.21 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.21  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.20  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

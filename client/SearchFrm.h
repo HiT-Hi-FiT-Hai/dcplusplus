@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "AtlCmdBar2.h"
+#include "FlatTabCtrl.h"
 #include "DownloadManager.h"
 #include "SearchManager.h"
 #include "ExListViewCtrl.h"
@@ -31,7 +31,7 @@
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 
-class SearchFrame : public CMDIChildWindowImpl2<SearchFrame>, private SearchManagerListener
+class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
 	DECLARE_FRAME_WND_CLASS("Search", IDR_MDICHILD)
@@ -48,7 +48,7 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl2<SearchFrame>)
+		CHAIN_MSG_MAP(MDITabChildWindowImpl<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
@@ -136,7 +136,7 @@ public:
 			ctrlSearch.SetWindowText("");
 			
 			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
-			search = StringTokenizer(s).getTokens();
+			search = StringTokenizer(s, ' ').getTokens();
 
 		} else {
 			bHandled = FALSE;
@@ -186,9 +186,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.4 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.5 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.5  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.4  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

@@ -43,17 +43,21 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.InsertColumn(3, _T("Slots"), LVCFMT_LEFT, 75, 3);
 	ctrlResults.InsertColumn(4, _T("Hub"), LVCFMT_LEFT, 100, 4);
 
-	SetWindowText("Search all connected hubs");
+	SetWindowText("Search");
 
+	bHandled = FALSE;
 	
 	return 1;
 }
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.3 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.4 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.4  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.3  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -25,19 +25,18 @@
 
 #include "User.h"
 
-#include "AtlCmdBar2.h"
+#include "FlatTabCtrl.h"
 
 #include "DirectoryListing.h"
 #include "ExListViewCtrl.h"
 
 class User;
 
-class DirectoryListingFrame : public CMDIChildWindowImpl2<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
 
-	DirectoryListingFrame(DirectoryListing* aList, const string& aNick) : dl(aList), user(aNick) { 
-	};
+	DirectoryListingFrame(DirectoryListing* aList, const string& aNick) :  dl(aList), user(aNick) { };
 
 	~DirectoryListingFrame() {
 		ctrlImages.Destroy();
@@ -63,7 +62,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl2<DirectoryListingFrame>)
+		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	END_MSG_MAP()
 
@@ -185,9 +184,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.7 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.8 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.8  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.7  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

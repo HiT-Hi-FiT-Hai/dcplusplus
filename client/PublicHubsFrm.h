@@ -23,13 +23,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "AtlCmdBar2.h"
+#include "FlatTabCtrl.h"
 #include "HubManager.h"
 #include "ExListViewCtrl.h"
 
 #define SERVER_MESSAGE_MAP 7
 
-class PublicHubsFrame : public CMDIChildWindowImpl2<PublicHubsFrame>, private HubManagerListener
+class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private HubManagerListener
 {
 public:
 	PublicHubsFrame() : close(false), listing(false), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
@@ -56,7 +56,7 @@ public:
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl2<PublicHubsFrame>)
+		CHAIN_MSG_MAP(MDITabChildWindowImpl<PublicHubsFrame>)
 	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
@@ -205,9 +205,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.4 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.4  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.3  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

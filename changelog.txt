@@ -1,3 +1,14 @@
+ -- 0.08 --
+* Private messages
+* Right-button menues
+* OP / Registred user login (with password)
+* Optimized file listing (a lot faster now...should barely notice it unless it's a _very_ large list)
+* Optimized shared files compression
+* More work towards application stability...although focus is still on functionality...
+* More work on the download queue
+* Connection saving, i e connections to users are not released until two inactive minutes have passed, giving time to browse the user's 
+  files without worrying about slots
+
  -- 0.07 2001-12-18 --
 * Passive searching (I hope...)
 * Reworked the download queue, it should now be a bit more stable...

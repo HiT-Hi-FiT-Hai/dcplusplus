@@ -28,11 +28,11 @@
 #include "CriticalSection.h"
 #include "ClientManager.h"
 
-#include "AtlCmdBar2.h"
+#include "FlatTabCtrl.h"
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public CMDIChildWindowImpl2<PrivateFrame>
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>
 {
 public:
 
@@ -51,7 +51,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
-		CHAIN_MSG_MAP(CMDIChildWindowImpl2<PrivateFrame>)
+		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
@@ -98,7 +98,7 @@ public:
 	{
 		LPMSG pMsg = (LPMSG)lParam;
 		
-		return CMDIChildWindowImpl2<PrivateFrame>::PreTranslateMessage(pMsg);
+		return MDITabChildWindowImpl<PrivateFrame>::PreTranslateMessage(pMsg);
 	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -181,9 +181,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.1 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.2 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.2  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.1  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

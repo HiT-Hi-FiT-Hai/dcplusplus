@@ -37,7 +37,7 @@ void PublicHubsFrame::onHub(const string& aName, const string& aServer, const st
 	updateStatus();
 }
 
-LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 
 	// Only one of this window please...
@@ -83,6 +83,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getPublicHubs();
 	
+	bHandled = FALSE;
 	return TRUE;
 }
 
@@ -95,6 +96,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	string tmp = buf;
 	if(!ClientManager::getInstance()->isConnected(tmp)) {
 		HubFrame* frm = new HubFrame(buf);
+		frm->setTab(getTab());
 		frm->CreateEx(GetParent());
 	}
 
@@ -130,6 +132,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
+			frm->setTab(getTab());
 			frm->CreateEx(GetParent());
 		}
 	}
@@ -140,6 +143,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
+			frm->setTab(getTab());
 			frm->CreateEx(GetParent());
 		}
 		
@@ -157,6 +161,7 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		delete hub;
 		if(!ClientManager::getInstance()->isConnected(s)) {
 			HubFrame* frm = new HubFrame(s);
+			frm->setTab(getTab());
 			frm->CreateEx(GetParent());
 		}
 		ctrlHub.SetWindowText("");
@@ -168,9 +173,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.4 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.5 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.5  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.4  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

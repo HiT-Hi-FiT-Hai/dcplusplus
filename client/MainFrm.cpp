@@ -164,6 +164,7 @@ void MainFrame::onDownloadComplete(Download* p) {
 		dl->load(tmp);
 
 		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getLastNick());
+		pChild->setTab(&ctrlTab);
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
 	}
@@ -240,6 +241,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
 	
+	ctrlTab.Create(m_hWnd, rcDefault);
+	
 	SetSplitterPanes(m_hWndClient, ctrlTransfers.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 8000;
@@ -294,6 +297,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
 	SearchFrame* pChild = new SearchFrame();
+	pChild->setTab(&ctrlTab);
 	pChild->CreateEx(m_hWndClient);
 	return 0;
 }	
@@ -301,6 +305,7 @@ LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(PublicHubsFrame::frame == NULL) {
 		PublicHubsFrame* pChild = new PublicHubsFrame();
+		pChild->setTab(&ctrlTab);
 		pChild->CreateEx(m_hWndClient);
 	} else {
 		PublicHubsFrame::frame->SetFocus();
@@ -373,9 +378,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.22 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.23 2001/12/27 12:05:00 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.23  2001/12/27 12:05:00  arnetheduck
+ * Added flat tabs, fixed sorting and a StringTokenizer bug
+ *
  * Revision 1.22  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *
