@@ -29,14 +29,40 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 	ctrlSearch.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+	searchContainer.SubclassWindow(ctrlSearch.m_hWnd);
 	
-	ctrlSearchContainer.SubclassWindow(ctrlSearch.m_hWnd);
+	ctrlMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_RESULTS);
+	modeContainer.SubclassWindow(ctrlMode.m_hWnd);
+
+	ctrlSize.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+	sizeContainer.SubclassWindow(ctrlSize.m_hWnd);
 	
+	ctrlSizeMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_RESULTS);
+	sizeModeContainer.SubclassWindow(ctrlSizeMode.m_hWnd);
+
 	ctrlResults.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_RESULTS);
 
-	ctrlSearch.SetFont(ctrlResults.GetFont());
+	ctrlSearch.SetFont(ctrlResults.GetFont(), FALSE);
+	ctrlSize.SetFont(ctrlResults.GetFont(), FALSE);
+	ctrlMode.SetFont(ctrlResults.GetFont(), FALSE);
+	ctrlSizeMode.SetFont(ctrlResults.GetFont(), FALSE);
 	
+	ctrlMode.AddString("Normal");
+	ctrlMode.AddString("At Least");
+	ctrlMode.AddString("At Most");
+	ctrlMode.SetCurSel(0);
+	
+	ctrlSizeMode.AddString("B");
+	ctrlSizeMode.AddString("kB");
+	ctrlSizeMode.AddString("MB");
+	ctrlSizeMode.AddString("GB");
+	
+	ctrlSizeMode.SetCurSel(2);
+
 	ctrlResults.InsertColumn(0, _T("User"), LVCFMT_LEFT, 100, 0);
 	ctrlResults.InsertColumn(1, _T("File"), LVCFMT_LEFT, 200, 1);
 	ctrlResults.InsertColumn(2, _T("Size"), LVCFMT_RIGHT, 100, 2);
@@ -71,9 +97,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.6 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.7 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.7  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.6  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

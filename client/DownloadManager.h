@@ -214,6 +214,8 @@ public:
 		checkDownloads(conn);
 	}
 	
+	void removeSource(Download* aDownload, Download::Source::Ptr aSource);
+
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
 	void removeConnections(); 
 
@@ -351,9 +353,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.20 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.21 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.21  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.20  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -39,7 +39,7 @@
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
-protected:
+private:
 	enum {
 		CLIENT_CONNECTING,
 		CLIENT_ERROR,
@@ -53,65 +53,65 @@ protected:
 		CLIENT_VALIDATEDENIED
 	};
 
-	StringList clientMessages;
-	string clientError;
-	User::List clientMyInfo;
-	User::List clientQuit;
-	map<PrivateFrame*, string> clientPrivateMessage;
-
+	enum {
+		IMAGE_USER = 0,
+		IMAGE_OP
+	};
+	
 	class UserInfo {
 	public:
 		LONGLONG size;
 	};
 
+	class PMInfo {
+	public:
+		PrivateFrame* frm;
+		string msg;
+	};
+	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		cs.enter();
 		// First some specials to handle those messages that have to initialize variables...
 		if(wParam == CLIENT_MESSAGE) {
-			StringIter i = clientMessages.begin();
-			while(i != clientMessages.end()) {
-				addLine(*i);
-				i = clientMessages.erase(i);
-			}
+			addLine(*(string*)lParam);
+			delete (string*)lParam;
 		} else if(wParam == CLIENT_MYINFO) {
-			User::Iter i = clientMyInfo.begin();
-			while(i != clientMyInfo.end()) {
-				User::Ptr& u = *i;
-				LV_FINDINFO fi;
-				fi.flags = LVFI_STRING;
-				fi.psz = u->getNick().c_str();
-				int j = ctrlUsers.FindItem(&fi, -1);
-				if(j == -1) {
-					UserInfo* ui = new UserInfo;
-					ui->size = u->getBytesShared();
-					StringList l;
-					l.push_back(u->getNick());
-					l.push_back(Util::formatBytes(u->getBytesSharedString()));
-					l.push_back(u->getDescription());
-					l.push_back(u->getConnection());
-					l.push_back(u->getEmail());
-					ctrlUsers.insert(l, 0, (LPARAM)ui);
-				} else {
-					ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
-					ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
-					ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
-					ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
-				}
-				
-				updateStatusBar();
-				i = clientMyInfo.erase(i);
+			User::Ptr& u = *(User::Ptr*)lParam;
+			LV_FINDINFO fi;
+			fi.flags = LVFI_STRING;
+			fi.psz = u->getNick().c_str();
+			int j = ctrlUsers.FindItem(&fi, -1);
+			if(j == -1) {
+				UserInfo* ui = new UserInfo;
+				ui->size = u->getBytesShared();
+				StringList l;
+				l.push_back(u->getNick());
+				l.push_back(Util::formatBytes(u->getBytesSharedString()));
+				l.push_back(u->getDescription());
+				l.push_back(u->getConnection());
+				l.push_back(u->getEmail());
+				ctrlUsers.insert(l, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, (LPARAM)ui);
+			} else {
+				ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, 0, 0, NULL);
+				ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
+				ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
+				ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
+				ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
+				((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 			}
+			
+			updateStatusBar();
+			delete (User::Ptr*)lParam;
 		} else if(wParam == CLIENT_QUIT) {
-			User::Iter i = clientQuit.begin();
-			while(i != clientQuit.end()) {
-				int item = ctrlUsers.find((*i)->getNick());
-				if(item != -1) {
-					delete (UserInfo*)ctrlUsers.GetItemData(item);
-					ctrlUsers.DeleteItem(item);
-				}
-				updateStatusBar();		
-				i = clientQuit.erase(i);
+			User::Ptr& u = *(User::Ptr*)lParam;
+
+			int item = ctrlUsers.find(u->getNick());
+			if(item != -1) {
+				delete (UserInfo*)ctrlUsers.GetItemData(item);
+				ctrlUsers.DeleteItem(item);
 			}
+			updateStatusBar();		
+			delete (User::Ptr*)lParam;
 		} else if(wParam == CLIENT_GETPASSWORD) {
 			LineDlg dlg;
 			dlg.title = "Hub Password";
@@ -127,7 +127,8 @@ protected:
 			addClientLine("Connecting to " + client->getServer() + "...");
 			SetWindowText(client->getServer().c_str());
 		} else if(wParam == CLIENT_ERROR) {
-			addClientLine(clientError);
+			addClientLine(*(string*)lParam);
+			delete (string*)lParam;
 		} else if(wParam == CLIENT_HUBNAME) {
 			SetWindowText(client->getName().c_str());
 			addClientLine("Connected");
@@ -135,9 +136,10 @@ protected:
 			addClientLine("Your nick was already taken, please change to something else!");
 			client->disconnect();
 		} else if(wParam == CLIENT_PRIVATEMESSAGE) {
-			dcassert(clientPrivateMessage.find((PrivateFrame*)lParam) != clientPrivateMessage.end());
-			((PrivateFrame*)lParam)->addLine(clientPrivateMessage[(PrivateFrame*)lParam]);
-			clientPrivateMessage.erase((PrivateFrame*)lParam);
+			PMInfo* i = (PMInfo*)lParam;
+			i->frm->Create(m_hWndMDIClient);
+			i->frm->addLine(i->msg);
+			delete i;
 		}
 		cs.leave();
 		return 0;
@@ -146,26 +148,26 @@ protected:
 	virtual void onClientConnecting(Client* aClient) { 
 		PostMessage(WM_SPEAKER, CLIENT_CONNECTING); 
 	};
+	
 	virtual void onClientError(Client* aClient, const string& aReason) {
-		cs.enter();
-		clientError = aReason;
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_ERROR);
+		string* x = new string(aReason);
+		PostMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM) x);
 	}
+	
 	virtual void onClientGetPassword(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); };
 	virtual void onClientHubName(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_HUBNAME); };
+	
 	virtual void onClientMessage(Client* aClient, const string& aMessage) {
-		cs.enter();
-		clientMessages.push_back(aMessage);
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_MESSAGE);
+		string* msg = new string(aMessage);
+		PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
 	}
+
 	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
-		cs.enter();
-		clientMyInfo.push_back(aUser);
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_MYINFO);
+		User::Ptr* x = new User::Ptr();
+		*x = aUser;
+		PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x);
 	}
+	
 	virtual void onClientOpList(Client* aClient, StringList& aOps) {
 		for(StringIter i = aOps.begin(); i != aOps.end(); ++i) {
 			if(*i == Settings::getNick()) {
@@ -174,26 +176,26 @@ protected:
 			}
 		}
 	}
+	
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
-		cs.enter();
-		PrivateFrame* frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
-		frm->setTab(getTab());
-		clientPrivateMessage[frm] = aMessage;
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)frm);
+		PMInfo* i = new PMInfo();
+
+		i->frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
+		i->frm->setTab(getTab());
+		i->msg = aMessage;
+		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
 	}
 	
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
-		cs.enter();
-		clientError = "Unknown: " + aCommand;
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_ERROR);
+#ifdef _DEBUG
+		string* x = new string("Unknown command: " + aCommand);
+		PostMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM)x);
+#endif // _DEBUG
 	}
 	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) {
-		cs.enter();
-		clientQuit.push_back(aUser);
-		cs.leave();
-		PostMessage(WM_SPEAKER, CLIENT_QUIT);
+		User::Ptr* x = new User::Ptr();
+		*x = aUser;
+		PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x);
 	}
 	virtual void onClientValidateDenied(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); };
 
@@ -211,6 +213,7 @@ protected:
 	CMenu opMenu;
 	bool op;
 
+	static CImageList* images;
 public:
 
 	HubFrame(const string& aServer) : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
@@ -269,10 +272,14 @@ public:
 				ctrlUsers.GetItemText(i, 0, buf, 256);
 				string user = buf;
 				User::Ptr& u = client->getUser(user);
-				if(u)
-					DownloadManager::getInstance()->downloadList(u);
-				else 
-					DownloadManager::getInstance()->downloadList(user);
+				try {
+					if(u)
+						DownloadManager::getInstance()->downloadList(u);
+					else 
+						DownloadManager::getInstance()->downloadList(user);
+				} catch(...) {
+					// ...
+				}
 			}
 		}
 		return 0;
@@ -466,10 +473,14 @@ public:
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 256);
 			user = buf;
 			User::Ptr& u = client->getUser(user);
-			if(u)
-				DownloadManager::getInstance()->downloadList(u);
-			else 
-				DownloadManager::getInstance()->downloadList(user);
+			try {
+				if(u)
+					DownloadManager::getInstance()->downloadList(u);
+				else 
+					DownloadManager::getInstance()->downloadList(user);
+			} catch(...) {
+				// ...
+			}
 		}
 		return 0;
 	}
@@ -549,9 +560,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.25 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.26 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.26  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.25  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

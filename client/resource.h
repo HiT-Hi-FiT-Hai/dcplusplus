@@ -16,6 +16,7 @@
 #define IDB_ARROWS                      208
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
+#define IDB_USERS                       210
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -43,7 +44,7 @@
 #define IDC_GETLIST                     1022
 #define IDC_KICK                        1023
 #define IDC_REDIRECT                    1024
-#define IDC_REMOVESOURCE				1025
+#define IDC_REMOVESOURCE                1025
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -55,7 +56,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        210
+#define _APS_NEXT_RESOURCE_VALUE        211
 #define _APS_NEXT_COMMAND_VALUE         32782
 #define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101

@@ -444,6 +444,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.leave();
 }
 
+void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aSource) {
+	cs.enter();
+	aDownload->removeSource(aSource);
+	cs.leave();
+	fireSourceRemoved(aDownload, aSource);
+}
+
 void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
 	cs.enter();
 	dcassert(running.find(aSource) != running.end());
@@ -484,17 +491,16 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	d->setSize(aFileLength);
 
 	if(d->getSize() == d->getPos()) {
-		for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
-			if(*j == d) {
-				queue.erase(j);
-				break;
-			}
-		}
+		Download::Iter j = find(queue.begin(), queue.end(), d);
+		dcassert(j != queue.end());
+		queue.erase(j);
+
 		cs.leave();
 		removeConnection(aSource);
 
 		// We're done...and this connection is broken...
 		fireComplete(d);
+		fireRemoved(d);
 		delete d;
 		
 	} else {
@@ -516,12 +522,9 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 	
 	Download::Ptr p = i->second;
 	running.erase(i);
-	for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
-		if(*j == p) {
-			queue.erase(j);
-			break;
-		}
-	}
+	Download::Iter j = find(queue.begin(), queue.end(), p);
+	dcassert(j != queue.end());
+	queue.erase(j);
 	
 	cs.leave();
 
@@ -533,6 +536,7 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 
 	dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
 	fireComplete(p);
+	fireRemoved(p);
 	delete p;
 
 	checkDownloads(aSource);
@@ -634,9 +638,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.22 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.23 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.23  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.22  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

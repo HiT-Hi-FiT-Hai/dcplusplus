@@ -25,18 +25,6 @@
 
 PublicHubsFrame* PublicHubsFrame::frame = NULL;
 
-void PublicHubsFrame::onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) {
-	StringList l;
-	l.push_back(aName);
-	l.push_back(aDescription);
-	l.push_back(aUsers);
-	l.push_back(aServer);
-	ctrlHubs.insert(l);
-	hubs++;
-	users += atoi(aUsers.c_str());
-	updateStatus();
-}
-
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 
@@ -79,9 +67,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlAddress.SetWindowText("Address");
 	ctrlAddress.SetFont(ctrlHubs.GetFont());
 	
-	listing = true;
 	HubManager::getInstance()->addListener(this);
-	HubManager::getInstance()->getPublicHubs();
+	HubManager::getInstance()->getPublicHubList();
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -106,22 +93,12 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	return 0;
 }
 
-LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	if(listing) {
-		close = true;
-		HubManager::getInstance()->stopListing();
-	}
-	else {
-		bHandled = FALSE;
-	}
-	
-	return 0;
-}
-
 LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	listing = true;
+	ctrlHubs.DeleteAllItems();
+	users = 0;
+	hubs = 0;
 	HubManager::getInstance()->addListener(this);
-	HubManager::getInstance()->getPublicHubs(true);
+	HubManager::getInstance()->getPublicHubList(true);
 
 	return 0;
 }
@@ -183,9 +160,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.7 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.8 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.8  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.7  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

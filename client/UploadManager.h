@@ -66,8 +66,9 @@ public:
 		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
 			if(i->second == aUpload) {
 				removeConnection(i->first);
-				delete i->second;
 				uploads.erase(i);
+				fireFailed(aUpload, "Aborted");
+				delete aUpload;
 				break;
 			}
 		}
@@ -248,9 +249,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.21 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.22 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.22  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.21  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -21,6 +21,8 @@
 
 #include "HubFrame.h"
 
+CImageList* HubFrame::images = NULL;
+
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	
@@ -38,7 +40,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
 
 	ctrlClient.SetFont(ctrlUsers.GetFont());
 	ctrlMessage.SetFont(ctrlUsers.GetFont());
@@ -56,6 +58,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.CreatePopupMenu();
 	opMenu.CreatePopupMenu();
 	
+	if(!images) {
+		images = new CImageList();
+		images->CreateFromImage(IDB_USERS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
+	}
+	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
+
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_STRING;
 	mi.dwTypeData = "Get File List";
@@ -108,9 +116,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.13 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.14 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.14  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.13  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -31,6 +31,9 @@
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 
+#define WM_ENTER (WM_USER + 120)
+#define WM_TAB (WM_ENTER + 1)
+
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
@@ -49,6 +52,8 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_ENTER, onEnter)
+		MESSAGE_HANDLER(WM_TAB, onTab)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
@@ -56,7 +61,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, OnChar)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
+		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
+		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
 	static int sortSize(LPARAM a, LPARAM b) {
@@ -113,7 +120,11 @@ public:
 				ctrlResults.GetItemText(i, 3, buf, 512);
 				string path = buf;
 				
-				DownloadManager::getInstance()->download(path + file, size, user, target);
+				try {
+					DownloadManager::getInstance()->download(path + file, size, user, target);
+				} catch(Exception e) {
+					MessageBox(e.getError().c_str());
+				}
 			}
 		} else {
 			string target = Settings::getDownloadDirectory();
@@ -136,8 +147,11 @@ public:
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
 			ctrlResults.GetItemText(i, 3, buf, 256);
 			string path = buf;
-			
-			DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
+			try {
+				DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
+			} catch(Exception e) {
+				MessageBox(e.getError().c_str());
+			}
 		}
 	}
 
@@ -146,7 +160,11 @@ public:
 		char buf[256];
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlResults.GetItemText(i, 0, buf, 256);
-			DownloadManager::getInstance()->downloadList(buf);
+			try {
+				DownloadManager::getInstance()->downloadList(buf);
+			} catch(...) {
+				// ...
+			}
 		}
 		return 0;
 	}
@@ -183,7 +201,11 @@ public:
 			ctrlResults.GetItemText(item->iItem, 3, buf, 256);
 			string path = buf;
 			
-			DownloadManager::getInstance()->download(path + file, size, user, Settings::getDownloadDirectory() + file);
+			try { 
+				DownloadManager::getInstance()->download(path + file, size, user, Settings::getDownloadDirectory() + file);
+			} catch(Exception e) {
+				MessageBox(e.getError().c_str());
+			}
 		}
 		return 0;
 		
@@ -237,19 +259,66 @@ public:
 		}
 		
 		CRect rc = rect;
-		rc.top +=24;
+		rc.top +=25;
 		ctrlResults.MoveWindow(rc);
 
 		rc.bottom = rc.top - 2;
-		rc.top -= 22;
+		rc.top -= 23;
+		rc.right -= 200;
 		ctrlSearch.MoveWindow(rc);
 		
+		rc.left = rc.right;
+		rc.right += 73;
+		rc.bottom += 50;
+		ctrlMode.MoveWindow(rc);
+		
+		rc.bottom -= 50;
+		rc.left = rc.right + 2;
+		rc.right += 75;
+		ctrlSize.MoveWindow(rc);
+
+		rc.left = rc.right + 2;
+		rc.right += 50;
+		rc.bottom += 70;
+		ctrlSizeMode.MoveWindow(rc);
 	}
 
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		switch (uMsg) 
+		{ 
+        case WM_KEYDOWN: 
+            switch (wParam) { 
+			case VK_TAB: 
+				SendMessage(WM_TAB); 
+				return 0; 
+			case VK_RETURN: 
+				SendMessage(WM_ENTER); 
+				return 0; 
+			default:
+				bHandled = FALSE;
+            } 
+            break; 
+			
+		case WM_KEYUP: 
+		case WM_CHAR: 
+			switch (wParam) { 
+            case VK_TAB:		// Fall through
+            case VK_RETURN: 
+                return 0; 
+			default: 
+				bHandled = FALSE;
+			} 
+			break;
+		default:
+			bHandled = FALSE;
+		}
+		return 0;
+	}
+	
+	LRESULT onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		char* message;
 		
-		if(wParam == VK_RETURN && ctrlSearch.GetWindowTextLength() > 0) {
+		if(ctrlSearch.GetWindowTextLength() > 0) {
 			message = new char[ctrlSearch.GetWindowTextLength()+1];
 			ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 			string s(message, ctrlSearch.GetWindowTextLength());
@@ -265,13 +334,27 @@ public:
 			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
 			search = StringTokenizer(s, ' ').getTokens();
 
-		} else {
-			bHandled = FALSE;
 		}
 		return 0;
 	}
 	
-	SearchFrame() : ctrlSearchContainer("edit", this, SEARCH_MESSAGE_MAP) {
+	LRESULT onTab(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND focus = GetFocus();
+		if(focus == ctrlSearch.m_hWnd) {
+			ctrlMode.SetFocus();
+		} else if(focus == ctrlMode.m_hWnd) {
+			ctrlSize.SetFocus();
+		} else if(focus == ctrlSize.m_hWnd) {
+			ctrlSizeMode.SetFocus();
+		} else if(focus == ctrlSizeMode.m_hWnd) {
+			ctrlSearch.SetFocus();
+		}
+		return 0;
+	}
+
+	SearchFrame() : searchContainer("edit", this, SEARCH_MESSAGE_MAP),  sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
+		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP) {
+		
 		SearchManager::getInstance()->addListener(this);
 	}
 
@@ -283,7 +366,15 @@ public:
 private:
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
-	CContainedWindow ctrlSearchContainer;
+	CEdit ctrlSize;
+	CComboBox ctrlMode;
+	CComboBox ctrlSizeMode;
+	
+	CContainedWindow searchContainer;
+	CContainedWindow sizeContainer;
+	CContainedWindow modeContainer;
+	CContainedWindow sizeModeContainer;
+	
 	ExListViewCtrl ctrlResults;
 	CMenu resultsMenu;
 	
@@ -327,9 +418,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.9 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.10 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.10  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.9  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

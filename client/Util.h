@@ -30,7 +30,8 @@ class Speaker {
 public:
 	void addListener(Listener* aListener) {
 		listenerCS.enter();
-		listeners.push_back(aListener);
+		if(find(listeners.begin(), listeners.end(), aListener) == listeners.end())
+			listeners.push_back(aListener);
 		listenerCS.leave();
 	}
 	
@@ -54,6 +55,21 @@ protected:
 	vector<Listener*> listeners;
 	CriticalSection listenerCS;
 };
+
+class StringInfo {
+public:
+	StringInfo(LPARAM lp = NULL, const string& s = "") : lParam(lp), str(s) { };
+	string str;
+	LPARAM lParam;
+};
+
+class StringListInfo {
+public:
+	StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
+	StringList l;
+	LPARAM lParam;
+};
+
 
 
 class Util  
@@ -208,9 +224,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: Util.h,v 1.9 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.9  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.8  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

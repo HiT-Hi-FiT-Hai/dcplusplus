@@ -69,47 +69,56 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	cs.enter();
-	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED) {
+	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED || wParam == DOWNLOAD_REMOVED) {
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
 	} else if(wParam == UPLOAD_STARTING) {
-		if(uploadStarting.find(lParam) != uploadStarting.end()) {
-			ctrlTransfers.insert(uploadStarting[lParam], 1, lParam);
-			uploadStarting.erase(lParam);
-		}
-	} else if(wParam == UPLOAD_TICK) {
-		if(uploadTick.find(lParam) != uploadTick.end()) {
-			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, uploadTick[lParam].c_str());
-			uploadTick.erase(lParam);
-		}
+		StringListInfo* i = (StringListInfo*)lParam;
+		ctrlTransfers.insert(i->l, IMAGE_UPLOAD, i->lParam);
+		delete i;
 	} else if(wParam == DOWNLOAD_ADDED) {
-		if(downloadAdded.find(lParam) != downloadAdded.end()) {
-			ctrlTransfers.insert(downloadAdded[lParam], 0, lParam);
-			downloadAdded.erase(lParam);
-		}
+		StringListInfo* i = (StringListInfo*)lParam;
+		ctrlTransfers.insert(i->l, IMAGE_DOWNLOAD, i->lParam);
+		delete i;
+	} else if(wParam == UPLOAD_TICK || wParam == DOWNLOAD_FAILED || wParam == DOWNLOAD_TICK) {
+		StringInfo* i = (StringInfo*)lParam;
+		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, i->str.c_str());
+		delete i;
 	} else if(wParam == DOWNLOAD_CONNECTING) {
 		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, "Connecting...");
-	} else if(wParam == DOWNLOAD_FAILED) {
-		if(downloadFailed.find(lParam) != downloadFailed.end()) {
-			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadFailed[lParam].c_str());
-			downloadFailed.erase(lParam);
-		}
 	} else if(wParam == DOWNLOAD_STARTING) {
-		if(downloadStarting.find(lParam) != downloadStarting.end()) {
-			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam][0].c_str());
-			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 3, downloadStarting[lParam][1].c_str());
-			downloadStarting.erase(lParam);
-		}
-	} else if(wParam == DOWNLOAD_TICK) {
-		if(downloadTick.find(lParam) != downloadTick.end()) {
-			ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadTick[lParam].c_str());
-			downloadTick.erase(lParam);
-		}
+		StringListInfo* i = (StringListInfo*)lParam;
+		int pos = ctrlTransfers.find(i->lParam);
+
+		ctrlTransfers.SetItemText(pos, 2, i->l[0].c_str());
+		ctrlTransfers.SetItemText(pos, 3, i->l[1].c_str());
 	} else if(wParam == DOWNLOAD_SOURCEADDED) {
-		if(downloadSourceAdded.find(lParam) != downloadSourceAdded.end()) {
-			SourceInfo& si = downloadSourceAdded[lParam];
-			ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)si.d), 3, si.source.c_str());
-			downloadSourceAdded.erase(lParam);
+		StringInfo* i = (StringInfo*)lParam;
+		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 3, i->str.c_str());
+		delete i;
+	} else if(wParam == DOWNLOAD_LISTING) {
+		StringListInfo* i = (StringListInfo*)lParam;
+		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 1, "Preparing file list...");
+		
+		HANDLE h = CreateFile(i->l[0].c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+
+		if(h==INVALID_HANDLE_VALUE) {
+			return 0;
 		}
+		DirectoryListing* dl = new DirectoryListing();
+		DWORD size = GetFileSize(h, NULL);
+		BYTE* buf = new BYTE[size];
+		ReadFile(h, buf, size, &size, NULL);
+		CloseHandle(h);
+		string tmp;
+		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+		delete buf;
+		dl->load(tmp);
+		
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->l[1]);
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+		pChild->SetWindowText((i->l[1] + i->l[2]).c_str());
+		delete i;
 	}
 	cs.leave();
 
@@ -117,19 +126,16 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 void MainFrame::onUploadStarting(Upload* aUpload) {
-	StringList l;
-	l.push_back(aUpload->getFileName());
-	l.push_back("Connecting...");
-	l.push_back(Util::formatBytes(aUpload->getSize()));
-	l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
-	cs.enter();
-	uploadStarting[(LPARAM)aUpload] = l;
-	cs.leave();
-	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)aUpload);
+	StringListInfo* i = new StringListInfo((LPARAM)aUpload);
+	i->l.push_back(aUpload->getFileName());
+	i->l.push_back("Connecting...");
+	i->l.push_back(Util::formatBytes(aUpload->getSize()));
+	i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
+	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)i);
 }
 
 void MainFrame::onUploadTick(Upload* aUpload) {
-	char buf[256];
+	char buf[128];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aUpload->getStart());
 	int seconds = 0;
 	LONGLONG avg = 0;
@@ -142,25 +148,19 @@ void MainFrame::onUploadTick(Upload* aUpload) {
 
 	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aUpload->getPos()).c_str(), 
 		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
-	cs.enter();
-	uploadTick[(LPARAM)aUpload] = buf;
-	cs.leave();
-	PostMessage(WM_SPEAKER, UPLOAD_TICK, (LPARAM)aUpload);
+
+	StringInfo* i = new StringInfo((LPARAM)aUpload, buf);
+	PostMessage(WM_SPEAKER, UPLOAD_TICK, (LPARAM)i);
 }
 
 void MainFrame::onDownloadAdded(Download* p) {
-	StringList l;
-	string file;
-	
-	l.push_back(p->getTarget().substr(p->getTarget().rfind('\\') + 1));
-	l.push_back("Waiting to connect...");
-	l.push_back((p->getSize() != -1) ? Util::formatBytes(p->getSize()).c_str() : "Unknown");
-	l.push_back("");
+	StringListInfo* i = new StringListInfo((LPARAM)p);	
+	i->l.push_back(p->getTarget().substr(p->getTarget().rfind('\\') + 1));
+	i->l.push_back("Waiting to connect...");
+	i->l.push_back((p->getSize() != -1) ? Util::formatBytes(p->getSize()).c_str() : "Unknown");
+	i->l.push_back("");
 
-	cs.enter();
-	downloadAdded[(LPARAM)p] = l;
-	cs.leave();
-	PostMessage(WM_SPEAKER, DOWNLOAD_ADDED, (LPARAM)p);
+	PostMessage(WM_SPEAKER, DOWNLOAD_ADDED, (LPARAM)i);
 }
 
 /**
@@ -171,82 +171,64 @@ void MainFrame::onDownloadAdded(Download* p) {
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
-		cs.enter();
-		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Preparing file list...");
-		cs.leave();
-		HANDLE h = CreateFile(p->getTarget().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		if(h==INVALID_HANDLE_VALUE) {
-			return;
-		}
-		DirectoryListing* dl = new DirectoryListing();
-		DWORD size = GetFileSize(h, NULL);
-		BYTE* buf = new BYTE[size];
-		ReadFile(h, buf, size, &size, NULL);
-		CloseHandle(h);
-		string tmp;
-		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-		delete buf;
-		dl->load(tmp);
+		StringListInfo* i = new StringListInfo((LPARAM)p);
+		i->l.push_back(p->getTarget());
+		i->l.push_back(p->getCurrentSource()->getUser()->getNick());
 
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getCurrentSource()->getNick());
-		pChild->setTab(&ctrlTab);
-		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
-		
+		if(p->getCurrentSource()->getUser() && p->getCurrentSource()->getUser()->isOnline()) {
+			i->l.push_back(" (" + p->getCurrentSource()->getUser()->getClient()->getName() + ")");
+		} else {
+			i->l.push_back(" (Offline)");
+		}
+		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 	}
-	
-	cs.enter();
-	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
-	cs.leave();
-//	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Download finished");
-	
 }
 
 void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason) {
-	cs.enter();
-	downloadFailed[(LPARAM) aDownload] = aReason;
-	cs.leave();
-	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)aDownload);
+	StringInfo* i = new StringInfo((LPARAM)aDownload, aReason);
+	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)i);
 }
-
+void MainFrame::onDownloadRemoved(Download* aDownload) {
+	PostMessage(WM_SPEAKER, DOWNLOAD_REMOVED, (LPARAM)aDownload);
+}
+	
 void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
 	if(!aDownload->isSet(Download::RUNNING)) {
-		string s;
-		for(Download::Source::Iter i = aDownload->getSources().begin(); i != aDownload->getSources().end(); ++i) {
-			if(s.size() > 0)
-				s += ", ";
+		StringInfo* i = new StringInfo((LPARAM)aDownload);
+		for(Download::Source::Iter j = aDownload->getSources().begin(); j != aDownload->getSources().end(); ++j) {
+			if(i->str.size() > 0)
+				i->str += ", ";
 
-			Download::Source::Ptr sr = *i;
+			Download::Source::Ptr sr = *j;
 			if(sr->getUser()) {
 				if(sr->getUser()->isOnline()) {
-					s += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
+					i->str += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
 				} else {
-					s += sr->getUser()->getNick() + " (Offline)";
+					i->str += sr->getUser()->getNick() + " (Offline)";
 				}
 			} else {
-				s += sr->getNick() + " (Offline)";
+				i->str += sr->getNick() + " (Offline)";
 			}
 		}
 
-		cs.enter();
-		downloadSourceAdded[(LPARAM) aSource] = SourceInfo(aDownload, s);
-		cs.leave();
-		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)aSource);
+		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)i);
 	}
 }
 
+void MainFrame::onDownloadSourceRemoved(Download::Ptr aDownload, Download::Source* aSource) {
+	onDownloadSourceAdded(aDownload, aSource);
+}
+
 void MainFrame::onDownloadStarting(Download* aDownload) {
-	cs.enter();
-	StringList l;
-	l.push_back(Util::formatBytes(aDownload->getSize()));
+	StringListInfo* i = new StringListInfo((LPARAM)aDownload);
+	i->l.push_back(Util::formatBytes(aDownload->getSize()));
 	if(aDownload->getCurrentSource()->getUser()->isOnline()) {
-		l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClient()->getName() + ")");
+		i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClient()->getName() + ")");
 	} else {
-		l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (Offline)");
+		i->l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (Offline)");
 	}
 	
-	downloadStarting[(LPARAM)aDownload] = l;
-	cs.leave();
-	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)aDownload);
+	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)i);
 }
 
 void MainFrame::onDownloadTick(Download* aDownload) {
@@ -263,19 +245,12 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 	
 	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aDownload->getPos()).c_str(), 
 		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
-	cs.enter();
-	downloadTick[(LPARAM)aDownload] = buf;
-	cs.leave();
-	PostMessage(WM_SPEAKER, DOWNLOAD_TICK, (LPARAM)aDownload);
+	
+	StringInfo* i = new StringInfo((LPARAM)aDownload, buf);
+	PostMessage(WM_SPEAKER, DOWNLOAD_TICK, (LPARAM)i);
 
 }
 
-LRESULT MainFrame::OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	DirectoryListingFrame* dlg = (DirectoryListingFrame*)wParam;
-	dlg->CreateEx(m_hWndClient);
-	dlg->setWindowTitle();
-	return 0;
-}
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		
 	// Set window name
@@ -476,10 +451,14 @@ LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 			Download::Source* s = (Download::Source*)mi.dwItemData;
 			switch(cmd) {
 			case 0:
-				DownloadManager::getInstance()->downloadList(s->getNick());
+				try {
+					DownloadManager::getInstance()->downloadList(s->getNick());
+				} catch(...) {
+					// ...
+				}
 				break;
 			case 1:
-				d->removeSource(s);
+				DownloadManager::getInstance()->removeSource(d, s);
 				break;
 			case 2:
 				if(s->getUser() && s->getUser()->isOnline()) {
@@ -523,9 +502,12 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.30 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.31 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.31  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.30  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

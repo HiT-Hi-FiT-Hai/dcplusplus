@@ -28,6 +28,19 @@
 #include "CriticalSection.h"
 #include "HttpConnection.h"
 
+class HubEntry {
+public:
+	typedef vector<HubEntry> List;
+	typedef List::iterator Iter;
+	string name;
+	string server;
+	string description;
+	string users;
+	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) : 
+	name(aName), server(aServer), description(aDescription), users(aUsers) { };
+	HubEntry() { };
+};
+
 class HubManagerListener {
 public:
 	typedef HubManagerListener* Ptr;
@@ -35,15 +48,13 @@ public:
 	typedef List::iterator Iter;
 
 	virtual void onHubMessage(const string& aMessage) { };
-	virtual void onHubStarting() { };
-	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) { };
-	virtual void onHubFinished() { };
+	virtual void onHubFinished(HubEntry::List& aList) { };
 };
 
 class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener
 {
 public:
-
+	
 	static HubManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -59,63 +70,56 @@ public:
 		instance = NULL;
 	}
 	
-	void getPublicHubs(bool aRefresh=false) {
+	void getPublicHubList(bool aRefresh = false) { 
+		cs.enter();
 		if(aRefresh) {
 			refresh();
+			cs.leave();
+			return;
 		}
+		
+		if(running) {
+			cs.leave();
+			return;
+		}
+		cs.leave();
 
-		startLister();
-	}
-
-	void stopListing() {
-		SetEvent(listerEvent);
-	}
+		fireFinished();
+	};
 
 	void refresh() {
-		publicCS.enter();
+		cs.enter();
 		publicHubs.clear();
-		publicCS.leave();
+		running = true;
+		cs.leave();
 		
-		if(conn) {
-			conn->removeListener(this);
-			delete conn;
-		}
-		ResetEvent(downloadEvent);
-		
+		reset();
+
 		conn = new HttpConnection();
 		conn->addListener(this);
 		conn->downloadFile("http://www.neo-modus.com/PublicHubList.config");
-		
 	}
 	
+	void reset() {
+		if(conn) {
+			conn->removeListener(this);
+			delete conn;
+			conn = NULL;
+		}
+	}
 private:
 	
-	class HubEntry {
-	public:
-		typedef vector<HubEntry> List;
-		typedef List::iterator Iter;
-		string name;
-		string server;
-		string description;
-		string users;
-		HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) : 
-		name(aName), server(aServer), description(aDescription), users(aUsers) { };
-		HubEntry() { };
-	};
-	
+
 	static HubManager* instance;
 	HubEntry::List publicHubs;
-	CriticalSection publicCS;
+	CriticalSection cs;
 	HttpConnection* conn;
-		
-	HubManager() : listerThread(NULL), listerEvent(NULL), conn(NULL) {
-		downloadEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	bool running;
+	
+	HubManager() : conn(NULL), running(false) {
 	}
 
 	~HubManager() {
-		CloseHandle(downloadEvent);
-
-		stopLister();
 
 		if(conn) {
 			conn->removeListener(this);
@@ -123,11 +127,6 @@ private:
 		}
 	}
 	
-	HANDLE listerThread;
-	HANDLE listerEvent;
-	static DWORD WINAPI lister(void* p);
-	
-	HANDLE downloadEvent;
 	string downloadBuf;
 
 	// HttpConnectionListener
@@ -135,29 +134,6 @@ private:
 	virtual void onHttpError(HttpConnection* aConn, const string& aError);
 	virtual void onHttpComplete(HttpConnection* aConn);	
 
-	void startLister() {
-		stopLister();
-		DWORD threadId;
-		listerEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		listerThread=CreateThread(NULL, 0, &lister, this, 0, &threadId);
-	}
-	
-	void stopLister() {
-		if(listerThread != NULL) {
-			SetEvent(listerEvent);
-			
-			if(WaitForSingleObject(listerThread, 2000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("Unable to stop lister thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			CloseHandle(listerThread);
-			listerThread = NULL;
-		}
-		if(listerEvent) {
-			CloseHandle(listerEvent);
-			listerEvent = NULL;
-		}
-	}
-	
 	void fireMessage(const string& aMessage) {
 		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
@@ -168,32 +144,13 @@ private:
 		}
 	}
 
-	void fireHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) {
-		listenerCS.enter();
-		HubManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireHub\n");
-		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHub(aName, aServer, aDescription, aUsers);
-		}
-	}
-
 	void fireFinished() {
 		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
 		listenerCS.leave();
 		//		dcdebug("fireMessage\n");
 		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHubFinished();
-		}
-	}
-	void fireStarting() {
-		listenerCS.enter();
-		HubManagerListener::List tmp = listeners;
-		listenerCS.leave();
-		//		dcdebug("fireMessage\n");
-		for(HubManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onHubStarting();
+			(*i)->onHubFinished(publicHubs);
 		}
 	}
 };
@@ -202,9 +159,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.11 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.12 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.12  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.11  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

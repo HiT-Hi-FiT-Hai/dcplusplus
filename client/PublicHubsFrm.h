@@ -32,7 +32,7 @@
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private HubManagerListener
 {
 public:
-	PublicHubsFrame() : close(false), listing(false), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
+	PublicHubsFrame() : stopperThread(NULL), users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP) {
 		
 	};
 
@@ -91,7 +91,24 @@ public:
 		return 0;
 	}
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
+	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		DWORD id;
+		if(stopperThread) {
+			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
+				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
+				PostMessage(WM_CLOSE);
+				return 0;
+			}
+			CloseHandle(stopperThread);
+			stopperThread = NULL;
+			bHandled = FALSE;
+		} else {
+			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+		}
+		return 0;
+	}
+
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	
 	LRESULT onColumnClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -179,30 +196,44 @@ private:
 	
 	CEdit ctrlHub;
 	ExListViewCtrl ctrlHubs;
-	bool listing;
-	bool close;
+	HANDLE stopperThread;
+	
+	static DWORD WINAPI stopper(void* p) {
+		PublicHubsFrame* frm = (PublicHubsFrame*)p;
+		HubManager::getInstance()->removeListener(frm);
+		HubManager::getInstance()->reset();
+		frm->PostMessage(WM_CLOSE);	
+		return 0;
+	}
 	
 	virtual void onHubMessage(const string& aMessage) {
 		ctrlStatus.SetText(0, aMessage.c_str());
 	}
 	
-	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
-	virtual void onHubFinished() {
+	virtual void onHubFinished(HubEntry::List& aList) {
 		HubManager::getInstance()->removeListener(this);
+		ctrlHubs.DeleteAllItems();
+		users = 0;
+		hubs = 0;
+		
+		ctrlHubs.SetRedraw(FALSE);
+
+		for(HubEntry::Iter i = aList.begin(); i != aList.end(); ++i) {
+			StringList l;
+			l.push_back(i->name);
+			l.push_back(i->description);
+			l.push_back(i->users);
+			l.push_back(i->server);
+			ctrlHubs.insert(l);
+			hubs++;
+			users += atoi(i->users.c_str());
+		}
+
 		ctrlHubs.SetRedraw(TRUE);
+		updateStatus();
 		ctrlHubs.Invalidate();
-		listing = false;
-		if(close)
-			PostMessage(WM_CLOSE);
 	}
 
-	virtual void onHubStarting() {
-		ctrlHubs.DeleteAllItems();
-		ctrlHubs.SetRedraw(FALSE);
-		hubs = users = 0;
-		updateStatus();
-	}
-	
 	void updateStatus() {
 		char buf[1024];
 		sprintf(buf, "Users: %d", users);
@@ -216,9 +247,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.6 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.7 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.7  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.6  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *

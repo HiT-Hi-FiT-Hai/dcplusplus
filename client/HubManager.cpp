@@ -26,48 +26,11 @@
 
 HubManager* HubManager::instance = NULL;
 
-DWORD WINAPI HubManager::lister(void* p) {
-	ATLASSERT(p);
-	HubManager* hm = (HubManager*)p;
-	HANDLE hEvent[2];
-	hEvent[0] = hm->listerEvent;
-
-	hm->fireMessage("Downloading public server list...");
-	hm->fireStarting();
-	
-	// Wait for downloaders to finish
-	hEvent[1] = hm->downloadEvent;
-	if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
-		ATLTRACE("Hub Lister Thread ended");
-		return 0;
-	}
-	
-	hm->publicCS.enter();
-	if(hm->publicHubs.size() == 0) {
-		hm->fireMessage("Unable to download public server list. Check your internet connection!");
-	} else {
-		hm->fireMessage("Download complete");
-	}
-	
-	for(HubManager::HubEntry::Iter i = hm->publicHubs.begin(); i != hm->publicHubs.end(); ++i) {
-		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
-			ATLTRACE("Hub Lister Thread ended");
-			hm->publicCS.leave();
-			return 0;
-		}
-		hm->fireHub(i->name, i->server, i->description, i->users);
-	}
-	hm->fireFinished();
-	
-	hm->publicCS.leave();
-	return 0;
-}
-
 void HubManager::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
 	downloadBuf.append((char*)aBuf, aLen);
 	string::size_type i;
 	
-	publicCS.enter();
+	cs.enter();
 
 	while( (i=downloadBuf.find("\r\n")) != string::npos) {
 		StringTokenizer tok(downloadBuf.substr(0, i), '|');
@@ -81,25 +44,35 @@ void HubManager::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
 		publicHubs.push_back(HubEntry(name, server, desc, users));
 	}
 
-	publicCS.leave();
+	cs.leave();
 }
 
 void HubManager::onHttpComplete(HttpConnection* aConn) {
-	SetEvent(downloadEvent);
+	cs.enter();
 	aConn->removeListener(this);
+	fireFinished();
+	running = false;
+	cs.leave();
+
 }
 
 void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
-	SetEvent(downloadEvent);
+	cs.enter();
 	aConn->removeListener(this);
+	fireMessage("Unable to download public server list. Check your internet connection!");
+	running = false;
+	cs.leave();
 }
 
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.8 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.9 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.9  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.8  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

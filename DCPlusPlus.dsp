@@ -435,6 +435,10 @@ SOURCE=.\res\arrows.bmp
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\bitmap1.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\res\DCPlusPlus.ico
 # End Source File
 # Begin Source File

@@ -31,8 +31,6 @@
 #include "FlatTabCtrl.h"
 #include "HttpConnection.h"
 
-#define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
-
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener
@@ -53,16 +51,23 @@ public:
 		DOWNLOAD_COMPLETE,
 		DOWNLOAD_CONNECTING,
 		DOWNLOAD_FAILED,
+		DOWNLOAD_REMOVED,
 		DOWNLOAD_STARTING,
 		DOWNLOAD_SOURCEADDED,
-		DOWNLOAD_TICK
+		DOWNLOAD_TICK,
+		DOWNLOAD_LISTING
 	};
 
 	enum {
 		IMAGE_DOWNLOAD = 0,
 		IMAGE_UPLOAD
 	};
-
+	
+	enum {
+		IMAGE_USER = 0,
+		IMAGE_OP
+	};
+	
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -83,7 +88,6 @@ public:
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
@@ -100,7 +104,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + (menuItems / 3)), onTransferItem)
+		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + menuItems), onTransferItem)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -118,7 +122,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	static DWORD WINAPI stopper(void* p);
 
 	LRESULT onKeyDownTransfers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -149,8 +152,6 @@ public:
 				DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
 			else
 				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
-			ctrlTransfers.DeleteItem(item.iItem);
-			item.iItem--;
 		}
 		cs.leave();
 	}
@@ -345,21 +346,20 @@ private:
 	};
 	int menuItems;
 	
-	map<LPARAM, StringList> uploadStarting;
-	map<LPARAM, string> uploadTick;
-	map<LPARAM, StringList> downloadAdded;
-	map<LPARAM, string> downloadFailed;
-	map<LPARAM, StringList> downloadStarting;
-	map<LPARAM, string> downloadTick;
-	class SourceInfo {
+	class StringInfo {
 	public:
-		SourceInfo() : d(NULL) { };
-		SourceInfo(Download* aDown, const string& s) : d(aDown), source(s) { };
-		string source;
-		Download* d;
+		StringInfo(LPARAM lp = NULL, const string& s = "") : lParam(lp), str(s) { };
+		string str;
+		LPARAM lParam;
 	};
-	map<LPARAM, SourceInfo> downloadSourceAdded;
-	
+
+	class StringListInfo {
+	public:
+		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
+		StringList l;
+		LPARAM lParam;
+	};
+
 	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;
@@ -384,7 +384,9 @@ private:
 	virtual void onDownloadComplete(Download* aDownload);
 	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
 	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
+	virtual void onDownloadRemoved(Download* aDownload);
 	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
+	virtual void onDownloadSourceRemoved(Download* aDownload, Download::Source* aSource);
 	virtual void onDownloadStarting(Download* aDownload);
 	virtual void onDownloadTick(Download* aDownload);
 	
@@ -418,9 +420,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.22 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.23 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.23  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.22  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

@@ -88,7 +88,11 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 
 		if(lvi.iImage == 2) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-			dl->download(file, user, Settings::getDownloadDirectory() + file->name);
+			try {
+				dl->download(file, user, Settings::getDownloadDirectory() + file->name);
+			} catch(Exception e) {
+				MessageBox(e.getError().c_str());
+			}
 		} else {
 			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 
@@ -111,7 +115,11 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		string target = Settings::getDownloadDirectory();
-		dl->download(dir, user, target);
+		try {
+			dl->download(dir, user, target);
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
 	}
 	return 0;
 }
@@ -121,8 +129,13 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		string target = Settings::getDownloadDirectory();
-		if(Util::browseDirectory(target, m_hWnd))
-			dl->download(dir, user, target);
+		if(Util::browseDirectory(target, m_hWnd)) {
+			try {
+				dl->download(dir, user, target);
+			} catch(Exception e) {
+				MessageBox(e.getError().c_str());
+			}
+		}
 	}
 	return 0;
 }
@@ -141,13 +154,17 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 		} else {
 			target = aTarget;
 		}
-		if(lvi.iImage == 2) {
-			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-			dl->download(file, user, target + file->name);
-		} else {
-			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-			dl->download(d, user, target);
-		} 
+		try {
+			if(lvi.iImage == 2) {
+				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
+				dl->download(file, user, target + file->name);
+			} else {
+				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
+				dl->download(d, user, target);
+			} 
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
 	}
 }
 
@@ -163,19 +180,23 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		lvi.iSubItem = 0;
 		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
 		ctrlList.GetItem(&lvi);
-		
-		if(lvi.iImage == 2) {
-			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-			string target = file->name;
-			if(Util::browseSaveFile(target))
-				dl->download(file, user, target);
-		} else {
-			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-			string target;
-			if(Util::browseDirectory(target)) {
-				dl->download(d, user, target);
-			}
-		} 
+
+		try {
+			if(lvi.iImage == 2) {
+				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
+				string target = file->name;
+				if(Util::browseSaveFile(target))
+					dl->download(file, user, target);
+			} else {
+				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
+				string target;
+				if(Util::browseDirectory(target)) {
+					dl->download(d, user, target);
+				}
+			} 
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
 	} else {
 		string target = Settings::getDownloadDirectory();
 		if(Util::browseDirectory(target, m_hWnd)) {
@@ -243,9 +264,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.11 2002/01/02 16:12:32 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.12 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.12  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.11  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources
  *

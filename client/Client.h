@@ -334,7 +334,7 @@ private:
 			(*i)->onClientGetPassword(this);
 		}
 	}
-	void fireHello(User::Ptr aUser) {
+	void fireHello(User::Ptr& aUser) {
 		//dcdebug("fireHello\n");
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -388,7 +388,7 @@ private:
 			(*i)->onClientMessage(this, aMessage);
 		}
 	}
-	void fireMyInfo(User::Ptr aUser) {
+	void fireMyInfo(User::Ptr& aUser) {
 //		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -424,7 +424,7 @@ private:
 			(*i)->onClientPrivateMessage(this, aUser, aMessage);
 		}
 	}
-	void fireQuit(User::Ptr aUser) {
+	void fireQuit(User::Ptr& aUser) {
 		//dcdebug("fireQuit %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -433,7 +433,7 @@ private:
 			(*i)->onClientQuit(this, aUser);
 		}
 	}
-	void fireRevConnectToMe(User::Ptr aUser) {
+	void fireRevConnectToMe(User::Ptr& aUser) {
 		dcdebug("fireRevConnectToMe %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -476,9 +476,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.19 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: Client.h,v 1.20 2002/01/05 18:32:42 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.20  2002/01/05 18:32:42  arnetheduck
+ * Added two new icons, fixed some bugs, and updated some other things
+ *
  * Revision 1.19  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *
