@@ -1,3 +1,17 @@
+ -- --
+* Fixed upload slots bug
+* Fixed download resume bug
+* Fixed security bug (allowing people to download arbitrary files on the hd...thanx Simon E.)
+* Added new settings dialog
+* Added client version option
+* Added rollback size option
+* Added auto-follow redirects option
+* Removed some level 4 warnings when compiling
+* Almost made compatible with VC++ 7.0 (You still have to change one line in the WTL to compile due to changes in ATL...)
+* Fixed some performance issues with large download queues (the app was doing a lot of unnecessary saving...). This should also
+  solve the problems people have had with unsaved settings...
+
+
  -- 0.132 2002-01-21 --
 * Fixed a bug when downloading tiny file lists (people with 0b share...)
 * Removed the empty line in the chat windows

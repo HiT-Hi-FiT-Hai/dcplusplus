@@ -53,8 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.8 /subsystem:windows /map /machine:I386
-# SUBTRACT LINK32 /profile /debug
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.8 /subsystem:windows /profile /map /debug /machine:I386
 
 !ELSEIF  "$(CFG)" == "DCPlusPlus - Win32 Debug"
 
@@ -70,7 +69,7 @@ LINK32=xilink6.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /G6 /Gr /MTd /W3 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /Yu"stdafx.h" /FD /GZ /c
+# ADD CPP /nologo /G6 /Gr /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /Yu"stdafx.h" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
@@ -92,6 +91,10 @@ LINK32=xilink6.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\client\AdvancedPage.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=.\client\BitInputStream.cpp
@@ -146,6 +149,10 @@ SOURCE=.\client\DownloadManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\DownloadPage.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Exception.cpp
 # End Source File
 # Begin Source File
@@ -163,6 +170,10 @@ SOURCE=.\client\File.cpp
 # Begin Source File
 
 SOURCE=.\client\FlatTabCtrl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\GeneralPage.cpp
 # End Source File
 # Begin Source File
 
@@ -191,6 +202,14 @@ SOURCE=.\client\Pointer.cpp
 # Begin Source File
 
 SOURCE=.\client\PrivateFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\PropertiesDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\PropPage.cpp
 # End Source File
 # Begin Source File
 
@@ -247,6 +266,10 @@ SOURCE=.\client\UploadManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\UploadPage.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\User.cpp
 # End Source File
 # Begin Source File
@@ -264,6 +287,10 @@ SOURCE=.\client\Util.cpp
 # Begin Source File
 
 SOURCE=.\client\AboutDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\AdvancedPage.h
 # End Source File
 # Begin Source File
 
@@ -319,6 +346,10 @@ SOURCE=.\client\DownloadManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\DownloadPage.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Exception.h
 # End Source File
 # Begin Source File
@@ -336,6 +367,10 @@ SOURCE=.\client\File.h
 # Begin Source File
 
 SOURCE=.\client\FlatTabCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\GeneralPage.h
 # End Source File
 # Begin Source File
 
@@ -368,6 +403,14 @@ SOURCE=.\client\Pointer.h
 # Begin Source File
 
 SOURCE=.\client\PrivateFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\PropertiesDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\PropPage.h
 # End Source File
 # Begin Source File
 
@@ -424,6 +467,10 @@ SOURCE=.\client\TimerManager.h
 # Begin Source File
 
 SOURCE=.\client\UploadManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\UploadPage.h
 # End Source File
 # Begin Source File
 

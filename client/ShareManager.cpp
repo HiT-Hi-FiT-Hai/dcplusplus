@@ -44,7 +44,16 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(j == dirs.end()) {
 			throw ShareException("File Not Available");
 		}
-
+		
+		// Make sure they're not trying something funny with the path and the get command...
+		if(aFile.find("..\\") != string::npos) {
+			throw ShareException("Get Lost");
+		}
+		
+		if(Util::findSubString(aFile, "DCPlusPlus.xml") != string::npos) {
+			throw ShareException("Don't think so");
+		}
+		
 		return j->second + aFile.substr(i);
 	}
 
@@ -308,9 +317,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.17 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.18 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.18  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.17  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

@@ -31,9 +31,9 @@ char const* SettingsManager::settingTags[] =
 {
 	// Strings
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
-	"SENTRY", 
+	"ClientVersion", "SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", "Rollback",
+	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow"
 	"SENTRY"
 };
 

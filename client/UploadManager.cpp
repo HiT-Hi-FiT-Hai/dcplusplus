@@ -72,14 +72,21 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			
 			dcdebug("UploadManager::onGet Unexpected command\n");				
 			
-			fire(UploadManagerListener::FAILED, i->second, "Unexpected command");
-			delete i->second;
-			dcdebug("onGet: Removing upload\n");
+			u = i->second;
 			uploads.erase(i);
-			
+
+			if(isExtra(u)) {
+				extra--;
+			} else {
+				running--;
+			}
+						
 			cs.leave();
 
 			removeConnection(aSource);
+
+			fire(UploadManagerListener::FAILED, u, "Unexpected command");
+			delete u;
 			return;
 		} 
 
@@ -237,9 +244,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.11 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.12 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.12  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.11  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

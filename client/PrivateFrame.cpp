@@ -58,7 +58,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 
 PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
-	PrivateFrame* p;
+	PrivateFrame* p = NULL;
 	cs.enter();
 	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
 	if(i == frames.end()) {
@@ -118,9 +118,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.10 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.11 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.11  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.10  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

@@ -26,6 +26,7 @@
 #include "PublicHubsFrm.h"
 #include "SettingsDlg.h"
 #include "SimpleXML.h"
+#include "PropertiesDlg.h"
 
 #include "ConnectionManager.h"
 #include "DownloadManager.h"
@@ -441,6 +442,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, Util::getLocalIp());
 	SettingsManager::getInstance()->setDefault(SettingsManager::PORT, 412);
 	SettingsManager::getInstance()->setDefault(SettingsManager::ROLLBACK, 1024);
+	SettingsManager::getInstance()->setDefault(SettingsManager::CLIENTVERSION, "1,0091");
+	SettingsManager::getInstance()->setDefault(SettingsManager::AUTO_FOLLOW, true);
 
 	ShareManager::getInstance()->refresh();
 	HubManager::getInstance()->refresh();
@@ -632,8 +635,8 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
-#ifdef PELI
-#include "PropertiesDlg.h"
+//#ifdef 1 // PELI
+
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PropertiesDlg dlg(SettingsManager::getInstance());
@@ -654,7 +657,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 	return 0;
 }
-#else // PELI
+//#else // PELI
+#if 0
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	SettingsDlg dlg;
 	dlg.nick = SettingsManager::getInstance()->get(SettingsManager::NICK, false);
@@ -859,9 +863,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.45 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.46 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.46  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.45  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

@@ -142,7 +142,7 @@ public:
 				return true;
 		}
 		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
-			if( !((*j)->getUser() && (*j)->getUser()->isOnline()) && ((*j)->getNick() == aUser->getNick())) {
+			if( (((*j)->getUser() && !(*j)->getUser()->isOnline()) || !(*j)->getUser()) && ((*j)->getNick() == aUser->getNick())) {
 				(*j)->setUser(aUser);
 				return true;
 			}
@@ -273,7 +273,7 @@ private:
 	}
 
 	friend class Singleton<DownloadManager>;
-	DownloadManager() { 
+	DownloadManager() : dirty(0) { 
 		TimerManager::getInstance()->addListener(this);
 	};
 	virtual ~DownloadManager() {
@@ -282,10 +282,19 @@ private:
 		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
 			DeleteFile(i->c_str());
 		}
+		// Delete queued items...
+		{
+			Lock l(cs);
+			for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
+				delete *j;
+			}
+			queue.empty();
+		}
 	};
 	
 	CriticalSection cs;
-
+	bool dirty;			// Indicates whether the queue needs saving
+	
 	Download::List queue;
 	map<User::Ptr, DWORD> waiting;
 	Download::Map running;
@@ -299,13 +308,15 @@ private:
 		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 			if((*i)->isSource(aUser) ) {
 				if( !(*i)->isSet(Download::RUNNING) ) {
-					if((*i)->getSize() < 16*1024) {
+					if((*i)->getSize() < 16*1024 || (*i)->isSet(Download::USER_LIST)) {
 						d = *i;
+						dcdebug("Found better download for %s: %s\n", aUser->getNick().c_str(), d->getTarget().c_str());
 						break;
 					}
 
 					if(d == NULL) {
 						d = *i;
+						dcdebug("Found download for %s: %s\n", aUser->getNick().c_str(), d->getTarget().c_str());
 					}
 				}
 			}
@@ -370,9 +381,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.29 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.30 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.30  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.29  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

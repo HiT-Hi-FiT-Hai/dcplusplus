@@ -76,6 +76,12 @@ public:
 			if(i->second == aUpload) {
 				fire(UploadManagerListener::FAILED, aUpload, "Aborted");
 				uploads.erase(i);
+				if(isExtra(aUpload)) {
+					extra--;
+				} else {
+					running--;
+				}
+				
 				cs.leave();
 				removeConnection(i->first);
 				delete aUpload;
@@ -221,9 +227,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.33 2002/01/23 08:45:37 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.34 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.34  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.33  2002/01/23 08:45:37  arnetheduck
  * New files for the notepad
  *

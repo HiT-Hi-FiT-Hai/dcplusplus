@@ -37,7 +37,7 @@ public:
 		hubName(rhs.hubName), hubAddress(rhs.hubAddress), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots) { };
 
 	string getFileName() { 
-		int i;
+		string::size_type i;
 		if( (i=file.rfind('\\')) != string::npos ) {
 			if((i + 1) < file.size()) {
 				return file.substr(i + 1);
@@ -153,9 +153,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.10 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.11 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.11  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.10  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

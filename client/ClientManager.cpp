@@ -52,11 +52,20 @@ void ClientManager::putClient(Client* aClient) {
 
 void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
 	if(aUser->getNick() == aClient->getNick()) {
-		aClient->version("1,0091");
+		aClient->version(SETTING(CLIENTVERSION));
 		aClient->getNickList();
 		aClient->myInfo(aClient->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
 	} else {
 		aClient->getInfo(aUser);
+	}
+}
+
+void ClientManager::infoUpdated() {
+	Lock l(cs);
+	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
+		if((*i)->isConnected()) {
+			(*i)->myInfo((*i)->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
+		}
 	}
 }
 
@@ -122,9 +131,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.7 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.7  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

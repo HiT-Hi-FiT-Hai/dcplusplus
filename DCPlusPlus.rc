@@ -308,12 +308,12 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON    DISCARDABLE     "res\\DCPlusPlus.ico"
-IDR_HUB                 ICON    DISCARDABLE     "res\\Hub.ico"
 IDR_PUBLICHUBS          ICON    DISCARDABLE     "res\\PublicHubs.ico"
 IDR_SEARCH              ICON    DISCARDABLE     "res\\search.ico"
 IDR_FAVORITES           ICON    DISCARDABLE     "res\\Favorites.ico"
 IDR_PRIVATE             ICON    DISCARDABLE     "res\\User.ico"
 IDR_DIRECTORY           ICON    DISCARDABLE     "res\\Directory.ico"
+IDR_HUB                 ICON    DISCARDABLE     "res\\Hub.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -332,52 +332,6 @@ BEGIN
     GROUPBOX        "",IDC_STATIC,7,7,166,69
 END
 
-IDD_SETTINGS DIALOG DISCARDABLE  0, 0, 397, 282
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Settings"
-FONT 8, "MS Sans Serif"
-BEGIN
-    EDITTEXT        IDC_NICK,74,16,103,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EMAIL,74,34,103,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_DESCRIPTION,74,52,103,14,ES_AUTOHSCROLL
-    COMBOBOX        IDC_CONNECTION,74,71,103,65,CBS_DROPDOWNLIST | 
-                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Active",IDC_ACTIVE,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,202,18,36,10
-    EDITTEXT        IDC_SERVER,264,52,68,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_PORT,355,52,29,14,ES_AUTOHSCROLL
-    CONTROL         "Passive (behind a firewall)",IDC_PASSIVE,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,202,72,97,10
-    CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,14,105,370,89
-    PUSHBUTTON      "&Add  folder",IDC_ADD,334,199,50,14
-    PUSHBUTTON      "&Remove",IDC_REMOVE,277,199,50,14,WS_DISABLED
-    EDITTEXT        IDC_SLOTS,202,199,36,14,ES_AUTOHSCROLL
-    CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
-                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,238,199,11,14
-    DEFPUSHBUTTON   "OK",IDOK,340,261,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,283,261,50,14
-    GROUPBOX        "Personal information",IDC_STATIC,7,7,178,84
-    LTEXT           "Nick (Required)",IDC_STATIC,14,19,50,8
-    LTEXT           "E-Mail",IDC_STATIC,14,37,20,8
-    LTEXT           "Description",IDC_STATIC,14,55,36,8
-    LTEXT           "Connection",IDC_STATIC,14,73,37,8
-    GROUPBOX        "Connection Settings",IDC_STATIC,195,7,195,84
-    LTEXT           "IP",IDC_STATIC,238,55,8,8
-    LTEXT           "Port",IDC_STATIC,333,55,14,8
-    LTEXT           "This is the most common configuration. Select this and enter IP and port you want to use for incoming connections, or the default will be used.",
-                    IDC_STATIC,238,18,146,34
-    GROUPBOX        "File sharing",IDC_STATIC,7,95,383,124
-    LTEXT           "Total size:",IDC_STATIC,14,202,33,8
-    LTEXT           "0 B",IDC_TOTAL,49,202,43,8
-    LTEXT           "Upload slots",IDC_STATIC,155,202,40,8
-    EDITTEXT        IDC_DOWNLOADDIR,14,234,314,14,ES_AUTOHSCROLL
-    GROUPBOX        "Default download directory",IDC_STATIC,7,222,383,32
-    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,334,234,50,14
-END
-
 IDD_LINE DIALOG DISCARDABLE  0, 0, 239, 46
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Title"
@@ -387,6 +341,77 @@ BEGIN
     GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
     EDITTEXT        IDC_LINE,13,18,156,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Cancel",IDCANCEL,182,25,50,14
+END
+
+IDD_GENERALPAGE DIALOG DISCARDABLE  0, 0, 275, 225
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "General"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_NICK,73,17,185,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EMAIL,74,34,184,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DESCRIPTION,73,51,185,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_CONNECTION,74,68,58,65,CBS_DROPDOWNLIST | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Active",IDC_ACTIVE,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,14,108,36,10
+    EDITTEXT        IDC_SERVER,74,178,68,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_PORT,167,178,29,14,ES_AUTOHSCROLL
+    CONTROL         "Passive (behind a firewall)",IDC_PASSIVE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,14,197,97,10
+    GROUPBOX        "Personal information",IDC_STATIC,7,7,261,80
+    LTEXT           "Nick (Required)",IDC_STATIC,14,20,50,8
+    LTEXT           "E-Mail",IDC_STATIC,14,37,20,8
+    LTEXT           "Description",IDC_STATIC,13,54,36,8
+    LTEXT           "Connection",IDC_STATIC,13,70,37,8
+    GROUPBOX        "Connection Settings",IDC_STATIC,7,94,261,124
+    LTEXT           "IP",IDC_STATIC,55,181,8,8
+    LTEXT           "Port",IDC_STATIC,148,181,14,8
+    LTEXT           "",IDC_MODEHELP,55,109,203,66
+END
+
+IDD_ADVANCEDPAGE DIALOG DISCARDABLE  0, 0, 275, 225
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Advanced"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Rollback bytes",IDC_STATIC,14,22,48,8
+    EDITTEXT        IDC_ROLLBACK,71,19,50,14,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
+    LTEXT           "Client version",IDC_STATIC,15,39,43,8
+    EDITTEXT        IDC_CLVERSION,71,36,50,14
+    CONTROL         "Follow redirects",IDC_AUTOFOLLOW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,55,65,10
+END
+
+IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Downloads"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_DOWNLOADDIR,15,19,186,14,ES_AUTOHSCROLL
+    GROUPBOX        "Default download directory",IDC_STATIC,7,7,261,33
+    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,209,19,50,14
+END
+
+IDD_UPLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Sharing"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,14,17,247,160
+    PUSHBUTTON      "&Add  folder",IDC_ADD,211,183,50,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE,155,183,50,14,WS_DISABLED
+    EDITTEXT        IDC_SLOTS,58,198,25,14,ES_NUMBER
+    CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,84,198,11,14
+    GROUPBOX        "Shared directories",IDC_STATIC,7,7,261,211
+    LTEXT           "Total size:",IDC_STATIC,14,181,33,8
+    LTEXT           "0 B",IDC_TOTAL,50,181,43,8
+    LTEXT           "Upload slots",IDC_STATIC,14,201,40,8
 END
 
 
@@ -406,29 +431,49 @@ BEGIN
         BOTTOMMARGIN, 96
     END
 
-    IDD_SETTINGS, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 390
-        VERTGUIDE, 14
-        VERTGUIDE, 74
-        VERTGUIDE, 177
-        VERTGUIDE, 185
-        VERTGUIDE, 195
-        VERTGUIDE, 202
-        VERTGUIDE, 238
-        VERTGUIDE, 384
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 275
-        HORZGUIDE, 213
-    END
-
     IDD_LINE, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 232
         TOPMARGIN, 7
         BOTTOMMARGIN, 39
+    END
+
+    IDD_GENERALPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        VERTGUIDE, 14
+        VERTGUIDE, 74
+        VERTGUIDE, 258
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_ADVANCEDPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        VERTGUIDE, 15
+        VERTGUIDE, 71
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_DOWNLOADPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 217
+    END
+
+    IDD_UPLOADPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -479,35 +524,6 @@ BEGIN
 END
 
 #endif    // !_MAC
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog Info
-//
-
-IDD_SETTINGS DLGINIT
-BEGIN
-    IDC_CONNECTION, 0x403, 9, 0
-0x3832, 0x382e, 0x624b, 0x7370, "\000" 
-    IDC_CONNECTION, 0x403, 9, 0
-0x3333, 0x362e, 0x624b, 0x7370, "\000" 
-    IDC_CONNECTION, 0x403, 7, 0
-0x3635, 0x624b, 0x7370, "\000" 
-    IDC_CONNECTION, 0x403, 5, 0
-0x5349, 0x4e44, "\000" 
-    IDC_CONNECTION, 0x403, 10, 0
-0x6153, 0x6574, 0x6c6c, 0x7469, 0x0065, 
-    IDC_CONNECTION, 0x403, 6, 0
-0x6143, 0x6c62, 0x0065, 
-    IDC_CONNECTION, 0x403, 4, 0
-0x5344, 0x004c, 
-    IDC_CONNECTION, 0x403, 8, 0
-0x614c, 0x286e, 0x3154, 0x0029, 
-    IDC_CONNECTION, 0x403, 8, 0
-0x614c, 0x286e, 0x3354, 0x0029, 
-    0
-END
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -194,6 +194,12 @@ private:
 			conn->removeListener(this);
 			delete conn;
 		}
+		{
+			Lock l(cs);
+			for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
+				delete *i;
+			}
+		}
 	}
 	
 	string downloadBuf;
@@ -241,9 +247,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.18 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.19 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.19  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.18  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

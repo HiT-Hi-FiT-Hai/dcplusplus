@@ -107,6 +107,10 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		}
 	}
 	cs.leave();
+
+	if(dirty) {
+		SettingsManager::getInstance()->save();		
+	}
 }
 
 void DownloadManager::onTimerSecond(DWORD aTick) {
@@ -206,7 +210,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const User::
 				} else {
 					fileName = aFile;
 				}
-				SettingsManager::getInstance()->save();
+				dirty = true;
 				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
@@ -274,7 +278,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const User::
 	}
 	
 	cs.leave();
-	SettingsManager::getInstance()->save();
+	dirty = true;
 	fire(DownloadManagerListener::ADDED, d);
 	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 	
@@ -326,7 +330,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 				} else {
 					fileName = aFile;
 				}
-				SettingsManager::getInstance()->save();
+				dirty = true;
 				fire(DownloadManagerListener::SOURCE_ADDED, dd, dd->addSource(aUser, fileName, path));
 			}
 			
@@ -366,7 +370,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	queue.push_back(d);
 	cs.leave();
 
-	SettingsManager::getInstance()->save();
+	dirty = true;
 	fire(DownloadManagerListener::ADDED, d);
 	fire(DownloadManagerListener::SOURCE_ADDED, d, s);
 
@@ -406,7 +410,7 @@ void DownloadManager::removeDownload(Download* aDownload) {
 		queue.erase(i);
 	}
 
-	SettingsManager::getInstance()->save();
+	dirty = true;
 	
 	fire(DownloadManagerListener::REMOVED, aDownload);
 	delete aDownload;
@@ -505,6 +509,7 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 				removeConnection(uc);
 				aDownload->unsetFlag(Download::RUNNING);
 				aDownload->setCurrentSource(NULL);
+				aDownload->setFile(NULL);
 				fire(DownloadManagerListener::FAILED, aDownload, "User removed");
 				break;
 			}
@@ -516,14 +521,14 @@ void DownloadManager::removeSource(Download* aDownload, Download::Source::Ptr aS
 		if(i != queue.end()) {
 			queue.erase(i);
 			cs.leave();
-			SettingsManager::getInstance()->save();
+			dirty = true;
 			fire(DownloadManagerListener::REMOVED, aDownload);
 			delete aDownload;
 		}
 	} else {
 		aDownload->removeSource(aSource);
 		cs.leave();
-		SettingsManager::getInstance()->save();
+		dirty = true;
 		fire(DownloadManagerListener::SOURCE_REMOVED, aDownload, aSource);
 	}
 }
@@ -640,7 +645,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			removeConnection(aSource);
 			
 			// We're done...and this connection is broken...
-			SettingsManager::getInstance()->save();
+			dirty = true;
 			fire(DownloadManagerListener::COMPLETE, d);
 			fire(DownloadManagerListener::REMOVED, d);
 			delete d;
@@ -675,7 +680,7 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 		
 		p->setFile(NULL);
 		
-		SettingsManager::getInstance()->save();
+		dirty = true;
 		dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
 		fire(DownloadManagerListener::COMPLETE, p);
 		fire(DownloadManagerListener::REMOVED, p);
@@ -755,6 +760,8 @@ void DownloadManager::save(SimpleXML* aXml) {
 		}
 	}
 	aXml->stepOut();
+	dirty = false;
+	
 }
 
 void DownloadManager::load(SimpleXML* aXml) {
@@ -786,9 +793,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.37 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.38 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.38  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.37  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

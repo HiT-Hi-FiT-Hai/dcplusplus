@@ -31,7 +31,7 @@ string CryptoManager::keySubst(string aKey, int n) {
 	
 	int j=0;
 	
-	for(int i = 0; i<aKey.length(); i++) {
+	for(string::size_type i = 0; i<aKey.length(); i++) {
 		if(isExtra(aKey[i])) {
 			temp[j++] = '/'; temp[j++] = '%'; temp[j++] = 'D';
 			temp[j++] = 'C'; temp[j++] = 'N';
@@ -62,7 +62,7 @@ string CryptoManager::makeKey(const string& lock) {
 	v1 = (v1 >> 4) | (v1 << 4);
 	temp[0] = v1;
 	
-	for(int i = 1; i<lock.length(); i++) {
+	for(string::size_type i = 1; i<lock.length(); i++) {
 		v1 = lock[i]^lock[i-1];
 		v1 = (v1 >> 4) | (v1 << 4);
 		temp[i] = v1;
@@ -324,9 +324,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.15 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.16 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.16  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.15  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -103,6 +103,8 @@ public:
 		}
 	}
 
+	void infoUpdated();
+
 private:
 	Client::List clients;
 	CriticalSection cs;
@@ -112,6 +114,19 @@ private:
 	virtual ~ClientManager() { };
 
 	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client, const string& line1) {
+		switch(type) {
+		case ClientListener::FORCE_MOVE:
+			if(BOOLSETTING(AUTO_FOLLOW)) {
+				string s, f;
+				short p = 411;
+				Util::decodeUrl(line1, s, p, f);
+				client->connect(s, p);
+			}
+		}
+	}
+	
+	
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
 		switch(type) {
 		case ClientListener::LOCK:
@@ -173,9 +188,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.10 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.11 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.11  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.10  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

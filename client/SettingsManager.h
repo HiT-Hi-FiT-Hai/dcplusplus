@@ -33,10 +33,10 @@ public:
 
 	enum StrSetting { STR_FIRST,
 		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOAD_DIRECTORY, EMAIL, NICK, SERVER,
-		STR_LAST };
+		CLIENTVERSION, STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
-		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK,
+		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -157,5 +157,6 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 // Shorthand accessor macros
 #define SETTING(k) (SettingsManager::getInstance()->get(SettingsManager::k, true))
+#define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
 #endif // SETTINGSMANAGER_H

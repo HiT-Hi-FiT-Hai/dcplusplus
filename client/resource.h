@@ -3,6 +3,8 @@
 // Used by C:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
+#define IDD_PROPPAGE_1                  107
+#define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
 #define IDR_HUB                         129
@@ -18,6 +20,10 @@
 #define IDD_PASSWORD                    209
 #define IDD_LINE                        209
 #define IDB_USERS                       210
+#define IDD_PROPPAGE_2                  210
+#define IDD_ADVANCEDPAGE                210
+#define IDD_DOWNLOADPAGE                211
+#define IDD_UPLOADPAGE                  212
 #define IDB_TOOLBAR                     213
 #define IDR_PUBLICHUBS                  215
 #define IDR_SEARCH                      216
@@ -51,9 +57,13 @@
 #define IDC_PRIVATEMESSAGE              1021
 #define IDC_VERSION                     1021
 #define IDC_GETLIST                     1022
+#define IDC_ROLLBACK                    1022
 #define IDC_KICK                        1023
+#define IDC_CLVERSION                   1023
 #define IDC_REDIRECT                    1024
+#define IDC_AUTOFOLLOW                  1024
 #define IDC_REMOVESOURCE                1025
+#define IDC_MODEHELP                    1025
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
 #define ID_FILE_CONNECT                 32772
@@ -70,9 +80,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        220
+#define _APS_NEXT_RESOURCE_VALUE        221
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1022
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

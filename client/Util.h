@@ -266,7 +266,7 @@ public:
 
 	static string toLower(const string& aString) {
 		string tmp = aString;
-		for(int i = 0; i < tmp.size(); i++) {
+		for(string::size_type i = 0; i < tmp.size(); i++) {
 			tmp[i] = tolower(tmp[i]);
 		}
 		return tmp;
@@ -285,7 +285,7 @@ public:
 	}
 
 	static float toFloat(const string& aString) {
-		return atof(aString.c_str());
+		return (float)atof(aString.c_str());
 	}
 
 	static string toString(LONGLONG val) {
@@ -411,9 +411,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.21 2002/01/22 00:10:38 arnetheduck Exp $
+ * $Id: Util.h,v 1.22 2002/01/25 00:11:26 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.22  2002/01/25 00:11:26  arnetheduck
+ * New settings dialog and various fixes
+ *
  * Revision 1.21  2002/01/22 00:10:38  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...
