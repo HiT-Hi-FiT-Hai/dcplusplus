@@ -24,7 +24,7 @@
 #include "ClientManager.h"
 #include "SearchManager.h"
 
-int Client::hubs = 0;
+long Client::hubs = 0;
 
 void Client::connect(const string& aServer) {
 	
@@ -311,6 +311,10 @@ void Client::onLine(const string& aLine) throw() {
 			}
 		}
 	} else if(cmd == "$GetPass") {
+		if(counted) {
+			InterlockedDecrement(&hubs);
+			counted = false;
+		}
 		fire(ClientListener::GET_PASSWORD, this);
 	} else if(cmd == "$BadPass") {
 		fire(ClientListener::BAD_PASSWORD, this);
@@ -361,9 +365,12 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.33 2002/03/13 23:06:07 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.34 2002/03/14 16:17:35 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.34  2002/03/14 16:17:35  arnetheduck
+ * Oops, file buffering bug
+ *
  * Revision 1.33  2002/03/13 23:06:07  arnetheduck
  * New info sent in the description part of myinfo...
  *

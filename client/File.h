@@ -184,14 +184,16 @@ public:
 	}
 
 	virtual DWORD write(const void* aBuf, DWORD len) throw(FileException) {
+		int pos2 = 0;
 		while(len) {
 			if(pos == 0 && len > size) {
 				File::write(aBuf, len);
 				len = 0;
 			} else {
 				int i = min(size-pos, len);
-				memcpy(buf+pos, aBuf, i);
+				memcpy(buf+pos, ((char*)aBuf)+pos2, i);
 				pos += i;
+				pos2 += i;
 				dcassert(pos <= size);
 				len -= i;
 
@@ -226,9 +228,12 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.6 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: File.h,v 1.7 2002/03/14 16:17:35 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.7  2002/03/14 16:17:35  arnetheduck
+ * Oops, file buffering bug
+ *
  * Revision 1.6  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

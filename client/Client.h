@@ -106,7 +106,9 @@ public:
 		lastHubs = hubs;
 		lastUpdate = TimerManager::getTick();
 		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
-			"<++ V:" VERSIONSTRING ",H:" + Util::toString(lastHubs) + ",S:" + Util::toString(SETTING(SLOTS)) + ">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
+			"<++ V:" VERSIONSTRING ",M:" + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
+			",H:" + Util::toString(lastHubs) + ",S:" + Util::toString(SETTING(SLOTS)) + 
+			">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -238,7 +240,7 @@ private:
 	CriticalSection cs;
 
 	User::NickMap users;
-	static int hubs;
+	static long hubs;
 
 	int lastHubs;
 	bool counted;
@@ -259,6 +261,8 @@ private:
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
 		removeListeners();
+		if(counted)
+			InterlockedDecrement(&hubs);
 	};
 	
 	// TimerManagerListener
@@ -295,7 +299,7 @@ private:
 			fire(ClientListener::FAILED, this, aLine);
 			disconnect();
 			if(counted) {
-				hubs--;
+				InterlockedDecrement(&hubs);
 				dcassert( hubs >= 0 );
 				counted = false;
 			}
@@ -309,7 +313,7 @@ private:
 		case BufferedSocketListener::CONNECTED:
 			lastActivity = TimerManager::getTick();
 			fire(ClientListener::CONNECTED, this);
-			hubs++;
+			InterlockedIncrement(&hubs);
 			counted = true;
 			break;
 		}
@@ -328,9 +332,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.44 2002/03/13 23:06:07 arnetheduck Exp $
+ * $Id: Client.h,v 1.45 2002/03/14 16:17:35 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.45  2002/03/14 16:17:35  arnetheduck
+ * Oops, file buffering bug
+ *
  * Revision 1.44  2002/03/13 23:06:07  arnetheduck
  * New info sent in the description part of myinfo...
  *

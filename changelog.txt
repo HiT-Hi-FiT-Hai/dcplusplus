@@ -29,6 +29,9 @@
 * Added write buffering to reduce fragmentation when downloading multiple files
 * New search window with new search options (file types, free slots)
 * A first go at internationalization...many of the texts in DC++ can now be changed by loading a different language XML
+* Added some information to the description field, <++ V:x,M:x,H:x,S:x> where V = client version, M = mode (a=active, p=passive)
+  H=number of hubs connected to where you're not a registered user, S=number of slots you have open. This is updated every 10-15 minutes.
+
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.
