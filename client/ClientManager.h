@@ -132,7 +132,7 @@ public:
  	}
 
 private:
-	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
+	typedef HASH_MULTIMAP_X(string, User::Ptr, noCaseStringHash, noCaseStringEq, noCaseStringLess) UserMap;
 	typedef UserMap::iterator UserIter;
 	typedef pair<UserIter, UserIter> UserPair;
 
@@ -174,6 +174,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.50 2004/09/09 09:27:35 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.51 2004/11/02 09:18:55 arnetheduck Exp $
  */
 
