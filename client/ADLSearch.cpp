@@ -83,6 +83,9 @@ void ADLSearchManager::Load()
 					if(xml.findChild("SizeType")) {
 						search.typeFileSize = search.StringToSizeType(xml.getChildData());
 					}
+					if(xml.findChild("IsAutoQueue")) {
+						search.isAutoQueue = (Util::toInt(xml.getChildData()) != 0);
+					}
 
 					// Add search to collection
 					if(search.searchString.size() > 0) {
@@ -150,6 +153,9 @@ void ADLSearchManager::Save()
 
 			xml.addTag("SizeType", search.SizeTypeToString(search.typeFileSize));
 			xml.addChildAttrib(type, string("string"));
+
+			xml.addTag("IsAutoQueue", search.isAutoQueue);
+			xml.addChildAttrib(type, string("int"));
 
 			xml.stepOut();
 		}
@@ -287,6 +293,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.15 2004/09/24 20:48:27 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.16 2004/10/25 14:42:09 arnetheduck Exp $
 */
 

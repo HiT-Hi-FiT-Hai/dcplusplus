@@ -1,13 +1,13 @@
 ﻿-- 0.4035 --
-* Fixed copy nick to clipboard (thanks trem)
+* Fixed copy nick to clipboard (thanks trem) [bug 173]
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)
 * Added # of locally filtered results to search frame (thanks garg)
 * Fixed a crash in the upnp code
 * Fixed wide formatting of time (thanks garg)
-* Added local filtering of searches with "-" in front of the search term (thanks cologic)
+* Added local filtering of searches with "-" in front of the search term (thanks cologic) [bug 166]
 * Fixed a missing hubframe stats bug (thanks trem)
-* TTH's are now correctly searched for in search spy (thanks trem)
+* TTH's are now correctly searched for in search spy (thanks trem) [bug 87]
 * Fixed an issue with utf8 user commands (thanks trem)
 * Moved to a less intrusive build procedure where stlport and wtl are local to the
   DC++ build (see compile.txt)
@@ -15,36 +15,39 @@
 * More internationalization (thanks garg)
 * Updated some template code (thanks farcry)
 * Extended log command (thanks ullner)
-* Fixed issue with utf-8 nicks during login to some hubs (thanks garg)
+* Fixed issue with utf-8 nicks during login to some hubs (thanks garg) [bug 212]
 * Fixed issue with utf-8 time formatting for certain languages in certain locales
 * Removed search optimisation obsoleted by tth's and bloom filters (those of
   you with a large number of files in your share, post on the forum if you notice
   any big increase in CPU usage)
-* Added option not to download files already in share (by TTH) (thanks TPO)
+* Added option not to download files already in share (by TTH) (thanks TPO) [bug 69]
 * Help file work (garg, ullner)
 * Added petabytes (PiB) (thanks garg)
 * Clicking on active tab will deactivate it (thanks garg)
-* Fixed an issue with loading invalid virtual names when upgrading (thanks garg)
+* Fixed an issue with loading invalid virtual names when upgrading (thanks garg) [bug 227]
 * Fixed another issue with user commands (thanks garg)
 * Updated to WTL 7.5.4291
-* Hopefully fixed a few issues with w9x and Unicode
+* Hopefully fixed a few issues with w9x and Unicode [bug 183]
 * Fixed common control initialization
 * Unix makefile now generates a shared lib (thanks jeremy huddleston)
 * Slight memory save for hash database
 * Added favorite hub removal confirmation option (thanks ullner)
-* Fixed broken redirect (thanks garg)
+* Fixed broken redirect (thanks garg) [bug 5]
+* Added spy frame column saving (thanks garg)
+* ADL Search autoqueue saved now (thanks garg)
+
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
-* Fixed a few issues with files not being hashed correctly (thanks garg)
+* Fixed a few issues with files not being hashed correctly (thanks garg) [bug 170]
 * More ADC fixes (thanks sed)
 * Fixed some ADLSearch stuff (thanks garg)
 * Added item count to finished frames (thanks garg)
 * Fixed user commands encoding (thanks garg)
 * Added last search time to search spy (thanks ullner)
-* Fixed queue size growing on queue item move
+* Fixed queue size growing on queue item move [bug 3]
 * Fixed missing file list on 0 byte share
-* Fixed missing search results (thanks garg)
+* Fixed missing search results (thanks garg) [bug 185]
 
 -- 0.4033 2004-09-27 --
 *** WARNING *** 
@@ -61,7 +64,7 @@ international filenames in it - they will not be correctly converted.
 * Files that can't be moved to the target drive from the temp folder
   are now renamed to their real name
 * Text with unix and mac line end encodings should now be correctly displayed
-* TTH Values are used for right click download menus when available
+* TTH Values are used for right click download menus when available [bug 35]
 * Upgraded to WTL 7.5.4196
 * Updated license to allow others to release legal binaries compiled against WTL
 * Moved the core structures to UTF-8 to allow correct internationalisation (major change)
@@ -74,7 +77,7 @@ international filenames in it - they will not be correctly converted.
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
-* Added UPnP support (thanks mark gillespie)
+* Added UPnP support (thanks mark gillespie) [bug 127]
 * Ctrl-L now opens file lists (thanks garg)
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
@@ -90,7 +93,7 @@ international filenames in it - they will not be correctly converted.
 * Files scheduled for viewing are always set to highest prio
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
-* Fixed dupe usercommands on reconnect (thanks sed)
+* Fixed dupe usercommands on reconnect (thanks sed) [bug 162]
 * Links now clickable in PM's and notepad as well (thanks torgny nyblom)
 * Files are no longer hashed if the shared directory is removed while hashing
 * Added hash progress dialog, hashing is run at a higher priority when dialog is shown
@@ -98,7 +101,7 @@ international filenames in it - they will not be correctly converted.
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
-* Fixed a memory leak with rollback buffers under certain conditions
+* Fixed a memory leak with rollback buffers under certain conditions [bug 169]
 * ADC INF updates only send the necessary info (thanks sed)
 
  -- 0.4032 2004-08-08 --
@@ -223,6 +226,7 @@ international filenames in it - they will not be correctly converted.
 * Fixed a rare deadlock when autosearching
 * Search by TTH greyed out for items that don't have a TTH root (thanks slowmo)
 * Added default menu items to finished frames (thanks slowmo)
+* TTH leaves (TTHL) exchanged between capable clients to verify data integrity
 
 
  -- 0.401 2004-03-28 --
@@ -565,7 +569,7 @@ Major:
 * Added selection size info to queue frame (same as file listing)
 * Fixed some crashes when closing windows (and perhaps added some new ones...)
 
-ADLSearch: (by Henrik Engstr�m)
+ADLSearch: (by Henrik Engström)
   * Keyboard shortcuts.
   * Context menu (back again).
   * Removed 'Active' column and made it a check box.
@@ -607,7 +611,7 @@ Minor:
 * Added match queue feature to the file listing window. This will take every file in the file listing and see if there
   is any matching file in the queue (exact filename & size match). Every match will then be added to the queue as an
   extra source. Depending on your queue size and the number of files in the listing this might take some time to do...
-* UI updates to ADLSearch (by Henrik Engstr�m)
+* UI updates to ADLSearch (by Henrik Engström)
 
  -- 0.241 2003-04-01 --
 * Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
@@ -638,7 +642,7 @@ Minor:
 
  -- 0.24 2003-03-11 --
 * The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)
-* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engstr�m.
+* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engström.
 * Local ip handling improved, so that a per-hub ip is used if nothing is entered in the active field (good for
   people who connect to local hubs or through different network cards)
 * You can now use $ and | in the chat. DC++ uses the HTML standard &#36; and &#124; to replace them...some people

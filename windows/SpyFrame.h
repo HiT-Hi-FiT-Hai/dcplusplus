@@ -50,6 +50,9 @@ public:
 		COLUMN_LAST
 	};
 
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
+
 	DECLARE_FRAME_WND_CLASS_EX(_T("SpyFrame"), IDR_SPY, 0, COLOR_3DFACE)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
@@ -102,6 +105,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.19 2004/10/02 22:22:50 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.20 2004/10/25 14:42:09 arnetheduck Exp $
  */
 

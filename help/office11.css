@@ -3,11 +3,11 @@
 
 
 /* BODY = default paragraph font */ 
-	body		{bgcolor: #ffffff; font-family: Tahoma, Arial, Helvetica, sans-serif; font-size: 70%; }
+	body		{background-color: #ffffff; font-family: Tahoma, Arial, Helvetica, sans-serif; font-size: 70%; }
 	
 /* HYPERLINKS */ 
-	a:link, a:visited	{color: "#0000FF"; text-decoration:"none"; }
-	a:active, a:hover	{color: "#990099"; cursor:hand;text-decoration:"underline"; }
+	a:link, a:visited	{color: #0000FF; text-decoration: none; }
+	a:active, a:hover	{color: #990099; cursor:auto; text-decoration: underline; }
 	.pop		{text-decoration: none; }
 
 /* LISTS */ 
@@ -19,7 +19,7 @@
 
 /* PREFORMATTING - CODE */ 
 	pre		{font-size: 100%; margin-top: 1.2em; margin-bottom: 1.5em;}
-	code	 	{font-family: "courier new", courier; font-size: 125%; }
+	code	 	{font-family: "courier new", courier, monospace; font-size: 125%; }
 	
 /* TABLES */ 
 	table		{font-size: 100%; margin-top: 1em; margin-bottom: 0em;}

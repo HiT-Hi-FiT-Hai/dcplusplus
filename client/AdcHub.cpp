@@ -389,12 +389,11 @@ void AdcHub::on(Connected) throw() {
 void AdcHub::on(Failed, const string& aLine) throw() { 
 	if(getMe())
 		ClientManager::getInstance()->putUserOffline(getMe());
-	state = STATE_PROTOCOL;
 	setMe(NULL);
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.21 2004/10/24 11:25:40 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.22 2004/10/25 14:42:09 arnetheduck Exp $
  */

@@ -140,11 +140,6 @@ template<typename T> struct ReferenceSelector<T,true> {
 
 template<typename T> class IsOfClassType {
 public:
-	struct Overloads {
-		template<typename U> static char check(int U::*);
-		template<typename U> static float check(...);
-	};
-
 	template<typename U> static char check(int U::*);
 	template<typename U> static float check(...);
 public:
@@ -168,6 +163,6 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.43 2004/10/23 17:06:25 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.44 2004/10/25 14:42:09 arnetheduck Exp $
  */
 
