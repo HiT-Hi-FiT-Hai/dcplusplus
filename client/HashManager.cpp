@@ -1,5 +1,7 @@
 #include "stdinc.h"
-#include ".\hashmanager.h"
+#include "DCPlusPlus.h"
+
+#include "hashmanager.h"
 
 HashManager::HashManager(void)
 {
