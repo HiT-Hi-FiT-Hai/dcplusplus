@@ -64,7 +64,8 @@ public:
 		DOWNLOAD_LISTING,
 		STATS,
 		AUTO_CONNECT,
-		PARSE_COMMAND_LINE
+		PARSE_COMMAND_LINE,
+		VIEW_TEXT
 	};
 
 	enum {
@@ -474,7 +475,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.20 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.21 2003/09/22 13:17:24 arnetheduck Exp $
  */
 
  

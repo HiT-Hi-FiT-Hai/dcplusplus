@@ -77,6 +77,7 @@ void Client::connect() {
 	op = false;
 	registered = false;
 	reconnect = true;
+	firstHello = true;
 
 	if(socket->isConnected()) {
 		disconnect();
@@ -251,7 +252,11 @@ void Client::onLine(const string& aLine) throw() {
 				// Hm, we have something...
 				u->setTag(tmpDesc.substr(x));
 				tmpDesc.erase(x);
+			} else {
+				u->setTag(Util::emptyString);
 			}
+		} else {
+			u->setTag(Util::emptyString);
 		}
 		u->setDescription(tmpDesc);
 		i = j + 3;
@@ -375,7 +380,7 @@ void Client::onLine(const string& aLine) throw() {
 		}
 	} else if(cmd == "$Hello") {
 		if(!param.empty()) {
-			User::Ptr& u = ClientManager::getInstance()->getUser(param, this);
+			User::Ptr u = ClientManager::getInstance()->getUser(param, this);
 			{
 				Lock l(cs);
 				users[param] = u;
@@ -390,9 +395,12 @@ void Client::onLine(const string& aLine) throw() {
 					if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
 						u->setFlag(User::PASSIVE);
 				}
+				fire(ClientListener::HELLO, this, u);
+				setFirstHello(false);
+			} else {
+				fire(ClientListener::HELLO, this, u);
 			}
 			
-			fire(ClientListener::HELLO, this, u);
 		}
 	} else if(cmd == "$ForceMove") {
 		disconnect();
@@ -415,9 +423,7 @@ void Client::onLine(const string& aLine) throw() {
 						continue;
 					}
 					string nick = param.substr(k, j-k);
-					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
-
-					users[nick] = u;
+					User::Ptr& u = users[nick] = ClientManager::getInstance()->getUser(nick, this);
 
 					v.push_back(u);
 					k = j + 2;
@@ -439,8 +445,7 @@ void Client::onLine(const string& aLine) throw() {
 						continue;
 					}
 					string nick = param.substr(k, j-k);
-					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
-					users[nick] = u;
+					User::Ptr& u = users[nick] = ClientManager::getInstance()->getUser(nick, this);
 					u->setFlag(User::OP);
 
 					v.push_back(u);
@@ -650,6 +655,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.53 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.54 2003/09/22 13:17:21 arnetheduck Exp $
  */
 

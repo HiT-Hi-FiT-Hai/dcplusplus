@@ -103,8 +103,8 @@ private:
 	}
 };
 
-#endif STRINGSEARCH_H
+#endif // STRINGSEARCH_H
 /**
  * @file
- * $Id: StringSearch.h,v 1.4 2003/05/28 11:53:04 arnetheduck Exp $
+ * $Id: StringSearch.h,v 1.5 2003/09/22 13:17:23 arnetheduck Exp $
  */

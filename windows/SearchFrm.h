@@ -56,6 +56,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadWholeTo)
+		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
@@ -142,6 +143,11 @@ public:
 	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		downloadSelected(SETTING(DOWNLOAD_DIRECTORY));
+		return 0;
+	}
+
+	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		downloadSelected(Util::getTempPath(), true);
 		return 0;
 	}
 
@@ -274,10 +280,12 @@ private:
 
 	CriticalSection cs;
 
-	void downloadSelected(const string& aDir); 
+	void downloadSelected(const string& aDir, bool view = false); 
 	void downloadWholeSelected(const string& aDir);
 	void onEnter();
 	void onTab(bool shift);
+
+	void download(SearchResult* aSR, const string& aDir, bool view);
 	
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) throw() {
@@ -299,6 +307,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

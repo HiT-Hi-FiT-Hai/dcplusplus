@@ -90,8 +90,10 @@ public:
 
 	}
 
+	bool isOpen() { return h != INVALID_HANDLE_VALUE; };
+
 	virtual void close() throw() {
-		if(h != INVALID_HANDLE_VALUE) {
+		if(isOpen()) {
 			CloseHandle(h);
 			h = INVALID_HANDLE_VALUE;
 		}
@@ -156,7 +158,7 @@ public:
 		}
 	}
 	virtual void setEOF() throw(FileException) {
-		dcassert(h != INVALID_HANDLE_VALUE);
+		dcassert(isOpen());
 		if(!SetEndOfFile(h)) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
@@ -209,16 +211,18 @@ public:
 		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR);
 		if(h == -1)
 			throw FileException("Could not open file");
-	}		
+	}	
 
-	virtual void close() throw() {
+	bool isOpen() { return h != -1; };
+
+	virtual void close() throw(FileException) {
 		if(h != -1) {
 			::close(h);
 			h = -1;
 		}
 	}
 
-	virtual int64_t getSize() throw() {
+	virtual int64_t getSize() throw(FileException) {
 		struct stat s;
 		if(::fstat(h, &s) == -1)
 			return -1;
@@ -226,13 +230,13 @@ public:
 		return (int64_t)s.st_size;
 	}
 
-	virtual int64_t getPos() throw() {
+	virtual int64_t getPos() throw(FileException) {
 		return (int64_t) lseek(h, 0, SEEK_CUR);
 	}
 
-	virtual void setPos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_SET); };
-	virtual void setEndPos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_END); };
-	virtual void movePos(int64_t pos) throw() { lseek(h, (off_t)pos, SEEK_CUR); };
+	virtual void setPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_SET); };
+	virtual void setEndPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_END); };
+	virtual void movePos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_CUR); };
 
 	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
 		ssize_t x = ::read(h, buf, (size_t)len);
@@ -281,7 +285,7 @@ public:
 	
 #endif // WIN32
 
-	virtual ~File() throw() {
+	virtual ~File() throw(FileException) {
 		File::close();
 	}
 
@@ -295,7 +299,10 @@ public:
 
 	string read() throw(FileException) {
 		setPos(0);
-		return read((u_int32_t)getSize());
+		int64_t sz = getSize();
+		if(sz == -1)
+			return Util::emptyString;
+		return read((u_int32_t)sz);
 	}
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
@@ -362,7 +369,7 @@ public:
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
 	
-	virtual void close() throw(FileException) { if(h != INVALID_HANDLE_VALUE) { flush(); File::close(); } };
+	virtual void close() throw(FileException) { if(isOpen()) { flush(); File::close(); } };
 	virtual int64_t getSize() throw(FileException) { flush(); return File::getSize(); };
 	virtual int64_t getPos() throw(FileException) { flush(); return File::getPos(); };
 	virtual void setPos(int64_t aPos) throw(FileException) { flush(); File::setPos(aPos); };
@@ -382,18 +389,18 @@ public:
 	SizedFile(int64_t aExpectedSize, const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
 		BufferedFile(aFileName, access, mode, aCrc32, bufSize)
 	{
-		int64_t pos = getPos();
+		int64_t tmp = getPos();
 		setPos(aExpectedSize);
 		setEOF();
-		setPos(pos);
+		setPos(tmp);
 	}
 
-	~SizedFile() throw(FileException) {
+	virtual ~SizedFile() throw(FileException) {
 		close();
 	}
 
 	virtual void close() throw(FileException) {
-		if(h != INVALID_HANDLE_VALUE) {
+		if(isOpen()) {
 			setEOF();
 			BufferedFile::close();
 		}
@@ -404,6 +411,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.20 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: File.h,v 1.21 2003/09/22 13:17:22 arnetheduck Exp $
  */
 

@@ -458,7 +458,7 @@ noCRC:
 		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
 		params["hub"] = aSource->getUser()->getLastHubName();
-		params["hubip"] = aSource->getUser()->getLastHubIp();
+		params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(d->getSize());
 		params["sizeshort"] = Util::formatBytes(d->getSize());
 		params["chunksize"] = Util::toString(d->getTotal());
@@ -653,5 +653,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.74 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.75 2003/09/22 13:17:22 arnetheduck Exp $
  */

@@ -212,6 +212,7 @@
 #define IDC_MATCH_QUEUE                 1125
 #define IDC_HELP_CHANGELOG              1126
 #define IDC_EDIT1                       1128
+#define IDC_VIEW_AS_TEXT				1129
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

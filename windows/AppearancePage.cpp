@@ -47,16 +47,16 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
-	{ SettingsManager::FULL_ROW_SELECT, ResourceManager::SETTINGS_APPEARANCE_FULL_ROW_SELECT },
-	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_APPEARANCE_FILTER_MESSAGES },
-	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_APPEARANCE_MINIMIZE_TRAY },
-	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_APPEARANCE_TIME_STAMPS },
-	{ SettingsManager::CONFIRM_EXIT, ResourceManager::SETTINGS_APPEARANCE_CONFIRM_EXIT },
-	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_APPEARANCE_STATUS_IN_CHAT },
-	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_APPEARANCE_SHOW_JOINS },
-	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_APPEARANCE_USE_SYSTEM_ICONS },
-	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_APPEARANCE_FINISHED_DIRTY },
-	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
+	{ SettingsManager::FULL_ROW_SELECT, ResourceManager::SETTINGS_FULL_ROW_SELECT },
+	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_FILTER_MESSAGES },
+	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_MINIMIZE_TRAY },
+	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_TIME_STAMPS },
+	{ SettingsManager::CONFIRM_EXIT, ResourceManager::SETTINGS_CONFIRM_EXIT },
+	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_STATUS_IN_CHAT },
+	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_SHOW_JOINS },
+	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
+	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 AppearancePage::~AppearancePage()
@@ -151,5 +151,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.6 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
  */

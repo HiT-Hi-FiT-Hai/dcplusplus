@@ -20,7 +20,7 @@
 #if !defined(AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 #define AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_
 
-#include "../client/config.h"
+#include "../client/stdinc.h"
 
 #ifdef WIN32
 
@@ -50,23 +50,6 @@ extern CAppModule _Module;
 #include <Shellapi.h>
 #endif // WIN32
 
-#include <stdio.h>
-#include <time.h>
-#include <memory.h>
-#include <sys/types.h>
-
-#include <algorithm>
-#include <vector>
-#include <string>
-#include <map>
-#include <list>
-#include <deque>
-#ifdef HAS_HASH
-#include <hash_map>
-#endif
-
-using namespace _STL;
-
 #define WM_SPEAKER (WM_APP + 500)
 
 //{{AFX_INSERT_LOCATION}}
@@ -76,6 +59,6 @@ using namespace _STL;
 
 /**
  * @file
- * $Id: stdafx.h,v 1.4 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.5 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

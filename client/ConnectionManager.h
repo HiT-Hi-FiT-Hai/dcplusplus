@@ -34,7 +34,7 @@ public:
 	typedef ConnectionQueueItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef hash_map<Ptr, u_int32_t, PointerHash<ConnectionQueueItem> > TimeMap;
+	typedef HASH_MAP_X(Ptr, u_int32_t, PointerHash<ConnectionQueueItem>, equal_to<Ptr>, less<Ptr>) TimeMap;
 	typedef TimeMap::iterator TimeIter;
 	
 	enum State {
@@ -117,6 +117,8 @@ private:
 	ServerSocket socket;
 	StringList features;
 
+	u_int32_t floodCounter;
+
 	bool shuttingDown;
 
 	friend class Singleton<ConnectionManager>;
@@ -162,5 +164,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.50 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.51 2003/09/22 13:17:22 arnetheduck Exp $
  */

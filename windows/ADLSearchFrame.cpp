@@ -491,6 +491,7 @@ LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	{
 		ctrlList.SetItemState(i0 + i, LVNI_SELECTED, LVNI_SELECTED);
 	}
+	ctrlList.EnsureVisible(i0, FALSE);
 
 	return 0;
 }
@@ -602,5 +603,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.6 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.7 2003/09/22 13:17:23 arnetheduck Exp $
  */

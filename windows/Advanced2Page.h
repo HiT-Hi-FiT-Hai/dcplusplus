@@ -29,7 +29,7 @@ class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
 {
 public:
 	Advanced2Page(SettingsManager *s) : PropPage(s) { };
-	~Advanced2Page() { };
+	virtual ~Advanced2Page() { };
 
 	BEGIN_MSG_MAP(Advanced2Page)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -62,6 +62,6 @@ protected:
 
 /**
  * @file
- * $Id: Advanced2Page.h,v 1.5 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.6 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

@@ -214,6 +214,11 @@ void SettingsManager::load(string const& aFileName)
 		fire(SettingsManagerListener::LOAD, &xml);
 
 		xml.stepOut();
+
+		if(!get(LANGUAGE_FILE).empty()) {
+			ResourceManager::getInstance()->loadLanguage(get(LANGUAGE_FILE));
+		}
+
 	} catch(const Exception&) {
 		// Oops, bad...
 	}
@@ -276,6 +281,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.52 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.53 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

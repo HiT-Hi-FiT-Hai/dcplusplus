@@ -41,31 +41,31 @@ PropPage::Item AdvancedPage::items[] = {
 };
 
 AdvancedPage::ListItem AdvancedPage::listItems[] = {
-	{ SettingsManager::AUTO_AWAY, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY },
-	{ SettingsManager::AUTO_FOLLOW, ResourceManager::SETTINGS_ADVANCED_AUTO_FOLLOW },
-	{ SettingsManager::CLEAR_SEARCH, ResourceManager::SETTINGS_ADVANCED_CLEAR_SEARCH },
-	{ SettingsManager::OPEN_PUBLIC, ResourceManager::SETTINGS_ADVANCED_OPEN_PUBLIC },
-	{ SettingsManager::OPEN_QUEUE, ResourceManager::SETTINGS_ADVANCED_OPEN_QUEUE },
-	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::SETTINGS_ADVANCED_OPEN_FAVORITE_HUBS },
-	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::SETTINGS_ADVANCED_OPEN_FINISHED_DOWNLOADS },
-	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_ADVANCED_AUTO_SEARCH },
-	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_ADVANCED_POPUP_PMS },
-	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_ADVANCED_IGNORE_OFFLINE },
-	{ SettingsManager::POPUP_OFFLINE, ResourceManager::SETTINGS_ADVANCED_POPUP_OFFLINE },
-	{ SettingsManager::REMOVE_DUPES, ResourceManager::SETTINGS_ADVANCED_REMOVE_DUPES },
-	{ SettingsManager::URL_HANDLER, ResourceManager::SETTINGS_ADVANCED_URL_HANDLER },
-	{ SettingsManager::SMALL_SEND_BUFFER, ResourceManager::SETTINGS_ADVANCED_SMALL_SEND_BUFFER },
-	{ SettingsManager::KEEP_LISTS, ResourceManager::SETTINGS_ADVANCED_KEEP_LISTS },
-	{ SettingsManager::AUTO_KICK, ResourceManager::SETTINGS_ADVANCED_AUTO_KICK },
-	{ SettingsManager::SHOW_PROGRESS_BARS, ResourceManager::SETTINGS_ADVANCED_SHOW_PROGRESS_BARS },
-	{ SettingsManager::SFV_CHECK, ResourceManager::SETTINGS_ADVANCED_SFV_CHECK },
-	{ SettingsManager::AUTO_UPDATE_LIST, ResourceManager::SETTINGS_ADVANCED_AUTO_UPDATE_LIST },
-	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ADVANCED_ANTI_FRAG },
-	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_ADVANCED_NO_AWAYMSG_TO_BOTS },
-	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_ADVANCED_SKIP_ZERO_BYTE },
-	{ SettingsManager::ADLS_BREAK_ON_FIRST, ResourceManager::SETTINGS_ADVANCED_ADLS_BREAK_ON_FIRST },
-	{ SettingsManager::TAB_COMPLETION, ResourceManager::SETTINGS_ADVANCED_TAB_COMPLETION },
-	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
+	{ SettingsManager::AUTO_AWAY, ResourceManager::SETTINGS_AUTO_AWAY },
+	{ SettingsManager::AUTO_FOLLOW, ResourceManager::SETTINGS_AUTO_FOLLOW },
+	{ SettingsManager::CLEAR_SEARCH, ResourceManager::SETTINGS_CLEAR_SEARCH },
+	{ SettingsManager::OPEN_PUBLIC, ResourceManager::SETTINGS_OPEN_PUBLIC },
+	{ SettingsManager::OPEN_QUEUE, ResourceManager::SETTINGS_OPEN_QUEUE },
+	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::SETTINGS_OPEN_FAVORITE_HUBS },
+	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::SETTINGS_OPEN_FINISHED_DOWNLOADS },
+	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_AUTO_SEARCH },
+	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_POPUP_PMS },
+	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_IGNORE_OFFLINE },
+	{ SettingsManager::POPUP_OFFLINE, ResourceManager::SETTINGS_POPUP_OFFLINE },
+	{ SettingsManager::REMOVE_DUPES, ResourceManager::SETTINGS_REMOVE_DUPES },
+	{ SettingsManager::URL_HANDLER, ResourceManager::SETTINGS_URL_HANDLER },
+	{ SettingsManager::SMALL_SEND_BUFFER, ResourceManager::SETTINGS_SMALL_SEND_BUFFER },
+	{ SettingsManager::KEEP_LISTS, ResourceManager::SETTINGS_KEEP_LISTS },
+	{ SettingsManager::AUTO_KICK, ResourceManager::SETTINGS_AUTO_KICK },
+	{ SettingsManager::SHOW_PROGRESS_BARS, ResourceManager::SETTINGS_SHOW_PROGRESS_BARS },
+	{ SettingsManager::SFV_CHECK, ResourceManager::SETTINGS_SFV_CHECK },
+	{ SettingsManager::AUTO_UPDATE_LIST, ResourceManager::SETTINGS_AUTO_UPDATE_LIST },
+	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ANTI_FRAG },
+	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_NO_AWAYMSG_TO_BOTS },
+	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_SKIP_ZERO_BYTE },
+	{ SettingsManager::ADLS_BREAK_ON_FIRST, ResourceManager::SETTINGS_ADLS_BREAK_ON_FIRST },
+	{ SettingsManager::TAB_COMPLETION, ResourceManager::SETTINGS_TAB_COMPLETION },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -77,8 +77,8 @@ LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	ctrlCommands.Attach(GetDlgItem(IDC_MENU_ITEMS));
 	ctrlCommands.GetClientRect(rc);
 
-	ctrlCommands.InsertColumn(0, CSTRING(SETTINGS_ADVANCED_NAME), LVCFMT_LEFT, rc.Width()/5, 0);
-	ctrlCommands.InsertColumn(1, CSTRING(SETTINGS_ADVANCED_COMMAND), LVCFMT_LEFT, rc.Width()*2 / 5, 1);
+	ctrlCommands.InsertColumn(0, CSTRING(SETTINGS_NAME), LVCFMT_LEFT, rc.Width()/5, 0);
+	ctrlCommands.InsertColumn(1, CSTRING(SETTINGS_COMMAND), LVCFMT_LEFT, rc.Width()*2 / 5, 1);
 	ctrlCommands.InsertColumn(2, CSTRING(HUB), LVCFMT_LEFT, rc.Width() / 5, 2);
 	ctrlCommands.InsertColumn(3, CSTRING(NICK), LVCFMT_LEFT, rc.Width() / 5, 3);
 
@@ -167,6 +167,6 @@ void AdvancedPage::write()
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.14 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.15 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

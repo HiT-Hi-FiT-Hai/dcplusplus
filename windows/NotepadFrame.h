@@ -51,7 +51,6 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -83,6 +82,6 @@ private:
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.8 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.9 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

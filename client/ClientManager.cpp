@@ -62,7 +62,7 @@ void ClientManager::putClient(Client* aClient) {
 }
 
 void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
-	if(aUser->getNick() == aClient->getNick()) {
+	if(aUser->getNick() == aClient->getNick() && aClient->getFirstHello()) {
 		aClient->version(SETTING(CLIENTVERSION));
 		aClient->getNickList();
 		aClient->myInfo();
@@ -163,14 +163,14 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	}
 }
 
-User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
+User::Ptr ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 	UserPair p = users.equal_range(aNick);
 
 	if(p.first == p.second) {
 		User::Ptr& u = users.insert(make_pair(aNick, new User(aNick)))->second;
-		u->setLastHubIp(aHint);
+		u->setLastHubAddress(aHint);
 		return u;
 	}
 
@@ -188,11 +188,21 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 
 	// Since we have a hint, make sure we use it...
 	for(i = p.first; i != p.second; ++i) {
-		if(i->second->getLastHubIp() == aHint) {
+		if(i->second->getLastHubAddress() == aHint) {
 			return i->second;
 		}
 	}
-
+	// Since old dc++'s didn't return port in $SR's we'll check for port-less hints as well
+	string::size_type k = aHint.find(':');
+	if(k != string::npos) {
+		string hint = aHint.substr(0, k); 
+		for(i = p.first; i != p.second; ++i) {
+			if(i->second->getLastHubAddress() == hint) {
+				return i->second;
+			}
+		}
+	}
+	
 	// Try to find an online user, higher probablility that it's one of these...
 	for(i = p.first; i != p.second; ++i) {
 		if(i->second->isOnline()) {
@@ -203,7 +213,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 	return users.insert(make_pair(aNick, new User(aNick)))->second;
 }
 
-User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
+User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
 	Lock l(cs);
 	dcassert(aNick.size() > 0);
 	dcassert(aClient != NULL);
@@ -219,9 +229,10 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		}
 	}
 
+	string tmpAddress = (aClient->getPort() == 411) ? aClient->getIp() : aClient->getIp() + ':' + Util::toString(aClient->getPort());
 	// Check for an offline user that was on that hub that we can put online again
 	for(i = p.first; i != p.second; ++i) {
-		if( (!i->second->isOnline()) && (i->second->getLastHubIp() == aClient->getIp()) ) {
+		if( (!i->second->isOnline()) && (i->second->getLastHubAddress() == tmpAddress) ) {
 			if(putOnline) {
 				i->second->setClient(aClient);
 				fire(ClientManagerListener::USER_UPDATED, i->second);
@@ -345,5 +356,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.36 2003/07/15 16:08:29 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.37 2003/09/22 13:17:22 arnetheduck Exp $
  */

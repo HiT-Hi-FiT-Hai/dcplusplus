@@ -98,7 +98,7 @@ void HubManager::save() {
 		for(User::Iter j = users.begin(); j != users.end(); ++j) {
 			xml.addTag("User");
 			xml.addChildAttrib("Nick", (*j)->getNick());
-			xml.addChildAttrib("LastHubIp", (*j)->getLastHubIp());
+			xml.addChildAttrib("LastHubAddress", (*j)->getLastHubAddress());
 			xml.addChildAttrib("LastHubName", (*j)->getLastHubName());
 		}
 		xml.stepOut();
@@ -186,9 +186,9 @@ void HubManager::load(SimpleXML* aXml) {
 	if(aXml->findChild("Users")) {
 		aXml->stepIn();
 		while(aXml->findChild("User")) {
-			User::Ptr& u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubIp"));
+			User::Ptr u = ClientManager::getInstance()->getUser(aXml->getChildAttrib("Nick"), aXml->getChildAttrib("LastHubAddress"));
 			if(!u->isOnline()) {
-				u->setLastHubIp(aXml->getChildAttrib("LastHubIp"));
+				u->setLastHubAddress(aXml->getChildAttrib("LastHubAddress"));
 				u->setLastHubName(aXml->getChildAttrib("LastHubName"));
 			}
 			addFavoriteUser(u);
@@ -278,5 +278,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.30 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.31 2003/09/22 13:17:22 arnetheduck Exp $
  */

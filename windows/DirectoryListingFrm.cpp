@@ -142,6 +142,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
 	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
+	fileMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 
 	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
@@ -307,7 +308,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 	return 0;
 }
 
-void DirectoryListingFrame::downloadList(const string& aTarget) {
+void DirectoryListingFrame::downloadList(const string& aTarget, bool view /* = false */) {
 	int i=-1;
 	while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
@@ -316,8 +317,11 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
-				dl->download(ii->file, target + ii->file->getName());
-			} else {
+				if(view) {
+					File::deleteFile(target+ii->file->getName());
+				}
+				dl->download(ii->file, target + ii->file->getName(), view);
+			} else if(!view) {
 				dl->download(ii->dir, target);
 			} 
 		} catch(const Exception& e) {
@@ -359,6 +363,11 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 			downloadList(target);
 		}
 	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	downloadList(Util::getTempPath(), true);
 	return 0;
 }
 
@@ -471,7 +480,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 		if(ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE) {
 			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
-			targets = QueueManager::getInstance()->getTargetsBySize(ii->file->getSize(), Util::getExtension(ii->file->getName()));
+			targets = QueueManager::getInstance()->getTargetsBySize(ii->file->getSize(), Util::getFileExt(ii->file->getName()));
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -846,5 +855,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
  */

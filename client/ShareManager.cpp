@@ -119,7 +119,7 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 			return false;
 		d = mi->second;
 	}
-	if(find_if(d->files.begin(), d->files.end(), CompareFirst<string, int64_t>(aFile.substr(j))) == d->files.end())
+	if(d->files.find(aFile.substr(j)) == d->files.end())
 		return false;
 
 	return true;
@@ -223,7 +223,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	HANDLE hFind;
 	
 	hFind = FindFirstFile((aName + "\\*").c_str(), &data);
-	
+	Directory::FileIter lastFileIter = dir->files.begin();
+
 	if(hFind != INVALID_HANDLE_VALUE) {
 		do {
 			string name = data.cFileName;
@@ -246,7 +247,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 						dir->addSearchType(getMask(name));
 						dir->addType(getType(name));
-						dir->files.push_back(make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
+						lastFileIter = dir->files.insert(lastFileIter, make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
 						dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					}
 				}
@@ -384,7 +385,8 @@ void ShareManager::Directory::toString(string& tmp, DupeMap& dupes, int ident /*
 		if(k != p.second) {
 			size-=j->second;
 			if(BOOLSETTING(REMOVE_DUPES)) {
-				j = files.erase(j);
+				//j = files.erase(j);
+				files.erase(j++);
 			} else {
 				tmp.append(ident+1, '\t');
 				tmp.append(j->first);
@@ -435,7 +437,7 @@ static bool checkType(const string& aString, int aType) {
 	switch(aType) {
 	case SearchManager::TYPE_AUDIO:
 		{
-			for(int i = 0; i < (sizeof(typeAudio) / sizeof(typeAudio[0])); i++) {
+			for(size_t i = 0; i < (sizeof(typeAudio) / sizeof(typeAudio[0])); i++) {
 				if(IS_TYPE(typeAudio[i])) {
 					return true;
 				}
@@ -463,7 +465,7 @@ static bool checkType(const string& aString, int aType) {
 		break;
 	case SearchManager::TYPE_PICTURE:
 		{
-			for(int i = 0; i < (sizeof(typePicture) / sizeof(typePicture[0])); i++) {
+			for(size_t i = 0; i < (sizeof(typePicture) / sizeof(typePicture[0])); i++) {
 				if(IS_TYPE(typePicture[i])) {
 					return true;
 				}
@@ -475,7 +477,7 @@ static bool checkType(const string& aString, int aType) {
 		break;
 	case SearchManager::TYPE_VIDEO:
 		{
-			for(int i = 0; i < (sizeof(typeVideo) / sizeof(typeVideo[0])); i++) {
+			for(size_t i = 0; i < (sizeof(typeVideo) / sizeof(typeVideo[0])); i++) {
 				if(IS_TYPE(typeVideo[i])) {
 					return true;
 				}
@@ -604,7 +606,10 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 		sr->setSlots(SETTING(SLOTS));
 		sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-		sr->setHubAddress(aClient->getIp());
+		if(aClient->getPort() == 411)
+			sr->setHubAddress(aClient->getIp());
+		else
+			sr->setHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
 		sr->setHubName(aClient->getName());
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -635,7 +640,10 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 				sr->setSlots(SETTING(SLOTS));
 				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				sr->setHubAddress(aClient->getIp());
+				if(aClient->getPort() == 411)
+					sr->setHubAddress(aClient->getIp());
+				else
+					sr->setHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -696,6 +704,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.54 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.55 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

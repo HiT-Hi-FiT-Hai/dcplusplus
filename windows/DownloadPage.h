@@ -29,7 +29,7 @@ class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 {
 public:
 	DownloadPage(SettingsManager *s) : PropPage(s) { };
-	~DownloadPage() { };
+	virtual ~DownloadPage() { };
 
 	BEGIN_MSG_MAP(DownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -54,5 +54,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.6 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
  */

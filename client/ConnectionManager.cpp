@@ -32,7 +32,7 @@ ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
 //#define WITH_GETZBLOCK 1
 
-ConnectionManager::ConnectionManager() : shuttingDown(false) {
+ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
@@ -277,13 +277,34 @@ void ConnectionManager::onTimerMinute(u_int32_t aTick) {
 	pendingDelete.clear();
 }
 
+static const u_int32_t FLOOD_TRIGGER = 10000;
+static const u_int32_t FLOOD_ADD = 2000;
+
 /**
  * Someone's connecting, accept the connection and wait for identification...
  * It's always the other fellow that starts sending if he made the connection.
  */
 void ConnectionManager::onIncomingConnection() throw() {
 	UserConnection* uc = NULL;
-	
+	u_int32_t now = GET_TICK();
+
+	if(now > floodCounter) {
+		floodCounter = now + FLOOD_ADD;
+	} else {
+		if(now + FLOOD_TRIGGER < floodCounter) {
+			Socket s;
+			try {
+				s.accept(socket);
+			} catch(const SocketException&) {
+				// ...
+			}
+			dcdebug("Connection flood detected!\n");
+			return;
+		} else {
+			floodCounter += 2000;
+		}
+	}
+
 	try { 
 		uc = getConnection();
 		uc->setFlag(UserConnection::FLAG_INCOMING);
@@ -607,5 +628,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.61 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.62 2003/09/22 13:17:22 arnetheduck Exp $
  */

@@ -124,7 +124,7 @@ public:
 		return res;
 	}
 	
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL);
+	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL, const char* defExt = NULL);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
 	static int getIconIndex(const string& aFileName);
@@ -148,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.12 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
  */

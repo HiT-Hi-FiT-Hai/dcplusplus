@@ -45,7 +45,7 @@ public:
 
 	// Constructor
 	ADLSearch() : searchString("<Enter string>"), isActive(true), sourceType(OnlyFile), 
-		minFileSize(-1), maxFileSize(-1), destDir("ADLSearch"), ddIndex(0), typeFileSize(SizeBytes) {}
+		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0) {}
 
 	// Prepare search
 		void Prepare(StringMap& params)
@@ -293,7 +293,7 @@ public:
 			{
 				DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
 				copyFile->setAdls(true);
-				id->subdir->files.push_back(copyFile);
+				id->subdir->files.insert(copyFile);
 			}
 			id->fileAdded = false;	// Prepare for next stage
 		}
@@ -316,7 +316,7 @@ public:
 			{
 				DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
 				copyFile->setAdls(true);
-				destDirVector[is->ddIndex].dir->files.push_back(copyFile);
+				destDirVector[is->ddIndex].dir->files.insert(copyFile);
 				destDirVector[is->ddIndex].fileAdded = true;
 				if(breakOnFirst)
 				{
@@ -337,7 +337,7 @@ public:
 			{
 				DirectoryListing::Directory* newDir = 
 					new DirectoryListing::AdlDirectory(fullPath, id->subdir, currentDir->getName());
-				id->subdir->directories.push_back(newDir);
+				id->subdir->directories.insert(newDir);
 				id->subdir = newDir;
 			}
 		}
@@ -359,7 +359,7 @@ public:
 			{
 				destDirVector[is->ddIndex].subdir = 
 					new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
-				destDirVector[is->ddIndex].dir->directories.push_back(destDirVector[is->ddIndex].subdir);
+				destDirVector[is->ddIndex].dir->directories.insert(destDirVector[is->ddIndex].subdir);
 				if(breakOnFirst)
 				{
 					// Found a match, search no more
@@ -390,7 +390,7 @@ public:
 	{
 		// Load default destination directory (index = 0)
 		destDirVector.clear();
-		vector<DestDir>::iterator id = destDirVector.insert(destDirVector.end());
+		vector<DestDir>::iterator id = destDirVector.insert(destDirVector.end(), DestDir());
 		id->name = "ADLSearch";
 		id->dir  = new DirectoryListing::Directory(root, "<<<" + id->name + ">>>", true);
 
@@ -421,7 +421,7 @@ public:
 			if(isNew)
 			{
 				// Add new destination directory
-				id = destDirVector.insert(destDirVector.end());
+				id = destDirVector.insert(destDirVector.end(), DestDir());
 				id->name = is->destDir;
 				id->dir  = new DirectoryListing::Directory(root, "<<<" + id->name + ">>>", true);
 				is->ddIndex = ddIndex;
@@ -453,7 +453,7 @@ public:
 			}
 			else
 			{
-				root->directories.push_back(id->dir);
+				root->directories.insert(id->dir);
 			}
 		}
 	}
@@ -477,5 +477,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.6 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.7 2003/09/22 13:17:21 arnetheduck Exp $
  */

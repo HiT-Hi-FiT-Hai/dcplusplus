@@ -61,13 +61,24 @@
 #ifdef HAS_HASH
 #define HASH_MAP hash_map
 #define HASH_MULTIMAP hash_multimap
+
+#ifdef _STLPORT_VERSION
+#define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
+#define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+#else // Assume the msvc 7.x stl
+#define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc >
+#define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc >
+#endif
+
 #else
 #define HASH_MAP map
+#define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
 #define HASH_MULTIMAP multimap
 #endif
 
-// These are defined by the C99 standard, but vc 6.0/7.0 doesn't understand them
-#if _MSC_VER == 1200 || _MSC_VER == 1300
+
+// These are defined by the C99 standard, but vc 6.0/7.0/7.1 doesn't understand them
+#if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed long int32_t;
@@ -81,5 +92,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.12 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: config.h,v 1.13 2003/09/22 13:17:23 arnetheduck Exp $
  */

@@ -23,6 +23,10 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef WIN32
+#include "CriticalSection.h"
+#endif
+
 class Semaphore  
 {
 #ifdef WIN32
@@ -91,5 +95,5 @@ private:
 
 /**
  * @file
- * $Id: Semaphore.h,v 1.7 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.8 2003/09/22 13:17:23 arnetheduck Exp $
  */

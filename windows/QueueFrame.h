@@ -271,7 +271,7 @@ private:
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
 	
-	typedef HASH_MULTIMAP<string, QueueItem*, noCaseStringHash, noCaseStringEq> DirectoryMap;
+	typedef HASH_MULTIMAP_X(string, QueueItem*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
@@ -359,5 +359,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.19 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.20 2003/09/22 13:17:24 arnetheduck Exp $
  */

@@ -40,6 +40,8 @@ void DirectoryListing::load(const string& in)
 
 	Directory* cur = root;
 	string fullPath;
+	
+	File::Iter lastFileIter = cur->files.begin();
 
 	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
 	{
@@ -62,22 +64,24 @@ void DirectoryListing::load(const string& in)
 				fullPath.erase(fullPath.begin() + l, fullPath.end());
 			}
 			pADLSearch->StepUpDirectory();
+
+			lastFileIter = cur->files.begin();
 		}
+
 		string::size_type k = tok.find('|', j);
-		if(k != string::npos) 
-		{
+		if(k != string::npos) {
 			// this must be a file...
-			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
+			lastFileIter = cur->files.insert(lastFileIter, new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
 
 			// ADLSearch
-			pADLSearch->MatchesFile(cur->files.back(), fullPath);
-		} 
-		else 
-		{
+			pADLSearch->MatchesFile(*lastFileIter, fullPath);
+		} else {
 			// A directory
 			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
-			cur->directories.push_back(d);
+			cur->directories.insert(d);
 			cur = d;
+			lastFileIter = cur->files.begin();
+
 			ident++;
 			fullPath += (string)"\\" + d->getName();
 
@@ -89,7 +93,6 @@ void DirectoryListing::load(const string& in)
 	// Finalize ADLSearch manager
 	pADLSearch->FinalizeDestinationDirectories(root);
 }
-
 
 string DirectoryListing::getPath(Directory* d) {
 	string dir;
@@ -135,15 +138,13 @@ void DirectoryListing::download(const string& aDir, const string& aTarget) {
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
 	string::size_type end = aName.find('\\');
 	dcassert(end != string::npos);
-	string cur = aName.substr(0, end);
-	for(Directory::Iter i = current->directories.begin(); i != current->directories.end(); ++i) {
-		Directory* d = *i;
-		if(Util::stricmp(d->getName().c_str(), cur.c_str()) == 0) {
-			if(end == (aName.size() - 1))
-				return d;
-			else
-				return find(aName.substr(end + 1), d);
-		}
+	Name n(aName.substr(0, end));
+	Directory::Iter i = current->directories.find((Directory*)&n);
+	if(i != current->directories.end()) {
+		if(end == (aName.size() - 1))
+			return *i;
+		else
+			return find(aName.substr(end + 1), *i);
 	}
 	return NULL;
 }
@@ -166,11 +167,11 @@ int DirectoryListing::Directory::getTotalFileCount(bool adls) {
 	return x;
 }
 
-void DirectoryListing::download(File* aFile, const string& aTarget) {
-	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget);
+void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
+	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME));
 }
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.17 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.18 2003/09/22 13:17:22 arnetheduck Exp $
  */

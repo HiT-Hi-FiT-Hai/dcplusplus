@@ -30,9 +30,9 @@ class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
 {
 public:
 	AppearancePage(SettingsManager *s) : PropPage(s) { };
-	~AppearancePage();
+	virtual ~AppearancePage();
 
-	BEGIN_MSG_MAP(PropPage1)
+	BEGIN_MSG_MAP(AppearancePage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
@@ -69,5 +69,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.5 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.6 2003/09/22 13:17:24 arnetheduck Exp $
  */

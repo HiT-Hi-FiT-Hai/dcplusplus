@@ -1,5 +1,29 @@
+ -- 0.262 --
+* Added arrows and tri-state sorting (thanks saurod)
+* Fixed a crash with certain queues when opening queue frame
+* Fixed a bug in the search frame not setting b/kB/MB correctly when searching for alternates
+* Fixed bad loading of menu translations
+* Fixed tag not being removed when someone turs it off
+* Added connection flooding protection
+* Fixed a bug with file extension being cut off when moving files in certain windows setups (I think, not tested)
+* Small fix to ip detect code (thanks fusbar)
+* Fixed a file read crash
+* Fixed so that DC++ correctly returns hub port in search results (thanks sed)
+* Now correctly reacts to multiple $Hello's with own nick
+* When moving items in the fav lists, items are scrolled into view if moved outside the window
+* Added "View as text file" option when downloading files (only shows the first 32k though...)
+* Made it possible to compile using the stl supplied in msvc 7.x, it's untested though, and I won't maintain it
+  (I just wanted to see if it works)
+* Already existing files are prioritised when queueing
+* Changed so that files are downloaded in alphabetical order when first added (this makes opening large user file 
+  lists a little bit slower)
+* Upgraded to STLPort 4.5.0725 (should be compatible with msvc 7.1)
+* Fixed right-click menu in hub frame when the username comes last on a line (thanks sed)
+* Added stored password sent notification when connecting to favorite hubs
+
+
  -- 0.261 2003-07-15 --
-* Fixed user list problems (dc++ was too fast for nmdch)
+* Fixed user list problems
 * Fixed a queue frame crash
 
  -- 0.26 2003-07-15 --

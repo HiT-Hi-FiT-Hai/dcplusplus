@@ -420,6 +420,7 @@ int BufferedSocket::run() {
 				case SEND_FILE: if(isConnected()) sendingFile = true; break;
 				case SEND_DATA: dcassert(!sendingFile); if(isConnected()) threadSendData(); break;
 				case CONNECT: sendingFile = false; threadConnect(); break;
+				case ACCEPTED: break;
 
 				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
@@ -446,5 +447,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.51 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.52 2003/09/22 13:17:21 arnetheduck Exp $
  */

@@ -30,31 +30,46 @@ class DirectoryListing
 public:
 	class Directory;
 
-	class File {
+	/** Auxiliary class to ease searching in File::List and Directory::List */
+	struct Name {
+		Name(const string& aName) : name(aName) { };
+		GETSETREF(string, name, Name);
+	};
+
+	class File : public Name {
 	public:
 		typedef File* Ptr;
-		typedef vector<Ptr> List;
+		struct FileSort {
+			bool operator()(const Ptr& a, const Ptr& b) const {
+				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
+			}
+		};
+		typedef set<Ptr, FileSort> List;
 		typedef List::iterator Iter;
 		
-		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : name(aName), size(aSize), parent(aDir), adls(false) { };
+		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : Name(aName), size(aSize), parent(aDir), adls(false) { };
 
-		GETSETREF(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 		GETSET(bool, adls, Adls);		
 	};
 
-	class Directory {
+	class Directory : public Name {
 	public:
 		typedef Directory* Ptr;
-		typedef vector<Ptr> List;
+		struct DirSort {
+			bool operator()(const Ptr& a, const Ptr& b) const {
+				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
+			}
+		};
+		typedef set<Ptr, DirSort> List;
 		typedef List::iterator Iter;
 		
 		List directories;
 		File::List files;
 		
 		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
-			: name(aName), parent(aParent), adls(_adls) { };
+			: Name(aName), parent(aParent), adls(_adls) { };
 		
 		~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
@@ -74,7 +89,6 @@ public:
 			return x;
 		}
 		
-		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);		
 	};
@@ -103,7 +117,7 @@ public:
 	int getTotalFileCount(bool adls = false) { return root->getTotalFileCount(adls); };
 	Directory* getRoot() { return root; };
 	
-	void download(File* aFile, const string& aTarget);
+	void download(File* aFile, const string& aTarget, bool view = false);
 
 	GETSETREF(User::Ptr, user, User);
 
@@ -118,5 +132,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.18 2003/09/22 13:17:22 arnetheduck Exp $
  */

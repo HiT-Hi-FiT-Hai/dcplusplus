@@ -54,7 +54,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_NEWFAV, onNew)
 		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp);
 		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown);
-		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
+//		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
@@ -102,6 +102,8 @@ public:
 		return 0;
 	}
 
+#if 0
+	// No sort, it'll screw up the move functionality...
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
@@ -114,7 +116,7 @@ public:
 		}
 		return 0;
 	}
-	
+#endif // 0
 	static FavoriteHubsFrame* frame;
 	
 private:
@@ -173,6 +175,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.12 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

@@ -69,7 +69,8 @@ public:
 		DISCONNECT,
 		SEND_DATA,
 		SEND_FILE,
-		SHUTDOWN
+		SHUTDOWN,
+		ACCEPTED
 	};
 
 	/**
@@ -88,8 +89,11 @@ public:
 		aSock->addTask(SHUTDOWN); 
 	};
 
-	// Socket::accept is ok for buffered sockets as well! (Note; it's synchronous tho...)
-	// virtual void accept(const ServerSocket& srv) throw(SocketException) { Socket::accept(srv); }
+	virtual void accept(const ServerSocket& srv) throw(SocketException) { 
+		Socket::accept(srv); 
+		Lock l(cs);
+		addTask(ACCEPTED);
+	}
 
 	virtual void disconnect() {
 		Lock l(cs);
@@ -166,7 +170,7 @@ private:
 	};
 
 	// Dummy...
-	BufferedSocket(const BufferedSocket&) throw() { dcassert(0); };
+	BufferedSocket(const BufferedSocket&) throw() : Socket(), Thread() { dcassert(0); };
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
@@ -235,5 +239,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.48 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.49 2003/09/22 13:17:21 arnetheduck Exp $
  */

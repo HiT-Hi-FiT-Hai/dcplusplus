@@ -123,8 +123,8 @@ private:
 	}
 	virtual ~FinishedManager();
 
-	virtual void onAction(DownloadManagerListener::Types type, Download* d);
-	virtual void onAction(UploadManagerListener::Types type, Upload* u);
+	virtual void onAction(DownloadManagerListener::Types type, Download* d) throw();
+	virtual void onAction(UploadManagerListener::Types type, Upload* u) throw();
 
 	CriticalSection cs;
 	FinishedItem::List downloads, uploads;
@@ -134,5 +134,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.6 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.7 2003/09/22 13:17:22 arnetheduck Exp $
  */

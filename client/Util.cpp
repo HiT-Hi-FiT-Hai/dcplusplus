@@ -272,7 +272,7 @@ string Util::getLocalIp() {
 	if( strncmp(tmp.c_str(), "192", 3) == 0 || 
 		strncmp(tmp.c_str(), "169", 3) == 0 || 
 		strncmp(tmp.c_str(), "127", 3) == 0 || 
-		strncmp(tmp.c_str(), "10", 2) == 0 ) {
+		strncmp(tmp.c_str(), "10.", 3) == 0 ) {
 		
 		while(he->h_addr_list[i]) {
 			memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
@@ -280,7 +280,7 @@ string Util::getLocalIp() {
 			if(	strncmp(tmp2.c_str(), "192", 3) != 0 &&
 				strncmp(tmp2.c_str(), "169", 3) != 0 &&
 				strncmp(tmp2.c_str(), "127", 3) != 0 &&
-				strncmp(tmp2.c_str(), "10", 2) != 0) {
+				strncmp(tmp2.c_str(), "10.", 3) != 0) {
 				
 				tmp = tmp2;
 			}
@@ -484,6 +484,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.26 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.27 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

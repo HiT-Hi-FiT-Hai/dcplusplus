@@ -54,9 +54,9 @@ public:
 	typedef map<string, Ptr, noCaseStringLess> StringMap;
 //	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
-	typedef HASH_MAP<User::Ptr, Ptr, User::HashFunction> UserMap;
+	typedef HASH_MAP_X(User::Ptr, Ptr, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
 	typedef UserMap::iterator UserIter;
-	typedef HASH_MAP<User::Ptr, List, User::HashFunction> UserListMap;
+	typedef HASH_MAP_X(User::Ptr, List, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserListMap;
 	typedef UserListMap::iterator UserListIter;
 
 	enum Status {
@@ -76,17 +76,24 @@ public:
 		HIGHEST,
 		LAST
 	};
-	enum {
+
+	enum FileFlags {
+		/** Normal download, no flags set */
+		FLAG_NORMAL = 0x00, 
 		/** This download should be resumed if possible */
 		FLAG_RESUME = 0x01,
 		/** This is a user file listing download */
 		FLAG_USER_LIST = 0x02,
 		/** The file list is downloaded to use for directory download (used with USER_LIST) */
 		FLAG_DIRECTORY_DOWNLOAD = 0x04,
-		/** The file list is downloaded to be viewed in the gui (used with USER_LIST) */
+		/** The file is downloaded to be viewed in the gui */
 		FLAG_CLIENT_VIEW = 0x08,
 		/** The file list downloaded was actually BZ compressed (MyList.bz2, only available in FINISHED message) */
 		FLAG_BZLIST = 0x10,
+		/** Flag to indicate that file should be viewed as a text file */
+		FLAG_TEXT = 0x20,
+		/** This file exists on the hard disk and should be prioritised */
+		FLAG_EXISTS = 0x40
 	};
 
 	class Source : public Flags {
@@ -116,8 +123,8 @@ public:
 		User::Ptr user;
 	};
 
-	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
-		status(STATUS_WAITING), priority(aPriority), current(NULL) { if(aResume) setFlag(FLAG_RESUME); };
+	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, int aFlag) : Flags(aFlag), target(aTarget), size(aSize),
+		status(STATUS_WAITING), priority(aPriority), current(NULL) { };
 	
 	QueueItem(const QueueItem& aQi) : Flags(aQi), target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
 		current(aQi.current) {
@@ -131,7 +138,7 @@ public:
 		
 	}
 
-	~QueueItem() { 
+	virtual ~QueueItem() { 
 		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
 		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
 	};
@@ -238,16 +245,14 @@ public:
 	
 	/** Add a file to the queue. */
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, 
-		const string& aTempTarget = Util::emptyString, bool addBad = true, 
-		bool isDirectory = false) throw(QueueException, FileException) {
+		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
+		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException) {
 		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, 
-			aTarget, aResume, p, aTempTarget, addBad, isDirectory);
+			aTarget, aFlags, p, aTempTarget, addBad);
 	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, 
-		const string& aTempTarget = Util::emptyString, bool addBad = true, 
-		bool isDirectory = false) throw(QueueException, FileException);
+		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
+		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, bool isDirectory = false) throw(QueueException, FileException) {
@@ -256,11 +261,13 @@ public:
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
 		string file = Util::getAppPath() + "FileLists\\" + Util::filterFileName(x) + ".DcLst";
-		add(USER_LIST_NAME, -1, aUser, file, false, QueueItem::DEFAULT, Util::emptyString, true, isDirectory);
+		add(USER_LIST_NAME, -1, aUser, file, 
+			QueueItem::FLAG_USER_LIST | (isDirectory ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : QueueItem::FLAG_CLIENT_VIEW),  QueueItem::DEFAULT, 
+			Util::emptyString, true);
 	}
 
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
-	void addDirectory(const string& aDir, User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
+	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
 	
 	int matchListing(DirectoryListing* dl) throw();
 
@@ -309,8 +316,8 @@ private:
 
 	class UserQueue {
 	public:
-		void add(QueueItem* qi, bool inFront = false);
-		void add(QueueItem* qi, const User::Ptr& aUser, bool inFront = false);
+		void add(QueueItem* qi);
+		void add(QueueItem* qi, const User::Ptr& aUser);
 		QueueItem* getNext(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
 		QueueItem* getRunning(const User::Ptr& aUser);
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
@@ -356,7 +363,7 @@ private:
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
-	QueueItem* getQueueItem(const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
+	QueueItem* getQueueItem(const string& aTarget, int64_t aSize, int aFlags, bool& newItem) throw(QueueException, FileException);
 	
 	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
@@ -385,6 +392,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.37 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.38 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

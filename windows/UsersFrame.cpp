@@ -100,10 +100,10 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 	StringList l;
 	l.push_back(aUser->getNick());
 	l.push_back(aUser->isOnline() ? STRING(ONLINE) : STRING(OFFLINE));
-	if(aUser->getLastHubIp().empty()) {
+	if(aUser->getLastHubAddress().empty()) {
 		l.push_back(aUser->getClientName());
 	} else {
-		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubIp() + ")");
+		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubAddress() + ")");
 	}
 	ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
 }
@@ -113,7 +113,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 	dcassert(i != -1);
 	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
 	ctrlUsers.SetItemText(i, 1, aUser->isOnline() ? CSTRING(ONLINE) : CSTRING(OFFLINE) );
-	ctrlUsers.SetItemText(i, 2, (aUser->getLastHubName() + " (" + aUser->getLastHubIp() + ")").c_str());
+	ctrlUsers.SetItemText(i, 2, (aUser->getLastHubName() + " (" + aUser->getLastHubAddress() + ")").c_str());
 }
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
@@ -171,6 +171,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.10 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.11 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

@@ -30,7 +30,7 @@ class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
 	GeneralPage(SettingsManager *s) : PropPage(s) { };
-	~GeneralPage() { };
+	virtual ~GeneralPage() { };
 
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -63,6 +63,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.6 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

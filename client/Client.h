@@ -169,7 +169,7 @@ public:
 
 	static string getCounts() {
 		char buf[128];
-		return string(buf, sprintf(buf, "%d/%d/%d", counts.normal, counts.registered, counts.op));
+		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
 	const string& getIp() {	return socket->getIp().empty() ? server : socket->getIp(); };
@@ -195,6 +195,7 @@ public:
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
+	GETSET(bool, firstHello, FirstHello);
 private:
 	enum States {
 		STATE_CONNECT,
@@ -239,14 +240,14 @@ private:
 	bool reconnect;
 	u_int32_t lastUpdate;
 	
-	typedef deque<pair<string, u_int32_t> > FloodMap;
+	typedef list<pair<string, u_int32_t> > FloodMap;
 	typedef FloodMap::iterator FloodIter;
 	FloodMap seekers;
 	FloodMap flooders;
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), 
+	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), firstHello(true), state(STATE_CONNECT), 
 		socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
 		countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
@@ -282,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.67 2003/07/15 14:53:10 arnetheduck Exp $
+ * $Id: Client.h,v 1.68 2003/09/22 13:17:22 arnetheduck Exp $
  */
 

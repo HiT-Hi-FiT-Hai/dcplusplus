@@ -45,7 +45,10 @@ private:
 
 template<class T>
 struct PointerHash {
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
 	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
+	bool operator()(const T* a, const T* b) { return a < b; };
 };
 template<>
 struct PointerHash<void> {
@@ -63,6 +66,7 @@ class Flags {
 	public:
 		Flags() : flags(0) { };
 		Flags(const Flags& rhs) : flags(rhs.flags) { };
+		Flags(int f) : flags(f) { };
 		bool isSet(int aFlag) const { return (flags & aFlag) == aFlag; };
 		void setFlag(int aFlag) { flags |= aFlag; };
 		void unsetFlag(int aFlag) { flags &= ~aFlag; };
@@ -122,12 +126,22 @@ public:
 	static string getAppName() {
 #ifdef WIN32
 		TCHAR buf[MAX_PATH+1];
-		GetModuleFileName(NULL, buf, MAX_PATH);
-		return string(buf);
+		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
+		return string(buf, x);
 #else // WIN32
 		return emptyString;
 #endif // WIN32
 	}	
+
+	static string getTempPath() {
+#ifdef WIN32
+		TCHAR buf[MAX_PATH + 1];
+		DWORD x = GetTempPath(MAX_PATH, buf);
+		return string(buf, x);
+#else
+		return emptyString;
+#endif
+	}
 
 	static string translateError(int aError) {
 #ifdef WIN32
@@ -165,7 +179,7 @@ public:
 		string::size_type i = path.rfind('\\');
 		return (i != string::npos) ? path.substr(i + 1) : path;
 	}
-	static string getExtension(const string& path) {
+	static string getFileExt(const string& path) {
 		string::size_type i = path.rfind('.');
 		return (i != string::npos) ? path.substr(i) : Util::emptyString;
 	}
@@ -399,6 +413,9 @@ private:
 
 /** Case insensitive hash function for strings */
 struct noCaseStringHash {
+	static const size_t bucket_size = 4;
+	static const size_t min_buckets = 8;
+
 	size_t operator()(const string& s) const {
 		size_t x = 0;
 		const char* y = s.data();
@@ -407,6 +424,9 @@ struct noCaseStringHash {
 			x = x*31 + (size_t)Util::toLower(y[i]);
 		}
 		return x;
+	}
+	bool operator()(const string& a, const string& b) const {
+		return Util::stricmp(a, b) == -1;
 	}
 };
 
@@ -429,5 +449,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.58 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: Util.h,v 1.59 2003/09/22 13:17:23 arnetheduck Exp $
  */

@@ -457,6 +457,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if(wParam == GET_PASSWORD) {
 		if(client->getPassword().size() > 0) {
 			client->password(client->getPassword());
+			addClientLine(STRING(STORED_PASSWORD_SENT));
 		} else {
 			ctrlMessage.SetWindowText("/password ");
 			ctrlMessage.SetFocus();
@@ -575,18 +576,13 @@ static int textUnderCursor(POINT p, CEdit& ctrl, string& x) {
 	x = string(buf, len-1);
 	delete buf;
 
-	string::size_type start = x.rfind(' ', c);
-	string::size_type start2 = x.rfind('<', c);
+	string::size_type start = x.find_last_of(" <\t\r\n", c);
 	if(start == string::npos)
 		start = 0;
 	else
 		start++;
-	if(start2 == string::npos)
-		start2 = 0;
-	else
-		start2++;
 
-	return max(start, start2);
+	return start;
 }
 
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -619,10 +615,11 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			Util::decodeUrl((x.c_str() + start), server, port, file);
 			HubFrame::openWindow(m_hWndMDIClient, getTab(), server + ":" + Util::toString(port));
 		} else {
-			string::size_type end = x.find_first_of("> \t\r\n", start+1);
-			if(end == string::npos || end == start + 1) {
+			string::size_type end = x.find_first_of(" >\t", start+1);
+			if(end == string::npos) // get EOL as well
+				end = x.length();
+			else if(end == start + 1)
 				return 0;
-			}
 
 			// Nickname click, let's see if we can find one like it in the name list...
 			int pos = ctrlUsers.find(x.substr(start + 1, end - start - 1));
@@ -699,8 +696,10 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 		string x;
 		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
 
-		string::size_type end = x.find_first_of(" >\t\r\n", start+1);
-		if(end == string::npos || end == start + 1) {
+		string::size_type end = x.find_first_of(" >\t", start+1);
+		if(end == string::npos) // get EOL as well
+			end = x.length();
+		else if(end == start + 1) {
 			bHandled = FALSE;
 			return FALSE;
 		}
@@ -1084,5 +1083,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.27 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.28 2003/09/22 13:17:24 arnetheduck Exp $
  */

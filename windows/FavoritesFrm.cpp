@@ -43,7 +43,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	SetWindowText(CSTRING(FAVORITE_HUBS));
 	
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_HUBLIST);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
@@ -213,6 +213,7 @@ LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 			fh.insert(fh.begin()+(i-1), e);
 			addEntry(e, i-1);
 			ctrlHubs.SetItemState(i-1, LVIS_SELECTED, LVIS_SELECTED);
+			ctrlHubs.EnsureVisible(i-1, FALSE);
 		}
 	}
 	ctrlHubs.SetRedraw(TRUE);
@@ -235,6 +236,7 @@ LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 			ctrlHubs.SetItemState(i+2, LVIS_SELECTED, LVIS_SELECTED);
 			fh.erase(fh.begin()+i);
 			ctrlHubs.DeleteItem(i);
+			ctrlHubs.EnsureVisible(i, FALSE);
 		}
 	}
 	ctrlHubs.SetRedraw(TRUE);
@@ -311,6 +313,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.12 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.13 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

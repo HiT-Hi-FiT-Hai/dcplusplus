@@ -36,6 +36,7 @@
 #include "ADLSearchFrame.h"
 #include "PrivateFrame.h"
 #include "FinishedULFrame.h"
+#include "TextFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -88,10 +89,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	WinUtil::init(m_hWnd);
 
-	// Ugly fix for the multi-cpu issues: we set all threads to run on processor 0
-	if(::SetThreadAffinityMask(GetCurrentThread(), 1) == 0)
-		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
-
 	// Register server socket message
 	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
 		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
@@ -99,10 +96,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	trayMessage = RegisterWindowMessage("TaskbarCreated");
 
 	TimerManager::getInstance()->start();
-
-	if(!SETTING(LANGUAGE_FILE).empty()) {
-		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
-	}
 
 	// Set window name
 	SetWindowText(APPNAME " " VERSIONSTRING);
@@ -470,6 +463,12 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		} catch(const FileException&) {
 			// ...
 		}
+	} else if(wParam == VIEW_TEXT) {
+		string* file = (string*)lParam;
+		TextFrame* pChild = new TextFrame(*file);
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+		delete file;
 	} else if(wParam == STATS) {
 		StringList& str = *(StringList*)lParam;
 		if(ctrlStatus.IsWindow()) {
@@ -594,7 +593,7 @@ void MainFrame::onUploadTick(const Upload::List& ul) {
 			ItemInfo* ii = transferItems[aCqi];		
 			ii->pos = u->getPos();
 			ii->timeLeft = u->getSecondsLeft();
-			ii->speed = u->getAverageSpeed();
+			ii->speed = u->getRunningAverage();
 
 			sprintf(buf, CSTRING(UPLOADED_BYTES), Util::formatBytes(u->getPos()).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatSeconds((GET_TICK() - u->getStart())/1000).c_str());
@@ -602,7 +601,7 @@ void MainFrame::onUploadTick(const Upload::List& ul) {
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			i->columns[COLUMN_STATUS] = buf;
 			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(u->getSecondsLeft());
-			i->columns[COLUMN_SPEED] = Util::formatBytes(u->getAverageSpeed()) + "/s";
+			i->columns[COLUMN_SPEED] = Util::formatBytes(u->getRunningAverage()) + "/s";
 			
 			v->push_back(i);
 		}
@@ -700,12 +699,12 @@ void MainFrame::onDownloadTick(const Download::List& dl) {
 			ItemInfo* ii = transferItems[aCqi];
 			ii->pos = d->getPos();
 			ii->timeLeft = d->getSecondsLeft();
-			ii->speed = d->getAverageSpeed();
+			ii->speed = d->getRunningAverage();
 
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			i->columns[COLUMN_STATUS] = buf;
 			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(d->getSecondsLeft());
-			i->columns[COLUMN_SPEED] = Util::formatBytes(d->getAverageSpeed()) + "/s";
+			i->columns[COLUMN_SPEED] = Util::formatBytes(d->getRunningAverage()) + "/s";
 			
 			v->push_back(i);
 		}
@@ -929,15 +928,15 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	{
 		int stringId = -1;
 		switch(idCtrl) {
-			case ID_FILE_CONNECT: stringId = ResourceManager::MENU_FILE_PUBLIC_HUBS; break;
-			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_FILE_RECONNECT; break;
-			case IDC_FOLLOW: stringId = ResourceManager::MENU_FILE_FOLLOW_REDIRECT; break;
-			case IDC_FAVORITES: stringId = ResourceManager::MENU_FILE_FAVORITE_HUBS; break;
-			case IDC_QUEUE: stringId = ResourceManager::MENU_FILE_DOWNLOAD_QUEUE; break;
-			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_FILE_SEARCH; break;
-			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_FILE_SETTINGS; break;
-			case IDC_NOTEPAD: stringId = ResourceManager::MENU_FILE_NOTEPAD; break;
-			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_FILE_ADL_SEARCH; break;
+			case ID_FILE_CONNECT: stringId = ResourceManager::MENU_PUBLIC_HUBS; break;
+			case ID_FILE_RECONNECT: stringId = ResourceManager::MENU_RECONNECT; break;
+			case IDC_FOLLOW: stringId = ResourceManager::MENU_FOLLOW_REDIRECT; break;
+			case IDC_FAVORITES: stringId = ResourceManager::MENU_FAVORITE_HUBS; break;
+			case IDC_QUEUE: stringId = ResourceManager::MENU_DOWNLOAD_QUEUE; break;
+			case ID_FILE_SEARCH: stringId = ResourceManager::MENU_SEARCH; break;
+			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
+			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
+			case IDC_FILE_ADL_SEARCH: stringId = ResourceManager::MENU_ADL_SEARCH; break;
 			case IDC_FINISHED: stringId = ResourceManager::FINISHED_DOWNLOADS; break; // tooltip
 			case IDC_FINISHED_UL: stringId = ResourceManager::FINISHED_UPLOADS; break; // Finished Uploads tooltip
 		}
@@ -1207,9 +1206,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			if(username.rfind('.') != string::npos) {
 				username.erase(username.rfind('.'));
 			}
-			User::Ptr& u = ClientManager::getInstance()->getUser(username);
-
-			DirectoryListingFrame* pChild = new DirectoryListingFrame(file, u);
+			DirectoryListingFrame* pChild = new DirectoryListingFrame(file, ClientManager::getInstance()->getUser(username));
 			pChild->setTab(&ctrlTab);
 			pChild->CreateEx(m_hWndClient);
 			pChild->setWindowTitle();
@@ -1434,22 +1431,27 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw() {
 	if(type == QueueManagerListener::FINISHED) {
 		if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
-			// This is a file listing, show it...
-			DirectoryListInfo* i = new DirectoryListInfo();
-			if(qi->isSet(QueueItem::FLAG_BZLIST) ){
-				dcassert(qi->getTarget().rfind('.') != string::npos);
-				i->file = qi->getTarget().substr(0, qi->getTarget().rfind('.')+1) + "bz2";
-			} else {
-				i->file = qi->getTarget();
+			if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
+				// This is a file listing, show it...
+
+				DirectoryListInfo* i = new DirectoryListInfo();
+				if(qi->isSet(QueueItem::FLAG_BZLIST) ){
+					dcassert(qi->getTarget().rfind('.') != string::npos);
+					i->file = qi->getTarget().substr(0, qi->getTarget().rfind('.')+1) + "bz2";
+				} else {
+					i->file = qi->getTarget();
+				}
+				i->user = qi->getCurrent()->getUser();
+				PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
+			} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
+				PostMessage(WM_SPEAKER, VIEW_TEXT, (LPARAM) new string(qi->getTarget()));
 			}
-			i->user = qi->getCurrent()->getUser();
-			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 		}
 	}
 }
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.27 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.28 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

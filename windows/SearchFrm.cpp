@@ -127,7 +127,10 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlSizeMode.AddString(CSTRING(KB));
 	ctrlSizeMode.AddString(CSTRING(MB));
 	ctrlSizeMode.AddString(CSTRING(GB));
-	ctrlSizeMode.SetCurSel(2);
+	if(initialSize == 0)
+		ctrlSizeMode.SetCurSel(2);
+	else
+		ctrlSizeMode.SetCurSel(0);
 
 	ctrlFiletype.AddString(CSTRING(ANY));
 	ctrlFiletype.AddString(CSTRING(AUDIO));
@@ -166,6 +169,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	resultsMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD_WHOLE_DIR));
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_WHOLE_DIR_TO));
+	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	resultsMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
@@ -176,6 +180,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	opMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
 	opMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD_WHOLE_DIR));
 	opMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_WHOLE_DIR_TO));
+	opMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
@@ -190,7 +195,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		lastSearches.push_back(initialString);
 		ctrlSearchBox.InsertString(0, initialString.c_str());
 		ctrlSearchBox.SetCurSel(0);
-		ctrlSizeMode.SetCurSel(initialMode);
+		ctrlMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Util::toString(initialSize).c_str());
 		ctrlFiletype.SetCurSel(initialType);
 		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
@@ -463,15 +468,16 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 	return 0;
 }
 
-void SearchFrame::downloadSelected(const string& aDir) {
+void SearchFrame::downloadSelected(const string& aDir, bool view /* = false */) {
 	int i=-1;
 	
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		try { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
-			} else {
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName(), 
+					(view ? (QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT) : QueueItem::FLAG_RESUME));
+			} else if(!view) {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), aDir);
 			}
@@ -833,7 +839,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
-				targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize(), Util::getExtension(sr->getFile()));
+				targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize(), Util::getFileExt(sr->getFile()));
 				if(targets.size() > 0) {
 					targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 					for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -881,15 +887,15 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				}
 				if (cmpSize == 0) {
 					if(ext.empty()) {
-						ext = Util::getExtension(sr->getFile());
+						ext = Util::getFileExt(sr->getFile());
 					}
-					if(Util::stricmp(ext, Util::getExtension(sr->getFile())) == 0) {
+					if(Util::stricmp(ext, Util::getFileExt(sr->getFile())) == 0) {
 						cmpSize = sr->getSize();
 					} else {
 						cmpSize = 0;
 						break;
 					}
-				} else if(cmpSize != sr->getSize() || Util::stricmp(ext, Util::getExtension(sr->getFile())) != 0) {
+				} else if(cmpSize != sr->getSize() || Util::stricmp(ext, Util::getFileExt(sr->getFile())) != 0) {
 					cmpSize = 0;
 					break;
 				}
@@ -1035,5 +1041,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.22 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.23 2003/09/22 13:17:24 arnetheduck Exp $
  */

@@ -77,8 +77,8 @@ public:
 
 	void infoUpdated();
 
-	User::Ptr& getUser(const string& aNick, const string& aHint = Util::emptyString);
-	User::Ptr& getUser(const string& aNick, Client* aClient, bool putOnline = true);
+	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
+	User::Ptr getUser(const string& aNick, Client* aClient, bool putOnline = true);
 	
 	bool isOnline(const string& aNick) {
 		Lock l(cs);
@@ -147,6 +147,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.33 2003/04/15 10:13:52 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.34 2003/09/22 13:17:22 arnetheduck Exp $
  */
 

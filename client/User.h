@@ -58,7 +58,10 @@ public:
 	typedef NickMap::iterator NickIter;
 
 	struct HashFunction {
+		static const size_t bucket_size = 4;
+		static const size_t min_buckets = 8;
 		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); };
+		bool operator()(const Ptr& a, const Ptr& b) { return (&(*a)) < (&(*b)); };
 	};
 
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
@@ -75,7 +78,7 @@ public:
 	void clientPM(const string& aTo, const string& aMsg);
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
-	bool isClientOp();
+	bool isClientOp() const;
 
 	string getFullNick() const { 
 		string tmp(getNick());
@@ -97,7 +100,7 @@ public:
 	GETSETREF(string, email, Email);
 	GETSETREF(string, description, Description);
 	GETSETREF(string, tag, Tag);
-	GETSETREF(string, lastHubIp, LastHubIp);
+	GETSETREF(string, lastHubAddress, LastHubAddress);
 	GETSETREF(string, lastHubName, LastHubName);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
@@ -111,6 +114,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.28 2003/07/15 14:53:11 arnetheduck Exp $
+ * $Id: User.h,v 1.29 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

@@ -356,26 +356,29 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 				// We insert the first part, if not, addDirectory will return the old commonStart
 				// Since this gets sorted before oldCommon, it should work =)
 				i = oldCommon.find('\\');
-				dcassert(i != string::npos);
-				string* tmp = new string(oldCommon.substr(0, i+1));
-				string name = tmp->substr(0, tmp->length() - 1);
-				tvi.hParent = NULL;
-				tvi.item.pszText = const_cast<char*>(name.c_str());
-				tvi.item.lParam = (LPARAM)tmp;
-				ctrlDirs.InsertItem(&tvi);
-				HTREEITEM ht = addDirectory(oldCommon);
-				HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
-				while(ht2 != NULL) {
-					moveNode(ht2, ht);
-					ht2 = ctrlDirs.GetChildItem(next);
+				if(i != 2) {
+					// oldCommon is not the shortest possible path, move all files...
+					dcassert(i != string::npos);
+					string* tmp = new string(oldCommon.substr(0, i+1));
+					string name = tmp->substr(0, tmp->length() - 1);
+					tvi.hParent = NULL;
+					tvi.item.pszText = const_cast<char*>(name.c_str());
+					tvi.item.lParam = (LPARAM)tmp;
+					ctrlDirs.InsertItem(&tvi);
+					HTREEITEM ht = addDirectory(oldCommon);
+					HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
+					while(ht2 != NULL) {
+						moveNode(ht2, ht);
+						ht2 = ctrlDirs.GetChildItem(next);
+					}
+					delete (string*)ctrlDirs.GetItemData(next);
+					ctrlDirs.DeleteItem(next);
+					next = ctrlDirs.GetRootItem();
+					if((next != NULL) && (next == fileLists)) {
+						next = ctrlDirs.GetNextSiblingItem(next);
+					}
+					i = 0;
 				}
-				delete (string*)ctrlDirs.GetItemData(next);
-				ctrlDirs.DeleteItem(next);
-				next = ctrlDirs.GetRootItem();
-				if((next != NULL) && (next == fileLists)) {
-					next = ctrlDirs.GetNextSiblingItem(next);
-				}
-				i = 0;
 			} else {
 				string name = commonStart.substr(0, commonStart.length() - 1);
 				tvi.hParent = NULL;
@@ -630,7 +633,16 @@ void QueueFrame::moveSelected() {
 		// Single file, get the full filename and move...
 		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 		string name = qi->getTarget();
-		if(WinUtil::browseFile(name, m_hWnd, true, Util::getFilePath(name))) {
+		string ext = Util::getFileExt(name);
+		string ext2 = "*." + ext;
+		ext2 += (char)0;
+		ext2 += "*." + ext;
+		ext2 += "*.*";
+		ext2 += (char)0;
+		ext2 += "*.*";
+		ext2 += (char)0;
+
+		if(WinUtil::browseFile(name, m_hWnd, true, Util::getFilePath(name), ext2.c_str(), ext.c_str())) {
 			QueueManager::getInstance()->move(qi->getTarget(), name);
 		}
 	} else if(n > 1) {
@@ -1139,7 +1151,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.25 2003/07/15 16:08:30 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.26 2003/09/22 13:17:24 arnetheduck Exp $
  */
 
 

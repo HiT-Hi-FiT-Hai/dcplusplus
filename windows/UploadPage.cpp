@@ -82,6 +82,8 @@ void UploadPage::write()
 
 	// Do specialized writing here
 	ShareManager::getInstance()->refresh();
+	ctrlDirectories.Detach();
+	ctrlTotal.Detach();
 }
 
 LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -129,6 +131,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.7 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.8 2003/09/22 13:17:24 arnetheduck Exp $
  */
 

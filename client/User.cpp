@@ -83,7 +83,7 @@ void User::privateMessage(const string& aMsg) {
 	}
 }
 
-bool User::isClientOp() {
+bool User::isClientOp() const {
 	RLock l(cs);
 	if(client) {
 		return client->getOp();
@@ -125,7 +125,10 @@ void User::setClient(Client* aClient) {
 	if(client == NULL)
 		unsetFlag(ONLINE);
 	else {
-		setLastHubIp(aClient->getIp());
+		if(aClient->getPort() == 411)
+			setLastHubAddress(aClient->getIp());
+		else
+			setLastHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
 		setLastHubName(aClient->getName());
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
@@ -134,6 +137,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.19 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: User.cpp,v 1.20 2003/09/22 13:17:23 arnetheduck Exp $
  */
 

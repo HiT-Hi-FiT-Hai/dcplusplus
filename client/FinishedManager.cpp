@@ -31,7 +31,7 @@ FinishedManager::~FinishedManager()
 	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
 }
 
-void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
+void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d) throw()
 {
 	switch(type) {
 	case DownloadManagerListener::COMPLETE:
@@ -62,7 +62,7 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 	}
 }
 
-void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
+void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) throw()
 {
 	switch(type) {
 	case UploadManagerListener::COMPLETE:
@@ -95,5 +95,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u)
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.8 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.9 2003/09/22 13:17:22 arnetheduck Exp $
  */

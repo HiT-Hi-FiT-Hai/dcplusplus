@@ -70,7 +70,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 		for(i = frames.begin(); i != frames.end(); ++i) {
 			if( (!i->first->isOnline()) && 
 				(i->first->getNick() == aUser->getNick()) &&
-				(i->first->getLastHubIp() == aUser->getLastHubIp()) ) {
+				(i->first->getLastHubAddress() == aUser->getLastHubAddress()) ) {
 				
 				found = true;
 				p = i->second;
@@ -266,7 +266,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.14 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.15 2003/09/22 13:17:24 arnetheduck Exp $
  */
 
 

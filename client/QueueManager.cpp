@@ -36,20 +36,20 @@ QueueManager* Singleton<QueueManager>::instance = NULL;
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
-void QueueManager::UserQueue::add(QueueItem* qi, bool inFront /* = false */) {
+void QueueManager::UserQueue::add(QueueItem* qi) {
 	for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
-		add(qi, (*i)->getUser(), inFront);
+		add(qi, (*i)->getUser());
 	}
 }
 
-void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser, bool inFront /* = false */) {
+void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser) {
 	dcassert(qi->getStatus() == QueueItem::STATUS_WAITING);
 	dcassert(qi->isSource(aUser));
 	dcassert(qi->getCurrent() == NULL);
 
 	QueueItem::List& l = userQueue[qi->getPriority()][aUser];
-	if(inFront) {
-		l.insert(l.begin(), qi);		//l.push_front(qi);
+	if(qi->isSet(QueueItem::FLAG_EXISTS)) {
+		l.insert(l.begin(), qi);
 	} else {
 		l.push_back(qi);
 	}
@@ -289,9 +289,8 @@ string QueueManager::getTempName(const string& aFileName) {
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
-					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */, 
-					   bool isDirectory /* = false */) throw(QueueException, FileException) {
+					   int aFlags /* = QueueItem::FLAG_RESUME */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
+					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */) throw(QueueException, FileException) {
 	
 	bool wantConnection = true;
 	
@@ -329,21 +328,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		Lock l(cs);
 		// Alright, get a queue item, new or old...
 		bool newItem = false;
-		QueueItem* q = getQueueItem(target, aSize, aResume, newItem);
+		QueueItem* q = getQueueItem(target, aSize, aFlags, newItem);
 		QueueItem::Source* s = NULL;
 		
-		if(aFile == USER_LIST_NAME) {
-			q->setFlag(QueueItem::FLAG_USER_LIST);
-			q->setPriority(QueueItem::HIGHEST);
-		}
+		dcassert((aFile == USER_LIST_NAME && q->isSet(QueueItem::FLAG_USER_LIST)) || (aFile != USER_LIST_NAME));
 
-		if(q->isSet(QueueItem::FLAG_USER_LIST)) {
-			q->setFlag(isDirectory ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : QueueItem::FLAG_CLIENT_VIEW);
-
+		if(!newItem && q->isSet(QueueItem::FLAG_USER_LIST)) {
 			// We've done what we could...
-			if(!newItem) {
-				return;
-			}
+			return;
 		}
 		
 		if(q->isSource(aUser)) {
@@ -357,6 +349,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 				}
 			}
 		}
+
 		if(!addBad) {
 			if(q->isBadSource(aUser)) {
 				throw QueueException(STRING(DUPLICATE_SOURCE));
@@ -370,24 +363,11 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 		s = q->addSource(aUser, aFile);
 		
-		if(newItem && (p != QueueItem::DEFAULT)) {
-			q->setPriority(p);
-		}
-
-		if(q->getPriority() == QueueItem::PAUSED) {
-			wantConnection = false;
-		}
-
-		if(aUser->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) ) {
-			q->removeSource(aUser, QueueItem::Source::FLAG_PASSIVE);
-			wantConnection = false;
-		} else if(q->getStatus() != QueueItem::STATUS_RUNNING) {
-			userQueue.add(q, aUser);
-		} else {
-			wantConnection = false;
-		}
-
 		if(newItem) {
+			if(p != QueueItem::DEFAULT) {
+				q->setPriority(p);
+			}
+
 			if(!q->isSet(QueueItem::FLAG_USER_LIST)) {
 				if(aTempTarget.empty()) {
 					if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(q->getTarget()) == -1)) {
@@ -404,7 +384,24 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 				lastInsert = queue.insert(lastInsert, make_pair(q->getTarget(), q));
 			}
 			fire(QueueManagerListener::ADDED, q);
+		}
 
+		if(q->getPriority() == QueueItem::PAUSED) {
+			wantConnection = false;
+		}
+
+		const string& tgt = q->getTempTarget().empty() ? q->getTarget() : q->getTempTarget();
+	
+		if(File::getSize(tgt) > 0)
+			q->setFlag(QueueItem::FLAG_EXISTS);
+
+		if(aUser->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) ) {
+			q->removeSource(aUser, QueueItem::Source::FLAG_PASSIVE);
+			wantConnection = false;
+		} else if(q->getStatus() != QueueItem::STATUS_RUNNING) {
+			userQueue.add(q, aUser);
+		} else {
+			wantConnection = false;
 		}
 
 		fire(QueueManagerListener::SOURCES_UPDATED, q);
@@ -415,7 +412,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-QueueItem* QueueManager::getQueueItem(const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException) {
+QueueItem* QueueManager::getQueueItem(const string& aTarget, int64_t aSize, int aFlags, bool& newItem) throw(QueueException, FileException) {
 	QueueItem* q;
 	if((lastInsert != queue.end()) && (lastInsert->first == aTarget)) {
 		q = lastInsert->second;
@@ -426,19 +423,20 @@ QueueItem* QueueManager::getQueueItem(const string& aTarget, int64_t aSize, bool
 	if(q == NULL) {
 		newItem = true;
 
-		q = new QueueItem(aTarget, aSize, (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL, aResume);
+		q = new QueueItem(aTarget, aSize, (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL, aFlags);
 
 	} else {
 		newItem = false;
 		if(q->getSize() != aSize) {
 			throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 		}
+		q->setFlag(aFlags);
 	}
 
 	return q;
 }
 
-void QueueManager::addDirectory(const string& aDir, User::Ptr& aUser, const string& aTarget, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw() {
+void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw() {
 	bool needList;
 	{
 		Lock l(cs);
@@ -541,6 +539,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 			copy = new QueueItem(*qs);
 		}
 	}
+
 	if(copy != NULL) {
 		remove(aSource);
 		// Damn...difficult...we add all sources then remove the old download...
@@ -917,7 +916,7 @@ void QueueManager::load(SimpleXML* aXml) {
 		while(aXml->findChild(sDownload)) {
 			const string& tempTarget = aXml->getChildAttrib(sTempTarget);
 			const string& target = aXml->getChildAttrib(sTarget);
-			bool resume = aXml->getBoolChildAttrib(sResume);
+			int flags = aXml->getBoolChildAttrib(sResume) ? QueueItem::FLAG_RESUME : 0;
 			int64_t size = aXml->getLongLongChildAttrib(sSize);
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
 			aXml->stepIn();
@@ -927,7 +926,7 @@ void QueueManager::load(SimpleXML* aXml) {
 					const string& path = aXml->getChildAttrib(sPath);
 
 					try {
-						add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p, tempTarget);
+						add(path, size, ClientManager::getInstance()->getUser(nick), target, flags, p, tempTarget);
 					} catch(const Exception&) {
 						// ...
 					}
@@ -939,7 +938,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				if(target.find('\\') == string::npos)
 					continue;
 
-				QueueItem* qi = getQueueItem(target, size, resume, newItem);
+				QueueItem* qi = getQueueItem(target, size, flags, newItem);
 				if(newItem) {
 					qi->setPriority(p);
 					qi->setTempTarget(tempTarget);
@@ -1030,7 +1029,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr) throw() {
 
 	if(type == SearchManagerListener::SEARCH_RESULT && BOOLSETTING(AUTO_SEARCH)) {
-		StringList l = getTargetsBySize(sr->getSize(), Util::getExtension(sr->getFile()));
+		StringList l = getTargetsBySize(sr->getSize(), Util::getFileExt(sr->getFile()));
 		
 		StringTokenizer t(SearchManager::clean(sr->getFileName()), ' ');
 		StringList& tok = t.getTokens();
@@ -1049,7 +1048,7 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 				// Wow! found a new source that seems to match...add it...
 				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 				try {
-					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, true, 
+					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, QueueItem::FLAG_RESUME, 
 						QueueItem::DEFAULT, Util::emptyString, false);
 				} catch(const Exception&) {
 					// ...
@@ -1078,9 +1077,9 @@ void QueueManager::onAction(ClientManagerListener::Types type, const User::Ptr& 
 		}
 		break;
 	}
+
 	if(aUser->isOnline() && hasDown)	
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
-
 }
 
 void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
@@ -1097,5 +1096,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.42 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.43 2003/09/22 13:17:23 arnetheduck Exp $
  */
