@@ -22,18 +22,29 @@
 class Exception  
 {
 public:
-	Exception(const string& aError = "") : error(aError) { };
+	Exception(const string& aError = "") : error(aError) { if(error.size()>0) dcdebug("Thrown: %s\n", error.c_str()); };
 
 	virtual const string& getError() const { return error; };
 protected:
 	string error;
 };
 
+#ifdef _DEBUG
+
+#define STANDARD_EXCEPTION(name) class name : public Exception { \
+public:\
+	name(const Exception& e, const string& aError) : Exception(#name ": " + aError + ":" + e.getError()) { }; \
+	name(const string& aError) : Exception(#name ": " + aError) { }; \
+}
+
+#else // _DEBUG
+
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
 	name(const Exception& e, const string& aError) : Exception(aError + ":" + e.getError()) { }; \
 	name(const string& aError) : Exception(aError) { }; \
 }
+#endif
 
 STANDARD_EXCEPTION(FileException);
 
@@ -41,9 +52,13 @@ STANDARD_EXCEPTION(FileException);
 
 /**
  * @file Exception.h
- * $Id: Exception.h,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Exception.h,v 1.3 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: Exception.h,v $
+ * Revision 1.3  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.2  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -407,22 +407,22 @@ private:
 		LONGLONG* psize = new LONGLONG;
 		*psize = aResult->getSize();
 
-		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick(), 0, (LPARAM)psize);
 		string file, path;
-		
 		if(aResult->getFile().rfind('\\') == string::npos) {
 			file = aResult->getFile();
 		} else {
 			file = aResult->getFile().substr(aResult->getFile().rfind('\\')+1);
 			path = aResult->getFile().substr(0, aResult->getFile().rfind('\\')+1);
 		}
-		ctrlResults.SetItemText(i, 1, file.c_str());
-		ctrlResults.SetItemText(i, 2, Util::formatBytes(aResult->getSize()).c_str());
-		ctrlResults.SetItemText(i, 3, path.c_str());
-		ctrlResults.SetItemText(i, 4, aResult->getSlotString().c_str());
-		ctrlResults.SetItemText(i, 5, aResult->getHubName().c_str());
 
-
+		StringList l;
+		l.push_back(aResult->getNick());
+		l.push_back(file);
+		l.push_back(Util::formatBytes(aResult->getSize()));
+		l.push_back(path);
+		l.push_back(aResult->getSlotString());
+		l.push_back(aResult->getHubName());
+		ctrlResults.insert(l, 0, (LPARAM)psize);		
 	}
 };
 
@@ -435,9 +435,13 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.12 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.13 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.13  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.12  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

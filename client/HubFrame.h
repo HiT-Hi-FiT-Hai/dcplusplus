@@ -26,14 +26,13 @@
 #include "ClientListener.h"
 #include "Client.h"
 #include "ExListViewCtrl.h"
-#include "DownloadManager.h"
 #include "User.h"
 #include "LineDlg.h"
 #include "CriticalSection.h"
 #include "ClientManager.h"
 #include "PrivateFrame.h"
 
-#include "AtlCmdBar2.h"
+#include "FlatTabCtrl.h"
 
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
@@ -69,103 +68,27 @@ private:
 		string msg;
 	};
 	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-		cs.enter();
-		// First some specials to handle those messages that have to initialize variables...
-		if(wParam == CLIENT_MESSAGE) {
-			addLine(*(string*)lParam);
-			delete (string*)lParam;
-		} else if(wParam == CLIENT_MYINFO) {
-			User::Ptr& u = *(User::Ptr*)lParam;
-			LV_FINDINFO fi;
-			fi.flags = LVFI_STRING;
-			fi.psz = u->getNick().c_str();
-			int j = ctrlUsers.FindItem(&fi, -1);
-			if(j == -1) {
-				UserInfo* ui = new UserInfo;
-				ui->size = u->getBytesShared();
-				StringList l;
-				l.push_back(u->getNick());
-				l.push_back(Util::formatBytes(u->getBytesSharedString()));
-				l.push_back(u->getDescription());
-				l.push_back(u->getConnection());
-				l.push_back(u->getEmail());
-				ctrlUsers.insert(l, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, (LPARAM)ui);
-			} else {
-				ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER, 0, 0, NULL);
-				ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
-				ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
-				ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
-				ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
-				((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
-			}
-			
-			updateStatusBar();
-			delete (User::Ptr*)lParam;
-		} else if(wParam == CLIENT_QUIT) {
-			User::Ptr& u = *(User::Ptr*)lParam;
-
-			int item = ctrlUsers.find(u->getNick());
-			if(item != -1) {
-				delete (UserInfo*)ctrlUsers.GetItemData(item);
-				ctrlUsers.DeleteItem(item);
-			}
-			updateStatusBar();		
-			delete (User::Ptr*)lParam;
-		} else if(wParam == CLIENT_GETPASSWORD) {
-			LineDlg dlg;
-			dlg.title = "Hub Password";
-			dlg.description = "Please enter your password";
-			dlg.password = true;
-			
-			if(dlg.DoModal() == IDOK) {
-				client->password(dlg.line);
-			} else {
-				client->disconnect();
-			}
-		} else if(wParam == CLIENT_CONNECTING) {
-			addClientLine("Connecting to " + client->getServer() + "...");
-			SetWindowText(client->getServer().c_str());
-		} else if(wParam == CLIENT_ERROR) {
-			addClientLine(*(string*)lParam);
-			delete (string*)lParam;
-		} else if(wParam == CLIENT_HUBNAME) {
-			SetWindowText(client->getName().c_str());
-			addClientLine("Connected");
-		} else if(wParam == CLIENT_VALIDATEDENIED) {
-			addClientLine("Your nick was already taken, please change to something else!");
-			client->disconnect();
-		} else if(wParam == CLIENT_PRIVATEMESSAGE) {
-			PMInfo* i = (PMInfo*)lParam;
-			i->frm->Create(m_hWndMDIClient);
-			i->frm->addLine(i->msg);
-			delete i;
-		}
-		cs.leave();
-		return 0;
-	};
-
-	virtual void onClientConnecting(Client* aClient) { 
-		PostMessage(WM_SPEAKER, CLIENT_CONNECTING); 
-	};
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+		
+	virtual void onClientConnecting(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_CONNECTING); };
 	
 	virtual void onClientError(Client* aClient, const string& aReason) {
 		string* x = new string(aReason);
-		PostMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM) x);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM) x);
 	}
 	
-	virtual void onClientGetPassword(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); };
-	virtual void onClientHubName(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_HUBNAME); };
+	virtual void onClientGetPassword(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_GETPASSWORD); };
+	virtual void onClientHubName(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_HUBNAME); };
 	
 	virtual void onClientMessage(Client* aClient, const string& aMessage) {
 		string* msg = new string(aMessage);
-		PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
 	}
 
 	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
 		User::Ptr* x = new User::Ptr();
 		*x = aUser;
-		PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x);
 	}
 	
 	virtual void onClientOpList(Client* aClient, StringList& aOps) {
@@ -183,21 +106,21 @@ private:
 		i->frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
 		i->frm->setTab(getTab());
 		i->msg = aMessage;
-		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
 	}
 	
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
 #ifdef _DEBUG
 		string* x = new string("Unknown command: " + aCommand);
-		PostMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM)x);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_ERROR, (LPARAM)x);
 #endif // _DEBUG
 	}
 	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) {
 		User::Ptr* x = new User::Ptr();
 		*x = aUser;
-		PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x);
+		SendNotifyMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x);
 	}
-	virtual void onClientValidateDenied(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); };
+	virtual void onClientValidateDenied(Client* aClient) { SendNotifyMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); };
 
 	void updateStatusBar() {
 		char buf[256];
@@ -264,44 +187,8 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i=-1;
-		char buf[256];
-		if(client->isConnected()) {
-			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				ctrlUsers.GetItemText(i, 0, buf, 256);
-				string user = buf;
-				User::Ptr& u = client->getUser(user);
-				try {
-					if(u)
-						DownloadManager::getInstance()->downloadList(u);
-					else 
-						DownloadManager::getInstance()->downloadList(user);
-				} catch(...) {
-					// ...
-				}
-			}
-		}
-		return 0;
-	}
-
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i=-1;
-		char buf[256];
-		if(client->isConnected()) {
-			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				ctrlUsers.GetItemText(i, 0, buf, 256);
-				string user = buf;
-				User::Ptr& u = client->getUser(user);
-				if(u) {
-					PrivateFrame* frm = PrivateFrame::getFrame(u, m_hWndMDIClient);
-					frm->setTab(getTab());
-					frm->CreateEx(m_hWndMDIClient);
-				}
-			}
-		}
-		return 0;
-	}
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(client->isConnected()) {
@@ -451,7 +338,12 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		client->disconnect();
+		ctrlUsers.DeleteAllItems();
+		client->connect(server);
+		return 0;
+	}
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
@@ -464,27 +356,8 @@ public:
 		return 0;
 	}
 		
-	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-		string user;
-		char buf[256];
-
-		if(client->isConnected() && item->iItem != -1) {
-			ctrlUsers.GetItemText(item->iItem, 0, buf, 256);
-			user = buf;
-			User::Ptr& u = client->getUser(user);
-			try {
-				if(u)
-					DownloadManager::getInstance()->downloadList(u);
-				else 
-					DownloadManager::getInstance()->downloadList(user);
-			} catch(...) {
-				// ...
-			}
-		}
-		return 0;
-	}
-		
+	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
@@ -560,9 +433,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.27 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.28 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.28  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.27  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

@@ -80,14 +80,16 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
-	char buf[1024];
-	
-	ctrlHubs.GetItemText(item->iItem, 3, buf, 1024);
-	string tmp = buf;
-	if(!ClientManager::getInstance()->isConnected(tmp)) {
-		HubFrame* frm = new HubFrame(buf);
-		frm->setTab(getTab());
-		frm->CreateEx(m_hWndMDIClient);
+	if(item->iItem != -1) {
+		char buf[256];
+		
+		ctrlHubs.GetItemText(item->iItem, 3, buf, 256);
+		string tmp = buf;
+		if(!ClientManager::getInstance()->isConnected(tmp)) {
+			HubFrame* frm = new HubFrame(buf);
+			frm->setTab(getTab());
+			frm->CreateEx(m_hWndMDIClient);
+		}
 	}
 
 	return 0;
@@ -160,9 +162,13 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.9 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.10 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.10  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.9  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

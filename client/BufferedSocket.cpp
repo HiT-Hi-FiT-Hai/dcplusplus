@@ -124,7 +124,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 		dcdebug("BufferedSocket::Reader caught: %s\n", e.getError().c_str());
 		bs->disconnect();
 		bs->fireError(e.getError());
-		return 0x02;
+		return 0x05;
 	}
 
 	string line;
@@ -140,7 +140,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			dcdebug("BufferedSocket::reader Writer event\n");
 			if(!writer(bs, buf)) {
 				delete buf;
-				return 0x03;
+				return 0x06;
 			}
 			break;
 		case WAIT_OBJECT_0 + 2:
@@ -156,7 +156,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 					bs->disconnect();
 					bs->fireError("Disconnected");
 					delete buf;
-					return 0x03;
+					return 0x07;
 				}
 				int bufpos = 0;
 				string l;
@@ -209,7 +209,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				bs->disconnect();
 				bs->fireError(e.getError());
 				delete buf;
-				return 0x04;
+				return 0x08;
 			}
 			break;
 		case WAIT_FAILED:
@@ -218,7 +218,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			delete buf;
 			bs->disconnect();
 			bs->fireError("Disconnected");
-			return 0x05;
+			return 0x09;
 		default:
 			dcassert(0);
 		}
@@ -229,9 +229,13 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.20 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.21 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.21  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.20  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

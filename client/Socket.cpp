@@ -25,9 +25,20 @@
 #define checkconnected() if(!connected) throw SocketException("Not connected")
 
 #define BUFSIZE 4096
+#ifdef _DEBUG
+
+SocketException::SocketException(int aError) {
+	error = "SocketException: " + errorToString(aError);
+	dcdebug("Thrown: %s\n", error.c_str());
+}
+
+#else // _DEBUG
+
 SocketException::SocketException(int aError) {
 	error = errorToString(aError);
 }
+
+#endif
 
 Socket::Stats Socket::stats = { 0, 0, 0, 0 };
 
@@ -58,7 +69,7 @@ string SocketException::errorToString(int aError) {
 	case ENOTSOCK:
 		return "Socket error.";
 	default:
-		char tmp[1024];
+		char tmp[128];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
 		return tmp;
 	}
@@ -203,9 +214,13 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.13 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.14 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.14  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.13  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

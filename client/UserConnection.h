@@ -61,7 +61,7 @@ public:
 	void setFile(HANDLE aFile, bool aUpdate = false) { 
 		file = aFile;
 		if(aUpdate) {
-			DWORD high;
+			DWORD high =0;
 			size = (LONGLONG) GetFileSize(aFile, &high) | (((LONGLONG)high) << 32);
 		}
 	}
@@ -135,7 +135,7 @@ public:
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
 	
 	void get(const string& aFile, LONGLONG aResume) { 
-		char buf[1024];
+		char buf[512];
 		sprintf(buf, "$Get %s$%I64d|", aFile.c_str(), aResume+1);
 		send(buf);
 	}
@@ -380,9 +380,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.21 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.22 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.22  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.21  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

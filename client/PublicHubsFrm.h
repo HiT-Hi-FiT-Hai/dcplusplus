@@ -235,7 +235,7 @@ private:
 	}
 
 	void updateStatus() {
-		char buf[1024];
+		char buf[128];
 		sprintf(buf, "Users: %d", users);
 		ctrlStatus.SetText(2, buf);
 		sprintf(buf, "Hubs: %d", hubs);
@@ -247,9 +247,13 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.8 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.9 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.9  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.8  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

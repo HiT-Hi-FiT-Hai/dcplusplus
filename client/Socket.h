@@ -87,7 +87,12 @@
 
 class SocketException : public Exception {
 public:
+#ifdef _DEBUG
+	SocketException(const string& aError) : Exception("SocketException: " + aError) { };
+#else //_DEBUG
 	SocketException(const string& aError) : Exception(aError) { };
+#endif // _DEBUG
+	
 	SocketException(int aError);
 	virtual ~SocketException() { };
 private:
@@ -214,9 +219,13 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.12 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Socket.h,v 1.13 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.13  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.12  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

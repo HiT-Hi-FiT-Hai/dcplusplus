@@ -156,8 +156,8 @@ public:
 	}
 	void deleteItem(const string& aItem, int col = 0) {
 		for(int i = 0; i < GetItemCount(); i++) {
-			char buf[1024];
-			GetItemText(i, col, buf, 1024);
+			char buf[256];
+			GetItemText(i, col, buf, 256);
 			if(aItem == buf) {
 				DeleteItem(i);
 				break;
@@ -214,9 +214,13 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.11 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.12 2002/01/06 21:55:20 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.12  2002/01/06 21:55:20  arnetheduck
+ * Some minor bugs fixed, but there remains one strange thing, the reconnect
+ * button doesn't work...
+ *
  * Revision 1.11  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *
