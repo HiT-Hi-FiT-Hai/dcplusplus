@@ -107,11 +107,14 @@ public:
 	
 	/** @internal */
 	bool getAutoSlot() {
+		/** A 0 in settings means disable */
 		if(SETTING(MIN_UPLOAD_SPEED) == 0)
 			return false;
-		if(getLastGrant() + 30*1000 < GET_TICK())
+		/** Only grant one slot per 30 sec */
+		if(GET_TICK() < getLastGrant() + 30*1000)
 			return false;
-		return (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed();
+		/** Grant if uploadspeed is less than the threshold speed */
+		return UploadManager::getInstance()->getAverageSpeed() < (SETTING(MIN_UPLOAD_SPEED)*1024);
 	}
 
 	/** @internal */
@@ -185,5 +188,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.72 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.73 2005/01/03 10:38:42 arnetheduck Exp $
  */

@@ -27,6 +27,8 @@
 * Better log file managment (thanks trem)
 * Fixed a queue count issue on removal (thanks ullner)
 * Fixed a queue move issue (thanks paka)
+* Fixed upload auto-slot granting (thanks naga)
+
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)
