@@ -359,8 +359,17 @@ public:
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
-	static void copyFile(const string& source, const string& target) throw() { 
-#warning FIXME
+	static void copyFile(const string& source, const string& target) throw(FileException) { 
+		File src(source, File::READ, File::OPEN);
+		File tgt(target, File::WRITE, File::CREATE | File::TRUNCATE);
+		
+		const size_t BUF_SIZE = 128 * 1024;
+		AutoArray<char> buf(BUF_SIZE);
+		size_t n = BUF_SIZE; 
+		while( (n = src.read((char*)buf, n)) > 0) {
+			tgt.write((char*)buf, n);
+			n = BUF_SIZE;
+		}
 	}
 
 	static int64_t getSize(const string& aFileName) {
@@ -505,6 +514,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.42 2004/09/25 20:40:39 arnetheduck Exp $
+ * $Id: File.h,v 1.43 2004/11/07 17:14:53 arnetheduck Exp $
  */
 
