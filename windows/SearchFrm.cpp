@@ -386,7 +386,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	l->push_back(aResult->getUser()->getNick());
 	l->push_back(file);
 	if(aResult->getType() == SearchResult::TYPE_FILE) {
-		int i = file.rfind('.');
+		string::size_type i = file.rfind('.');
 		if(i != string::npos) {
 			l->push_back(file.substr(i + 1));
 		} else {
@@ -873,7 +873,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 			
 			op = sr->getUser()->isClientOp();
-			oneHub = sr->getUser()->getClientServer();
+			oneHub = sr->getUser()->getClientAddressPort();
 
 		} else if(ctrlResults.GetSelectedCount() > 1) {
 
@@ -937,9 +937,9 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				}
 				if(one) {
 					if(oneHub.empty()) {
-						oneHub = sr->getUser()->getClientServer();
+						oneHub = sr->getUser()->getClientAddressPort();
 					} else {
-						if(Util::stricmp(sr->getUser()->getClientServer(), oneHub) != 0) {
+						if(Util::stricmp(sr->getUser()->getClientAddressPort(), oneHub) != 0) {
 							oneHub.clear();
 							one = false;
 						}
@@ -1092,5 +1092,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.31 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.32 2003/11/04 20:18:15 arnetheduck Exp $
  */

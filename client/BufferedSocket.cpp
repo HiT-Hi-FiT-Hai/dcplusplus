@@ -156,7 +156,7 @@ void BufferedSocket::threadConnect() {
 	{
 		Lock l(cs);
 
-		s=server;
+		s=address;
 		p=port;
 	}
 
@@ -449,5 +449,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.54 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.55 2003/11/04 20:18:09 arnetheduck Exp $
  */

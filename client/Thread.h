@@ -26,7 +26,6 @@
 #ifndef WIN32
 #include <pthread.h>
 #include <sched.h>
-#include <asm/atomic.h>
 #include <sys/resource.h>
 #endif
 
@@ -101,14 +100,26 @@ public:
 	static void sleep(u_int32_t millis) { ::usleep(millis*1000); };
 	static void yield() { ::sched_yield(); };
 	static long safeInc(long* v) { 
+#if 0
 		atomic_t t = ATOMIC_INIT(*v);
 		atomic_inc(&t);
 		return (*v=t.counter);
+#else
+#warning FIXME
+		(*v)++;
+		return *v;
+#endif
 	};
 	static long safeDec(long* v) { 
+#if 0
 		atomic_t t = ATOMIC_INIT(*v);
 		atomic_dec(&t);
 		return (*v=t.counter);
+#else
+#warning FIXME
+		(*v)--;
+		return *v;
+#endif
 	};
 #endif
 
@@ -139,6 +150,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.9 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: Thread.h,v 1.10 2003/11/04 20:18:12 arnetheduck Exp $
  */
 

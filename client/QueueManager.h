@@ -170,6 +170,7 @@ public:
 	string getTargetFileName() { return Util::getFileName(getTarget()); };
 
 	bool isSource(const User::Ptr& aUser) { return (getSource(aUser) != sources.end()); };
+	bool isBadSource(const User::Ptr& aUser) { return (getBadSource(aUser) != badSources.end()); };
 
 	void setCurrent(const User::Ptr& aUser) {
 		dcassert(isSource(aUser));
@@ -211,8 +212,6 @@ private:
 		badSources.push_back(*i);
 		sources.erase(i);
 	}
-	
-	bool isBadSource(const User::Ptr& aUser) { return (getBadSource(aUser) != badSources.end()); };
 
 	Source::Iter getSource(const User::Ptr& aUser) { return find(sources.begin(), sources.end(), aUser); };
 	Source::Iter getBadSource(const User::Ptr& aUser) { return find(badSources.begin(), badSources.end(), aUser); };
@@ -253,13 +252,6 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	
 	/** Add a file to the queue. */
-	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-		const string& aSearchString = Util::emptyString, int aFlags = QueueItem::FLAG_RESUME, 
-		QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString, 
-		bool addBad = true) throw(QueueException, FileException) {
-		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, 
-			aTarget, aSearchString, aFlags, p, aTempTarget, addBad);
-	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 		const string& aSearchString = Util::emptyString, int aFlags = QueueItem::FLAG_RESUME, 
 		QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString, 
@@ -410,6 +402,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.42 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.43 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

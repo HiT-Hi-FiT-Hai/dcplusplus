@@ -37,8 +37,7 @@ class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CContro
 public:
 	enum {	
 		SORT_FUNC,
-		SORT_FUNC_ITEM,
-		SORT_STRING,
+ 		SORT_STRING,
 		SORT_STRING_NOCASE,
 		SORT_INT,
 		SORT_FLOAT
@@ -122,19 +121,7 @@ public:
 		int result = p->sortType;
 		if(result == SORT_FUNC) {
 			result = p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
-		} else if(result == SORT_FUNC_ITEM) {
-			LVITEM a;
-			LVITEM b;
-			a.mask = b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-			a.iSubItem = b.iSubItem = 0;
-
-			a.iItem = lParam1;
-			p->GetItem(&a);
-			
-			b.iItem = lParam2;
-			p->GetItem(&b);
-			result = p->fun((LPARAM)&a, (LPARAM)&b);
-		}
+		} 
 
 		if(result == SORT_STRING) {
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
@@ -199,6 +186,6 @@ protected:
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.8 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.9 2003/11/04 20:18:14 arnetheduck Exp $
  */
 

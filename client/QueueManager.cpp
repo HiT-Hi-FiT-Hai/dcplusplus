@@ -1094,11 +1094,13 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 		StringIter j = records.begin();
 		++j; // filename
 
-		const string& size   = *(++j);
+		int64_t size = Util::toInt64(*(++j));
+		if(size <= 0)
+			continue;
 		const string& target = *(++j);
 		const string& file   = *(++j);
 		const string& nick   = *(++j);
-
+		
 		try {
 			add(file, size, ClientManager::getInstance()->getUser(nick), target);
 		} catch(const Exception&) {
@@ -1168,7 +1170,7 @@ void QueueManager::onAction(ClientManagerListener::Types type, const User::Ptr& 
 				QueueItem::UserListIter j = userQueue.getList(i).find(aUser);
 				if(j != userQueue.getList(i).end()) {
 					for(QueueItem::Iter m = j->second.begin(); m != j->second.end(); ++m)
-						fire(QueueManagerListener::SOURCES_UPDATED, *m);
+						fire(QueueManagerListener::STATUS_UPDATED, *m);
 					if(i != QueueItem::PAUSED)
 						hasDown = true;
 				}
@@ -1214,5 +1216,5 @@ bool QueueManager::isDownloadingFromSources(QueueItem* qi, int& onlineUserCount)
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.49 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.50 2003/11/04 20:18:11 arnetheduck Exp $
  */

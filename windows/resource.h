@@ -3,6 +3,8 @@
 // Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
+#define IDC_TRAY_QUIT                   102
+#define IDC_TRAY_SHOW                   103
 #define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
@@ -277,7 +279,7 @@
 #define IDC_RESULT                      1207
 #define IDC_BUTTON1                     1208
 #define IDC_BUTTON2                     1209
-#define IDC_REFRESH_FILE_LIST			1210
+#define IDC_REFRESH_FILE_LIST           1210
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -298,6 +300,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
 #define _APS_NEXT_CONTROL_VALUE         1211
-#define _APS_NEXT_SYMED_VALUE           102
+#define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -170,15 +170,19 @@ public:
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
 
-	void connect(const string& aServer);
+	void connect(const string& aAddressPort);
 	
 	void updated(User::Ptr& aUser) {
 		fire(ClientListener::MY_INFO, this, aUser);
 	}
 
-	const string& getName() { return name; };
-	const string& getServer() { return server; };
-	string getServerWithPort() const { return port == 411 ? server : server + ':' + Util::toString(port); };
+	const string& getName() const { return name; };
+	const string& getAddress() const { return address; };
+	const string& getAddressPort() const { return addressPort; };
+	short getPort() const { return port; };
+
+	const string& getIp() {	return socket->getIp().empty() ? getAddress() : socket->getIp(); };
+	string getIpPort() { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
 
 	int getUserCount() throw() {
 		Lock l(cs);
@@ -199,10 +203,6 @@ public:
 		return string(buf, sprintf(buf, "%ld/%ld/%ld", counts.normal, counts.registered, counts.op));
 	}
 
-	const string& getIp() {	return socket->getIp().empty() ? server : socket->getIp(); };
-	const short getPort() { return port; };
-	string getIpWithPort() { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
-	
 	string getLocalIp() { 
 		if(!SETTING(SERVER).empty()) {
 			return Socket::resolve(SETTING(SERVER));
@@ -240,7 +240,8 @@ private:
 		COUNT_OP
 	};
 
-	string server;
+	string address;
+	string addressPort;
 	short port;
 
 	string name;
@@ -304,6 +305,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.70 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: Client.h,v 1.71 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

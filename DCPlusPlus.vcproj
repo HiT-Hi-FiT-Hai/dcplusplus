@@ -475,6 +475,9 @@
 				RelativePath="windows\TreePropertySheet.h">
 			</File>
 			<File
+				RelativePath=".\windows\TypedListViewCtrl.h">
+			</File>
+			<File
 				RelativePath=".\windows\UCHandler.h">
 			</File>
 			<File

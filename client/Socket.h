@@ -83,7 +83,10 @@
 #	define checksocket(x) if((x) == INVALID_SOCKET) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
 #	define checkrecv(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); if(a == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(a); } }
 #	define checksockerr(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
+
 typedef int socklen_t;
+typedef SOCKET socket_t;
+
 #else
 #include <sys/ioctl.h>
 #include <sys/socket.h>
@@ -92,7 +95,8 @@ typedef int socklen_t;
 #include <errno.h>
 #include <netdb.h>
 
-typedef int SOCKET;
+typedef int socket_t;
+
 #define SOCKET_ERROR -1
 #define INVALID_SOCKET -1
 #	define closesocket(x) close(x)
@@ -217,7 +221,7 @@ public:
 
 	GETSETREF(string, ip, Ip);
 protected:
-	SOCKET sock;
+	socket_t sock;
 	bool connected;
 
 	static string udpServer;
@@ -241,6 +245,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.43 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: Socket.h,v 1.44 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

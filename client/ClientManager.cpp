@@ -234,7 +234,9 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 
 	// Check for an offline user that was on that hub that we can put online again
 	for(i = p.first; i != p.second; ++i) {
-		if( (!i->second->isOnline()) && (i->second->getLastHubAddress() == aClient->getIpWithPort()) ) {
+		if( (!i->second->isOnline()) && 
+			((i->second->getLastHubAddress() == aClient->getAddressPort()) || (i->second->getLastHubAddress() == aClient->getIpPort())) )
+		{
 			if(putOnline) {
 				i->second->setClient(aClient);
 				fire(ClientManagerListener::USER_UPDATED, i->second);
@@ -292,14 +294,14 @@ void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 }
 
 // ClientListener
-void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line) {
+void ClientManager::onAction(ClientListener::Types type, Client* client, const string& /*line*/) throw() {
 	if(type == ClientListener::FAILED) {
-		HubManager::getInstance()->removeUserCommand(client->getServerWithPort());
+		HubManager::getInstance()->removeUserCommand(client->getAddressPort());
 	}
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(type == ClientListener::USER_COMMAND) {
-		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getServerWithPort());
+		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
 	}
 }
 
@@ -379,5 +381,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.41 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.42 2003/11/04 20:18:11 arnetheduck Exp $
  */

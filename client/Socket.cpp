@@ -118,11 +118,11 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 /**
  * Connects a socket to an address/ip, closing any other connections made with
  * this instance.
- * @param ip Server IP, in xxx.xxx.xxx.xxx format.
- * @param port Server port.
+ * @param aAddr Server address, in dns or xxx.xxx.xxx.xxx format.
+ * @param aPort Server port.
  * @throw SocketException If any connection error occurs.
  */
-void Socket::connect(const string& aip, short port) throw(SocketException) {
+void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
 	sockaddr_in  serv_addr;
 	hostent* host;
 
@@ -131,13 +131,13 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
 	}
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
-    serv_addr.sin_port = htons(port);
+    serv_addr.sin_port = htons(aPort);
 	serv_addr.sin_family = AF_INET;
 	
-	serv_addr.sin_addr.s_addr = inet_addr(aip.c_str());
+	serv_addr.sin_addr.s_addr = inet_addr(aAddr.c_str());
 
     if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
-        host = gethostbyname(aip.c_str());
+        host = gethostbyname(aAddr.c_str());
         if (host == NULL) {
             throw SocketException(STRING(UNKNOWN_ADDRESS));
         }
@@ -145,7 +145,6 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
     }
 
 	setIp(inet_ntoa(serv_addr.sin_addr));
-//	dcdebug("Server %s = %s\n", aip.c_str(), getIp().c_str());
 	
 	bool blocking = true;
     if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
@@ -518,6 +517,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.48 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.49 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

@@ -118,13 +118,13 @@ public:
 	int getMode() { return mode; };
 	
 	/**
-	 * Connect to aServer / aPort
+	 * Connect to aAddress / aPort
 	 * Note; this one doesn't actually throw, but it overrides one that does...
 	 */
-	virtual void connect(const string& aServer, short aPort) throw(SocketException) {
+	virtual void connect(const string& aAddress, short aPort) throw(SocketException) {
 		Lock l(cs);
 		mode = MODE_LINE;
-		server = aServer;
+		address = aAddress;
 		port = aPort;
 		addTask(CONNECT);
 	}
@@ -185,7 +185,7 @@ private:
 
 	Semaphore taskSem;
 	vector<Tasks> tasks;
-	string server;
+	string address;
 	short port;
 	int mode;
 	int64_t dataBytes;
@@ -239,5 +239,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.50 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.51 2003/11/04 20:18:10 arnetheduck Exp $
  */

@@ -28,6 +28,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/utsname.h>
+#include <ctype.h>
 #endif
 
 string Util::emptyString;
@@ -230,12 +231,12 @@ string Util::validateFileName(const string& aFile) {
 		tmp.erase(i+1, 2);
 	}
 
-	// Remove any double \\ 
+	// Remove any double \\ ...
 	while( ((i = tmp.find("\\\\"))) != string::npos) {
 		tmp.erase(i+1, 1);
 	}
 
-	// And last, but not least, the infamous ..\!
+	// And last, but not least, the infamous ..\! ...
 	while( ((i = tmp.find("\\..\\", i)) != string::npos) ) {
 		tmp[i + 1] = '_';
 		tmp[i + 2] = '_';
@@ -521,6 +522,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.31 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.32 2003/11/04 20:18:12 arnetheduck Exp $
  */
 

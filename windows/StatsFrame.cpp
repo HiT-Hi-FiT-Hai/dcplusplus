@@ -49,7 +49,7 @@ void StatsFrame::drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRec
 	
 	StatIter i;
 	for(i = begin; i != end; ++i) {
-		if((x - i->scroll) < rc.right)
+		if((x - (int)i->scroll) < rc.right)
 			break;
 		x -= i->scroll;
 	}
@@ -213,7 +213,7 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.2 2003/10/19 15:46:34 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.3 2003/11/04 20:18:15 arnetheduck Exp $
  */
 
 

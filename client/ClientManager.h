@@ -54,11 +54,11 @@ public:
 		return c;
 	}
 
-	bool isConnected(const string& aServer, short port) {
+	bool isConnected(const string& aAddress, short port) {
 		Lock l(cs);
 
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
-			if(((*i)->getServer() == aServer || (*i)->getIp() == aServer) && (*i)->getPort() == port) {
+			if(((*i)->getAddress() == aAddress || (*i)->getIp() == aAddress) && (*i)->getPort() == port) {
 				return true;
 			}
 		}
@@ -185,6 +185,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.37 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.38 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

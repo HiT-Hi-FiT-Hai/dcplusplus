@@ -3,9 +3,10 @@ How to compile in 4 easy steps:
 1) Make sure you've downloaded the WTL 7.0 Package and have all the files in it in your include path.
    You can find it on the dc++ sourceforge site. Mind the version.
 
-2) Make sure you have stlport 4.5.3 installed and that it's included _before_ the standard vc directories
+2) Make sure you have stlport installed and that it's included _before_ the standard vc directories
    Use the one supplied on the dc++ sourceforge page (do not use the one from www.stlport.org unless 
-   you know what you're doing, I've modified it a little bit). Mind the version.
+   you know what you're doing, I've modified it a little bit). Mind the version (download the latest
+   one from the source extras).
    
    * Note; This step may not be required if you use MSVC 7.x, i e it might work without STLPort,
      but I don't recommend this as it's completely untested, and the original distribution uses it.
@@ -20,11 +21,12 @@ How to compile in 4 easy steps:
 
 Note 1;	you'll probably get a whole bunch of warnings, ignore those, it's a bug in the compiler...
 
-Note 2;	I usually use vc7, but I try to keep it vc6 compatible as well.
+Note 2;	I now use vc7.1 (2003). If you're using vc7.0(2002) you'll have to copy the old project 
+        files from the vc7.0-project folder and then add all missing files. VC6 is no longer supported.
 
-Note 3;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise you'll get
-	errors saying symbols are missing when running your compiled executable. My copy says version 5.1.2600.1106
-	right now.
+Note 3;	You'll need DBGHELP.dll from the binary distribution unless you're using WinXP, otherwise 
+        you'll get errors saying symbols are missing when running your compiled executable. My copy 
+        says version 5.1.2600.1106 right now.
 
 Note 4;	If you have problems, read the forum posts before posting. Somebody else has probably done your mistake
 	already.

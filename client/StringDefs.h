@@ -150,6 +150,7 @@ enum Strings { // @DontAdd
 	MENU_PUBLIC_HUBS, // "&Public Hubs\tCtrl+P"
 	MENU_RECONNECT, // "&Reconnect\tCtrl+R"
 	MENU_REFRESH_FILE_LIST, // "Refresh file list"
+	MENU_SHOW, // "Show"
 	MENU_SEARCH, // "&Search\tCtrl+S"
 	MENU_SEARCH_SPY, // "Search spy"
 	MENU_SETTINGS, // "Settings..."

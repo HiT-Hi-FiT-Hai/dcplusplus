@@ -798,6 +798,17 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	if (lParam == WM_LBUTTONUP) {
 		ShowWindow(SW_SHOW);
 		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
+	}else if(lParam == WM_RBUTTONDOWN || lParam == WM_CONTEXTMENU){ 		
+		CPoint pt;
+		CMenu mnuTrayMenu;
+		mnuTrayMenu.CreatePopupMenu();
+		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_SHOW, CSTRING(MENU_SHOW));
+		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_QUIT, CSTRING(MENU_EXIT));
+		GetCursorPos(&pt);
+		SetForegroundWindow(m_hWnd); 
+		mnuTrayMenu.TrackPopupMenu(TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON,pt.x,pt.y,m_hWnd);
+		PostMessage(WM_NULL, 0, 0);
+		mnuTrayMenu.SetMenuDefaultItem(0,TRUE);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -901,6 +912,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.36 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.37 2003/11/04 20:18:14 arnetheduck Exp $
  */
 

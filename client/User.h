@@ -61,7 +61,7 @@ public:
 		static const size_t bucket_size = 4;
 		static const size_t min_buckets = 8;
 		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); };
-		bool operator()(const Ptr& a, const Ptr& b) { return (&(*a)) < (&(*b)); };
+		bool operator()(const Ptr& a, const Ptr& b) const { return (&(*a)) < (&(*b)); };
 	};
 
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
@@ -72,7 +72,7 @@ public:
 	const string& getClientNick() const;
 	void update();
 	const string& getClientName() const;
-	string getClientServer() const;
+	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
 	void clientPM(const string& aTo, const string& aMsg);
@@ -115,6 +115,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.31 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: User.h,v 1.32 2003/11/04 20:18:12 arnetheduck Exp $
  */
 

@@ -25,6 +25,7 @@
 
 #ifndef WIN32
 #include "CriticalSection.h"
+#include <sys/time.h>
 #endif
 
 class Semaphore  
@@ -95,5 +96,5 @@ private:
 
 /**
  * @file
- * $Id: Semaphore.h,v 1.8 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: Semaphore.h,v 1.9 2003/11/04 20:18:11 arnetheduck Exp $
  */

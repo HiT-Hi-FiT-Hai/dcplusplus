@@ -607,7 +607,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 		sr->setSlots(SETTING(SLOTS));
 		sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-		sr->setHubAddress(aClient->getIpWithPort());
+		sr->setHubAddress(aClient->getIpPort());
 		sr->setHubName(aClient->getName());
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -638,7 +638,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 				sr->setSlots(SETTING(SLOTS));
 				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				sr->setHubAddress(aClient->getIpWithPort());
+				sr->setHubAddress(aClient->getIpPort());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -699,6 +699,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.57 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.58 2003/11/04 20:18:11 arnetheduck Exp $
  */
 

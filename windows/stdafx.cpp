@@ -24,12 +24,13 @@
 #include <atlimpl.cpp>
 #endif
 
-#if (_WTL_VER < 0x700) || (_STLPORT_VERSION < 0x452)
-//#error Read compile.txt and do as it says before asking stupid questions
+// Basic sanity check
+#if (_WTL_VER < 0x700) || (defined(HAS_STLPORT) && (_STLPORT_VERSION < 0x455))
+#error Read compile.txt and do as it says before asking stupid questions at the forums
 #endif
 
 /**
  * @file
- * $Id: stdafx.cpp,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.8 2003/11/04 20:18:16 arnetheduck Exp $
  */
 

@@ -122,6 +122,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onLink)
 		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
+		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
+		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
@@ -137,6 +139,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
+
 
 	LRESULT onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -172,6 +175,17 @@ public:
 
 	LRESULT onWhereAreYou(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return WMU_WHERE_ARE_YOU;
+	}
+
+	LRESULT onTrayQuit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		PostMessage(WM_CLOSE);
+		return 0;
+	}
+
+	LRESULT onTrayShow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		ShowWindow(SW_SHOW);
+		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
+		return 0;
 	}
 
 	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
@@ -315,7 +329,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.26 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.27 2003/11/04 20:18:14 arnetheduck Exp $
  */
 
  

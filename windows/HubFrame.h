@@ -24,7 +24,7 @@
 #endif // _MSC_VER >= 1000
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
 
 #include "../client/Client.h"
 #include "../client/User.h"
@@ -68,13 +68,13 @@ public:
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
-		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(ucBase)
+		REFLECT_NOTIFICATIONS()
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -167,42 +167,6 @@ public:
 		return 0;
 	}
 
-	static int sortSize(LPARAM a, LPARAM b) {
-		UserInfo* c = (UserInfo*)a;
-		UserInfo* d = (UserInfo*)b;
-		return compare(c->user->getBytesShared(), d->user->getBytesShared());
-	}
-
-	static int sortNick(LPARAM a, LPARAM b) {
-		UserInfo* c = (UserInfo*)a;
-		UserInfo* d = (UserInfo*)b;
-		if(c->user->isSet(User::OP) && !d->user->isSet(User::OP)) {
-			return -1;
-		} else if(!c->user->isSet(User::OP) && d->user->isSet(User::OP)) {
-			return 1;
-		}
-		return Util::stricmp(c->user->getNick().c_str(), d->user->getNick().c_str());		
-	}
-	
-	LRESULT onColumnClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlUsers.getSortColumn()) {
-			if (!ctrlUsers.getSortDirection())
-				ctrlUsers.setSort(-1, ctrlUsers.getSortType());
-			else
-				ctrlUsers.setSortDirection(false);
-		} else {
-			if(l->iSubItem == COLUMN_SHARED) {
-				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-			} else if(l->iSubItem == COLUMN_NICK) {
-				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortNick);
-			} else {				
-				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-			}
-		}
-		return 0;
-	}
-
 	LRESULT onKeyDownUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* l = (NMLVKEYDOWN*)pnmh;
 		if(l->wVKey == VK_TAB) {
@@ -237,8 +201,42 @@ private:
 	
 	class UserInfo {
 	public:
-		UserInfo(const User::Ptr& u) : user(u) { };
+		UserInfo(const User::Ptr& u) : user(u) { update(); };
 		User::Ptr user;
+
+		const string& getText(int col) const {
+			switch(col) {
+				case COLUMN_NICK: return user->getNick();
+				case COLUMN_SHARED: return shared;
+				case COLUMN_DESCRIPTION: return user->getDescription();
+				case COLUMN_TAG: return user->getTag();
+				case COLUMN_CONNECTION: return user->getConnection();
+				case COLUMN_EMAIL: return user->getEmail();
+				default: return Util::emptyString;
+			}
+		}
+
+		static int compareItems(UserInfo* a, UserInfo* b, int col) {
+			switch(col) {
+				case COLUMN_NICK:
+					if(a->user->isSet(User::OP) && !b->user->isSet(User::OP)) {
+						return -1;
+					} else if(!a->user->isSet(User::OP) && b->user->isSet(User::OP)) {
+						return 1;
+					}
+					return Util::stricmp(a->user->getNick(), b->user->getNick());	
+				case COLUMN_SHARED:	return compare(a->user->getBytesShared(), b->user->getBytesShared());
+				case COLUMN_DESCRIPTION: return Util::stricmp(a->user->getDescription(), b->user->getDescription());
+				case COLUMN_TAG: return Util::stricmp(a->user->getTag(), b->user->getTag());
+				case COLUMN_CONNECTION: return Util::stricmp(a->user->getConnection(), b->user->getConnection());
+				case COLUMN_EMAIL: return Util::stricmp(a->user->getEmail(), b->user->getEmail());
+				default: return 0;
+			}
+		}
+
+		void update() { shared = Util::formatBytes(user->getBytesShared()); }
+
+		GETSETREF(string, shared, Shared)
 	};
 
 	class PMInfo {
@@ -249,12 +247,11 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), server(aServer), needSort(false), closed(false), 
+	waitingForPW(false), server(aServer), closed(false), updateUsers(false),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
 	{
-
 		client = ClientManager::getInstance()->getClient();
 		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
 		if(!aNick.empty())
@@ -284,7 +281,6 @@ private:
 	string lastRedir;
 	string lastServer;
 	
-	bool needSort;
 	bool waitingForPW;
 
 	Client* client;
@@ -299,7 +295,7 @@ private:
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
-	ExListViewCtrl ctrlUsers;
+	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
 
 	bool closed;
@@ -307,6 +303,12 @@ private:
 	StringMap ucParams;
 	StringMap tabParams;
 	bool tabMenuShown;
+
+	typedef vector<pair<User::Ptr, Speakers> > UpdateList;
+	typedef UpdateList::iterator UpdateIter;
+	UpdateList updateList;
+	CriticalSection updateCS;
+	bool updateUsers;
 
 	enum { MAX_CLIENT_LINES = 5 };
 	StringList lastLinesList;
@@ -316,7 +318,7 @@ private:
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
-	bool updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
+	bool updateUser(const User::Ptr& u, bool sorted = false);
 	void addAsFavorite();
 
 	void clearUserList() {
@@ -355,8 +357,11 @@ private:
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
-	void speak(Speakers s, const User::Ptr& u) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new UserInfo(u)); };
-	void speak(Speakers s, const User::List& l) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new User::List(l)); };
+	void speak(Speakers s, const User::Ptr& u) { 
+		Lock l(updateCS);
+		updateList.push_back(make_pair(u, s));
+		updateUsers = true;
+	};
 	void speak(Speakers s, const User::Ptr& u, const string& line) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new PMInfo(u, line)); };
 
 };
@@ -369,6 +374,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.29 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.30 2003/11/04 20:18:14 arnetheduck Exp $
  */
 

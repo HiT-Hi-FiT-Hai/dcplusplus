@@ -491,7 +491,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		os.append("HE3\x0d");
 		
 		// Nada...
-		os.append(7, 0);
+		os.append(7, '\0');
 		return;
 	}
 	// First, we count all characters
@@ -568,5 +568,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.33 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.34 2003/11/04 20:18:11 arnetheduck Exp $
  */

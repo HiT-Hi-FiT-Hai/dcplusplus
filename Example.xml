@@ -147,6 +147,7 @@
 		<String Name="MenuPublicHubs">&amp;Public Hubs\tCtrl+P</String>
 		<String Name="MenuReconnect">&amp;Reconnect\tCtrl+R</String>
 		<String Name="MenuRefreshFileList">Refresh file list</String>
+		<String Name="MenuShow">Show</String>
 		<String Name="MenuSearch">&amp;Search\tCtrl+S</String>
 		<String Name="MenuSearchSpy">Search spy</String>
 		<String Name="MenuSettings">Settings...</String>
@@ -198,6 +199,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
+		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
 		<String Name="OpenFolder">Open folder</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
@@ -239,6 +241,7 @@
 		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
+		<String Name="SearchStringInefficient"/>
 		<String Name="SearchingFor">Searching for </String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
@@ -254,6 +257,7 @@
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
+		<String Name="SettingsAutoSearchAutoString">Automatically add search string for alternative download locations</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>

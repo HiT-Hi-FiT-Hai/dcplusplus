@@ -24,7 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
 
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
@@ -75,7 +75,6 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_ITEMCHANGED, onItemChangedQueue)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
@@ -91,6 +90,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + readdItems, onReadd)
 		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(baseClass)
+		REFLECT_NOTIFICATIONS();
 	ALT_MSG_MAP(SHOWTREE_MESSAGE_MAP)
 		MESSAGE_HANDLER(BM_SETCHECK, onShowTree)
 	END_MSG_MAP()
@@ -169,37 +169,6 @@ public:
 		}
 	}
 
-	static int sortSize(LPARAM a, LPARAM b) {
-		QueueItem* c = (QueueItem*)a;
-		QueueItem* d = (QueueItem*)b;
-		return compare(c->getSize(), d->getSize());
-	}
-
-	static int sortPriority(LPARAM a, LPARAM b) {
-		QueueItem* c = (QueueItem*)a;
-		QueueItem* d = (QueueItem*)b;
-		return compare(c->getPriority(), d->getPriority());
-	}
-
-	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlQueue.getSortColumn()) {
-			if (!ctrlQueue.getSortDirection())
-				ctrlQueue.setSort(-1, ctrlQueue.getSortType());
-			else
-				ctrlQueue.setSortDirection(false);
-		} else {
-			if(l->iSubItem == COLUMN_SIZE) {
-				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-			} else if(l->iSubItem == COLUMN_PRIORITY) {
-				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortPriority);
-			} else {
-				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-			}
-		}
-		return 0;
-	}
-
 	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		showTree = (wParam == BST_CHECKED);
@@ -221,20 +190,49 @@ private:
 		COLUMN_SEARCHSTRING,
 		COLUMN_LAST
 	};
-
 	enum Tasks {
 		ADD_ITEM,
 		REMOVE_ITEM,
-		SET_TEXT
+		UPDATE_ITEM
 	};
 	
-	class StringListInfo;
-	friend class StringListInfo;
+	class QueueItemInfo;
+	friend class QueueItemInfo;
 	
-	class StringListInfo {
+	class QueueItemInfo : public QueueItem {
 	public:
-		StringListInfo(QueueItem* aQi);
+		enum {
+			MASK_TARGET = 1 << COLUMN_TARGET,
+			MASK_STATUS = 1 << COLUMN_STATUS,
+			MASK_SIZE = 1 << COLUMN_SIZE,
+			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
+			MASK_USERS = 1 << COLUMN_USERS,
+			MASK_PATH = 1 << COLUMN_PATH,
+			MASK_ERRORS = 1 << COLUMN_ERRORS,
+			MASK_SEARCHSTRING = 1 << COLUMN_SEARCHSTRING
+		};
+
+		QueueItemInfo(const QueueItem& aQi) : QueueItem(aQi), updateMask((u_int32_t)-1) { 
+			update(); 
+		};
+
 		string columns[COLUMN_LAST];
+		u_int32_t updateMask;
+		void update();
+
+		// TypedListViewCtrl functions
+		const string& getText(int col) const {
+			return columns[col];
+		}
+		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
+			switch(col) {
+				case COLUMN_SIZE: return compare(a->getSize(), b->getSize());
+				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
+				default: return Util::stricmp(a->columns[col], b->columns[col]);
+			}
+		}
+
+		const string& getPath() const { return columns[COLUMN_PATH]; };
 	};
 
 	typedef pair<Tasks, void*> Task;
@@ -272,18 +270,18 @@ private:
 
 	StringList searchFilter;
 
-	typedef hash_map<QueueItem*, QueueItem*, PointerHash<QueueItem> > QueueMap;
+	typedef hash_map<QueueItem*, QueueItemInfo*, PointerHash<QueueItem> > QueueMap;
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
 	
-	typedef HASH_MULTIMAP_X(string, QueueItem*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
+	typedef HASH_MULTIMAP_X(string, QueueItemInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
 	string curDir;
 	
 	CriticalSection cs;
-	ExListViewCtrl ctrlQueue;
+	TypedListViewCtrl<QueueItemInfo, IDC_QUEUE> ctrlQueue;
 	CTreeViewCtrl ctrlDirs;
 	
 	CStatusBarCtrl ctrlStatus;
@@ -298,7 +296,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 
 	void addQueueList(const QueueItem::StringMap& l);
-	void addQueueItem(QueueItem* qi);
+	void addQueueItem(QueueItemInfo* qi, bool noSort);
 	HTREEITEM addDirectory(const string& dir, bool isFileList = false, HTREEITEM startAt = NULL);
 	void removeDirectory(const string& dir, bool isFileList = false);
 	void removeDirectories(HTREEITEM ht);
@@ -340,7 +338,7 @@ private:
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->remove(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget());
+			QueueManager::getInstance()->remove(ctrlQueue.getItemData(i)->getTarget());
 		}
 	}
 	
@@ -372,5 +370,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.24 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.25 2003/11/04 20:18:15 arnetheduck Exp $
  */

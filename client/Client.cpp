@@ -67,10 +67,11 @@ void Client::updateCounts(bool aRemove) {
 	}
 }
 
-void Client::connect(const string& aServer) {
+void Client::connect(const string& aAddressPort) {
+	addressPort = aAddressPort;
 	string tmp;
 	port = 411;
-	Util::decodeUrl(aServer, server, port, tmp);
+	Util::decodeUrl(aAddressPort, address, port, tmp);
 
 	connect();
 }
@@ -87,7 +88,7 @@ void Client::connect() {
 
 	state = STATE_LOCK;
 
-	socket->connect(server, port);
+	socket->connect(address, port);
 }
 
 void Client::refreshUserList(bool unknownOnly /* = false */) {
@@ -649,7 +650,7 @@ void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw()
 				socket->write("|", 1);
 			} else {
 				// Try to reconnect...
-				if(reconnect && !server.empty())
+				if(reconnect && !address.empty())
 					connect();
 			}
 		}
@@ -700,6 +701,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.59 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.60 2003/11/04 20:18:10 arnetheduck Exp $
  */
 

@@ -158,7 +158,7 @@ void SpyFrame::onAction(ClientManagerListener::Types type, const string& s) thro
 	case ClientManagerListener::INCOMING_SEARCH:
 		{
 			string* x = new string(s);
-			int i = -1;
+			string::size_type i = string::npos;
 			while( (i=x->find('$')) != string::npos) {
 				(*x)[i] = ' ';
 			}
@@ -184,5 +184,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.13 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.14 2003/11/04 20:18:15 arnetheduck Exp $
  */

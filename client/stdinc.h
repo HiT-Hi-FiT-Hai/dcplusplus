@@ -56,39 +56,43 @@
 #include <list>
 #include <deque>
 #include <set>
-#ifdef HAS_HASH
-#include <hash_map>
-#endif
 
-#ifdef _STLPORT_VERSION
+#include <utility>
+
+#ifdef HAS_STLPORT
 using namespace _STL;
-#else //_STLPORT_VERSION
+#include <hash_map>
+
+#elif defined(__GLIBCPP__)  // Using GNU C++ library?
+#include <ext/hash_map>
+#define HAS_HASH 1
+#define HASH_MAP hash_map
+#define HASH_MULTIMAP hash_multimap
+                                                                                
 using namespace std;
+using namespace __gnu_cxx;
+                                                                                
+// GNU C++ library doesn't have hash(std::string) or hash(long long int)
+namespace __gnu_cxx {
+	template<> struct hash<std::string> {
+		size_t operator()(const std::string& x) const
+			{ return hash<const char*>()(x.c_str()); }
+	};
+	template<> struct hash<long long int> {
+		size_t operator()(long long int x) const { return x; }
+	};
+}
+#else // __GLIBCPP__
 
-template<>
-class std::hash_compare<string, less<string> > {
-public:
-	static const size_t bucket_size = 4;
-	static const size_t min_buckets = 8;
+using namespace std;
+#include <hash_map>
+using namespace stdext;
 
-	size_t operator()(const string& s) const {
-		size_t x = 0;
-		const char* y = s.data();
-		string::size_type j = s.size();
-		for(string::size_type i = 0; i < j; ++i) {
-			x = x*31 + (size_t)y[i];
-		}
-		return x;
-	}
-	bool operator()(const string& a, const string& b) const {
-		return strcmp(a.c_str(), b.c_str()) == -1;
-	}
-};
-#endif
+#endif // __GLIBCPP__
 
 #endif // !defined(AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 
 /**
  * @file
- * $Id: stdinc.h,v 1.6 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.7 2003/11/04 20:18:12 arnetheduck Exp $
  */

@@ -101,13 +101,6 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 			if(comp == SORT_FUNC) {
 				data = GetItemData(loc);
 				comp = fun(lParam, data);
-			} else if(comp == SORT_FUNC_ITEM) {
-				LVITEM b;
-				b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-				b.iItem = loc;
-				b.iSubItem = 0;
-				GetItem(&b);
-				comp = fun((LPARAM)&a, (LPARAM)&b);
 			}
 			
 			if(comp == SORT_STRING) {
@@ -139,15 +132,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		comp = sortType;
 		if(comp == SORT_FUNC) {
 			comp = fun(lParam, data);
-		} else if(comp == SORT_FUNC_ITEM) {
-			LVITEM b;
-			b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-			b.iItem = loc;
-			b.iSubItem = 0;
-			GetItem(&b);
-			comp = fun((LPARAM)&a, (LPARAM)&b);
-		}
-		
+		} 
 		if(comp == SORT_STRING) {
 			comp = compare(b, string(buf));
 		} else if(comp == SORT_STRING_NOCASE) {
@@ -298,6 +283,6 @@ void ExListViewCtrl::updateArrow()
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.8 2003/08/07 13:28:18 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.9 2003/11/04 20:18:14 arnetheduck Exp $
  */
 
