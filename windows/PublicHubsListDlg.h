@@ -27,6 +27,7 @@
 #include "../client/Text.h"
 #include "../Client/HubManager.h"
 #include "ExListViewCtrl.h"
+#include "LineDlg.h"
 
 class PublicHubListDlg : public CDialogImpl<PublicHubListDlg> {
 public:
@@ -42,6 +43,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_LIST_ADD, onAdd);
 		COMMAND_ID_HANDLER(IDC_LIST_UP, onMoveUp);
 		COMMAND_ID_HANDLER(IDC_LIST_DOWN, onMoveDown);
+		COMMAND_ID_HANDLER(IDC_LIST_EDIT, onEdit);
 		COMMAND_ID_HANDLER(IDC_LIST_REMOVE, onRemove);
 		COMMAND_ID_HANDLER(IDOK, onCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, onCloseCmd)
@@ -57,6 +59,7 @@ public:
 		SetDlgItemText(IDC_LIST_ADD, CTSTRING(ADD));
 		SetDlgItemText(IDC_LIST_UP, CTSTRING(MOVE_UP));
 		SetDlgItemText(IDC_LIST_DOWN, CTSTRING(MOVE_DOWN));
+		SetDlgItemText(IDC_LIST_EDIT, CTSTRING(EDIT_ACCEL));
 		SetDlgItemText(IDC_LIST_REMOVE, CTSTRING(REMOVE));
 
 		// set up the list of lists
@@ -72,7 +75,7 @@ public:
 
 		// set the initial focus
 		CEdit focusThis;
-		focusThis.Attach(GetDlgItem(IDC_LIST_EDIT));
+		focusThis.Attach(GetDlgItem(IDC_LIST_EDIT_BOX));
 		focusThis.SetFocus();
 
 		return 0;
@@ -80,7 +83,7 @@ public:
 
 	LRESULT onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
 		TCHAR buf[256];
-		if(GetDlgItemText(IDC_LIST_EDIT, buf, 256)) {
+		if(GetDlgItemText(IDC_LIST_EDIT_BOX, buf, 256)) {
 			ctrlList.insert(0, buf);
 		}
 		bHandled = FALSE;
@@ -103,6 +106,23 @@ public:
 		for(int i = j; i >= 0; --i) {
 			if(ctrlList.GetItemState(i, LVIS_SELECTED)) {
 				ctrlList.moveItem(i, i+1);
+			}
+		}
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
+		int i = -1;
+		TCHAR buf[256];
+		while( (i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			LineDlg hublist;
+			hublist.title = _T("Hublist");
+			hublist.description = _T("Edit the hublist");
+			ctrlList.GetItemText(i, 0, buf, 256);
+			hublist.line = tstring(buf);
+			if(hublist.DoModal(m_hWnd) == IDOK) {
+				ctrlList.SetItemText(i, 0, hublist.line.c_str());
 			}
 		}
 		bHandled = FALSE;
@@ -144,6 +164,6 @@ private:
 
 /**
 * @file
-* $Id: PublicHubsListDlg.h,v 1.2 2004/11/09 20:29:25 arnetheduck Exp $
+* $Id: PublicHubsListDlg.h,v 1.3 2004/11/13 11:54:11 arnetheduck Exp $
 */
 

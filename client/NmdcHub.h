@@ -225,8 +225,7 @@ private:
 
 	bool reconnect;
 	u_int32_t lastUpdate;
-	string lastMyInfo;
-	int64_t lastSize;
+	string lastMyInfoA, lastMyInfoB;
 
 	typedef list<pair<string, u_int32_t> > FloodMap;
 	typedef FloodMap::iterator FloodIter;
@@ -265,6 +264,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.17 2004/11/11 12:49:44 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.18 2004/11/13 11:54:09 arnetheduck Exp $
  */
 

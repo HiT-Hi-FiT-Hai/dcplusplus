@@ -36,7 +36,7 @@
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
 	adapter(this), state(STATE_CONNECT),
 	lastActivity(GET_TICK()), 
-	reconnect(true), lastUpdate(0),lastSize(0)
+	reconnect(true), lastUpdate(0)
 {
 	TimerManager::getInstance()->addListener(this);
 
@@ -55,8 +55,8 @@ void NmdcHub::connect() {
 	setReconnDelay(120 + Util::rand(0, 60));
 	reconnect = true;
 	supportFlags = 0;
-	lastMyInfo.clear();
-	lastSize = 0;
+	lastMyInfoA.clear();
+ 	lastMyInfoB.clear();
 	lastUpdate = 0;
 
 	if(socket->isConnected()) {
@@ -628,21 +628,17 @@ void NmdcHub::myInfo(bool alwaysSend) {
 		modeChar = '5';
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
-	string minf = 
-		"$MyINFO $ALL " + toNmdc(getNick()) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
+	string myInfoA = 
+		"$MyINFO $ALL " + toNmdc(checkNick(getNick())) + " " + toNmdc(Util::validateMessage(getDescription(), false)) + 
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
-		">$ $" + SETTING(CONNECTION) + "\x01$" + toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
-		ShareManager::getInstance()->getShareSizeString() + "$|";
-	if(alwaysSend || minf != lastMyInfo) {
-		int64_t ssize = ShareManager::getInstance()->getShareSize();
-
-		if((!alwaysSend) && (lastSize != ssize && lastUpdate + 15*60*1000 > GET_TICK())) {
-			return;
-		}
-		send(minf);
-		lastMyInfo = minf;
-		lastSize = ssize;
-		lastUpdate = GET_TICK();
+		">$ $" + SETTING(CONNECTION) + "\x01$" + toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$'; 
+	string myInfoB = ShareManager::getInstance()->getShareSizeString() + "$|";
+ 	
+ 	if(lastMyInfoA != myInfoA || alwaysSend || (lastMyInfoB != myInfoB && lastUpdate + 15*60*1000 < GET_TICK()) ){
+ 		send(myInfoA + myInfoB);
+ 		lastMyInfoA = myInfoA;
+ 		lastMyInfoB = myInfoB;
+ 		lastUpdate = GET_TICK();
 	}
 }
 
@@ -718,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.21 2004/11/11 12:49:44 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.22 2004/11/13 11:54:09 arnetheduck Exp $
  */
 

@@ -143,6 +143,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 
 		ucParams["mynick"] = itemI->user->getClientNick();
 		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
+		ucParams["file"] = Text::fromT(itemI->path) + Text::fromT(itemI->file);
 
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
@@ -584,5 +585,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.38 2004/10/31 22:33:26 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.39 2004/11/13 11:54:11 arnetheduck Exp $
  */

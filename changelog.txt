@@ -14,6 +14,11 @@
 * Fixed passive search results issue with international nicks (thanks garg)
 * Fixed search frame extension vs tth again
 * FAQ added to the help file (thanks bsod)
+* Fixed a zlib security issue (thanks garg)
+* Added %[file] to the transfer view user commands (thanks naga)
+* Fixed myinfo update issue (thanks sulan)
+* Added option to use only up/down for command line history (thanks jonathan stone)
+* Improved installer (thanks bsod)
 
 -- 0.666 2004-11-03 --
 * [bug 173] Fixed copy nick to clipboard (thanks trem)

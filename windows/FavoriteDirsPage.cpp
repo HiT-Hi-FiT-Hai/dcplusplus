@@ -111,7 +111,7 @@ LRESULT FavoriteDirsPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	item.pszText = buf;
 
 	int i = -1;
-	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+	while((i = ctrlDirectories.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
 		item.iSubItem = 0;
 		ctrlDirectories.GetItem(&item);
@@ -123,7 +123,6 @@ LRESULT FavoriteDirsPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		if(virt.DoModal(m_hWnd) == IDOK) {
 			if (HubManager::getInstance()->renameFavoriteDir(Text::fromT(buf), Text::fromT(virt.line))) {
 				ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
-				return 0;
 			} else {
 				MessageBox(CTSTRING(DIRECTORY_ADD_ERROR));
 			}
@@ -163,5 +162,5 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: FavoriteDirsPage.cpp,v 1.3 2004/11/09 20:29:25 arnetheduck Exp $
+ * $Id: FavoriteDirsPage.cpp,v 1.4 2004/11/13 11:54:11 arnetheduck Exp $
  */

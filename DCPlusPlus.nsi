@@ -1,3 +1,14 @@
+Function GetDCPlusPlusVersion
+        Exch $0
+	GetDllVersion "$INSTDIR\$0" $R0 $R1
+	IntOp $R2 $R0 / 0x00010000
+	IntOp $R3 $R0 & 0x0000FFFF
+	IntOp $R4 $R1 / 0x00010000
+	IntOp $R5 $R1 & 0x0000FFFF
+        StrCpy $1 "$R2.$R3$R4$R5"
+        Exch $1
+FunctionEnd
+
 SetCompressor "lzma"
 
 ; The name of the installer
@@ -52,11 +63,27 @@ no_backup:
   File "License.txt"
   File "License-GeoIP.txt"
   File "Magnet.exe"
+  
+  ; Get DCPlusplus version we just installed and store in $1
+  Push "DCPlusPlus.exe"
+  Call "GetDCPlusPlusVersion"
+  Pop $1
+
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DC++ "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
-  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "DisplayName" "DC++ (remove only)"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "InstallLocation" "$INSTDIR"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "DisplayIcon" '"$INSTDIR\DCPlusPlus.exe"'
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "DisplayName" "DC++ $1"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "DisplayVersion" "$1"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "UninstallString" '"$INSTDIR\uninstall.exe"'
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "Publisher" "Jacek Sieka"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "URLInfoAbout" "http://dcplusplus.sf.net/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "URLUpdateInfo" "http://dcplusplus.sf.net/download/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "HelpLink" "http://dcplusplus.sourceforge.net/forum/"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "NoModify" "1"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\DC++" "NoRepair" "1"
+  
   WriteUninstaller "uninstall.exe"
 SectionEnd
 

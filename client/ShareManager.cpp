@@ -353,8 +353,6 @@ void ShareManager::renameDirectory(const string& oName, const string& nName) thr
 	} else {
 		// Valid newName, lets rename
 		i->first = nName;
-		setDirty();
-		refresh(true, true, false);
 	}
 }
 
@@ -1280,6 +1278,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.112 2004/11/07 17:23:59 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.113 2004/11/13 11:54:09 arnetheduck Exp $
  */
 
