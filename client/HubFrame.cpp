@@ -36,6 +36,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
+	
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	
@@ -328,9 +329,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.19 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.20 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.20  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.19  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

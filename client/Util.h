@@ -31,48 +31,48 @@ public:
 	void fire(Listener::Types type) throw () {
 		listenerCS.enter();
 		vector<Listener*> tmp = listeners;
-		listenerCS.leave();
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
 		}
+		listenerCS.leave();
 	};
 	
 	template<class T> 
 		void fire(Listener::Types type, const T& param) throw () {
 		listenerCS.enter();
 		vector<Listener*> tmp = listeners;
-		listenerCS.leave();
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, param);
 		}
+		listenerCS.leave();
 	};
 	
 	template<class T, class T2> 
 		void fire(Listener::Types type, const T& p, const T2& p2) throw() {
 		listenerCS.enter();
 		vector<Listener*> tmp = listeners;
-		listenerCS.leave();
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2);
 		}
+		listenerCS.leave();
 	};
 	template<class T, class T2, class T3> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
 		listenerCS.enter();
 		vector<Listener*> tmp = listeners;
-		listenerCS.leave();
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3);
 		}
+		listenerCS.leave();
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
 		listenerCS.enter();
 		vector<Listener*> tmp = listeners;
-		listenerCS.leave();
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
 		}
+		listenerCS.leave();
 	};
 	
 	
@@ -296,9 +296,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.14 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: Util.h,v 1.15 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.15  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.14  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

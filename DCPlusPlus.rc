@@ -404,7 +404,7 @@ END
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
     IDR_MAINFRAME           "DCPlusPlus"
-    IDR_MDICHILD            "Document"
+    IDR_MDICHILD            "Please wait..."
 END
 
 STRINGTABLE DISCARDABLE 

@@ -307,7 +307,7 @@ private:
 		case UploadManagerListener::STARTING:
 			onUploadStarting(aUpload); break;
 		case UploadManagerListener::TICK:
-			onUploadTick(aUpload);
+			onUploadTick(aUpload); break;
 		default:
 			dcassert(0);
 		}
@@ -393,9 +393,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.26 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.27 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.27  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.26  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

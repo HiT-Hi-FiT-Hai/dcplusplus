@@ -23,7 +23,6 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
-#include "ClientListener.h"
 #include "Client.h"
 #include "ExListViewCtrl.h"
 #include "User.h"
@@ -75,6 +74,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
@@ -89,6 +89,16 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		if(hWnd == ctrlClient.m_hWnd) {
+			return (LRESULT)GetStockObject(WHITE_BRUSH);
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
+	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -153,12 +163,11 @@ public:
 	static DWORD WINAPI stopper(void* p) {
 		HubFrame* f = (HubFrame*)p;
 
-		ClientManager::getInstance()->putClient(f->client);
-		f->cs.enter();
 		TimerManager::getInstance()->removeListener(f);
-		f->cs.leave();
-
+		f->cs.enter();
+		ClientManager::getInstance()->putClient(f->client);
 		f->client = NULL;
+		f->cs.leave();
 		f->PostMessage(WM_CLOSE);
 		return 0;
 	}
@@ -393,7 +402,7 @@ private:
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
 		switch(type) {
 		case ClientListener::PRIVATE_MESSAGE:
-			string* msg = new string("Private message from " + line1 + "\r\n" + line1);
+			string* msg = new string("Private message from " + line1 + "\r\n" + line2);
 			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
 			break;
 		}
@@ -401,8 +410,10 @@ private:
 	
 	void updateStatusBar() {
 		StringList* str = new StringList();
+		cs.enter();
 		str->push_back(Util::toString(client->getUserCount()) + " users");
 		str->push_back(Util::formatBytes(client->getAvailable()));
+		cs.leave();
 		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
 	}
 
@@ -425,9 +436,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.32 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.33 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.33  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.32  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -85,7 +85,7 @@ public:
 		if(l->iSubItem == ctrlResults.getSortColumn()) {
 			ctrlResults.setSortDirection(!ctrlResults.getSortDirection());
 		} else {
-			if(l->iSubItem == 2) {
+			if(l->iSubItem == 3) {
 				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else {
 				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
@@ -359,9 +359,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.16 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.17 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.17  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.16  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

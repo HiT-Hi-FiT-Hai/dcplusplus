@@ -266,8 +266,8 @@ private:
 	};
 	
 	virtual ~Client() throw() {
-		cs.enter();
 		TimerManager::getInstance()->removeListener(this);
+		cs.enter();
 		socket.removeListener(this);
 		
 		removeListeners();
@@ -336,9 +336,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.24 2002/01/11 14:52:56 arnetheduck Exp $
+ * $Id: Client.h,v 1.25 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.25  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.24  2002/01/11 14:52:56  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

@@ -65,10 +65,11 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	ctrlResults.InsertColumn(0, _T("User"), LVCFMT_LEFT, 100, 0);
 	ctrlResults.InsertColumn(1, _T("File"), LVCFMT_LEFT, 200, 1);
-	ctrlResults.InsertColumn(2, _T("Size"), LVCFMT_RIGHT, 100, 2);
-	ctrlResults.InsertColumn(3, _T("Path"), LVCFMT_LEFT, 100, 3);
-	ctrlResults.InsertColumn(4, _T("Slots"), LVCFMT_LEFT, 75, 4);
-	ctrlResults.InsertColumn(5, _T("Hub"), LVCFMT_LEFT, 100, 5);
+	ctrlResults.InsertColumn(2, _T("Type"), LVCFMT_LEFT, 50, 2);
+	ctrlResults.InsertColumn(3, _T("Size"), LVCFMT_RIGHT, 100, 3);
+	ctrlResults.InsertColumn(4, _T("Path"), LVCFMT_LEFT, 100, 4);
+	ctrlResults.InsertColumn(5, _T("Slots"), LVCFMT_LEFT, 75, 5);
+	ctrlResults.InsertColumn(6, _T("Hub"), LVCFMT_LEFT, 150, 6);
 
 	SetWindowText("Search");
 
@@ -191,6 +192,12 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	StringList* l = new StringList();
 	l->push_back(aResult->getNick());
 	l->push_back(file);
+	int i = file.rfind('.');
+	if(i != string::npos) {
+		l->push_back(file.substr(i + 1));
+	} else {
+		l->push_back("");
+	}
 	l->push_back(Util::formatBytes(aResult->getSize()));
 	l->push_back(path);
 	l->push_back(aResult->getSlotString());
@@ -200,9 +207,12 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.11 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.12 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.12  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.11  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

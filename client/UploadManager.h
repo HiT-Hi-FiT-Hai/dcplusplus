@@ -134,10 +134,18 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick) {
-		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-			fire(UploadManagerListener::TICK, i->second);
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		switch(type) {
+		case TimerManagerListener::SECOND:
+			cs.enter();
+			for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+				fire(UploadManagerListener::TICK, i->second);
+			}
+			cs.leave();
+			break;
 		}
+	}
+	virtual void onTimerSecond(DWORD aTick) {
 	}
 	
 	// UserConnectionListener
@@ -182,9 +190,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.25 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.26 2002/01/11 16:13:33 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.26  2002/01/11 16:13:33  arnetheduck
+ * Fixed some locks and bugs, added type field to the search frame
+ *
  * Revision 1.25  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template
