@@ -136,11 +136,15 @@ public:
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
-			WaitForSingleObject(stopperThread, INFINITE);
+			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
+				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
+				PostMessage(WM_CLOSE);
+			}
 			CloseHandle(stopperThread);
+			stopperThread = NULL;
+			bHandled = FALSE;
 		} else {
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-			bHandled = FALSE;
 		}
 		return 0;
 	}
@@ -245,9 +249,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.14 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.15 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.15  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.14  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

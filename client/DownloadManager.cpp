@@ -42,7 +42,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		}
 
 
-		if(waiting.find(u) == waiting.end()) {
+		if(waiting.find(u) != waiting.end()) {
 			continue;
 		}
 
@@ -62,6 +62,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 
 			if(!found) {
 				d->setUser(User::nuser);
+				fireFailed(d, d->getLastNick() + " has gone offline");
 			}
 		}
 	}
@@ -195,6 +196,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 
 		queue.push_back(d);
 		fireAdded(d);
+		fireFailed(d, d->getLastNick() + " has gone offline");
 	}
 	cs.leave();
 }
@@ -419,9 +421,12 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.13 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.14 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.14  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.13  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

@@ -114,15 +114,19 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 		lvi.iItem = i;
 		lvi.iSubItem = 0;
 		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
-		
+		string target;
 		ctrlList.GetItem(&lvi);
-
+		if(aTarget.empty()) {
+			target = Settings::getDownloadDirectory();
+		} else {
+			target = aTarget;
+		}
 		if(lvi.iImage == 2) {
 			DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
-			dl->download(file, user, Settings::getDownloadDirectory() + file->name);
+			dl->download(file, user, target + file->name);
 		} else {
 			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-			dl->download(d, user, Settings::getDownloadDirectory());
+			dl->download(d, user, target);
 		} 
 	}
 }
@@ -155,7 +159,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	} else {
 		string target;
 		if(Util::browseDirectory(target)) {
-			downloadList(target);
+			downloadList(target + '\\');
 		}
 		
 	}
@@ -208,9 +212,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.7 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.8 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.8  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.7  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

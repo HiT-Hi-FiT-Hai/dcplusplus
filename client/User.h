@@ -66,7 +66,7 @@ public:
 	void setBytesShared(LONGLONG aSharing) { char buf[24]; sharing = _i64toa(aSharing, buf, 10); };
 	void setBytesShared(const string& aSharing) { sharing = aSharing; };
 
-	void setFlag(DWORD aFlag) { flags &= aFlag; };
+	void setFlag(DWORD aFlag) { flags |= aFlag; };
 	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
 	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
 
@@ -90,9 +90,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.3 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: User.h,v 1.4 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.4  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.3  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

@@ -41,6 +41,10 @@ public:
 	typedef UserMap::iterator UserIter;
 	
 	Download() : resume(false) { }
+	
+	enum {
+		USER_LIST = 0x01
+	};
 
 	bool getResume() { return resume; };
 	void setResume(bool aResume) { resume = aResume; };
@@ -58,8 +62,12 @@ public:
 	const string& getLastNick() { return lastNick; };
 	const string& getLastPath() { return lastPath; };
 	void setLast(const string& aNick, const string& aPath) { lastNick = aNick; lastPath = aPath; };
-
+	
+	bool isSet(int aFlag) { return (flags & aFlag) > 0; };
+	void setFlag(int aFlag) { flags |= aFlag; };
+	void unsetFlag(int aFlag) { flags &= ~aFlag; };
 private:
+	int flags;
 	bool resume;
 	string target;
 	
@@ -230,9 +238,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.13 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.14 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.14  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.13  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

@@ -143,8 +143,12 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
-			WaitForSingleObject(stopperThread, INFINITE);
+			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
+				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
+				PostMessage(WM_CLOSE);
+			}
 			CloseHandle(stopperThread);
+			stopperThread = FALSE;
 			bHandled = FALSE;
 		} else {
 			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
@@ -300,9 +304,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.17 2001/12/18 12:32:18 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.17  2001/12/18 12:32:18  arnetheduck
+ * Stability fixes
+ *
  * Revision 1.16  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *
