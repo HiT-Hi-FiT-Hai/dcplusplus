@@ -85,10 +85,12 @@ void Client::onLine(const string& aLine) {
 		fireConnectToMe(server, param.substr(param.find(':')+1));
 	} else if(cmd == "$RevConnectToMe") {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			cs.enter();
 			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
 				fireRevConnectToMe(i->second);
 			}
+			cs.leave();
 		}
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
@@ -101,15 +103,17 @@ void Client::onLine(const string& aLine) {
 		string pk = param.substr(param.find(' ') + 4);
 		fireLock(lock, pk);	
 	} else if(cmd == "$Hello") {
-		User* u;
+		User::Ptr u;
+		cs.enter();
 		User::NickIter i = users.find(param);
 		if(i == users.end()) {
-			u = new User(param);
+			u = new User(param, User::ONLINE);
 			u->setClient(this);
 			users[param] = u;
 		} else {
 			u = i->second;
 		}
+		cs.leave();
 		fireHello(u);
 	} else if(cmd == "$ForceMove") {
 		fireForceMove(param);
@@ -120,15 +124,16 @@ void Client::onLine(const string& aLine) {
 		param = param.substr(5);
 		nick = param.substr(0, param.find(' '));
 		param = param.substr(param.find(' ')+1);
-		User* u;
+		User::Ptr u;
+		cs.enter();
 		if(users.find(nick) == users.end()) {
-			u = new User(nick);
+			u = new User(nick, User::ONLINE);
 			u->setClient(this);
 			users[nick] = u;
 		} else {
 			u = users[nick];
 		}
-
+		cs.leave();
 		u->setDescription(param.substr(0, param.find('$')));
 		param = param.substr(param.find('$')+3);
 		u->setConnection(param.substr(0, param.find('$')-1));
@@ -141,11 +146,12 @@ void Client::onLine(const string& aLine) {
 		
 	} else if(cmd == "$Quit") {
 		if(users.find(param) != users.end()) {
-			User* u = users[param];
+			cs.enter();
+			User::Ptr u = users[param];
 			users.erase(param);
-			
+			cs.leave();
+			u->unsetFlag(User::ONLINE);
 			fireQuit(u);
-			delete u;
 		}
 		
 	} else if(cmd == "$ValidateDenide") {
@@ -155,13 +161,13 @@ void Client::onLine(const string& aLine) {
 		int j;
 		while( (j=param.find("$$")) != string::npos) {
 			string nick = param.substr(0, j);
-			
+			cs.enter();
 			if(users.find(nick) == users.end()) {
-				User* u = new User(nick);
+				User::Ptr u = new User(nick, User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
 			}
-
+			cs.leave();
 			v.push_back(nick);
 			param = param.substr(j+2);
 		}
@@ -173,12 +179,14 @@ void Client::onLine(const string& aLine) {
 		int j;
 		while( (j=param.find("$$")) != string::npos) {
 			string nick = param.substr(0, j);
+			cs.enter();
 			if(users.find(nick) == users.end()) {
-				User* u = new User(nick, User::FLAG_OP);
+				User::Ptr u = new User(nick, User::OP | User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
 			}
-			users[nick]->setFlag(User::FLAG_OP);
+			users[nick]->setFlag(User::OP);
+			cs.leave();
 			v.push_back(nick);
 			param = param.substr(j+2);
 		}
@@ -198,9 +206,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.10 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.10  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.9  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

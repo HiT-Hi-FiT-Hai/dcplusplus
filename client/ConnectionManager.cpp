@@ -37,11 +37,10 @@ ConnectionManager* ConnectionManager::instance = NULL;
  * @return The state of the connection sequence (UserConnection::CONNECTING if a connection is being made, otherwise
  * there's probably already a connection in progress).
  */
-int ConnectionManager::getDownloadConnection(User* aUser) {
+int ConnectionManager::getDownloadConnection(User::Ptr& aUser) {
 	cs.enter();
-	UserConnection::NickIter i = downloaders.find(aUser->getNick());
 
-	if(i != downloaders.end() || pendingDown.find(aUser->getNick()) != pendingDown.end()) {
+	if( pendingDown.find(aUser) != pendingDown.end() ) {
 		cs.leave();
 		return UserConnection::BUSY;
 	}
@@ -61,20 +60,21 @@ int ConnectionManager::getDownloadConnection(User* aUser) {
 	}
 	
 	// Add to the list of pending downloads...
-	pendingDown[aUser->getNick()] = TimerManager::getTick();
+	pendingDown[aUser] = TimerManager::getTick();
 	cs.leave();
 	return UserConnection::CONNECTING;
 }
 
 void ConnectionManager::onTimerSecond(DWORD aTick) {
 	cs.enter();
-	map<string, DWORD>::iterator i = pendingDown.begin();
+	map<User::Ptr, DWORD>::iterator i = pendingDown.begin();
 
 	while(i != pendingDown.end()) {
 		if((i->second + 40*1000) < aTick) {
 			// Haven't connected for a long, long time...
 			DownloadManager::getInstance()->connectFailed(i->first);
-			i = --pendingDown.erase(i);
+
+			i = pendingDown.erase(i);
 		} else {
 			++i;
 		}
@@ -108,38 +108,34 @@ void ConnectionManager::onIncomingConnection() {
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 	cs.enter();
-	map<string, DWORD>::iterator i = pendingDown.find(aNick);
 
-	if(i != pendingDown.end()) {
-		aSource->user = Client::findUser(aNick);
-		
-		if(aSource->user == NULL) {
-			putConnection(aSource);
-			cs.leave();
-			return;
+	for(map<User::Ptr, DWORD>::iterator i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+		if(i->first->getNick() == aNick) {
+			aSource->user = i->first;
+			break;
 		}
-		aSource->nick = aSource->user->getNick();
+	}
+
+	if(aSource->user) {
+		
 		aSource->flags |= UserConnection::FLAG_DOWNLOAD;
 		
-		downloaders[aNick] = aSource;
+		downloaders.push_back(aSource);
 		pendingDown.erase(i);
 
 	} else {
 		// We didn't order it so it must be an uploading connection...
 		// Make sure we know who it is, i e that he/she is connected...
 		aSource->user = Client::findUser(aNick);
-		if(aSource->user == NULL) {
-			// Duuuh...this is bad...abort, abort, abort! (Disconnect and replace the connection on the pool)
-			dcdebug("ConnectionManager::onMyNick Unknown nick: %s\n", aNick.c_str());
+		if(!aSource->user) {
 			putConnection(aSource);
 			cs.leave();
 			return;
 		}
 		
-		aSource->nick = aSource->user->getNick();
 		aSource->flags |= UserConnection::FLAG_UPLOAD;
 
-		uploaders[aNick] = aSource;
+		uploaders.push_back(aSource);
 	} 
 	cs.leave();
 }
@@ -208,9 +204,12 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.11 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.12 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.12  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.11  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

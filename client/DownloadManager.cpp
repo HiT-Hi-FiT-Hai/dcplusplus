@@ -22,51 +22,65 @@
 #include "DownloadManager.h"
 #include "ConnectionManager.h"
 #include "Client.h"
+#include "User.h"
 
 DownloadManager* DownloadManager::instance = NULL;
 
-void DownloadManager::onTimerSecond(DWORD aTick) {
+void DownloadManager::onTimerMinute(DWORD aTick) {
 	cs.enter();
-	Download::List tmp = queue;
-	cs.leave();
 	
-	for(Download::Iter i = tmp.begin(); i != tmp.end(); ++i) {
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		Download* d = *i;
-		if(aTick > d->getLastTry() + 60 * 1000) {
-			// Time to go hot...
-			User* u = Client::findUser(d->getLastNick());
-			if(u != NULL) {
-				map<User*, DWORD>::iterator j = lastConnection.find(u);
+		User::Ptr& u = d->getUser();
+		
+		if(!u) {
+			// Let's see if the user maybe connected...
+			u = Client::findUser(d->getLastNick());
+			if(!u) {
+				continue;
+			}	
+		}
 
-				if(j != lastConnection.end()) {
-					if(aTick > j->second + 60*1000) {
-						lastConnection[u] = aTick;
-						d->setLastTry(aTick);
-						if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY) {
-							fireConnecting(d);
-						}
-					}
-				} else {
-					lastConnection[u] = aTick;
-					d->setLastTry(aTick);
-					if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY) {
-						fireConnecting(d);
-					}
+
+		if(waiting.find(u) == waiting.end()) {
+			continue;
+		}
+
+		if(u->isOnline()) {
+			if(ConnectionManager::getInstance()->getDownloadConnection(u)==UserConnection::CONNECTING) {
+				waiting[u] = d;
+				fireConnecting(d);
+			}
+		} else {
+			// We need to check if we already have a connection to this user
+			bool found = false;
+			for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+				if((*i)->getUser() == u) {
+					found = true;
 				}
+			}
+
+			if(!found) {
+				d->setUser(User::nuser);
 			}
 		}
 	}
+	cs.leave();
+	
 }
 
-void DownloadManager::connectFailed(const string& aUser) {
-	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		// First, search the queue for the same download...
-		Download* dd = *i;
-		if(dd->getLastNick() == aUser) {
-			// Same download it seems
-			fireFailed(dd, "Connection Timeout");
+void DownloadManager::connectFailed(const User::Ptr& aUser) {
+	Download::UserIter i = waiting.find(aUser);
+	if(i != waiting.end()) {
+		if(!aUser->isOnline()) {
+			i->second->setUser(User::nuser);
+			fireFailed(i->second, "Connection timeout, user disconnected");
+		} else {
+			fireFailed(i->second, "Connection timeout, user not responding");
 		}
+		waiting.erase(i);
 	}
+
 }
 
 /**
@@ -81,7 +95,7 @@ void DownloadManager::connectFailed(const string& aUser) {
  * @param aTarget Target location of a file.
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
-void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser, const string& aTarget, bool aResume /* = true /*/) {
+void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) {
 	Download* d = NULL;
 
 	cs.enter();
@@ -96,6 +110,14 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 	}
 
 	if(d == NULL) {
+		// No such download, check if the target file is smaller than the one being downloaded...
+		if(aResume && (aSize != -1) ) {
+			if(Util::getFileSize(aTarget) >= aSize) {
+				cs.leave();
+				return;
+			}
+		}
+
 		d = new Download();
 	
 		if(aFile.find('\\')) {
@@ -105,21 +127,24 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 			d->setFileName(aFile);
 			d->setLast(aUser->getNick(), "");
 		}
-
+		d->setUser(aUser);
 		d->setTarget(aTarget);
 		d->setSize(aSize);
-		d->setLastTry(TimerManager::getInstance()->getTick());
 		d->setResume(aResume);
 
 		queue.push_back(d);
 		fireAdded(d);
 	}
-	cs.leave();
 
-	int status = ConnectionManager::getInstance()->getDownloadConnection(aUser);
-	if(status == UserConnection::CONNECTING) {
-		fireConnecting(d);
+	if(waiting.find(aUser) == waiting.end()) {
+		int status = ConnectionManager::getInstance()->getDownloadConnection(aUser);
+		if(status == UserConnection::CONNECTING) {
+			waiting[d->getUser()] = d;
+			fireConnecting(d);
+		}
 	}
+	cs.leave();
+	
 }
 
 /**
@@ -135,8 +160,8 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) {
 	Download* d = NULL;
 
-	User* user = Client::findUser(aUser);
-	if(user != NULL) {
+	User::Ptr& user = Client::findUser(aUser);
+	if(user) {
 		download(aFile, aSize, user, aTarget, aResume);
 		return;
 	}
@@ -166,7 +191,6 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 
 		d->setTarget(aTarget);
 		d->setSize(aSize);
-		d->setLastTry(TimerManager::getInstance()->getTick());
 		d->setResume(aResume);
 
 		queue.push_back(d);
@@ -175,7 +199,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	cs.leave();
 }
 
-void DownloadManager::downloadList(User* aUser) {
+void DownloadManager::downloadList(User::Ptr& aUser) {
 	string file = Settings::getAppPath() + aUser->getNick() + ".DcLst";
 	download("MyList.DcLst", -1, aUser, file, false);
 	userLists.push_back(file);
@@ -192,7 +216,13 @@ void DownloadManager::removeDownload(Download* aDownload) {
 	// First, we search the queue
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		if(*i == aDownload) {
-			// Good! It's in the queue, we can simply remove it...
+			// Good! It's in the queue, we can simply remove it...and check if we're waiting for a connection to the user...
+			if(aDownload->getUser()) {
+				Download::UserIter i = waiting.find(aDownload->getUser());
+				if(i != waiting.end()) {
+					waiting.erase(i);
+				}
+			}
 			queue.erase(i);
 			delete aDownload;
 			cs.leave();
@@ -247,9 +277,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	cs.enter();
 	dcdebug("Checking downloads...");
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(aConn->getNick() == (*i)->getLastNick()) {
+		if(aConn->getUser()->getNick() == (*i)->getLastNick()) {
 			Download* d = *i;
 			queue.erase(i);
+
+			d->setUser(aConn->getUser());
 
 			running[aConn] = d;
 			
@@ -292,11 +324,11 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	HANDLE file;
 	Util::ensureDirectory(d->getTarget());
 	if(d->getResume())
-		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	else
-		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	
-	if(file == NULL) {
+	if(file == INVALID_HANDLE_VALUE) {
 		running.erase(aSource);
 		queue.push_back(d);
 
@@ -371,6 +403,10 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 	Download* d = i->second;
 
+	if(d->getFile()) {
+		CloseHandle(d->getFile());
+		d->setFile(NULL);
+	}
 	fireFailed(d, aError);
 	
 	running.erase(i);
@@ -383,9 +419,12 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.12 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.13 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.13  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.12  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -46,6 +46,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 
+#include <algorithm>
 #include <vector>
 #include <string>
 #include <map>
@@ -63,9 +64,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.10 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.10  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.9  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

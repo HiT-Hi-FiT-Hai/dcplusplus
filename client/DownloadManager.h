@@ -37,8 +37,10 @@ public:
 	typedef List::iterator Iter;
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
+	typedef map<User::Ptr, Ptr> UserMap;
+	typedef UserMap::iterator UserIter;
 	
-	Download() : lastTry(0), resume(false) { }
+	Download() : resume(false) { }
 
 	bool getResume() { return resume; };
 	void setResume(bool aResume) { resume = aResume; };
@@ -57,13 +59,9 @@ public:
 	const string& getLastPath() { return lastPath; };
 	void setLast(const string& aNick, const string& aPath) { lastNick = aNick; lastPath = aPath; };
 
-	DWORD getLastTry() { return lastTry; };
-	void setLastTry(DWORD aTime) { lastTry = aTime; };
-
 private:
 	bool resume;
 	string target;
-	DWORD lastTry;
 	
 	string lastNick;
 	string lastPath;
@@ -86,18 +84,18 @@ public:
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener
 {
 public:
-	void download(const string& aFile, const string& aSize, User* aUser, const string& aDestination, bool aResume = true) {
+	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) {
 		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
-	void download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume = true);
+	void download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true);
 
 	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) {
 		download(aFile, aSize.length() > 0 ? _atoi64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true);
-	void downloadList(User* aUser);
+	void downloadList(User::Ptr& aUser);
 	void downloadList(const string& aUser);
-	void connectFailed(const string& aUser);
+	void connectFailed(const User::Ptr& aUser);
 	
 	void removeDownload(Download* aDownload);
 
@@ -125,6 +123,11 @@ public:
 		conn->addListener(this);
 		
 		cs.enter();
+		Download::UserIter i = waiting.find(conn->getUser());
+		if(i!=waiting.end()) {
+			waiting.erase(i);
+		}
+
 		connections.push_back(conn);
 		cs.leave();
 
@@ -138,9 +141,8 @@ private:
 	CriticalSection cs;
 
 	Download::List queue;
+	Download::UserMap waiting;
 	Download::Map running;
-	
-	map<User*, DWORD> lastConnection;
 	
 	static DownloadManager* instance;
 	
@@ -157,7 +159,7 @@ private:
 	virtual void onModeChange(UserConnection* aSource, int aNewMode);
 	
 	// TimerManagerListener
-	virtual void onTimerSecond(DWORD aTick);
+	virtual void onTimerMinute(DWORD aTick);
 	
 	void fireAdded(Download::Ptr aPtr) {
 		listenerCS.enter();
@@ -228,9 +230,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.12 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.13 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.13  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.12  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

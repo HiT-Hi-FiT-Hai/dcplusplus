@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Util.h"
+#include "Pointer.h"
 
 class Client;
 
@@ -31,17 +32,19 @@ class Client;
  * A user connected to one or more hubs.
  * @todo Something clever for handling different users with the same nick (on different hubs)
  */
-class User
+class User : public PointerBase
 {
 public:
 	enum {
-		FLAG_OP = 0x01
+		OP = 0x01,
+		ONLINE = 0x02
 	};
-	typedef User* Ptr;
+	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	typedef map<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
+	static Ptr nuser;
 
 	Client* getClient() const { return client; };
 	void setClient(Client* aClient) { client = aClient; };
@@ -65,7 +68,9 @@ public:
 
 	void setFlag(DWORD aFlag) { flags &= aFlag; };
 	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
-	bool isSet(DWORD aFlag) { return (flags&aFlag) > 0; };
+	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
+
+	bool isOnline() const { return (flags & ONLINE) != 0; };
 
 	User() : client(NULL), flags(0) { };
 	User(const string& aNick, DWORD aFlags = 0) : client(NULL), nick(aNick), flags(aFlags) { };
@@ -85,9 +90,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.2 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: User.h,v 1.3 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.3  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.2  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

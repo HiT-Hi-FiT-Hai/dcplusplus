@@ -26,9 +26,10 @@
 #include "BufferedSocket.h"
 #include "CriticalSection.h"
 #include "TimerManager.h"
+#include "User.h"
 
 class UserConnection;
-class User;
+
 
 class UserConnectionListener {
 public:
@@ -83,9 +84,15 @@ public:
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
 
+	void setUser(User::Ptr& aUser) {
+		user = aUser;
+	}
+	User::Ptr& getUser() { return user; };
+
 	Transfer() : pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) CloseHandle(file); };
 private:
+	User::Ptr user;
 	string fileName;
 	HANDLE file;
 	LONGLONG pos;
@@ -140,8 +147,7 @@ public:
 	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
 	void maxedOut() { send("$MaxedOut|"); };
 
-	User* getUser() { return user; };
-	const string& getNick() { return nick; };
+	User::Ptr& getUser() { return user; };
 	
 	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
@@ -165,8 +171,7 @@ private:
 	string server;
 	short port;
 	BufferedSocket socket;
-	User* user;
-	string nick;
+	User::Ptr user;
 	
 	int state;
 	int flags;
@@ -211,6 +216,7 @@ private:
 	virtual void onTimerSecond(DWORD aTick) {
 		if((lastActivity + 120 * 1000) < aTick) {
 			// Nothing's happened for 120 seconds, fire error...
+			dcdebug("UserConnection::onTimerSecond Connection timeout\n");
 			fireError("Connection Timeout");
 			lastActivity = aTick;
 		}
@@ -375,9 +381,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.15 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.16  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.15  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

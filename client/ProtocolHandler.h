@@ -42,7 +42,7 @@ public:
 		aClient->key(CryptoManager::getInstance()->makeKey(aLock));
 		aClient->validateNick(Settings::getNick());
 	}
-	virtual void onClientHello(Client* aClient, User* aUser) {
+	virtual void onClientHello(Client* aClient, User::Ptr& aUser) {
 		if(aUser->getNick() == Settings::getNick()) {
 			aClient->version("1,0091");
 			aClient->getNickList();
@@ -67,7 +67,7 @@ public:
 		ConnectionManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
 	}
 	
-	virtual void onClientRevConnectToMe(Client* aClient, User* aUser) {
+	virtual void onClientRevConnectToMe(Client* aClient, User::Ptr& aUser) {
 		aClient->connectToMe(aUser);
 	}
 	
@@ -98,9 +98,12 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.8 2001/12/07 20:03:15 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.9 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.9  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.8  2001/12/07 20:03:15  arnetheduck
  * More work done towards application stability
  *

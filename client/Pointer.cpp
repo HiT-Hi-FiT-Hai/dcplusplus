@@ -19,20 +19,15 @@
 #include "stdafx.h"
 #include "DCPlusPlus.h"
 
-#include "User.h"
-
-User::Ptr User::nuser = User::Ptr(NULL);
+#include "Pointer.h"
 
 /**
- * @file User.cpp
- * $Id: User.cpp,v 1.2 2001/12/16 19:47:48 arnetheduck Exp $
+ * @file Pointer.cpp
+ * $Id: Pointer.cpp,v 1.1 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
- * $Log: User.cpp,v $
- * Revision 1.2  2001/12/16 19:47:48  arnetheduck
+ * $Log: Pointer.cpp,v $
+ * Revision 1.1  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.1  2001/12/01 17:17:22  arnetheduck
- * New additions to the reworked connection manager and huffman encoder
  *
  * @endif
  */

@@ -37,6 +37,7 @@
 #include "SearchManager.h"
 
 MainFrame::~MainFrame() {
+	arrows.Destroy();
 }
 
 DWORD WINAPI MainFrame::stopper(void* p) {
@@ -59,7 +60,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	SearchManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	HubManager::deleteInstance();
-	mf->PostMessage(WM_REALLYCLOSE);	
+	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
 
@@ -135,7 +136,11 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	int i = ctrlTransfers.find((LPARAM)aDownload);
 	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aDownload->getSize()).c_str());
-	ctrlTransfers.SetItemText(i, 3, aDownload->getLastNick().c_str());
+	if(aDownload->getUser()->getClient() != NULL) {
+		ctrlTransfers.SetItemText(i, 3, (aDownload->getLastNick() + " (" + aDownload->getUser()->getClient()->getName() + ")").c_str());
+	} else {
+		ctrlTransfers.SetItemText(i, 3, (aDownload->getLastNick() + " (Offline)").c_str());
+	}
 }
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[1024];
@@ -319,9 +324,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.18 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.19 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.19  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.18  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

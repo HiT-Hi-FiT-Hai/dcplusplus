@@ -170,6 +170,10 @@ SOURCE=.\client\MainFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\Pointer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ProtocolHandler.cpp
 # End Source File
 # Begin Source File
@@ -320,6 +324,10 @@ SOURCE=.\client\HubManager.h
 # Begin Source File
 
 SOURCE=.\client\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\Pointer.h
 # End Source File
 # Begin Source File
 

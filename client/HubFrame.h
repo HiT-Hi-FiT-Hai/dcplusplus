@@ -27,14 +27,11 @@
 #include "Client.h"
 #include "ExListViewCtrl.h"
 #include "DownloadManager.h"
+#include "User.h"
 
 #include "AtlCmdBar2.h"
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
-
-#ifndef WM_REALLYCLOSE
-#define WM_REALLYCLOSE (WM_USER+1001)
-#endif
 
 class HubFrame : public CMDIChildWindowImpl2<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
@@ -50,7 +47,7 @@ protected:
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
 		addClientLine("Unknown: " + aCommand);
 	}
-	virtual void onClientQuit(Client* aClient, User* aUser) {
+	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) {
 		ctrlUsers.deleteItem(aUser->getNick());
 		updateStatusBar();		
 	}
@@ -66,7 +63,7 @@ protected:
 		client->disconnect();
 	}
 
-	virtual void onClientMyInfo(Client* aClient, User* aUser) {
+	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
 		
 		LV_FINDINFO fi;
 		fi.flags = LVFI_STRING;
@@ -128,7 +125,6 @@ public:
 	typedef CSplitterImpl<HubFrame> splitBase;
 
 	BEGIN_MSG_MAP(HubFrame)
-		MESSAGE_HANDLER(WM_REALLYCLOSE, onReallyClose)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -144,10 +140,16 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		DWORD id;
-
-		stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+		if(stopperThread) {
+			WaitForSingleObject(stopperThread, INFINITE);
+			CloseHandle(stopperThread);
+			bHandled = FALSE;
+		} else {
+			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+		
+		}
 		return 0;
 	}
 
@@ -155,16 +157,11 @@ public:
 		HubFrame* f = (HubFrame*)p;
 
 		f->client->removeListener(f);
+		f->client->disconnect();
+		
 		delete f->client;
 		f->client = NULL;
-		f->PostMessage(WM_REALLYCLOSE);
-		return 0;
-	}
-
-	LRESULT onReallyClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		if(stopperThread)
-			CloseHandle(stopperThread);
-		DestroyWindow();
+		f->PostMessage(WM_CLOSE);
 		return 0;
 	}
 
@@ -227,11 +224,11 @@ public:
 		if(client->isConnected() && item->iItem != -1) {
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
 			user = buf;
-			User* u = client->getUser(user);
-			if(u == NULL)
-				DownloadManager::getInstance()->downloadList(user);
-			else 
+			User::Ptr& u = client->getUser(user);
+			if(u)
 				DownloadManager::getInstance()->downloadList(u);
+			else 
+				DownloadManager::getInstance()->downloadList(user);
 		}
 		return 0;
 	}
@@ -303,9 +300,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.15 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.16  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.15  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -57,25 +57,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	client->connect(server);
 	return 1;
 }
-/*
-LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	if(wParam != SIZE_MINIMIZED) {
-		CRect rc;
-		GetClientRect(rc);
-		rc.bottom -=28;
-		SetSplitterRect(rc);
-		
-		GetClientRect(rc);
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-		rc.left +=2;
-		rc.right -=2;
-		ctrlMessage.MoveWindow(rc);
-	}	
-	return 0;
-}
-*/
+
 LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	client->disconnect();
 	ctrlUsers.DeleteAllItems();
@@ -85,9 +67,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.10 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.11 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.11  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.10  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

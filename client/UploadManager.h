@@ -33,11 +33,6 @@ public:
 	typedef Upload* Ptr;
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
-	User* getUser() { return user; };
-	void setUser(User* aUser) { user = aUser; };
-	
-private:
-	User* user;
 	
 };
 
@@ -302,9 +297,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.15 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.16  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.15  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

@@ -24,8 +24,8 @@
 #endif // _MSC_VER > 1000
 
 #include "Util.h"
+#include "User.h"
 
-class User;
 class Client;
 
 class ClientListener  
@@ -67,17 +67,17 @@ public:
 	 * New user arrived. If this is the user's nick, send myinfo.
 	 * @param aUser User that connected (Only the nick is valid so far...)
 	 */
-	virtual void onClientHello(Client* aClient, User* aUser) { };
+	virtual void onClientHello(Client* aClient, User::Ptr& aUser) { };
 	/**
 	 * Another user disconnected.
 	 * @param aUser User disconnected.
 	 */
-	virtual void onClientQuit(Client* aClient, User* aUser) { };
+	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) { };
 	/**
 	 * Detailed information about a user received/updated.
 	 * @param aUser Full info about the user.
 	 */
-	virtual void onClientMyInfo(Client* aClient, User* aUser) { };
+	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) { };
 	virtual void onClientMessage(Client* aClient, const string& aMessage) { };
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) { };
 	virtual void onClientNickList(Client* aClient, StringList& aNicks) { };
@@ -88,16 +88,19 @@ public:
 	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
 	virtual void onClientConnectToMe(Client* aClient, const string& aServer, const string& aPort) { };
-	virtual void onClientRevConnectToMe(Client* aClient, User* aUser) { };
+	virtual void onClientRevConnectToMe(Client* aClient, User::Ptr& aUser) { };
 };
 
 #endif // !defined(AFX_CLIENTLISTENER_H__607F5375_97B0_47CD_B53B_D230ABF23E7E__INCLUDED_)
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.6 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.7 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.7  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.6  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

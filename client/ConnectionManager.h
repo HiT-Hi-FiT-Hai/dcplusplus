@@ -37,27 +37,26 @@ public:
 			delete instance;
 
 		instance = new ConnectionManager();
+		TimerManager::getInstance()->addListener(instance);
 	}
 	static ConnectionManager* getInstance() {
 		dcassert(instance);
 		return instance;
 	}
 	static void deleteInstance() {
+		TimerManager::getInstance()->removeListener(instance);
 		if(instance)
 			delete instance;
 		instance = NULL;
 	}
 
-	int getDownloadConnection(User* aUser);
+	int getDownloadConnection(User::Ptr& aUser);
 	
 	void putDownloadConnection(UserConnection* aSource) {
 		cs.enter();
-		for(UserConnection::NickIter i = downloaders.begin(); i != downloaders.end(); ++i) {
-			// Can't search by user, he/she might have disconnected...
-			if(i->second == aSource) {
-				downloaders.erase(i);
-				break;
-			}
+		UserConnection::Iter i = find(downloaders.begin(), downloaders.end(), aSource);
+		if(i != downloaders.end()) {
+			downloaders.erase(i);
 		}
 		cs.leave();		
 		// Pool it for later usage...
@@ -65,12 +64,9 @@ public:
 	}
 	void putUploadConnection(UserConnection* aSource) {
 		cs.enter();
-		for(UserConnection::NickIter i = uploaders.begin(); i != uploaders.end(); ++i) {
-			// Can't search by user, he/she might have disconnected...
-			if(i->second == aSource) {
-				uploaders.erase(i);
-				break;
-			}
+		UserConnection::Iter i = find(uploaders.begin(), uploaders.end(), aSource);
+		if(i != uploaders.end()) {
+			uploaders.erase(i);
 		}
 		cs.leave();
 		putConnection(aSource);
@@ -90,9 +86,9 @@ private:
 	/** Main critical section for the connection manager */
 	CriticalSection cs;
 
-	map<string, DWORD> pendingDown;
-	UserConnection::NickMap downloaders;
-	UserConnection::NickMap uploaders;
+	map<User::Ptr, DWORD> pendingDown;
+	UserConnection::List downloaders;
+	UserConnection::List uploaders;
 	UserConnection::List pool;
 
 	// UserConnectionListener
@@ -165,9 +161,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.13 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.14 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.14  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.13  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

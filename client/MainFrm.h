@@ -32,15 +32,12 @@
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
-#ifndef WM_REALLYCLOSE
-#define WM_REALLYCLOSE (WM_USER+1001)
-#endif
-
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
 		public TimerManagerListener, public UploadManagerListener
 {
 public:
+	MainFrame() : stopperThread(NULL) { };
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
@@ -93,7 +90,6 @@ public:
 	}
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
-		MESSAGE_HANDLER(WM_REALLYCLOSE, OnReallyClose)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
@@ -121,11 +117,6 @@ public:
 	END_UPDATE_UI_MAP()
 
 	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnReallyClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		DestroyWindow();
-		return 0;
-	}
-	
 	static DWORD WINAPI stopper(void* p);
 
 	LRESULT onKeyDownTransfers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -142,10 +133,15 @@ public:
 	}
 		
 
-	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
-
-		CreateThread(NULL, 0, &stopper, this, 0, &id);
+		if(stopperThread) {
+			WaitForSingleObject(stopperThread, INFINITE);
+			CloseHandle(stopperThread);
+		} else {
+			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+			bHandled = FALSE;
+		}
 		return 0;
 	}
 	
@@ -236,6 +232,8 @@ protected:
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;		
 	CImageList arrows;
+	HANDLE stopperThread;
+
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -247,9 +245,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.13 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.14 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.14  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.13  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

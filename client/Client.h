@@ -66,10 +66,6 @@ public:
 				break;
 			}				
 		}
-		// Remove all users
-		for(User::NickIter j = users.begin(); j != users.end(); ++j) {
-			delete j->second;
-		}
 		socket.removeListener(this);
 	};
 	
@@ -109,13 +105,15 @@ public:
 	}
 
 	void disconnect() {	
-		User::NickMap tmp = users;
-		users.clear();
-		for(User::NickIter i = tmp.begin(); i != tmp.end(); ++i) {
-			delete i->second;
-		}
 		socket.removeListener(this);
 		socket.disconnect();
+		cs.enter();
+		User::NickIter i = users.begin();
+		while(i != users.end()) {
+			i->second->unsetFlag(User::ONLINE);
+			i = users.erase(i);
+		}
+		cs.leave();
 	}
 
 	void validateNick(const string& aNick) {
@@ -170,13 +168,15 @@ public:
 		}
 		send("<" + Settings::getNick() + "> " + tmp + "|");
 	}
-	void getInfo(User* aUser) {
+	void getInfo(User::Ptr aUser) {
 //		dcdebug("GetInfo %s\n", aUser->getNick().c_str());
 		send("$GetINFO " + aUser->getNick() + " " + Settings::getNick() + "|");
 	}
 	void getInfo(const string& aNick) {
+		cs.enter();
 		if(users.find(aNick) != users.end())
 			send("$GetINFO " + aNick + " " + Settings::getNick() + "|");
+		cs.leave();
 	}
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
@@ -184,7 +184,7 @@ public:
 		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "\x05$" + aEmail + "$" + aBytesShared + "$|");
 	}
 
-	void connectToMe(User* aUser) {
+	void connectToMe(User::Ptr aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		string server = Settings::getServer();
 		string port = Settings::getPortString();
@@ -198,51 +198,63 @@ public:
 
 		send("$ConnectToMe " + aUser->getNick() + " " + server + ":" + port + "|");
 	}
-	void revConnectToMe(User* aUser) {
+	void revConnectToMe(User::Ptr aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
 	}
 	void connect(const string& aServer, short aPort = 411);
 
 	bool userConnected(const string& aNick) {
-		return !(users.find(aNick) == users.end());
+		cs.enter();
+		bool b = !(users.find(aNick) == users.end());
+		cs.leave();
+		return b;
 	}
 
 	const string& getName() { return name; };
 	const string& getServer() { return server; };
 
-	User* getUser(const string& aNick) {
+	User::Ptr getUser(const string& aNick) {
 		dcassert(aNick.length() > 0);
-
+		cs.enter();
 		User::NickIter j = users.find(aNick);
 		if(j != users.end()) {
+			cs.leave();
 			return j->second;
 		} else {
+			cs.leave();
 			return NULL;
 		}
 	}
 
-	static User* findUser(const string& aNick) {
+	static User::Ptr& findUser(const string& aNick) {
 		dcassert(aNick.length() > 0);
-
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
+			(*i)->cs.enter();
 			User::NickIter j = (*i)->users.find(aNick);
 			if(j != (*i)->users.end()) {
+				(*i)->cs.leave();
 				return j->second;
 			}
+			(*i)->cs.leave();
 		}
-		return NULL;
+		return User::nuser;
 	}
 	
 	int getUserCount() {
-		return users.size();
+		cs.enter();
+		int c = users.size();
+		cs.leave();
+		return c;
 	}
 
 	LONGLONG getAvailable() {
 		LONGLONG x = 0;
+		cs.enter();
 		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
 			x+=i->second->getBytesShared();
 		}
+		cs.leave();
 		return x;
 	}
 	
@@ -267,6 +279,7 @@ private:
 	string name;
 	DWORD lastActivity;
 
+	CriticalSection cs;
 	User::NickMap users;
 
 	static List clientList;
@@ -356,7 +369,7 @@ private:
 			(*i)->onClientForceMove(this, aServer);
 		}
 	}
-	void fireHello(User* aUser) {
+	void fireHello(User::Ptr aUser) {
 		//dcdebug("fireHello\n");
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -401,7 +414,7 @@ private:
 			(*i)->onClientMessage(this, aMessage);
 		}
 	}
-	void fireMyInfo(User* aUser) {
+	void fireMyInfo(User::Ptr aUser) {
 //		dcdebug("fireMyInfo %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -437,7 +450,7 @@ private:
 			(*i)->onClientPrivateMessage(this, aFrom, aMessage);
 		}
 	}
-	void fireQuit(User* aUser) {
+	void fireQuit(User::Ptr aUser) {
 		//dcdebug("fireQuit %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -446,7 +459,7 @@ private:
 			(*i)->onClientQuit(this, aUser);
 		}
 	}
-	void fireRevConnectToMe(User* aUser) {
+	void fireRevConnectToMe(User::Ptr aUser) {
 		dcdebug("fireRevConnectToMe %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
@@ -489,9 +502,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.10 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: Client.h,v 1.11 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.11  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.10  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -26,6 +26,7 @@ TimerManager* TimerManager::instance;
 DWORD WINAPI TimerManager::ticker(void* p) {
 	TimerManager* t = (TimerManager*)p;
 	DWORD nextTick;
+	int nextMin = 0;
 	int x;
 
 	nextTick = GetTickCount() + 1000;
@@ -33,15 +34,22 @@ DWORD WINAPI TimerManager::ticker(void* p) {
 		DWORD z = GetTickCount();
 		nextTick = z + 1000;
 		t->fireSecond(z);
+		if(nextMin++ >= 60) {
+			t->fireMinute(z);
+			nextMin = 0;
+		}
 	}
 
 	return 0;
 }
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.4 2001/12/16 19:47:48 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.4  2001/12/16 19:47:48  arnetheduck
+ * Reworked downloading and user handling some, and changed some small UI things
+ *
  * Revision 1.3  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.
