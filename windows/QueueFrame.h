@@ -44,9 +44,11 @@ public:
 		IDC_REMOVE_SOURCE = 3400,
 		IDC_PM = 3600,
 		IDC_PRIORITY_PAUSED = 4000,
-		IDC_PRIORITY_LOW = 4001,
-		IDC_PRIORITY_NORMAL = 4002,
-		IDC_PRIORITY_HIGH = 4003,
+		IDC_PRIORITY_LOWEST,
+		IDC_PRIORITY_LOW,
+		IDC_PRIORITY_NORMAL,
+		IDC_PRIORITY_HIGH,
+		IDC_PRIORITY_HIGHEST
 	};
 
 	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
@@ -247,14 +249,14 @@ private:
 		}
 	};
 
-	virtual void onAction(QueueManagerListener::Types type, const QueueItem::List& l) { 
+	virtual void onAction(QueueManagerListener::Types type, const QueueItem::StringMap& l) { 
 		switch(type) {
 		case QueueManagerListener::QUEUE: onQueueList(l); break;
 		default: dcassert(0); break;
 		}
 	};
 
-	void onQueueList(const QueueItem::List& l);
+	void onQueueList(const QueueItem::StringMap& l);
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
@@ -265,6 +267,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.5 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

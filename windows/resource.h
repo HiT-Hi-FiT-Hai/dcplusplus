@@ -38,6 +38,7 @@
 #define IDD_FAVORITEHUB                 223
 #define IDR_USERS                       224
 #define IDD_ADVANCED2PAGE               224
+#define IDB_SPEEDS                      225
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -143,11 +144,18 @@
 #define IDC_MIN_UPLOAD_SPIN             1075
 #define IDC_CHEVRON                     1076
 #define IDC_OPEN_FILE_LIST              1077
+#define IDC_TOTALS                      1077
 #define IDC_SEARCH                      1078
+#define IDC_RATIO                       1078
 #define IDC_HELP_README                 1079
+#define IDC_POST_DOWNLOAD               1079
 #define IDC_CLOSE_WINDOW                1080
-#define IDC_FIND						1081
-#define IDC_NEXT						1082
+#define IDC_POST_UPLOAD                 1080
+#define IDC_FIND                        1081
+#define IDC_MAIN_CHAT                   1081
+#define IDC_NEXT                        1082
+#define IDC_EDIT2                       1082
+#define IDC_PRIVATE_CHAT                1082
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -163,9 +171,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        224
+#define _APS_NEXT_RESOURCE_VALUE        226
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1077
+#define _APS_NEXT_CONTROL_VALUE         1083
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

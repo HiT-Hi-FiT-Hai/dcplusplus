@@ -194,7 +194,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if(name == "." || name == "..")
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				dir->directories[name] = buildTree(aName + '\\' + name, dir);
+				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
+					dir->directories[name] = buildTree(aName + '\\' + name, dir);
+				}
 			} else {
 
 				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
@@ -480,6 +482,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.38 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.39 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

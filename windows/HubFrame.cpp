@@ -283,9 +283,6 @@ void HubFrame::onEnter() {
 	}
 }
 
-/**
- * @todo fix the user stuff...
- */
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	if(client->isConnected()) {
@@ -607,16 +604,15 @@ void HubFrame::addLine(const string& aLine) {
 	else {
 		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
 	}
+	if(BOOLSETTING(LOG_MAIN_CHAT)) {
+		StringMap params;
+		params["message"] = aLine;
+		LOG(client->getServer(), Util::formatParams(SETTING(LOG_FORMAT_MAIN_CHAT), params));
+	}
 	if(timeStamps) {
 		ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		if(BOOLSETTING(LOG_MAIN_CHAT)) {
-			LOG(client->getServer(), "[" + Util::getShortTimeString() + "] " + aLine);
-		}
 	} else {
 		ctrlClient.AppendText(("\r\n" + aLine).c_str());
-		if(BOOLSETTING(LOG_MAIN_CHAT)) {
-			LOG(client->getServer(), aLine);
-		}
 	}
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
@@ -683,6 +679,6 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.6 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.7 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

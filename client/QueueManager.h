@@ -30,6 +30,7 @@
 #include "File.h"
 #include "TimerManager.h"
 #include "SearchManager.h"
+#include "ClientManager.h"
 
 STANDARD_EXCEPTION(QueueException);
 
@@ -40,31 +41,41 @@ class UserConnection;
 class QueueItem : public Flags {
 public:
 	typedef QueueItem* Ptr;
-	typedef list<Ptr> List;
-	typedef List::iterator Iter;
+	typedef HASH_MAP<string, Ptr> StringMap;
+	typedef StringMap::iterator StringIter;
+	typedef HASH_MULTIMAP<User::Ptr, Ptr> UserMap;
+	typedef UserMap::iterator UserIter;
+	typedef pair<UserIter, UserIter> UserPair;
 
 	enum Status {
 		WAITING,
 		RUNNING
 	};
+
 	enum Priority {
 		DEFAULT = -1,
 		PAUSED = 0,
+		LOWEST,
 		LOW,
 		NORMAL,
-		HIGH
+		HIGH,
+		HIGHEST
 	};
-	enum Flags {
+	enum {
 		RESUME = 0x01,
 		USER_LIST = 0x02
 	};
 
-	class Source {
+	class Source : public Flags {
 	public:
 		typedef Source* Ptr;
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
-		
+		enum {
+			FLAG_FILE_NOT_FOUND,
+			FLAG_ROLLBACK_INCONSISTENCY
+		};
+
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
 		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
 
@@ -197,12 +208,12 @@ public:
 	};
 
 	virtual void onAction(Types, QueueItem*) { };
-	virtual void onAction(Types, const QueueItem::List&) { };
+	virtual void onAction(Types, const QueueItem::StringMap&) { };
 };
 class ConnectionQueueItem;
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
-	private SearchManagerListener, private SettingsManagerListener
+	private SearchManagerListener, private SettingsManagerListener, private ClientManagerListener
 {
 public:
 	
@@ -228,9 +239,9 @@ public:
 		Lock l(cs);
 		StringList sl;
 		
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if((*i)->getSize() == aSize) {
-				sl.push_back((*i)->getTarget());
+		for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
+			if(i->second->getSize() == aSize) {
+				sl.push_back(i->second->getTarget());
 			}
 		}
 		return sl;
@@ -239,10 +250,12 @@ public:
 	Download* getDownload(User::Ptr& aUser);
 	bool hasDownload(const User::Ptr& aUser) {
 		Lock l(cs);
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if(((*i)->getStatus() != QueueItem::RUNNING) && 
-				((*i)->getPriority() != QueueItem::PAUSED) && 
-				((*i)->isSource(aUser)) ) {
+		QueueItem::UserPair up = userQueue.equal_range(aUser);
+		
+		for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
+			dcassert(i->second->isSource(aUser));
+			if( (i->second->getStatus() != QueueItem::RUNNING) &&
+				(i->second->getPriority() != QueueItem::PAUSED) ) {
 				return true;
 			}
 		}
@@ -257,74 +270,53 @@ public:
 	}
 
 	void importNMQueue(const string& aFile) throw(FileException);
+	void loadQueue();
 	
 	GETSET(bool, dirty, Dirty);
+	GETSET(u_int32_t, lastSave, LastSave);
+	GETSETREF(string, queueFile, QueueFile);
 private:
 
 	friend class Singleton<QueueManager>;
 	
-	QueueManager() : dirty(false) { 
+	QueueManager() : dirty(false), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
 		SettingsManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this); 
 		SearchManager::getInstance()->addListener(this);
+		ClientManager::getInstance()->addListener(this);
 		Util::ensureDirectory(Util::getAppPath() + "FileLists\\");
 	};
-	
-	virtual ~QueueManager() { 
-		SettingsManager::getInstance()->removeListener(this);
-		SearchManager::getInstance()->removeListener(this);
-		TimerManager::getInstance()->removeListener(this); 
-#ifdef WIN32
-		string path = Util::getAppPath() + "FileLists\\";
-		WIN32_FIND_DATA data;
-		HANDLE hFind;
-		
-		hFind = FindFirstFile((path + "\\*.bz2").c_str(), &data);
-		if(hFind != INVALID_HANDLE_VALUE) {
-			do {
-				File::deleteFile(path + data.cFileName);			
-			} while(FindNextFile(hFind, &data));
-
-			FindClose(hFind);
-		}
-
-		hFind = FindFirstFile((path + "\\*.DcLst").c_str(), &data);
-		if(hFind != INVALID_HANDLE_VALUE) {
-			do {
-				File::deleteFile(path + data.cFileName);			
-			} while(FindNextFile(hFind, &data));
-			
-			FindClose(hFind);
-		}
-#endif
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			delete *i;
-		}
-	};
+	virtual ~QueueManager();
 	
 	CriticalSection cs;
-	QueueItem::List queue;
+	
+	QueueItem::StringMap queue;
+	QueueItem::UserMap userQueue;
+
 	typedef deque<pair<string, u_int32_t> > SearchList;
 	typedef SearchList::iterator SearchIter;
 	SearchList search;
 
 	static const string USER_LIST_NAME;
 	
-	QueueItem* findByTarget(const string& aTarget) {
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if(stricmp((*i)->getTarget().c_str(), aTarget.c_str()) == 0)
-				return *i;
-		}
-		return NULL;
-	}
 	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
-	
-	
+	void remove(QueueItem* q);
+
+	void load(SimpleXML* aXml);
+	void saveQueue();
+
+	QueueItem* findByTarget(const string& aTarget);
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		switch(type) {
 		case TimerManagerListener::MINUTE:
 			onTimerMinute(aTick); break;
+		case TimerManagerListener::SECOND:
+			if(dirty && ((lastSave + 10000) < aTick)) {
+				saveQueue();
+			}
+			break;
 		}
 	}
 	void onTimerMinute(u_int32_t aTick);
@@ -336,18 +328,36 @@ private:
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
 		switch(type) {
 		case SettingsManagerListener::LOAD: load(xml); break;
-		case SettingsManagerListener::SAVE: save(xml); break;
 		}
 	}
-	
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
+
+	// ClientManagerListener
+	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) {
+		switch(type) {
+		case ClientManagerListener::USER_UPDATED:
+			{
+				QueueItem::UserPair up = userQueue.equal_range(aUser);
+				bool hasDown = false;
+				for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
+					if( (i->second->getPriority() != QueueItem::PAUSED) &&
+						(i->second->getStatus() == QueueItem::WAITING) ) {
+							hasDown = true;
+						}
+					fire(QueueManagerListener::SOURCES_UPDATED, i->second);
+				}
+				if( aUser->isOnline() && hasDown ) {
+					ConnectionManager::getInstance()->getDownloadConnection(aUser);
+				} 
+			}
+			break;
+		}
+	}
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.21 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.22 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

@@ -79,6 +79,10 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlResults.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 
+	images.CreateFromImage(IDB_SPEEDS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	
+	ctrlResults.SetImageList(images, LVSIL_SMALL);
+
 	searchLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	searchLabel.SetFont(uiFont, FALSE);
 	searchLabel.SetWindowText(CSTRING(SEARCH_FOR));
@@ -226,10 +230,6 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		string target = SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName();
 
 		if(WinUtil::browseFile(target, m_hWnd)) {
-			if(lastDirs.size() > 10)
-				lastDirs.erase(lastDirs.begin());
-			lastDirs.push_back(target);
-
 			try {
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
 			} catch(QueueException e) {
@@ -241,7 +241,10 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	} else {
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(WinUtil::browseDirectory(target, m_hWnd)) {
+			if(lastDirs.size() > 10)
+				lastDirs.erase(lastDirs.begin());
 			lastDirs.push_back(target);
+
 			downloadSelected(target);
 		}
 	}
@@ -764,8 +767,40 @@ void SearchFrame::onTab() {
 	}
 }
 
+LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	SearchResult* sr = (SearchResult*)lParam;
+
+	// Check previous search results for dupes
+	for(int i = 0, j = ctrlResults.GetItemCount(); i < j; ++i) {
+		SearchResult* sr2 = (SearchResult*)ctrlResults.GetItemData(i);
+		if((sr->getUser() == sr2->getUser()) && (sr->getFile() == sr2->getFile())) {
+			delete (StringList*)wParam;
+			delete sr;
+			return 0;
+		}
+	}
+
+	int image = 0;
+	const string& tmp = sr->getUser()->getConnection();
+	if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_288K]) ||
+		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_576K]) ||
+		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_SATELLITE]) ||
+		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_ISDN]) ) {
+		image = 1;
+	} else if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_CABLE]) ||
+		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_DSL]) ) {
+		image = 2;
+	} else if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_T1]) ||
+		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_T3]) ) {
+		image = 3;
+	}
+	ctrlResults.insert(*(StringList*)wParam, image, lParam);
+	delete (StringList*)wParam;
+	return 0;
+}
+
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.7 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

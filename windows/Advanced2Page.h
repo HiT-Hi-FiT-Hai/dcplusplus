@@ -30,11 +30,20 @@ public:
 	BEGIN_MSG_MAP(Advanced2Page)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_HANDLER(IDC_BROWSE_LOG, BN_CLICKED, onClickedBrowseDir)
+		COMMAND_HANDLER(IDC_LOG_MAIN_CHAT, BN_CLICKED, onUpdateEdits)
+		COMMAND_HANDLER(IDC_LOG_PRIVATE_CHAT, BN_CLICKED, onUpdateEdits)
+		COMMAND_HANDLER(IDC_LOG_DOWNLOADS, BN_CLICKED, onUpdateEdits)
+		COMMAND_HANDLER(IDC_LOG_UPLOADS, BN_CLICKED, onUpdateEdits)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onClickedBrowseDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onUpdateEdits(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		updateEdits();
+		return 0;
+	}
 	
+	void updateEdits();
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
@@ -47,6 +56,6 @@ protected:
 
 /**
  * @file Advanced2Page.h
- * $Id: Advanced2Page.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.2 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

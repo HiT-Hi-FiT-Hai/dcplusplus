@@ -75,10 +75,9 @@
 #		undef errno
 #	endif
 #	define errno WSAGetLastError()
-#	define checksocket(x) if((x) == INVALID_SOCKET) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
-#	define checksend(x, len) if((x) != len) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
-#	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(WSAGetLastError()); } }
-#	define checksockerr(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(WSAGetLastError()); }
+#	define checksocket(x) if((x) == INVALID_SOCKET) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
+#	define checkrecv(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); if(a == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(a); } }
+#	define checksockerr(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
 typedef int socklen_t;
 #else
 #include <sys/ioctl.h>
@@ -94,8 +93,6 @@ typedef int SOCKET;
 #	define closesocket(x) close(x)
 #	define ioctlsocket(a, b, c) ioctl(a, b, c)
 #	define checksocket(x) if((x) < 0) { Socket::disconnect(); throw SocketException(errno); }
-#	define checkconnect(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
-#	define checksend(x, len) if((x) != len) { Socket::disconnect(); throw SocketException(errno); }
 #	define checkrecv(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
 #	define checksockerr(x) if((x) == SOCKET_ERROR) { Socket::disconnect(); throw SocketException(errno); }
 #endif
@@ -238,6 +235,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.33 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: Socket.h,v 1.34 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

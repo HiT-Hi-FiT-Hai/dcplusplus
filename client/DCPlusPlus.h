@@ -22,10 +22,12 @@
 
 #ifdef _DEBUG
 
+#ifdef WIN32
 // Warning C4130: '==' : logical operation on address of string constant
 #pragma warning (disable: 4130)
+#endif
 
-inline void _cdecl debugTrace(const char* format, ...)
+inline void CDECL debugTrace(const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
@@ -42,7 +44,12 @@ inline void _cdecl debugTrace(const char* format, ...)
 };
 
 #define dcdebug debugTrace
+#ifdef WIN32
 #define dcassert(exp) _ASSERTE(exp)
+#else
+#include <assert.h>
+#define dcassert(exp) assert(exp)
+#endif
 #define dcdrun(exp) exp
 
 #else //_DEBUG
@@ -87,6 +94,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.25 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.26 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

@@ -28,6 +28,37 @@ void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMo
 	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
 }
 
+void SearchManager::setPort(short aPort) throw(SocketException) {
+	if(socket != NULL) {
+		socket->disconnect();
+		join();
+	} else {
+		socket = new Socket();
+	}
+
+	socket->create(Socket::TYPE_UDP);
+	socket->bind(aPort);
+	start();
+}
+
+int SearchManager::run() {
+	static const int bufsize = 4096;
+
+	u_int8_t* buf = new u_int8_t[bufsize];
+	int len;
+	try {
+		while( (len = socket->read(buf, bufsize)) != 0) {
+			onData(buf, len);
+		}
+	} catch(SocketException e) {
+		dcdebug("SearchManager::run Stopped listening: %s\n", e.getError());
+		return 1;
+	}
+
+	delete buf;
+	return 0;
+}
+
 void SearchManager::onData(const u_int8_t* buf, int aLen) {
 	string x((char*)buf, aLen);
 	if(x.find("$SR") != string::npos) {
@@ -82,6 +113,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.19 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.20 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

@@ -40,7 +40,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private ConnectionManagerListener
 {
 public:
-	MainFrame() : trayIcon(false), lastUpload(-1), stopperThread(NULL), c(NULL) { 
+	MainFrame() : trayMessage(0), trayIcon(false), lastUpload(-1), lastUpdate(0), stopperThread(NULL), c(NULL) { 
 		c = new HttpConnection();
 	};
 	virtual ~MainFrame();
@@ -92,6 +92,7 @@ public:
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
+		MESSAGE_HANDLER(trayMessage, onTray)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -161,6 +162,11 @@ public:
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
+	LRESULT onTray(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
+		updateTray(true); 
+		return 0;
+	};
+
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
@@ -186,12 +192,7 @@ public:
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		if(trayIcon) {
-			NOTIFYICONDATA nid;
-			nid.cbSize = sizeof(NOTIFYICONDATA);
-			nid.hWnd = m_hWnd;
-			nid.uID = 0;
-			nid.uFlags = 0;
-			::Shell_NotifyIcon(NIM_DELETE, &nid);
+			updateTray(false);
 		}
 		bHandled = FALSE;
 		return 0;
@@ -310,9 +311,11 @@ private:
 	
 	CMenu transferMenu;
 
+	UINT trayMessage;
 	bool trayIcon;
 	u_int32_t lastMove;
-	
+	u_int32_t lastUpdate;
+
 	int lastUpload;
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -322,6 +325,7 @@ private:
 
 	HWND createToolbar();
 	void buildMenu();
+	void updateTray(bool add = true);
 
 	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
@@ -395,15 +399,20 @@ private:
 	void onConnectionStatus(ConnectionQueueItem* aCqi);
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		if(type == TimerManagerListener::SECOND) {
+			u_int32_t diff = (lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate;
+
 			StringList* str = new StringList();
 			str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
 			str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 			str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-			str->push_back("D: " + Util::formatBytes(Socket::getDown()) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
-			str->push_back("U: " + Util::formatBytes(Socket::getUp()) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
+			str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+			str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
 			PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
+			SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + Socket::getUp());
+			SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + Socket::getDown());
+			lastUpdate = aTick;
 			Socket::resetStats();
 		}
 	}
@@ -433,7 +442,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
  */
 
  

@@ -250,8 +250,8 @@ private:
 			dcassert(c);
 			c->removeListener(this);
 			onHttpFinished();
-			fire(HubManagerListener::DOWNLOAD_FINISHED);
 			running = false;
+			fire(HubManagerListener::DOWNLOAD_FINISHED);
 		}
 	}
 	
@@ -281,6 +281,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.29 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.30 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

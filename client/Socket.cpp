@@ -130,7 +130,7 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
             throw SocketException(STRING(UNKNOWN_ADDRESS));
         }
         serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
-		
+	
     }
 
 	setIp(inet_ntoa(serv_addr.sin_addr));
@@ -210,7 +210,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				FD_ZERO(&wfd);
 				FD_SET(sock, &wfd);
 				// Wait until something happens with the socket...
-				checksockerr(select(1, NULL, &wfd, NULL, &t));
+				checksockerr(select(sock+1, NULL, &wfd, NULL, &t));
 			} else if(errno == ENOBUFS) {
 				if(sendSize > 32) {
 					sendSize /= 2;
@@ -286,6 +286,6 @@ bool Socket::waitForConnect(u_int32_t millis) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.36 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.37 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

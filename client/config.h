@@ -29,10 +29,20 @@
 #pragma warning(disable: 4512) // can't generate assignment operator (so what?)
 #pragma warning(disable: 4710) // function not inlined
 
+#ifndef CDECL
+#define CDECL _cdecl
+#endif
+
+#else
+
+#ifndef CDECL
+#define CDECL
+#endif
+
 #endif
 
 // This enables stlport's debug mode (and slows it down to a crawl...)
-# define _STLP_DEBUG 1
+//# define _STLP_DEBUG 1
 
 # ifdef _DEBUG
 //# define _STLP_DEBUG 1
@@ -77,5 +87,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file config.h
- * $Id: config.h,v 1.7 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: config.h,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
  */

@@ -100,7 +100,9 @@ private:
 	Upload::List uploads;
 	CriticalSection cs;
 
-	map<User::Ptr, u_int32_t> reservedSlots;
+	typedef HASH_MAP<User::Ptr, u_int32_t> SlotMap;
+	typedef SlotMap::iterator SlotIter;
+	SlotMap reservedSlots;
 
 	friend class Singleton<UploadManager>;
 	UploadManager() : running(0), extra(0) { 
@@ -197,5 +199,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.44 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.45 2002/05/12 21:54:08 arnetheduck Exp $
  */

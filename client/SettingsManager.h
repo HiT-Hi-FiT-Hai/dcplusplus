@@ -49,6 +49,7 @@ public:
 		LANGUAGE_FILE, SEARCHFRAME_ORDER, SEARCHFRAME_WIDTHS, FAVORITESFRAME_ORDER, FAVORITESFRAME_WIDTHS, 
 		HUBLIST_SERVERS, QUEUEFRAME_ORDER, QUEUEFRAME_WIDTHS, PUBLICHUBSFRAME_ORDER, PUBLICHUBSFRAME_WIDTHS, 
 		USERSFRAME_ORDER, USERSFRAME_WIDTHS, HTTP_PROXY, LOG_DIRECTORY, NOTEPAD_TEXT, LOG_FORMAT_POST_DOWNLOAD, 
+		LOG_FORMAT_POST_UPLOAD, LOG_FORMAT_MAIN_CHAT, LOG_FORMAT_PRIVATE_CHAT,
 		STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
@@ -58,7 +59,10 @@ public:
 		REMOVE_DUPES, BUFFER_SIZE, DOWNLOAD_SLOTS, MAX_DOWNLOAD_SPEED, LOG_MAIN_CHAT, LOG_PRIVATE_CHAT,
 		LOG_DOWNLOADS, LOG_UPLOADS, STATUS_IN_CHAT, SHOW_JOINS, PRIVATE_MESSAGE_BEEP, PRIVATE_MESSAGE_BEEP_OPEN,
 		USE_SYSTEM_ICONS, POPUP_PMS, MIN_UPLOAD_SPEED,
-		INT_LAST, SETTINGS_LAST = INT_LAST };
+		INT_LAST };
+
+	enum Int64Setting { INT64_FIRST = INT_LAST + 1,
+		TOTAL_UPLOAD = INT64_FIRST, TOTAL_DOWNLOAD, INT64_LAST, SETTINGS_LAST = INT64_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
 			SPEED_DSL, SPEED_T1, SPEED_T3, SPEED_LAST };
@@ -71,6 +75,9 @@ public:
 
 	int get(IntSetting key, bool useDefault = true) const {
 		return (isSet[key] || !useDefault) ? intSettings[key - INT_FIRST] : intDefaults[key - INT_FIRST];
+	}
+	int64_t get(Int64Setting key, bool useDefault = true) const {
+		return (isSet[key] || !useDefault) ? int64Settings[key - INT64_FIRST] : int64Defaults[key - INT64_FIRST];
 	}
 
 	bool getBool(IntSetting key, bool useDefault = true) const {
@@ -100,7 +107,22 @@ public:
 			isSet[key] = true;
 		}
 	}
-	
+
+	void set(Int64Setting key, int64_t value) {
+		int64Settings[key - INT64_FIRST] = value;
+		isSet[key] = true;
+	}
+
+	void set(Int64Setting key, const string& value) {
+		if(value.empty()) {
+			int64Settings[key - INT64_FIRST] = 0;
+			isSet[key] = false;
+		} else {
+			int64Settings[key - INT64_FIRST] = Util::toInt64(value);
+			isSet[key] = true;
+		}
+	}
+
 	void set(IntSetting key, bool value) { set(key, (int)value); }
 
 	void setDefault(StrSetting key, string const& value) {
@@ -109,6 +131,9 @@ public:
 
 	void setDefault(IntSetting key, int value) {
 		intDefaults[key - INT_FIRST] = value;
+	}
+	void setDefault(Int64Setting key, int64_t value) {
+		int64Defaults[key - INT_FIRST] = value;
 	}
 
 	void load() {
@@ -129,8 +154,10 @@ private:
 
 	string strSettings[STR_LAST - STR_FIRST];
 	int    intSettings[INT_LAST - INT_FIRST];
+	int64_t int64Settings[INT64_LAST - INT64_FIRST];
 	string strDefaults[STR_LAST - STR_FIRST];
 	int    intDefaults[INT_LAST - INT_FIRST];
+	int64_t int64Defaults[INT64_LAST - INT64_FIRST];
 	bool isSet[SETTINGS_LAST];
 };
 
@@ -143,6 +170,6 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.30 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.31 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

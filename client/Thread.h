@@ -23,6 +23,13 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef WIN32
+#include <pthread.h>
+#include <sched.h>
+#include <asm/atomic.h>
+#include <sys/resource.h>
+#endif
+
 #include "Exception.h"
 STANDARD_EXCEPTION(ThreadException);
 
@@ -67,20 +74,40 @@ public:
 #else
 
 	enum Priority {
-		LOW,
-		NORMAL,
-		HIGH
+		LOW = 1,
+		NORMAL = 0,
+		HIGH = -1
 	};
-	Thread() { };
-	virtual ~Thread() { };
-	void start() { };
-	void join() { };
-	void setThreadPriority(Priority p) { };
-	
-	static void sleep(u_int32_t millis) { };
-	static void yield() { };
-	static long safeInc(long* v) { return ++(*v); };
-	static long safeDec(long* v) { return --(*v); };
+	Thread() : t(0) { };
+	virtual ~Thread() { 
+		if(t != 0) {
+			pthread_detach(t);
+		}
+	};
+	void start() throw(ThreadException) { 
+		if(pthread_create(&t, NULL, &starter, this) != 0) {
+			throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
+		}
+	};
+	void join() { 
+		void* x;
+		pthread_join(t, &x);
+		t = 0;
+	};
+
+	void setThreadPriority(Priority p) { setpriority(PRIO_PROCESS, 0, p); };
+	static void sleep(u_int32_t millis) { ::usleep(millis*1000); };
+	static void yield() { ::sched_yield(); };
+	static long safeInc(long* v) { 
+		atomic_t t = ATOMIC_INIT(*v);
+		atomic_inc(&t);
+		return t.counter;
+	};
+	static long safeDec(long* v) { 
+		atomic_t t = ATOMIC_INIT(*v);
+		atomic_dec(&t);
+		return t.counter;
+	};
 #endif
 
 protected:
@@ -96,6 +123,13 @@ private:
 		t->run();
 		return 0;
 	}
+#else
+	pthread_t t;
+	static void* starter(void* p) {
+		Thread* t = (Thread*)p;
+		t->run();
+		return NULL;
+	}
 #endif
 };
 
@@ -103,6 +137,6 @@ private:
 
 /**
  * @file Thread.h
- * $Id: Thread.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: Thread.h,v 1.4 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

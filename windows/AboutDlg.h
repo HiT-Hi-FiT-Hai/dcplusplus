@@ -42,6 +42,14 @@ public:
 		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/");
 		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the first and (so far) only mirror...more thanks go out to the people testing the application and to all those who have been discussing it on sourceforge and all over the world...you probably know who you are...also, thanks to the bzip2 team, they're the ones that made the bzip2 compression library used in DC++");
 		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
+		SetDlgItemText(IDC_TOTALS, ("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
+			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
+
+		if(SETTING(TOTAL_DOWNLOAD) > 0) {
+			char buf[64];
+			sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
+			SetDlgItemText(IDC_RATIO, buf);
+		}
 		CenterWindow(GetParent());
 		c.addListener(this);
 		c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
@@ -110,6 +118,6 @@ private:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.5 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

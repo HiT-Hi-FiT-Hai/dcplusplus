@@ -71,15 +71,15 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(!param.empty()) {
 			x = param.find(" Pk=");
 			if(x != string::npos) {
-				fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
+				fire(UserConnectionListener::C_LOCK, this, param.substr(0, x), param.substr(x + 4));
 			} else {
 				// Workaround for faulty linux clients...
 				x = param.find(' ');
 				if(x != string::npos) {
 					setFlag(FLAG_INVALIDKEY);
-					fire(UserConnectionListener::LOCK, this, param.substr(0, x), Util::emptyString);
+					fire(UserConnectionListener::C_LOCK, this, param.substr(0, x), Util::emptyString);
 				} else {
-					fire(UserConnectionListener::LOCK, this, param, Util::emptyString);
+					fire(UserConnectionListener::C_LOCK, this, param, Util::emptyString);
 				}
 			}
 		}
@@ -99,5 +99,5 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.20 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.21 2002/05/12 21:54:08 arnetheduck Exp $
  */

@@ -234,19 +234,16 @@ void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 	
 	if(BOOLSETTING(LOG_DOWNLOADS)) {
 		StringMap params;
-		params["filename"] = d->getTarget();
+		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
-		params["size"] = Util::toString(d->getSize()) + " " + STRING(B);
+		params["size"] = Util::toString(d->getSize());
 		params["sizeshort"] = Util::formatBytes(d->getSize());
-		params["chunksize"] = Util::toString(d->getTotal()) + " " + STRING(B);
+		params["chunksize"] = Util::toString(d->getTotal());
 		params["chunksizeshort"] = Util::formatBytes(d->getTotal());
 		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
 		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
-/*		LOGDT(DOWNLOAD_AREA, d->getTarget() + STRING(DOWNLOADED_FROM) + aSource->getUser()->getNick() + 
-			", " + Util::toString(d->getSize()) + " b, " + Util::formatBytes(d->getAverageSpeed()) + 
-			"/s, " + Util::formatSeconds((GET_TICK() - d->getStart()) / 1000) );
-*/	}
+	}
 
 	fire(DownloadManagerListener::COMPLETE, d);
 	
@@ -334,5 +331,5 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.60 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.61 2002/05/12 21:54:08 arnetheduck Exp $
  */

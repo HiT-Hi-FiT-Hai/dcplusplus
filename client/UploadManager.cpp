@@ -56,13 +56,14 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 	}
 
 	cs.enter();
-	map<User::Ptr, u_int32_t>::iterator ui = reservedSlots.find(aSource->getUser());
+	SlotIter ui = reservedSlots.find(aSource->getUser());
 
 	if( (!aSource->isSet(UserConnection::FLAG_HASSLOT)) && 
 		(getFreeSlots()<=0) && 
 		(ui == reservedSlots.end()) ) 
 	{
-		if( (SETTING(MIN_UPLOAD_SPEED) == 0) || (SETTING(MIN_UPLOAD_SPEED) < UploadManager::getInstance()->getAverageSpeed() ) ) {
+		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()));
+		if( (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
 			if( !(smallfile || userlist) ||
 				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) || (aSource->getUser()->isSet(User::OP)) ) || 
 				!(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
@@ -176,11 +177,18 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	aSource->setState(UserConnection::STATE_GET);
 
 	if(BOOLSETTING(LOG_UPLOADS)) {
-		LOGDT(UPLOAD_AREA, u->getFileName() + STRING(UPLOADED_TO) + aSource->getUser()->getNick() + 
-			", " + Util::toString(u->getSize()) + " b, : " + Util::formatBytes(u->getAverageSpeed()) + 
-			"/s, " + Util::formatSeconds((GET_TICK() - u->getStart()) / 1000));
+		StringMap params;
+		params["source"] = u->getFileName();
+		params["user"] = aSource->getUser()->getNick();
+		params["size"] = Util::toString(u->getSize());
+		params["sizeshort"] = Util::formatBytes(u->getSize());
+		params["chunksize"] = Util::toString(u->getTotal());
+		params["chunksizeshort"] = Util::formatBytes(u->getTotal());
+		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
+		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
+		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
 	}
-	
+
 	fire(UploadManagerListener::COMPLETE, u);
 	removeUpload(u);
 }
@@ -201,7 +209,7 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 
 void UploadManager::onTimerMinute(u_int32_t aTick) {
 	Lock l(cs);
-	for(map<User::Ptr, u_int32_t>::iterator j = reservedSlots.begin(); j != reservedSlots.end();) {
+	for(SlotIter j = reservedSlots.begin(); j != reservedSlots.end();) {
 		if(j->second + 600 * 1000 < aTick) {
 			reservedSlots.erase(j++);
 		} else {
@@ -212,5 +220,5 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.28 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.29 2002/05/12 21:54:08 arnetheduck Exp $
  */

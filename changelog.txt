@@ -4,8 +4,23 @@
 * Fixed a redirection bug
 * Changed so that the average speed is calculated as a running average over the last 30 seconds (instead of
   the whole transfer time...the value in the log file is still a whole file average)
-* Added a lot of advanced logging options (log format now customizable)
+* Added some advanced logging options (log format now customizable)
 * Found a bug in the msvc7 optimizer...after a small workaround, my vc7-compiled build seems quite stable
+* Search spammers are now ignored for 2 full minutes before they're given responses again
+* Fixed so that multiple search results from the same user are not shown
+* Fixed a few case (in)sensistivity issues
+* Huge performance increase on large queues with many sources / download
+* Changed the order of downloads, smaller files with equal priority are now downloaded first
+* Added two more priorities
+* Tray icon is now redisplayed if explorer crashes
+* Queue is now saved to a separate file, and updated 6 times as often (old queue will still be loaded in 
+  this version)
+* Fixed some minor hublist bugs
+* Fixed unknown error 0x0 (I think...)
+* Fixed min speed autogrant slot (was counting bytes instead of kilobytes...=)
+* Fixed hidden directory sharing (not sharing...)
+* Added a few icons to the search list
+* Added some all time stats to the about window
 
  -- 0.173 2002-04-29 --
 * Fixed some minor debug mode bugs

@@ -98,10 +98,41 @@ void Client::onLine(const string& aLine) throw() {
 		}
 		string::size_type i = 0;
 		string::size_type j = param.find(' ', i);
-		if(j == string::npos)
+		if(j == string::npos || i == j)
 			return;
 		string seeker = param.substr(i, j-i);
 		i = j + 1;
+		
+		{
+			Lock l(cs);
+			u_int32_t tick = GET_TICK();
+
+			seekers.push_back(make_pair(seeker, tick));
+
+			// First, check if it's a flooder
+			for(FloodIter i = flooders.begin(); i != flooders.end(); ++i) {
+				if(i->first == seeker) {
+					return;
+				}
+			}
+
+			int count = 0;
+			for(FloodIter i = seekers.begin(); i != seekers.end(); ++i) {
+				if(i->first == seeker)
+					count++;
+
+				if(count > 7) {
+					if(seeker.find("Hub:") != string::npos)
+						fire(ClientListener::SEARCH_FLOOD, this, seeker.substr(4));
+					else
+						fire(ClientListener::SEARCH_FLOOD, this, seeker + STRING(NICK_UNKNOWN));
+
+					flooders.push_back(make_pair(seeker, tick));
+					return;
+				}
+			}
+		}
+
 		int a;
 		if(param[i] == 'F') {
 			a = SearchManager::SIZE_DONTCARE;
@@ -112,35 +143,18 @@ void Client::onLine(const string& aLine) throw() {
 		}
 		i += 4;
 		j = param.find('?', i);
-		if(j == string::npos)
+		if(j == string::npos || i == j)
 			return;
 		string size = param.substr(i, j-i);
 		i = j + 1;
 		j = param.find('?', i);
-		if(j == string::npos)
+		if(j == string::npos || i == j)
 			return;
 		int type = Util::toInt(param.substr(i, j-i)) - 1;
 		i = j + 1;
 		param = param.substr(i);
-		bool spam = false;
-		{
-			Lock l(cs);
-			FloodIter s = searchFlood.find(seeker);
-			if(s != searchFlood.end()) {
-				if(++s->second > 5) {
-					// We have a search spammer!!!
-					if(seeker.find("Hub:") != string::npos)
-						fire(ClientListener::SEARCH_FLOOD, this, seeker.substr(4));
-					else
-						fire(ClientListener::SEARCH_FLOOD, this, seeker + STRING(NICK_UNKNOWN));
-					spam = true;
-				}
-			} else {
-				searchFlood[seeker] = 1;
-			}
-		}
 
-		if(!spam && param.size() > 0) {
+		if(param.size() > 0) {
 			fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
 			
 			if(seeker.find("Hub:") != string::npos) {
@@ -202,7 +216,6 @@ void Client::onLine(const string& aLine) throw() {
 		u->setBytesShared(param.substr(i, j-i));
 		
 		fire(ClientListener::MY_INFO, this, u);
-		
 	} else if(cmd == "$Quit") {
 		if(!param.empty()) {
 			User::Ptr u;
@@ -225,9 +238,22 @@ void Client::onLine(const string& aLine) throw() {
 		if(state != STATE_CONNECTED) {
 			return;
 		}
-		param = param.substr(param.find(' ') + 1);
-		string server = param.substr(0, param.find(':'));
-		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(param.find(':')+1));
+		string::size_type i = param.find(' ');
+		string::size_type j;
+		if( (i == string::npos) || ((i + 1) >= param.size()) ) {
+			return;
+		}
+		i++;
+		j = param.find(':', i);
+		if(j == string::npos) {
+			return;
+		}
+		string server = param.substr(i, j-i);
+		if(j+1 >= param.size()) {
+			return;
+		}
+		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(j+1));
+
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
 			return;
@@ -236,13 +262,20 @@ void Client::onLine(const string& aLine) throw() {
 		bool up = false;
 		{
 			Lock l(cs);
-			User::NickIter i = users.find(param.substr(0, param.find(' ')));
-			if(i != users.end()) {
-				u = i->second;
-				if(!u->isSet(User::PASSIVE)) {
-					u->setFlag(User::PASSIVE);
-					up = true;
-				}
+			string::size_type j = param.find(' ');
+			if(j == string::npos) {
+				return;
+			}
+
+			User::NickIter i = users.find(param.substr(0, j));
+			if(i == users.end()) {
+				return;
+			}
+
+			u = i->second;
+			if(!u->isSet(User::PASSIVE)) {
+				u->setFlag(User::PASSIVE);
+				up = true;
 			}
 		}
 
@@ -283,7 +316,7 @@ void Client::onLine(const string& aLine) throw() {
 				else
 					lock = param;
 			}
-			fire(ClientListener::LOCK, this, lock, pk);	
+			fire(ClientListener::C_LOCK, this, lock, pk);	
 		}
 	} else if(cmd == "$Hello") {
 		if(!param.empty()) {
@@ -318,10 +351,11 @@ void Client::onLine(const string& aLine) throw() {
 			fire(ClientListener::HELLO, this, u);
 		}
 	} else if(cmd == "$ForceMove") {
+		disconnect();
 		fire(ClientListener::FORCE_MOVE, this, param);
 	} else if(cmd == "$HubIsFull") {
 		fire(ClientListener::HUB_FULL, this);
-	} else if(cmd == "$ValidateDenide") {
+	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
 		fire(ClientListener::VALIDATE_DENIED, this);
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
@@ -331,6 +365,8 @@ void Client::onLine(const string& aLine) throw() {
 			{
 				Lock l(cs);
 				while( (j=param.find("$$", k)) != string::npos) {
+					if(j == k)
+						continue;
 					string nick = param.substr(k, j-k);
 					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 
@@ -351,6 +387,8 @@ void Client::onLine(const string& aLine) throw() {
 			{
 				Lock l(cs);
 				while( (j=param.find("$$", k)) != string::npos) {
+					if(j == k)
+						continue;
 					string nick = param.substr(k, j-k);
 					User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
 					users[nick] = u;
@@ -423,6 +461,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.42 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.43 2002/05/12 21:54:07 arnetheduck Exp $
  */
 

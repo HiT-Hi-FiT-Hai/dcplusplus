@@ -20,10 +20,8 @@
 #include "DCPlusPlus.h"
 #include "SimpleXML.h"
 #include "SettingsManager.h"
-#include "ShareManager.h"
-#include "QueueManager.h"
-#include "HubManager.h"
 #include "Util.h"
+#include "File.h"
 
 SettingsManager* Singleton<SettingsManager>::instance = 0;
 
@@ -35,6 +33,7 @@ const string SettingsManager::settingTags[] =
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
+	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
@@ -43,6 +42,9 @@ const string SettingsManager::settingTags[] =
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed",
+	"SENTRY",
+	// Int64
+	"TotalUpload", "TotalDownload",
 	"SENTRY"
 };
 
@@ -96,8 +98,10 @@ SettingsManager::SettingsManager()
 	setDefault(USE_SYSTEM_ICONS, true);
 	setDefault(POPUP_PMS, true);
 	setDefault(MIN_UPLOAD_SPEED, 0);
-	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[user], %[size] (%[chunksize]), %[speed], %[time])");
-
+	setDefault(LOG_FORMAT_POST_DOWNLOAD, "%Y-%m-%d %H:%M: %[target]" + STRING(DOWNLOADED_FROM) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_POST_UPLOAD, "%Y-%m-%d %H:%M: %[source]" + STRING(UPLOADED_TO) + "%[user], %[size] (%[chunksize]), %[speed], %[time]");
+	setDefault(LOG_FORMAT_MAIN_CHAT, "[%Y-%m-%d %H:%M] %[message]");
+	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -148,6 +152,15 @@ void SettingsManager::load(string const& aFileName)
 				set(IntSetting(i), Util::toInt(xml.getChildData()));
 			xml.resetCurrentChild();
 		}
+		for(i=INT64_FIRST; i<INT64_LAST; i++)
+		{
+			attr = settingTags[i];
+			dcassert(attr.find("SENTRY") == string::npos);
+
+			if(xml.findChild(attr))
+				set(Int64Setting(i), Util::toInt64(xml.getChildData()));
+			xml.resetCurrentChild();
+		}
 		
 		xml.stepOut();
 	}
@@ -186,6 +199,16 @@ void SettingsManager::save(string const& aFileName) {
 			xml.addChildAttrib(type, curType);
 		}
 	}
+	curType = "int64";
+	for(i=INT64_FIRST; i<INT64_LAST; i++)
+	{
+		if(isSet[i])
+		{
+			attr = settingTags[i];
+			xml.addTag(attr, get(Int64Setting(i), false));
+			xml.addChildAttrib(type, curType);
+		}
+	}
 	xml.stepOut();
 	
 	fire(SettingsManagerListener::SAVE, &xml);
@@ -204,6 +227,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.37 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.38 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

@@ -130,7 +130,7 @@ private:
 	// ClientListener
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
 		switch(type) {
-		case ClientListener::LOCK:
+		case ClientListener::C_LOCK:
 			client->key(CryptoManager::getInstance()->makeKey(line1));
 			client->validateNick(client->getNick());
 			break;
@@ -198,6 +198,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.23 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.24 2002/05/12 21:54:07 arnetheduck Exp $
  */
 

@@ -38,6 +38,10 @@ PropPage::Item Advanced2Page::items[] = {
 	{ IDC_LOG_DIRECTORY, SettingsManager::LOG_DIRECTORY, PropPage::T_STR },
 	{ IDC_PRIVATE_MESSAGE_BEEP, SettingsManager::PRIVATE_MESSAGE_BEEP, PropPage::T_BOOL },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, SettingsManager::PRIVATE_MESSAGE_BEEP_OPEN, PropPage::T_BOOL },
+	{ IDC_POST_DOWNLOAD, SettingsManager::LOG_FORMAT_POST_DOWNLOAD, PropPage::T_STR },
+	{ IDC_POST_UPLOAD, SettingsManager::LOG_FORMAT_POST_UPLOAD, PropPage::T_STR },
+	{ IDC_MAIN_CHAT, SettingsManager::LOG_FORMAT_MAIN_CHAT, PropPage::T_STR },
+	{ IDC_PRIVATE_CHAT, SettingsManager::LOG_FORMAT_PRIVATE_CHAT, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -47,6 +51,17 @@ LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	// Do specialized reading here
 	return TRUE;
+}
+
+void Advanced2Page::updateEdits() {
+	CButton btn = ::GetDlgItem(m_hWnd, IDC_LOG_MAIN_CHAT);
+	::EnableWindow(::GetDlgItem(m_hWnd, IDC_MAIN_CHAT), btn.GetCheck());
+	btn = ::GetDlgItem(m_hWnd, IDC_LOG_PRIVATE_CHAT);
+	::EnableWindow(::GetDlgItem(m_hWnd, IDC_PRIVATE_CHAT), btn.GetCheck());
+	btn = ::GetDlgItem(m_hWnd, IDC_LOG_DOWNLOADS);
+	::EnableWindow(::GetDlgItem(m_hWnd, IDC_POST_DOWNLOAD), btn.GetCheck());
+	btn = ::GetDlgItem(m_hWnd, IDC_LOG_UPLOADS);
+	::EnableWindow(::GetDlgItem(m_hWnd, IDC_POST_UPLOAD), btn.GetCheck());
 }
 
 void Advanced2Page::write()
@@ -78,6 +93,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file Advanced2Page.cpp
- * $Id: Advanced2Page.cpp,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.4 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

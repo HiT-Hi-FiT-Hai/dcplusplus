@@ -52,6 +52,13 @@ public:
 		COLUMN_LAST
 	};
 
+	enum Images {
+		IMAGE_UNKOWN,
+		IMAGE_SLOW,
+		IMAGE_NORMAL,
+		IMAGE_FAST
+	};
+
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", IDR_SEARCH, 0, COLOR_3DFACE)
 
 	SearchFrame() : 
@@ -71,6 +78,7 @@ public:
 
 	virtual ~SearchFrame() {
 		SearchManager::getInstance()->removeListener(this);
+		images.Destroy();
 	}
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
@@ -176,11 +184,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/){
-		ctrlResults.insert(*(StringList*)wParam, 0, lParam);
-		delete (StringList*)wParam;
-		return 0;
-	}
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = false;
@@ -223,6 +227,8 @@ private:
 	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
+	CImageList images;
+
 	ExListViewCtrl ctrlResults;
 	CMenu resultsMenu;
 	CMenu opMenu;
@@ -230,7 +236,7 @@ private:
 	
 	StringList search;
 	StringList targets;
-	
+
 	StringList lastDirs;
 	
 	string lastKick;
@@ -269,6 +275,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.6 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.7 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

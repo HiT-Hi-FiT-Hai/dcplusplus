@@ -23,8 +23,9 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "BufferedSocket.h"
+#include "Socket.h"
 #include "User.h"
+#include "Thread.h"
 
 class SearchResult {
 public:	
@@ -77,7 +78,7 @@ public:
 	virtual void onAction(Types, SearchResult*) { }
 };
 
-class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener, public Singleton<SearchManager>
+class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
 {
 public:
 	enum SizeModes {
@@ -112,54 +113,40 @@ public:
 		}
 		return tmp;
 	}
-	void setPort(short aPort) throw(SocketException) {
-		if(!socket) {
-			socket = BufferedSocket::getSocket('|');
-			socket->addListener(this);
-		}
-		socket->disconnect();
-		socket->create(Socket::TYPE_UDP);
-		socket->bind(aPort);
-	}
 
+	void setPort(short aPort) throw(SocketException);
 	void onSearchResult(const string& aLine) {
 		onData((const u_int8_t*)aLine.data(), aLine.length());
 	}
 	
 private:
 	
-	BufferedSocket* socket;
+	Socket* socket;
 	short port;
 
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL) { 
-	};
+	SearchManager() : socket(NULL) {  };
 	// We won't be copying it anyway...
 	SearchManager(const SearchManager&) { dcassert(0); };
 
+	virtual int run();
+
 	virtual ~SearchManager() { 
 		if(socket) {
-			socket->removeListener(this);
-			BufferedSocket::putSocket(socket);
+			socket->disconnect();
+			join();
+			delete socket;
 		}
-
 	};
 
-	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
-		if(type == BufferedSocketListener::DATA) {
-			onData(aBuf, aLen);
-		}
-	}
 	void onData(const u_int8_t* buf, int aLen);
-
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.19 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.20 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

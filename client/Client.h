@@ -49,7 +49,7 @@ public:
 		HELLO,
 		HUB_NAME,
 		HUB_FULL,
-		LOCK,
+		C_LOCK,
 		LOGGED_IN,
 		MESSAGE,
 		MY_INFO,
@@ -265,10 +265,11 @@ private:
 	bool counted;
 	u_int32_t lastUpdate;
 	
-	typedef HASH_MAP<string, int> FloodMap;
+	typedef deque<pair<string, u_int32_t> > FloodMap;
 	typedef FloodMap::iterator FloodIter;
-	FloodMap searchFlood;
-	
+	FloodMap seekers;
+	FloodMap flooders;
+
 	Client() : op(false), registered(false), state(STATE_CONNECT), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
 		TimerManager::getInstance()->addListener(this);
 	};
@@ -296,13 +297,14 @@ private:
 			}
 			{
 				Lock l(cs);
-				for(FloodIter i = searchFlood.begin(); i != searchFlood.end();) {
-					dcassert(i->second > 0);
-					if(--i->second <= 0) {
-						searchFlood.erase(i++);
-					} else {
-						++i;
-					}
+				u_int32_t tick = GET_TICK();
+
+				while(!seekers.empty() && seekers.front().second + (5 * 1000) < tick) {
+					seekers.pop_front();
+				}
+
+				while(!flooders.empty() && flooders.front().second + (120 * 1000) < tick) {
+					flooders.pop_front();
 				}
 			}
 		} 
@@ -342,6 +344,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.52 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: Client.h,v 1.53 2002/05/12 21:54:07 arnetheduck Exp $
  */
 

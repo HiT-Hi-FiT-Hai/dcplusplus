@@ -282,7 +282,7 @@ void BufferedSocket::threadRun() {
 			switch(t) {
 			case SHUTDOWN: threadShutDown(); return;
 			case DISCONNECT:
-				{
+				if(isConnected()) {
 					Socket::disconnect(); 
 					fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
 
@@ -313,5 +313,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.39 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.40 2002/05/12 21:54:07 arnetheduck Exp $
  */

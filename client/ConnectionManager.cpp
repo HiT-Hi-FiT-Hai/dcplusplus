@@ -42,7 +42,14 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	{
 		Lock l(cs);
 
-		for(ConnectionQueueItem::Iter j = downPool.begin(); j != downPool.end(); ++j) {
+		ConnectionQueueItem::Iter j;
+		for(j = pendingAdd.begin(); j != pendingAdd.end(); ++j) {
+			if((*j)->getUser() == aUser) {
+				return;
+			}
+		}
+
+		for(j = downPool.begin(); j != downPool.end(); ++j) {
 			if((*j)->getUser() == aUser) {
 				dcassert((*j)->getConnection());
 				
@@ -70,6 +77,18 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		pendingDown[cqi] = 0;
 
 		fire(ConnectionManagerListener::ADDED, cqi);
+	}
+}
+
+void ConnectionManager::abortDownloadConnection(const User::Ptr& aUser) {
+	Lock l(cs);
+
+	for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+		if(i->first->getUser() == aUser) {
+			pendingDown.erase(i);
+			fire(ConnectionManagerListener::REMOVED, i->first);
+			break;
+		}
 	}
 }
 
@@ -476,5 +495,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.43 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.44 2002/05/12 21:54:07 arnetheduck Exp $
  */

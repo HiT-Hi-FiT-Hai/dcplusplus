@@ -43,6 +43,7 @@ void HubManager::onHttpFinished() throw() {
 
 	{
 		Lock l(cs);
+		publicHubs.clear();
 		i = 0;
 		
 		while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
@@ -148,6 +149,6 @@ void HubManager::refresh() {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.23 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.24 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

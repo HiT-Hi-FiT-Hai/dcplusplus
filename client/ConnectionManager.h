@@ -85,7 +85,7 @@ public:
 	}
 
 	void connect(const string& aServer, short aPort, const string& aNick);
-
+	void abortDownloadConnection(const User::Ptr& aUser);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 	void putUploadConnection(UserConnection* aSource) { putConnection(aSource); };
@@ -196,7 +196,7 @@ private:
 	}
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) {
 		switch(type) {
-		case UserConnectionListener::LOCK:
+		case UserConnectionListener::C_LOCK:
 			onLock(conn, line1, line2); break;
 		case UserConnectionListener::DIRECTION:
 			onDirection(conn, line1, line2); break;
@@ -240,5 +240,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.36 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.37 2002/05/12 21:54:07 arnetheduck Exp $
  */

@@ -42,7 +42,7 @@ public:
 		CONNECTED,
 		DATA,
 		FAILED,
-		LOCK,
+		C_LOCK,
 		KEY,
 		DIRECTION,
 		GET,
@@ -117,8 +117,8 @@ public:
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
-	Transfer() : file(NULL), userConnection(NULL), start(0), last(0), total(0), 
-		pos(-1), size(-1), lastTick(GET_TICK()), runningAverage(0) { };
+	Transfer() : file(NULL), userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
+		last(0), total(0), pos(-1), size(-1) { };
 	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
 
 	GETSET(File*, file, File);
@@ -325,5 +325,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.43 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.44 2002/05/12 21:54:08 arnetheduck Exp $
  */

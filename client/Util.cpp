@@ -134,11 +134,11 @@ string Util::formatParams(const string& msg, StringMap& params) {
 		string name = result.substr(j + 2, k - j - 2);
 		StringMapIter smi = params.find(name);
 		if(smi == params.end()) {
-			result.erase(j, k);
+			result.erase(j, k-j);
 		} else {
-			result.replace(j, k-j, smi->second);
+			result.replace(j, k-j + 1, smi->second);
 		}
-		i = k + 1;
+		i = j + smi->second.size();
 	}
 
 	int bufsize = result.size() + 64;
@@ -158,6 +158,6 @@ string Util::formatParams(const string& msg, StringMap& params) {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.16 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.17 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

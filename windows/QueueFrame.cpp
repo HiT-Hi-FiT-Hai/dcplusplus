@@ -126,9 +126,11 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_PAUSED, CSTRING(PAUSED));
+	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_LOWEST, CSTRING(LOWEST));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_LOW, CSTRING(LOW));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_NORMAL, CSTRING(NORMAL));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGH, CSTRING(HIGH));
+	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGHEST, CSTRING(HIGHEST));
 
 	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 
@@ -186,9 +188,11 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
 	
 	switch(qi->getPriority()) {
 	case QueueItem::PAUSED: columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
+	case QueueItem::LOWEST: columns[COLUMN_PRIORITY] = STRING(LOWEST); break;
 	case QueueItem::LOW: columns[COLUMN_PRIORITY] = STRING(LOW); break;
 	case QueueItem::NORMAL: columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
 	case QueueItem::HIGH: columns[COLUMN_PRIORITY] = STRING(HIGH); break;
+	case QueueItem::HIGHEST: columns[COLUMN_PRIORITY] = STRING(HIGHEST); break;
 	default: dcassert(0); break;
 	}
 	columns[COLUMN_PATH] = qi->getTarget();
@@ -210,15 +214,15 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
-void QueueFrame::onQueueList(const QueueItem::List& li) {
+void QueueFrame::onQueueList(const QueueItem::StringMap& li) {
 	vector<StringListInfo*>* i = new vector<StringListInfo*>;
 	i->reserve(li.size());
 
 	{
 		Lock l(cs);
 		
-		for(QueueItem::List::const_iterator j = li.begin(); j != li.end(); ++j) {
-			QueueItem* aQI = *j;
+		for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
+			QueueItem* aQI = j->second;
 			QueueItem* qi = new QueueItem(*aQI);
 			dcassert(queue.find(aQI) == queue.end());
 			queue[aQI] = qi;
@@ -527,9 +531,11 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		
 		switch(wID) {
 		case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
+		case IDC_PRIORITY_LOWEST: p = QueueItem::LOWEST; break;
 		case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
 		case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
 		case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
+		case IDC_PRIORITY_HIGHEST: p = QueueItem::HIGHEST; break;
 		default: p = QueueItem::NORMAL; break;
 		}
 		QueueManager::getInstance()->setPriority(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget(), p);
@@ -606,6 +612,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 		pair<DirectoryIter, DirectoryIter> i = directories.equal_range(curDir);
 
+		ctrlQueue.SetRedraw(FALSE);
 		for(DirectoryIter j = i.first; j != i.second; ++j) {
 			QueueItem* qi = j->second;
 
@@ -615,15 +622,17 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 				sl.push_back(li.columns[k]);
 			}
 			
-			ctrlQueue.insert(sl, WinUtil::getIconIndex(qi->getTarget()), (LPARAM)qi);
+			ctrlQueue.insert(ctrlQueue.GetItemCount(), sl, WinUtil::getIconIndex(qi->getTarget()), (LPARAM)qi);
 		}
+		ctrlQueue.SetRedraw(TRUE);
+		ctrlQueue.resort();
 	}
 	return 0;
 }
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.7 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
  */
 
 

@@ -49,6 +49,7 @@ void startup() {
 	QueueManager::newInstance();
 
 	SettingsManager::getInstance()->load();	
+	QueueManager::getInstance()->loadQueue();
 
 	int i;
 	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
@@ -103,6 +104,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.14 2002/05/03 18:52:59 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.15 2002/05/12 21:54:07 arnetheduck Exp $
  */
 

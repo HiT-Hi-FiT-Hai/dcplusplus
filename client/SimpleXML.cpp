@@ -237,7 +237,7 @@ void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) thro
 
 	if(current == root) {
 		if(current->children.empty()) {
-			current->children.push_back(new Tag(aName, aData, NULL));
+			current->children.push_back(new Tag(aName, aData, root));
 			currentChild = current->children.begin();
 		} else {
 			throw SimpleXMLException("Only one root tag allowed");
@@ -279,6 +279,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.15 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.16 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

@@ -51,6 +51,7 @@ IDB_ARROWS              BITMAP                  "res\\arrows.bmp"
 IDB_USERS               BITMAP                  "res\\users.bmp"
 IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
 IDB_TOOLBAR20           BITMAP                  "res\\toolbar20.bmp"
+IDB_SPEEDS              BITMAP                  "res\\Speeds.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -73,31 +74,35 @@ IDR_NOTEPAD             ICON                    "res\\notepad.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG  0, 0, 205, 206
+IDD_ABOUTBOX DIALOGEX 0, 0, 205, 254
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,78,185,50,14
+    DEFPUSHBUTTON   "OK",IDOK,77,233,50,14
     CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
                     IDC_VERSION,31,38,143,36
     ICON            IDR_MAINFRAME,IDC_STATIC,92,15,21,20
     GROUPBOX        "",IDC_STATIC,7,7,191,69
-    GROUPBOX        "",IDC_STATIC,7,81,191,71
+    GROUPBOX        "Greetz",IDC_STATIC,7,81,191,71,BS_CENTER
     LTEXT           "",IDC_THANKS,13,89,178,59
-    GROUPBOX        "Latest version",IDC_STATIC,7,157,191,24,BS_CENTER
-    CTEXT           "Static",IDC_LATEST,16,168,174,8
+    GROUPBOX        "Latest version",IDC_STATIC,7,204,191,24,BS_CENTER
+    CTEXT           "0.xxx",IDC_LATEST,13,215,179,8
+    GROUPBOX        "Totals",IDC_STATIC,7,159,191,39,BS_CENTER
+    CTEXT           "Upload: xx.xx MB, Download: xx.xx MB",IDC_TOTALS,13,170,
+                    179,8
+    CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,182,179,8
 END
 
-IDD_LINE DIALOG  0, 0, 239, 46
+IDD_LINE DIALOGEX 0, 0, 239, 46
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Title"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,182,7,50,14
-    GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
     EDITTEXT        IDC_LINE,13,18,156,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,182,7,50,14
     PUSHBUTTON      "&Cancel",IDCANCEL,182,25,50,14
+    GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
 END
 
 IDD_GENERALPAGE DIALOG  0, 0, 275, 225
@@ -171,61 +176,61 @@ BEGIN
     LTEXT           "Download public hublist from:",IDC_STATIC,15,187,93,8
 END
 
-IDD_DOWNLOADPAGE DIALOG  0, 0, 262, 225
+IDD_DOWNLOADPAGE DIALOGEX 0, 0, 262, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_DOWNLOADDIR,14,19,186,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,204,19,44,14
-    EDITTEXT        IDC_DOWNLOADS,14,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_DOWNLOADS,201,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,37,56,11,14
-    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
+                    UDS_NOTHOUSANDS,230,56,11,14
+    EDITTEXT        IDC_MAXSPEED,201,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,223,74,11,14
+                    UDS_NOTHOUSANDS,230,74,11,14
     EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
     GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
     GROUPBOX        "Options",IDC_STATIC,7,45,248,93
-    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,49,59,87,8
+    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,14,59,87,8
     LTEXT           "Don't start new downloads if download speed is more than",
                     IDC_STATIC,14,77,184,8
-    LTEXT           "kB/s",IDC_STATIC,231,77,16,8
+    LTEXT           "kB/s",IDC_STATIC,234,77,16,8
     LTEXT           "HTTP proxy address for downloading the hub list (i e www.proxy.com:8080)",
                     IDC_STATIC,14,105,237,8
     LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",
                     IDC_STATIC,14,90,233,8
 END
 
-IDD_UPLOADPAGE DIALOG  0, 0, 275, 225
+IDD_UPLOADPAGE DIALOGEX 0, 0, 275, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sharing"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,14,17,247,146
     CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,93,169,72,10
-    PUSHBUTTON      "&Add  folder",IDC_ADD,215,167,46,14
-    PUSHBUTTON      "&Remove",IDC_REMOVE,168,167,44,14,WS_DISABLED
-    EDITTEXT        IDC_SLOTS,60,204,25,14,ES_NUMBER
+    PUSHBUTTON      "&Add  folder",IDC_ADD,215,166,46,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE,168,166,44,14,WS_DISABLED
+    EDITTEXT        IDC_MIN_UPLOAD_SPEED,212,189,32,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
+                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,241,188,11,14
+    EDITTEXT        IDC_SLOTS,212,204,32,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,81,204,11,14
+                    UDS_NOTHOUSANDS,241,204,11,14
     GROUPBOX        "Shared directories",IDC_STATIC,7,7,261,179
     LTEXT           "Total size:",IDC_STATIC,14,170,33,8
     LTEXT           "0 B",IDC_TOTAL,50,170,41,8
     LTEXT           "Upload slots",IDC_STATIC,14,207,40,8
-    LTEXT           "Automatically open an extra slot if speed is below",
-                    IDC_STATIC,14,191,154,8
-    EDITTEXT        IDC_MIN_UPLOAD_SPEED,171,188,26,14,ES_AUTOHSCROLL
-    CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
-                    UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,192,189,11,14
-    LTEXT           "kB/s (0 = disable)",IDC_STATIC,201,191,56,8
+    LTEXT           "Automatically open an extra slot if speed is below (0 = disable)",
+                    IDC_STATIC,14,192,194,8
+    LTEXT           "kB/s",IDC_STATIC,246,192,16,8
 END
 
 IDD_APPEARANCEPAGE DIALOG  0, 0, 275, 225
@@ -264,30 +269,34 @@ BEGIN
                     IDC_STATIC,7,210,179,8
 END
 
-IDD_ADVANCED2PAGE DIALOG  0, 0, 275, 225
+IDD_ADVANCED2PAGE DIALOGEX 0, 0, 275, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced 2"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_LOG_DIRECTORY,15,27,194,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BROWSE_LOG,211,27,50,14
     CONTROL         "Log main chat",IDC_LOG_MAIN_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,48,61,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,47,61,10
+    EDITTEXT        IDC_MAIN_CHAT,15,58,246,14,ES_AUTOHSCROLL
     CONTROL         "Log private chat",IDC_LOG_PRIVATE_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,124,48,67,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,76,67,10
+    EDITTEXT        IDC_PRIVATE_CHAT,15,87,246,14,ES_AUTOHSCROLL
     CONTROL         "Log downloads",IDC_LOG_DOWNLOADS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,60,64,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,106,64,10
+    EDITTEXT        IDC_POST_DOWNLOAD,15,117,246,14,ES_AUTOHSCROLL
     CONTROL         "Log uploads",IDC_LOG_UPLOADS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,124,60,55,10
+                    WS_TABSTOP,15,135,55,10
+    EDITTEXT        IDC_POST_UPLOAD,15,146,246,14,ES_AUTOHSCROLL
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,92,225,10
+                    WS_TABSTOP,15,189,225,10
     CONTROL         "Make an annoying sound when a private message window is opened",
                     IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,104,233,10
-    GROUPBOX        "Logging",IDC_STATIC,7,7,261,71
+                    WS_TABSTOP,15,199,233,10
+    GROUPBOX        "Logging",IDC_STATIC,7,7,261,161
     LTEXT           "Log directory",IDC_STATIC,15,17,42,8
-    GROUPBOX        "Sounds",IDC_STATIC,7,82,261,40
+    GROUPBOX        "Sounds",IDC_STATIC,7,178,261,40
 END
 
 
@@ -303,8 +312,10 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 198
+        VERTGUIDE, 13
+        VERTGUIDE, 192
         TOPMARGIN, 7
-        BOTTOMMARGIN, 199
+        BOTTOMMARGIN, 247
     END
 
     IDD_LINE, DIALOG
@@ -342,6 +353,8 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 255
         VERTGUIDE, 14
+        VERTGUIDE, 230
+        VERTGUIDE, 234
         TOPMARGIN, 7
         BOTTOMMARGIN, 217
     END
@@ -351,6 +364,10 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
         VERTGUIDE, 14
+        VERTGUIDE, 212
+        VERTGUIDE, 244
+        VERTGUIDE, 246
+        VERTGUIDE, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
@@ -369,8 +386,8 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
         VERTGUIDE, 15
-        VERTGUIDE, 71
         VERTGUIDE, 124
+        VERTGUIDE, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END

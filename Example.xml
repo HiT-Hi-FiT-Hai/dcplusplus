@@ -75,6 +75,7 @@
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
 		<String Name="High">High</String>
+		<String Name="Highest">Highest</String>
 		<String Name="HostUnreachable">Host unreachable</String>
 		<String Name="Hub">Hub</String>
 		<String Name="Hubs">Hubs</String>
@@ -94,6 +95,7 @@
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="Low">Low</String>
+		<String Name="Lowest">Lowest</String>
 		<String Name="ManualAddress">Manual connect address</String>
 		<String Name="Mb">MB</String>
 		<String Name="MenuFile">&amp;File</String>

@@ -351,6 +351,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
 	WinUtil::font = ::CreateFontIndirect(&lf);
 
+	trayMessage = RegisterWindowMessage("TaskbarCreated");
+
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		WinUtil::fileImages = CImageList::Duplicate((HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES));
@@ -719,9 +721,8 @@ LRESULT MainFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
-LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	if(wParam == SIZE_MINIMIZED && BOOLSETTING(MINIMIZE_TRAY)) {
+void MainFrame::updateTray(bool add /* = true */) {
+	if(add) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
 		nid.hWnd = m_hWnd;
@@ -732,11 +733,9 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		strncpy(nid.szTip, "DC++",64);
 		nid.szTip[63] = '\0';
 		lastMove = GET_TICK() - 1000;
-		
 		::Shell_NotifyIcon(NIM_ADD, &nid);
-		ShowWindow(SW_HIDE);
 		trayIcon = true;
-	} else if( ((wParam == SIZE_RESTORED) || wParam == SIZE_MAXIMIZED) && trayIcon) {
+	} else {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
 		nid.hWnd = m_hWnd;
@@ -745,6 +744,15 @@ LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 		::Shell_NotifyIcon(NIM_DELETE, &nid);
 		ShowWindow(SW_SHOW);
 		trayIcon = false;		
+	}
+}
+LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(wParam == SIZE_MINIMIZED && BOOLSETTING(MINIMIZE_TRAY)) {
+		updateTray(true);
+		ShowWindow(SW_HIDE);
+	} else if( ((wParam == SIZE_RESTORED) || wParam == SIZE_MAXIMIZED) && trayIcon) {
+		updateTray(false);
 	}
 	
 	bHandled = FALSE;
@@ -930,6 +938,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.8 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.9 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

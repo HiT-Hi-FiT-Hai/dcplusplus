@@ -42,6 +42,9 @@ public:
 	void addTag(const string& aName, int aData) throw(SimpleXMLException) {
 		addTag(aName, Util::toString(aData));
 	}
+	void addTag(const string& aName, int64_t aData) throw(SimpleXMLException) {
+		addTag(aName, Util::toString(aData));
+	}
 
 	void addAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
 	void addAttrib(const string& aName, int aData) throw(SimpleXMLException) {
@@ -202,6 +205,6 @@ private:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.15 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.16 2002/05/12 21:54:08 arnetheduck Exp $
  */
 

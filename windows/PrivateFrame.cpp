@@ -219,17 +219,18 @@ void PrivateFrame::addLine(const string& aLine) {
 	if(!created) {
 		CreateEx(parent);
 	}
+
+	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
+		StringMap params;
+		params["message"] = aLine;
+		LOG(user->getNick(), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
+	}
+
 	if(BOOLSETTING(TIME_STAMPS)) {
 		ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
-			LOG(user->getNick(), "[" + Util::getShortTimeString() + "] " + aLine);
-		}
 		
 	} else {
 		ctrlClient.AppendText(("\r\n" + aLine).c_str());
-		if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
-			LOG(user->getNick(), aLine);
-		}
 	}
 	addClientLine("Last change: " + Util::getTimeString());
 	setDirty();
@@ -269,7 +270,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
  */
 
 
