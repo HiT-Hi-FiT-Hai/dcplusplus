@@ -50,8 +50,8 @@ void ResourceManager::loadLanguage(const string& aFile) {
 					if(j != h.end()) {
 						strings[j->second] = xml.getChildData();
 					}
-					createWide();
 				}
+				createWide();
 			}
 		}
 	} catch(const Exception&) {
@@ -68,6 +68,6 @@ void ResourceManager::createWide() {
 
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.11 2004/09/11 13:35:04 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.12 2004/09/13 14:58:30 arnetheduck Exp $
  */
 

@@ -64,13 +64,13 @@ protected:
 	ExListViewCtrl ctrlDirectories;
 	CStatic ctrlTotal;
 
-	void addDirectory(const tstring& path);
+	void addDirectory(const tstring& aPath);
 };
 
 #endif //UPLOADPAGE_H
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.11 2004/09/11 06:46:47 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.12 2004/09/13 14:58:33 arnetheduck Exp $
  */
 

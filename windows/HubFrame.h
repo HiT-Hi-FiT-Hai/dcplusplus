@@ -206,6 +206,9 @@ private:
 					return 1;
 				}
 			}
+			if(col == COLUMN_SHARED) {
+				return compare(a->user->getBytesShared(), b->user->getBytesShared());
+			}
 			return Util::stricmp(a->columns[col], b->columns[col]);	
 		}
 
@@ -389,6 +392,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.51 2004/09/11 06:50:48 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.52 2004/09/13 14:58:32 arnetheduck Exp $
  */
 
