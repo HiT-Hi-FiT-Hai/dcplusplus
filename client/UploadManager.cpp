@@ -291,7 +291,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 
-		if(!u->getTTH() != NULL) {
+		if(u->getTTH() != NULL) {
 			params["tth"] = u->getTTH()->toBase32();
 		}
 		LOG(LogManager::UPLOAD, params);
@@ -406,5 +406,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.78 2004/12/29 19:52:34 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.79 2004/12/29 19:54:20 arnetheduck Exp $
  */
