@@ -26,6 +26,7 @@
 #include "UserConnection.h"
 #include "CryptoManager.h"
 #include "Client.h"
+#include "ClientManager.h"
 
 ConnectionManager* ConnectionManager::instance = NULL;
 
@@ -45,6 +46,18 @@ int ConnectionManager::getDownloadConnection(User::Ptr& aUser) {
 		return UserConnection::BUSY;
 	}
 
+	// Check the downloader's pool
+	for(UserConnection::Iter i = downPool.begin(); i != downPool.end(); ++i) {
+		if((*i)->getUser() == aUser) {
+			// Bingo!
+			UserConnection* u = *i;
+			dcdebug("ConnectionManager::getDownloadConnection Found connection to %s in active pool\n", u->getUser()->getNick().c_str());
+			downPool.erase(i);
+			cs.leave();
+			DownloadManager::getInstance()->addConnection(u);
+			return UserConnection::FREE;
+		}
+	}
 	// Alright, set up a new connection attempt.
 	try {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
@@ -126,7 +139,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 	} else {
 		// We didn't order it so it must be an uploading connection...
 		// Make sure we know who it is, i e that he/she is connected...
-		aSource->user = Client::findUser(aNick);
+		aSource->user = ClientManager::getInstance()->findUser(aNick);
 		if(!aSource->user) {
 			putConnection(aSource);
 			cs.leave();
@@ -194,6 +207,13 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 
 void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 	if(aSource->flags & UserConnection::FLAG_DOWNLOAD) {
+		cs.enter();
+		UserConnection::Iter i = find(downPool.begin(), downPool.end(), aSource);
+		if(i != downPool.end()) {
+			dcdebug("ConnectionManager::onError Removing connection to %s from active pool\n", aSource->getUser()->getNick().c_str());
+			downPool.erase(i);
+		}
+		cs.leave();
 		putDownloadConnection(aSource);
 	} else if(aSource->flags & UserConnection::FLAG_UPLOAD) {
 		putUploadConnection(aSource);
@@ -204,9 +224,12 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.12 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.13 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.13  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.12  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

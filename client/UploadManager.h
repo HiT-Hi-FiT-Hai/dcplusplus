@@ -48,7 +48,7 @@ public:
 	virtual void onUploadTick(Upload* aUpload) { };
 };
 
-class UploadManager : public UserConnectionListener, public Speaker<UploadManagerListener>
+class UploadManager : public UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener
 {
 public:
 	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
@@ -65,7 +65,7 @@ public:
 		u = i->second;
 		uploadCS.leave();
 		u->addPos(aBytes);
-		fireTick(u);
+		//fireTick(u);
 	}
 
 	virtual void onError(UserConnection* aSource, const string& aError) {
@@ -243,8 +243,11 @@ private:
 	Upload::Map uploads;
 	CriticalSection uploadCS;
 	
-	UploadManager() { };
+	UploadManager() { 
+		TimerManager::getInstance()->addListener(this);
+	};
 	~UploadManager() {
+		TimerManager::getInstance()->removeListener(this);
 		UserConnection::List tmp = connections;
 		uploadCS.enter();
 		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
@@ -253,6 +256,13 @@ private:
 		uploadCS.leave();
 
 		removeConnections();
+	}
+
+	// TimerManagerListener
+	virtual void onTimerSecond(DWORD aTick) {
+		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+			fireTick(i->second);
+		}
 	}
 
 	void fireComplete(Upload::Ptr aPtr) {
@@ -297,9 +307,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.17 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.17  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.16  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

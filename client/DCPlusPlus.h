@@ -36,10 +36,21 @@ typedef StringSet::iterator StringSetIter;
 #include "Version.h"
 
 /**
+ * This message is posted when something's changed about the hub. It's necessary, because using a SendMessage
+ * might block the main window thread if it's trying to access a resource that the Speaker owns.
+ * wParam Specifies what actually happened
+ */
+#define WM_SPEAKER (WM_USER + 100)		
+
+
+/**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.5 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.5  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.4  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

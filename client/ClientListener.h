@@ -87,7 +87,7 @@ public:
 	virtual void onClientConnected(Client* aClient) { };
 	virtual void onClientError(Client* aClient, const string& aReason) { };
 	virtual void onClientOpList(Client* aClient, StringList& aOps) { };
-	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) { };
+	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aFrom, const string& aMessage) { };
 	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
 	virtual void onClientConnectToMe(Client* aClient, const string& aServer, const string& aPort) { };
@@ -98,9 +98,12 @@ public:
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.8 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.9 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.9  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.8  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

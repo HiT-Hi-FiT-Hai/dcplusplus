@@ -81,7 +81,19 @@ public:
 	static int getConnectionType() { return connectionType; };
 	static int getSlots() { return slots; };
 	
-	static void setNick(const string& aNick) { nick = aNick; };
+	static void setNick(const string& aNick) { 
+		nick = aNick; 
+		int i;
+		while( (i=nick.find('$')) != string::npos) {
+			nick.replace(i, 1, 1, '_');
+		}
+		while( (i=nick.find(' ')) != string::npos) {
+			nick.replace(i, 1, 1, '_');
+		}
+		while( (i=nick.find('|')) != string::npos) {
+			nick.replace(i, 1, 1, '_');
+		}
+	};
 	static void setEmail(const string& aEmail) { email = aEmail; };
 	static void setDescription(const string& aDescription) { description = aDescription; };
 	static void setConnection(const string& aConnection) { connection = aConnection; };
@@ -108,9 +120,12 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.9 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Settings.h,v 1.10 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.10  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.9  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

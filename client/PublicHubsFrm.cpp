@@ -93,7 +93,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	
 	ctrlHubs.GetItemText(item->iItem, 3, buf, 1024);
 	string tmp = buf;
-	if(!Client::isConnected(tmp)) {
+	if(!ClientManager::getInstance()->isConnected(tmp)) {
 		HubFrame* frm = new HubFrame(buf);
 		frm->CreateEx(GetParent());
 	}
@@ -128,7 +128,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ctrlHubs.GetItemText(i, 3, buf, 1024);
 		string tmp = buf;
-		if(!Client::isConnected(tmp)) {
+		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
 			frm->CreateEx(GetParent());
 		}
@@ -138,7 +138,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 		ctrlHub.GetWindowText(buf, 1024);
 		ctrlHub.SetWindowText("");
 		string tmp = buf;
-		if(!Client::isConnected(tmp)) {
+		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
 			frm->CreateEx(GetParent());
 		}
@@ -155,7 +155,7 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		string s(hub, ctrlHub.GetWindowTextLength());
 		delete hub;
-		if(!Client::isConnected(s)) {
+		if(!ClientManager::getInstance()->isConnected(s)) {
 			HubFrame* frm = new HubFrame(s);
 			frm->CreateEx(GetParent());
 		}
@@ -168,9 +168,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.3 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.4 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.4  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.3  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

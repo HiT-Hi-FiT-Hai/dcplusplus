@@ -23,11 +23,6 @@
 #include "Client.h"
 #include "CriticalSection.h"
 
-Client::List Client::clientList;
-
-ClientListener::List Client::staticListeners;
-CriticalSection Client::staticListenersCS;
-
 void Client::connect(const string& aServer, short aPort) {
 	if(socket.isConnected()) {
 		disconnect();
@@ -193,9 +188,11 @@ void Client::onLine(const string& aLine) {
 		fireOpList(v);
 	} else if(cmd == "$To:") {
 		string tmp = param.substr(param.find("From:") + 6);
-		string nick = tmp.substr(0, tmp.find("$") - 1);
-		tmp = tmp.substr(tmp.find("$") + 1);
-		firePrivateMessage(nick, tmp);
+		User::Ptr& user = getUser(tmp.substr(0, tmp.find("$") - 1));
+		if(user) {
+			tmp = tmp.substr(tmp.find("$") + 1);
+			firePrivateMessage(user, tmp);
+		}
 	} else if(cmd == "$GetPass") {
 		fireGetPassword();
 	} else if(cmd == "$BadPass") {
@@ -212,9 +209,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.11 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.12 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.12  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.11  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

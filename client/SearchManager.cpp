@@ -21,18 +21,12 @@
 
 #include "SearchManager.h"
 #include "Client.h"
+#include "ClientManager.h"
 
 SearchManager* SearchManager::instance = NULL;
 
 void SearchManager::search(const string& aName, LONGLONG aSize, DWORD aFlags /* = 0 */, int aType /* = 0 */ ) {
-	Client::List ls = Client::getList();
-	for(Client::Iter i = ls.begin(); i != ls.end(); ++i) {
-		try {
-			(*i)->search(aType, aSize, aType, aName);
-		} catch(Exception e) {
-			dcdebug("SearchManager::search caught: %s\n", e.getError().c_str());
-		}
-	}
+	ClientManager::getInstance()->search(aType, aSize, aType, aName);
 }
 
 void SearchManager::onData(const BYTE* buf, int aLen) {
@@ -63,9 +57,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.5 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.6 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.6  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.5  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

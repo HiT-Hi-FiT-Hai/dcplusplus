@@ -74,6 +74,9 @@ public:
 				switch(sortType) {
 				case SORT_STRING:
 					comp = compare(b, string(buf), ascending); break;
+				case SORT_STRING_NOCASE:
+					comp =  ascending ? strnicmp(b.c_str(), buf, min(b.length(), strlen(buf))) : -strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+					break;
 				case SORT_INT:
 					comp = compare(c, atoi(buf), ascending); break;
 				default:
@@ -91,6 +94,9 @@ public:
 			switch(sortType) {
 			case SORT_STRING:
 				comp = compare(b, string(buf), ascending); break;
+			case SORT_STRING_NOCASE:
+				comp =  ascending ? strnicmp(b.c_str(), buf, min(b.length(), strlen(buf))) : -strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+				break;
 			case SORT_INT:
 				comp = compare(c, atoi(buf), ascending); break;
 			default:
@@ -154,7 +160,7 @@ public:
 		case SORT_STRING:
 			return compare(a, b, p->ascending);
 		case SORT_STRING_NOCASE:
-			return p->ascending ? strnicmp(a.c_str(), b.c_str(), max(a.length(), b.length())) : -strnicmp(a.c_str(), b.c_str(), max(a.length(), b.length()));
+			return p->ascending ? strnicmp(a.c_str(), b.c_str(), min(a.length(), b.length())) : -strnicmp(a.c_str(), b.c_str(), min(a.length(), b.length()));
 		case SORT_INT:
 			return compare(atoi(a.c_str()), atoi(b.c_str()), p->ascending);
 		default:
@@ -190,9 +196,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.10 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.10  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.9  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

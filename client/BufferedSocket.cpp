@@ -34,8 +34,7 @@ void BufferedSocket::accept(const ServerSocket& aSocket) {
  * Write a file to the socket, stops reading from the socket until the transfer's finished.
  * @return True if everythings ok and the thread should continue reading, false on error
  */
-bool BufferedSocket::writer(BufferedSocket* bs) {
-	BYTE buf[BUFSIZE];
+bool BufferedSocket::writer(BufferedSocket* bs, BYTE* buf) {
 	DWORD len;
 
 	HANDLE h = bs->readerEvent;
@@ -66,7 +65,6 @@ bool BufferedSocket::writer(BufferedSocket* bs) {
 			return false;
 		}
 	}
-
 	// Hm, to fire or not to fire, that is the question...
 //	fireError("File not finished");
 	return false;
@@ -130,7 +128,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	}
 
 	string line = "";
-	BYTE buf[BUFSIZE];
+	BYTE* buf = new BYTE[BUFSIZE];
 	
 	while(true) {
 		switch( WaitForMultipleObjects(3, h, FALSE, INFINITE) ) {
@@ -139,8 +137,10 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			return 0;
 		case WAIT_OBJECT_0 + 1:			// writerEvent, send the file
 			dcdebug("BufferedSocket::reader Writer event\n");
-			if(!writer(bs))
+			if(!writer(bs, buf)) {
+				delete buf;
 				return 0x03;
+			}
 			break;
 		case WAIT_OBJECT_0 + 2:
 
@@ -154,6 +154,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 					// This socket has been closed...
 					bs->disconnect();
 					bs->fireError("Disconnected");
+					delete buf;
 					return 0x03;
 				}
 				int bufpos = 0;
@@ -207,12 +208,14 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				bs->disconnect();
 				bs->fireError(e.getError());
 				bs->readerThread = NULL;
+				delete buf;
 				return 0x04;
 			}
 			break;
 		case WAIT_FAILED:
 			// Duuhhh???
 			dcdebug("BufferedSocket::reader Wait failed (%x)\n", GetLastError());
+			delete buf;
 			return 0x05;
 		default:
 			dcassert(0);
@@ -223,9 +226,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.17 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.18 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.18  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.17  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

@@ -139,7 +139,7 @@ public:
 		checkDownloads(conn);
 	}
 	
-	void removeConnection(UserConnection::Ptr aConn);
+	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
 	void removeConnections(); 
 private:
 
@@ -246,9 +246,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.15 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.16  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.15  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

@@ -128,7 +128,7 @@ private:
 	HANDLE readerEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
-	static bool writer(BufferedSocket* bs);
+	static bool writer(BufferedSocket* bs, BYTE* buf);
 	
 	void startReader() {
 		DWORD threadId;
@@ -222,9 +222,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.14 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.15 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.15  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.14  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

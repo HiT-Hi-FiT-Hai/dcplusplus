@@ -29,6 +29,7 @@
 #include "UploadManager.h"
 #include "ExListViewCtrl.h"
 #include "TimerManager.h"
+#include "CriticalSection.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
 
@@ -43,16 +44,30 @@ public:
 
 	CCommandBarCtrl2 m_CmdBar;
 
+	enum {
+		UPLOAD_COMPLETE,
+		UPLOAD_FAILED,
+		UPLOAD_STARTING,
+		UPLOAD_TICK,
+		DOWNLOAD_ADDED,
+		DOWNLOAD_COMPLETE,
+		DOWNLOAD_CONNECTING,
+		DOWNLOAD_FAILED,
+		DOWNLOAD_STARTING,
+		DOWNLOAD_TICK
+	};
+
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	// UploadManagerListener
-	virtual void onUploadComplete(Upload* aUpload);
-	virtual void onUploadFailed(Upload* aUpload, const string& aReason);
+	virtual void onUploadComplete(Upload* aUpload) { PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); };
+	virtual void onUploadFailed(Upload* aUpload, const string& aReason) { PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); };
 	virtual void onUploadStarting(Upload* aUpload);
 	virtual void onUploadTick(Upload* aUpload);
 	
 	// DownloadManagerListener
 	virtual void onDownloadAdded(Download* aDownload);
 	virtual void onDownloadComplete(Download* aDownload);
-	virtual void onDownloadConnecting(Download* aDownload);
+	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
 	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
 	virtual void onDownloadStarting(Download* aDownload);
 	virtual void onDownloadTick(Download* aDownload);
@@ -94,6 +109,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -233,6 +249,14 @@ public:
 		return 0;
 	}
 protected:
+	map<LPARAM, StringList> uploadStarting;
+	map<LPARAM, string> uploadTick;
+	map<LPARAM, StringList> downloadAdded;
+	map<LPARAM, string> downloadFailed;
+	map<LPARAM, string> downloadStarting;
+	map<LPARAM, string> downloadTick;
+
+	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;		
 	CImageList arrows;
@@ -249,9 +273,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.15 2001/12/18 12:32:18 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.16  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.15  2001/12/18 12:32:18  arnetheduck
  * Stability fixes
  *

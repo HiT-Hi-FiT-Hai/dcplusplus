@@ -99,7 +99,7 @@ public:
 			if (PtInRect(&rc, pt)) 
 			{ 
 				ctrlTree.ClientToScreen(&pt);
-				fileMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				directoryMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 				
 				return TRUE; 
 			} 
@@ -185,9 +185,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.6 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.7 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.7  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.6  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

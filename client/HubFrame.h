@@ -29,6 +29,9 @@
 #include "DownloadManager.h"
 #include "User.h"
 #include "PasswordDlg.h"
+#include "CriticalSection.h"
+#include "ClientManager.h"
+#include "PrivateFrame.h"
 
 #include "AtlCmdBar2.h"
 
@@ -37,70 +40,154 @@
 class HubFrame : public CMDIChildWindowImpl2<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
-	virtual void onClientConnecting(Client* aClient) {
-		addClientLine("Connecting to " + aClient->getServer() + "...");
-		SetWindowText(aClient->getServer().c_str());
+	enum {
+		CLIENT_CONNECTING,
+		CLIENT_ERROR,
+		CLIENT_GETPASSWORD,
+		CLIENT_HUBNAME,
+		CLIENT_MESSAGE,
+		CLIENT_MYINFO,
+		CLIENT_PRIVATEMESSAGE,
+		CLIENT_QUIT,
+		CLIENT_UNKNOWN,
+		CLIENT_VALIDATEDENIED
+	};
+
+	StringList clientMessages;
+	string clientError;
+	User::List clientMyInfo;
+	User::List clientQuit;
+	map<PrivateFrame*, string> clientPrivateMessage;
+
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+
+		// First some specials to handle those messages that have to initialize variables...
+		if(wParam == CLIENT_MESSAGE) {
+			cs.enter();
+			StringIter i = clientMessages.begin();
+			while(i != clientMessages.end()) {
+				addLine(*i);
+				i = clientMessages.erase(i);
+			}
+			cs.leave();
+		} else if(wParam == CLIENT_MYINFO) {
+			cs.enter();
+			User::Iter i = clientMyInfo.begin();
+			while(i != clientMyInfo.end()) {
+				User::Ptr& u = *i;
+				LV_FINDINFO fi;
+				fi.flags = LVFI_STRING;
+				fi.psz = u->getNick().c_str();
+				int j = ctrlUsers.FindItem(&fi, -1);
+				if(j == -1) {
+					StringList l;
+					l.push_back(u->getNick());
+					l.push_back(Util::shortenBytes(u->getBytesSharedString()));
+					l.push_back(u->getDescription());
+					l.push_back(u->getConnection());
+					l.push_back(u->getEmail());
+					ctrlUsers.insert(l);
+				} else {
+					ctrlUsers.SetItemText(j, 1, Util::shortenBytes(u->getBytesSharedString()).c_str());
+					ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
+					ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
+					ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
+				}
+				
+				updateStatusBar();
+				i = clientMyInfo.erase(i);
+			}
+			cs.leave();
+		} else if(wParam == CLIENT_QUIT) {
+			cs.enter();
+			User::Iter i = clientQuit.begin();
+			while(i != clientQuit.end()) {
+				ctrlUsers.deleteItem((*i)->getNick());
+				updateStatusBar();		
+				i = clientQuit.erase(i);
+			}
+			cs.leave();
+		} else if(wParam == CLIENT_GETPASSWORD) {
+			PasswordDlg dlg;
+			if(dlg.DoModal() == IDOK) {
+				client->password(dlg.password);
+			} else {
+				client->disconnect();
+			}
+		} else if(wParam == CLIENT_CONNECTING) {
+			addClientLine("Connecting to " + client->getServer() + "...");
+			SetWindowText(client->getServer().c_str());
+		} else if(wParam == CLIENT_ERROR) {
+			cs.enter();
+			addClientLine("Connection failed: " + clientError);
+			cs.leave();
+		} else if(wParam == CLIENT_HUBNAME) {
+			SetWindowText(client->getName().c_str());
+			addClientLine("Connected");
+		} else if(wParam == CLIENT_VALIDATEDENIED) {
+			addClientLine("Your nick was already taken, please change to something else!");
+			client->disconnect();
+		} else if(wParam == CLIENT_PRIVATEMESSAGE) {
+			dcassert(clientPrivateMessage.find((PrivateFrame*)lParam) != clientPrivateMessage.end());
+			((PrivateFrame*)lParam)->addLine(clientPrivateMessage[(PrivateFrame*)lParam]);
+			clientPrivateMessage.erase((PrivateFrame*)lParam);
+		}
+		return 0;
+	};
+
+	virtual void onClientConnecting(Client* aClient) { 
+		PostMessage(WM_SPEAKER, CLIENT_CONNECTING); 
+	};
+	virtual void onClientError(Client* aClient, const string& aReason) {
+		cs.enter();
+		clientError = aReason;
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_ERROR);
 	}
+	virtual void onClientGetPassword(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_GETPASSWORD); };
+	virtual void onClientHubName(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_HUBNAME); };
 	virtual void onClientMessage(Client* aClient, const string& aMessage) {
-		addLine(aMessage);
+		cs.enter();
+		clientMessages.push_back(aMessage);
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_MESSAGE);
+	}
+	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
+		cs.enter();
+		clientMyInfo.push_back(aUser);
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_MYINFO);
+	}
+	
+	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
+		cs.enter();
+		PrivateFrame* frm = PrivateFrame::getFrame(aUser, GetParent());
+		clientPrivateMessage[frm] = aMessage;
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)frm);
 	}
 	
 	virtual void onClientUnknown(Client* aClient, const string& aCommand) {
-		addClientLine("Unknown: " + aCommand);
+		cs.enter();
+		clientError = "Unknown: " + aCommand;
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_ERROR);
 	}
 	virtual void onClientQuit(Client* aClient, User::Ptr& aUser) {
-		ctrlUsers.deleteItem(aUser->getNick());
-		updateStatusBar();		
+		cs.enter();
+		clientQuit.push_back(aUser);
+		cs.leave();
+		PostMessage(WM_SPEAKER, CLIENT_QUIT);
 	}
-	virtual void onClientHubName(Client* aClient) {
-		SetWindowText(aClient->getName().c_str());
-		addClientLine("Connected");
-	}
-	virtual void onClientError(Client* aClient, const string& aReason) {
-		addClientLine("Connection failed: " + aReason);
-	}
-	virtual void onClientValidateDenied(Client* aClient) {
-		addClientLine("Your nick was already taken, please change to something else!");
-		client->disconnect();
-	}
-
-	virtual void onClientGetPassword(Client* aClient) {
-		PasswordDlg dlg;
-		if(dlg.DoModal() == IDOK) {
-			client->password(dlg.password);
-		} else {
-			client->disconnect();
-		}
-	}
-
-	virtual void onClientMyInfo(Client* aClient, User::Ptr& aUser) {
-		
-		LV_FINDINFO fi;
-		fi.flags = LVFI_STRING;
-		fi.psz = aUser->getNick().c_str();
-		int i = ctrlUsers.FindItem(&fi, -1);
-		if(i == -1) {
-			i = ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), aUser->getNick().c_str());
-		}
-		ctrlUsers.SetItemText(i, 1, Util::shortenBytes(aUser->getBytesSharedString()).c_str());
-		ctrlUsers.SetItemText(i, 2, aUser->getDescription().c_str());
-		ctrlUsers.SetItemText(i, 3, aUser->getConnection().c_str());
-		ctrlUsers.SetItemText(i, 4, aUser->getEmail().c_str());
-
-		updateStatusBar();		
-	}
-
-	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) {
-		addLine("Private message from " + aFrom + ":\r\n" + aMessage);
-	}
+	virtual void onClientValidateDenied(Client* aClient) { PostMessage(WM_SPEAKER, CLIENT_VALIDATEDENIED); };
 
 	void updateStatusBar() {
 		char buf[256];
 		sprintf(buf, "%d users", client->getUserCount());
 		ctrlStatus.SetText(1, buf);
 		ctrlStatus.SetText(2, Util::shortenBytes(client->getAvailable()).c_str());
-		
 	}
+
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
@@ -108,15 +195,12 @@ protected:
 public:
 
 	HubFrame(const string& aServer) : ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
-		client = new Client();
+		client = ClientManager::getInstance()->getClient();
 		client->addListener(this);
 	}
 
 	~HubFrame() {
-		if(client) {
-			client->removeListeners();
-			delete client;
-		}
+		dcassert(client == NULL);
 	}
 
 	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD);
@@ -125,6 +209,7 @@ public:
 	CEdit ctrlMessage;
 	ExListViewCtrl ctrlUsers;
 	CStatusBarCtrl ctrlStatus;
+	CriticalSection cs;
 
 	HANDLE stopperThread;
 	
@@ -141,6 +226,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
@@ -170,10 +256,8 @@ public:
 	static DWORD WINAPI stopper(void* p) {
 		HubFrame* f = (HubFrame*)p;
 
-		f->client->removeListener(f);
-		f->client->disconnect();
-		
-		delete f->client;
+		ClientManager::getInstance()->putClient(f->client);
+
 		f->client = NULL;
 		f->PostMessage(WM_CLOSE);
 		return 0;
@@ -291,12 +375,7 @@ public:
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 			string s(message, ctrlMessage.GetWindowTextLength());
 			delete message;
-			try {
-				client->sendMessage(s);
-			} catch(Exception e) {
-				// ...
-
-			}
+			client->sendMessage(s);
 			ctrlMessage.SetWindowText("");
 		} else {
 			bHandled = FALSE;
@@ -314,9 +393,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.18 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.19 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.19  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.18  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

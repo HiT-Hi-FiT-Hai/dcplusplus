@@ -185,7 +185,7 @@ private:
 		dcdebug("UserConnection(%p)::reset\n", this );
 		disconnect();
 		removeListeners();
-		user = NULL;
+		user = User::nuser;
 		flags = 0;
 		state = LOGIN;
 		server = "";
@@ -381,9 +381,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.16 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.17 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.17  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.16  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

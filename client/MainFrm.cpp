@@ -30,7 +30,6 @@
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "CryptoManager.h"
-#include "ProtocolHandler.h"
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
 #include "ShareManager.h"
@@ -52,57 +51,100 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 		}
 	}
 	TimerManager::getInstance()->removeListeners();
+	
 	ShareManager::deleteInstance();
-	ProtocolHandler::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
 	SearchManager::deleteInstance();
 	ConnectionManager::deleteInstance();
+	ClientManager::deleteInstance();
 	HubManager::deleteInstance();
 	TimerManager::deleteInstance();
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
 
-void MainFrame::onUploadComplete(Upload* p) {
-	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
-	//	ctrlUploads.SetItemText(ctrlUploads.find((LPARAM)p), 1, "Upload finished");
-	
-}
+LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	cs.enter();
+	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED) {
+		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
+	} else if(wParam == UPLOAD_STARTING) {
+		dcassert(uploadStarting.find(lParam) != uploadStarting.end());
+		ctrlTransfers.insert(uploadStarting[lParam], 1, lParam);
+		uploadStarting.erase(lParam);
 
-void MainFrame::onUploadFailed(Upload* aUpload, const string& aReason) {
-	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)aUpload));
-//	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, aReason.c_str());
+	} else if(wParam == UPLOAD_TICK) {
+		dcassert(uploadTick.find(lParam) != uploadTick.end());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, uploadTick[lParam].c_str());
+		uploadTick.erase(lParam);
+	} else if(wParam == DOWNLOAD_ADDED) {
+		dcassert(downloadAdded.find(lParam) != downloadAdded.end());
+		ctrlTransfers.insert(downloadAdded[lParam], 0, lParam);
+		downloadAdded.erase(lParam);
+	} else if(wParam == DOWNLOAD_CONNECTING) {
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, "Connecting...");
+	} else if(wParam == DOWNLOAD_FAILED) {
+		dcassert(downloadFailed.find(lParam) != downloadFailed.end());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadFailed[lParam].c_str());
+		downloadFailed.erase(lParam);
+	} else if(wParam == DOWNLOAD_STARTING) {
+		dcassert(downloadStarting.find(lParam) != downloadStarting.end());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam].c_str());
+		downloadStarting.erase(lParam);
+	} else if(wParam == DOWNLOAD_TICK) {
+		dcassert(downloadTick.find(lParam) != downloadTick.end());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadTick[lParam].c_str());
+		downloadTick.erase(lParam);
+	}
+	cs.leave();
+
+	return 0;
 }
 
 void MainFrame::onUploadStarting(Upload* aUpload) {
-	int i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), aUpload->getFileName().c_str(), 1, (LPARAM)aUpload);
-	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aUpload->getSize()).c_str());
-	ctrlTransfers.SetItemText(i, 3, aUpload->getUser()->getNick().c_str());
+	StringList l;
+	l.push_back(aUpload->getFileName());
+	l.push_back(Util::shortenBytes(aUpload->getSize()));
+	l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
+	cs.enter();
+	uploadStarting[(LPARAM)aUpload] = l;
+	cs.leave();
+	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)aUpload);
 }
+
 void MainFrame::onUploadTick(Upload* aUpload) {
-	char buf[1024];
+	char buf[256];
 	sprintf(buf, "Uploaded %s (%.01f%%)", Util::shortenBytes(aUpload->getPos()).c_str(), (double)aUpload->getPos()*100.0/(double)aUpload->getSize());
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, buf);
+	cs.enter();
+	uploadTick[(LPARAM)aUpload] = buf;
+	cs.leave();
+	PostMessage(WM_SPEAKER, UPLOAD_TICK, (LPARAM)aUpload);
 }
 
 void MainFrame::onDownloadAdded(Download* p) {
-	int i;
-	if(p->getFileName() == "MyList.DcLst") {
-		i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), (p->getLastNick() + ".DcLst").c_str(), 0, (LPARAM)p);
+	StringList l;
+	l.push_back(p->isSet(Download::USER_LIST) ? p->getLastNick() + ".DcLst" : p->getFileName());
+	l.push_back("Waiting to connect...");
+	l.push_back((p->getSize() != -1) ? Util::shortenBytes(p->getSize()).c_str() : "Unknown");
+
+	if(p->getUser() && p->getUser()->isOnline()) {
+		l.push_back(p->getUser()->getNick() + " (" + p->getUser()->getClient()->getName() + ")");
 	} else {
-		i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), p->getFileName().c_str(), 0, (LPARAM)p);
+		l.push_back(p->getLastNick() + " (Offline)");
 	}
-	if(p->getSize() != -1) {
-		ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(p->getSize()).c_str());
-	}
+	
+	cs.enter();
+	downloadAdded[(LPARAM)p] = l;
+	cs.leave();
+	PostMessage(WM_SPEAKER, DOWNLOAD_ADDED, (LPARAM)p);
 }
 
-void MainFrame::onDownloadConnecting(Download* aDownload) {
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->getLastNick()).c_str());
-}
-
+/**
+ * This is an exception to the WM_SPEAKER thing....
+ * -> DownloadManager::fireComplete must never be called when it's holding DownloadManager::cs
+ * @todo Work this out...
+ */
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->getFileName().find(".DcLst")!=string::npos) {
 		// We have a new DC listing, show it...
@@ -132,21 +174,27 @@ void MainFrame::onDownloadComplete(Download* p) {
 }
 
 void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason) {
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, aReason.c_str());
+	cs.enter();
+	downloadFailed[(LPARAM) aDownload] = aReason;
+	cs.leave();
+	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)aDownload);
 }
+
 void MainFrame::onDownloadStarting(Download* aDownload) {
-	int i = ctrlTransfers.find((LPARAM)aDownload);
-	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aDownload->getSize()).c_str());
-	if(aDownload->getUser()->getClient() != NULL) {
-		ctrlTransfers.SetItemText(i, 3, (aDownload->getLastNick() + " (" + aDownload->getUser()->getClient()->getName() + ")").c_str());
-	} else {
-		ctrlTransfers.SetItemText(i, 3, (aDownload->getLastNick() + " (Offline)").c_str());
-	}
+	cs.enter();
+	downloadStarting[(LPARAM)aDownload] = Util::shortenBytes(aDownload->getSize());
+	cs.leave();
+	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)aDownload);
 }
+
 void MainFrame::onDownloadTick(Download* aDownload) {
-	char buf[1024];
+	char buf[256];
 	sprintf(buf, "Downloaded %s (%.01f%%)", Util::shortenBytes(aDownload->getPos()).c_str(), (double)aDownload->getPos()*100.0/(double)aDownload->getSize());
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, buf);
+	cs.enter();
+	downloadTick[(LPARAM)aDownload] = buf;
+	cs.leave();
+	PostMessage(WM_SPEAKER, DOWNLOAD_TICK, (LPARAM)aDownload);
+
 }
 
 LRESULT MainFrame::OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -188,7 +236,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlTransfers.InsertColumn(0, "File", LVCFMT_LEFT, 400, 0);
 	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
 	ctrlTransfers.InsertColumn(2, "Size", LVCFMT_RIGHT, 100, 2);
-	ctrlTransfers.InsertColumn(3, "User", LVCFMT_LEFT, 100, 3);
+	ctrlTransfers.InsertColumn(3, "User", LVCFMT_LEFT, 200, 3);
 	
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
 	
@@ -213,11 +261,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	TimerManager::getInstance()->addListener(this);
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
+	ClientManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	HubManager::newInstance();
-	ProtocolHandler::newInstance();
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 
@@ -325,9 +373,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.20 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.21 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.21  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.20  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

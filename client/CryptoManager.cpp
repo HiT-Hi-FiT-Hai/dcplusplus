@@ -94,7 +94,7 @@ void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 
-	if(is[pos] != 'H' || is[pos+1] != 'E' || is[pos+2] != '3') {
+	if(is[pos] != 'H' || is[pos+1] != 'E' || !((is[pos+2] == '3') || (is[pos+2] == '0'))) {
 		return;
 	}
 	pos+=5;
@@ -333,9 +333,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.11 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.12 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.12  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.11  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

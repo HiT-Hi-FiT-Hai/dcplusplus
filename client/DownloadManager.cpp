@@ -23,6 +23,7 @@
 #include "ConnectionManager.h"
 #include "Client.h"
 #include "User.h"
+#include "ClientManager.h"
 
 DownloadManager* DownloadManager::instance = NULL;
 
@@ -43,7 +44,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 
 		// Check if we've got a user pointer at all
 		if(!d->getUser()) {
-			d->setUser(Client::findUser(d->getLastNick()));
+			d->setUser(ClientManager::getInstance()->findUser(d->getLastNick()));
 	
 			if(!d->getUser()) {
 				// Still no user, go on to the next one...
@@ -54,9 +55,17 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 
 		// Check if the user is still online
 		if(!d->getUser()->isOnline()) {
-			// Damn, we've lost him...
-			d->setUser(User::nuser);
-			offline.push_back(d);
+			bool found = false;
+			for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+				if((*i)->getUser() == d->getUser()) {
+					found = true;
+				}
+			}
+			if(!found) {
+				// Damn, we've lost him...
+				d->setUser(User::nuser);
+				offline.push_back(d);
+			}
 			continue;
 		}
 
@@ -77,8 +86,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 void DownloadManager::onTimerSecond(DWORD aTick) {
 	cs.enter();
 
-	Download::List connecting;
-	
 	map<User::Ptr, DWORD>::iterator i = waiting.begin();
 
 	// Check on the users we're waiting for...
@@ -90,9 +97,15 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 
 			Download* d = getNextDownload(i->first);
 			if(d) {
-				if(ConnectionManager::getInstance()->getDownloadConnection(d->getUser())==UserConnection::CONNECTING) {
-					connecting.push_back(d);
+				int status = ConnectionManager::getInstance()->getDownloadConnection(d->getUser());
+				if(status==UserConnection::CONNECTING) {
+					fireConnecting(d);
+				} else if(status == UserConnection::FREE) {
+					// Alright, the connection was reused, so the waiting pool might have changed...try again...
+					i = waiting.begin();
+					continue;
 				}
+				
 			} else {
 				// Duuh...no downloads for this user...remove him/her from the waiting queue...
 				i = waiting.erase(i);
@@ -102,17 +115,12 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 		++i;
 	}
 
-	Download::Map tmp = running;
-
+	for(Download::MapIter m = running.begin(); m != running.end(); ++m) {
+		if(m->second->getPos() > 0) {
+			fireTick(m->second);
+		}
+	}
 	cs.leave();
-
-	for(Download::Iter j = connecting.begin(); j != connecting.end(); ++j) {
-		fireConnecting(*j);
-	}
-
-	for(Download::MapIter m = tmp.begin(); m != tmp.end(); ++m) {
-		fireTick(m->second);
-	}
 	
 }
 
@@ -225,7 +233,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) {
 	Download* d = NULL;
 
-	User::Ptr& user = Client::findUser(aUser);
+	User::Ptr& user = ClientManager::getInstance()->findUser(aUser);
 	if(user) {
 		download(aFile, aSize, user, aTarget, aResume);
 		return;
@@ -305,13 +313,13 @@ void DownloadManager::removeDownload(Download* aDownload) {
 	cs.leave();
 }
 
-void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
+void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
 	cs.enter();
 	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 		if(*i == aConn) {
 			aConn->removeListener(this);
 			connections.erase(i);
-			ConnectionManager::getInstance()->putDownloadConnection(aConn);
+			ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
 			break;
 		}
 	}
@@ -357,7 +365,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	// No more downloads for this user, make sure we're not waiting for a connection...
 	waiting.erase(aConn->getUser());
 
-	removeConnection(aConn);
+	removeConnection(aConn, true);
 	cs.leave();
 }
 
@@ -496,9 +504,12 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.15 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.16  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.15  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

@@ -114,6 +114,10 @@ SOURCE=.\client\ClientListener.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\ClientManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ConnectionManager.cpp
 # End Source File
 # Begin Source File
@@ -178,7 +182,7 @@ SOURCE=.\client\Pointer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\ProtocolHandler.cpp
+SOURCE=.\client\PrivateFrame.cpp
 # End Source File
 # Begin Source File
 
@@ -279,6 +283,10 @@ SOURCE=.\client\ClientListener.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\ClientManager.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ConnectionManager.h
 # End Source File
 # Begin Source File
@@ -339,7 +347,7 @@ SOURCE=.\client\Pointer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\ProtocolHandler.h
+SOURCE=.\client\PrivateFrame.h
 # End Source File
 # Begin Source File
 

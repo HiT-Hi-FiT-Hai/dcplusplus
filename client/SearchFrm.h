@@ -96,7 +96,7 @@ public:
 	{
 		RECT rect;
 		GetClientRect(&rect);
-		// position bars and offset their dimensions
+		    // position bars and offset their dimensions
 		UpdateBarsPosition(rect, bResizeBars);
 		
 		if(ctrlStatus.IsWindow()) {
@@ -186,9 +186,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.3 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.4 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.4  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.3  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

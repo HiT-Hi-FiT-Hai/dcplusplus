@@ -52,15 +52,25 @@ public:
 
 	int getDownloadConnection(User::Ptr& aUser);
 	
-	void putDownloadConnection(UserConnection* aSource) {
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false) {
 		cs.enter();
 		UserConnection::Iter i = find(downloaders.begin(), downloaders.end(), aSource);
 		if(i != downloaders.end()) {
 			downloaders.erase(i);
 		}
-		cs.leave();		
 		// Pool it for later usage...
-		putConnection(aSource);
+		if(reuse) {
+			if(find(downPool.begin(), downPool.end(), aSource) == downPool.end()) {
+				dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection to %s\n", aSource->getUser()->getNick().c_str());
+				
+				aSource->addListener(this);
+				downPool.push_back(aSource);
+			}
+			cs.leave();
+		} else {
+			cs.leave();		
+			putConnection(aSource);
+		}
 	}
 	void putUploadConnection(UserConnection* aSource) {
 		cs.enter();
@@ -90,6 +100,7 @@ private:
 	UserConnection::List downloaders;
 	UserConnection::List uploaders;
 	UserConnection::List pool;
+	UserConnection::List downPool;
 
 	// UserConnectionListener
 	virtual void onIncomingConnection();
@@ -161,9 +172,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.14 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.15 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.15  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.14  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *

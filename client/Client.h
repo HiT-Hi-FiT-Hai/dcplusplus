@@ -32,6 +32,7 @@
 
 class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener
 {
+	friend class ClientManager;
 public:
 	enum {
 		SEARCH_PLAIN,
@@ -42,67 +43,7 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client() : socket('|'), lastActivity(TimerManager::getTick()) {
-		TimerManager::getInstance()->addListener(this);
-		clientList.push_back(this);
-		listeners.insert(listeners.end(), staticListeners.begin(), staticListeners.end());
-	};
-
 	bool isConnected() { return socket.isConnected(); };
-	static bool isConnected(const string& aServer) {
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			if((*i)->getServer() == aServer) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	virtual ~Client() {
-		TimerManager::getInstance()->removeListener(this);
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			if(*i == this) {
-				clientList.erase(i);
-				break;
-			}				
-		}
-		socket.removeListener(this);
-	};
-	
-	static void addStaticListener(ClientListener::Ptr aListener) {
-		staticListenersCS.enter();
-		staticListeners.push_back(aListener);
-		staticListenersCS.leave();
-
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			(*i)->addListener(aListener);
-		}
-	}
-	
-	static void removeStaticListener(ClientListener::Ptr aListener) {
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			(*i)->removeListener(aListener);
-		}
-		staticListenersCS.enter();
-		for(ClientListener::Iter j = staticListeners.begin(); j != staticListeners.end(); ++j) {
-			if(*j == aListener) {
-				staticListeners.erase(j);
-				break;
-			}
-		}
-		staticListenersCS.leave();
-	}
-	
-	static void removeStaticListeners() {
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			for(ClientListener::Iter j = staticListeners.begin(); j != staticListeners.end(); ++j) {
-				(*i)->removeListener(*j);
-			}
-		}
-		staticListenersCS.enter();
-		staticListeners.clear();
-		staticListenersCS.leave();
-	}
 
 	void disconnect() {	
 		socket.removeListener(this);
@@ -187,7 +128,7 @@ public:
 		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "\x05$" + aEmail + "$" + aBytesShared + "$|");
 	}
 
-	void connectToMe(User::Ptr aUser) {
+	void connectToMe(User::Ptr& aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		string server = Settings::getServer();
 		string port = Settings::getPortString();
@@ -201,7 +142,10 @@ public:
 
 		send("$ConnectToMe " + aUser->getNick() + " " + server + ":" + port + "|");
 	}
-	void revConnectToMe(User::Ptr aUser) {
+	void privateMessage(User::Ptr& aUser, const string& aMessage) {
+		send("$To: " + aUser->getNick() + " From: " + Settings::getNick() + " $" + aMessage + "|");
+	}
+	void revConnectToMe(User::Ptr& aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
 	}
@@ -230,20 +174,6 @@ public:
 		}
 	}
 
-	static User::Ptr& findUser(const string& aNick) {
-		dcassert(aNick.length() > 0);
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			(*i)->cs.enter();
-			User::NickIter j = (*i)->users.find(aNick);
-			if(j != (*i)->users.end()) {
-				(*i)->cs.leave();
-				return j->second;
-			}
-			(*i)->cs.leave();
-		}
-		return User::nuser;
-	}
-	
 	int getUserCount() {
 		cs.enter();
 		int c = users.size();
@@ -261,21 +191,8 @@ public:
 		return x;
 	}
 	
-	static int getTotalUserCount() {
-		int c = 0;
-		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
-			c+=(*i)->getUserCount();
-		}
-		return c;
-	}
-
-	static List& getList() { return clientList; }
 private:
 	
-	/** A list of listeners that receive all client messages (from all clients) */
-	static ClientListener::List staticListeners;
-	static CriticalSection staticListenersCS;
-
 	string server;
 	short port;
 	BufferedSocket socket;
@@ -285,8 +202,20 @@ private:
 	CriticalSection cs;
 	User::NickMap users;
 
-	static List clientList;
-
+	Client() : socket('|'), lastActivity(TimerManager::getTick()) {
+		TimerManager::getInstance()->addListener(this);
+	};
+	
+	virtual ~Client() {
+		cs.enter();
+		TimerManager::getInstance()->removeListener(this);
+		socket.removeListener(this);
+		
+		removeListeners();
+		cs.leave();
+	};
+	
+	
 	virtual void onTimerSecond(DWORD aTick) {
 		if((lastActivity + 120 * 1000) < aTick) {
 			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
@@ -471,13 +400,13 @@ private:
 			(*i)->onClientOpList(this, aList);
 		}
 	}
-	void firePrivateMessage(const string& aFrom, const string& aMessage) {
-		dcdebug("firePM %s ...\n", aFrom.c_str());
+	void firePrivateMessage(User::Ptr& aUser, const string& aMessage) {
+		dcdebug("firePM %s ...\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientPrivateMessage(this, aFrom, aMessage);
+			(*i)->onClientPrivateMessage(this, aUser, aMessage);
 		}
 	}
 	void fireQuit(User::Ptr aUser) {
@@ -532,9 +461,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.12 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: Client.h,v 1.13 2001/12/21 20:21:17 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.13  2001/12/21 20:21:17  arnetheduck
+ * Private messaging added, and a lot of other updates as well...
+ *
  * Revision 1.12  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.
