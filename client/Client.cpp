@@ -71,8 +71,10 @@ void DCClient::onLine(const string& aLine) {
 		string pk = lock.substr(lock.find(' ') + 4);
 		fireLock(lock, pk);	
 	} else if(aLine.find("$Hello") != string::npos) {
-		fireHello(aLine.substr(7));
-		users.push_back(aLine.substr(7));
+		string nick = aLine.substr(7);
+		User* u = new User(nick);
+		users[nick] = u;
+		fireHello(nick);
 	} else if(aLine.find("$ForceMove") != string::npos) {
 		fireForceMove(aLine.substr(11));
 	} else if(aLine.find("$HubIsFull") != string::npos) {
@@ -148,9 +150,12 @@ void DCClient::onLine(const string& aLine) {
 
 /**
  * @file DCClient.cpp
- * $Id: DCClient.cpp,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.1 2001/11/27 22:10:08 arnetheduck Exp $
  * @if LOG
- * $Log: DCClient.cpp,v $
+ * $Log: Client.cpp,v $
+ * Revision 1.1  2001/11/27 22:10:08  arnetheduck
+ * Renamed DCClient* to Client*
+ *
  * Revision 1.5  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

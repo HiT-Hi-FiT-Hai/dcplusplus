@@ -25,6 +25,7 @@
 
 #include "ClientListener.h"
 #include "BufferedSocket.h"
+#include "User.h"
 
 class DCClient : public BufferedSocketListener
 {
@@ -119,13 +120,11 @@ public:
 		send("$RevConnectToMe " + Settings::getNick() + " " + aNick  + "|");
 	}
 	void connect(const string& aServer, short aPort = 411);
+
 	bool userConnected(const string& aNick) {
-		for(StringIter i = users.begin(); i != users.end(); ++i) {
-			if(*i == aNick)
-				return true;
-		}
-		return false;
+		return !(users.find(aNick) == users.end());
 	}
+
 	static List& getList() { return clientList; }
 protected:
 	ClientListener::List listeners;
@@ -133,7 +132,7 @@ protected:
 	short port;
 	BufferedSocket socket;
 
-	StringList users;
+	User::NickMap users;
 
 	static List clientList;
 
@@ -193,10 +192,10 @@ protected:
 			(*i)->onPrivateMessage(aFrom, aMessage);
 		}
 	}
-	void fireHello(const string& aNick) {
+	void fireHello(User* aUser) {
 		dcdebug("fireHello %s\n", aNick.c_str());
 		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
-			(*i)->onHello(aNick);
+			(*i)->onHello(aUser);
 		}
 	}
 	void fireForceMove(const string& aServer) {
@@ -272,9 +271,12 @@ protected:
 
 /**
  * @file DCClient.h
- * $Id: DCClient.h,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: Client.h,v 1.1 2001/11/27 22:10:08 arnetheduck Exp $
  * @if LOG
- * $Log: DCClient.h,v $
+ * $Log: Client.h,v $
+ * Revision 1.1  2001/11/27 22:10:08  arnetheduck
+ * Renamed DCClient* to Client*
+ *
  * Revision 1.5  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
