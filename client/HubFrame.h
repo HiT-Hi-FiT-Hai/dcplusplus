@@ -33,7 +33,7 @@
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
-class HubFrame : public CMDIChildWindowImpl2<HubFrame>, public ClientListener
+class HubFrame : public CMDIChildWindowImpl2<HubFrame>, public ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
 	virtual void onConnecting(const string& aServer) {
@@ -133,24 +133,37 @@ public:
 		delete this;
 	}
 
+	typedef CSplitterImpl<HubFrame> splitBase;
+
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
+		CHAIN_MSG_MAP(splitBase)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		return 0;
+	};
+	
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		return 0;
+	}
+		
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 		string user;
 		char buf[1024];
 		ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
 		user = buf;
-		DownloadManager::getInstance()->download("MyList.DcLst", user, "c:\\temp\\" + user + ".DcLst");
+		DownloadManager::getInstance()->download("MyList.DcLst", user, Settings::getAppPath() + user + ".DcLst");
 
 		return 0;
 	}
@@ -216,9 +229,14 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.5  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.4  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

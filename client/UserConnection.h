@@ -39,7 +39,6 @@ public:
 	virtual void onConnectionError(UserConnection* aSource, const string& aReason) { };
 	virtual void onData(UserConnection* aSource, BYTE* aBuf, int aLen) { };
 	virtual void onError(UserConnection* aSource, const string& aError) { };
-	virtual void onMyNick(UserConnection* aSource, const string& aNick) { };
 	virtual void onLock(UserConnection* aSource, const string& aLock, const string& aPk) { };
 	virtual void onKey(UserConnection* aSource, const string& aKey) { };
 	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) { };
@@ -48,7 +47,9 @@ public:
 	virtual void onSend(UserConnection* aSource) { };
 	virtual void onDisconnected(UserConnection* aSource) { };
 	virtual void onGetListLen(UserConnection* aSource) { };
+	virtual void onMaxedOut(UserConnection* aSource) { };
 	virtual void onModeChange(UserConnection* aSource, int aNewMode) { };
+	virtual void onMyNick(UserConnection* aSource, const string& aNick) { };
 };
 
 class ServerSocket;
@@ -109,8 +110,8 @@ public:
 	void error(const string& aError) { send("$Error " + aError + "|"); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
 	void maxedOut() { send("$MaxedOut|"); };
-	boolean hasSentNick() { return sentNick; };
-	boolean hasSentLock() { return sentLock; };
+	bool hasSentNick() { return sentNick; };
+	bool hasSentLock() { return sentLock; };
 	UserConnection() : socket('|'), sentNick(false), sentLock(false) { 
 		socket.addListener(this);
 	};
@@ -131,8 +132,8 @@ public:
 	};
 
 private:
-	boolean sentNick;
-	boolean sentLock;
+	bool sentNick;
+	bool sentLock;
 	string server;
 	short port;
 	BufferedSocket socket;
@@ -252,6 +253,15 @@ private:
 		}
 		listenerCS.leave();
 	}
+	void fireMaxedOut() {
+		listenerCS.enter();
+		dcdebug("UserConnection::fireMaxedOut\n");
+		UserConnectionListener::List tmp = listeners;
+		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onMaxedOut(this);
+		}
+		listenerCS.leave();
+	}
 	void fireModeChange(int aNewMode) {
 		listenerCS.enter();
 		dcdebug("UserConnection::fireModeChange\n");
@@ -285,9 +295,14 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.1 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.2  2001/11/26 23:40:37  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.1  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

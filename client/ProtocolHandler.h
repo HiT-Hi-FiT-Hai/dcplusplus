@@ -38,7 +38,7 @@ class ProtocolHandler : public ClientListener
 {
 public:
 	virtual void onLock(const string& aLock, const string& aPk)  {
-		client->key(CryptoManager::makeKey(aLock));
+		client->key(CryptoManager::getInstance()->makeKey(aLock));
 		client->validateNick(Settings::getNick());
 	}
 	virtual void onHello(const string& aNick) {
@@ -81,9 +81,14 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.5  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.4  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

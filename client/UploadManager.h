@@ -37,10 +37,10 @@ public:
 		if(!aSource->hasSentNick())
 			aSource->myNick(Settings::getNick());
 		if(!aSource->hasSentLock())
-			aSource->lock(CryptoManager::getLock(), CryptoManager::getPk());
+			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		
 		aSource->direction("Upload", "666");
-		aSource->key(CryptoManager::makeKey(aLock));
+		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 	}
 	
 	virtual void onDirection(UserConnection* aSource, const string& aDirection, const string& aNumber) {
@@ -109,9 +109,14 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.1 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.2  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.1  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

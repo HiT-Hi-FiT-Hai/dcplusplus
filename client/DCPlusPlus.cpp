@@ -46,11 +46,13 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-	HRESULT hRes = ::CoInitialize(NULL);
+//	HRESULT hRes = ::CoInitialize(NULL);
 // If you are running on NT 4.0 or higher you can use the following call instead to 
 // make the EXE free threaded. This means that calls come in on a random RPC thread.
 //	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	ATLASSERT(SUCCEEDED(hRes));
+	HRESULT hRes;
+//	ATLASSERT(SUCCEEDED(hRes));
+
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	
@@ -72,16 +74,21 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 
 	_Module.Term();
-	::CoUninitialize();
+//	::CoUninitialize();
 
 	return nRet;
 }
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.cpp,v $
+ * Revision 1.4  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

@@ -67,8 +67,10 @@ void UserConnection::onLine(const string& aLine) {
 		fireMyNick(aLine.substr(8));
 	} else if(aLine.find("$Send")) {
 		fireSend();
+	} else if(aLine.find("$MaxedOut")){
+		fireMaxedOut();
 	} else {
-		dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
+		//dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
 	}
 }
 
@@ -77,9 +79,14 @@ void UserConnection::waitForConnection(short aPort /* = 412 */) {
 }
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.1 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.2  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.1  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

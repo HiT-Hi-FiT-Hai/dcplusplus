@@ -16,16 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define APPNAME "DC++"
-#define VERSIONSTRING "0.03"
-#define VERSIONINT 3
+#include "stdafx.h"
+#include "DCPlusPlus.h"
+
+#include "BitInputStream.h"
 
 /**
- * @file Version.h
- * $Id: version.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
+ * @file BitInputStream.cpp
+ * $Id: BitInputStream.cpp,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
- * $Log: version.h,v $
- * Revision 1.2  2001/11/26 23:40:37  arnetheduck
+ * $Log: BitInputStream.cpp,v $
+ * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
  * fixes. Only user file listings are downloadable, but at least it's something...

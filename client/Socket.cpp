@@ -24,6 +24,7 @@
 
 #define checkconnected() if(!connected) throw SocketException("Not connected")
 
+#define BUFSIZE 4096
 SocketException::SocketException(int aError) {
 	error = errorToString(aError);
 }
@@ -182,7 +183,7 @@ void Socket::writeLine(const string& aData) throw(SocketException) {
  * @throw TimeOutExecption No data received befor timeout.
  */
 string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, TimeOutException) {
-	char buf[256];
+	char buf[BUFSIZE];
 	int len;
 	
 	if( !connected ) {
@@ -205,7 +206,7 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 			throw TimeOutException("No data received within timeout");
 		}
 		
-		checkrecv(len = ::recv(sock, buf, 256, 0));
+		checkrecv(len = ::recv(sock, buf, BUFSIZE, 0));
 		if(len == 0) {
 			// We've lost our connection!!
 			connected = false;
@@ -223,9 +224,14 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.4  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

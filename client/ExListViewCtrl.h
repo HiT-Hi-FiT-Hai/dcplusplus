@@ -27,12 +27,12 @@ class ExListViewCtrl : public CListViewCtrl
 {
 	int sortColumn;
 	int sortType;
-	boolean ascending;
+	bool ascending;
 public:
 	enum {	SORT_STRING,
 			SORT_INT
 	};
-	void setSort(int aColumn, int aType, boolean aAscending = true) {
+	void setSort(int aColumn, int aType, bool aAscending = true) {
 		sortColumn = aColumn;
 		sortType = aType;
 		ascending = aAscending;
@@ -44,11 +44,11 @@ public:
 			SortItemsEx(&CompareFunc, (LPARAM)this);
 	}
 
-	boolean getSortDirection() { return ascending; };
+	bool getSortDirection() { return ascending; };
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
-	int insertItem(StringList& aList) {
+	int insertItem(StringList& aList, int iImage = 0) {
 
 		int loc;
 		if(sortColumn == -1) {
@@ -75,7 +75,7 @@ public:
 					break;
 			}
 		}
-		int i = AddItem(loc, 0, aList[0].c_str());
+		int i = InsertItem(loc, aList[0].c_str(), iImage);
 		int k = 0;
 		for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 			SetItemText(i, k, j->c_str());
@@ -93,7 +93,7 @@ public:
 			}
 		}
 	}
-	void setSortDirection(boolean aAscending) { setSort(sortColumn, sortType, aAscending); };
+	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending); };
 
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
@@ -116,7 +116,7 @@ public:
 		dcassert(0);
 	}
 	
-	template<class T> static int compare(const T& a, const T& b, boolean d) {
+	template<class T> static int compare(const T& a, const T& b, bool d) {
 		if(d) {
 			if(a < b)
 				return -1;
@@ -144,9 +144,14 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.1 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.2  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.1  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

@@ -23,7 +23,7 @@
 
 string SimpleXML::emptyString;
 
-static string escape(const string& aString, boolean aAttrib, boolean aReverse = false) {
+static string escape(const string& aString, bool aAttrib, bool aReverse = false) {
 	string::size_type i;
 	string tmp = aString;
 	const char* chars = aAttrib ? "<&>'\"" : "<&>";
@@ -252,9 +252,14 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.1 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.2  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.1  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -28,14 +28,58 @@
 #include "IncomingManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
+#include "CryptoManager.h"
+
+#include "DirectoryListing.h"
+#include "DirectoryListingFrm.h"
+
+#include <fstream>
+#include <strstream>
 
 MainFrame::~MainFrame() {
+	DownloadManager::getInstance()->removeListener(this);
+	CryptoManager::deleteInstance();
 	IncomingManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
 	HubManager::deleteInstance();
 }
 
+void MainFrame::onDownloadFailed(Download::Ptr p, const string& aReason) {
+	MessageBox(aReason.c_str(), "Download failed", MB_OK | MB_ICONERROR);
+}
+
+void MainFrame::onDownloadComplete(Download::Ptr p) {
+	if(p->fileName.find(".DcLst")) {
+		// We have a new DC listing, show it...
+		DirectoryListing* dl = new DirectoryListing();
+		HANDLE h = CreateFile(p->destination.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		if(h==NULL) {
+			return;
+		}
+		DWORD size = GetFileSize(h, NULL);
+		char* buf = new char[size];
+		ReadFile(h, buf, size, &size, NULL);
+		string code(buf, size);
+		delete buf;
+		CloseHandle(h);
+		string tmp;
+		CryptoManager::getInstance()->decodeHuffman(code, tmp);
+		dl->load(tmp);
+		
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->lastUser);
+		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
+		
+	} else {
+		MessageBox(("Download of " + p->fileName + " complete!").c_str());
+	}
+}
+LRESULT MainFrame::OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	DirectoryListingFrame* dlg = (DirectoryListingFrame*)wParam;
+	dlg->CreateEx(m_hWndClient);
+	dlg->setWindowTitle();
+	return 0;
+}
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		
 	// Set window name
@@ -45,11 +89,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// attach menu
 	m_CmdBar.AttachMenu(GetMenu());
 	// load command bar images
-	m_CmdBar.LoadImages(IDR_MAINFRAME);
+	m_CmdBar.LoadImages(IDR_MDICHILD);
 	// remove old menu
 	SetMenu(NULL);
 	
-	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MDICHILD, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
@@ -71,10 +115,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	Settings::load();	
 	
+	CryptoManager::newInstance();
 	IncomingManager::newInstance();
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	HubManager::newInstance();
+	
+	DownloadManager::getInstance()->addListener(this);
 	
 	return 0;
 }
@@ -90,7 +137,7 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	
 	HubFrame* pChild = new HubFrame(dlg.server);
 	pChild->CreateEx(m_hWndClient);
-	
+
 	return 0;
 }
 
@@ -119,15 +166,22 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setPort(dlg.port);
 		Settings::setConnectionType(dlg.connectionType);
 		Settings::save();
+
+		IncomingManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
 	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.5  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.4  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

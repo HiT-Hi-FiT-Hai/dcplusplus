@@ -99,6 +99,7 @@ void DCClient::onLine(const string& aLine) {
 		for(StringIter i = users.begin(); i != users.end(); ++i) {
 			if(*i == nick) {
 				users.erase(i);
+				break;
 			}
 		}
 	} else if(aLine.find("$ValidateDenide") != string::npos) {
@@ -147,9 +148,14 @@ void DCClient::onLine(const string& aLine) {
 
 /**
  * @file DCClient.cpp
- * $Id: DCClient.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: DCClient.cpp,v 1.5 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.cpp,v $
+ * Revision 1.5  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.4  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

@@ -25,8 +25,12 @@
 
 #include "AtlCmdBar2.h"
 
+#include "DownloadManager.h"
+
+#define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
+
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
-		public CMessageFilter, public CIdleHandler
+		public CMessageFilter, public CIdleHandler, public DownloadManagerListener
 {
 public:
 	virtual ~MainFrame();
@@ -34,6 +38,9 @@ public:
 
 	CCommandBarCtrl2 m_CmdBar;
 
+	virtual void onDownloadComplete(Download::Ptr p);
+	virtual void onDownloadFailed(Download::Ptr p, const string& aReason);
+	
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		if(CMDIFrameWindowImpl<MainFrame>::PreTranslateMessage(pMsg))
@@ -54,6 +61,7 @@ public:
 
 	BEGIN_MSG_MAP(MainFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -72,6 +80,8 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		PostMessage(WM_CLOSE);
@@ -134,9 +144,14 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.4  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!

@@ -16,16 +16,46 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define APPNAME "DC++"
-#define VERSIONSTRING "0.03"
-#define VERSIONINT 3
+#if !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
+#define AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
+class BitInputStream  
+{
+public:
+	BitInputStream(const string& aStream, int aStart) : is(aStream), bitPos(aStart*8) { };
+	~BitInputStream() { };
+	
+	char get() {
+		char ret = (is[bitPos>>3] >> (bitPos&0x07)) & 0x01;
+		bitPos++;
+		return ret;
+	}
+	
+	void skipToByte() {
+		bitPos = ((bitPos>>3)+1)<<3;
+	}
+	
+	void skip(int n) {
+		bitPos += n * 8;
+		return ;
+	}
+private:
+	int bitPos;
+	const string& is;
+};
+
+#endif // !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
 
 /**
- * @file Version.h
- * $Id: version.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
+ * @file BitInputStream.h
+ * $Id: BitInputStream.h,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
- * $Log: version.h,v $
- * Revision 1.2  2001/11/26 23:40:37  arnetheduck
+ * $Log: BitInputStream.h,v $
+ * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
  * fixes. Only user file listings are downloadable, but at least it's something...

@@ -16,16 +16,48 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#define APPNAME "DC++"
-#define VERSIONSTRING "0.03"
-#define VERSIONINT 3
+#include "stdafx.h"
+#include "DCPlusPlus.h"
 
+#include "DirectoryListing.h"
+#include "StringTokenizer.h"
+
+void DirectoryListing::load(string& in) {
+	StringTokenizer t(in);
+
+	StringList& tokens = t.getTokens();
+	int ident = 0;
+	
+	Directory* cur = root;
+
+	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) {
+		string tok = *i;
+		int j = tok.find_first_not_of('\t');
+		while(j < ident) {
+			cur = cur->parent;
+			dcassert(cur != NULL);
+			ident--;
+		}
+		if( tok.find('|')!=string::npos) {
+			// this must be a file...
+			tok = tok.substr(j);
+			j = tok.find('|');
+			cur->files.push_back(new File(tok.substr(0, j), _atoi64(tok.substr(j+1).c_str())));
+		} else {
+			// A directory
+			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
+			cur->directories.push_back(d);
+			cur = d;
+			ident++;
+		}
+	}
+}
 /**
- * @file Version.h
- * $Id: version.h,v 1.2 2001/11/26 23:40:37 arnetheduck Exp $
+ * @file DirectoryListing.cpp
+ * $Id: DirectoryListing.cpp,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
- * $Log: version.h,v $
- * Revision 1.2  2001/11/26 23:40:37  arnetheduck
+ * $Log: DirectoryListing.cpp,v $
+ * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug
  * fixes. Only user file listings are downloadable, but at least it's something...

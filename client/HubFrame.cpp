@@ -28,14 +28,18 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
-
+	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
 
+	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	m_nProportionalPos = 7500;
+
 	ctrlUsers.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100, 0);
-	ctrlUsers.InsertColumn(1, _T("Shared"), LVCFMT_LEFT, 50, 1);
+	ctrlUsers.InsertColumn(1, _T("Shared"), LVCFMT_LEFT, 75, 1);
 	ctrlUsers.InsertColumn(2, _T("Description"), LVCFMT_LEFT, 100, 2);
 	ctrlUsers.InsertColumn(3, _T("Connection"), LVCFMT_LEFT, 75, 3);
 	ctrlUsers.InsertColumn(4, _T("E-Mail"), LVCFMT_LEFT, 100, 4);
@@ -48,33 +52,32 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	CRect rc;
-	GetClientRect(rc);
-	rc.bottom -=28;
-	rc.right = rc.left + ((rc.right - rc.left)*3/4) - 2;
-	ctrlClient.MoveWindow(rc);
-
-	GetClientRect(rc);
-	rc.bottom -=28;
-	rc.left = rc.left + ((rc.right - rc.left)*3/4) + 2;
-	rc.right -=2;
-	ctrlUsers.MoveWindow(rc);
-
-	GetClientRect(rc);
-	rc.bottom -= 2;
-	rc.top = rc.bottom - 22;
-	rc.left +=2;
-	rc.right -=2;
-	ctrlMessage.MoveWindow(rc);
-	
+	if(wParam != SIZE_MINIMIZED) {
+		CRect rc;
+		GetClientRect(rc);
+		rc.bottom -=28;
+		SetSplitterRect(rc);
+		
+		GetClientRect(rc);
+		rc.bottom -= 2;
+		rc.top = rc.bottom - 22;
+		rc.left +=2;
+		rc.right -=2;
+		ctrlMessage.MoveWindow(rc);
+	}	
 	return 0;
 }
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.2 2001/11/24 10:37:09 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.3 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.3  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.2  2001/11/24 10:37:09  arnetheduck
  * onQuit is now handled
  * User list sorting

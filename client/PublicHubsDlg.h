@@ -31,7 +31,7 @@ class PublicHubsDlg : public CDialogImpl<PublicHubsDlg>, HubManagerListener
 private:
 
 	ExListViewCtrl ctrlHubs;
-	boolean listing;
+	bool listing;
 	int wId;
 	
 public:
@@ -87,9 +87,14 @@ public:
 
 /**
  * @file PublicHubsDlg.h
- * $Id: PublicHubsDlg.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
+ * $Id: PublicHubsDlg.h,v 1.4 2001/11/26 23:40:36 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.h,v $
+ * Revision 1.4  2001/11/26 23:40:36  arnetheduck
+ * Downloads!! Now downloads are possible, although the implementation is
+ * likely to change in the future...more UI work (splitters...) and some bug
+ * fixes. Only user file listings are downloadable, but at least it's something...
+ *
  * Revision 1.3  2001/11/25 22:06:25  arnetheduck
  * Finally downloading is working! There are now a few quirks and bugs to be fixed
  * but what the heck....!
