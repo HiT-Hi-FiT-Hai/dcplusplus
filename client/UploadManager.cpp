@@ -130,7 +130,6 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 	cs.leave();
 
 	aSource->fileLength(Util::toString(u->getSize()));
-
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
@@ -144,7 +143,7 @@ void UploadManager::onSend(UserConnection* aSource) {
 
 	u->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
-	aSource->transmitFile(u->getFile());
+	aSource->transmitFile(u->getFile(), u->getSize() - u->getPos());
 	fire(UploadManagerListener::STARTING, u);
 }
 
@@ -272,5 +271,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.32 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.33 2002/06/01 19:38:28 arnetheduck Exp $
  */

@@ -25,6 +25,24 @@
 
 #include "CriticalSection.h"
 
+template<class T1, class T2, class op = equal_to<T1> >
+class CompareFirst {
+public:
+	CompareFirst(const T1& compareTo) : a(compareTo) { };
+	bool operator()(const pair<T1, T2>& p) { return op()(p.first, a); };
+private:
+	const T1& a;
+};
+
+template<class T1, class T2, class op = equal_to<T2> >
+class CompareSecond {
+public:
+	CompareSecond(const T2& compareTo) : a(compareTo) { };
+	bool operator()(const pair<T1, T2>& p) { return op()(p.second, a); };
+private:
+	const T2& a;
+};
+
 class Flags {
 	public:
 		Flags() : flags(0) { };
@@ -351,6 +369,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.44 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: Util.h,v 1.45 2002/06/01 19:38:28 arnetheduck Exp $
  */
 

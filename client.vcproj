@@ -125,12 +125,6 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath=".\client\BitInputStream.cpp">
-			</File>
-			<File
-				RelativePath=".\client\BitOutputStream.cpp">
-			</File>
-			<File
 				RelativePath=".\client\BufferedSocket.cpp">
 			</File>
 			<File
@@ -141,9 +135,6 @@
 			</File>
 			<File
 				RelativePath=".\client\ConnectionManager.cpp">
-			</File>
-			<File
-				RelativePath=".\client\CriticalSection.cpp">
 			</File>
 			<File
 				RelativePath=".\client\CryptoManager.cpp">
@@ -158,12 +149,6 @@
 				RelativePath=".\client\DownloadManager.cpp">
 			</File>
 			<File
-				RelativePath=".\client\Exception.cpp">
-			</File>
-			<File
-				RelativePath=".\client\File.cpp">
-			</File>
-			<File
 				RelativePath=".\client\HttpConnection.cpp">
 			</File>
 			<File
@@ -173,9 +158,6 @@
 				RelativePath=".\client\LogManager.cpp">
 			</File>
 			<File
-				RelativePath=".\client\Pointer.cpp">
-			</File>
-			<File
 				RelativePath=".\client\QueueManager.cpp">
 			</File>
 			<File
@@ -183,9 +165,6 @@
 			</File>
 			<File
 				RelativePath=".\client\SearchManager.cpp">
-			</File>
-			<File
-				RelativePath=".\client\Semaphore.cpp">
 			</File>
 			<File
 				RelativePath=".\client\ServerSocket.cpp">

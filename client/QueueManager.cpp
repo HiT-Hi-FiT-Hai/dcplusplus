@@ -70,6 +70,11 @@ QueueManager::~QueueManager() {
 
 void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	if(BOOLSETTING(AUTO_SEARCH)) {
+
+		while((recent.size() > 0) && (recent.front().second + 20*50*1000) < GET_TICK()) {
+			recent.pop_front();
+		}
+
 		{
 			Lock l(cs);
 			
@@ -77,7 +82,7 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 			for(QueueItem::StringIter i = queue.begin(); (search.size() < 100) && (i != queue.end()); ++i) {
 				QueueItem* q = i->second;
 				
-				if(q->getStatus() == QueueItem::RUNNING) {
+				if( q->isSet(QueueItem::USER_LIST) || (q->getStatus() == QueueItem::RUNNING) ) {
 					continue;
 				}
 				
@@ -92,14 +97,11 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 
 					if(!online) {
 						SearchIter si;
-						for(si = search.begin(); si != search.end(); ++si) {
-							if(si->first == q->getTarget())
-								break;
-						}
+						if(find_if(recent.begin(), recent.end(), CompareFirst<string, u_int32_t>(q->getTarget())) != recent.end())
+							continue;
 
-						if(si == search.end()) {
+						if(find_if(search.begin(), search.end(), CompareFirst<string, u_int32_t>(q->getTarget())) == search.end())
 							search.push_back(make_pair(q->getTarget(), GET_TICK()));
-						}
 					}
 				}
 			}
@@ -118,6 +120,7 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 				if(j == q->getSources().end()) {
 					dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
 					SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, SearchManager::TYPE_ANY, SearchManager::SIZE_ATLEAST);
+					recent.push_back(make_pair(q->getTarget(), GET_TICK()));
 					break;
 				} 
 			} 
@@ -500,36 +503,35 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 	StringList& tokens = line.getTokens();
 	
 	for(StringIter i = tokens.begin(); i != tokens.end(); i++) {
-		string& tok = *i;
+		const string& tok = *i;
 		string::size_type k = tok.find('|');
 
 		if( (k == string::npos) || ((k+1) >= tok.size()) )
 			continue;
 
-		if(tok.substr(k + 1).compare("Active") == 0 || tok.substr(k + 1).compare("Paused") == 0) {
+		string tmp = tok.substr(k+1);
+		if( (tmp == "Active") || (tmp == "Paused") ) {
 			continue; // ignore first line
 		}
 		
-		StringTokenizer t(*i, '\t');
+		StringTokenizer t(tok, '\t');
 		StringList& records = t.getTokens();
 		
 		if(records.size() < 5)
 			continue;
 
-		for(StringIter j = records.begin(); j != records.end(); ++j) {
-			++j; // filename
+		StringIter j = records.begin();
+		++j; // filename
 
-			const string& size   = *(++j);
-			const string& target = *(++j);
-			const string& file   = *(++j);
-			const string& nick   = *(++j);
+		const string& size   = *(++j);
+		const string& target = *(++j);
+		const string& file   = *(++j);
+		const string& nick   = *(++j);
 
-			try {
-				add(file, size, ClientManager::getInstance()->getUser(nick), target);
-			} catch(Exception e) {
-				// ...
-			}
-			break;			
+		try {
+			add(file, size, ClientManager::getInstance()->getUser(nick), target);
+		} catch(Exception e) {
+			// ...
 		}
 	}
 		
@@ -611,5 +613,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.28 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.29 2002/06/01 19:38:28 arnetheduck Exp $
  */

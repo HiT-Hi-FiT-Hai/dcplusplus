@@ -30,9 +30,32 @@
 
 ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
+ConnectionManager::~ConnectionManager() {
+	TimerManager::getInstance()->removeListener(this);
+
+	socket.removeListener(this);
+	socket.disconnect();
+
+	{
+		Lock l(cs);
+		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+			(*j)->disconnect();
+		}
+	}
+
+	while(true) {
+		{
+			Lock l(cs);
+			if(userConnections.empty())
+				break;
+		}
+		Thread::sleep(100);			
+	}
+}
+
 /**
  * Request a connection for downloading.
- * DownloadConnection::addConnection will be called as soon as the connection is ready
+ * DownloadManager::addConnection will be called as soon as the connection is ready
  * for downloading.
  * @param aUser The user to connect to.
  */
@@ -482,6 +505,28 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 	}
 }
 
+void ConnectionManager::shutdown() {
+	shuttingDown = true;
+	socket.removeListener(this);
+	socket.disconnect();
+	{
+		Lock l(cs);
+		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+			(*j)->disconnect();
+		}
+	}
+	// Wait until all connections have died out...
+	while(true) {
+		{
+			Lock l(cs);
+			if(userConnections.empty()) {
+				break;
+			}
+		}
+		Thread::sleep(50);
+	}
+}		
+
 // ServerSocketListener
 void ConnectionManager::onAction(ServerSocketListener::Types type) {
 	switch(type) {
@@ -539,5 +584,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.48 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.49 2002/06/01 19:38:28 arnetheduck Exp $
  */

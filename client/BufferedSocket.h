@@ -122,16 +122,17 @@ public:
 	 * Send the file f over this socket. Note; reading is suspended until the whole file has
 	 * been sent.
 	 */
-	void transmitFile(File* f) throw() {
+	void transmitFile(File* f, int64_t s) throw() {
 		Lock l(cs);
 		file = f;
+		size = s;
 		addTask(SEND_FILE);
 	}
 
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(16384), curBuf(0), file(NULL) {
+		dataBytes(0), inbufSize(16384), curBuf(0), file(NULL), size(0) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -185,6 +186,7 @@ private:
 	CriticalSection bufCS[BUFFERS];
 
 	File* file;
+	int64_t size;
 
 	virtual void accept(const ServerSocket& ) throw(SocketException) { }; // We don't want people accepting BufferedSockets this way...
 	virtual void create(int) throw(SocketException) { dcassert(0); }; // Sockets are created implicitly
@@ -225,5 +227,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.40 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.41 2002/06/01 19:38:28 arnetheduck Exp $
  */

@@ -263,11 +263,10 @@ private:
 	}
 };
 
-
 #endif // !defined(AFX_Client_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.57 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: Client.h,v 1.58 2002/06/01 19:38:28 arnetheduck Exp $
  */
 

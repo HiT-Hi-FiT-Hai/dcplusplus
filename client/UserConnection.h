@@ -219,7 +219,7 @@ public:
 	}
 	
 	void disconnect() { if(socket) socket->disconnect(); };
-	void transmitFile(File* f) { socket->transmitFile(f); };
+	void transmitFile(File* f, int64_t size) { socket->transmitFile(f, size); };
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
@@ -285,5 +285,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.46 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.47 2002/06/01 19:38:28 arnetheduck Exp $
  */

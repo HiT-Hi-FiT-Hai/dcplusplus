@@ -272,6 +272,7 @@ private:
 	typedef deque<pair<string, u_int32_t> > SearchList;
 	typedef SearchList::iterator SearchIter;
 	SearchList search;
+	SearchList recent;
 
 	static const string USER_LIST_NAME;
 	
@@ -301,6 +302,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.25 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.26 2002/06/01 19:38:28 arnetheduck Exp $
  */
 

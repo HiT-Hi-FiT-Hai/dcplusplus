@@ -81,42 +81,13 @@ public:
 class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
 {
 public:
-
-	ConnectionQueueItem* getQueueItem(UserConnection* aConn) {
-		dcassert(connections.find(aConn) != connections.end());
-		return connections[aConn];
-	}
-
 	void connect(const string& aServer, short aPort, const string& aNick);
-	void abortDownloadConnection(const User::Ptr& aUser);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 	void putUploadConnection(UserConnection* aSource) { putConnection(aSource); };
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
-	
-	void shutdown() {
-		shuttingDown = true;
-		socket.removeListener(this);
-		socket.disconnect();
-		{
-			Lock l(cs);
-			for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-				(*j)->disconnect();
-			}
-		}
-		// Wait until all connections have died out...
-		while(true) {
-			{
-				Lock l(cs);
-				if(userConnections.empty()) {
-					break;
-				}
-			}
-			Thread::sleep(50);
-		}
-	}		
-	
+	void shutdown();	
 	/**
 	 * Set this ConnectionManager to listen at a different port.
 	 */
@@ -149,33 +120,9 @@ private:
 		features.push_back("BZList");
 	};
 	
-	virtual ~ConnectionManager() {
-		TimerManager::getInstance()->removeListener(this);
-
-		socket.removeListener(this);
-		socket.disconnect();
-		
-		{
-			Lock l(cs);
-			for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-				(*j)->disconnect();
-			}
-		}
-		
-		while(true) {
-			{
-				Lock l(cs);
-				if(userConnections.empty())
-					break;
-			}
-			Thread::sleep(100);			
-		}
-	}
+	virtual ~ConnectionManager();
 	
-	/**
-	 * Returns a connection, either from the pool or a brand new fresh one.
-	 */
-	UserConnection* getConnection() {
+	UserConnection* getConnection() throw() {
 		UserConnection* uc = new UserConnection();
 		uc->addListener(this);
 		{
@@ -213,5 +160,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.40 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.41 2002/06/01 19:38:28 arnetheduck Exp $
  */

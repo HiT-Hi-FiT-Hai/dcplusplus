@@ -120,6 +120,9 @@ string CryptoManager::keySubst(string aKey, int n) {
 }
 
 string CryptoManager::makeKey(const string& lock) {
+	if(lock.size() < 3)
+		return Util::emptyString;
+
 	u_int8_t* temp = new u_int8_t[lock.length()];
 	u_int8_t v1;
 	int extra=0;
@@ -406,5 +409,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.24 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.25 2002/06/01 19:38:28 arnetheduck Exp $
  */

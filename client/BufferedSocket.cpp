@@ -46,13 +46,29 @@ bool BufferedSocket::threadSendFile() {
 	u_int32_t len;
 	dcassert(file != NULL);
 
-	if( (len = file->read(inbuf, inbufSize)) == 0) {
-		fire(BufferedSocketListener::TRANSMIT_DONE);
-		return true;
+	while(size > 0) {
+		{
+			Lock l(cs);
+			if(!tasks.empty())
+				return false;
+		}
+		int waitFor = WAIT_READ;
+		if(wait(0, waitFor))
+			return false;
+		u_int32_t s = (u_int32_t)min((int64_t)inbufSize, size);
+		if( (len = file->read(inbuf, s)) == 0) {
+			// We don't want this to happen really...disconnect!
+			dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
+			disconnect();
+			return false;
+		}
+		Socket::write((char*)inbuf, len);
+		fire(BufferedSocketListener::BYTES_SENT, len);
+		size -= len;
 	}
-	Socket::write((char*)inbuf, len);
-	fire(BufferedSocketListener::BYTES_SENT, len);
-	return false;
+
+	fire(BufferedSocketListener::TRANSMIT_DONE);
+	return true;
 }
 
 void BufferedSocket::threadConnect() {
@@ -75,11 +91,13 @@ void BufferedSocket::threadConnect() {
 		int waitFor = WAIT_CONNECT;
 
 		while(!wait(200, waitFor)) {
-			if(taskSem.wait(0)) {
-				// We don't want to handle tasks here, push it back and return...
-				taskSem.signal();
-				Socket::disconnect();
-				return;
+			{
+				Lock l(cs);
+				if(!tasks.empty()) {
+					// We don't want to handle tasks here...
+					Socket::disconnect();
+					return;
+				}
 			}
 			if((start + 30000) < GET_TICK()) {
 				// Connection timeout
@@ -266,5 +284,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.41 2002/05/23 21:48:22 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.42 2002/06/01 19:38:28 arnetheduck Exp $
  */
