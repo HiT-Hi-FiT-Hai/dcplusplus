@@ -35,6 +35,7 @@
 * Some linux compile fixes
 * Added readd all sources (thanks garg)
 * Fixed a deadlock when closing hub windows (thanks trem)
+* Added user ip logging in up and downloads (thanks ullner)
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

@@ -280,6 +280,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		StringMap params;
 		params["source"] = u->getFileName();
 		params["user"] = aSource->getUser()->getNick();
+		params["userip"] = aSource->getRemoteIp();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(u->getSize());
@@ -411,5 +412,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.83 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.84 2005/01/07 20:12:44 arnetheduck Exp $
  */

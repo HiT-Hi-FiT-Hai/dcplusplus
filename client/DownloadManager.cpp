@@ -264,7 +264,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			d->setFlag(Download::FLAG_UTF8);
+			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
+				d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
@@ -739,6 +740,7 @@ noCRC:
 		StringMap params;
 		params["target"] = d->getTarget();
 		params["user"] = aSource->getUser()->getNick();
+		params["userip"] = aSource->getRemoteIp();
 		params["hub"] = aSource->getUser()->getLastHubName();
 		params["hubip"] = aSource->getUser()->getLastHubAddress();
 		params["size"] = Util::toString(d->getSize());
@@ -976,5 +978,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.136 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.137 2005/01/07 20:12:44 arnetheduck Exp $
  */
