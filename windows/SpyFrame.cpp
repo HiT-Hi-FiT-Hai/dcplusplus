@@ -172,9 +172,13 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 }
 
 LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-
 	if (GetFocus() == ctrlSearches && ctrlSearches.GetSelectedCount() == 1) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlSearches.ClientToScreen(&pt);
+		}
+
 		int i = ctrlSearches.GetNextItem(-1, LVNI_SELECTED);
 
 		CMenu mnu;
@@ -226,5 +230,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.33 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.34 2005/03/19 17:59:26 arnetheduck Exp $
  */

@@ -79,9 +79,13 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 }
 
 LRESULT FinishedULFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-
 	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x == -1 || pt.y == -1) {
+			RECT rc;
+			ctrlList.GetClientRect(&rc);
+			pt.x = rc.left; pt.y = rc.top;
+		}
 		ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
 		return TRUE; 
 	}
@@ -249,5 +253,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.25 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.26 2005/03/19 17:59:26 arnetheduck Exp $
  */

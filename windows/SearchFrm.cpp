@@ -917,10 +917,12 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 }
 
 LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	
 	if ((HWND)wParam == ctrlResults && ctrlResults.GetSelectedCount() > 0) {
-
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlResults.ClientToScreen(&pt);
+		}
 		while(targetMenu.GetMenuItemCount() > 0) {
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
@@ -1112,5 +1114,5 @@ LRESULT SearchFrame::onPurge(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.88 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.89 2005/03/19 17:59:26 arnetheduck Exp $
  */

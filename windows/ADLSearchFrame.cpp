@@ -218,10 +218,12 @@ LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	
 LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 {
-	// Get the bounding rectangle of the client area. 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-
 	if((HWND)wParam == ctrlList) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlList.ClientToScreen(&pt);
+		}
 		int status = ctrlList.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_GRAYED;
 		contextMenu.EnableMenuItem(IDC_EDIT, status);
 		contextMenu.EnableMenuItem(IDC_REMOVE, status);
@@ -547,5 +549,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.21 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.22 2005/03/19 17:59:26 arnetheduck Exp $
  */

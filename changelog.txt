@@ -1,4 +1,4 @@
-﻿-- 0.671 --
+﻿-- 0.671 2005-03-19 --
 * Added possibility to set minislot size (thanks ullner)
 * [bug 22] Added possibility for multiline away messages and user commands (thanks ullner)
 * Added file type to queue frame (thanks ullner)
@@ -22,7 +22,6 @@
 * [bug 58] Fixed strange user list behaviour
 * [bug 83] Consolidated auto-open window options
 * Fixed some context menu stuff
-
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)

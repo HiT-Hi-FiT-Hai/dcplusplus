@@ -506,11 +506,15 @@ void DirectoryListingFrame::selectItem(const tstring& name) {
 }
 
 HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	
 	fileMenu.RemoveMenu(IDC_GO_TO_DIRECTORY, MF_BYCOMMAND);
 
 	if ((HWND)wParam == ctrlList && ctrlList.GetSelectedCount() > 0) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlList.ClientToScreen(&pt);
+		}
+
 		int n = 0;
 
 		ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
@@ -597,6 +601,12 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		
 		return TRUE; 
 	} else if((HWND)wParam == ctrlTree && ctrlTree.GetSelectedItem() != NULL) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlTree.ClientToScreen(&pt);
+		}
+
 		// Strange, windows doesn't change the selection on right-click... (!)
 		UINT a = 0;
 		HTREEITEM ht = ctrlTree.HitTest(pt, &a);
@@ -977,5 +987,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.57 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.58 2005/03/19 17:59:26 arnetheduck Exp $
  */

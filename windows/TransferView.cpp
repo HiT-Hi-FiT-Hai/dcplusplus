@@ -100,10 +100,12 @@ LRESULT TransferView::onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-
-	if ((HWND)wParam == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) 
-	{ 
+	if ((HWND)wParam == ctrlTransfers && ctrlTransfers.GetSelectedCount() > 0) { 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		if(pt.x < 0 || pt.y < 0) {
+			pt.x = pt.y = 0;
+			ctrlTransfers.ClientToScreen(&pt);
+		}
 		int i = -1;
 		ItemInfo* itemI;
 		bool bCustomMenu = false;
@@ -596,5 +598,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.45 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.46 2005/03/19 17:59:26 arnetheduck Exp $
  */
