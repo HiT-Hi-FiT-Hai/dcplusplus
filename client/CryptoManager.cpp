@@ -552,10 +552,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	bos.skipToByte();
 }
 
-void CryptoManager::encodeBase32(const u_int8_t* src, size_t len, char* dst) {
+string CryptoManager::encodeBase32(const u_int8_t* src, size_t len) {
 	// Code snagged from the bitzi bitcollider
 	size_t i, index;
 	u_int8_t word;
+	string dst;
+	dst.reserve(((len * 8) / 5) + 1);
 
 	for(i = 0, index = 0; i < len;) {
 		/* Is the current word going to span a byte boundary? */
@@ -575,10 +577,9 @@ void CryptoManager::encodeBase32(const u_int8_t* src, size_t len, char* dst) {
 		}
 
 		dcassert(word < 32);
-		*(dst++) = base32Alphabet[word];
+		dst += base32Alphabet[word];
 	}
-
-	*dst = 0;
+	return dst;
 }
 
 void CryptoManager::decodeBase32(const char* src, u_int8_t* dst, size_t len) {
@@ -615,5 +616,5 @@ void CryptoManager::decodeBase32(const char* src, u_int8_t* dst, size_t len) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.39 2004/01/25 10:37:39 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.40 2004/01/25 15:29:07 arnetheduck Exp $
  */

@@ -57,6 +57,11 @@ public:
 		}
 		return true;
 	}
+	void clear() {
+		size_t s = table.size();
+		table.clear();
+		table.resize(s);
+	}
 #ifdef TESTER
 	void print_table_status() {
 		int tot = 0;
@@ -85,5 +90,5 @@ private:
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.2 2004/01/25 10:37:39 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.3 2004/01/25 15:29:06 arnetheduck Exp $
  */

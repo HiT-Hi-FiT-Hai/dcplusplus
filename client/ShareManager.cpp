@@ -63,11 +63,6 @@ ShareManager::ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(fa
 	words.push_back("wav");
 	words.push_back("exe");
 	words.push_back("ccd");
-//	words.push_back("the");
-//	words.push_back("of");
-//	words.push_back("dvdr");
-//	words.push_back("cd1");
-//	words.push_back("cd2");
 
 };
 
@@ -311,6 +306,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 					dir->addType(getType(name));
 					lastFileIter = dir->files.insert(lastFileIter, make_pair(name, s.st_size));
 					dir->size += s.st_size;
+					bloom.add(Util::toLower(name));
 				}
 			}
 		}
@@ -357,7 +353,8 @@ int ShareManager::run() {
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
 				removeDirectory(*k);
 			}
-			for(StringIter l = dirs.begin(); l != dirs.end(); ++l) {
+			bloom.clear();
+            for(StringIter l = dirs.begin(); l != dirs.end(); ++l) {
 				addDirectory(*l);
 			}
 			refreshDirs = false;
@@ -750,6 +747,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.72 2004/01/24 20:42:41 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.73 2004/01/25 15:29:07 arnetheduck Exp $
  */
 

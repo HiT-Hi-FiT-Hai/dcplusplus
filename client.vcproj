@@ -163,6 +163,9 @@
 				RelativePath="client\FinishedManager.cpp">
 			</File>
 			<File
+				RelativePath=".\client\HashManager.cpp">
+			</File>
+			<File
 				RelativePath=".\client\HttpConnection.cpp">
 			</File>
 			<File
@@ -303,6 +306,9 @@
 			</File>
 			<File
 				RelativePath="client\FinishedManager.h">
+			</File>
+			<File
+				RelativePath=".\client\HashManager.h">
 			</File>
 			<File
 				RelativePath=".\client\HttpConnection.h">

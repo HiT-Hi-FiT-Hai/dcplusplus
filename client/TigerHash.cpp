@@ -108,13 +108,13 @@
 }
 
 /* The compress function is a function. Requires smaller cache?    */
-void TigerHash::tigerCompress(u_int64_t *str, u_int64_t state[3]) {
-	tiger_compress_macro(((u_int64_t*)str), ((u_int64_t*)state));
+void TigerHash::tigerCompress(const u_int64_t *str, u_int64_t state[3]) {
+	tiger_compress_macro(((const u_int64_t*)str), ((u_int64_t*)state));
 }
 
-void TigerHash::update(void* data, u_int32_t length) {
+void TigerHash::update(const void* data, u_int32_t length) {
 	u_int32_t tmppos = (u_int32_t)(pos & BLOCK_SIZE-1);
-	u_int8_t* str = (u_int8_t*)data;
+	const u_int8_t* str = (const u_int8_t*)data;
 	// First empty tmp buffer if possible
 	if(tmppos > 0) {
 		u_int32_t n = min(length, BLOCK_SIZE-tmppos);
@@ -682,5 +682,5 @@ u_int64_t TigerHash::table[4*256] = {
 
 /**
  * @file
- * $Id: TigerHash.cpp,v 1.1 2004/01/25 10:37:40 arnetheduck Exp $
+ * $Id: TigerHash.cpp,v 1.2 2004/01/25 15:29:07 arnetheduck Exp $
  */

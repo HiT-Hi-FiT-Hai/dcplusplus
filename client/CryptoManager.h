@@ -153,7 +153,7 @@ public:
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 	void encodeBZ2(const string& is, string& os, int strength = 9);
 	
-	void encodeBase32(const u_int8_t* src, size_t len, char* dst);
+	string encodeBase32(const u_int8_t* src, size_t len);
 	void decodeBase32(const char* src, u_int8_t* dst, size_t len);
 private:
 
@@ -207,5 +207,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.33 2004/01/25 10:37:40 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.34 2004/01/25 15:29:07 arnetheduck Exp $
  */

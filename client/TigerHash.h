@@ -36,7 +36,7 @@ public:
 	}
 
 	/** Calculates the Tiger hash of the data. */
-	void update(void* data, u_int32_t len);
+	void update(const void* data, u_int32_t len);
 	/** Call once all data has been processed. */
 	u_int8_t* finalize();
 
@@ -52,12 +52,12 @@ private:
 	/** S boxes */
 	static u_int64_t table[];
 
-	void tigerCompress(u_int64_t* data, u_int64_t state[3]);
+	void tigerCompress(const u_int64_t* data, u_int64_t state[3]);
 };
 
 #endif // _TIGER_HASH
 
 /**
  * @file
- * $Id: TigerHash.h,v 1.1 2004/01/25 10:37:41 arnetheduck Exp $
+ * $Id: TigerHash.h,v 1.2 2004/01/25 15:29:07 arnetheduck Exp $
  */
