@@ -322,7 +322,7 @@ static const string sTimeStamp = "TimeStamp";
 static const string sRoot = "Root";
 
 void HashLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
-	if(name == sFile) {
+	if(name == sFile && !simple) {
 		file = getAttrib(attribs, sName, 0);
 		size = Util::toInt64(getAttrib(attribs, sSize, 1));
 		timeStamp = Util::toUInt32(getAttrib(attribs, sTimeStamp, 2));
@@ -604,5 +604,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.37 2004/12/27 20:30:03 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.38 2004/12/29 14:38:44 arnetheduck Exp $
  */
