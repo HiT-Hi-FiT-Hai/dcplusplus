@@ -553,7 +553,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		if(end == string::npos)
 			end = x.length();
 		
-		WinUtil::parseDBLClick(x, start, end);
+		bHandled = WinUtil::parseDBLClick(x, start, end);
 		if (!bHandled) {
 			string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 
@@ -1107,5 +1107,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.75 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.76 2004/09/26 07:55:33 arnetheduck Exp $
  */

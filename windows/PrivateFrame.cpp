@@ -351,14 +351,14 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		if(end == string::npos)
 			end = x.length();
 		
-		WinUtil::parseDBLClick(x, start, end);
+		bHandled = WinUtil::parseDBLClick(x, start, end);
 	}
 	return 0;
 }
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.33 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.34 2004/09/26 07:55:35 arnetheduck Exp $
  */
 
 

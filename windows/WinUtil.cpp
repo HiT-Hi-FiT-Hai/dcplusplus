@@ -879,24 +879,24 @@ int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
 	return start;
 }
 
-void WinUtil::parseDBLClick(const tstring& aString, string::size_type start, string::size_type end, bool bHandled /*false*/) {
-	if (!bHandled) { /* Make sure it's not handled */
-		if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) || 
-			(Util::strnicmp(aString.c_str() + start, _T("www."), 4) == 0) ||
-			(Util::strnicmp(aString.c_str() + start, _T("ftp://"), 6) == 0) ||
-			(Util::strnicmp(aString.c_str() + start, _T("irc://"), 6) == 0) ||
-			(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) )	{
+bool WinUtil::parseDBLClick(const tstring& aString, string::size_type start, string::size_type end) {
+	if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) || 
+		(Util::strnicmp(aString.c_str() + start, _T("www."), 4) == 0) ||
+		(Util::strnicmp(aString.c_str() + start, _T("ftp://"), 6) == 0) ||
+		(Util::strnicmp(aString.c_str() + start, _T("irc://"), 6) == 0) ||
+		(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) )	
+	{
 
-				bHandled = true;
-				openLink(aString.substr(start, end-start));
-			} else if(Util::strnicmp(aString.c_str() + start, _T("dchub://"), 8) == 0) {
-				bHandled = true;
-				parseDchubUrl(aString.substr(start, end-start));
-			} else if(Util::strnicmp(aString.c_str() + start, _T("magnet:?"), 8) == 0) {
-				bHandled = true;
-				parseMagnetUri(aString.substr(start, end-start));
-			}
+		openLink(aString.substr(start, end-start));
+		return true;
+	} else if(Util::strnicmp(aString.c_str() + start, _T("dchub://"), 8) == 0) {
+		parseDchubUrl(aString.substr(start, end-start));
+		return true;
+	} else if(Util::strnicmp(aString.c_str() + start, _T("magnet:?"), 8) == 0) {
+		parseMagnetUri(aString.substr(start, end-start));
+		return true;
 	}
+	return false;
 }
 
 void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
@@ -944,5 +944,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.59 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.60 2004/09/26 07:55:35 arnetheduck Exp $
  */
