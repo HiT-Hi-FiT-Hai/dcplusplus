@@ -129,10 +129,9 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->accept(socket);
 		uc->flags |= UserConnection::FLAG_INCOMING;
 		uc->state = UserConnection::LOGIN;
-		// Send something to wake the other fellow up...
-		uc->send("|");
-//		uc->myNick(SETTING(NICK));
-//		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+
+		//		uc->myNick(SETTING(NICK));
+		//		uc->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -196,7 +195,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	try {
 		if(aLock == CryptoManager::getInstance()->getLock()) {
 			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
-			if(aPk.find("DCPLUSPLUS") != string::npos && aSource->getUser()) {
+			if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
 				aSource->getUser()->setFlag(User::DCPLUSPLUS);
 
 				if(aSource->getUser()->getClient()) {
@@ -268,11 +267,24 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) 
 	}
 }
 
+void ConnectionManager::updateUser(UserConnection* aConn) {
+	dcassert(!aConn->getUser()->isOnline());
+	
+	User::Ptr& p = ClientManager::getInstance()->findUser(aConn->getUser()->getNick());
+	if(p) {
+		aConn->setUser(p);
+	}
+	
+}
+
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.19 2002/01/14 01:56:33 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.20 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.20  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.19  2002/01/14 01:56:33  arnetheduck
  * All done for 0.12
  *

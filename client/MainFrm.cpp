@@ -429,6 +429,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, Util::getLocalIp());
 	SettingsManager::getInstance()->setDefault(SettingsManager::PORT, 412);
+	SettingsManager::getInstance()->setDefault(SettingsManager::ROLLBACK, 1024);
 
 	ShareManager::getInstance()->refresh();
 	HubManager::getInstance()->refresh();
@@ -765,9 +766,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.37 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.38 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.38  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.37  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

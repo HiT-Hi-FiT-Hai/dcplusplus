@@ -35,7 +35,7 @@ DWORD WINAPI TimerManager::ticker(void* p) {
 		nextTick = z + 1000;
 		t->fire(TimerManagerListener::SECOND, z);
 		if(nextMin++ >= 60) {
-			t->fire(TimerManagerListener::SECOND, z);
+			t->fire(TimerManagerListener::MINUTE, z);
 			nextMin = 0;
 		}
 	}
@@ -44,9 +44,12 @@ DWORD WINAPI TimerManager::ticker(void* p) {
 }
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.5 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.6 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.6  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.5  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

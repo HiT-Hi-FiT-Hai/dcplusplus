@@ -127,7 +127,6 @@ private:
 	};
 	~UploadManager() {
 		TimerManager::getInstance()->removeListener(this);
-		UserConnection::List tmp = connections;
 		cs.enter();
 		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
 			delete j->second;
@@ -140,16 +139,28 @@ private:
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		switch(type) {
-		case TimerManagerListener::SECOND:
-			cs.enter();
-			for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-				fire(UploadManagerListener::TICK, i->second);
+		case TimerManagerListener::SECOND: 
+			{
+				cs.enter();
+				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+					fire(UploadManagerListener::TICK, i->second);
+				}
+				cs.leave();
 			}
-			cs.leave();
+			break;
+		case TimerManagerListener::MINUTE:
+			{
+				cs.enter();
+				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+					UserConnection* c = i->first;
+					if(!c->getUser()->isOnline()) {
+						ConnectionManager::getInstance()->updateUser(c);
+					}
+				}
+				cs.leave();
+			}	
 			break;
 		}
-	}
-	virtual void onTimerSecond(DWORD aTick) {
 	}
 	
 	// UserConnectionListener
@@ -194,9 +205,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.27 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.28 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.28  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.27  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

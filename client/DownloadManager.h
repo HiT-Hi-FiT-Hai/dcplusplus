@@ -43,23 +43,16 @@ public:
 		Source(const string& aNick, const string& aFileName, const string& aPath, User::Ptr& aUser = User::nuser) : nick(aNick),
 			fileName(aFileName), path(aPath), user(aUser) { };
 
-		const string& getNick() const { return nick; };
-		void setNick(const string& aNick) { nick = aNick; };
-
-		const string& getFileName() const { return fileName; };
-		void setFileName(const string& aFileName) { fileName = aFileName; };
-
-		const string& getPath() const { return path; };
-		void setPath(const string& aPath) { path = aPath; };
-
 		User::Ptr& getUser() { return user; };
-		void setUser(User::Ptr& aUser) { user = aUser; };
+		void setUser(const User::Ptr& aUser) {
+			user = aUser;
+		}
 
+		GETSETREF(string, fileName, FileName);
+		GETSETREF(string, nick, Nick);
+		GETSETREF(string, path, Path);
+		
 	private:
-		string nick;
-		string fileName;
-		string path;
-
 		User::Ptr user;
 	};
 
@@ -127,10 +120,19 @@ public:
 	}
 	
 	Source::Ptr getSource(const User::Ptr& aUser) {
+		// First, search by user...or nick...
 		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser)
 				return *i;
 		}
+
+		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
+			if( !((*j)->getUser() && (*j)->getUser()->isOnline()) && ((*j)->getNick() == aUser->getNick())) {
+				(*j)->setUser(aUser);
+				return *j;
+			}
+		}
+		
 		return NULL;
 	}
 	
@@ -139,13 +141,20 @@ public:
 			if((*i)->getUser() == aUser)
 				return true;
 		}
+		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
+			if( !((*j)->getUser() && (*j)->getUser()->isOnline()) && ((*j)->getNick() == aUser->getNick())) {
+				(*j)->setUser(aUser);
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool isSource(const string& aUser) const {
-		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getNick() == aUser)
+		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
+			if((*j)->getNick() == aUser) {
 				return true;
+			}
 		}
 		return false;
 	}
@@ -184,6 +193,7 @@ public:
 		REMOVED,
 		SOURCE_ADDED,
 		SOURCE_REMOVED,
+		SOURCE_UPDATED,
 		STARTING,
 		TICK
 	};
@@ -320,9 +330,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.24 2002/01/11 14:52:57 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.25 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.25  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.24  2002/01/11 14:52:57  arnetheduck
  * Huge changes in the listener code, replaced most of it with templates,
  * also moved the getinstance stuff for the managers to a template

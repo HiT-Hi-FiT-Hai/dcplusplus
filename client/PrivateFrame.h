@@ -131,7 +131,8 @@ public:
 		return 0;
 	}
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
+	void setUser(const User::Ptr& aUser) { user = aUser; };
+	
 	static PrivateFrame* getFrame(const User::Ptr& aUser, HWND aParent = NULL);
 	
 private:
@@ -158,9 +159,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.5 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.6 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.6  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.5  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

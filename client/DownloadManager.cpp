@@ -44,7 +44,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		}
 		bool online = false;
 		for(Download::Source::Iter j = d->getSources().begin(); j != d->getSources().end(); ++j) {
-			Download::Source::Ptr s = *j;
+			Download::Source* s = *j;
 
 			// Check if we've got a user pointer at all
 			if(!s->getUser()) {
@@ -54,7 +54,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 					// Still no user, go on to the next one...
 					continue;
 				}
-				
+				fire(DownloadManagerListener::SOURCE_UPDATED, d, s);
 			}
 			
 			// Check if the user is still online
@@ -67,10 +67,13 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 					}
 				}
 				if(!found) {
-					// Damn, we've lost him...
-					s->setUser(User::nuser);
+					// Damn, we've lost him...check if he's/she's reconnected...
+					s->setUser(ClientManager::getInstance()->findUser(s->getNick()));
+					fire(DownloadManagerListener::SOURCE_UPDATED, d, s);
+					if(!s->getUser()) {
+						continue;
+					}
 				}
-				continue;
 			}
 
 			online = true;
@@ -433,8 +436,14 @@ void DownloadManager::removeConnections() {
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
-	cs.enter();
 	dcdebug("Checking downloads...");
+	
+	// If the user is offline, check if he's maybe back online, and change the user pointer if that is the case...
+	if( !aConn->getUser()->isOnline() ) {
+		ConnectionManager::getInstance()->updateUser(aConn);
+	}
+
+	cs.enter();
 	Download* d = getNextDownload(aConn->getUser());
 
 	if(d) {
@@ -752,9 +761,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.29 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.30 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.30  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.29  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

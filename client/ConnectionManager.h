@@ -46,7 +46,8 @@ public:
 		putConnection(aSource);
 	}
 	void connect(const string& aServer, short aPort, const string& aNick);
-
+	void updateUser(UserConnection* aConn);
+	
 	/**
 	 * Set this ConnectionManager to listen at a different port.
 	 */
@@ -162,9 +163,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.20 2002/01/13 22:50:47 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.21 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.21  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.20  2002/01/13 22:50:47  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

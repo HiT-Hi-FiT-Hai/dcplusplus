@@ -61,8 +61,21 @@ PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
 	cs.enter();
 	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
 	if(i == frames.end()) {
-		p = new PrivateFrame(aUser, aParent);
-		frames[aUser] = p;
+		bool found = false;
+		for(i = frames.begin(); i != frames.end(); ++i) {
+			if(i->first->getNick() == aUser->getNick()) {
+				found = true;
+				p = i->second;
+				frames.erase(i);
+				frames[aUser] = p;
+				p->setUser(aUser);
+			}
+		}
+		if(!found) {
+			p = new PrivateFrame(aUser, aParent);
+			frames[aUser] = p;
+		}
+
 	} else {
 		p = i->second;
 	}
@@ -95,9 +108,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.4 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.5 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.5  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.4  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

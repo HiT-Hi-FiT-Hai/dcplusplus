@@ -337,7 +337,8 @@ private:
 	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, Download::Source* aSource) {
 		switch(type) {
 		case DownloadManagerListener::SOURCE_ADDED:		// Fallthrough
-		case DownloadManagerListener::SOURCE_REMOVED:
+		case DownloadManagerListener::SOURCE_REMOVED:	// Fallthrough
+		case DownloadManagerListener::SOURCE_UPDATED:
 			onDownloadSourceAdded(aDownload, aSource); break;
 		default:
 			dcassert(0);
@@ -404,9 +405,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.28 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.29 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.29  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.28  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -157,8 +157,6 @@ public:
 	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
 	void maxedOut() { send("$MaxedOut|"); };
 
-	User::Ptr& getUser() { return user; };
-	
 	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
 
 	void connect(const string& aServer, short aPort = 412);
@@ -187,19 +185,26 @@ public:
 		nick = aNick;
 	}
 	
+	User::Ptr& getUser() { return user; };
+
 private:
 	string nick;
 	string server;
 	short port;
 	BufferedSocket socket;
-	User::Ptr user;
 	
 	int state;
 	int flags;
 	DWORD lastActivity;
+	User::Ptr user;
 	
 	static const string UPLOAD, DOWNLOAD;
 	
+	void setUser(const User::Ptr& aUser) {
+		user = aUser;
+	}
+
+
 	void reset() {
 		dcdebug("UserConnection(%p)::reset\n", this );
 
@@ -297,9 +302,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.25 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.26 2002/01/14 22:19:43 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.26  2002/01/14 22:19:43  arnetheduck
+ * Commiting minor bugfixes
+ *
  * Revision 1.25  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *
