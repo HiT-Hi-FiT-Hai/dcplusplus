@@ -26,7 +26,7 @@
 * Added "Match Queue" to various right-click menus
 * Internationalised settings (thanks gargoyle)
 * Fixed finished frame lockups
-
+* Moved to Visual Studio 7.1, 7.0 project files are available, but won't be maintained...
 
  -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)
