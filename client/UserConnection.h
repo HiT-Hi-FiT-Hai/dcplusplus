@@ -174,6 +174,7 @@ private:
 	
 	void reset() {
 		disconnect();
+		removeListeners();
 		user = NULL;
 		flags = 0;
 		state = LOGIN;
@@ -342,9 +343,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.12  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.11  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

@@ -94,8 +94,6 @@ void CryptoManager::decodeHuffman(BYTE* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 
-	// We want to operate on the data directly...and this is really faster than operator[]...
-
 	if(is[pos] != 'H' || is[pos+1] != 'E' || !(is[pos+2] == '3' || is[pos+2] == '0')) {
 		return;
 	}
@@ -178,14 +176,15 @@ void CryptoManager::decodeHuffman(BYTE* is, string& os) {
  */
 int CryptoManager::countChars(const string& aString, int* c, BYTE& csum) {
 	int chars = 0;
+	BYTE* a = (BYTE*)aString.data();
+	string::size_type len = aString.length();
+	for(int i=0; i<len; i++) {
 
-	for(int i=0; i<aString.length(); i++) {
-
-		if(c[(BYTE)aString[i]] == 0)
+		if(c[a[i]] == 0)
 			chars++;
 
-		c[(BYTE)aString[i]]++;
-		csum^=(BYTE)aString[i];
+		c[a[i]]++;
+		csum^=a[i];
 	}
 	return chars;
 }
@@ -330,9 +329,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.7 2001/12/07 20:03:05 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.8 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.8  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.7  2001/12/07 20:03:05  arnetheduck
  * More work done towards application stability
  *

@@ -40,6 +40,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
 
+	ctrlClient.SetFont(ctrlUsers.GetFont());
+	
 	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 7500;
@@ -82,9 +84,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.7 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.8 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.8  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.7  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

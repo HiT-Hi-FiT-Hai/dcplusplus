@@ -135,7 +135,6 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
 		CHAIN_MSG_MAP(splitBase)
-		CHAIN_CLIENT_COMMANDS()
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
@@ -250,8 +249,7 @@ public:
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 			string s(message, ctrlMessage.GetWindowTextLength());
 			delete message;
-			SearchManager::getInstance()->search(s);
-			//client->sendMessage(s);
+			client->sendMessage(s);
 			ctrlMessage.SetWindowText("");
 		} else {
 			bHandled = FALSE;
@@ -269,9 +267,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.12  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.11  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

@@ -25,50 +25,51 @@
 
 #include "BufferedSocket.h"
 
+class SearchResult {
+public:	
+	const string& getNick() { return nick; };
+	void setNick(const string& aNick) { nick = aNick; };
+	
+	const string& getFile() { return file; };
+	void setFile(const string& aFile) { file = aFile; };
+	
+	const string& getHubName() { return hubName; };
+	void setHubName(const string aHub) { hubName = aHub; };
+	
+	const string& getHubAddress() { return hubAddress; };
+	void setHubAddress(const string& aAddress) { hubAddress = aAddress; };
+	
+	LONGLONG getSize() { return size; };
+	void setSize(LONGLONG aSize) { size = aSize; };
+	void setSize(const string& aSize) { size = _atoi64(aSize.c_str()); };
+	
+	int getSlots() { return slots; };
+	int getFreeSlots() { return freeSlots; };
+	string getSlotString() { char buf[16]; sprintf(buf, "%d/%d", freeSlots, slots); return buf; };
+	void setSlots(int aSlots) { slots = aSlots; };
+	void setSlots(const string& aSlots) { setSlots(atoi(aSlots.c_str())); };
+	
+	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
+	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
+	
+private:
+	string nick;
+	string file;
+	string hubName;
+	string hubAddress;
+	
+	LONGLONG size;
+	int slots;
+	int freeSlots;
+};
+
 class SearchManagerListener {
 public:
 	typedef SearchManagerListener* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-};
-
-class SearchResult {
-
-	const string& getNick() { return nick; };
-	void setNick(const string& aNick) { nick = aNick; };
-
-	const string& getFile() { return file; };
-	void setFile(const string& aFile) { file = aFile; };
-
-	const string& getHubName() { return hubName; };
-	void setHubName(const string aHub) { hubName = aHub; };
-	
-	const string& getHubAddress() { return hubAddress; };
-	void setHubAddress(const string& aAddress) { hubAddress = aAddress; };
-
-	LONGLONG getSize() { return size; };
-	void setSize(LONGLONG aSize) { size = aSize; };
-	void setSize(const string& aSize) { size = _atoi64(aSize.c_str()); };
-
-	int getSlots() { return slots; };
-	int getFreeSlots() { return freeSlots; };
-	string getSlotString() { char buf[16]; sprintf(buf, "%d/%d", slots, freeSlots); return buf; };
-	void setSlots(int aSlots) { slots = aSlots; };
-	void setSlots(const string& aSlots) { setSlots(atoi(aSlots.c_str())); };
-
-	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
-	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
-
-private:
-	string nick;
-	string file;
-	string hubName;
-	string hubAddress;
-
-	LONGLONG size;
-	int slots;
-	int freeSlots;
+	virtual void onSearchResult(SearchResult* aResult) { };
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener
@@ -125,19 +126,30 @@ private:
 		socket.removeListener(this);
 	};
 
-	virtual void onData(BYTE* buf, int aLen) {
-		string x((char*)buf, aLen);
-		dcdebug("Search: %s\n", x.c_str());
+	virtual void onData(BYTE* buf, int aLen);
+
+	void fireResult(SearchResult* aResult) {
+		listenerCS.enter();
+		SearchManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		for(SearchManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onSearchResult(aResult);
+		}
 	}
+	
+	
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.2 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.3 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.3  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.2  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

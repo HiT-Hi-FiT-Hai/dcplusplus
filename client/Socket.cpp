@@ -101,6 +101,7 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 		disconnect();
 	
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
+	type = TYPE_TCP;
 	connected = true;
 }
 
@@ -208,9 +209,12 @@ void Socket::write(const string& aData) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.10 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.11 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.11  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.10  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

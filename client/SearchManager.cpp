@@ -27,16 +27,48 @@ SearchManager* SearchManager::instance = NULL;
 void SearchManager::search(const string& aName, LONGLONG aSize, DWORD aFlags /* = 0 */, int aType /* = 0 */ ) {
 	Client::List ls = Client::getList();
 	for(Client::Iter i = ls.begin(); i != ls.end(); ++i) {
-		(*i)->search(aType, aSize, aType, aName);
+		try {
+			(*i)->search(aType, aSize, aType, aName);
+		} catch(Exception e) {
+			dcdebug("SearchManager::search caught: %s\n", e.getError().c_str());
+		}
 	}
 }
 
+void SearchManager::onData(BYTE* buf, int aLen) {
+	string x((char*)buf, aLen);
+	if(x.find("$SR") != string::npos) {
+		SearchResult* sr=new SearchResult();
+		
+		x = x.substr(4);
+		sr->setNick(x.substr(0, x.find(' ')));
+		x = x.substr(x.find(' ') + 1);
+		sr->setFile(x.substr(0, x.find((char)5)));
+		x = x.substr(x.find((char)5) + 1);
+		sr->setSize(x.substr(0, x.find(' ')));
+		x = x.substr(x.find(' ') + 1);
+		sr->setFreeSlots(x.substr(0, x.find('/')));
+		x = x.substr(x.find('/') + 1);
+		sr->setSlots(x.substr(0, x.find((char)5)));
+		x = x.substr(x.find((char)5)+1);
+		sr->setHubName(x.substr(0, x.find(' ')));
+		x = x.substr(x.find(' ')+2);
+		sr->setHubAddress(x.substr(0, x.find(')')));
+
+		fireResult(sr);
+		delete sr;
+	}
+	dcdebug("Search: %s\n", x.c_str());
+}
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.2 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.3 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.3  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.2  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

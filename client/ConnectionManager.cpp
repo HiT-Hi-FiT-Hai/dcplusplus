@@ -91,7 +91,7 @@ void ConnectionManager::onIncomingConnection() {
 		uc->accept(socket);
 		uc->state = UserConnection::LOGIN;
 	} catch(Exception e) {
-		dcdebug("Error creating connection\n");
+		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		uc->disconnect();
 		pool.push_back(uc);
 	}
@@ -111,6 +111,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 				aSource->myNick(Settings::getNick());
 				aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 			} catch(Exception e) {
+				dcdebug("ConnectionManager::onMyNick caught: %s\n", e.getError().c_str());
 				putConnection(aSource);
 			}
 		} 	
@@ -126,6 +127,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 		try {
 			aSource->direction("Download", "666");
 		} catch(Exception e) {
+			dcdebug("ConnectionManager::onMyNick caught(2): %s\n", e.getError().c_str());
 			putConnection(aSource);
 		}
 	
@@ -142,6 +144,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 			aSource->myNick(Settings::getNick());
 			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		} catch(Exception e) {
+			dcdebug("ConnectionManager::onMyNick caught(3): %s\n", e.getError().c_str());
 			putConnection(aSource);
 		}
 	
@@ -157,6 +160,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	try {
 		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 	} catch(Exception e) {
+		dcdebug("ConnectionManager::onLock caught: %s\n", e.getError().c_str());
 		putConnection(aSource);
 	}
 	
@@ -184,6 +188,7 @@ void ConnectionManager::onConnected(UserConnection* aSource) {
 		aSource->myNick(Settings::getNick());
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	} catch(Exception e) {
+		dcdebug("ConnectionManager::onConnected caught: %s\n", e.getError().c_str());
 		putConnection(aSource);
 	}
 }
@@ -195,15 +200,19 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 	try { 
 		c->connect(aServer, aPort);
 	} catch(Exception e) {
+		dcdebug("ConnectionManager::connect caught: %s\n", e.getError().c_str());
 		putConnection(c);
 	}
 }
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.7 2001/12/07 20:03:04 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.8 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.8  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.7  2001/12/07 20:03:04  arnetheduck
  * More work done towards application stability
  *

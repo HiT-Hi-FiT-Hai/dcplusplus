@@ -124,6 +124,8 @@ public:
 			Upload::MapIter i = uploads.find(aSource);
 			if(i != uploads.end()) {
 				// This is bad!
+				
+				dcdebug("UploadManager::onGet Unexpected command\n");				
 				fireFailed(i->second, "Unexpected command");
 				delete i->second;
 				dcdebug("onGet: Removing upload\n");
@@ -151,6 +153,8 @@ public:
 
 		} catch (ShareException e) {
 			aSource->error("File Not Available");
+		} catch(SocketException e) {
+			dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		}
 
 		uploadCS.leave();
@@ -172,6 +176,7 @@ public:
 			aSource->transmitFile(u->getFile());
 			fireStarting(u);
 		} catch(Exception e) {
+			dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 			dcdebug("onSend: Removing upload\n");
 			uploads.erase(i);
 			delete u;
@@ -283,9 +288,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.12  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.11  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

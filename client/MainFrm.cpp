@@ -22,6 +22,7 @@
 #include "MainFrm.h"
 #include "AboutDlg.h"
 #include "HubFrame.h"
+#include "SearchFrm.h"
 #include "PublicHubsDlg.h"
 #include "SettingsDlg.h"
 
@@ -212,6 +213,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	bHandled = FALSE;
 	return 0;
 }
+
+LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	SearchFrame* pChild = new SearchFrame();
+	pChild->CreateEx(m_hWndClient);
+	return 0;
+}	
 	
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	PublicHubsDlg dlg;
@@ -274,9 +282,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.14 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.15 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.15  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.14  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

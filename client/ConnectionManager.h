@@ -49,7 +49,6 @@ public:
 
 	int getDownloadConnection(User* aUser);
 	void putDownloadConnection(UserConnection* aSource) {
-		aSource->reset();
 		downloaderCS.enter();
 		int j = downloaders.size();
 		for(UserConnection::NickIter i = downloaders.begin(); i != downloaders.end(); ++i) {
@@ -61,10 +60,9 @@ public:
 		}
 		downloaderCS.leave();		
 		// Pool it for later usage...
-		pool.push_back(aSource);
+		putConnection(aSource);
 	}
 	void putUploadConnection(UserConnection* aSource) {
-		aSource->reset();
 		uploaderCS.enter();
 		for(UserConnection::NickIter i = uploaders.begin(); i != uploaders.end(); ++i) {
 			// Can't search by user, he/she might have disconnected...
@@ -74,7 +72,7 @@ public:
 			}
 		}
 		uploaderCS.leave();
-		pool.push_back(aSource);
+		putConnection(aSource);
 	}
 	void connect(const string& aServer, short aPort);
 
@@ -87,6 +85,7 @@ public:
 			socket.disconnect();
 			socket.waitForConnections(aPort);
 		} catch(SocketException e) {
+			dcdebug("ConnectionManager::setPort caught: %s\n", e.getError().c_str());
 			// Doh!...
 		}
 	}
@@ -118,6 +117,7 @@ private:
 		} else {
 			uc = pool.back();
 			pool.pop_back();
+			uc->addListener(this);
 		}
 		poolCS.leave();
 		return uc;
@@ -126,7 +126,7 @@ private:
 	 * Put a connection back into the pool.
 	 */
 	void putConnection(UserConnection* aConn) {
-		aConn->disconnect();
+		aConn->reset();
 		poolCS.enter();
 		pool.push_back(aConn);
 		poolCS.leave();
@@ -140,7 +140,7 @@ private:
 			socket.addListener(this);
 			socket.waitForConnections(Settings::getPort());
 		} catch(SocketException e) {
-			// Doh!
+			dcdebug("ConnectionManager::ConnectionManager caught: %s\n", e.getError().c_str());
 		}
 	};
 
@@ -149,6 +149,7 @@ private:
 		// Time to empty the pool...
 		poolCS.enter();
 		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
+			dcdebug("Deleting connection %p\n", *i);
 			delete *i;
 		}
 		poolCS.leave();
@@ -161,9 +162,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.9 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.9  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.8  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

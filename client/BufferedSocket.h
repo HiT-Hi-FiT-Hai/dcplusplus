@@ -74,7 +74,7 @@ public:
 	void setSeparator(char aSeparator) { separator = aSeparator; };
 
 	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), readerEvent(NULL), mode(MODE_LINE),
-		writerEvent(NULL), writerThread(NULL) {
+		writerEvent(NULL), writerThread(NULL), dataBytes(0) {
 
 	};
 
@@ -132,7 +132,7 @@ private:
 			SetEvent(writerEvent);
 			
 			if(WaitForSingleObject(writerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("BufferedSocket: Unable to stop writer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+				dcassert(0);
 			}
 			
 			writerThread = NULL;
@@ -150,7 +150,7 @@ private:
 			SetEvent(readerEvent);
 			
 			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("BufferedSocket: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+				dcassert(0);
 			}
 			
 			readerThread = NULL;
@@ -231,9 +231,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.9 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.9  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.8  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

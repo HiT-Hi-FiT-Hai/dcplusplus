@@ -178,6 +178,10 @@ SOURCE=.\client\PublicHubsDlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\SearchFrm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\SearchManager.cpp
 # End Source File
 # Begin Source File
@@ -328,6 +332,10 @@ SOURCE=.\client\PublicHubsDlg.h
 # Begin Source File
 
 SOURCE=.\client\resource.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SearchFrm.h
 # End Source File
 # Begin Source File
 

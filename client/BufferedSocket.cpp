@@ -25,7 +25,7 @@ static const int BUFSIZE = 4096;
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
 	Socket::accept(aSocket);
-	
+
 	dcdebug("Socket accepted\n");
 	startReader();
 }
@@ -57,6 +57,7 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 				bs->write((char*)buf, len);
 				bs->fireBytesSent(len);
 			} catch(SocketException e) {
+				dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
 				bs->fireError(e.getError());
 				bs->writerThread = NULL;
 				return 0x12;
@@ -103,6 +104,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			h[1] = bs->getEvent();
 		}
 	} catch (SocketException e) {
+		dcdebug("BufferedSocket::Reader caught: %s\n", e.getError().c_str());
 		bs->disconnect();
 		bs->fireError(e.getError());
 		bs->readerThread = NULL;
@@ -172,6 +174,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				}
 			}
 		} catch(SocketException e) {
+			dcdebug("BufferedSocket::Reader caught(2): %s\n", e.getError().c_str());
 			// Ouch...
 			bs->disconnect();
 			bs->fireError(e.getError());
@@ -185,9 +188,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.12 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.13 2001/12/08 20:59:26 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.13  2001/12/08 20:59:26  arnetheduck
+ * Fixing bugs...
+ *
  * Revision 1.12  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *
