@@ -199,23 +199,23 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 		const string& b = getAttrib(attribs, sBase, 2);
 		if(b.size() >= 1 && b[0] == '/' && b[b.size()-1] == '/') {
 			base = b;
-			StringList sl = StringTokenizer<string>(base.substr(1), '/').getTokens();
-			for(StringIter i = sl.begin(); i != sl.end(); ++i) {
-				DirectoryListing::Directory* d = NULL;
-				for(DirectoryListing::Directory::Iter j = cur->directories.begin(); j != cur->directories.end(); ++j) {
-					if((*j)->getName() == *i) {
-						d = *j;
-						break;
-					}
-				}
-				if(d == NULL) {
-					d = new DirectoryListing::Directory(cur, *i, false, false);
-					cur->directories.push_back(d);
-				}
-				cur = d;
-			}
-			cur->setComplete(true);
 		}
+		StringList sl = StringTokenizer<string>(base.substr(1), '/').getTokens();
+		for(StringIter i = sl.begin(); i != sl.end(); ++i) {
+			DirectoryListing::Directory* d = NULL;
+			for(DirectoryListing::Directory::Iter j = cur->directories.begin(); j != cur->directories.end(); ++j) {
+				if((*j)->getName() == *i) {
+					d = *j;
+					break;
+				}
+			}
+			if(d == NULL) {
+				d = new DirectoryListing::Directory(cur, *i, false, false);
+				cur->directories.push_back(d);
+			}
+			cur = d;
+		}
+		cur->setComplete(true);
 		inListing = true;
 
 		if(simple) {
@@ -332,5 +332,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.49 2005/03/14 14:04:30 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.50 2005/03/20 15:35:30 arnetheduck Exp $
  */

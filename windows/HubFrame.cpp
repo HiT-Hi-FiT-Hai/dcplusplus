@@ -661,13 +661,14 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	POINT pt; 
 	GetCursorPos(&pt);			//need cursor pos
 	ctrlClient.GetWindowRect(&rc);
-	ctrlClient.ClientToScreen(&pt);
 
 	bool doMenu = false;
 
 	if (PtInRect(&rc, pt)) {
 		tstring x;
+		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
+		ctrlClient.ClientToScreen(&pt);
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
@@ -691,7 +692,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 			doMenu = true; 
 		} 
 	} 
-	ctrlClient.ScreenToClient(&pt);
 	
 	if((doMenu || ((HWND)wParam == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
 		tabMenuShown = false;
@@ -1131,5 +1131,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.101 2005/03/19 16:17:42 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.102 2005/03/20 15:35:21 arnetheduck Exp $
  */

@@ -845,13 +845,16 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		if(pt.x < 0 || pt.y < 0) {
 			pt.x = pt.y = 0;
 			ctrlDirs.ClientToScreen(&pt);
+		} else {
+			// Strange, windows doesn't change the selection on right-click... (!)
+			UINT a = 0;
+			ctrlDirs.ScreenToClient(&pt);
+			HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
+			if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
+				ctrlDirs.SelectItem(ht);
+			ctrlDirs.ClientToScreen(&pt);
 		}
 		usingDirMenu = true;
-		// Strange, windows doesn't change the selection on right-click... (!)
-		UINT a = 0;
-		HTREEITEM ht = ctrlDirs.HitTest(pt, &a);
-		if(ht != NULL && ht != ctrlDirs.GetSelectedItem())
-			ctrlDirs.SelectItem(ht);
 		
 		dirMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	
@@ -1258,7 +1261,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.73 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.74 2005/03/20 15:35:21 arnetheduck Exp $
  */
 
 

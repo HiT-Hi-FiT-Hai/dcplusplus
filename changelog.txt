@@ -1,4 +1,8 @@
-﻿-- 0.671 2005-03-19 --
+﻿-- 0.672 2005-03-20 --
+* Fixed an issue when loading pre-671 file lists
+* Fixed the hub frame context menu fix
+
+-- 0.671 2005-03-19 --
 * Added possibility to set minislot size (thanks ullner)
 * [bug 22] Added possibility for multiline away messages and user commands (thanks ullner)
 * Added file type to queue frame (thanks ullner)

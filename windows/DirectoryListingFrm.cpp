@@ -223,6 +223,8 @@ void DirectoryListingFrame::refreshTree(const tstring& root) {
 	}
 
 	updateTree(d, ht);
+	
+	ctrlTree.Expand(treeRoot);
 
 	int index = d->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
 	ctrlTree.SetItemImage(ht, index, index);
@@ -605,13 +607,16 @@ HRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARA
 		if(pt.x < 0 || pt.y < 0) {
 			pt.x = pt.y = 0;
 			ctrlTree.ClientToScreen(&pt);
+		} else {
+			ctrlTree.ScreenToClient(&pt);
+			UINT a = 0;
+			HTREEITEM ht = ctrlTree.HitTest(pt, &a);
+			if(ht != NULL && ht != ctrlTree.GetSelectedItem())
+				ctrlTree.SelectItem(ht);
+			ctrlTree.ClientToScreen(&pt);
 		}
 
 		// Strange, windows doesn't change the selection on right-click... (!)
-		UINT a = 0;
-		HTREEITEM ht = ctrlTree.HitTest(pt, &a);
-		if(ht != NULL && ht != ctrlTree.GetSelectedItem())
-			ctrlTree.SelectItem(ht);
 		
 		while(targetDirMenu.GetMenuItemCount() > 0) {
 			targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
@@ -987,5 +992,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.58 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.59 2005/03/20 15:35:21 arnetheduck Exp $
  */
