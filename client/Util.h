@@ -343,11 +343,18 @@ public:
 	}
 
 	static double toDouble(const string& aString) {
+		// Work-around for atof and locales...
+		string::size_type i = aString.rfind(',');
+		if(i != string::npos) {
+			string tmp(aString);
+			tmp[i] = '.';
+			return atof(tmp.c_str());
+		}
 		return atof(aString.c_str());
 	}
 
 	static float toFloat(const string& aString) {
-		return (float)atof(aString.c_str());
+		return (float)toDouble(aString.c_str());
 	}
 
 	static string toString(const int64_t& val) {
@@ -599,5 +606,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.97 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: Util.h,v 1.98 2004/09/10 10:04:01 arnetheduck Exp $
  */

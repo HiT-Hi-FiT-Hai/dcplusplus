@@ -212,8 +212,8 @@ private:
 		void update() { 
 			columns[COLUMN_NICK] = WinUtil::toT(user->getNick());
 			columns[COLUMN_SHARED] = WinUtil::toT(Util::formatBytes(user->getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = WinUtil::toT(Util::formatBytes(user->getUserDescription()));
-			columns[COLUMN_TAG] = WinUtil::toT(Util::formatBytes(user->getTag()));
+			columns[COLUMN_DESCRIPTION] = WinUtil::toT(user->getUserDescription());
+			columns[COLUMN_TAG] = WinUtil::toT(user->getTag());
 			columns[COLUMN_CONNECTION] = WinUtil::toT(user->getConnection());
 			columns[COLUMN_EMAIL] = WinUtil::toT(user->getEmail());
 			op = user->isSet(User::OP); 
@@ -389,6 +389,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.48 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.49 2004/09/10 10:04:07 arnetheduck Exp $
  */
 

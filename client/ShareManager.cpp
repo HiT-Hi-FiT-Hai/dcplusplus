@@ -224,7 +224,10 @@ void ShareManager::load(SimpleXML* aXml) {
 			if(d[d.length() - 1] != PATH_SEPARATOR)
 				d += PATH_SEPARATOR;
 			if(!virt.empty()) {
-				newVirt = Util::getLastDir(virt);
+				newVirt = virt;
+				if(newVirt[newVirt.length() - 1] == PATH_SEPARATOR) {
+					newVirt.erase(newVirt.length() -1, 1);
+				}
 			} else {
 				newVirt = Util::getLastDir(d);
 			}
@@ -485,7 +488,7 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 
 	for(Directory::MapIter i = dir->directories.begin(); i != dir->directories.end(); ++i) {
 		Directory* d = i->second;
-		addTree(fullName + PATH_SEPARATOR + d->getName(), d);
+		addTree(fullName + d->getName() + PATH_SEPARATOR, d);
 	}
 
 	for(Directory::File::Iter i = dir->files.begin(); i != dir->files.end(); ) {
@@ -495,7 +498,7 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 		Directory::File& f = const_cast<Directory::File&>(f2);
 		string fileName = fullName + f.getName();
 
-		f.setTTH(HashManager::getInstance()->getTTH(fullName + f.getName()));
+		f.setTTH(HashManager::getInstance()->getTTH(fileName));
 
 		if(f.getTTH() != NULL) {
 			addFile(dir, i++);
@@ -576,12 +579,6 @@ int ShareManager::run() {
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
 					addTree(i->first, i->second);
 					directories.insert(*i);
-				}
-			}
-            for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
-				try {
-					addDirectory(i->second, i->first);
-				} catch(...) {
 				}
 			}
 			refreshDirs = false;
@@ -1225,6 +1222,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.96 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.97 2004/09/10 10:04:00 arnetheduck Exp $
  */
 

@@ -321,6 +321,9 @@ private:
 				path = WinUtil::toT(sr->getFile());
 				type = TSTRING(DIRECTORY);
 			}
+			nick = WinUtil::toT(sr->getUser()->getNick());
+			connection = WinUtil::toT(sr->getUser()->getConnection());
+			hubName = WinUtil::toT(sr->getHubName());
 			slots = WinUtil::toT(sr->getSlotString());
 			ip = WinUtil::toT(sr->getIP());
 			if(sr->getTTH() != NULL)
@@ -456,6 +459,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.41 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.42 2004/09/10 10:04:08 arnetheduck Exp $
  */
 

@@ -414,15 +414,15 @@ void WinUtil::setClipboard(const tstring& str) {
 	EmptyClipboard();
 
 	// Allocate a global memory object for the text. 
-	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1)); 
+	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR)); 
 	if (hglbCopy == NULL) { 
 		CloseClipboard(); 
 		return; 
 	} 
 
 	// Lock the handle and copy the text to the buffer. 
-	char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
-	memcpy(lptstrCopy, str.c_str(), str.length() + 1);
+	TCHAR* lptstrCopy = (TCHAR*)GlobalLock(hglbCopy); 
+	_tcscpy(lptstrCopy, str.c_str());
 	GlobalUnlock(hglbCopy); 
 
 	// Place the handle on the clipboard. 
@@ -886,5 +886,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.54 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.55 2004/09/10 10:04:08 arnetheduck Exp $
  */
