@@ -98,7 +98,7 @@ public:
 		parse(aLine, nmdc);
 	}
 
-	void parse(const string& aLine, bool nmdc = false);
+	void parse(const string& aLine, bool nmdc = false) throw(ParseException);
 
 	u_int32_t getCommand() const { return cmdInt; }
 	char getType() const { return type; }
@@ -200,5 +200,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.17 2005/02/19 21:58:29 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.18 2005/03/03 11:58:30 arnetheduck Exp $
 */

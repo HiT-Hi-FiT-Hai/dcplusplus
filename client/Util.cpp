@@ -65,6 +65,19 @@ void Util::initialize() {
 
 	sgenrand((unsigned long)time(NULL));
 
+#ifdef _WIN32
+	TCHAR buf[MAX_PATH+1];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	appPath = Text::fromT(buf);
+	appPath.erase(appPath.rfind('\\') + 1);
+#else // _WIN32
+	char* home = getenv("HOME");
+	if (home) {
+		appPath = Text::fromT(home);
+		appPath += "/.dc++/";
+	}
+#endif // _WIN32
+
 	try {
 		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
 		// Updates at http://www.maxmind.com/app/geoip_country
@@ -93,19 +106,6 @@ void Util::initialize() {
 		}
 	} catch(const FileException&) {
 	}
-
-#ifdef _WIN32
-	TCHAR buf[MAX_PATH+1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	appPath = Text::fromT(buf);
-	appPath.erase(appPath.rfind('\\') + 1);
-#else // _WIN32
-	char* home = getenv("HOME");
-	if (home) {
-		appPath = Text::fromT(home);
-		appPath += "/.dc++/";
-	}
-#endif // _WIN32
 }
 
 string Util::getConfigPath() {
@@ -469,7 +469,7 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 	const u_int8_t* tx = (const u_int8_t*)aString.c_str() + start;
 	const u_int8_t* px = (const u_int8_t*)aSubString.c_str();
 
-	const u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
+	const u_int8_t* end = tx + aString.length() - start - aSubString.length() + 1;
 
 	wchar_t wp = utf8ToLC(px);
 
@@ -860,6 +860,6 @@ string Util::toDOS(const string& tmp) {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.82 2005/02/01 16:41:36 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.83 2005/03/03 11:58:30 arnetheduck Exp $
  */
 

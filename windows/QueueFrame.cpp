@@ -1043,7 +1043,7 @@ void QueueFrame::changePriority(bool inc){
 		if ((inc && p == QueueItem::HIGHEST) || (!inc && p == QueueItem::PAUSED)){
 			// Trying to go higher than HIGHEST or lower than PAUSED
 			// so do nothing
-			return;
+			continue;
 		}
 
 		switch(p){
@@ -1263,7 +1263,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.69 2005/02/07 18:24:03 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.70 2005/03/03 11:58:27 arnetheduck Exp $
  */
 
 

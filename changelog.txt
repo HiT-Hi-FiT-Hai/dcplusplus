@@ -6,6 +6,10 @@
 * [bug 439] Fixed purge button (thanks ullner)
 * Fixed search frame only tth issue (thanks naga)
 * Updated to ADC 0.9
+* Fixed a crash bug (thanks trem)
+* Fixed a geoip init bug (thanks trem)
+* Fixed a prio setting bug (thanks tpo)
+* Fixed some font settings (thanks tpo)
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
