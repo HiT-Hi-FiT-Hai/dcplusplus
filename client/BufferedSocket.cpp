@@ -32,8 +32,8 @@
 #define POLL_TIMEOUT 250
 
 BufferedSocket::BufferedSocket(char aSeparator, bool aUsesEscapes) throw(SocketException) : 
-separator(aSeparator), usesEscapes(aUsesEscapes), escaped(false), port(0), mode(MODE_LINE), 
-dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
+separator(aSeparator), usesEscapes(aUsesEscapes), port(0), mode(MODE_LINE), 
+dataBytes(0), escaped(false), inbufSize(64*1024), curBuf(0), file(NULL) {
 
 	inbuf = new u_int8_t[inbufSize];
 
@@ -54,7 +54,7 @@ dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
 	}
 }
 
-BufferedSocket::~BufferedSocket() {
+BufferedSocket::~BufferedSocket() throw() {
 	delete[] inbuf;
 	for(int i = 0; i < BUFFERS; i++) {
 		delete[] outbuf[i];
@@ -376,7 +376,7 @@ void BufferedSocket::write(const char* aBuf, size_t aLen) throw() {
 
 		if(newSize > outbufSize[curBuf]) {
 			// Need to grow...
-			dcdebug("Growing outbuf[%d] to %d bytes\n", curBuf, newSize);
+			dcdebug("Growing outbuf[%d] to %lu bytes\n", curBuf, newSize);
 			u_int8_t* newbuf = new u_int8_t[newSize];
 			memcpy(newbuf, outbuf[curBuf], outbufPos[curBuf]);
 			delete[] outbuf[curBuf];
@@ -458,5 +458,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.77 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.78 2005/01/06 18:19:48 arnetheduck Exp $
  */

@@ -99,7 +99,7 @@ public:
 		addTask(ACCEPTED);
 	}
 
-	virtual void disconnect() {
+	virtual void disconnect() throw() {
 		Lock l(cs);
 		addTask(DISCONNECT);
 	}
@@ -154,7 +154,7 @@ private:
 	BufferedSocket(const BufferedSocket&);
 	BufferedSocket& operator=(const BufferedSocket&);
 
-	virtual ~BufferedSocket();
+	virtual ~BufferedSocket() throw();
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
@@ -215,5 +215,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.64 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.65 2005/01/06 18:19:48 arnetheduck Exp $
  */

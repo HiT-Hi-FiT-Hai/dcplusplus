@@ -1041,7 +1041,33 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 		return 2;
 	}
 }
+
+int WinUtil::getOsMajor() {
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMajorVersion;
+}
+
+int WinUtil::getOsMinor() 
+{
+	OSVERSIONINFOEX ver;
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
+	{
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	}
+	GetVersionEx((OSVERSIONINFO*)&ver);
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	return ver.dwMinorVersion;
+}
+
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.76 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.77 2005/01/06 18:20:07 arnetheduck Exp $
  */

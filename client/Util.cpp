@@ -619,7 +619,7 @@ string fixedftime(const string& format, struct tm* t) {
 
 	StringMap sm;
 	AutoArray<char> buf(1024);
-	for(int i = 0; i < sizeof(codes); ++i) {
+	for(size_t i = 0; i < sizeof(codes); ++i) {
 		tmp[1] = codes[i];
 		tmp[2] = 0;
 		strftime(buf, 1024-1, tmp, t);
@@ -858,37 +858,8 @@ string Util::toDOS(const string& tmp) {
 	return tmp2;
 }
 
-int Util::getOsMajor() 
-{
-#ifdef _WIN32
-	OSVERSIONINFOEX ver;
-	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
-	{
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	}
-	GetVersionEx((OSVERSIONINFO*)&ver);
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	return ver.dwMajorVersion;
-#endif //_WIN32
-}
-
-int Util::getOsMinor() 
-{
-#ifdef _WIN32
-	OSVERSIONINFOEX ver;
-	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
-	if(!GetVersionEx((OSVERSIONINFO*)&ver)) 
-	{
-		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	}
-	GetVersionEx((OSVERSIONINFO*)&ver);
-	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	return ver.dwMinorVersion;
-#endif //_WIN32
-}
 /**
  * @file
- * $Id: Util.cpp,v 1.80 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.81 2005/01/06 18:19:49 arnetheduck Exp $
  */
 

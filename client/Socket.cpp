@@ -40,7 +40,7 @@ SocketException::SocketException(int aError) {
 
 #else // _DEBUG
 
-SocketException::SocketException(int aError) {
+SocketException::SocketException(int aError) throw() {
 	error = errorToString(aError);
 }
 
@@ -48,7 +48,7 @@ SocketException::SocketException(int aError) {
 
 Socket::Stats Socket::stats = { 0, 0 };
 
-string SocketException::errorToString(int aError) {
+string SocketException::errorToString(int aError) throw() {
 	switch(aError) {
 	case EWOULDBLOCK:
 		return STRING(OPERATION_WOULD_BLOCK_EXECUTION);
@@ -264,7 +264,7 @@ void Socket::write(const char* aBuffer, size_t aLen) throw(SocketException) {
 					// Uhm, two blocks in a row...try making the send window smaller...
 					if(sendSize >= 256) {
 						sendSize /= 2;
-						dcdebug("Reducing send window size to %d\n", sendSize);
+						dcdebug("Reducing send window size to %lu\n", sendSize);
 					} else {
 						Thread::sleep(10);
 					}
@@ -277,7 +277,7 @@ void Socket::write(const char* aBuffer, size_t aLen) throw(SocketException) {
 			} else if(errno == ENOBUFS) {
 				if(sendSize > 32) {
 					sendSize /= 2;
-					dcdebug("Reducing send window size to %d\n", sendSize);
+					dcdebug("Reducing send window size to %lu\n", sendSize);
 				} else {
 					throw SocketException(STRING(OUT_OF_BUFFER_SPACE));
 				}
@@ -571,5 +571,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.61 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.62 2005/01/06 18:19:49 arnetheduck Exp $
  */

@@ -181,7 +181,7 @@ private:
 
 	virtual int run();
 
-	virtual ~SearchManager() { 
+	virtual ~SearchManager() throw() { 
 		if(socket) {
 			stop = true;
 			socket->disconnect();
@@ -199,5 +199,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.50 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.51 2005/01/06 18:19:48 arnetheduck Exp $
  */

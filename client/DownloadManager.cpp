@@ -345,7 +345,6 @@ void DownloadManager::on(AdcCommand::SND, UserConnection* aSource, const AdcComm
 class RollbackException : public FileException {
 public:
 	RollbackException (const string& aError) : FileException(aError) { };
-	virtual ~RollbackException() { };
 };
 
 template<bool managed>
@@ -532,7 +531,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	}
 
 	if(d->getPos() == 0) {
-		if(!d->getTreeValid() && d->getTTH() != NULL && d->getSize() < numeric_limits<size_t>::max()) {
+		if(!d->getTreeValid() && d->getTTH() != NULL && d->getSize() < (int64_t)numeric_limits<size_t>::max()) {
 			// We make a single node tree...
 			d->getTigerTree().setFileSize(d->getSize());
 			d->getTigerTree().setBlockSize((size_t)d->getSize());
@@ -615,7 +614,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		Download* old = d->getOldDownload();
 
 		int64_t bl = 1024;
-		while(bl * old->getTigerTree().getLeaves().size() < old->getSize())
+		while(bl * (int64_t)old->getTigerTree().getLeaves().size() < old->getSize())
 			bl *= 2;
 		old->getTigerTree().setBlockSize(bl);
 		dcassert(old->getSize() != -1);
@@ -977,5 +976,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.135 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.136 2005/01/06 18:19:49 arnetheduck Exp $
  */

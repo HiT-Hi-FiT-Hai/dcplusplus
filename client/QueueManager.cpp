@@ -16,12 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _WIN32
-#include <sys/types.h>
-#include <dirent.h>
-#include <fnmatch.h>
-#endif
-
 #include "stdinc.h"
 #include "DCPlusPlus.h"
 
@@ -48,6 +42,12 @@
 
 #ifdef ff
 #undef ff
+#endif
+
+#ifndef _WIN32
+#include <sys/types.h>
+#include <dirent.h>
+#include <fnmatch.h>
 #endif
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
@@ -306,7 +306,7 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
 };
 
-QueueManager::~QueueManager() { 
+QueueManager::~QueueManager() throw() { 
 	SearchManager::getInstance()->removeListener(this);
 	TimerManager::getInstance()->removeListener(this); 
 	ClientManager::getInstance()->removeListener(this);
@@ -1270,5 +1270,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.113 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.114 2005/01/06 18:19:49 arnetheduck Exp $
  */

@@ -171,6 +171,7 @@ public:
 private:
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
+	virtual ~SettingsManager() throw() { }
 
 	static const string settingTags[SETTINGS_LAST+1];
 
@@ -191,6 +192,6 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.84 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.85 2005/01/06 18:19:49 arnetheduck Exp $
  */
 

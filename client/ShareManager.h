@@ -70,7 +70,7 @@ public:
 	MemoryInputStream* generatePartialList(const string& dir, bool recurse);
 	MemoryInputStream* getTree(const string& aFile);
 
-	AdcCommand getFileInfo(const string& aFile);
+	AdcCommand getFileInfo(const string& aFile) throw(ShareException);
 
 	int64_t getShareSize() throw();
 	int64_t getShareSize(const string& aDir) throw();
@@ -123,7 +123,7 @@ private:
 			typedef set<File, FileLess> Set;
 			typedef Set::iterator Iter;
 
-			File() : size(0), parent(NULL), tth(NULL) { };
+			File() : size(0), parent(NULL) { };
 			File(const string& aName, int64_t aSize, Directory* aParent, const TTHValue& aRoot) : 
 			name(aName), tth(aRoot), size(aSize), parent(aParent) { };
 			File(const File& rhs) : 
@@ -320,6 +320,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.74 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.75 2005/01/06 18:19:48 arnetheduck Exp $
  */
 

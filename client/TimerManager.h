@@ -70,7 +70,7 @@ private:
 #endif
 	};
 	
-	virtual ~TimerManager() {
+	virtual ~TimerManager() throw() {
 		dcassert(listeners.empty());
 		s.signal();
 		join();
@@ -90,6 +90,6 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.25 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.26 2005/01/06 18:19:48 arnetheduck Exp $
  */
 

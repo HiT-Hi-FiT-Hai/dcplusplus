@@ -351,7 +351,7 @@ private:
 		socket->addListener(this);
 	};
 
-	virtual ~UserConnection() {
+	virtual ~UserConnection() throw() {
 		socket->removeListener(this);
 		removeListeners();
 		BufferedSocket::putSocket(socket);
@@ -397,6 +397,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.88 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.89 2005/01/06 18:19:49 arnetheduck Exp $
  */
 

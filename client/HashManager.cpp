@@ -115,7 +115,7 @@ int64_t HashManager::HashStore::addLeaves(const TigerTree::MerkleList& leaves) {
 
 	// Check if we should grow the file, we grow by a meg at a time...
 	int64_t datsz = f.getSize();
-	if((pos + leaves.size() * TTHValue::SIZE) >= datsz) {
+	if((pos + (int64_t)(leaves.size() * TTHValue::SIZE)) >= datsz) {
 		f.setPos(datsz + 1024*1024);
 		f.setEOF();
 	}
@@ -604,5 +604,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.39 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.40 2005/01/06 18:19:49 arnetheduck Exp $
  */

@@ -102,7 +102,7 @@ private:
 		logOptions[STATUS][FILE]		= SettingsManager::LOG_FILE_STATUS;
 		logOptions[STATUS][FORMAT]		= SettingsManager::LOG_FORMAT_STATUS;
 	};
-	virtual ~LogManager() { };
+	virtual ~LogManager() throw() { };
 
 };
 
@@ -112,5 +112,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.15 2005/01/05 19:30:28 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.16 2005/01/06 18:19:48 arnetheduck Exp $
  */

@@ -209,7 +209,7 @@ private:
 	friend class Singleton<QueueManager>;
 	
 	QueueManager();
-	virtual ~QueueManager();
+	virtual ~QueueManager() throw();
 	
 	CriticalSection cs;
 	
@@ -260,6 +260,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.63 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.64 2005/01/06 18:19:48 arnetheduck Exp $
  */
 

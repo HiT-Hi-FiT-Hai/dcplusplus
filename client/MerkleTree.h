@@ -98,7 +98,7 @@ public:
 			Hasher h;
 			h.update(&zero, 1);
 			h.update(buf + i, n);
-			if(baseBlockSize < blockSize) {
+			if((int64_t)baseBlockSize < blockSize) {
 				blocks.push_back(make_pair(MerkleValue(h.finalize()), baseBlockSize));
 				reduceBlocks();
 			} else {
@@ -155,7 +155,7 @@ public:
 	}
 
 private:	
-	typedef pair<MerkleValue, size_t> MerkleBlock;
+	typedef pair<MerkleValue, int64_t> MerkleBlock;
 	typedef vector<MerkleBlock> MBList;
 
 	MBList blocks;
@@ -228,5 +228,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.21 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.22 2005/01/06 18:19:48 arnetheduck Exp $
  */

@@ -32,7 +32,7 @@
 * Added initial ADC file transfers support
 * ADC hub connectivity improved
 * Fixed unnecessary COM initialisation (thanks garg)
-
+* Some linux compile fixes
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

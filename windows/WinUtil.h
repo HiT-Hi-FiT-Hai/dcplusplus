@@ -279,6 +279,9 @@ public:
 		return dirIconIndex;
 	}
 	
+	static int getOsMajor();
+	static int getOsMinor();
+	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
@@ -307,5 +310,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.40 2005/01/05 19:30:22 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.41 2005/01/06 18:20:05 arnetheduck Exp $
  */

@@ -139,7 +139,7 @@ public:
 	Socket::Socket() throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { }
 	Socket::Socket(const string& aIp, const string& aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
 	Socket::Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
-	virtual ~Socket() { Socket::disconnect(); };
+	virtual ~Socket() throw() { Socket::disconnect(); };
 
 	virtual void create(int aType = TYPE_TCP) throw(SocketException);
 	virtual void bind(short aPort) throw(SocketException);
@@ -226,5 +226,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.57 2005/01/05 19:30:25 arnetheduck Exp $
+ * $Id: Socket.h,v 1.58 2005/01/06 18:19:49 arnetheduck Exp $
  */

@@ -119,7 +119,7 @@ private:
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager();
 
-	virtual ~ConnectionManager() { shutdown(); };
+	virtual ~ConnectionManager() throw() { shutdown(); };
 	
 	UserConnection* getConnection(bool aNmdc) throw(SocketException) {
 		UserConnection* uc = new UserConnection();
@@ -161,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.64 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.65 2005/01/06 18:19:48 arnetheduck Exp $
  */

@@ -130,7 +130,7 @@ private:
 		TimerManager::getInstance()->addListener(this); 
 	};
 
-	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
+	virtual ~ClientManager() throw() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
 	virtual void on(Connected, Client* c) throw() { fire(ClientManagerListener::ClientConnected(), c); }
@@ -149,6 +149,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.54 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.55 2005/01/06 18:19:48 arnetheduck Exp $
  */
 

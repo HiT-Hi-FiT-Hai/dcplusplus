@@ -337,11 +337,7 @@ public:
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-#ifdef _WIN32
-		sprintf(buf, "%01I64d:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
-#else
-		sprintf(buf, "%01lld:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
-#endif		
+		sprintf(buf, "%01lu:%02d:%02d", (unsigned long)(aSec / (60*60)), (int)((aSec / 60) % 60), (int)(aSec % 60));
 		return buf;
 	}
 
@@ -482,9 +478,6 @@ public:
 
 	static string getIpCountry (string IP);
 
-	static int getOsMinor();
-	static int getOsMajor(); 
-
 	static bool getAway() { return away; };
 	static void setAway(bool aAway) {
 		away = aAway;
@@ -594,5 +587,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.116 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: Util.h,v 1.117 2005/01/06 18:19:48 arnetheduck Exp $
  */

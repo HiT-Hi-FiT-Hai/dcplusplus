@@ -237,7 +237,7 @@ private:
 		TimerManager::getInstance()->addListener(this);
 	};
 
-	virtual ~DownloadManager() {
+	virtual ~DownloadManager() throw() {
 		TimerManager::getInstance()->removeListener(this);
 		while(true) {
 			{
@@ -272,5 +272,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.76 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.77 2005/01/06 18:19:48 arnetheduck Exp $
  */

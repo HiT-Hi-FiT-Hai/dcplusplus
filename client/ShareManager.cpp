@@ -311,8 +311,8 @@ struct ShareLoader : public SimpleXMLReader::CallBack {
 	}
 
 private:
-	StringPairList& virts;
 	ShareManager::Directory::Map& dirs;
+	StringPairList& virts;
 
 	ShareManager::Directory* cur;
 	size_t depth;
@@ -1459,6 +1459,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.126 2005/01/05 19:30:23 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.127 2005/01/06 18:19:49 arnetheduck Exp $
  */
 

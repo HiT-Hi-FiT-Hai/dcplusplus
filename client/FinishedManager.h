@@ -95,7 +95,7 @@ private:
 		DownloadManager::getInstance()->addListener(this);
 		UploadManager::getInstance()->addListener(this);
 	}
-	virtual ~FinishedManager();
+	virtual ~FinishedManager() throw();
 
 	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 	virtual void on(UploadManagerListener::Complete, Upload*) throw();
@@ -108,5 +108,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.15 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.16 2005/01/06 18:19:48 arnetheduck Exp $
  */

@@ -34,7 +34,7 @@ STANDARD_EXCEPTION(BitStreamException);
 class BitInputStream  
 {
 public:
-	BitInputStream(const u_int8_t* aStream, size_t aStart, size_t aEnd) : endPos(aEnd*8), bitPos(aStart*8), is(aStream) { };
+	BitInputStream(const u_int8_t* aStream, size_t aStart, size_t aEnd) : bitPos(aStart*8), endPos(aEnd*8), is(aStream) { };
 	~BitInputStream() { };
 	
 	bool get() throw(BitStreamException) {
@@ -65,5 +65,5 @@ private:
 
 /**
  * @file
- * $Id: BitInputStream.h,v 1.13 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.14 2005/01/06 18:19:49 arnetheduck Exp $
  */

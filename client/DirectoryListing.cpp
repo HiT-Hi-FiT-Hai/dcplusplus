@@ -41,7 +41,7 @@ void DirectoryListing::loadFile(const string& name) {
 	string ext = Util::getFileExt(name);
 	if(Util::stricmp(ext, ".DcLst") == 0) {
 		size_t len = (size_t)::File::getSize(name);
-		if(len == -1)
+		if(len == (size_t)-1)
 			return;
 		AutoArray<u_int8_t> buf(len);
 		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
@@ -309,5 +309,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.44 2005/01/05 19:30:24 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.45 2005/01/06 18:19:49 arnetheduck Exp $
  */
