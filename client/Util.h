@@ -165,6 +165,14 @@ public:
 		return atoi(aString.c_str());
 	}
 
+	static double toDouble(const string& aString) {
+		return atof(aString.c_str());
+	}
+
+	static float toFloat(const string& aString) {
+		return atof(aString.c_str());
+	}
+
 	static string toString(LONGLONG val) {
 		char buf[32];
 		return _i64toa(val, buf, 10);
@@ -208,9 +216,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.11 2002/01/06 11:13:07 arnetheduck Exp $
+ * $Id: Util.h,v 1.12 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.12  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.11  2002/01/06 11:13:07  arnetheduck
  * Last fixes before 0.10
  *

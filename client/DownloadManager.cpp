@@ -423,7 +423,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		
 		if(d->isSet(Download::RESUME)) {
 			LONGLONG x = Util::getFileSize(d->getTarget());
-			d->setPos( (x == -1) ? 0 : x);
+			if(x < Settings::getRollback()) {
+				d->setPos(0);
+			} else {
+				d->setPos(x - Settings::getRollback());
+				d->setFlag(Download::ROLLBACK);
+			}
+
 		} else {
 			d->setPos(0);
 		}
@@ -480,16 +486,59 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
 	if(i != running.end()) {
-		DWORD len;
 		Download* d = i->second;
-		cs.leave();
+
+		if(d->isSet(Download::ROLLBACK)) {
+			dcassert(d->getRollbackBuffer());
+			if(d->getTotal() + aLen >= Settings::getRollback()) {
+				BYTE* buf = new BYTE[d->getRollbackSize()];
+				DWORD x;
+				
+				memcpy(d->getRollbackBuffer() + d->getTotal(), aData, d->getRollbackSize() - d->getTotal());
+
+				ReadFile(d->getFile(), buf, d->getRollbackSize(), &x, NULL);
+				if(memcmp(d->getRollbackBuffer(), buf, d->getRollbackSize()) != 0) {
+					// We have a problem...
+					running.erase(i);
+					d->unsetFlag(Download::RUNNING);
+					d->unsetFlag(Download::ROLLBACK); // Just in case
+					d->resetTotal();
+					cs.leave();
+					
+					if(d->getFile()) {
+						CloseHandle(d->getFile());
+						d->setFile(NULL);
+					}
+
+					fireFailed(d, "Rollback discovered resume inconsistency, removing the download source from the queue");
+					removeSource(d, d->getCurrentSource());
+
+					d->setCurrentSource(NULL);
+					removeConnection(aSource);
+					return;
+				}
+
+				// Alright, write the rest...the file pointer should have been moved to the correct position by now...
+				WriteFile(d->getFile(), aData+d->getRollbackSize(), aLen-d->getRollbackSize(), &x, NULL);
+				d->unsetFlag(Download::ROLLBACK);
+				d->setRollbackBuffer(0);
+			} else {
+				memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen - d->getTotal());
+			}
+			cs.leave();
+		} else {
+			cs.leave();
+			DWORD len;
+			WriteFile(d->getFile(), aData, aLen, &len, NULL);
+		}
 		
-		WriteFile(d->getFile(), aData, aLen, &len, NULL);
-		d->addPos(len);
+		d->addPos(aLen);
 	}
 }
 
 void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+
+	LONGLONG fileLength = Util::toInt64(aFileLength);
 
 	cs.enter();
 	Download::MapIter i = running.find(aSource);
@@ -499,9 +548,9 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		HANDLE file;
 		Util::ensureDirectory(d->getTarget());
 		if(d->isSet(Download::RESUME))
-			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		else
-			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+			file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		
 		if(file == INVALID_HANDLE_VALUE) {
 			running.erase(i);
@@ -512,10 +561,19 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			fireFailed(d, "Could not open target file");
 			return;
 		}
-		
+
 		d->setFile(file, true);
-		d->setPos(d->getSize(), true);
-		d->setSize(aFileLength);
+
+		if(fileLength > Settings::getRollback() && d->isSet(Download::ROLLBACK)) {
+			// Update the file pointer...yes, this is what they call ugly code in the books...
+			d->setPos(d->getPos(), true);
+			d->setRollbackBuffer(Settings::getRollback());
+		} else {
+			d->setPos(0, true);
+			dcassert(!d->isSet(Download::ROLLBACK));
+		}
+
+		d->setSize(fileLength);
 		
 		if(d->getSize() == d->getPos()) {
 			Download::Iter j = find(queue.begin(), queue.end(), d);
@@ -601,6 +659,8 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 	Download* d = i->second;
 	running.erase(i);
 	d->unsetFlag(Download::RUNNING);
+	d->unsetFlag(Download::ROLLBACK); // Just in case
+	d->resetTotal();
 	cs.leave();
 	
 	if(d->getFile()) {
@@ -608,7 +668,7 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 		d->setFile(NULL);
 	}
 	fireFailed(d, aError);
-	
+	d->setCurrentSource(NULL);
 	removeConnection(aSource);
 }
 
@@ -667,9 +727,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.25 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.26 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.26  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.25  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

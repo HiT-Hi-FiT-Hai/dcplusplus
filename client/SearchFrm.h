@@ -329,14 +329,14 @@ public:
 			string size(message, ctrlSize.GetWindowTextLength());
 			delete message;
 
-			LONGLONG lsize = Util::toInt64(size);
+			double lsize = Util::toInt64(size);
 			switch(ctrlSizeMode.GetCurSel()) {
 			case 1:
-				lsize*=(LONGLONG)1024; break;
+				lsize*=1024I64; break;
 			case 2:
-				lsize*=(LONGLONG)1024*1024; break;
+				lsize*=1024I64*1024I64; break;
 			case 3:
-				lsize*=(LONGLONG)1024*1024*1024; break;
+				lsize*=1024I64*1024I64*1024I64; break;
 			}
 
 			for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
@@ -344,7 +344,7 @@ public:
 			}
 			ctrlResults.DeleteAllItems();
 
-			SearchManager::getInstance()->search(s,lsize, 0, ctrlMode.GetCurSel());
+			SearchManager::getInstance()->search(s, (LONGLONG)lsize, 0, ctrlMode.GetCurSel());
 			//client->sendMessage(s);
 			ctrlSearch.SetWindowText("");
 			
@@ -435,9 +435,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.13 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.14 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.14  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.13  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

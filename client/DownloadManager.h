@@ -71,8 +71,11 @@ public:
 	typedef map<User::Ptr, Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	
-	Download() : flags(0), currentSource(NULL) { }
+	Download() : flags(0), currentSource(NULL), rollbackBuffer(NULL) { }
 	~Download() {
+		if(rollbackBuffer)
+			delete rollbackBuffer;
+
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			delete *i;
 		}
@@ -81,8 +84,24 @@ public:
 	enum {
 		USER_LIST = 0x01,
 		RUNNING = 0x02,
-		RESUME = 0x04
+		RESUME = 0x04,
+		ROLLBACK = 0x08
 	};
+
+	BYTE* getRollbackBuffer() { return rollbackBuffer; };
+	void setRollbackBuffer(int aSize) { 
+		if(rollbackBuffer) 
+			delete rollbackBuffer;
+
+		if(aSize > 0) {
+			rollbackBuffer = new BYTE[aSize];
+		} else {
+			rollbackBuffer = NULL;
+		}
+		rollbackSize = aSize;
+	}
+
+	int getRollbackSize() { return rollbackSize; };
 
 	const string& getTarget() { return target; };
 	void setTarget(const string& aTarget) { target = aTarget; };
@@ -144,7 +163,10 @@ private:
 	int flags;
 	string target;
 	Source* currentSource;
-
+	
+	BYTE* rollbackBuffer;
+	int rollbackSize;
+	
 	Source::List sources;
 };
 
@@ -353,9 +375,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.22 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.23 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.23  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.22  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

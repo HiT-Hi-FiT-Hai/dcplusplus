@@ -78,7 +78,8 @@ public:
 	void addPos(LONGLONG aPos) { pos += aPos; last+=aPos; total+=aPos; };
 	
 	LONGLONG getTotal() { return total; };
-
+	void resetTotal() { total = 0; };
+	
 	DWORD getStart() { return start; };
 	void setStart(DWORD aStart) { start = aStart; };
 
@@ -380,9 +381,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.22 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.23 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.23  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.22  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

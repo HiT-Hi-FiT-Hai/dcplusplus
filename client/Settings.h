@@ -80,6 +80,7 @@ public:
 	static const string& getPortString() { return port; };
 	static int getConnectionType() { return connectionType; };
 	static int getSlots() { return slots; };
+	static LONGLONG getRollback() { return 1024; };
 	
 	static void setNick(const string& aNick) { 
 		nick = aNick; 
@@ -120,9 +121,12 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.10 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: Settings.h,v 1.11 2002/01/07 23:05:48 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.11  2002/01/07 23:05:48  arnetheduck
+ * Resume rollback implemented
+ *
  * Revision 1.10  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *
