@@ -560,17 +560,14 @@ void WinUtil::openLink(const string& url) {
 				
 				STARTUPINFO si = { sizeof(si), 0 };
 				PROCESS_INFORMATION pi = { 0 };
-				AutoArray<char> buf(cmd.length() + url.length() + 4);
+				AutoArray<char> buf(url.length() + 4);
 				size_t pos = 0;
 				buf[pos++] = '"';
-				strcpy(buf + pos, cmd.c_str());
-				pos += cmd.size();
-				buf[pos++] = '"';
-				buf[pos++] = ' ';
 				strcpy(buf + pos, url.c_str());
 				pos += url.length();
+				buf[pos++] = '"';
 				buf[pos++] = 0;
-				if(::CreateProcess(NULL, buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+				if(::CreateProcess(cmd.c_str(), buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
 					::CloseHandle(pi.hThread);
 					::CloseHandle(pi.hProcess);
 					return;
@@ -629,5 +626,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.37 2004/03/09 12:20:20 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.38 2004/03/10 11:35:59 arnetheduck Exp $
  */

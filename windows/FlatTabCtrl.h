@@ -234,7 +234,8 @@ public:
 	}
 
 	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		::SendMessage(closing, WM_CLOSE, 0, 0);
+		if(::IsWindow(closing))
+			::SendMessage(closing, WM_CLOSE, 0, 0);
 		return 0;
 	}
 
@@ -730,5 +731,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.24 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.25 2004/03/10 11:35:58 arnetheduck Exp $
  */

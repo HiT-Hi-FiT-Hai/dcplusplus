@@ -1,4 +1,4 @@
- -- 0.307 --
+ -- 0.307 2004-03-10 --
 * Experimental release, lots and lots of core code has changed => high fatal bug probability.
 * Fixed full name being displayed in user commands with submenus
 * Bloom filters dramatically improve cpu efficiency on incoming searches (if you have a large share)
