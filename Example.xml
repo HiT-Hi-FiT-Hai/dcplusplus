@@ -205,7 +205,7 @@
 		<String Name="MenuCloseDisconnected">Close disconnected</String>
 		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate ï¿½ï¿½ï¿½/$$$ (paypal)</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
 		<String Name="MenuExit">&amp;Exit</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -367,7 +367,7 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate ï¿½ï¿½ï¿½:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFavoriteDirsPage">Downloads\\Download to</String>
 		<String Name="SettingsFavoriteDirs">Favorite download to directories</String>

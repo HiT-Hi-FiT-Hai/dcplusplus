@@ -911,8 +911,8 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 			if( BOOLSETTING( SETTINGS_USE_UPNP ) )
 			{
-			 if ( ( Util::getOsMajor() >= 5 && Util::getOsMinor() >= 1 )//WinXP & WinSvr2003
-				  || Util::getOsMajor() >= 6 )  //Longhorn
+			 if ( ( WinUtil::getOsMajor() >= 5 && WinUtil::getOsMinor() >= 1 )//WinXP & WinSvr2003
+				  || WinUtil::getOsMajor() >= 6 )  //Longhorn
 				{
 					if (UPnP_UDPConnection && UPnP_TCPConnection )
 					{
@@ -1183,5 +1183,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.82 2005/01/06 18:20:07 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.83 2005/01/06 20:48:07 arnetheduck Exp $
  */
