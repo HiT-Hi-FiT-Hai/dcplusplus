@@ -19,9 +19,11 @@
   both up- and downloads. If both users have it enabled it will automatically be used. Compression
   is automatically turned off file files that don't compress well (.rar's for example), but the extra
   CRC check is still done.
-* New nice progress bars for the transfers window (thanks citruz)
+* New, very nice progress bars for the transfers window (thanks citruz)
 * Multi-shade progress bars to show how much was resumed and compressed
-* Added auto-grant option to favorite users
+* Added auto-grant option to favorite users (thanks saurod)
+* Improvements of robustness and speed of the XML reader
+
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

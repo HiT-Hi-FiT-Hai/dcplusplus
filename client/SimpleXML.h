@@ -127,14 +127,14 @@ public:
 	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML(0) : Util::emptyString; };
 	void toXML(File* f) throw(FileException) { if(!root->children.empty()) root->children[0]->toXML(0, f); };
 	
-	static string escape(const string& aString, bool aAttrib, bool aReverse = false);
+	static void escape(string& aString, bool aAttrib, bool aLoading = false);
 	/** 
 	 * This is a heurestic for whether escape needs to be called or not. The results are
-	 * only guaranteed for false, i e sometimes true might be returned even though escape
+ 	 * only guaranteed for false, i e sometimes true might be returned even though escape
 	 * was not needed...
 	 */
-	static bool needsEscape(const string& aString, bool aAttrib, bool aReverse = false) {
-		return ((aReverse) ? aString.find('&') : aString.find_first_of(aAttrib ? "<&>'\"" : "<&>")) != string::npos;
+	static bool needsEscape(const string& aString, bool aAttrib, bool aLoading = false) {
+		return ((aLoading) ? aString.find('&') : aString.find_first_of(aAttrib ? "<&>'\"" : "<&>")) != string::npos;
 	}
 private:
 	class Tag {
@@ -179,8 +179,10 @@ private:
 		string toXML(int indent);
 		void toXML(int indent, File* f);
 		
-		void fromXML(const string& aXML, string::size_type start, string::size_type end, int aa = 0) throw(SimpleXMLException);
-		string getAttribString();
+		string::size_type fromXML(const string& tmp, string::size_type start, int aa, bool isRoot = false) throw(SimpleXMLException);
+		string::size_type loadAttribs(const string& tmp, string::size_type start) throw(SimpleXMLException);
+
+		void appendAttribString(string& tmp);
 		/** Delete all children! */
 		~Tag() {
 			for(Iter i = children.begin(); i != children.end(); ++i) {
@@ -210,6 +212,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.22 2003/10/28 15:27:53 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.23 2003/11/07 16:38:22 arnetheduck Exp $
  */
 

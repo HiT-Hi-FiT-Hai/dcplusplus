@@ -21,147 +21,104 @@
 
 #include "SimpleXML.h"
 
-string SimpleXML::escape(const string& aString, bool aAttrib, bool aReverse /* = false */) {
-	string::size_type i;
+void SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */) {
+	string::size_type i = 0;
 	const char* chars = aAttrib ? "<&>'\"" : "<&>";
 	
-	if(aReverse) {
-		if(aString.find('&') == string::npos) {
-			return aString;
-		} else {
-			string tmp = aString;
-			while( (i=tmp.find("&lt;")) != string::npos) {
-				tmp.replace(i, 4, 1, '<');
-			}
-			while( (i=tmp.find("&amp;")) != string::npos) {
-				tmp.replace(i, 5, 1, '&');
-			}
-			while( (i=tmp.find("&gt;")) != string::npos) {
-				tmp.replace(i, 4, 1, '>');
-			}
-			if(aAttrib) {
-				while( (i=tmp.find("&apos;")) != string::npos) {
-					tmp.replace(i, 6, 1, '\'');
-				}
-				while( (i=tmp.find("&quot;")) != string::npos) {
-					tmp.replace(i, 6, 1, '"');
+	if(aLoading) {
+		while((i = aString.find('&', i)) != string::npos) {
+			if(aString.compare(i+1, 3, "lt;") == 0) {
+				aString.replace(i, 4, 1, '<');
+			} else if(aString.compare(i+1, 4, "amp;") == 0) {
+				aString.replace(i, 5, 1, '&');
+			} else if(aString.compare(i+1, 3, "gt;") == 0) {
+				aString.replace(i, 4, 1, '>');
+			} else if(aAttrib) {
+				if(aString.compare(i+1, 5, "apos;") == 0) {
+					aString.replace(i, 6, 1, '\'');
+				} else if(aString.compare(i+1, 5, "quot;") == 0) {
+					aString.replace(i, 6, 1, '"');
 				}
 			}
-			if( (i = tmp.find('\n')) != string::npos) {
-				if(i > 0 && tmp[i-1] != '\r') {
-					// This is a unix thing...decode it...
-					i = 0;
-					while( (i = tmp.find('\n', i) ) != string::npos) {
-						if(tmp[i-1] != '\r')
-							tmp.insert(i, 1, '\r');
-						
-						i+=2;
-					}
+			i++;
+		}
+		i = 0;
+		if( (i = aString.find('\n')) != string::npos) {
+			if(i > 0 && aString[i-1] != '\r') {
+				// This is a unix \n thing...convert it...
+				i = 0;
+				while( (i = aString.find('\n', i) ) != string::npos) {
+					if(aString[i-1] != '\r')
+						aString.insert(i, 1, '\r');
+					
+					i+=2;
 				}
 			}
-			return tmp;
 		}
 	} else {
-		i = aString.find_first_of(chars);
-		if(i == string::npos) {
-			return aString;
-		} else {
-			string tmp = aString;
-			do {
-				switch(tmp[i]) {
-				case '<': tmp.replace(i, 1, "&lt;"); i+=4; break;
-				case '&': tmp.replace(i, 1, "&amp;"); i+=5; break;
-				case '>': tmp.replace(i, 1, "&gt;"); i+=4; break;
-				case '\'': tmp.replace(i, 1, "&apos;"); i+=6; break;
-				case '"': tmp.replace(i, 1, "&quot;"); i+=6; break;
-				default: dcassert(0);
-				}
-			} while( (i = tmp.find_first_of(chars, i)) != string::npos);
-			return tmp;
+		while( (i = aString.find_first_of(chars, i)) != string::npos) {
+			switch(aString[i]) {
+			case '<': aString.replace(i, 1, "&lt;"); i+=4; break;
+			case '&': aString.replace(i, 1, "&amp;"); i+=5; break;
+			case '>': aString.replace(i, 1, "&gt;"); i+=4; break;
+			case '\'': aString.replace(i, 1, "&apos;"); i+=6; break;
+			case '"': aString.replace(i, 1, "&quot;"); i+=6; break;
+			default: dcasserta(0);
+			}
 		}
 	}
-	dcasserta(0);
 }
 
-string SimpleXML::Tag::getAttribString() {
-	string tmp;
+void SimpleXML::Tag::appendAttribString(string& tmp) {
 	for(AttribIter i = attribs.begin(); i!= attribs.end(); ++i) {
 		tmp.append(i->first);
 		tmp.append("=\"", 2);
-		tmp.append(needsEscape(i->second, true) ? escape(i->second, true) : i->second);
+		if(needsEscape(i->second, true)) {
+			string tmp2(i->second);
+			escape(tmp2, true);
+			tmp.append(tmp2);
+		} else {
+			tmp.append(i->second);
+		}
 		tmp.append("\" ", 2);
 	}
-	if(tmp.size() > 0) {
-		tmp.erase(tmp.size() - 1);
-	}
-	return tmp;
+	tmp.erase(tmp.size()-1);
 }
 
 string SimpleXML::Tag::toXML(int indent) {
-	if(children.empty()) {
-		if(data.empty()) {
-			if(attribs.empty()) {
-				string tmp;
-				tmp.reserve(indent + name.length() + 5);
-				tmp.append(indent, '\t');
-				tmp.append(1, '<');
-				tmp.append(name);
-				tmp.append("/>\r\n", 4);
-				return tmp;
-			} else {
-				string attr = getAttribString();
-				string tmp;
-				tmp.reserve(indent + name.length() + attr.length() + 6);
-				tmp.append(indent, '\t');
-				tmp.append(1, '<');
-				tmp.append(name);
-				tmp.append(1, ' ');
-				tmp.append(attr);
-				tmp.append("/>\r\n", 4);
-				return tmp;
-			}
-		} else {
-			if(attribs.empty()) {
-				string tmp = escape(data, false);
-				char* buf = new char[indent + name.length()*2 + tmp.length() + 10];
-				sprintf(buf, "%s<%s>%s</%s>\r\n", string(indent, '\t').c_str(), name.c_str(), tmp.c_str(), name.c_str());
-				tmp = buf;
-				delete[] buf;
-				return tmp;
-			} else {
-				string tmp = escape(data, false);
-				string attrib = getAttribString();
-				char* buf = new char[indent + name.length()*2 + tmp.length() + attrib.length() + 10];
-				sprintf(buf, "%s<%s %s>%s</%s>\r\n", string(indent, '\t').c_str(), name.c_str(), attrib.c_str(), tmp.c_str(), name.c_str());
-				tmp = buf;
-				delete[] buf;
-				return tmp;
-			}
-		}
-	} else if(attribs.empty()) {
-		string tmp(indent, '\t');
-		tmp.append(1, '<');
-		tmp.append(name);
-		tmp.append(">\r\n", 3);
-		for(Iter i = children.begin(); i!=children.end(); ++i) {
-			tmp.append((*i)->toXML(indent + 1));
-		}
+	if(children.empty() && data.empty()) {
+		string tmp;
+		tmp.reserve(indent + name.length() + 30);
 		tmp.append(indent, '\t');
-		tmp.append("</", 2);
-		tmp.append(name);
-		tmp.append(">\r\n", 3);
-		return tmp;
-	} else {
-		string tmp(indent, '\t');
 		tmp.append(1, '<');
 		tmp.append(name);
 		tmp.append(1, ' ');
-		tmp.append(getAttribString());
-		tmp.append(">\r\n", 3);
-		for(Iter i = children.begin(); i!=children.end(); ++i) {
-			tmp.append((*i)->toXML(indent + 1));
-		}
+		appendAttribString(tmp);
+		tmp.append("/>\r\n", 4);
+		return tmp;
+	} else {
+		string tmp;
 		tmp.append(indent, '\t');
+		tmp.append(1, '<');
+		tmp.append(name);
+		tmp.append(1, ' ');
+		appendAttribString(tmp);
+		if(children.empty()) {
+			tmp.append(1, '>');
+			if(needsEscape(data, false)) {
+				string tmp2(data);
+				escape(tmp2, false);
+				tmp.append(tmp2);
+			} else {
+				tmp.append(data);
+			}
+		} else {
+			tmp.append(">\r\n", 3);
+			for(Iter i = children.begin(); i!=children.end(); ++i) {
+				tmp.append((*i)->toXML(indent + 1));
+			}
+			tmp.append(indent, '\t');
+		}
 		tmp.append("</", 2);
 		tmp.append(name);
 		tmp.append(">\r\n", 3);
@@ -175,87 +132,45 @@ string SimpleXML::Tag::toXML(int indent) {
  * file, otherwise things will be very slow (I assume write is not expensive and call it a lot
  */
 void SimpleXML::Tag::toXML(int indent, File* f) {
-	if(children.empty()) {
-		if(data.empty()) {
-			if(attribs.empty()) {
-				for(int i = 0; i < indent; i++)
-					f->write("\t", 1);
-				f->write("<", 1);
-				f->write(name);
-				f->write("/>\r\n", 4);
-				return;
+	if(children.empty() && data.empty()) {
+		string tmp;
+		tmp.reserve(indent + name.length() + 30);
+		tmp.append(indent, '\t');
+		tmp.append(1, '<');
+		tmp.append(name);
+		tmp.append(1, ' ');
+		appendAttribString(tmp);
+		tmp.append("/>\r\n", 4);
+		f->write(tmp);
+	} else {
+		string tmp;
+		tmp.append(indent, '\t');
+		tmp.append(1, '<');
+		tmp.append(name);
+		tmp.append(1, ' ');
+		appendAttribString(tmp);
+		if(children.empty()) {
+			tmp.append(1, '>');
+			if(needsEscape(data, false)) {
+				string tmp2(data);
+				escape(tmp2, false);
+				tmp.append(tmp2);
 			} else {
-				for(int i = 0; i < indent; i++)
-					f->write("\t", 1);
-
-				f->write("<", 1);
-				f->write(name);
-				f->write(" ", 1);
-				f->write(getAttribString());
-				f->write("/>\r\n", 4);
-				return;
+				tmp.append(data);
 			}
 		} else {
-			if(attribs.empty()) {
-				for(int i = 0; i < indent; i++)
-					f->write("\t", 1);
-				f->write("<", 1);
-				f->write(name);
-				f->write(">", 1);
-				f->write(needsEscape(data, false) ? escape(data, false) : data);
-				f->write("</", 2);
-				f->write(name);
-				f->write(">\r\n", 3);
-				return;
-			} else {
-				for(int i = 0; i < indent; i++)
-					f->write("\t", 1);
-				f->write("<", 1);
-				f->write(name);
-				f->write(" ", 1);
-				f->write(getAttribString());
-				f->write(">", 1);
-				f->write(needsEscape(data, false) ? escape(data, false) : data);
-				f->write("</", 2);
-				f->write(name);
-				f->write(">\r\n", 3);
-				return;
+			tmp.append(">\r\n", 3);
+			f->write(tmp);
+			tmp.clear();
+			for(Iter i = children.begin(); i!=children.end(); ++i) {
+				(*i)->toXML(indent + 1, f);
 			}
+			tmp.append(indent, '\t');
 		}
-	} else if(attribs.empty()) {
-		int i;
-		for(i = 0; i < indent; i++)
-			f->write("\t", 1);
-		f->write("<", 1);
-		f->write(name);
-		f->write(">\r\n", 3);
-		for(Iter it = children.begin(); it!=children.end(); ++it) {
-			(*it)->toXML(indent + 1, f);
-		}
-		for(i = 0; i < indent; i++)
-			f->write("\t", 1);
-		f->write("</", 2);
-		f->write(name);
-		f->write(">\r\n", 3);
-		return;
-	} else {
-		int i;
-		for(i = 0; i < indent; i++)
-			f->write("\t", 1);
-		f->write("<", 1);
-		f->write(name);
-		f->write(" ", 1);
-		f->write(getAttribString());
-		f->write(">\r\n", 3);
-		for(Iter it = children.begin(); it!=children.end(); ++it) {
-			(*it)->toXML(indent + 1, f);
-		}
-		for(i = 0; i < indent; i++)
-			f->write("\t", 1);
-		f->write("</", 2);
-		f->write(name);
-		f->write(">\r\n", 3);
-		return;
+		tmp.append("</", 2);
+		tmp.append(name);
+		tmp.append(">\r\n", 3);
+		f->write(tmp);
 	}
 }
 
@@ -275,21 +190,53 @@ bool SimpleXML::findChild(const string& aName) throw() {
 	return false;
 }
 
+string::size_type SimpleXML::Tag::loadAttribs(const string& tmp, string::size_type start) throw(SimpleXMLException) {
+	string::size_type i = start;
+	string::size_type j;
+	for(;;) {
+		j = tmp.find('=', i);
+		if(j == string::npos) {
+			throw SimpleXMLException("Missing '=' in " + name);
+		}
+		if(tmp[j+1] != '"' && tmp[j+1] != '\'') {
+			throw SimpleXMLException("Invalid character after '=' in " + name);
+		}
+		string::size_type x = j + 2;
+		string::size_type y = tmp.find(tmp[j+1], x);
+		if(y == string::npos) {
+			throw SimpleXMLException("Missing '" + string(1, tmp[j+1]) + "' in " + name);
+		}
+		// Ok, we have an attribute...
+		attribs.push_back(make_pair(tmp.substr(i, j-i), tmp.substr(x, y-x)));
+		escape(attribs.back().second, true, true);
 
-void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string::size_type end, int aa /* = 0 */) throw(SimpleXMLException) {
+		i = tmp.find_first_not_of(' ', y + 1);
+		if(tmp[i] == '/' || tmp[i] == '>')
+			return i;
+	}
+}
+
+string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, int aa, bool isRoot /* = false */) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
 
+	bool hasChildren = false;
 	dcassert(tmp.size() > 0);
 	
-	while( (j = tmp.find('<', i)) != string::npos ) {
-		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
-		if((j + 3) > tmp.size()) {
-			throw SimpleXMLException("Too few characters after <");
+	for(;;) {
+		j = tmp.find('<', i);
+		if(j == string::npos) {
+			if(isRoot) {
+				throw SimpleXMLException("Invalid XML file, missing root tag");
+			} else {
+				throw SimpleXMLException("Missing end tag in " + name);
+			}
 		}
 
-		if( (j+3) > end)
-			break;
+		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
+		if((j + 3) > tmp.size()) {
+			throw SimpleXMLException("Missing end tag in " + name);
+		}
 
 		Ptr child = NULL;
 
@@ -299,95 +246,73 @@ void SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, string:
 			// <? processing instruction ?>, ignore...
 			i = tmp.find("?>", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing '?>'");
+				throw SimpleXMLException("Missing '?>' in " + name);
 			}
 			continue;
 		}
-		
+
 		if(tmp[i] == '!' && tmp[i+1] == '-' && tmp[i+2] == '-') {
 			// <!-- comment -->, ignore...
 			i = tmp.find("-->", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing '-->'");
+				throw SimpleXMLException("Missing '-->' in " + name);
 			}
 			continue;
 		}
 
-		// Alright, we have a real tag for sure...
-		j = tmp.find_first_of(" >", i);
+		// Check if we reached the end tag
+		if(tmp[i] == '/') {
+			i++;
+			if( (tmp.compare(i, name.length(), name) == 0) && 
+				(tmp[i + name.length()] == '>') )
+			{
+				if(!hasChildren) {
+					data = tmp.substr(start, i - start - 2);
+					escape(data, false, true);
+				}
+				return i + name.length() + 1;
+			} else {
+				throw SimpleXMLException("Missing end tag in " + name);
+			}
+		}
+
+		// Alright, we have a real tag for sure...now get the name of it.
+		j = tmp.find_first_of(" />", i);
 		if(j == string::npos) {
-			throw("Missing '>'");
-		}
-
-		string name;
-		string::size_type tagStart = 0;
-		string::size_type tagEnd = 0;
-		bool simpleTag = false;
-		if(tmp[j] == ' ') {
-			name = tmp.substr(i, j-i);
-			if(name.empty()) {
-				throw SimpleXMLException("Tag without name");
-			}
-			i = j+1;
-			j = tmp.find('>', i);
-			if(j == string::npos) {
-				throw SimpleXMLException("Missing '>' around " + name);
-			}
-			tagStart = i;
-			if(tmp[j-1] == '/') {
-				tagEnd = j - 1;
-				simpleTag = true;
-			} else {
-				tagEnd = j;
-			}
-		} else {
-			if(tmp[j-1] == '/') {
-				simpleTag = true;
-				name = tmp.substr(i, j-i-1);
-			} else {
-				name = tmp.substr(i, j-i);
-			}
+			throw SimpleXMLException("Missing '>' in " + name);
 		}
 		
-		i = j + 1;
-
-		string::size_type x = tagStart;
-		string::size_type y;
-
-		child = new Tag(name, Util::emptyString, this, aa);
-		while( (x < tagEnd) && (y=tmp.find('=', x)) != string::npos && (y < tagEnd)) {
-			x = tmp.find_first_not_of(' ', x);
-			
-			string::size_type x2 = y + 2;
-			string::size_type y2 = tmp.find('"', x2);
-			if(y2 == string::npos || y2 > tagEnd) {
-				throw SimpleXMLException("Missing '\"' around " + name);
-			}
-			child->attribs.push_back(make_pair(tmp.substr(x, y-x), tmp.substr(x2, y2-x2)));
-			if(needsEscape(child->attribs.back().second, true, true))
-				child->attribs.back().second = escape(child->attribs.back().second, true, true);
-			x = y2 + 1;
-		}
-		
-		if(!simpleTag) {
-			string endTag = "</" + name + ">";
-			j = tmp.find(endTag, i);
-			if(j == string::npos) {
-				throw SimpleXMLException("Missing end tag around " + name);
-			}
-			string::size_type dataPos = tmp.find('<', i);
-
-			if(dataPos != string::npos && dataPos < j) {
-				child->fromXML(tmp, i, j, aa);
-			} else {
-				child->data = tmp.substr(i, j-i);
-				if(needsEscape(child->data, false, true))
-					child->data = escape(child->data, false, true);
-			}
-			i = j + endTag.length();
-		}
-
+		child = new Tag(tmp.substr(i, j-i), Util::emptyString, this, aa);
+		// Put it here immideately to avoid mem leaks
 		children.push_back(child);
+
+		if(tmp[j] == ' ')
+			j = tmp.find_first_not_of(' ', j+1);
+		
+		if(j == string::npos) {
+			throw SimpleXMLException("Missing '>' in " + name);
+		}
+		
+		if(tmp[j] != '/' && tmp[j] != '>') {
+			// We have attribs...
+			j = child->loadAttribs(tmp, j);
+		}
+
+		if(tmp[j] == '>') {
+			// This is a real tag with data etc...
+			hasChildren = true;
+			j = child->fromXML(tmp, j+1, aa);
+		} else {
+			// A simple tag (<xxx/>
+			j++;
+		}
+		i = j;
+		if(isRoot) {
+			if(tmp.find('<', i) != string::npos) {
+				throw SimpleXMLException("Invalid XML file, multiple root tags");
+			}
+			return tmp.length();
+		}
 	}	
 }
 
@@ -428,7 +353,7 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 	}
 	root = new Tag("BOGUSROOT", Util::emptyString, NULL, 0);
 
-	root->fromXML(aXML, 0, aXML.size(), attribs);
+	root->fromXML(aXML, 0, attribs, true);
 	
 	if(root->children.size() != 1) {
 		throw SimpleXMLException("Invalid XML file, missing or multiple root tags");
@@ -440,6 +365,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.19 2003/04/15 10:13:55 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.20 2003/11/07 16:38:22 arnetheduck Exp $
  */
 

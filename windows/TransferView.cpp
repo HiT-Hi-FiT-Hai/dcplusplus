@@ -290,8 +290,8 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				char buf[256];
 				COLORREF barBase = ::GetSysColor(COLOR_HIGHLIGHT);
 				COLORREF bgBase = WinUtil::bgColor;
-				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -40 : 40;
-				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
+				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
+				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -50, 50), barBase, HLS_TRANSFORM(barBase, 450, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
 				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
@@ -305,7 +305,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				HGDIOBJ oldpen = ::SelectObject(cd->nmcd.hdc, CreatePen(PS_SOLID,0,bgPal[0]));
 				HGDIOBJ oldbr = ::SelectObject(cd->nmcd.hdc, CreateSolidBrush(bgPal[1]));
 				::Rectangle(cd->nmcd.hdc, rc.left, rc.top - 1, rc.right, rc.bottom);			
-				rc.DeflateRect(1, 1, 1, 1);
+				rc.DeflateRect(1, 0, 1, 1);
 
 				LONG left = rc.left;
 				int64_t w = rc.Width();
@@ -348,8 +348,19 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldpen));
 				DeleteObject(::SelectObject(cd->nmcd.hdc, oldbr));
 
+				LONG right = rc2.right;
+				left = rc2.left;
+				rc2.right = rc.right;
+				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
 				SetTextColor(cd->nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
-				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
+				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+
+				rc2.left = rc2.right;
+				rc2.right = right;
+
+				SetTextColor(cd->nmcd.hdc, WinUtil::textColor);
+				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
 
 				return CDRF_SKIPDEFAULT;
 			}
@@ -690,5 +701,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.9 2003/11/07 01:31:58 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.10 2003/11/07 16:38:22 arnetheduck Exp $
  */

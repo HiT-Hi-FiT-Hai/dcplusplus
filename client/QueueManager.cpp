@@ -901,12 +901,12 @@ void QueueManager::saveQueue() throw() {
 	try {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
-#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? SimpleXML::escape(n, true) : n
+#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? SimpleXML::escape(tmp, true),tmp : n
 		
 		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write(STRINGLEN("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n"));
 		f.write(STRINGLEN("<Downloads>\r\n"));
-
+		string tmp;
 		for(QueueItem::StringIter i = fileQueue.getQueue().begin(); i != fileQueue.getQueue().end(); ++i) {
 			QueueItem* d = i->second;
 			if(!d->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -1187,5 +1187,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.52 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.53 2003/11/07 16:38:22 arnetheduck Exp $
  */
