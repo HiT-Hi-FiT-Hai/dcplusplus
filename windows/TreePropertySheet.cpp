@@ -33,7 +33,6 @@ LRESULT TreePropertySheet::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	hideTab();
 	addTree();
 	fillTree();
-	CenterWindow(GetParent());
 	return 0;
 }
 
@@ -51,7 +50,7 @@ void TreePropertySheet::hideTab() {
 	ScreenToClient(&rcTab);
 
 	ScrollWindow(SPACE_MID-rcPage.left, SPACE_TOP-rcPage.top);
-	rcWindow.right += SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT;
+	rcWindow.right += SPACE_MID - rcPage.left - (rcClient.Width()-rcTab.right) + SPACE_RIGHT + TREE_WIDTH + SPACE_LEFT;
 	rcWindow.bottom += SPACE_TOP - rcPage.top;
 
 	tab.ShowWindow(SW_HIDE);
@@ -64,25 +63,13 @@ void TreePropertySheet::hideTab() {
 void TreePropertySheet::addTree()
 {
 	// Insert the space to the left
-	const int nAddSpace=TREE_WIDTH + SPACE_LEFT;
-	const int nLeft=nAddSpace/2;
-	const int nRight=(nAddSpace-nLeft);
-	
 	CRect rcWindow,rcPage,rcTab;
 
-	GetWindowRect(&rcWindow);
-	rcWindow.left-=nLeft;
-	rcWindow.right+=nRight;
-	MoveWindow(&rcWindow,TRUE);
-
 	HWND page = IndexToHwnd(0);
-	HWND tab = GetTabControl();
 	::GetWindowRect(page, &rcPage);
 	ScreenToClient(&rcPage);
-	::GetWindowRect(tab, &rcTab);
-	ScreenToClient(&rcTab);
 
-	ScrollWindow(nAddSpace,0);
+	ScrollWindow(SPACE_LEFT + TREE_WIDTH,0);
 
 	CRect rc(SPACE_LEFT, rcPage.top, TREE_WIDTH, rcPage.bottom);
 
