@@ -3,7 +3,7 @@
 // Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
-#define IDD_GENERALPAGE                 101
+#define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
 #define IDR_HUB                         129

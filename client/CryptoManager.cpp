@@ -42,10 +42,13 @@ ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength
 
 u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(CryptoException) {
 	dcassert(buf);
-	dcassert(bufLen > 0); 
 
-	if(state == STATE_FINISHED) {
+        if(bufLen == 0){
 		return 0;
+	}
+	
+	if(state == STATE_FINISHED) {
+		return -1;
 	}
 	
 	// We make a read buffer four times as large as the out buffer...this should be
@@ -565,5 +568,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.32 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.33 2003/10/24 00:37:32 arnetheduck Exp $
  */

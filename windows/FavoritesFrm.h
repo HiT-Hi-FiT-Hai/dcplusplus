@@ -64,8 +64,6 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onEnter(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -76,6 +74,16 @@ public:
 	bool checkNick();
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
+	LRESULT onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
+		openSelected();
+		return 0;
+	}
+
+	LRESULT onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		openSelected();
+		return 0;
+	}
+
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
@@ -145,6 +153,8 @@ private:
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
+
+	void openSelected();
 	
 	void updateList(const FavoriteHubEntry::List& fl) {
 		ctrlHubs.SetRedraw(FALSE);
@@ -175,6 +185,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.14 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.15 2003/10/24 00:37:32 arnetheduck Exp $
  */
 

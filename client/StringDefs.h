@@ -340,7 +340,7 @@ enum Strings { // @DontAdd
 	SETTINGS_URL_HANDLER, // "Install URL handler on startup (to handle dchub:// links)"
 	SETTINGS_USE_OEM_MONOFONT, // "Use OEM monospaced font for viewing text	files"
 	SETTINGS_USE_SYSTEM_ICONS, // "Use system icons when browsing files (slows browsing down a bit)"
-	SETTINGS_USER_COMMANDS, // "User Commands"
+	SETTINGS_USER_COMMANDS, // "Advanced\\User Commands"
 	SETTINGS_USER_MENU, // "User Menu Items"
 	SETTINGS_WRITE_BUFFER, // "Write buffer size"
 	SFV_INCONSISTENCY, // "CRC32 inconsistency (SFV-Check)"

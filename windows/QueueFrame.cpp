@@ -302,9 +302,23 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 	HTREEITEM parent = NULL;
 
 	if(startAt == NULL) {
+		// First find the correct drive letter
+		dcassert(dir[1] == ':');
+		dcassert(dir[2] == '\\');
+
 		next = ctrlDirs.GetRootItem();
 
 		if((next != NULL) && (next == fileLists)) {
+			next = ctrlDirs.GetNextSiblingItem(next);
+		}
+
+		while(next != NULL) {
+			if((next != NULL) && (next == fileLists)) {
+				next = ctrlDirs.GetNextSiblingItem(next);
+			}
+			string* stmp = (string*)ctrlDirs.GetItemData(next);
+			if(Util::strnicmp(*stmp, dir, 3) == 0)
+				break;
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
 
@@ -312,101 +326,69 @@ HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false
 			// First addition, set commonStart to the dir minus the last part...
 			i = dir.rfind('\\', dir.length()-2);
 			if(i != string::npos) {
-				commonStart = dir.substr(0, i+1);
-				string name = commonStart.substr(0, commonStart.length() - 1);
+				string name = dir.substr(0, i);
 				tvi.hParent = NULL;
 				tvi.item.pszText = const_cast<char*>(name.c_str());
-				tvi.item.lParam = (LPARAM)new string(commonStart);
-				parent = ctrlDirs.InsertItem(&tvi);
-				next = NULL;
-				i++;
+				tvi.item.lParam = (LPARAM)new string(dir.substr(0, i+1));
+				next = ctrlDirs.InsertItem(&tvi);
 			} else {
-				// No commonStart...
-				i = 0;
+				dcassert(dir.length() == 3);
+				tvi.hParent = NULL;
+				tvi.item.pszText = const_cast<char*>(dir.c_str());
+				tvi.item.lParam = (LPARAM)new string(dir);
+				next = ctrlDirs.InsertItem(&tvi);
 			}
-		} else {
-			// Check if commonStart is the same as this dir start...
-			if(commonStart.empty()) {
-				// nothing...
-			} else if(Util::strnicmp(dir, commonStart, commonStart.length()) == 0) {
-				// Ok, np, commonstart is equal...
-				i = commonStart.length();
-				dcassert(next != NULL);
-				parent = next;
-				next = ctrlDirs.GetChildItem(next);
-			} else {
-				string oldCommon = commonStart;
-				i = 0;
-				for(;;) {
-					j = dir.find('\\', i);
-					if(j == string::npos) {
-						commonStart = dir.substr(0, i);
-						break;
-					}
-					if(Util::strnicmp(dir, commonStart, j) == 0) {
-						i = j + 1;
-					} else {
-						commonStart = dir.substr(0, i);
-						break;
-					}
-				}
-				if(commonStart.empty()) {
-					// We insert the first part, if not, addDirectory will return the old commonStart
-					// Since this gets sorted before oldCommon, it should work =)
-					i = oldCommon.find('\\');
-					if(i != 2) {
-						// oldCommon is not the shortest possible path, move all files...
-						dcassert(i != string::npos);
-						string* tmp = new string(oldCommon.substr(0, i+1));
-						string name = tmp->substr(0, tmp->length() - 1);
-						tvi.hParent = NULL;
-						tvi.item.pszText = const_cast<char*>(name.c_str());
-						tvi.item.lParam = (LPARAM)tmp;
-						ctrlDirs.InsertItem(&tvi);
-						HTREEITEM ht = addDirectory(oldCommon);
-						HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
-						while(ht2 != NULL) {
-							moveNode(ht2, ht);
-							ht2 = ctrlDirs.GetChildItem(next);
-						}
-						delete (string*)ctrlDirs.GetItemData(next);
-						ctrlDirs.DeleteItem(next);
-						next = ctrlDirs.GetRootItem();
-						if((next != NULL) && (next == fileLists)) {
-							next = ctrlDirs.GetNextSiblingItem(next);
-						}
-						i = 0;
-					}
-				} else {
-					string name = commonStart.substr(0, commonStart.length() - 1);
-					tvi.hParent = NULL;
-					tvi.item.pszText = const_cast<char*>(name.c_str());
-					tvi.item.lParam = (LPARAM)new string(commonStart);
-					parent = ctrlDirs.InsertItem(&tvi);
-					HTREEITEM ht = addDirectory(oldCommon, false, parent);
-					HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
-					while(ht2 != NULL) {
-						moveNode(ht2, ht);
-						ht2 = ctrlDirs.GetChildItem(next);
-					}
-					delete (string*)ctrlDirs.GetItemData(next);
-					ctrlDirs.DeleteItem(next);
+		} 
+		
+		// Ok, next now points to x:\... find how much is common
 
-					next = ctrlDirs.GetChildItem(parent);
-					i = commonStart.length();
-				}
+		string* rootStr = (string*)ctrlDirs.GetItemData(next);
+		
+		i = 0;
+
+		for(;;) {
+			j = dir.find('\\', i);
+			if(j == string::npos)
+				break;
+			if(Util::strnicmp(dir.c_str() + i, rootStr->c_str() + i, j - i) != 0)
+				break;
+			i = j + 1;
+		}
+		
+		if(i < rootStr->length()) {
+			HTREEITEM oldRoot = next;
+
+			// Create a new root
+			string name = rootStr->substr(0, i-1);
+			tvi.hParent = NULL;
+			tvi.item.pszText = const_cast<char*>(name.c_str());
+			tvi.item.lParam = (LPARAM)new string(rootStr->substr(0, i));
+			HTREEITEM newRoot = ctrlDirs.InsertItem(&tvi);
+
+			parent = addDirectory(*rootStr, false, newRoot);
+
+			next = ctrlDirs.GetChildItem(oldRoot);
+			while(next != NULL) {
+				moveNode(next, parent);
+				next = ctrlDirs.GetChildItem(oldRoot);
 			}
+			delete rootStr;
+			ctrlDirs.DeleteItem(oldRoot);
+			parent = newRoot;
+		} else {
+			// Use this root as parent
+			parent = next;
+			next = ctrlDirs.GetChildItem(parent);
 		}
 	} else {
 		parent = startAt;
-		next = NULL;
+		next = ctrlDirs.GetChildItem(parent);
 		i = getDir(parent).length();
 		dcassert(Util::strnicmp(getDir(parent), dir, getDir(parent).length()) == 0);
 	}
 
-
 	while( i < dir.length() ) {
-		if(next == fileLists) {
+		if((next != NULL) && (next == fileLists)) {
 			next = ctrlDirs.GetNextSiblingItem(next);
 		}
 		while(next != NULL) {
@@ -1147,7 +1129,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.30 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.31 2003/10/24 00:37:32 arnetheduck Exp $
  */
 
 

@@ -130,7 +130,7 @@ public:
 	string makeKey(const string& aLock);
 	const string& getLock() { return lock; };
 	const string& getPk() { return pk; };
-	bool isExtended(const string& aLock) { return aLock.find("EXTENDEDPROTOCOL") != string::npos; };
+	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; };
 
 	void decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
@@ -187,5 +187,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.23 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.24 2003/10/24 00:37:32 arnetheduck Exp $
  */

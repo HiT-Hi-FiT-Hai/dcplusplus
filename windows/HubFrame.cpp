@@ -657,27 +657,26 @@ LRESULT HubFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, 
 	tabMenuShown = true;
 	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getServer(), client->getOp());
 	tabMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	tabMenu.AppendMenu(MF_STRING, ID_FILE_CLOSE, CSTRING(CLOSE));
+	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	return TRUE;
 }
 
+
+
 LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-	RECT rc;                    // client area of window 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	RECT rc; 
+	POINT pt; 
+	GetCursorPos(&pt);			//need cursor pos
+	ctrlClient.GetWindowRect(&rc);
 
-	tabMenuShown = false;
-
-	ctrlClient.GetClientRect(&rc);
-	if(uMsg == WM_CONTEXTMENU)
-		ctrlClient.ScreenToClient(&pt);
-	
 	bool doMenu = false;
 
 	if (PtInRect(&rc, pt)) {
 		string x;
+		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
 
 		string::size_type end = x.find_first_of(" >\t", start+1);
@@ -687,7 +686,7 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 			bHandled = FALSE;
 			return FALSE;
 		}
-			
+
 		// Nickname click, let's see if we can find one like it in the name list...
 		int pos = ctrlUsers.find(x.substr(start, end - start));
 		if(pos != -1) {
@@ -698,22 +697,20 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 			}
 			ctrlUsers.SetRedraw(TRUE);
 			ctrlUsers.EnsureVisible(pos, FALSE);
-			
+
 			ctrlClient.ClientToScreen(&pt);
 			doMenu = true; 
 		} else {
 			bHandled = FALSE;
 		}
 	} else {
-		ctrlClient.ClientToScreen(&pt);
 		// Get the bounding rectangle of the client area. 
-		ctrlUsers.GetClientRect(&rc);
-		if(uMsg == WM_CONTEXTMENU)
-			ctrlUsers.ScreenToClient(&pt); 
-		
+		ctrlUsers.GetWindowRect(&rc);
+
 		if (PtInRect(&rc, pt)) { 
-			ctrlUsers.ClientToScreen(&pt);
 			doMenu = true;
+		}else{
+			bHandled = FALSE; //needed to popup context menu under userlist
 		}
 	}
 
@@ -1032,5 +1029,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.35 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.36 2003/10/24 00:37:32 arnetheduck Exp $
  */

@@ -204,7 +204,11 @@ int Socket::readFull(void* aBuffer, int aBufLen) throw(SocketException) {
 void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	checkconnected();
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
-	dcassert(aLen > 0);
+        
+        if(aLen == 0){
+                return;
+        }
+
 	int pos = 0;
 	int sendSize = min(aLen, 64 * 1024);
 
@@ -514,6 +518,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.47 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.48 2003/10/24 00:37:32 arnetheduck Exp $
  */
 

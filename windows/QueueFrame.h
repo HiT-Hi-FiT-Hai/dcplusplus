@@ -145,9 +145,11 @@ public:
 
 	LRESULT onKeyDownDirs(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMTVKEYDOWN* kd = (NMTVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_TAB) {
+		if(kd->wVKey == VK_DELETE) {
+			removeSelectedDir();
+		} else if(kd->wVKey == VK_TAB) {
 			onTab();
-		}
+		} 
 		return 0;
 	}
 
@@ -264,8 +266,6 @@ private:
 
 	StringList searchFilter;
 
-	string commonStart;
-
 	typedef hash_map<QueueItem*, QueueItem*, PointerHash<QueueItem> > QueueMap;
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
@@ -360,5 +360,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.22 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.23 2003/10/24 00:37:32 arnetheduck Exp $
  */

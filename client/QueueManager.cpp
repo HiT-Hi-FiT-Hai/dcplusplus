@@ -462,10 +462,9 @@ typedef pair<SizeIter, SizeIter> SizePair;
 #define isnum(c) (((c) >= '0') && ((c) <= '9'))
 
 static inline int adjustSize(u_int32_t sz, const string& name) {
-	if(sz == 15 * 1000 * 1000 || sz == 50 * 1000 * 1000) {
+	if((name.length() > 2) && ((sz == 15 * 1000 * 1000) || (sz == 50 * 1000 * 1000))) {
 		// Common rar-set size...handle specially because it makes
 		// the hash map ineffective
-		dcassert(name.length() > 2);
 		// filename.r32
 		u_int8_t c1 = (u_int8_t)name[name.length()-2];
 		u_int8_t c2 = (u_int8_t)name[name.length()-1];
@@ -1132,5 +1131,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.46 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.47 2003/10/24 00:37:32 arnetheduck Exp $
  */

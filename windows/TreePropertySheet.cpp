@@ -21,6 +21,8 @@
 
 #include "TreePropertySheet.h"
 
+static const char SEPARATOR = '\\';
+
 int TreePropertySheet::PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam) {
 	if(uMsg == PSCB_INITIALIZED) {
 		::PostMessage(hwndDlg, WM_USER_INITDIALOG, 0, 0);
@@ -101,7 +103,7 @@ HTREEITEM TreePropertySheet::createTree(const string& str, HTREEITEM parent, int
 
 	HTREEITEM first = (parent == TVI_ROOT) ? ctrlTree.GetRootItem() : ctrlTree.GetChildItem(parent);
 
-	string::size_type i = str.find('\\');
+	string::size_type i = str.find(SEPARATOR);
 	if(i == string::npos) {
 		// Last dir, the actual page
 		HTREEITEM item = findItem(str, first);
@@ -110,7 +112,9 @@ HTREEITEM TreePropertySheet::createTree(const string& str, HTREEITEM parent, int
 			tvi.item.mask = TVIF_PARAM | TVIF_TEXT;
 			tvi.item.pszText = const_cast<LPSTR>(str.c_str());
 			tvi.item.lParam = page;
-			return ctrlTree.InsertItem(&tvi);
+			item = ctrlTree.InsertItem(&tvi);
+			ctrlTree.Expand(parent);
+			return item;
 		} else {
 			// Update page
 			if(ctrlTree.GetItemData(item) == -1)
@@ -127,6 +131,7 @@ HTREEITEM TreePropertySheet::createTree(const string& str, HTREEITEM parent, int
 			tvi.item.pszText = const_cast<LPSTR>(name.c_str());
 			item = ctrlTree.InsertItem(&tvi);
 		} 
+		ctrlTree.Expand(parent);
 		// Recurse...
 		return createTree(str.substr(i+1), item, page);
 	}	

@@ -139,11 +139,11 @@ void HubManager::load() {
 	// Add standard op commands
 	static const char kickstr[] = 
 		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
-	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB, UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
 		STRING(KICK_USER), kickstr, "op");
 	static const char redirstr[] =
 		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
-	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB, UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, UserCommand::FLAG_NOSAVE, 
 		STRING(REDIRECT_USER), redirstr, "op");
 
 	try {
@@ -331,5 +331,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.34 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.35 2003/10/24 00:37:32 arnetheduck Exp $
  */
