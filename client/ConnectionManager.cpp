@@ -108,7 +108,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			downPool.push_back(i->second);
 			aSource->setLastActivity(GET_TICK());
 		}
-		dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
+		dcdebug("ConnectionManager::putDownloadConnection Pooling reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
 		
 	} else {
 		if(aSource->getUser()) {
@@ -591,5 +591,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.52 2002/06/18 19:06:33 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.53 2002/06/19 14:29:35 arnetheduck Exp $
  */
