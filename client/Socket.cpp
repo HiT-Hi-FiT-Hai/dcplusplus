@@ -62,10 +62,6 @@ Socket::Socket() : readEvent(NULL) {
 	buffer.reserve(256);
 }
 
-Socket::~Socket() {
-	closesocket(sock);
-}
-
 Socket::Socket(const string& ip, const string& port) throw(SocketException) : readEvent(NULL)  {
 	connected = false;
 	sock = -1;
@@ -222,11 +218,14 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.2 2001/11/24 10:39:00 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/24 10:39:00  arnetheduck
+ * New BufferedSocket creates reader threads and reports inbound data through a listener.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

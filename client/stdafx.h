@@ -43,6 +43,7 @@ extern CAppModule _Module;
 #include <atldlgs.h>
 #include <atlctrlw.h>
 #include <atlmisc.h>
+#include <atlsplit.h>
 
 #include <string>
 #include <vector>
@@ -58,9 +59,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.3 2001/11/24 10:39:00 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.3  2001/11/24 10:39:00  arnetheduck
+ * New BufferedSocket creates reader threads and reports inbound data through a listener.
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -15,6 +15,7 @@
 #define IDC_EMAIL                       1002
 #define IDC_DESCRIPTION                 1003
 #define IDC_CONNECTION                  1005
+#define IDC_USERS						1006
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTING                 32773
 #define ID_FILE_SETTINGS                32774

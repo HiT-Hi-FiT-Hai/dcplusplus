@@ -103,12 +103,14 @@ public:
 	Socket();
 	Socket(const string& ip, const string& port) throw(SocketException);
 	Socket(const string& ip, short port) throw(SocketException);
-	virtual ~Socket();
+	virtual ~Socket() {
+		closesocket(sock);
+	};
 	
-	void connect(const string& ip, short port) throw(SocketException);
-	void connect(const string& ip, const string& port) throw(SocketException);
+	virtual void connect(const string& ip, short port) throw(SocketException);
+	virtual void connect(const string& ip, const string& port) throw(SocketException);
 	
-	void disconnect() {
+	virtual void disconnect() {
 		closesocket(sock);
 		connected = false;
 	}
@@ -119,8 +121,8 @@ public:
 		return i;
 	}
 	
-	void write(const char* buffer, int len) throw(SocketException);
-	void write(const string& aData) throw(SocketException); 
+	virtual void write(const char* buffer, int len) throw(SocketException);
+	virtual void write(const string& aData) throw(SocketException); 
 
 	boolean isConnected() {
 		return connected;
@@ -157,11 +159,14 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: Socket.h,v 1.2 2001/11/24 10:39:00 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/24 10:39:00  arnetheduck
+ * New BufferedSocket creates reader threads and reports inbound data through a listener.
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

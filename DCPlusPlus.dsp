@@ -92,6 +92,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\client\BufferedSocket.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ClientListener.cpp
 # End Source File
 # Begin Source File
@@ -109,6 +113,10 @@ SOURCE=.\DCPlusPlus.rc
 # Begin Source File
 
 SOURCE=.\client\Exception.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\ExListViewCtrl.cpp
 # End Source File
 # Begin Source File
 
@@ -159,6 +167,10 @@ SOURCE=.\client\stdafx.cpp
 
 SOURCE=.\client\StringTokenizer.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\client\UserConnection.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -166,6 +178,10 @@ SOURCE=.\client\StringTokenizer.cpp
 # Begin Source File
 
 SOURCE=.\client\AboutDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\BufferedSocket.h
 # End Source File
 # Begin Source File
 
@@ -182,6 +198,10 @@ SOURCE=.\client\DCPlusPlus.h
 # Begin Source File
 
 SOURCE=.\client\Exception.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\ExListViewCtrl.h
 # End Source File
 # Begin Source File
 
@@ -234,6 +254,10 @@ SOURCE=.\client\stdafx.h
 # Begin Source File
 
 SOURCE=.\client\StringTokenizer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\UserConnection.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

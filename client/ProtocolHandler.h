@@ -43,6 +43,8 @@ public:
 			client->version("1,0091");
 			client->getNickList();
 			client->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "1000000000000");
+		} else {
+			client->getInfo(aNick);
 		}
 	}
 	void onNickList(StringList& aNicks) {
@@ -68,9 +70,12 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.3 2001/11/24 10:39:00 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.3  2001/11/24 10:39:00  arnetheduck
+ * New BufferedSocket creates reader threads and reports inbound data through a listener.
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.
