@@ -459,6 +459,15 @@ int64_t ShareManager::getShareSize() throw() {
 	return tmp;
 }
 
+size_t ShareManager::getSharedFiles() throw() {
+	RLock<> l(cs);
+	size_t tmp = 0;
+	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+		tmp += i->second->countFiles();
+	}
+	return tmp;
+}
+
 
 string ShareManager::Directory::getADCPath() const throw() {
 	if(parent == NULL)
@@ -1430,6 +1439,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.123 2005/01/03 20:23:34 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.124 2005/01/04 14:59:46 arnetheduck Exp $
  */
 

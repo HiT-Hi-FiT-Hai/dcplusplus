@@ -295,12 +295,14 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("DE", getDescription());
 	ADDPARAM("SL", Util::toString(SETTING(SLOTS)));
 	ADDPARAM("SS", ShareManager::getInstance()->getShareSizeString());
+	ADDPARAM("SF", Util::toString(ShareManager::getInstance()->getSharedFiles()));
+	ADDPARAM("EM", SETTING(EMAIL));
 	ADDPARAM("HN", Util::toString(counts.normal));
 	ADDPARAM("HR", Util::toString(counts.registered));
 	ADDPARAM("HO", Util::toString(counts.op));
-	ADDPARAM("VE", "++\\ " VERSIONSTRING);
-	ADDPARAM("I4", "0.0.0.0");
+	ADDPARAM("VE", "++ " VERSIONSTRING);
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+		ADDPARAM("I4", "0.0.0.0");
 		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
 	} else {
 		ADDPARAM("U4", "");
@@ -344,5 +346,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.33 2005/01/04 14:17:47 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.34 2005/01/04 14:59:47 arnetheduck Exp $
  */

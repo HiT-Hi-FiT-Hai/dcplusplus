@@ -74,6 +74,8 @@ public:
 	int64_t getShareSize() throw();
 	int64_t getShareSize(const string& aDir) throw();
 
+	size_t getSharedFiles() throw();
+
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
@@ -166,10 +168,16 @@ private:
 
 		int64_t getSize() {
 			int64_t tmp = size;
-			for(MapIter i = directories.begin(); i != directories.end(); ++i) {
+			for(MapIter i = directories.begin(); i != directories.end(); ++i)
 				tmp+=i->second->getSize();
-			}
 			return tmp;
+		}
+
+		size_t countFiles() {
+			size_t tmp = files.size();
+			for(MapIter i = directories.begin(); i != directories.end(); ++i)
+				tmp+=i->second->countFiles();
+			return tmp;			
 		}
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
@@ -311,6 +319,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.71 2005/01/03 20:23:35 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.72 2005/01/04 14:59:47 arnetheduck Exp $
  */
 
