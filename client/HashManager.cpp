@@ -343,9 +343,9 @@ void HashLoader::startTag(const string& name, StringPairList& attribs, bool) {
 		int64_t index = Util::toInt64(getAttrib(attribs, sIndex, 2));
 		const string& root = getAttrib(attribs, sRoot, 3);
 		if(!file.empty() && (type == sTTH) && (blockSize >= 1024) && (index >= 8) && !root.empty()) {
-			string fpath = Text::toLower(Util::getFilePath(name));
+			string fpath = Text::toLower(Util::getFilePath(file));
 			/** @todo Verify root against data file */
-			store.indexTTH[fpath].push_back(new HashManager::HashStore::FileInfo(name, TTHValue(root), size, index, blockSize, timeStamp, false));
+			store.indexTTH[fpath].push_back(new HashManager::HashStore::FileInfo(file, TTHValue(root), size, index, blockSize, timeStamp, false));
 		}
 	}
 }
@@ -615,5 +615,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.31 2004/10/24 10:37:11 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.32 2004/10/24 10:47:20 arnetheduck Exp $
  */
