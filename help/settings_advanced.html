@@ -40,6 +40,15 @@ the download was started with a TTH root hash available, the autosearch
 will find exact matches by searching via hash. Otherwise, the
 autosearch will try to find matches by searching with a slightly
 modified version of the filename.</dd>
+  <dt>Automatically Match Queue for Auto Search Hits</dt>
+  <dd>Enable to automatically download a user's list and match them as
+sources for files in your Download Queue when they've been discovered
+as a source for one of the files you're downloading. If you download
+files in sets, that user is probably a source for many more files
+you're downloading.<span style="font-style: italic;">Enable if unsure.
+The drawbacks are that it might add slower sources, possibly increasing
+the time needed to complete a download, and that you'll download a lot
+of file lists.</span></dd>
   <dt>Open Private Messages in Their Own Window</dt>
   <dd>If you disable this option, a private message from a user appears
 as a status line in main chat instead of in a separate window. This
@@ -74,7 +83,8 @@ list them but subtract their size from your total reported share size.
 Duplicate files never count towards your share size, no matter what
 this is set to.</dd>
   <dt>Register with Windows to Handle dchub:// and adc:// URL Links</dt>
-  <dd>When set, DC++ will be the default handler for all dchub:// and adc://
+  <dd>When set, DC++ will be the default handler for all dchub:// and
+adc://
 links. These links can appear on web pages, internet shortcuts on your
 computer, or be&nbsp;typed and run as a program from
 the&nbsp;Start&nbsp;Menu. Disable this if you prefer for a different
@@ -184,15 +194,6 @@ custom commands from a remote&nbsp;hub. Custom User Commands may show
 when you click on the hub's tab, or on a user in the Transfer View,
 Search Window, or User List, and can enable you to read the rules,
 perform operator functions, interact with hub bots, etcetera.</dd>
-  <dt>Automatically Match Queue for Auto Search Hits</dt>
-  <dd>Enable to automatically download a user's list and match them as
-sources for files in your Download Queue when they've been discovered
-as a source for one of the files you're downloading. If you download
-files in sets, that user is probably a source for many more files
-you're downloading.<span style="font-style: italic;">Enable if unsure.
-The drawbacks are that it might add slower sources, possibly increasing
-the time needed to complete a download, and that you'll download a lot
-of file lists.</span></dd>
   <dt><a name="filelist"></a>Log Filelist transfers</dt>
   <dd>Add successful file lists transfers&nbsp;to your upload and
 download logs. Otherwise only transferred files are logged. <em>Enabled
@@ -218,13 +219,28 @@ page.&nbsp; A guide to setting up UPnP can be found <a
 exist in one of your shared directories. Note that this only works with
 those files which have a TTH.</dd>
   <dt>Use CTRL for line history</dt>
-  <dd>Press up arrow while holding down CTRL to scroll through line history. If not enabled, up arrow will be enough.</dd>
+  <dd>Press up arrow while holding down CTRL to scroll through line
+history. If not enabled, up arrow will be enough.</dd>
   <dt><a name="new_window"></a>Open new window when using /join</dt>
-  <dd>When using /join <ip>, a new window with the hub will open.</dd>
+  <dd>When using /join &gt;ip&lt;, a new window with the hub will open.</dd>
   <dt>Search for files with TTH root only as standard</dt>
-  <dd>Enables "Only results with TTH root" in the search window as standard. This option will cause search results that don't have a TTH to not be displayed.</dd>
-  <dt>Advanced resume using TTH</dt>
-  <dd>.</dd>
+  <dd>Enables "Only results with TTH root" in the search window as
+standard. This option will cause search results that don't have a TTH
+to not be displayed.</dd>
+  <dt><a name="advanced_resume"></a>Advanced resume using TTH</dt>
+  <dd>Enables a more advanced form of transfer resuming than the <a
+ href="settings_expert.html#rollback">rollback</a> method.&nbsp; The
+last block of the incomplete file will be checked for validity using
+the leaves, retrieved from the remote client, of the TTH.&nbsp; If the
+block fails verification, the previous block in the file will be tried,
+and so on, until a good block is found, or there is no more data in the
+file.</dd>
+  <dt>Toggle window when selecting an active tab</dt>
+  <dd>With this option enabled, clicking on an active tab will mimic
+the behavior of Windows 98+ and send the currently active window to the
+background.&nbsp; The most recently accessed window will become the new
+active window.<br>
+  </dd>
 </dl>
 </div>
 </body>

@@ -57,6 +57,7 @@ public:
 		FLAG_UTF8 = 0x80,
 		FLAG_TREE_DOWNLOAD = 0x100,
 		FLAG_TREE_TRIED = 0x200,
+		FLAG_PARTIAL_LIST = 0x400,
 	};
 
 	Download() throw();
@@ -77,7 +78,7 @@ public:
 		} else {
 			return getTarget();
 		}
-	};
+	}
 
 	/** @internal */
 	string getDownloadTarget() {
@@ -86,10 +87,8 @@ public:
 	}
 
 	/** @internal */
-	TigerTree& getTigerTree() {
-		return tt;
-	}
-
+	TigerTree& getTigerTree() { return tt; }
+	string& getPFS() { return pfs; }
 	/** @internal */
 	AdcCommand getCommand(bool zlib, bool tthf);
 
@@ -108,6 +107,7 @@ private:
 	Download& operator=(const Download&);
 
 	TigerTree tt;
+	string pfs;
 };
 
 
@@ -277,5 +277,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.79 2005/01/13 15:07:57 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.80 2005/03/12 13:36:33 arnetheduck Exp $
  */

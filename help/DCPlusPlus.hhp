@@ -46,22 +46,23 @@ faq_different_icons.html
 faq_units.html
 dev_createpatch.html
 dev_applypatch.html
+links.html
 
 [ALIAS]
 IDC_HELP_CHANGELOG=changelog.html
-IDD_LOGPAGE=settings_logs.html
+IDD_ADVANCED3PAGE=settings_expert.html
 IDD_ADVANCEDPAGE=settings_advanced.html
-IDD_APPEARANCEPAGE=settings_appearance.html
 IDD_APPEARANCE2PAGE=settings_colors_and_sounds.html
+IDD_APPEARANCEPAGE=settings_appearance.html
 IDD_DOWNLOADPAGE=settings_downloads.html
 IDD_DOWNLOADPAGE=settings_sharing.html
 IDD_FAVORITE_DIRSPAGE=settings_favoritedirs.html
 IDD_GENERALPAGE=settings_general.html
-IDD_NETWORKPAGE=settings_connection.html
 IDD_KEYBOARD=faq_keyboard_commands.html
+IDD_LOGPAGE=settings_logs.html
+IDD_NETWORKPAGE=settings_connection.html
 IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
-IDD_ADVANCED3PAGE=settings_expert.html
 IDD_UPLOADPAGE=settings_sharing.html
 IDR_ADLSEARCH=adlsearch.html
 

@@ -94,6 +94,8 @@ public:
 			true);
 	}
 
+	void addPfs(const User::Ptr& aUser, const string& aDir) throw();
+
 	/** Readd a source that was removed */
 	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
@@ -121,7 +123,7 @@ public:
 
 	bool hasDownload(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST) throw() {
 		Lock l(cs);
-		return (userQueue.getNext(aUser, minPrio) != NULL);
+		return (pfsQueue.find(aUser->getCID()) != pfsQueue.end()) || (userQueue.getNext(aUser, minPrio) != NULL);
 	}
 	
 	void loadQueue() throw();
@@ -130,6 +132,9 @@ public:
 	GETSET(u_int32_t, lastSave, LastSave);
 	GETSET(string, queueFile, QueueFile);
 private:
+
+	typedef HASH_MAP_X(CID, string, CID::Hash, equal_to<CID>, less<CID>) PfsQueue;
+	typedef PfsQueue::iterator PfsIter;
 
 	/** All queue items by target */
 	class FileQueue {
@@ -197,6 +202,8 @@ private:
 	
 	CriticalSection cs;
 	
+	/** Partial file list queue */
+	PfsQueue pfsQueue;
 	/** QueueItems by target */
 	FileQueue fileQueue;
 	/** QueueItems by user */
@@ -244,6 +251,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.68 2005/01/20 15:42:14 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.69 2005/03/12 13:36:50 arnetheduck Exp $
  */
 

@@ -26,10 +26,15 @@
 #include "AdcCommand.h"
 #include "ConnectionManager.h"
 #include "version.h"
-
+#include "Util.h"
 const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
+}
+
+AdcHub::~AdcHub() {
+	Lock l(cs);
+	clearUsers();
 }
 
 void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
@@ -49,7 +54,12 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 			continue;
 
 		if(i->compare(0, 2, "NI") == 0) {
+			Lock l(cs);
+			if(!u->getNick().empty()) {
+				nickMap.erase(u->getNick());
+			}
 			u->setNick(i->substr(2));
+			nickMap.insert(make_pair(u->getNick(), u));
 		} else if(i->compare(0, 2, "HU") == 0) {
 			hub = u;
 		} else if(i->compare(0, 2, "DE") == 0) {
@@ -154,6 +164,10 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParam(0)), false);
 	if(!p)
 		return;
+	if(!p->getNick().empty()) {
+		Lock l(cs);
+		nickMap.erase(p->getNick());
+	}
 	ClientManager::getInstance()->putUserOffline(p);
 	fire(ClientListener::UserRemoved(), this, p);
 }
@@ -193,6 +207,13 @@ void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
     connect(&*p, token);
 }
 
+void AdcHub::handle(AdcCommand::STA, AdcCommand& c) throw() {
+	if(c.getParameters().size() < 2)
+		return;
+
+	fire(ClientListener::Message(), this, c.getParam(1));
+}
+
 void AdcHub::connect(const User* user) {
 	u_int32_t r = Util::rand();
 	connect(user, Util::toString(r));
@@ -212,6 +233,10 @@ void AdcHub::connect(const User* user, string const& token) {
 void AdcHub::disconnect() {
 	state = STATE_PROTOCOL;
 	Client::disconnect();
+	{
+		Lock l(cs);
+		clearUsers();
+	}
 }
 
 void AdcHub::hubMessage(const string& aMessage) {
@@ -254,13 +279,13 @@ void AdcHub::password(const string& pwd) {
 	if(state != STATE_VERIFY)
 		return;
 	if(!salt.empty()) {
-		static const int SALT_SIZE = 192/8;
-		u_int8_t buf[SALT_SIZE];
-		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
+		size_t saltBytes = salt.size() * 5 / 8;
+		AutoArray<u_int8_t> buf(saltBytes);
+		Encoder::fromBase32(salt.c_str(), buf, saltBytes);
 		TigerHash th;
 		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
 		th.update(pwd.data(), pwd.length());
-		th.update(buf, SALT_SIZE);
+		th.update(buf, saltBytes);
 		send(AdcCommand(AdcCommand::CMD_PAS, AdcCommand::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
 		salt.clear();
 	}
@@ -328,6 +353,13 @@ string AdcHub::getHubURL() {
 	return getAddressPort();
 }
 
+void AdcHub::clearUsers() {
+	for(User::NickIter i = nickMap.begin(); i != nickMap.end(); ++i) {
+		ClientManager::getInstance()->putUserOffline(i->second);		
+	}
+	nickMap.clear();
+}
+
 void AdcHub::on(Connected) throw() { 
 	dcassert(state == STATE_PROTOCOL);
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
@@ -345,13 +377,12 @@ void AdcHub::on(Line, const string& aLine) throw() {
 }
 
 void AdcHub::on(Failed, const string& aLine) throw() { 
-	if(getMe())
-		ClientManager::getInstance()->putUserOffline(getMe());
+	clearUsers();
 	setMe(NULL);
 	state = STATE_PROTOCOL;
 	fire(ClientListener::Failed(), this, aLine);
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.39 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.40 2005/03/12 13:36:34 arnetheduck Exp $
  */

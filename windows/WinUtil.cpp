@@ -58,6 +58,7 @@ CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
 CImageList WinUtil::userImages;
 int WinUtil::dirIconIndex = 0;
+int WinUtil::dirMaskedIndex = 0;
 TStringList WinUtil::lastDirs;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
@@ -151,6 +152,14 @@ void UserInfoBase::matchQueue() {
 void UserInfoBase::getList() {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+	} catch(const Exception&) {
+	}
+}
+void UserInfoBase::browseList() {
+	if(user->getCID().isZero())
+		return;
+	try {
+		QueueManager::getInstance()->addPfs(user, "");
 	} catch(const Exception&) {
 	}
 }
@@ -274,17 +283,27 @@ void WinUtil::init(HWND hWnd) {
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT_PTR)(HMENU)help, CTSTRING(MENU_HELP));
 
+/** @todo fix this so that the system icon is used for dirs as well (we need
+			  to mask it so that incomplete folders appear correct */
+#if 0	
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
 		fileImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 16, 16);
 		::SHGetFileInfo(_T("."), FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
+		fileImages.AddIcon(ic);
 		::DestroyIcon(fi.hIcon);
-		dirIconIndex = fileImageCount++;
 	} else {
 		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-		dirIconIndex = 0;
 	}
+#endif
+
+	fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	dirIconIndex = fileImageCount++;
+	dirMaskedIndex = fileImageCount++;
+
+	fileImageCount++;
+
 	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 
 	LOGFONT lf, lf2;
@@ -311,7 +330,8 @@ void WinUtil::init(HWND hWnd) {
 		registerDchubHandler();
 		registerADChubHandler();
 	}
-	registerMagnetHandler();
+	if(BOOLSETTING(URL_MAGNET))
+		registerMagnetHandler();
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
 
@@ -1069,5 +1089,5 @@ int WinUtil::getOsMinor()
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.77 2005/01/06 18:20:07 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.78 2005/03/12 13:36:50 arnetheduck Exp $
  */

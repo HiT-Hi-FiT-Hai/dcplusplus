@@ -258,7 +258,7 @@ void QueueFrame::QueueItemInfo::update() {
 			display->columns[COLUMN_TTH] = Text::toT(getTTH()->toBase32());
 		}
 		if(colMask & MASK_TYPE) {
-			display->columns[COLUMN_TYPE] = Util::getFileExt(Util::getFileName(getTarget()));
+			display->columns[COLUMN_TYPE] = Util::getFileExt(getTarget());
 			if(display->columns[COLUMN_TYPE].size() > 0 && display->columns[COLUMN_TYPE][0] == '.')
 				display->columns[COLUMN_TYPE].erase(0, 1);
 		}
@@ -1263,7 +1263,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.70 2005/03/03 11:58:27 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.71 2005/03/12 13:36:50 arnetheduck Exp $
  */
 
 

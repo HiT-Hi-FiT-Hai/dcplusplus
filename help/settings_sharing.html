@@ -12,7 +12,10 @@ To add&nbsp;directories to your share, you can use the Add and Remove
 buttons, or drag and drop folders from a Windows Explorer window.&nbsp;
 <em style="font-weight: bold;">Beginning with version 0.4032, files
 will be shared only once they have been hashed.</em><span
- style="font-weight: bold;"> &nbsp;</span>
+ style="font-weight: bold;">&nbsp; <br>
+If you enter the Sharing tab and press OK; the client may appear to
+freeze, this is due to a refresh of the file list.<br>
+</span>
 <dl style="margin-left: 40px;">
   <dt>Add Folder</dt>
   <dd>Browse for a new folder to add to your share.&nbsp; If another
@@ -29,12 +32,16 @@ choose to let it display, or let hashing continue in the background.<br>
   </dd>
   <dt>Share Hidden Files</dt>
   <dd>Share files with the Hidden attribute set and files inside
-directory with the Hidden attribute set. With this option off, files starting with a . (full stop) will not be shared. Files that have a $ in the filename will not be shared due to a protocol limitation. Note: this option requires a
+directory with the Hidden attribute set. With this option off, files
+starting with a . (full stop) will not be shared. Files that have a $
+(dollar sign) in the filename will not be shared due to a protocol
+limitation. Note: this option requires a
 refresh of the file list, and may cause the client to appear to freeze.<br>
   </dd>
   <dt>Rename</dt>
   <dd>Change the virtual name on a shared folder. Note: the client will
-  appear to freeze when you exit settings, this is due to a refresh of the filelist.</dd>
+appear to freeze when you exit settings, this is due to a refresh of
+the file list.</dd>
 </dl>
 <dl>
   <dt>Automatically Open an Extra Slot if Speed is Below ...</dt>
@@ -42,11 +49,17 @@ refresh of the file list, and may cause the client to appear to freeze.<br>
 additional upload slot will be granted.&nbsp; These slots are granted
 once every 30 seconds at maximum.&nbsp; If the speed of the original
 uploads increases, the granted slot will not be closed.</dd>
-  <dt>Upload Slots</dt>
+  <dt><a name="slots">Upload Slots</dt>
   <dd>Configure the number of slots that other users can occupy to
 download files from you.&nbsp; A remote user can use only one slot for
-each hub that they're on with you.<br>
-  </dd>
+each hub that they're on with you. DC++ supports uploading
+filelists and files below <a href="settings_expert.html#minislotsize">64 KiB</a> to other DC++ users without requiring
+a slot. There's a max of 3 connections in addition to normal slots,
+these are called minislots. </dd>
 </dl>
+Note: If a user leaves the hub DC++ will close his slots, if the user
+is back
+within 10 minutes DC++ will grant him a slot.&nbsp; This can cause your
+upload slots going over maximum set in settings.<br>
 </body>
 </html>

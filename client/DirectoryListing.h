@@ -137,7 +137,7 @@ public:
 	void loadFile(const string& name);
 
 	void load(const string& i);
-	void loadXML(const string& xml);
+	void loadXML(const string& xml, bool updating);
 
 	void download(const string& aDir, const string& aTarget, bool highPrio);
 	void download(Directory* aDir, const string& aTarget, bool highPrio);
@@ -173,5 +173,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.39 2005/01/05 19:30:26 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.40 2005/03/12 13:36:33 arnetheduck Exp $
  */

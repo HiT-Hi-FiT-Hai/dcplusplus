@@ -407,6 +407,22 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 }
 
+void QueueManager::addPfs(const User::Ptr& aUser, const string& aDir) throw() {
+	if(!aUser->isOnline())
+		return;
+
+	{
+		Lock l(cs);
+		pair<PfsIter, PfsIter> range = pfsQueue.equal_range(aUser->getCID());
+		if(find_if(range.first, range.second, CompareSecond<CID, string>(aDir)) == range.second) {
+
+			pfsQueue.insert(make_pair(aUser->getCID(), aDir));
+		}
+	}
+
+	ConnectionManager::getInstance()->getDownloadConnection(aUser);
+}
+
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 					   const TTHValue* root, 
 					   int aFlags /* = QueueItem::FLAG_RESUME */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
@@ -729,6 +745,16 @@ void QueueManager::getTargetsByRoot(StringList& sl, const TTHValue& tth) {
 Download* QueueManager::getDownload(User::Ptr& aUser, bool supportsTrees) throw() {
 	Lock l(cs);
 
+	// First check PFS's...
+	PfsIter pi = pfsQueue.find(aUser->getCID());
+	if(pi != pfsQueue.end()) {
+		Download* d = new Download();
+		d->setFlag(Download::FLAG_PARTIAL_LIST);
+		d->setFlag(Download::FLAG_UTF8);
+		d->setSource(pi->second);
+		return d;
+	}
+
 	QueueItem* q = userQueue.getNext(aUser);
 
 	if(q == NULL)
@@ -775,80 +801,91 @@ void QueueManager::putDownload(Download* aDownload, bool finished) throw() {
 
 	{
 		Lock l(cs);
-		QueueItem* q = fileQueue.find(aDownload->getTarget());
-
-		if(q != NULL) {
-			if(aDownload->isSet(Download::FLAG_USER_LIST)) {
-				if(aDownload->getSource() == "files.xml.bz2") {
-					q->setFlag(QueueItem::FLAG_XML_BZLIST);
-				} else {
-					q->unsetFlag(QueueItem::FLAG_XML_BZLIST);
-				}
+		
+		if(aDownload->isSet(Download::FLAG_PARTIAL_LIST)) {
+			pair<PfsIter, PfsIter> range = pfsQueue.equal_range(aDownload->getUserConnection()->getUser()->getCID());
+			PfsIter i = find_if(range.first, range.second, CompareSecond<CID, string>(aDownload->getSource()));
+			if(i != range.second) {
+				pfsQueue.erase(i);
+				fire(QueueManagerListener::PartialList(), aDownload->getUserConnection()->getUser(), aDownload->getPFS());
 			}
+		} else {
 
+			QueueItem* q = fileQueue.find(aDownload->getTarget());
 
-			if(finished) {
-				dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
-				if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-					// Got a full tree, now add it to the HashManager
-					dcassert(aDownload->getTreeValid());
-					HashManager::getInstance()->addTree(aDownload->getTigerTree());
-
-					q->setCurrentDownload(NULL);
-					userQueue.setWaiting(q);
-
-					fire(QueueManagerListener::StatusUpdated(), q);
-				} else {
-					userQueue.remove(q);
-					fire(QueueManagerListener::Finished(), q);
-					fire(QueueManagerListener::Removed(), q);
-					// Now, let's see if this was a directory download filelist...
-					if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
-						(q->isSet(QueueItem::FLAG_MATCH_QUEUE)) ) 
-					{
-						fname = q->getListName();
-						up = q->getCurrent()->getUser();
-						flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
-							| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
-					} 
-					fileQueue.remove(q);
-					setDirty();
-				}
-			} else {
-				if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-					q->setDownloadedBytes(aDownload->getPos());
-
-					if(q->getDownloadedBytes() > 0) {
-						q->setFlag(QueueItem::FLAG_EXISTS);
+			if(q != NULL) {
+				if(aDownload->isSet(Download::FLAG_USER_LIST)) {
+					if(aDownload->getSource() == "files.xml.bz2") {
+						q->setFlag(QueueItem::FLAG_XML_BZLIST);
 					} else {
-						q->setTempTarget(Util::emptyString);
-					}
-					if(q->isSet(QueueItem::FLAG_USER_LIST)) {
-						// Blah...no use keeping an unfinished file list...
-						File::deleteFile(q->getListName());
+						q->unsetFlag(QueueItem::FLAG_XML_BZLIST);
 					}
 				}
 
-				if(q->getPriority() != QueueItem::PAUSED) {
-					for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
-						if((*j)->getUser()->isOnline()) {
-							getConn.push_back((*j)->getUser());
+
+				if(finished) {
+					dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
+					if(aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+						// Got a full tree, now add it to the HashManager
+						dcassert(aDownload->getTreeValid());
+						HashManager::getInstance()->addTree(aDownload->getTigerTree());
+
+						q->setCurrentDownload(NULL);
+						userQueue.setWaiting(q);
+
+						fire(QueueManagerListener::StatusUpdated(), q);
+					} else {
+						userQueue.remove(q);
+						fire(QueueManagerListener::Finished(), q);
+						fire(QueueManagerListener::Removed(), q);
+						// Now, let's see if this was a directory download filelist...
+						if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
+							(q->isSet(QueueItem::FLAG_MATCH_QUEUE)) ) 
+						{
+							fname = q->getListName();
+							up = q->getCurrent()->getUser();
+							flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
+								| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
+						} 
+						fileQueue.remove(q);
+						setDirty();
+					}
+				} else {
+					if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+						q->setDownloadedBytes(aDownload->getPos());
+
+						if(q->getDownloadedBytes() > 0) {
+							q->setFlag(QueueItem::FLAG_EXISTS);
+						} else {
+							q->setTempTarget(Util::emptyString);
+						}
+						if(q->isSet(QueueItem::FLAG_USER_LIST)) {
+							// Blah...no use keeping an unfinished file list...
+							File::deleteFile(q->getListName());
 						}
 					}
-				}
 
-				q->setCurrentDownload(NULL);
+					if(q->getPriority() != QueueItem::PAUSED) {
+						for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+							if((*j)->getUser()->isOnline()) {
+								getConn.push_back((*j)->getUser());
+							}
+						}
+					}
 
-				// This might have been set to wait by removesource already...
-				if(q->getStatus() == QueueItem::STATUS_RUNNING) {
-					userQueue.setWaiting(q);
-					fire(QueueManagerListener::StatusUpdated(), q);
+					q->setCurrentDownload(NULL);
+
+					// This might have been set to wait by removesource already...
+					if(q->getStatus() == QueueItem::STATUS_RUNNING) {
+						userQueue.setWaiting(q);
+						fire(QueueManagerListener::StatusUpdated(), q);
+					}
 				}
-			}
-		} else if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
-			if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
-				File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
-				File::deleteFile(aDownload->getTempTarget());
+			} else if(!aDownload->isSet(Download::FLAG_TREE_DOWNLOAD)) {
+				if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
+					File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
+					File::deleteFile(aDownload->getTempTarget());
+				}
 			}
 		}
 		aDownload->setUserConnection(NULL);
@@ -1304,6 +1341,10 @@ void QueueManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser
 					hasDown = true;
 			}
 		}
+
+		if(pfsQueue.find(aUser->getCID()) != pfsQueue.end()) {
+			hasDown = true;
+		}
 	}
 
 	if(aUser->isOnline() && hasDown)	
@@ -1318,5 +1359,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.122 2005/03/04 09:18:15 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.123 2005/03/12 13:36:34 arnetheduck Exp $
  */

@@ -644,7 +644,7 @@ void NmdcHub::myInfo(bool alwaysSend) {
 
 void NmdcHub::disconnect() throw() {	
 	state = STATE_CONNECT;
-	socket->disconnect();
+	Client::disconnect();
 	{ 
 		Lock l(cs);
 		clearUsers();
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.28 2005/02/01 16:41:35 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.29 2005/03/12 13:36:34 arnetheduck Exp $
  */
 

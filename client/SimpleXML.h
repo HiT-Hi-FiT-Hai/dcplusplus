@@ -169,7 +169,7 @@ public:
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
-	string toXML() { StringOutputStream os; toXML(&os); return os.getString(); };
+	string toXML() { string tmp; StringOutputStream os(tmp); toXML(&os); return tmp; };
 	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
 	static const string& escape(const string& str, string& tmp, bool aAttrib, bool aLoading = false, bool utf8 = true) {
@@ -284,6 +284,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.42 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.43 2005/03/12 13:36:34 arnetheduck Exp $
  */
 

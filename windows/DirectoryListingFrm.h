@@ -43,6 +43,7 @@ class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame
 {
 public:
 	static void openWindow(const tstring& aFile, const User::Ptr& aUser);
+	static void openWindow(const User::Ptr& aUser, const string& txt);
 
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 	typedef UCHandler<DirectoryListingFrame> ucBase;
@@ -56,10 +57,13 @@ public:
 		COLUMN_LAST
 	};
 	
-	DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser);
+	DirectoryListingFrame(const User::Ptr& aUser);
 	~DirectoryListingFrame() { 
+		dcassert(lists.find(dl->getUser()) != lists.end());
+		lists.erase(dl->getUser());
 		delete dl; 
 	}
+
 
 	DECLARE_FRAME_WND_CLASS(_T("DirectoryListingFrame"), IDR_DIRECTORY)
 
@@ -125,6 +129,9 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
 	void runUserCommand(UserCommand& uc);
+	void loadFile(const tstring& name);
+	void loadXML(const string& txt);
+	void refreshTree();
 	
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 		updateStatus();
@@ -198,6 +205,7 @@ public:
 			ctrlTree.SetFocus();
 		}
 	}
+
 private:
 	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
 	HTREEITEM findFile(const StringSearch& str, HTREEITEM root, int &foundFile, int &skipHits);
@@ -313,6 +321,11 @@ private:
 	
 	DirectoryListing* dl;
 
+	typedef HASH_MAP_X(User::Ptr, DirectoryListingFrame*, User::HashFunction, equal_to<User::Ptr>, less<User::Ptr>) UserMap;
+	typedef UserMap::iterator UserIter;
+	
+	static UserMap lists;
+
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 };
@@ -321,5 +334,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.48 2005/02/04 14:40:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.49 2005/03/12 13:36:50 arnetheduck Exp $
  */

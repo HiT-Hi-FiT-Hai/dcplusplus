@@ -371,7 +371,7 @@ void TransferView::ItemInfo::update() {
 }
 
 void TransferView::on(ConnectionManagerListener::Added, ConnectionQueueItem* aCqi) {
-	ItemInfo::Types t = aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD) ? ItemInfo::TYPE_UPLOAD : ItemInfo::TYPE_DOWNLOAD;
+	ItemInfo::Types t = aCqi->getDownload() ? ItemInfo::TYPE_DOWNLOAD : ItemInfo::TYPE_UPLOAD;
 	ItemInfo* i = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
 
 	{
@@ -599,5 +599,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.42 2005/01/16 00:26:41 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.43 2005/03/12 13:36:50 arnetheduck Exp $
  */

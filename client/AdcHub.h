@@ -57,6 +57,7 @@ public:
 	void handle(AdcCommand::QUI, AdcCommand& c) throw();
 	void handle(AdcCommand::CTM, AdcCommand& c) throw();
 	void handle(AdcCommand::RCM, AdcCommand& c) throw();
+	void handle(AdcCommand::STA, AdcCommand& c) throw();
 
 	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
@@ -74,10 +75,11 @@ private:
 
 	AdcHub(const AdcHub&);
 	AdcHub& operator=(const AdcHub&);
-	virtual ~AdcHub() throw() { }
+	virtual ~AdcHub() throw();
 	User::NickMap nickMap;
 	User::Ptr hub;
 	StringMap lastInfoMap;
+	CriticalSection cs;
 
 	string salt;
 
@@ -85,6 +87,8 @@ private:
 	 
 	virtual string checkNick(const string& nick);
 	virtual string getHubURL();
+	
+	void clearUsers();
 
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
@@ -94,5 +98,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.24 2005/02/19 21:58:30 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.25 2005/03/12 13:36:34 arnetheduck Exp $
  */

@@ -474,6 +474,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		DirectoryListingFrame::openWindow(i->file, i->user);
 		delete i;
+	} else if(wParam == BROWSE_LISTING) {
+		DirectoryBrowseInfo* i = (DirectoryBrowseInfo*)lParam;
+		DirectoryListingFrame::openWindow(i->user, i->text);
+		delete i;
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
 		tstring* file = (tstring*)lParam;
 		TextFrame::openWindow(*file);
@@ -624,7 +628,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			WinUtil::registerDchubHandler();
 			WinUtil::registerADChubHandler();
 		}
-		WinUtil::registerMagnetHandler();
+		if(BOOLSETTING(URL_MAGNET))
+			WinUtil::registerMagnetHandler();
 	}
 	return 0;
 }
@@ -1175,6 +1180,10 @@ void MainFrame::on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const
 	versionInfo += string((const char*)buf, len);
 }
 
+void MainFrame::on(PartialList, const User::Ptr& aUser, const string& text) throw() {
+	PostMessage(WM_SPEAKER, BROWSE_LISTING, (LPARAM)new DirectoryBrowseInfo(aUser, text));
+}
+
 void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 	if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
 		if(qi->isSet(QueueItem::FLAG_USER_LIST)) {
@@ -1193,5 +1202,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.84 2005/02/01 16:41:45 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.85 2005/03/12 13:36:51 arnetheduck Exp $
  */

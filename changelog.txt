@@ -10,6 +10,10 @@
 * Fixed a geoip init bug (thanks trem)
 * Fixed a prio setting bug (thanks tpo)
 * Fixed some font settings (thanks tpo)
+* Fixed ADC password sending
+* Magnet registration fix (thanks ullner)
+* Finished partial file lists for ADC
+* Fixed some ADC crashes
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)

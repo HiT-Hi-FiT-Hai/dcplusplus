@@ -883,37 +883,55 @@ void ShareManager::generateNmdcList() {
 }
 
 MemoryInputStream* ShareManager::generatePartialList(const string& dir, bool recurse) {
-	if(dir.length() < 3 || dir[0] != '/' || dir[dir.size()-1] != '/')
+	if(dir[0] != '/' || dir[dir.size()-1] != '/')
 		return NULL;
 
-	string::size_type i = 1, j = 1;
-	ShareManager::Directory::MapIter it = directories.end();
-	bool first = true;
-	while( (i = dir.find('/', j)) != dir.length() - 1) {
-		if(i == j) {
-			j++;
-			continue;
-		}
+	string xml = SimpleXML::utf8Header;
+	string tmp;
+	xml += "<FileListing Version=\"1\" CID=\"" + SETTING(CLIENT_ID) + "\" Base=\"" + SimpleXML::escape(dir, tmp, false) + "\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n";
+	StringOutputStream sos(xml);
+	string indent = "\t";
 
-		if(first) {
-			first = false;
-			it = directories.find(dir.substr(j, i-j));
-			if(it == directories.end())
-				return NULL;
-		} else {
-			ShareManager::Directory::MapIter it2 = it->second->directories.find(dir.substr(j, i-j));
-			if(it2 == it->second->directories.end()) {
-				return NULL;
-			}
-			it = it2;
+	if(dir == "/") {
+		for(ShareManager::Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			tmp.clear();
+			i->second->toXml(sos, indent, tmp, recurse);
 		}
+	} else {
+		string::size_type i = 1, j = 1;
+		ShareManager::Directory::MapIter it = directories.end();
+		bool first = true;
+		while( (i = dir.find('/', j)) != string::npos) {
+			if(i == j) {
+				j++;
+				continue;
+			}
+
+			if(first) {
+				first = false;
+				StringPairIter k = lookupVirtual(dir.substr(j, i-j));
+				if(k == virtualMap.end())
+					return NULL;
+				it = directories.find(k->second);
+				if(it == directories.end())
+					return NULL;
+			} else {
+				ShareManager::Directory::MapIter it2 = it->second->directories.find(dir.substr(j, i-j));
+				if(it2 == it->second->directories.end()) {
+					return NULL;
+				}
+				it = it2;
+			}
+			j = i + 1;
+		}
+		for(ShareManager::Directory::MapIter it2 = it->second->directories.begin(); it2 != it->second->directories.end(); ++it2) {
+			it2->second->toXml(sos, indent, tmp, recurse);
+		}
+		it->second->filesToXml(sos, indent, tmp);
 	}
 
-	StringOutputStream sos;
-	string tmp;
-	string indent = "\t";
-	it->second->toXml(sos, indent, tmp, recurse);
-	return new MemoryInputStream(sos.getString());
+	xml += "</FileListing>";
+	return new MemoryInputStream(xml);
 }
 
 bool ShareManager::getTTH(const string& aFile, TTHValue& tth) throw() {
@@ -1460,6 +1478,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.128 2005/02/04 17:17:09 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.129 2005/03/12 13:36:33 arnetheduck Exp $
  */
 

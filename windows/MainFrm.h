@@ -53,6 +53,7 @@ public:
 
 	enum {
 		DOWNLOAD_LISTING,
+		BROWSE_LISTING,
 		STATS,
 		AUTO_CONNECT,
 		PARSE_COMMAND_LINE,
@@ -302,6 +303,12 @@ private:
 		tstring file;
 		LPARAM lParam;
 	};
+	class DirectoryBrowseInfo {
+	public:
+		DirectoryBrowseInfo(const User::Ptr& ptr, string aText) : user(ptr), text(aText) { };
+		User::Ptr user;
+		string text;
+	};
 	
 	TransferView transferView;
 
@@ -371,6 +378,8 @@ private:
 
 	// QueueManagerListener
 	virtual void on(QueueManagerListener::Finished, QueueItem* qi) throw();
+	virtual void on(PartialList, const User::Ptr&, const string& text) throw();
+
 	// UPnP connectors
 	UPnP* UPnP_TCPConnection;
 	UPnP* UPnP_UDPConnection;
@@ -380,7 +389,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.54 2005/02/04 14:40:51 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.55 2005/03/12 13:36:50 arnetheduck Exp $
  */
 
  

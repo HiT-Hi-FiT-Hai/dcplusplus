@@ -36,31 +36,68 @@ int DirectoryListingFrame::columnSizes[] = { 300, 60, 100, 100, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::EXACT_SIZE, ResourceManager::SIZE, ResourceManager::TTH_ROOT };
 
+
+DirectoryListingFrame::UserMap DirectoryListingFrame::lists;
+
 void DirectoryListingFrame::openWindow(const tstring& aFile, const User::Ptr& aUser) {
-	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser);
-	if(BOOLSETTING(POPUNDER_FILELIST))
-		WinUtil::hiddenCreateEx(frame);
-	else
-		frame->CreateEx(WinUtil::mdiClient);
-		
+	UserIter i = lists.find(aUser);
+	if(i != lists.end()) {
+		if(!BOOLSETTING(POPUNDER_FILELIST)) {
+			i->second->MDIActivate(i->second->m_hWnd);
+		}
+	} else {
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
+		if(BOOLSETTING(POPUNDER_FILELIST)) {
+			WinUtil::hiddenCreateEx(frame);
+		} else {
+			frame->CreateEx(WinUtil::mdiClient);
+		}
+		frame->loadFile(aFile);
+	}
 }
 
-DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::Ptr& aUser) :
+void DirectoryListingFrame::openWindow(const User::Ptr& aUser, const string& txt) {
+	UserIter i = lists.find(aUser);
+	if(i != lists.end()) {
+		i->second->loadXML(txt);
+	} else {
+		DirectoryListingFrame* frame = new DirectoryListingFrame(aUser);
+		if(BOOLSETTING(POPUNDER_FILELIST)) {
+			WinUtil::hiddenCreateEx(frame);
+		} else {
+			frame->CreateEx(WinUtil::mdiClient);
+		}
+		frame->loadXML(txt);
+	}
+}
+
+DirectoryListingFrame::DirectoryListingFrame(const User::Ptr& aUser) :
 	statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
 		treeRoot(NULL), skipHits(0), updating(false), dl(NULL), searching(false), start(Text::toT(WinUtil::getInitialDir(aUser)))
 {
 	tstring tmp;
-	if(aFile.size() < 4) {
-		error = Text::toT(aUser->getFullNick() + ": " + STRING(UNSUPPORTED_FILELIST_FORMAT));
-		return;
-	}
 
 	dl = new DirectoryListing(aUser);
+
+	lists.insert(make_pair(aUser, this));
+}
+
+void DirectoryListingFrame::loadFile(const tstring& name) {
 	try {
-		dl->loadFile(Text::fromT(aFile));
+		dl->loadFile(Text::fromT(name));
 		ADLSearchManager::getInstance()->matchListing(dl);
+		refreshTree();
 	} catch(const Exception& e) {
-		error = Text::toT(aUser->getFullNick() + ": " + e.getError());
+		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
+	}
+}
+
+void DirectoryListingFrame::loadXML(const string& txt) {
+	try {
+		dl->loadXML(txt, true);
+		refreshTree();
+	} catch(const Exception& e) {
+		error = Text::toT(dl->getUser()->getFullNick() + ": " + e.getError());
 	}
 }
 
@@ -114,10 +151,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
 	m_nProportionalPos = 2500;
 	
-	if(dl != NULL)
-		treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
+	treeRoot = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, Text::toT(dl->getUser()->getNick()).c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)dl->getRoot(), NULL, TVI_SORT);;
 
-	updateTree(dl->getRoot(), treeRoot);
 	files = dl->getTotalFileCount();
 	size = Util::formatBytes(dl->getTotalSize());
 
@@ -134,14 +169,6 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.SetText(3, tmp1.c_str());
 	ctrlStatus.SetText(4, tmp2.c_str());
 
-	if(!start.empty()) {
-		StringTokenizer<tstring> tok(start, _T('\\'));
-		TStringIter i = tok.getTokens().begin();
-		GoToDirectory(treeRoot, i, tok.getTokens().end());
-	} else {
-		ctrlTree.SelectItem(treeRoot);
-	}
-	
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	directoryMenu.CreatePopupMenu();
@@ -173,11 +200,37 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 		} else {
 			name = Text::toT(Text::acpToUtf8((*i)->getName()));
 		}
-		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), WinUtil::getDirIconIndex(), WinUtil::getDirIconIndex(), 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
+		int index = (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex();
+		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_PARAM, name.c_str(), index, index, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
 		if((*i)->getAdls())
 			ctrlTree.SetItemState(ht, TVIS_BOLD, TVIS_BOLD);
 		updateTree(*i, ht);
 	}
+}
+void DirectoryListingFrame::refreshTree() {
+	
+	ctrlTree.SetRedraw(FALSE);
+	HTREEITEM next = ctrlTree.GetSelectedItem();
+	if(next != treeRoot && next != NULL) {
+		DirectoryListing::Directory* d = (DirectoryListing::Directory*)ctrlTree.GetItemData(next);
+		start = Text::toT(dl->getPath(d));
+	}
+
+	while((next = ctrlTree.GetChildItem(treeRoot)) != NULL) {
+		ctrlTree.DeleteItem(next);
+	}
+
+	updateTree(dl->getRoot(), treeRoot);
+	ctrlTree.SetRedraw(TRUE);
+
+	if(!start.empty()) {
+		StringTokenizer<tstring> tok(start, _T('\\'));
+		TStringIter i = tok.getTokens().begin();
+		GoToDirectory(treeRoot, i, tok.getTokens().end());
+	} else {
+		ctrlTree.SelectItem(treeRoot);
+	}
+	start.clear();
 }
 
 void DirectoryListingFrame::updateStatus() {
@@ -231,7 +284,7 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	clearList();
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), WinUtil::getDirIconIndex());
+		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), (*i)->getComplete() ? WinUtil::getDirIconIndex() : WinUtil::getDirMaskedIndex());
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 		ItemInfo* ii = new ItemInfo(*j, dl->getUtf8());
@@ -241,6 +294,15 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 	ctrlList.SetRedraw(enableRedraw);
 	updating = false;
 	updateStatus();
+
+	if(!d->getComplete()) {
+		if(dl->getUser()->isOnline()) {
+			QueueManager::getInstance()->addPfs(dl->getUser(), dl->getPath(d));
+			ctrlStatus.SetText(0, CTSTRING(DOWNLOADING_LIST));
+		} else {
+			ctrlStatus.SetText(0, CTSTRING(USER_OFFLINE));
+		}
+	}
 }
 
 LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -951,5 +1013,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.54 2005/02/19 12:44:30 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.55 2005/03/12 13:36:50 arnetheduck Exp $
  */

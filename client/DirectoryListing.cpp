@@ -61,7 +61,7 @@ void DirectoryListing::loadFile(const string& name) {
 				break;
 		}
 
-		loadXML(txt);
+		loadXML(txt, false);
 	}
 }
 
@@ -118,8 +118,7 @@ void DirectoryListing::load(const string& in) {
 
 class ListLoader : public SimpleXMLReader::CallBack {
 public:
-	ListLoader(DirectoryListing::Directory* root) : cur(root), inListing(false) { 
-		lastFileIter = cur->files.begin();
+	ListLoader(DirectoryListing::Directory* root, bool aUpdating) : cur(root), inListing(false), updating(aUpdating) { 
 	};
 
 	virtual ~ListLoader() { }
@@ -127,19 +126,17 @@ public:
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
 private:
-	string fullPath;
-
 	DirectoryListing::Directory* cur;
-	DirectoryListing::File::Iter lastFileIter;
 
 	StringMap params;
 	bool inListing;
+	bool updating;
 };
 
-void DirectoryListing::loadXML(const string& xml) {
+void DirectoryListing::loadXML(const string& xml, bool updating) {
 	setUtf8(true);
 
-	ListLoader ll(getRoot());
+	ListLoader ll(getRoot(), updating);
 	SimpleXMLReader(&ll).fromXML(xml);
 }
 
@@ -170,11 +167,21 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 				throw SimpleXMLException("Directory missing name attribute");
 			}
 			bool incomp = getAttrib(attribs, sIncomplete, 1) == "1";
-			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n, false, incomp);
-			cur->directories.push_back(d);
+			DirectoryListing::Directory* d = NULL;
+			if(updating) {
+				for(DirectoryListing::Directory::Iter i  = cur->directories.begin(); i != cur->directories.end(); ++i) {
+					if((*i)->getName() == n) {
+						d = *i;
+						d->setComplete(!incomp);
+						break;
+					}
+				}
+			}
+			if(d == NULL) {
+				d = new DirectoryListing::Directory(cur, n, false, !incomp);
+				cur->directories.push_back(d);
+			}
 			cur = d;
-			fullPath += '\\';
-			fullPath += d->getName();
 
 			if(simple) {
 				// To handle <Directory Name="..." />
@@ -186,14 +193,27 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 		if(base.size() > 1 && base[0] == '/' && base[base.size()-1] == '/') {
 			StringList sl = StringTokenizer<string>(base.substr(1), '/').getTokens();
 			for(StringIter i = sl.begin(); i != sl.end(); ++i) {
-				DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, *i);
-				cur->directories.push_back(d);
+				DirectoryListing::Directory* d = NULL;
+				for(DirectoryListing::Directory::Iter j = cur->directories.begin(); j != cur->directories.end(); ++j) {
+					if((*j)->getName() == *i) {
+						d = *j;
+						break;
+					}
+				}
+				if(d == NULL) {
+					d = new DirectoryListing::Directory(cur, *i, false, false);
+					cur->directories.push_back(d);
+				}
 				cur = d;
-				fullPath += '\\';
-				fullPath += d->getName();
 			}
+			cur->setComplete(true);
 		}
 		inListing = true;
+
+		if(simple) {
+			// To handle <Directory Name="..." />
+			endTag(name, Util::emptyString);
+		}
 	}
 }
 
@@ -201,9 +221,6 @@ void ListLoader::endTag(const string& name, const string&) {
 	if(inListing) {
 		if(name == sDirectory) {
 			cur = cur->getParent();
-			dcassert(fullPath.find('\\') != string::npos);
-			fullPath.erase(fullPath.rfind('\\'));
-			lastFileIter = cur->files.begin();
 		} else if(name == sFileListing) {
 			// cur should be root now...
 			inListing = false;
@@ -304,5 +321,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.47 2005/02/01 16:41:36 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.48 2005/03/12 13:36:34 arnetheduck Exp $
  */

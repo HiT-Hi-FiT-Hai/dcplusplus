@@ -167,6 +167,7 @@ private:
 
 class StringOutputStream : public OutputStream {
 public:
+	StringOutputStream(string& out) : str(out) { }
 	virtual ~StringOutputStream() throw() { }
 	using OutputStream::write;
 
@@ -175,9 +176,8 @@ public:
 		str.append((char*)buf, len);
 		return len;
 	}
-	const string& getString() { return str; }
 private:
-	string str;
+	string& str;
 };
 
 
@@ -185,5 +185,5 @@ private:
 
 /**
 * @file
-* $Id: Streams.h,v 1.3 2005/01/18 15:53:30 arnetheduck Exp $
+* $Id: Streams.h,v 1.4 2005/03/12 13:36:34 arnetheduck Exp $
 */
