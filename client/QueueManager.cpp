@@ -398,11 +398,13 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 				online = qi->hasOnlineUsers();
 				recent.push_back(qi->getTarget());
 				nextSearch = aTick + (online ? 120000 : 300000);
-				SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
 			}
 		}
 	}
 
+	if(!searchString.empty()) {
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_TTH, SearchManager::SIZE_DONTCARE);
+	}
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
@@ -1316,5 +1318,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.121 2005/02/04 17:17:11 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.122 2005/03/04 09:18:15 arnetheduck Exp $
  */
