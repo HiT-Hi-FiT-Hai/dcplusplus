@@ -274,6 +274,10 @@ SOURCE=.\client\stdafx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\StringDefs.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\StringTokenizer.cpp
 # End Source File
 # Begin Source File
@@ -499,6 +503,10 @@ SOURCE=.\client\Socket.h
 # Begin Source File
 
 SOURCE=.\client\stdafx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\StringDefs.h
 # End Source File
 # Begin Source File
 
