@@ -38,10 +38,6 @@ PropPage::Item AppearancePage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-AppearancePage::AppearancePage(SettingsManager *s) : PropPage(s)
-{
-}
-
 AppearancePage::~AppearancePage()
 {
 	::DeleteObject(bgbrush);
@@ -134,9 +130,12 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.5 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.6 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.6  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.5  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

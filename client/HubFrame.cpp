@@ -351,11 +351,17 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 		lastKick = dlg.line;
 		
 		int i = -1;
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		int k = 0;
+		bool op = false;
+		while( (k < 15) && (!op) && ((i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) ) {
 			char buf[256];
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			if(client) {
-				ClientManager::getInstance()->getUser(buf, client->getIp())->kick(dlg.line);
+				User::Ptr p = ClientManager::getInstance()->getUser(buf, client->getIp());
+				if(p->isSet(User::OP))
+					op = true;
+				p->kick(dlg.line);
+				k++;
 			}
 		}
 	}
@@ -645,9 +651,12 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.46 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.47 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.47  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.46  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

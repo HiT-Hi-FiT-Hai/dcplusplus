@@ -25,7 +25,7 @@
 class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
 {
 public:
-	AppearancePage(SettingsManager *s);
+	AppearancePage(SettingsManager *s) : PropPage(s) { };
 	~AppearancePage();
 
 	BEGIN_MSG_MAP(PropPage1)
@@ -62,9 +62,12 @@ protected:
 
 /**
  * @file AppearancePage.h
- * $Id: AppearancePage.h,v 1.3 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.4 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.h,v $
+ * Revision 1.4  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.3  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

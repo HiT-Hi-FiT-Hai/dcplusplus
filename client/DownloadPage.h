@@ -24,10 +24,10 @@
 class DownloadPage : public CPropertyPage<IDD_DOWNLOADPAGE>, public PropPage
 {
 public:
-	DownloadPage(SettingsManager *s);
-	~DownloadPage();
+	DownloadPage(SettingsManager *s) : PropPage(s) { };
+	~DownloadPage() { };
 
-	BEGIN_MSG_MAP(PropPage1)
+	BEGIN_MSG_MAP(DownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_HANDLER(IDC_BROWSEDIR, BN_CLICKED, onClickedBrowseDir)
 	END_MSG_MAP()

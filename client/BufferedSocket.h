@@ -206,9 +206,12 @@ private:
 
 	void stopWorker() {
 		Socket::disconnect();
-		addTask(SHUTDOWN);
+		{
+			Lock l(cs);
+			addTask(SHUTDOWN);
+		}
 
-		if(WaitForSingleObject(workerThread, 5000) == WAIT_TIMEOUT) {
+		if(WaitForSingleObject(workerThread, 30000) == WAIT_TIMEOUT) {
 			dcassert("BufferedSocket::stopWorker: Waiting for thread failed!" == NULL);
 		}
 
@@ -222,9 +225,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.31 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.32 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.32  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.31  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

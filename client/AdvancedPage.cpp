@@ -45,14 +45,6 @@ PropPage::Item AdvancedPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-AdvancedPage::AdvancedPage(SettingsManager *s) : PropPage(s)
-{
-}
-
-AdvancedPage::~AdvancedPage()
-{
-}
-
 LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::read((HWND)*this, items);
@@ -71,9 +63,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.13 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.14 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.14  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.13  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

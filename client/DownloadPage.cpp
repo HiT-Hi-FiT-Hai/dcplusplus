@@ -14,14 +14,6 @@ PropPage::Item DownloadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-DownloadPage::DownloadPage(SettingsManager *s) : PropPage(s)
-{
-}
-
-DownloadPage::~DownloadPage()
-{
-}
-
 LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PropPage::read((HWND)*this, items);
@@ -35,9 +27,9 @@ void DownloadPage::write()
 	
 	PropPage::write((HWND)*this, items);
 	
-	string s = SETTING(DOWNLOAD_DIRECTORY);
+	const string& s = SETTING(DOWNLOAD_DIRECTORY);
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
-		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, s);
+		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, s + '\\');
 	}
 }
 

@@ -24,8 +24,8 @@
 class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 {
 public:
-	AdvancedPage(SettingsManager *s);
-	~AdvancedPage();
+	AdvancedPage(SettingsManager *s) : PropPage(s) { };
+	~AdvancedPage() { };
 
 	BEGIN_MSG_MAP(PropPage1)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -45,9 +45,12 @@ protected:
 
 /**
  * @file AdvancedPage.h
- * $Id: AdvancedPage.h,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: AdvancedPage.h,v 1.3 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.h,v $
+ * Revision 1.3  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.2  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

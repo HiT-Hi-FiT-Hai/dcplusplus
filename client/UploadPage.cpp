@@ -35,14 +35,6 @@ PropPage::Item UploadPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-UploadPage::UploadPage(SettingsManager *s) : PropPage(s)
-{
-}
-
-UploadPage::~UploadPage()
-{
-}
-
 LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
@@ -129,9 +121,12 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.6 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadPage.cpp,v $
+ * Revision 1.6  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.5  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -25,10 +25,10 @@
 class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 {
 public:
-	UploadPage(SettingsManager *s);
-	~UploadPage();
+	UploadPage(SettingsManager *s) : PropPage(s) { };
+	~UploadPage() { };
 
-	BEGIN_MSG_MAP(PropPage1)
+	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
 		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onClickedAdd)
@@ -54,9 +54,12 @@ protected:
 
 /**
  * @file UploadPage.h
- * $Id: UploadPage.h,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.3 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadPage.h,v $
+ * Revision 1.3  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.2  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

@@ -25,8 +25,8 @@
 class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
-	GeneralPage(SettingsManager *s);
-	~GeneralPage();
+	GeneralPage(SettingsManager *s) : PropPage(s) { };
+	~GeneralPage() { };
 
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
@@ -55,9 +55,12 @@ private:
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.h,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.4 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: GeneralPage.h,v $
+ * Revision 1.4  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.3  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

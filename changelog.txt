@@ -31,7 +31,10 @@
 * A first go at internationalization...many of the texts in DC++ can now be changed by loading a different language XML
 * Added some information to the description field, <++ V:x,M:x,H:x,S:x> where V = client version, M = mode (a=active, p=passive)
   H=number of hubs connected to where you're not a registered user, S=number of slots you have open. This is updated every 10-15 minutes.
-
+* Small performance increase in loading dclists (thanks geoff)
+* Added total queue size and number of queue items to the download queue window
+* Added path column to download queue
+* Added a limit so that only 15 users and 1 op kan be kicked at a time from the hub user list
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

@@ -37,14 +37,6 @@ PropPage::Item GeneralPage::items[] = {
 	{ 0, 0, PropPage::T_END }
 };
 
-GeneralPage::GeneralPage(SettingsManager *s) : PropPage(s)
-{
-}
-
-GeneralPage::~GeneralPage()
-{
-}
-
 void GeneralPage::write()
 {
 	PropPage::write((HWND)(*this), items);
@@ -131,9 +123,12 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.5 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.6 2002/03/15 15:12:35 arnetheduck Exp $
  * @if LOG
  * $Log: GeneralPage.cpp,v $
+ * Revision 1.6  2002/03/15 15:12:35  arnetheduck
+ * 0.16
+ *
  * Revision 1.5  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *
