@@ -76,8 +76,15 @@ void ShareManager::save(SimpleXML* aXml) {
 
 void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) {
 	cs.enter();
+	dcassert(aDirectory.size() > 0);
+	string d;
+	if(aDirectory[aDirectory.size() - 1] == '\\') {
+		d = aDirectory.substr(0, aDirectory.size()-1);
+	} else {
+		d = aDirectory;
+	}
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-		if(aDirectory.find(i->first) != string::npos) {
+		if(d.find(i->first) != string::npos) {
 			cs.leave();
 			throw ShareException("Directory already shared.");
 		} else if(i->first.find(aDirectory) != string::npos) {
@@ -86,9 +93,10 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		}
 	}
 
-	directories[aDirectory] = buildTree(aDirectory, NULL);
-	string dir = aDirectory.substr(aDirectory.rfind('\\') + 1);
-	dirs[dir] = aDirectory;
+	
+	directories[d] = buildTree(d, NULL);
+	string dir = d.substr(d.rfind('\\') + 1);
+	dirs[dir] = d;
 
 	dirty = true;
 	cs.leave();
@@ -120,7 +128,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if(name == "." || name == "..")
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				dir->directories[name] = buildTree(aName + "\\" + name, dir);
+				dir->directories[name] = buildTree(aName + '\\' + name, dir);
 			} else {
 				// Not a directory, assume it's a file...
 				dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
@@ -253,9 +261,12 @@ StringList ShareManager::search(const string& aString, int aSearchType, LONGLONG
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.6 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.7  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.6  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

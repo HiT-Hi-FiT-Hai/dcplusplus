@@ -50,6 +50,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 			wnd2 = wnd;
 		}
 	}
+	Settings::save();
 	TimerManager::getInstance()->removeListeners();
 	
 	ShareManager::deleteInstance();
@@ -405,9 +406,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.26 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.27 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.27  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.26  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

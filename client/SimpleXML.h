@@ -149,12 +149,14 @@ public:
 	void stepOut() throw(SimpleXMLException) {
 		if(current == NULL)
 			throw SimpleXMLException("Already at lowest level");
-		current = current->parent;
-		found = false;
-		if(current != NULL)
-			currentChild = current->children.begin();
+
+		if(current->parent != NULL)
+			currentChild = find(current->parent->children.begin(), current->parent->children.end(), current);
 		else
-			currentChild = root.begin();
+			currentChild = find(root.begin(), root.end(), current);
+
+		current = current->parent;
+		found = true;
 	}
 
 	void resetCurrentChild() {
@@ -226,9 +228,12 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.7  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.6  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

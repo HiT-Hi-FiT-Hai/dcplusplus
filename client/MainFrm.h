@@ -152,6 +152,7 @@ public:
 		if(kd->wVKey == VK_DELETE) {
 			LVITEM item;
 			item.iItem = -1;
+			item.iSubItem = 0;
 			item.mask = LVIF_PARAM | LVIF_IMAGE;
 
 			while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
@@ -162,6 +163,7 @@ public:
 				else
 					UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
 				ctrlTransfers.DeleteItem(item.iItem);
+				item.iItem--;
 
 			}
 		}
@@ -302,9 +304,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.19 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.20 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.20  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.19  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

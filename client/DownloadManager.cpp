@@ -523,15 +523,15 @@ void DownloadManager::load(SimpleXML* aXml) {
 			const string& target = aXml->getChildAttrib("Target");
 			bool resume = aXml->getBoolChildAttrib("Resume");
 			LONGLONG size = aXml->getLongLongChildAttrib("Size");
+			aXml->stepIn();
 			if(aXml->findChild("Source")) {
-				aXml->stepIn();
 				const string& nick = aXml->getChildAttrib("LastNick");
 				const string& path = aXml->getChildAttrib("LastPath");
 				const string& file = aXml->getChildAttrib("FileName");
 
 				download(path + file, size, nick, target, resume);
-				aXml->stepOut();
 			}
+			aXml->stepOut();
 		}
 		aXml->stepOut();
 	}
@@ -540,9 +540,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.18 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.19 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.19  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.18  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

@@ -109,27 +109,25 @@ void SimpleXML::Tag::fromXML(const string& aString) throw(SimpleXMLException) {
 		tmp = tmp.substr(tmp.find('>')+1);
 		
 		string::size_type i;
+		child = new Tag(name, "", this);
 
-		if(tag.length() > 0 && tag[tag.length()-1] == '/') {
-			child = new Tag(name, "", this);
-
-			while( (i=tag.find('=')) != string::npos) {
-				tag = tag.substr(tag.find_first_not_of(' '));
-				string attr = tag.substr(0, tag.find('='));
-				tag = tag.substr(tag.find('=')+2);
-				child->attribs[attr] = escape(tag.substr(0, tag.find('"')), true, true);
-				tag = tag.substr(tag.find('"')+1);
-			}
-		} else {
+		while( (i=tag.find('=')) != string::npos) {
+			tag = tag.substr(tag.find_first_not_of(' '));
+			string attr = tag.substr(0, tag.find('='));
+			tag = tag.substr(tag.find('=')+2);
+			child->attribs[attr] = escape(tag.substr(0, tag.find('"')), true, true);
+			tag = tag.substr(tag.find('"')+1);
+		}
+		
+		if((tag.length() == 0) || (tag.length() > 0 && tag[tag.length()-1] != '/')) {
 			string endTag = "</" + name + ">";
 			string data = tmp.substr(0, tmp.find(endTag));
 			tmp = tmp.substr(tmp.find(endTag)+endTag.length());
 
 			if(!data.empty() && data[0] == '<') {
-				child = new Tag(name, "", this);
-				child->fromXML(escape(data, false, true));
+				child->fromXML(data);
 			} else {
-				child = new Tag(name, data, this);
+				child->data = escape(data, false, true);
 			}
 		}
 
@@ -253,9 +251,12 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.4 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.4  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.3  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

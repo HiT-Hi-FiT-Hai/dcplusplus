@@ -55,12 +55,18 @@ public:
 		return tmp;
 	}
 	LONGLONG getShareSize(const string& aDir) {
-		Directory::MapIter i = directories.find(aDir);
+		dcassert(aDir.size()>0);
+		Directory::MapIter i;
+		if(aDir[aDir.size()-1] =='\\')
+			i = directories.find(aDir.substr(0, aDir.size()-1));
+		else
+			i = directories.find(aDir);
+
 		if(i != directories.end()) {
 			return i->second->getSize();
 		}
 		
-		return 0;
+		return -1;
 	}
 	string getShareSizeString() {
 		char buf[24];
@@ -178,9 +184,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.6 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.7  2001/12/30 17:41:16  arnetheduck
+ * Fixed some XML parsing bugs
+ *
  * Revision 1.6  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *
