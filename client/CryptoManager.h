@@ -37,7 +37,7 @@
 
 STANDARD_EXCEPTION(CryptoException);
 
-class Node {
+class Node : public FastAlloc<Node> {
 public:
 	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
 	// CryptoManager along with the greater specialization, it generates a ICE on the greater class. The typedefs
@@ -160,7 +160,7 @@ private:
 	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { };
 	virtual ~CryptoManager() { };
 
-	class Leaf {
+	class Leaf : public FastAlloc<DecNode> {
 	public:
 		int chr;
 		int len;
@@ -168,7 +168,7 @@ private:
 		Leaf() : chr(-1), len(-1) { };
 	};
 	
-	class DecNode {
+	class DecNode : public FastAlloc<DecNode> {
 	public:
 		int chr;
 		DecNode* left;
@@ -203,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.29 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.30 2004/01/04 16:34:37 arnetheduck Exp $
  */

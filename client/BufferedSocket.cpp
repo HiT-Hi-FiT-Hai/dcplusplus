@@ -54,7 +54,6 @@ bool BufferedSocket::threadSendFile() {
 				comp = new ZCompressor(*file, size);
 			}
 			u_int32_t s = (u_int32_t)min(size, (int64_t) (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize));
-			u_int32_t bytes;
 			while(true) {
 				{
 					Lock l(cs);
@@ -66,7 +65,7 @@ bool BufferedSocket::threadSendFile() {
 					return false;
 
 				u_int32_t br = 0;
-				bytes = comp->compress(inbuf, s, br);
+				u_int32_t bytes = comp->compress(inbuf, s, br);
 				if(bytes == 0) {
 					// Finished!
 					delete comp;
@@ -456,5 +455,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.62 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.63 2004/01/04 16:34:37 arnetheduck Exp $
  */

@@ -291,7 +291,11 @@ public:
 		time_t _tt;
 		time(&_tt);
 		tm* _tm = localtime(&_tt);
-		strftime(buf, 64, "%X", _tm);
+		if(_tm == NULL) {
+			strcpy(buf, "xx:xx:xx");
+		} else {
+			strftime(buf, 64, "%X", _tm);
+		}
 		return buf;
 	}
 	
@@ -315,7 +319,6 @@ public:
 #ifdef WIN32
 		char number[64];
 		sprintf(number, "%I64d", aNumber);
-		SetLocaleInfoA(GetUserDefaultLCID(), LOCALE_IDIGITS, "0");
 		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, NULL, buf, sizeof(buf)/sizeof(buf[0]));
 #else
 		sprintf(buf, "%'lld", aNumber);
@@ -554,5 +557,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.74 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: Util.h,v 1.75 2004/01/04 16:34:38 arnetheduck Exp $
  */

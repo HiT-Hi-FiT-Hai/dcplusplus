@@ -71,7 +71,6 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
-	transferMenu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
 
 	ConnectionManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
@@ -564,5 +563,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.20 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.21 2004/01/04 16:34:38 arnetheduck Exp $
  */

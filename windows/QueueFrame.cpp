@@ -92,6 +92,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	multiMenu.CreatePopupMenu();
 	browseMenu.CreatePopupMenu();
 	removeMenu.CreatePopupMenu();
+	removeAllMenu.CreatePopupMenu();
 	pmMenu.CreatePopupMenu();
 	priorityMenu.CreatePopupMenu();
 	dirMenu.CreatePopupMenu();
@@ -106,6 +107,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)readdMenu, CSTRING(READD_SOURCE));
 	singleMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeMenu, CSTRING(REMOVE_SOURCE));
+	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)removeAllMenu, CSTRING(REMOVE_FROM_ALL));
 	singleMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	multiMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
@@ -839,6 +841,9 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		while(removeMenu.GetMenuItemCount() > 0) {
 			removeMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
+		while(removeAllMenu.GetMenuItemCount() > 0) {
+			removeAllMenu.RemoveMenu(0, MF_BYPOSITION);
+		}
 		while(pmMenu.GetMenuItemCount() > 0) {
 			pmMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
@@ -862,6 +867,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				mi.wID = IDC_REMOVE_SOURCE + menuItems;
 				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				mi.wID = IDC_REMOVE_SOURCES + menuItems;
+				removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				if(i->getUser()->isOnline()) {
 					mi.wID = IDC_PM + menuItems;
 					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
@@ -995,6 +1002,15 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		QueueManager::getInstance()->removeSource(ii->getTarget(), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	}
+	return 0;
+}
+
+LRESULT QueueFrame::onRemoveSources(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_DATA;
+	removeAllMenu.GetMenuItemInfo(wID, FALSE, &mi);
+	QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
+	QueueManager::getInstance()->removeSources(s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	return 0;
 }
 
@@ -1266,7 +1282,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.42 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.43 2004/01/04 16:34:38 arnetheduck Exp $
  */
 
 

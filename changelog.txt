@@ -13,6 +13,13 @@
 * An extra buffer flush is done to ensure that file lists are fully written to disk
 * Readme automatically shown for new users (thanks johnny)
 * Filename is shown on transfer error (no slots etc) (thanks ciber)
+* Ctrl-tab order is now the standard last-seen
+* Added support for user command menu subitems (add a '\' to the name)
+* Fixed locale setting bug
+* Added option to automatically add items to queue from ADL search (thanks twink)
+* Fixed share sizes not being updated with the "share hidden" box (thanks theparanoidone)
+* Directories with '$' in the name are no longer shared (they can't be downloaded)
+* Favorite users can now have descriptions
 
  -- 0.305 2003-12-04 --
 * Fixed disappearing queue items bug

@@ -53,6 +53,7 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 	::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_SETCHECK, search->isActive ? 1 : 0, 0L);
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_SETCURSEL, search->sourceType, 0L);
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_SETCURSEL, search->typeFileSize, 0L);
+	::SendMessage(GetDlgItem(IDC_AUTOQUEUE), BM_SETCHECK, search->isAutoQueue ? 1 : 0, 0L);
 
 	// Center dialog
 	CenterWindow(GetParent());
@@ -81,6 +82,7 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		search->sourceType = (ADLSearch::SourceType)::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_GETCURSEL, 0, 0L);
 		search->typeFileSize = (ADLSearch::SizeType)::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_GETCURSEL, 0, 0L);
 		search->isActive = (::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_GETCHECK, 0, 0L) != 0);
+		search->isAutoQueue = (::SendMessage(GetDlgItem(IDC_AUTOQUEUE), BM_GETCHECK, 0, 0L) != 0);
 	}
 
 	EndDialog(wID);
@@ -89,5 +91,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.1 2003/04/16 17:07:07 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.2 2004/01/04 16:34:38 arnetheduck Exp $
  */

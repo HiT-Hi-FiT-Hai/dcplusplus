@@ -14,7 +14,6 @@
 		<String Name="AllUsersOffline">All %d users offline</String>
 		<String Name="All3UsersOffline">All 3 users offline</String>
 		<String Name="All4UsersOffline">All 4 users offline</String>
-		<String Name="AlreadyGettingThatList">Already getting that file list</String>
 		<String Name="Any">Any</String>
 		<String Name="AtLeast">At least</String>
 		<String Name="AtMost">At most</String>
@@ -47,7 +46,6 @@
 		<String Name="ConnectionTimeout">Connection timeout</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
 		<String Name="CouldNotOpenTargetFile">Could not open target file: </String>
-		<String Name="CouldNotOpenFile">Could not open file</String>
 		<String Name="Count">Count</String>
 		<String Name="CrcChecked">CRC Checked</String>
 		<String Name="DecompressionError">Error during decompression</String>
@@ -73,6 +71,7 @@
 		<String Name="DownloadedFrom"> downloaded from </String>
 		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
+		<String Name="Downloads">Downloads</String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
 		<String Name="Email">E-Mail</String>
@@ -208,6 +207,7 @@
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
 		<String Name="OnlyWhereOp">Only where I'm op</String>
 		<String Name="Open">Open</String>
+		<String Name="OpenDownloadPage">Open download page?</String>
 		<String Name="OpenFolder">Open folder</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
@@ -392,6 +392,7 @@
 		<String Name="UploadStarting">Upload starting...</String>
 		<String Name="UploadedBytes">Uploaded %s (%.01f%%) in %s</String>
 		<String Name="UploadedTo"> uploaded to </String>
+		<String Name="Uploads">Uploads</String>
 		<String Name="User">User</String>
 		<String Name="UserDescription">User Description</String>
 		<String Name="UserOffline">User offline</String>

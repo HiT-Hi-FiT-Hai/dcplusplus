@@ -53,7 +53,7 @@ Hub Menu: Hub tab (at the bottom of the screen) right-click menu\r\n\
 Chat Menu: User right-click menu in chat and PM tab menu\r\n\
 Search Menu: Search right-click menu\r\n\
 Parameters:\r\n\
-Name: Name shown in the menus\r\n\
+Name: Name (use '\\' to create submenus)\r\n\
 Command: Command text (may contain parameters)\r\n\
 Hub: Hub ip as typed when connecting (empty = all hubs, \"op\" = hubs where you're op)\r\n\
 To: PM recipient\r\n\
@@ -148,5 +148,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.5 2003/11/27 10:33:15 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.6 2004/01/04 16:34:38 arnetheduck Exp $
 */

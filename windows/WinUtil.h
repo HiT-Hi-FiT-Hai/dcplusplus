@@ -49,6 +49,7 @@ public:
 	void pm();
 	void grant();
 	void addFav();
+	void removeAll();
 
 	User::Ptr user;
 };
@@ -62,6 +63,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
+		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 	END_MSG_MAP()
 
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -84,6 +86,10 @@ public:
 		((T*)this)->getUserList().forEachSelected(&UserInfoBase::grant);
 		return 0;
 	}
+	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::removeAll);
+		return 0;
+	}
 
 	void appendUserItems(CMenu& menu) {
 		menu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
@@ -91,6 +97,7 @@ public:
 		menu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 		menu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 		menu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+		menu.AppendMenu(MF_STRING, IDC_REMOVEALL, CSTRING(REMOVE_FROM_ALL));
 	}
 };
 
@@ -240,5 +247,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.22 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.23 2004/01/04 16:34:38 arnetheduck Exp $
  */

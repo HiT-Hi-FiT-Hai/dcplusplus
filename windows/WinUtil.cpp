@@ -151,6 +151,9 @@ void UserInfoBase::pm() {
 void UserInfoBase::grant() {
 	UploadManager::getInstance()->reserveSlot(user);
 }
+void UserInfoBase::removeAll() {
+	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+}
 
 static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 	if(code == HC_ACTION) {
@@ -525,19 +528,9 @@ void WinUtil::openLink(const string& url) {
 				if(end == string::npos)
 					end = cmd.length();
 
-				string param;
-				if(end < cmd.length()) {
-					param = cmd.substr(end + 1);
-				}
 				cmd = cmd.substr(start, end-start);
-				string::size_type i = param.find("%1");
-				if(i != string::npos) {
-					param.replace(i, 2, url);
-				} else {
-					param = " " + url;
-				}
 
-				if((int)::ShellExecute(NULL, NULL, cmd.c_str(), param.c_str(), NULL, SW_SHOWNORMAL) > 32) {
+				if((int)::ShellExecute(NULL, NULL, cmd.c_str(), url.c_str(), NULL, SW_SHOWNORMAL) > 32) {
 					return;
 				}
 			}
@@ -594,5 +587,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.34 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.35 2004/01/04 16:34:38 arnetheduck Exp $
  */

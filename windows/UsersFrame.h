@@ -57,6 +57,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
 		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -64,6 +65,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -132,6 +134,7 @@ private:
 		COLUMN_STATUS,
 		COLUMN_HUB,
 		COLUMN_SEEN,
+		COLUMN_DESCRIPTION,
 		COLUMN_LAST
 	};
 
@@ -163,6 +166,7 @@ private:
 				columns[COLUMN_HUB] += " (" + user->getLastHubAddress() + ")";
 			}
 			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyString : Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen());
+			columns[COLUMN_DESCRIPTION] = user->getUserDescription();
 		}
 
 		string columns[COLUMN_LAST];
@@ -206,6 +210,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.13 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.14 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

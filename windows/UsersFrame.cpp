@@ -23,10 +23,11 @@
 #include "UsersFrame.h"
 
 #include "../client/StringTokenizer.h"
+#include "LineDlg.h"
 
-int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN };
-int UsersFrame::columnSizes[] = { 200, 150, 300, 125 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN };
+int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN, COLUMN_DESCRIPTION };
+int UsersFrame::columnSizes[] = { 200, 150, 300, 125, 200 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN, ResourceManager::DESCRIPTION };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -58,6 +59,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.CreatePopupMenu();
 	appendUserItems(usersMenu);
 	usersMenu.AppendMenu(MF_SEPARATOR);
+	usersMenu.AppendMenu(MF_STRING, IDC_EDIT, CSTRING(PROPERTIES));
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	HubManager::getInstance()->addListener(this);
@@ -79,9 +81,27 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 }
 
-
 LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ctrlUsers.forEachSelected(&UserInfo::remove);
+	return 0;
+}
+
+LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlUsers.GetSelectedCount() == 1) {
+		int i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED);
+		UserInfo* ui = ctrlUsers.getItemData(i);
+		dcassert(i != -1);
+		LineDlg dlg;
+		dlg.description = STRING(DESCRIPTION);
+		dlg.title = ui->user->getNick();
+		dlg.line = ui->user->getUserDescription();
+		if(dlg.DoModal(m_hWnd)) {
+			ui->user->setUserDescription(dlg.line);
+			ui->update();
+			ctrlUsers.update(i);
+			HubManager::getInstance()->save();
+		}
+	}
 	return 0;
 }
 
@@ -146,6 +166,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.17 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.18 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

@@ -26,8 +26,7 @@
 #include "Client.h"
 #include "FavoriteUser.h"
 
-User::~User() throw()
-{
+User::~User() throw() {
 	delete favoriteUser;
 }
 
@@ -162,27 +161,23 @@ void User::getParams(StringMap& ucParams) {
 }
 
 // favorite user stuff
-void User::setFavoriteUser(FavoriteUser* aUser)
-{
+void User::setFavoriteUser(FavoriteUser* aUser) {
 	WLock l(cs);
 	delete favoriteUser;
 	favoriteUser = aUser;
 }
 
-bool User::isFavoriteUser() const
-{
+bool User::isFavoriteUser() const {
 	RLock l(cs);
 	return (favoriteUser != NULL);
 }
 
-bool User::getFavoriteGrantSlot() const
-{
+bool User::getFavoriteGrantSlot() const {
 	RLock l(cs);
 	return (favoriteUser != NULL && favoriteUser->isSet(FavoriteUser::FLAG_GRANTSLOT));
 }
 
-void User::setFavoriteGrantSlot(bool grant)
-{
+void User::setFavoriteGrantSlot(bool grant) {
 	WLock l(cs);
 	if (favoriteUser == NULL)
 		return;
@@ -194,6 +189,7 @@ void User::setFavoriteGrantSlot(bool grant)
 }
 
 void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
+	WLock l(cs);
 	if (favoriteUser != NULL) {
 		if (anOfflineTime != 0)
 			favoriteUser->setLastSeen(anOfflineTime);
@@ -203,14 +199,29 @@ void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
 }
 
 u_int32_t User::getFavoriteLastSeen() const {
+	RLock l(cs);
 	if (favoriteUser != NULL)
 		return favoriteUser->getLastSeen();
 	else
 		return 0;
 }
 
+const string& User::getUserDescription() const {
+	RLock l(cs);
+	if (favoriteUser != NULL)
+		return favoriteUser->getDescription();
+	else
+		return Util::emptyString;
+}
+
+void User::setUserDescription(const string& aDescription) {
+	WLock l(cs);
+	if (favoriteUser != NULL)
+		favoriteUser->setDescription(aDescription);
+}
+
 /**
  * @file
- * $Id: User.cpp,v 1.27 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: User.cpp,v 1.28 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

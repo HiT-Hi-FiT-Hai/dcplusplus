@@ -138,8 +138,37 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Save the checkbox state so that ShareManager knows to include/disclude hidden files
+	Item i = items[1]; // The checkbox. Explicit index used - bad!
+	if(::IsDlgButtonChecked((HWND)* this, i.itemID) == BST_CHECKED){
+		settings->set((SettingsManager::IntSetting)i.setting, true);
+	} else {
+		settings->set((SettingsManager::IntSetting)i.setting, false);
+	}
+
+	// Refresh the share. This is a blocking refresh. Might cause problems?
+	// Hopefully people won't click the checkbox enough for it to be an issue. :-)
+	ShareManager::getInstance()->setDirty();
+	ShareManager::getInstance()->refresh(true, false, true);
+
+	// Clear the GUI list, for insertion of updated shares
+	ctrlDirectories.DeleteAllItems();
+	StringList directories = ShareManager::getInstance()->getDirectories();
+	for(StringIter j = directories.begin(); j != directories.end(); j++)
+	{
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), *j);
+		ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
+	}
+
+	// Display the new total share size
+	ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
+	return 0;
+}
+
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.13 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.14 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

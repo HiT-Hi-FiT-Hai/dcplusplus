@@ -511,11 +511,24 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 		if(xml.findChild("Version")) {
 			if(atof(xml.getChildData().c_str()) > VERSIONFLOAT) {
 				xml.resetCurrentChild();
-				if(xml.findChild("Message")) {
-					const string& msg = xml.getChildData();
+				string url;
+				if(xml.findChild("URL")) {
+					url = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Title")) {
+					const string& title = xml.getChildData();
 					xml.resetCurrentChild();
-					if(xml.findChild("Title")) {
-						MessageBox(msg.c_str(), xml.getChildData().c_str());
+					if(xml.findChild("Message")) {
+						if(url.empty()) {
+							const string& msg = xml.getChildData();
+							MessageBox(msg.c_str(), title.c_str(), MB_OK);
+						} else {
+							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
+							if(MessageBox(msg.c_str(), title.c_str(), MB_YESNO) == IDYES) {
+								WinUtil::openLink(url);
+							}
+						}
 					}
 				}
 				xml.resetCurrentChild();
@@ -926,6 +939,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.41 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.42 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

@@ -210,13 +210,6 @@ private:
 		COLUMN_LAST
 	};
 
-	enum Images {
-		IMAGE_UNKOWN,
-		IMAGE_SLOW,
-		IMAGE_NORMAL,
-		IMAGE_FAST
-	};
-
 	class SearchInfo : public UserInfoBase {
 	public:
 		SearchResult* sr;
@@ -484,6 +477,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.30 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.31 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

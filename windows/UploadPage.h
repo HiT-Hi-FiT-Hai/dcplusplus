@@ -42,12 +42,14 @@ public:
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
 		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
+		COMMAND_ID_HANDLER(IDC_SHAREHIDDEN, onClickedShareHidden)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedShareHidden(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -65,6 +67,6 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.7 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.8 2004/01/04 16:34:38 arnetheduck Exp $
  */
 

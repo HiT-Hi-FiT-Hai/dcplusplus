@@ -250,6 +250,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			string name = data.cFileName;
 			if(name == "." || name == "..")
 				continue;
+			if(name.find('$') != string::npos)
+				continue;
 			if(!BOOLSETTING(SHARE_HIDDEN) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
@@ -261,8 +263,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			} else {
 				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
 				if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
-					(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
-					(name.find('$') == string::npos) ) {
+					(Util::stricmp(name.c_str(), "Favorites.xml") != 0)) {
 
 					dir->addSearchType(getMask(name));
 					dir->addType(getType(name));
@@ -284,6 +285,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if (name == "." || name == "..") {
 				continue;
 			}
+			if(name.find('$') != string::npos)
+				continue;
 			if (name[0] == '.' && !BOOLSETTING(SHARE_HIDDEN)) {
 				continue;
 			}
@@ -736,6 +739,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.69 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.70 2004/01/04 16:34:37 arnetheduck Exp $
  */
 

@@ -48,18 +48,8 @@ PropPage::TextItem AppearancePage::texts[] = {
 };
 
 PropPage::Item AppearancePage::items[] = {
-	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
-	{ IDC_FILTERKICK, SettingsManager::FILTER_MESSAGES, PropPage::T_BOOL }, 
-	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
-	{ IDC_TIMESTAMPS, SettingsManager::TIME_STAMPS, PropPage::T_BOOL },
-	{ IDC_CONFIRMEXIT, SettingsManager::CONFIRM_EXIT, PropPage::T_BOOL },
 	{ IDC_DEFAULT_AWAY_MESSAGE, SettingsManager::DEFAULT_AWAY_MESSAGE, PropPage::T_STR },
 	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
-	{ IDC_STATUS_IN_CHAT, SettingsManager::STATUS_IN_CHAT, PropPage::T_BOOL },
-	{ IDC_SHOW_JOINS, SettingsManager::SHOW_JOINS, PropPage::T_BOOL },
-	{ IDC_USE_SYSTEM_ICONS, SettingsManager::USE_SYSTEM_ICONS, PropPage::T_BOOL },
-	{ IDC_USE_OEM_MONOFONT, SettingsManager::USE_OEM_MONOFONT, PropPage::T_BOOL },
-	{ IDC_FINISHED_DIRTY, SettingsManager::FINISHED_DIRTY, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -200,5 +190,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.11 2003/12/04 10:31:41 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.12 2004/01/04 16:34:38 arnetheduck Exp $
  */

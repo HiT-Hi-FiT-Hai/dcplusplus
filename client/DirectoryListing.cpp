@@ -39,6 +39,8 @@ void DirectoryListing::load(const string& in) {
 
 	StringMap params;
 	params["nick"] = getUser()->getNick();
+	pADLSearch->setUser(getUser());
+
 	pADLSearch->PrepareDestinationDirectories(destDirs, root, params);
 	pADLSearch->setBreakOnFirst(BOOLSETTING(ADLS_BREAK_ON_FIRST));
 
@@ -181,5 +183,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.22 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.23 2004/01/04 16:34:37 arnetheduck Exp $
  */
