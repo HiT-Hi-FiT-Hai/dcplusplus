@@ -26,7 +26,7 @@
 #include "Util.h"
 #include "Exception.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 // Berkely constants converted to the windows equivs...
 #	define EWOULDBLOCK             WSAEWOULDBLOCK
@@ -195,7 +195,7 @@ public:
 		return i;
 	}
 
-#ifdef WIN32
+#ifdef _WIN32
 	void setBlocking(bool block) throw(SocketException) {
 		u_long b = block ? 0 : 1;
 		ioctlsocket(sock, FIONBIO, &b);
@@ -248,6 +248,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.48 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: Socket.h,v 1.49 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

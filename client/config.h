@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifdef WIN32
+#ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
 #define WINVER		0x0500
 #define _WIN32_IE	0x0500
@@ -40,15 +40,6 @@
 
 #endif
 
-// This enables stlport's debug mode (and slows it down to a crawl...)
-//# define _STLP_DEBUG 1
-
-# ifdef _DEBUG
-//# define _STLP_DEBUG 1
-# else
-# undef _STLP_DEBUG
-# endif
-
 // Remove this line if hashes are not available in your stl
 // Hint: the once that comes with mcvc++ 6.0 doesn't have hashes...
 #define HAS_HASH 1
@@ -57,6 +48,20 @@
 #define HAS_STLPORT 1
 
 // --- Shouldn't have to change anything under here...
+#if (defined(HAS_STLPORT))
+#if !(defined(_REENTRANT))
+#define _REENTRANT 1
+#endif
+#if !defined(_DEBUG)
+#define _STLP_NO_EXCEPTIONS
+#undef _STLP_DEBUG
+#else
+// This enables stlport's debug mode (and slows it down to a crawl...)
+//#define _STLP_DEBUG 1
+#endif
+#endif
+
+#define BZ_NO_STDIO
 
 // User maps instead of hash_maps if they're not available...(even if there's
 // no need for the data to be sorted...
@@ -92,7 +97,7 @@ typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
 #endif
 
-#ifdef WIN32
+#ifdef _WIN32
 #define PATH_SEPARATOR '\\'
 #define PATH_SEPARATOR_STR "\\"
 #define I64_FMT "%I64d"
@@ -104,5 +109,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.17 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: config.h,v 1.18 2004/01/04 17:32:47 arnetheduck Exp $
  */

@@ -23,7 +23,6 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -57,7 +56,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
 				Culture="1053"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -86,7 +84,6 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,_REENTRANT,BZ_NO_STDIO,_STLP_NO_EXCEPTIONS"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -100,7 +97,6 @@
 				AssemblerOutput="4"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
 				CallingConvention="1"/>
 			<Tool
@@ -119,7 +115,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

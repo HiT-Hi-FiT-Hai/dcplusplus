@@ -22,7 +22,7 @@
 
 #include "../client/stdinc.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
@@ -52,7 +52,7 @@ extern CAppModule _Module;
 #include <atlmisc.h>
 #include <atlsplit.h>
 #include <Shellapi.h>
-#endif // WIN32
+#endif // _WIN32
 
 #define WM_SPEAKER (WM_APP + 500)
 
@@ -63,6 +63,6 @@ extern CAppModule _Module;
 
 /**
  * @file
- * $Id: stdafx.h,v 1.6 2003/12/14 20:41:39 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.7 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

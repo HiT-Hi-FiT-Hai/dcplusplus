@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -151,7 +151,7 @@ public:
 	{
 		string::size_type start = 0;
 
-#ifdef WIN32
+#ifdef _WIN32
 		while( (start = aFile.find_first_of("\\/", start)) != string::npos) {
 			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
 			start++;
@@ -165,26 +165,26 @@ public:
 	}
 	
 	static string getAppPath() {
-#ifdef WIN32
+#ifdef _WIN32
 		TCHAR buf[MAX_PATH+1];
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		int i = (strrchr(buf, '\\') - buf);
 		return string(buf, i + 1);
-#else // WIN32
+#else // _WIN32
 		char* home = getenv("HOME");
 		if (home) {
 			return string(home) + "/.dc++/";
 		}
 		return emptyString;
-#endif // WIN32
+#endif // _WIN32
 	}	
 
 	static string getAppName() {
-#ifdef WIN32
+#ifdef _WIN32
 		TCHAR buf[MAX_PATH+1];
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
 		return string(buf, x);
-#else // WIN32
+#else // _WIN32
 		char buf[PATH_MAX + 1];
 		char* path = getenv("_");
 		if (!path) {
@@ -194,11 +194,11 @@ public:
 			path = buf;
 		}
 		return string(path);
-#endif // WIN32
+#endif // _WIN32
 	}	
 
 	static string getTempPath() {
-#ifdef WIN32
+#ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
 		return string(buf, x);
@@ -208,7 +208,7 @@ public:
 	}
 
 	static string getDataPath() {
-#ifdef WIN32
+#ifdef _WIN32
 		return getAppPath();
 #else
 		char* home = getenv("HOME");
@@ -220,7 +220,7 @@ public:
 	}
 
 	static string translateError(int aError) {
-#ifdef WIN32
+#ifdef _WIN32
 		LPVOID lpMsgBuf;
 		FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -242,9 +242,9 @@ public:
 			tmp.erase(i, 1);
 		}
 		return tmp;
-#else // WIN32
+#else // _WIN32
 		return emptyString;
-#endif // WIN32
+#endif // _WIN32
 	}
 
 	static string getFilePath(const string& path) {
@@ -303,7 +303,7 @@ public:
 
 	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-#ifdef WIN32
+#ifdef _WIN32
 		sprintf(buf, "%01I64d:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
 #else
 		sprintf(buf, "%01lld:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
@@ -316,7 +316,7 @@ public:
 
 	static string formatNumber(int64_t aNumber) {
 		char buf[64];
-#ifdef WIN32
+#ifdef _WIN32
 		char number[64];
 		sprintf(number, "%I64d", aNumber);
 		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, NULL, buf, sizeof(buf)/sizeof(buf[0]));
@@ -343,7 +343,7 @@ public:
 		}
 	}
 	static int64_t toInt64(const string& aString) {
-#ifdef WIN32
+#ifdef _WIN32
 		return _atoi64(aString.c_str());
 #else
 		return atoll(aString.c_str());
@@ -364,7 +364,7 @@ public:
 
 	static string toString(const int64_t& val) {
 		char buf[32];
-#ifdef WIN32
+#ifdef _WIN32
 		return _i64toa(val, buf, 10);
 #else
 		sprintf(buf, "%lld", val);
@@ -557,5 +557,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.75 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: Util.h,v 1.76 2004/01/04 17:32:47 arnetheduck Exp $
  */

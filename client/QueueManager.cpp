@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/types.h>
 #include <dirent.h>
 #include <fnmatch.h>
@@ -41,7 +41,7 @@
 
 QueueManager* Singleton<QueueManager>::instance = NULL;
 
-#ifdef WIN32
+#ifdef _WIN32
 #define FILELISTS_DIR "FileLists\\"
 #else
 #define FILELISTS_DIR "filelists/"
@@ -278,7 +278,7 @@ QueueManager::~QueueManager() {
 	if(!BOOLSETTING(KEEP_LISTS)) {
 		string path = Util::getAppPath() + FILELISTS_DIR;
 
-#ifdef WIN32
+#ifdef _WIN32
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
 	
@@ -443,7 +443,7 @@ void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueExce
 }
 
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
-#ifdef WIN32
+#ifdef _WIN32
 	if(aTarget.length() > MAX_PATH) {
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
 	}
@@ -1285,5 +1285,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.68 2003/12/26 11:00:06 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.69 2004/01/04 17:32:47 arnetheduck Exp $
  */

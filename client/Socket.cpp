@@ -109,7 +109,7 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
 	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
-#ifdef WIN32
+#ifdef _WIN32
 	// Make sure we disable any inherited windows message things for this socket.
 	::WSAAsyncSelect(sock, NULL, 0, 0);
 #endif
@@ -516,6 +516,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.52 2003/12/26 11:00:06 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.53 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

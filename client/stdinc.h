@@ -22,7 +22,7 @@
 
 #include "config.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #define STRICT
 #define WIN32_LEAN_AND_MEAN
@@ -94,5 +94,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.7 2003/11/04 20:18:12 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.8 2004/01/04 17:32:47 arnetheduck Exp $
  */

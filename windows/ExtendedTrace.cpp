@@ -17,7 +17,7 @@
 // header through StdAfx.h
 #include "stdafx.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 
 #include "../client/DCPlusPlus.h"
 #include "../client/File.h"
@@ -397,5 +397,5 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			ResumeThread( hThread );
 }
 
-#endif //_DEBUG && WIN32
+#endif //_DEBUG && _WIN32
 

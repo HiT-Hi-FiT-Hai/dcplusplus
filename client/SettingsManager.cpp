@@ -147,7 +147,7 @@ SettingsManager::SettingsManager()
 	setDefault(HUB_USER_COMMANDS, true);
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 
-#ifdef WIN32
+#ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
 	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);
@@ -287,6 +287,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.62 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.63 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

@@ -29,7 +29,7 @@
 #include "Exception.h"
 #include "Singleton.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "../zlib/zlib.h"
 #else
 #include <zlib.h>
@@ -203,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.30 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.31 2004/01/04 17:32:47 arnetheduck Exp $
  */

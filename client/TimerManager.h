@@ -28,7 +28,7 @@
 #include "Speaker.h"
 #include "Singleton.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 
@@ -53,7 +53,7 @@ public:
 		return (u_int32_t)time(NULL);
 	}
 	static u_int32_t getTick() { 
-#ifdef WIN32
+#ifdef _WIN32
 		return GetTickCount(); 
 #else
 		timeval tv2;
@@ -67,7 +67,7 @@ private:
 
 	friend class Singleton<TimerManager>;
 	TimerManager() { 
-#ifndef WIN32
+#ifndef _WIN32
 		gettimeofday(&tv, NULL);
 #endif
 	};
@@ -80,7 +80,7 @@ private:
 	
 	virtual int run();
 	
-#ifndef WIN32
+#ifndef _WIN32
 	static timeval tv;
 #endif
 };
@@ -92,6 +92,6 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.20 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.21 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

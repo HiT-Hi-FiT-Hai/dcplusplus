@@ -20,11 +20,9 @@
 			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200"
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -37,7 +35,6 @@
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				CompileAs="0"/>
@@ -45,17 +42,17 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386 /fixed:no"
+				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
-				SubSystem="2"/>
+				SubSystem="2"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -68,7 +65,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -92,7 +88,6 @@
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm150"
 				Optimization="4"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
@@ -101,7 +96,6 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO,_STLP_NO_EXCEPTIONS"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -112,15 +106,14 @@
 				PrecompiledHeaderThrough="stdafx.h"
 				AssemblerOutput="4"
 				WarningLevel="4"
-				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
-				CallingConvention="1"/>
+				CallingConvention="1"
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
+				AdditionalOptions="/FIXED:NO"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
@@ -136,10 +129,9 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				SetChecksum="TRUE"
-				TargetMachine="0"/>
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
 				MkTypLibCompatible="TRUE"
 				SuppressStartupBanner="TRUE"
 				TargetEnvironment="1"
@@ -152,7 +144,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -488,6 +479,22 @@
 			</File>
 			<File
 				RelativePath=".\windows\WinUtil.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Documenation"
+			Filter="txt">
+			<File
+				RelativePath=".\changelog.txt">
+			</File>
+			<File
+				RelativePath=".\Compile.txt">
+			</File>
+			<File
+				RelativePath=".\Extensions.txt">
+			</File>
+			<File
+				RelativePath=".\readme.txt">
 			</File>
 		</Filter>
 	</Files>

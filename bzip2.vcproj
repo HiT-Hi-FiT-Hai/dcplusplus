@@ -29,7 +29,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,BZ_NO_STDIO"
+				PreprocessorDefinitions="BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -37,13 +37,10 @@
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="0"
-				AssemblerOutput="4"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				WarningLevel="0"
 				DebugInformationFormat="3"
 				CallingConvention="1"
-				DisableSpecificWarnings="4244"/>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -60,7 +57,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
@@ -83,9 +79,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="2"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
-				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,BZ_NO_STDIO"
+				PreprocessorDefinitions="BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -95,13 +91,10 @@
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="0"
-				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				WarningLevel="4"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"
-				DisableSpecificWarnings="4244;4100"/>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -118,7 +111,6 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
 				Culture="1033"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>

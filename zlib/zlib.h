@@ -42,6 +42,7 @@
 #pragma warning(disable:4131)  // uses old-style declarator
 #pragma warning(disable:4244)  // conversion from unsigned int to unsigned short
 #pragma warning(disable:4127)  // conditional expression is constant
+#pragma warning(disable:4100)  // unreferenced formal parameter
 #endif
 #endif
 

@@ -27,7 +27,7 @@
 
 class CriticalSection  
 {
-#ifdef WIN32
+#ifdef _WIN32
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
@@ -126,5 +126,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.16 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.17 2004/01/04 17:32:47 arnetheduck Exp $
  */

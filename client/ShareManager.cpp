@@ -29,7 +29,7 @@
 #include "StringTokenizer.h"
 #include "File.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -238,7 +238,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 	dir->addSearchType(getMask(dir->getName()));
 
-#ifdef WIN32
+#ifdef _WIN32
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 	
@@ -276,7 +276,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	
 	FindClose(hFind);
 
-#else // WIN32
+#else // _WIN32
 	Directory::FileIter lastFileIter = dir->files.begin();
 	DIR *dirp = opendir(aName.c_str());
 	if (dirp) {
@@ -308,7 +308,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 		}
 		closedir(dirp);
 	}
-#endif // WIN32
+#endif // _WIN32
 
 	return dir;
 }
@@ -739,6 +739,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.70 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.71 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

@@ -23,7 +23,7 @@
 
 #include "ResourceManager.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 void Thread::start() throw(ThreadException) {
 	join();
 	if( (threadHandle = CreateThread(NULL, 0, &starter, this, 0, &threadId)) == NULL) {
@@ -41,6 +41,6 @@ void Thread::start() throw(ThreadException) {
 #endif
 /**
  * @file
- * $Id: Thread.cpp,v 1.5 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: Thread.cpp,v 1.6 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

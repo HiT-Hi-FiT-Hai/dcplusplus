@@ -29,7 +29,7 @@
 #include "Exception.h"
 #include "Util.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/stat.h>
 #include <fcntl.h>
 #endif
@@ -60,7 +60,7 @@ public:
 		TRUNCATE = 0x04
 	};
 
-#ifdef WIN32
+#ifdef _WIN32
 	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 
@@ -191,7 +191,7 @@ public:
 		}
 	}
 	
-#else // WIN32
+#else // _WIN32
 	
 	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
@@ -285,7 +285,7 @@ public:
 		return s.st_size;
 	}
 	
-#endif // WIN32
+#endif // _WIN32
 
 	virtual ~File() throw(FileException) {
 		File::close();
@@ -313,7 +313,7 @@ public:
 	u_int32_t getCRC32() const { return crc32.getValue(); };
 
 protected:
-#ifdef WIN32
+#ifdef _WIN32
 	HANDLE h;
 #else
 	int h;
@@ -420,6 +420,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.25 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: File.h,v 1.26 2004/01/04 17:32:47 arnetheduck Exp $
  */
 

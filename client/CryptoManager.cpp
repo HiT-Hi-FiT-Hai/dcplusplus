@@ -25,7 +25,7 @@
 #include "BitOutputStream.h"
 #include "File.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 #include "../bzip2/bzlib.h"
 #else
 #include <bzlib.h>
@@ -533,5 +533,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.37 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.38 2004/01/04 17:32:47 arnetheduck Exp $
  */

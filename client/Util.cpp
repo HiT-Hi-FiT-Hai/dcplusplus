@@ -24,7 +24,7 @@
 #include "SettingsManager.h"
 #include "ResourceManager.h"
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -120,7 +120,7 @@ static void sgenrand(unsigned long seed);
 void Util::initialize() {
 	int i;
 	for(i = 0; i < 256; ++i) {
-#ifdef WIN32
+#ifdef _WIN32
 		upper[i] = (char)CharUpper((LPSTR)i);
 		lower[i] = (char)CharLower((LPSTR)i);
 #else
@@ -490,7 +490,7 @@ u_int32_t Util::rand() {
 }
 
 string Util::getOsVersion() {
-#ifdef WIN32
+#ifdef _WIN32
 	string os;
 
 	OSVERSIONINFOEX ver;
@@ -540,7 +540,7 @@ string Util::getOsVersion() {
 
 	return os;
 
-#else // WIN32
+#else // _WIN32
 	utsname n;
 
 	if(uname(&n) != 0) {
@@ -549,11 +549,11 @@ string Util::getOsVersion() {
 
 	return string(n.sysname) + " " + string(n.release) + " (" + string(n.machine) + ")";
 
-#endif // WIN32
+#endif // _WIN32
 }
 
 /**
  * @file
- * $Id: Util.cpp,v 1.40 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.41 2004/01/04 17:32:47 arnetheduck Exp $
  */
 
