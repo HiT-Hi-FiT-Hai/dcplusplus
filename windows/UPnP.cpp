@@ -100,19 +100,38 @@ string UPnP::GetExternalIP()
 	HRESULT hResult;
 
 	IUPnPNAT *pIUN=NULL;
-	hResult=CoCreateInstance( CLSID_UPnPNAT,NULL,CLSCTX_INPROC_SERVER, IID_IUPnPNAT, (void **) &pIUN); 
+	hResult = CoCreateInstance( CLSID_UPnPNAT,NULL,CLSCTX_INPROC_SERVER, IID_IUPnPNAT, (void **) &pIUN); 
+	if(!SUCCEEDED(hResult)) {
+		return Util::emptyString;
+	}
+
 	IStaticPortMappingCollection *pIMaps=NULL;
+	
 	hResult=pIUN->get_StaticPortMappingCollection(&pIMaps);
 
-	if(!pIMaps) {
+	if(!SUCCEEDED(hResult) || !pIMaps) {
+		pIUN->Release();
 		return Util::emptyString;
 	}
 
 	IUnknown *pUnk=NULL;
 	hResult=pIMaps->get__NewEnum(&pUnk);
 
+	if(!SUCCEEDED(hResult)) {
+		pIMaps->Release();
+		pIUN->Release();
+		return Util::emptyString;
+	}
+
 	IEnumVARIANT *pEnumVar=NULL;
 	hResult=pUnk->QueryInterface(IID_IEnumVARIANT, (void **)&pEnumVar);
+
+	if(!SUCCEEDED(hResult)) {
+		pUnk->Release();
+		pIMaps->Release();
+		pIUN->Release();
+		return Util::emptyString;
+	}
 
 	VARIANT varCurMapping;
 	VariantInit(&varCurMapping);
@@ -123,20 +142,34 @@ string UPnP::GetExternalIP()
 	IStaticPortMapping *pITheMap=NULL;
 	IDispatch *pDispMap = V_DISPATCH(&varCurMapping);
 	hResult=pDispMap->QueryInterface(IID_IStaticPortMapping, (void **)&pITheMap);
+	if(!SUCCEEDED(hResult)) {
+		pUnk->Release();
+		pIMaps->Release();
+		pIUN->Release();
+		return Util::emptyString;
+	}
+
 	hResult=pITheMap->get_ExternalIPAddress(&bStrExt);
+	if(!SUCCEEDED(hResult)) {
+		pUnk->Release();
+		pIMaps->Release();
+		pIUN->Release();
+		return Util::emptyString;
+	}
+
+	string tmp;
+	if(bStrExt != NULL)
+		tmp = OLE2A(bStrExt);
+
 	SysFreeString(bStrExt);
 	VariantClear(&varCurMapping);
-
 
 	pEnumVar->Release();
 	pUnk->Release();
 	pIMaps->Release();
+	pIUN->Release();
 
-	if(bStrExt != NULL) {
-		return OLE2A(bStrExt);
-	} else {
-		return Util::emptyString;
-	}
+	return tmp;
 }
 
 UPnP::~UPnP()
@@ -145,5 +178,5 @@ UPnP::~UPnP()
 
 /**
  * @file
- * $Id: UPnP.cpp,v 1.2 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: UPnP.cpp,v 1.3 2004/10/05 16:46:43 arnetheduck Exp $
  */

@@ -1,4 +1,13 @@
-﻿-- 0.4034 2004-10-03 --
+﻿-- 0.4035 --
+* Fixed copy nick to clipboard (thanks trem)
+* Removed some old code (thanks garg)
+* Added tth to log codes (thanks garg)
+* Added # of locally filtered results to search frame (thanks garg)
+* Fixed a crash in the upnp code
+* Fixed wide formatting of time (thanks garg)
+
+
+-- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
 * Fixed a few issues with files not being hashed correctly (thanks garg)
 * More ADC fixes (thanks sed)

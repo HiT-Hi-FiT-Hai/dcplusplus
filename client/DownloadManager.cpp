@@ -722,6 +722,7 @@ noCRC:
 		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
 		params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
+		params["tth"] = d->getTTH()->toBase32();
 		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
 	}
 
@@ -912,5 +913,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.121 2004/09/27 16:01:26 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.122 2004/10/05 16:46:42 arnetheduck Exp $
  */

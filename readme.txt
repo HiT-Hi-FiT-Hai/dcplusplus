@@ -156,6 +156,7 @@ Contents
      speed          speed of download
      time           time to download (hh:mm:ss format)
      sfv            1 if the file was sfv/crc32 checked, 0 otherwise
+     tth            base32 representation of the tiger tree root hash
    
     You can also use all date and time parameters (%Y, %m, ...) of strftime (google for it).
 

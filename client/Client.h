@@ -84,11 +84,8 @@ public:
 	virtual void connect(const User* user) = 0;
 	virtual void hubMessage(const string& aMessage) = 0;
 	virtual void privateMessage(const User* user, const string& aMessage) = 0;
-	virtual void kick(const User* user, const string& aMessage) = 0;
-	virtual void ban(const User* user, const string& aMessage, time_t seconds) = 0;
 	virtual void send(const string& aMessage) = 0;
 	virtual void sendUserCmd(const string& aUserCmd) = 0;
-	virtual void redirect(const User* user, const string& aHub, const string& aMessage) = 0;
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) = 0;
 	virtual void password(const string& pwd) = 0;
 	virtual void info() = 0;
@@ -192,5 +189,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.88 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: Client.h,v 1.89 2004/10/05 16:46:42 arnetheduck Exp $
  */

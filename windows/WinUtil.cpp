@@ -434,6 +434,32 @@ void WinUtil::setClipboard(const tstring& str) {
 
 	EmptyClipboard();
 
+#ifdef UNICODE	
+	OSVERSIONINFOEX ver;
+	if( WinUtil::getVersionInfo(ver) ) {
+		if( ver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ) {
+			string tmp = Text::wideToAcp(str);
+
+			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (tmp.size() + 1) * sizeof(char)); 
+			if (hglbCopy == NULL) { 
+				CloseClipboard(); 
+				return; 
+			} 
+
+			// Lock the handle and copy the text to the buffer. 
+			char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
+			strcpy(lptstrCopy, tmp.c_str());
+			GlobalUnlock(hglbCopy);
+
+			SetClipboardData(CF_TEXT, hglbCopy);
+
+			CloseClipboard();
+
+			return;
+		}
+	}
+#endif
+
 	// Allocate a global memory object for the text. 
 	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1) * sizeof(TCHAR)); 
 	if (hglbCopy == NULL) { 
@@ -446,8 +472,13 @@ void WinUtil::setClipboard(const tstring& str) {
 	_tcscpy(lptstrCopy, str.c_str());
 	GlobalUnlock(hglbCopy); 
 
-	// Place the handle on the clipboard. 
-	SetClipboardData(CF_TEXT, hglbCopy); 
+	// Place the handle on the clipboard.
+#ifdef UNICODE
+    SetClipboardData(CF_UNICODETEXT, hglbCopy); 
+#else
+	SetClipboardData(CF_TEXT hglbCopy);
+#endif
+
 	CloseClipboard();
 }
 
@@ -950,5 +981,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.61 2004/09/27 12:02:44 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.62 2004/10/05 16:46:43 arnetheduck Exp $
  */

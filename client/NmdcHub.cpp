@@ -78,12 +78,6 @@ void NmdcHub::connect(const User* aUser) {
 	}
 }
 
-void NmdcHub::redirect(const User* aUser, const string& aServer, const string& aMsg) {
-	checkstate(); 
-	dcdebug("NmdcHub::opForceMove\n");
-	send("$OpForceMove $Who:" + toNmdc(aUser->getNick()) + "$Where:" + aServer + "$Msg:" + toNmdc(aMsg) + "|");
-}
-
 int64_t NmdcHub::getAvailable() const {
 	Lock l(cs);
 	int64_t x = 0;
@@ -669,47 +663,6 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 	delete[] buf;
 }
 
-void NmdcHub::kick(const User::Ptr& aUser, const string& aMsg) {
-	checkstate(); 
-	dcdebug("NmdcHub::kick\n");
-	static const char str[] = 
-		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = toNmdc(Util::validateMessage(aMsg, false));
-	
-	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
-	const char* u = aUser->getNick().c_str();
-	const char* n = getNick().c_str();
-	const char* m = msg2.c_str();
-	sprintf(tmp, str, u, n, n, m, n, n, u, m);
-	send(tmp);
-	delete[] tmp;
-	
-	// Short, short break to allow the message to reach the NmdcHub...
-	Thread::sleep(200);
-	send("$Kick " + toNmdc(aUser->getNick()) + "|");
-}
-
-void NmdcHub::kick(const User* aUser, const string& aMsg) {
-	checkstate(); 
-	dcdebug("NmdcHub::kick\n");
-	
-	static const char str[] = 
-		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
-	string msg2 = toNmdc(Util::validateMessage(aMsg, false));
-	
-	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
-	const char* u = aUser->getNick().c_str();
-	const char* n = getNick().c_str();
-	const char* m = msg2.c_str();
-	sprintf(tmp, str, u, n, n, m, n, n, u, m);
-	send(tmp);
-	delete[] tmp;
-	
-	// Short, short break to allow the message to reach the NmdcHub...
-	Thread::sleep(100);
-	send("$Kick " + toNmdc(aUser->getNick()) + "|");
-}
-
 // TimerManagerListener
 void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	if(socket && (lastActivity + (120+Util::rand(0, 60)) * 1000) < aTick) {
@@ -751,6 +704,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.13 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.14 2004/10/05 16:46:42 arnetheduck Exp $
  */
 

@@ -116,6 +116,7 @@ enum Strings { // @DontAdd
 	FILES_PER_HOUR, // "files/h"
 	FILES_LEFT, // "files left"
 	FILTER, // "F&ilter"
+	FILTERED, // "Filtered"
 	FIND, // "Find"
 	FINISHED_DOWNLOADS, // "Finished Downloads"
 	FINISHED_UPLOADS, // "Finished Uploads"

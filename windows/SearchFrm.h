@@ -103,7 +103,7 @@ public:
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false)
+		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -416,6 +416,7 @@ private:
 	CriticalSection cs;
 
 	static TStringList lastSearches;
+	size_t droppedResults;
 
 	DWORD lastSearch;
 	bool closed;
@@ -459,6 +460,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.43 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.44 2004/10/05 16:46:43 arnetheduck Exp $
  */
 

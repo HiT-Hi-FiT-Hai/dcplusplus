@@ -55,13 +55,15 @@ units<br>
 %[time] - Elapsed time of the transfer<br>
 %[sfv] - Whether the file was checked against a SFV file (0 = no, 1 =
 yes).<br>
+%[tth] - Base32 representation of the tiger tree root hash<br>
 Default format: %Y-%m-%d %H:%M: %[target] downloaded from %[user],
 %[size] (%[chunksize]), %[speed], %[time]<br>
   </dd>
   <dt>Log Uploads</dt>
   <dd>Enables the logging of completed uploads to Uploads.log.&nbsp;
 File list transfers may not be logged if you've disabled them under <a
- href="settings_advanced.html#filelist">Advanced</a> options. Uploaded Tiger
+ href="settings_advanced.html#filelist">Advanced</a> options. Uploaded
+Tiger
 Tree Hash Leaves, added in 0.402, will also be logged.</dd>
   <dt>Upload Log Format<br>
   </dt>
@@ -86,7 +88,10 @@ such messages are: notifications of files that have finished hashing,
 share refreshes, discovery of duplicate files, and disconnections of
 users who leave the hub (if <a href="settings_advanced.html">enabled</a>).</dd>
   <dt>Log Status Messages</dt>
-  <dd>Enables the logging of status messages. Examples of such messages are: Connected to (and disconnected from ) hub, kicked, and banned messages. In short all messages that would appear below the chat input in the hub windows.</dd>
+  <dd>Enables the logging of status messages. Examples of such messages
+are: Connected to (and disconnected from ) hub, kicked, and banned
+messages. In short all messages that would appear below the chat input
+in the hub windows.</dd>
   <dt>General Time Format Variables</dt>
   <dd>The following time variables can be used in any of the log
 formats.</dd>

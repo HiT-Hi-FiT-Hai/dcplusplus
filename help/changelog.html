@@ -13,11 +13,18 @@
 <h1>DC++ Changelog</h1>
 See the version history of DC++ below.
 
-<h2>0.4034</h2>
+<h2>0.4034 <span style="color: gray;">(2004-10-03)</span></h2>
 <ul>
   <li>Help file additions (thanks naga &amp; ullner)</li>
   <li>Fixed a few issues with files not being hashed correctly (thanks garg)</li>
   <li>More ADC fixes (thanks sed)</li>
+  <li>Fixed some ADLSearch stuff (thanks garg)</li>
+  <li>Added item count to finished frames (thanks garg)</li>
+  <li>Fixed user commands encoding (thanks garg)</li>
+  <li>Added last search time to search spy (thanks ullner)</li>
+  <li>Fixed queue size growing on queue item move</li>
+  <li>Fixed missing file list on 0 byte share</li>
+  <li>Fixed missing search results (thanks garg)</li>
 </ul>
 
 <h2>0.4033 <span style="color: gray;">(2004-09-27)</span></h2>
@@ -61,7 +68,10 @@ See the version history of DC++ below.
   <li>Added hash progress dialog, hashing is run at a higher priority when dialog is shown</li>
   <li>Fixed a crash issue with invalid DcLst:s (thanks garg)</li>
   <li>Better strategy for removing old filelists on exit (thanks garg)</li>
-  <li>Added Geo-IP license</li>
+  <li>Added Geo-IP license and fixes (thanks garg)</li>
+  <li>Added Help file - make sure you read it (thanks garg)</li>
+  <li>Fixed a memory leak with rollback buffers under certain conditions</li>
+  <li>ADC INF updates only send the necessary info (thanks sed)</li>
 </ul>
 
 <h2>0.4032 <span style="color: gray;">(2004-08-08)</span></h2>

@@ -247,25 +247,6 @@ void AdcHub::privateMessage(const User* user, const string& aMessage) {
 	send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + " PM\n"); 
 }
 
-void AdcHub::kick(const User* user, const string& aMessage) { 
-	if(state != STATE_NORMAL)
-		return;
-	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " KK KK " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + "\n"); 
-}
-void AdcHub::ban(const User* user, const string& aMessage, time_t aSeconds) { 
-	if(state != STATE_NORMAL)
-		return;
-	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " BA BA " + getMe()->getCID().toBase32() + " " + Util::toString(aSeconds) + " " + Command::escape(aMessage) + "\n"); 
-}
-
-void AdcHub::redirect(const User* user, const string& aHub, const string& aMessage) { 
-	if(state != STATE_NORMAL)
-		return;
-	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " RD RD " + getMe()->getCID().toBase32() + " " + aHub + " " + Command::escape(aMessage) + "\n"); 
-}
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	if(state != STATE_NORMAL)
 		return;
@@ -379,5 +360,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.18 2004/10/01 22:45:03 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.19 2004/10/05 16:46:42 arnetheduck Exp $
  */

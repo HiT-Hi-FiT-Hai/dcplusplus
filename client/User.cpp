@@ -99,13 +99,6 @@ bool User::isClientOp() const {
 	return false;
 }
 
-void User::kick(const string& aMsg) {
-	RLock l(cs);
-	if(client) {
-		client->kick(this, aMsg);
-	}
-}
-
 void User::send(const string& aMsg) {
 	RLock l(cs);
 	if(client) {
@@ -115,13 +108,6 @@ void User::send(const string& aMsg) {
 
 void User::sendUserCmd(const string& aUserCmd) {
 	send(aUserCmd);
-}
-
-void User::redirect(const string& aTarget, const string& aReason) {
-	RLock l(cs);
-	if(client) {
-		client->redirect(this, aTarget, aReason);
-	}
 }
 
 void User::clientMessage(const string& aMsg) {
@@ -224,6 +210,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.34 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: User.cpp,v 1.35 2004/10/05 16:46:42 arnetheduck Exp $
  */
 

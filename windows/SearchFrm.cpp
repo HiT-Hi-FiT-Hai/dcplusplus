@@ -280,6 +280,8 @@ void SearchFrame::onEnter() {
 	
 	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
 	ctrlStatus.SetText(2, _T(""));
+	ctrlStatus.SetText(3, _T(""));
+	droppedResults = 0;
 	{
 		Lock l(cs);
 		search = StringTokenizer<tstring>(s, _T(' ')).getTokens();
@@ -313,6 +315,8 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		} else {
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
 				if(Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) {
+					droppedResults++;
+					ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
 					return;
 				}
 			}
@@ -962,5 +966,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.66 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.67 2004/10/05 16:46:42 arnetheduck Exp $
  */

@@ -115,8 +115,6 @@ public:
 	virtual void connect(const User* aUser);
 	virtual void hubMessage(const string& aMessage) { checkstate(); send(toNmdc( "<" + getNick() + "> " + Util::validateMessage(aMessage, false) + "|" ) ); }
 	virtual void privateMessage(const User* aUser, const string& aMessage) { privateMessage(aUser->getNick(), string("<") + getNick() + "> " + aMessage); }
-	virtual void kick(const User* aUser, const string& aMsg);
-	virtual void ban(const User*, const string&, time_t) { /* Unimplemented... */ }
 	virtual void send(const string& a) throw() {
 		lastActivity = GET_TICK();
 		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
@@ -125,7 +123,6 @@ public:
 	virtual void sendUserCmd(const string& aUserCmd) throw() {
 		send(toNmdc(aUserCmd));
 	}
-	virtual void redirect(const User* aUser, const string& aServer, const string& aMsg);
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
 	virtual void info() { myInfo(); }
@@ -184,8 +181,6 @@ public:
 		lastActivity = GET_TICK();
 		socket->write(aBuf, aLen);
 	}
-
-	void kick(const User::Ptr& aUser, const string& aMsg);
 
 	GETSET(int, supportFlags, SupportFlags);
 private:
@@ -268,6 +263,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.12 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.13 2004/10/05 16:46:42 arnetheduck Exp $
  */
 

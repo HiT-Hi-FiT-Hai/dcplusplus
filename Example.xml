@@ -112,6 +112,7 @@
 		<String Name="FilesPerHour">files/h</String>
 		<String Name="FilesLeft">files left</String>
 		<String Name="Filter">F&amp;ilter</String>
+		<String Name="Filtered">Filtered</String>
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>

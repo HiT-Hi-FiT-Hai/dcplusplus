@@ -573,7 +573,18 @@ string Util::formatTime(const string &msg, const time_t t) {
 		if(!loc) {
 			return Util::emptyString;
 		}
+#if _WIN32
+		AutoArray<TCHAR> buf(new TCHAR[bufsize]);
 
+		while(!_tcsftime(buf, bufsize-1, Text::toT(msg).c_str(), loc)) {
+			bufsize+=64;
+			buf = new TCHAR[bufsize];
+		}
+
+		return Text::fromT(tstring(buf));
+#else
+		// will this give wide representations for %a and %A?
+		// surely win32 can't have a leg up on linux/unixen in this area. - Todd
 		AutoArray<char> buf(new char[bufsize]);
 
 		while(!strftime(buf, bufsize-1, msg.c_str(), loc)) {
@@ -582,6 +593,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 		}
 
 		return string(buf);
+#endif
 	}
 	return Util::emptyString;
 }
@@ -802,6 +814,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.68 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.69 2004/10/05 16:46:42 arnetheduck Exp $
  */
 

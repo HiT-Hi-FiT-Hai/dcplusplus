@@ -33,11 +33,8 @@ public:
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const User* user, const string& aMessage);
-	virtual void kick(const User* user, const string& aMessage);
-	virtual void ban(const User* user, const string& aMessage, time_t aSeconds);
 	virtual void send(const string& aMessage) { socket->write(aMessage); };
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
-	virtual void redirect(const User* user, const string& aHub, const string& aMessage);
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& pwd);
 	virtual void info();
@@ -95,5 +92,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.13 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.14 2004/10/05 16:46:42 arnetheduck Exp $
  */
