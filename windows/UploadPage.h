@@ -35,8 +35,8 @@ public:
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
-		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onClickedAdd)
-		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onClickedRemove)
+		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -59,6 +59,6 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.4 2003/04/15 10:14:05 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.5 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

@@ -1,4 +1,4 @@
- -- 0.252 --
+ -- 0.26 2003-07-15 
 * Search for alternates now sets file type as well (and should work correctly with sizes...)
 * Search now returns results for exact size matches on at least/most searches
 * Some minor fixes
@@ -7,7 +7,25 @@
 * Added notification for which file was not available for downloading
 * Added H: to main window status bar
 * Hub developers: Added section about $Supports scheme for client-hub communication to extensions.txt that 
-  dc++/dch++ will use to extend the protocol.
+  dc++/dch++ will (probably) use to extend the protocol (if it ever happens =).
+* Default hub list now points to one that works
+* Minor code cleanups
+* M:5 in the <++ tag means socks5 mode (this should have worked since 0.20...)
+* If no nick is set the settings dialog pops up at startup (to help newbies...)
+* Added a smarter queue tree display, to make it less deep
+* Fixed downloading of files with ? and * in name
+* Fixed downloading of filelists from users with \ in name
+* ADLSearch: Added Break on first option and special 'discard' target (see help) (by henrik as usual)
+* Added time left and speed columns to transfer window
+* Add to favorite user available from search frame
+* <++ tag is now shown in a separate column in the hub frame
+* Different tab types are now colored differently (some day I might actually make the colors configurable...)
+* Tabs are back at using the system menu font instead of the custom one
+* Added tab completition in hub frame, turn it off in advanced settings to get old tab behaviour (it can also
+  be used as a user search...)
+* Added move up/down controls to favorite hubs
+* Added options to open the finished downloads and favorite hubs window at startup
+* Fixed a bug where bad results were being given when searching for directories
 
  -- 0.251 2003-05-28 --
 * Fixed 100% cpu bug in new search (thanks opera)
@@ -1018,7 +1036,7 @@ Minor:
 * Some thread work, but more needed to be done, current model really sucks...
 
  -- 0.02 2001-11-22 --
-* Settings dialog, to set user name and connection info.
+* Settings dialog, to set user name and connection info.s
 * Search command recognised.
 * New buttons.
 

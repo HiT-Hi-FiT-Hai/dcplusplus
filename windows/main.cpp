@@ -185,7 +185,6 @@ void callBack(void* x, const string& a) {
 
 static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-
 	checkCommonControls();
 
 	CMessageLoop theLoop;
@@ -210,12 +209,9 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		ES_CENTER | ES_READONLY, WS_EX_STATICEDGE);
 	splash.SetFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
 	
-	HDC dc = splash.GetDC();
-	rc.bottom = rc.top + WinUtil::getTextHeight(dc, splash.GetFont()) + 4;
-	splash.ReleaseDC(dc);
+	rc.bottom = rc.top + WinUtil::getTextHeight(splash.m_hWnd, splash.GetFont()) + 4;
 	splash.HideCaret();
 	splash.SetWindowPos(HWND_TOPMOST, &rc, SWP_SHOWWINDOW);
-	splash.SetWindowText("Loading DC++, please wait...");
 	splash.SetFocus();
 	splash.RedrawWindow();
 
@@ -318,5 +314,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.12 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: main.cpp,v 1.13 2003/07/15 14:53:12 arnetheduck Exp $
  */

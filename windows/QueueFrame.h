@@ -262,6 +262,8 @@ private:
 
 	StringList searchFilter;
 
+	string commonStart;
+
 	typedef hash_map<QueueItem*, QueueItem*, PointerHash<QueueItem> > QueueMap;
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
@@ -289,7 +291,7 @@ private:
 
 	void addQueueList(const QueueItem::StringMap& l);
 	void addQueueItem(QueueItem* qi);
-	void addDirectory(const string& dir, bool isFileList = false, string* s = NULL);
+	HTREEITEM addDirectory(const string& dir, bool isFileList = false);
 	void removeDirectory(const string& dir, bool isFileList = false);
 	void removeDirectories(HTREEITEM ht);
 
@@ -313,7 +315,18 @@ private:
 	void moveSelected();	
 	void moveSelectedDir();
 	void moveDir(HTREEITEM ht, const string& target);
-	
+
+	void moveNode(HTREEITEM item, HTREEITEM parent);
+
+	void clearTree(HTREEITEM item) {
+		HTREEITEM next = ctrlDirs.GetChildItem(item);
+		while(next != NULL) {
+			clearTree(next);
+			next = ctrlDirs.GetNextSiblingItem(next);
+		}
+		delete (string*)ctrlDirs.GetItemData(item);
+	}
+
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
@@ -343,6 +356,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.17 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.18 2003/07/15 14:53:12 arnetheduck Exp $
  */
-

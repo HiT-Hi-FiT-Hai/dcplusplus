@@ -140,12 +140,12 @@ public:
 
 	virtual void bind(short aPort) throw(SocketException);
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
-	virtual void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
+	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
 	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
 	virtual void write(const char* buffer, int len) throw(SocketException);
-	virtual void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
+	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
 	virtual void writeTo(const string& aIp, short aPort, const char* buffer, int len) throw(SocketException);
-	virtual void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
+	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
 
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
 	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
@@ -246,6 +246,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.41 2003/04/15 10:13:56 arnetheduck Exp $
+ * $Id: Socket.h,v 1.42 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

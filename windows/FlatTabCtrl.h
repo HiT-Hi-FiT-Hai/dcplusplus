@@ -43,7 +43,6 @@ public:
 
 	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-		grey.CreatePen(PS_SOLID, 1, RGB(128,128,128));
 	};
 	~FlatTabCtrlImpl() { }
 
@@ -52,8 +51,8 @@ public:
 		return _T("FlatTabCtrl");
 	}
 
-	void addTab(HWND hWnd) {
-		TabInfo* i = new TabInfo(hWnd);
+	void addTab(HWND hWnd, COLORREF color = RGB(0, 0, 0)) {
+		TabInfo* i = new TabInfo(hWnd, color);
 		dcassert(getTabInfo(hWnd) == NULL);
 		tabs.push_back(i);
 		active = i;
@@ -105,12 +104,22 @@ public:
 		}
 	}
 
+	void setColor(HWND aWnd, COLORREF color) {
+		TabInfo* ti = getTabInfo(aWnd);
+		if(ti != NULL) {
+			ti->pen.DeleteObject();
+			ti->pen.CreatePen(PS_SOLID, 1, color);
+			Invalidate();
+		}
+	}
+
 	void updateText(HWND aWnd, LPCTSTR text) {
 		TabInfo* ti = getTabInfo(aWnd);
-		dcassert(ti != NULL);
-		ti->updateText(text);
-		calcRows(false);
-		Invalidate();
+		if(ti != NULL) {
+			ti->updateText(text);
+			calcRows(false);
+			Invalidate();
+		}
 	}
 
 	BEGIN_MSG_MAP(thisClass)
@@ -271,7 +280,7 @@ public:
 			if(drawActive) {
 				dcassert(active);
 				drawTab(dc, active, active->xpos, active->row, true);
-				dc.SelectPen(grey);
+				dc.SelectPen(active->pen);
 				int y = (rows - active->row -1) * getTabHeight();
 				dc.MoveTo(active->xpos, y);
 				dc.LineTo(active->xpos + active->getWidth() + getFill(), y);
@@ -334,7 +343,8 @@ private:
 
 		enum { MAX_LENGTH = 20 };
 
-		TabInfo(HWND aWnd) : hWnd(aWnd), len(0), xpos(0), row(0), dirty(false) { 
+		TabInfo(HWND aWnd, COLORREF c) : hWnd(aWnd), len(0), xpos(0), row(0), dirty(false) { 
+			pen.CreatePen(PS_SOLID, 1, c);
 			memset(&size, 0, sizeof(size));
 			memset(&boldSize, 0, sizeof(boldSize));
 			name[0] = 0;
@@ -342,6 +352,7 @@ private:
 		};
 
 		HWND hWnd;
+		CPen pen;
 		char name[MAX_LENGTH];
 		int len;
 		SIZE size;
@@ -414,7 +425,6 @@ private:
 	TabInfo* active;
 	TabInfo::List tabs;
 	CPen black;
-	CPen grey;
 
 	TabInfo* getTabInfo(HWND aWnd) {
 		for(TabInfo::ListIter i	= tabs.begin(); i != tabs.end(); ++i) {
@@ -460,7 +470,7 @@ private:
 		if(!active || (tab->row != (rows - 1)) )
 			dc.LineTo(p[0]);
 		
-		dc.SelectPen(grey);
+		dc.SelectPen(tab->pen);
 		dc.MoveTo(p[1]);
 		dc.LineTo(p[0]);
 		dc.MoveTo(p[1]);
@@ -486,7 +496,7 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX(GetWndClassName(), IDR_QUEUE, 0, COLOR_3DFACE);
 };
 
-template <class T, class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
+template <class T, int C = RGB(128, 128, 128), class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
 class ATL_NO_VTABLE MDITabChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits> {
 public:
 
@@ -494,7 +504,7 @@ public:
 	void setTab(FlatTabCtrl* aTab) { tab = aTab; };
 	FlatTabCtrl* getTab() { return tab; };
 
- 	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
+ 	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
@@ -543,14 +553,14 @@ public:
 	LRESULT onCreate(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		if(getTab())
-			getTab()->addTab(m_hWnd);
+			getTab()->addTab(m_hWnd, C);
 		created = true;
 		return 0;
 	}
 	
-	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		bHandled = FALSE;
-		if(getTab())
+		if(getTab() && (m_hWnd == (HWND)lParam))
 			getTab()->setActive(m_hWnd);
 		return 0;
 	}
@@ -579,6 +589,10 @@ public:
 		if(getTab())
 			getTab()->setDirty(m_hWnd);
 	}
+	void setTabColor(COLORREF color) {
+		if(getTab())
+			getTab()->setColor(m_hWnd, color);
+	}
 
 private:
 	FlatTabCtrl* tab;
@@ -589,5 +603,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.14 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.15 2003/07/15 14:53:12 arnetheduck Exp $
  */

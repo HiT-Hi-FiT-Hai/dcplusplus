@@ -77,34 +77,34 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
-	ctrlHub.SetFont(ctrlHubs.GetFont());
+	ctrlHub.SetFont(WinUtil::systemFont);
 	
 	ctrlHubContainer.SubclassWindow(ctrlHub.m_hWnd);
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
 	ctrlConnect.SetWindowText(CSTRING(CONNECT));
-	ctrlConnect.SetFont(ctrlHubs.GetFont());
+	ctrlConnect.SetFont(WinUtil::systemFont);
 
 	ctrlRefresh.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_REFRESH);
 	ctrlRefresh.SetWindowText(CSTRING(REFRESH));
-	ctrlRefresh.SetFont(ctrlHubs.GetFont());
+	ctrlRefresh.SetFont(WinUtil::systemFont);
 
 	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
 	ctrlAddress.SetWindowText(CSTRING(MANUAL_ADDRESS));
-	ctrlAddress.SetFont(ctrlHubs.GetFont());
+	ctrlAddress.SetFont(WinUtil::systemFont);
 	
 	ctrlFilter.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	filterContainer.SubclassWindow(ctrlFilter.m_hWnd);
-	ctrlFilter.SetFont(ctrlHubs.GetFont());
+	ctrlFilter.SetFont(WinUtil::systemFont);
 	
 	ctrlFilterDesc.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_GROUPBOX, WS_EX_TRANSPARENT);
 	ctrlFilterDesc.SetWindowText(CSTRING(FILTER));
-	ctrlFilterDesc.SetFont(ctrlHubs.GetFont());
+	ctrlFilterDesc.SetFont(WinUtil::systemFont);
 
 	HubManager::getInstance()->addListener(this);
 
@@ -398,6 +398,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.13 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.14 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

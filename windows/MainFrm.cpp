@@ -43,22 +43,20 @@
 #include "../client/StringTokenizer.h"
 #include "../client/SimpleXML.h"
 
-int MainFrame::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH };
-int MainFrame::columnSizes[] = { 200, 300, 200, 100, 200 };
+int MainFrame::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH };
+int MainFrame::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::STATUS,
-	ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH };
+ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH };
 
 MainFrame::~MainFrame() {
-	arrows.Destroy();
-	images.Destroy();
 	m_CmdBar.m_hImageList = NULL;
 
+	arrows.Destroy();
+	images.Destroy();
 	largeImages.Destroy();
 
-	DeleteObject(WinUtil::bgBrush);
-	DeleteObject(WinUtil::font);
-	WinUtil::fileImages.Destroy();
+	WinUtil::uninit();
 }
 
 DWORD WINAPI MainFrame::stopper(void* p) {
@@ -88,6 +86,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ConnectionManager::getInstance()->addListener(this);
 	QueueManager::getInstance()->addListener(this);
 
+	WinUtil::init(m_hWnd);
+
 	// Ugly fix for the multi-cpu issues: we set all threads to run on processor 0
 	if(::SetThreadAffinityMask(GetCurrentThread(), 1) == 0)
 		throw ThreadException(STRING(UNABLE_TO_CREATE_THREAD));
@@ -96,32 +96,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(),
 		m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
 
-	WinUtil::mainWnd = m_hWnd;
-
-	LOGFONT lf;
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::encodeFont(lf));
-	WinUtil::decodeFont(SETTING(TEXT_FONT), lf);
-
-	WinUtil::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
-	WinUtil::textColor = SETTING(TEXT_COLOR);
-	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
-	WinUtil::font = ::CreateFontIndirect(&lf);
-	WinUtil::fontHeight = WinUtil::getTextHeight(m_hWnd, WinUtil::font);
-	lf.lfWeight = FW_BOLD;
-	WinUtil::boldFont = ::CreateFontIndirect(&lf);
-
 	trayMessage = RegisterWindowMessage("TaskbarCreated");
-
-	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-		SHFILEINFO fi;
-		WinUtil::fileImages = CImageList::Duplicate((HIMAGELIST)::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES));
-		WinUtil::fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
-		WinUtil::dirIconIndex = fi.iIcon;	
-	} else {
-		WinUtil::fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-		WinUtil::dirIconIndex = 0;
-	}
 
 	TimerManager::getInstance()->start();
 
@@ -136,11 +111,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// create command bar window
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 
-	WinUtil::buildMenu();
 	m_hMenu = WinUtil::mainMenu;
 
 	// attach menu
-	m_CmdBar.AttachMenu(WinUtil::mainMenu);
+	m_CmdBar.AttachMenu(m_hMenu);
 	// load command bar images
 	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
@@ -191,7 +165,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
 
 	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		int fmt = (j == COLUMN_SIZE || j == COLUMN_TIMELEFT || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 
@@ -238,6 +212,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
 	if(BOOLSETTING(OPEN_QUEUE))
 		PostMessage(WM_COMMAND, IDC_QUEUE);
+	if(BOOLSETTING(OPEN_FAVORITE_HUBS))
+		PostMessage(WM_COMMAND, IDC_FAVORITES);
+	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS))
+		PostMessage(WM_COMMAND, IDC_FINISHED);
 
 	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
@@ -249,6 +227,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
 
 	startSocket();
+
+	if(SETTING(NICK).empty()) {
+		PostMessage(WM_COMMAND, ID_FILE_SETTINGS);
+	}
 
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
@@ -370,6 +352,53 @@ HWND MainFrame::createToolbar() {
 	return ctrl.m_hWnd;
 }
 
+int MainFrame::sortSize(LPARAM a, LPARAM b) {
+	int i = sortItem(a, b);
+	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
+		ItemInfo* c = (ItemInfo*)a;
+		ItemInfo* d = (ItemInfo*)b;
+		return compare(c->size, d->size);			
+	}
+	return i;
+}
+int MainFrame::sortStatus(LPARAM a, LPARAM b) {
+	int i = sortItem(a, b);
+	return (i == ExListViewCtrl::SORT_STRING_NOCASE) ? 0 : i;
+}
+int MainFrame::sortSpeed(LPARAM a, LPARAM b) {
+	int i = sortItem(a, b);
+	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
+		ItemInfo* c = (ItemInfo*)a;
+		ItemInfo* d = (ItemInfo*)b;
+		return compare(c->speed, d->speed);			
+	}
+	return i;
+}
+int MainFrame::sortTimeLeft(LPARAM a, LPARAM b) {
+	int i = sortItem(a, b);
+	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
+		ItemInfo* c = (ItemInfo*)a;
+		ItemInfo* d = (ItemInfo*)b;
+		return compare(c->timeLeft, d->timeLeft);			
+	}
+	return i;
+}
+
+int MainFrame::sortItem(LPARAM a, LPARAM b) {
+	ItemInfo* c = (ItemInfo*)a;
+	ItemInfo* d = (ItemInfo*)b;
+	if(c->type == d->type) {
+		if(c->status == d->status || d->type == ItemInfo::TYPE_UPLOAD) {
+			return ExListViewCtrl::SORT_STRING_NOCASE;
+		} else {
+			return c->status == ItemInfo::STATUS_RUNNING ? -1 : 1;
+		}
+	} else {
+		return c->type == ItemInfo::TYPE_DOWNLOAD ? -1 : 1;
+	}
+}
+
+
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
 	if(wParam == ADD_DOWNLOAD_ITEM) {
@@ -446,7 +475,8 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(ctrlStatus.IsWindow()) {
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
-			for(int i = 0; i < 7; i++) {
+			ctrlStatus.SetText(1, str[0].c_str());
+			for(int i = 1; i < 7; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
 				
 				if(statusSizes[i] < w) {
@@ -536,6 +566,8 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	ii->pos = 0;
 	ii->size = aUpload->getSize();
 	ii->status = ItemInfo::STATUS_RUNNING;
+	ii->speed = 0;
+	ii->timeLeft = 0;
 
 	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	
@@ -551,7 +583,7 @@ void MainFrame::onUploadTick(const Upload::List& ul) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(ul.size());
 
-	char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
+	char* buf = new char[STRING(UPLOADED_BYTES).size() + 64];
 	
 	{
 		Lock l(cs);
@@ -561,12 +593,16 @@ void MainFrame::onUploadTick(const Upload::List& ul) {
 			ConnectionQueueItem* aCqi = u->getUserConnection()->getCQI();
 			ItemInfo* ii = transferItems[aCqi];		
 			ii->pos = u->getPos();
+			ii->timeLeft = u->getSecondsLeft();
+			ii->speed = u->getAverageSpeed();
 
-			sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
-				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getRunningAverage()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
+			sprintf(buf, CSTRING(UPLOADED_BYTES), Util::formatBytes(u->getPos()).c_str(), 
+				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatSeconds((GET_TICK() - u->getStart())/1000).c_str());
 			
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			i->columns[COLUMN_STATUS] = buf;
+			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(u->getSecondsLeft());
+			i->columns[COLUMN_SPEED] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 			
 			v->push_back(i);
 		}
@@ -650,25 +686,31 @@ void MainFrame::onDownloadTick(const Download::List& dl) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(dl.size());
 
+	char* buf = new char[STRING(DOWNLOADED_BYTES).size() + 64];
+
 	{
 		Lock l(cs);
 		for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
 			Download* d = *j;
-			char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
-			sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
-				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getRunningAverage()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
+
+			sprintf(buf, CSTRING(DOWNLOADED_BYTES), Util::formatBytes(d->getPos()).c_str(), 
+				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatSeconds((GET_TICK()-d->getStart())/1000));
 			
 			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
 			ItemInfo* ii = transferItems[aCqi];
 			ii->pos = d->getPos();
+			ii->timeLeft = d->getSecondsLeft();
+			ii->speed = d->getAverageSpeed();
 
 			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			i->columns[COLUMN_STATUS] = buf;
-			delete[] buf;
+			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(d->getSecondsLeft());
+			i->columns[COLUMN_SPEED] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 			
 			v->push_back(i);
 		}
 	}
+	delete[] buf;
 	
 	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
 }
@@ -1085,12 +1127,9 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		WaitForSingleObject(stopperThread, 60*1000);
 		CloseHandle(stopperThread);
 		stopperThread = NULL;
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 	}
 
-	if(stopperThread) {
-	} else {
-	}
 	return 0;
 }
 
@@ -1157,9 +1196,11 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	SetSplitterRect(rc2);
 }
 
+static const char types[] = "File Lists\0*.DcLst;*.bz2\0All Files\0*.*\0";
+
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	string file;
-	if(WinUtil::browseFile(file, m_hWnd, false, Util::getAppPath() + "FileLists\\")) {
+	if(WinUtil::browseFile(file, m_hWnd, false, Util::getAppPath() + "FileLists\\", types)) {
 		string username;
 		if(file.rfind('\\') != string::npos) {
 			username = file.substr(file.rfind('\\') + 1);
@@ -1363,8 +1404,8 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 
 		StringList* str = new StringList();
-		str->push_back("H: " + Client::getCounts());
 		str->push_back(Util::getAway() ? STRING(AWAY) : "");
+		str->push_back("H: " + Client::getCounts());
 		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
@@ -1409,6 +1450,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.26 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.27 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

@@ -52,7 +52,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlMessage.SetFont(WinUtil::font);
 
-	updateTitle();
+	PostMessage(WM_SPEAKER, USER_UPDATED);
 	created = true;
 
 	ClientManager::getInstance()->addListener(this);
@@ -189,11 +189,10 @@ void PrivateFrame::onEnter()
 	} 
 }
 
-LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(!closed) {
 		ClientManager::getInstance()->removeListener(this);
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -201,7 +200,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		Lock l(cs);
 		frames.erase(user);
 
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
@@ -267,7 +266,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.13 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.14 2003/07/15 14:53:12 arnetheduck Exp $
  */
 
 

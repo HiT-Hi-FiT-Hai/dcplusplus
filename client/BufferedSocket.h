@@ -37,13 +37,14 @@ public:
 	typedef List::iterator Iter;
 	
 	enum Types {
-		BYTES_SENT,
+		CONNECTING,
 		CONNECTED,
 		LINE,
-		FAILED,
 		DATA,
+		BYTES_SENT,
 		MODE_CHANGE,
-		TRANSMIT_DONE
+		TRANSMIT_DONE,
+		FAILED
 	};
 	
 	virtual void onAction(Types) throw() { };
@@ -76,17 +77,19 @@ public:
 	 * @param sep Line separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep = '\n') throw(SocketException) { 
+	static BufferedSocket* getSocket(char sep) throw(SocketException) { 
 		return new BufferedSocket(sep); 
 	};
-	static BufferedSocket* accept(const ServerSocket& aSocket, char sep = '\n', BufferedSocketListener* l = NULL) throw(SocketException);
-	
+
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
 		aSock->Socket::disconnect();
 		Lock l(aSock->cs);
 		aSock->addTask(SHUTDOWN); 
 	};
+
+	// Socket::accept is ok for buffered sockets as well! (Note; it's synchronous tho...)
+	// virtual void accept(const ServerSocket& srv) throw(SocketException) { Socket::accept(srv); }
 
 	virtual void disconnect() {
 		Lock l(cs);
@@ -122,9 +125,7 @@ public:
 		addTask(CONNECT);
 	}
 	
-	virtual void write(const string& aData) throw() {
-		write(aData.data(), aData.length());
-	}
+	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
 	virtual void write(const char* aBuf, int aLen) throw();
 
 	/**
@@ -141,7 +142,7 @@ public:
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(64*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
+		dataBytes(0), inbufSize(16*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -199,7 +200,6 @@ private:
 	File* file;
 	int64_t size;
 
-	virtual void accept(const ServerSocket& ) throw(SocketException) { }; // We don't want people accepting BufferedSockets this way...
 	virtual void create(int) throw(SocketException) { dcassert(0); }; // Sockets are created implicitly
 	virtual void bind(short) throw(SocketException) { dcassert(0); }; // Binding / UDP not supported...
 
@@ -222,7 +222,6 @@ private:
 	 */
 	void threadShutDown() {
 		removeListeners();
-		Socket::disconnect();
 		delete this;
 	}
 	
@@ -236,5 +235,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.47 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.48 2003/07/15 14:53:10 arnetheduck Exp $
  */

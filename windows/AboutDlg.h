@@ -26,6 +26,15 @@
 #include "../client/HttpConnection.h"
 #include "../client/SimpleXML.h"
 
+static const char thanks[] = "Big thanks to all donators and people who have contributed with ideas "
+"and code! Thanks go out to sourceforge for hosting the project. This application uses libbzip2, "
+"thanks to Julian R Seward and team for providing it. This application uses STLPort "
+"(www.stlport.org), a most excellent STL package. The following people have contributed code to "
+"DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n"
+"geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, "
+"patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, "
+"sedulus, sandos, henrik engström, dwomac. Keep it coming!";
+
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
 {
 public:
@@ -43,8 +52,11 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2002 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\n\nhttp://dcplusplus.sourceforge.net/");
-		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the forum (http://dcpp.lichlord.org/forum). also all the beta testers and people supporting the project in other ways ($$$ =) deserve mentioning...also, thanks to the libzip2 people, they're the ones that made the bzip2 compression library used in DC++. This application uses STLPort (www.stlport.org), a most excellent STL package.");
+		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2003 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/");
+		CEdit ctrl(GetDlgItem(IDC_THANKS));
+		ctrl.FmtLines(TRUE);
+		ctrl.AppendText(thanks, TRUE);
+		ctrl.Detach();
 		SetDlgItemText(IDC_LATEST, CSTRING(DOWNLOADING));
 		SetDlgItemText(IDC_TOTALS, ("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
@@ -119,6 +131,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.8 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.9 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

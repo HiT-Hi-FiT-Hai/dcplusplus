@@ -35,9 +35,9 @@ public:
 	BEGIN_MSG_MAP(PropPage1)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		COMMAND_HANDLER(IDC_SELTEXT, BN_CLICKED, onClickedText)
-		COMMAND_HANDLER(IDC_SELWINCOLOR, BN_CLICKED, onClickedBackground)
-		COMMAND_HANDLER(IDC_BROWSE, BN_CLICKED, onBrowse)
+		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
+		COMMAND_ID_HANDLER(IDC_SELWINCOLOR, onClickedBackground)
+		COMMAND_ID_HANDLER(IDC_BROWSE, onBrowse)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -69,5 +69,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.4 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.5 2003/07/15 14:53:11 arnetheduck Exp $
  */

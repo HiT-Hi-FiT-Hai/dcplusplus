@@ -49,7 +49,7 @@ const string SettingsManager::settingTags[] =
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
-	"SkipZeroByte",
+	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -94,7 +94,7 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://dcplusplus.sourceforge.net/PublicHubList.config.bz2");
+	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.config.bz2");
 	setDefault(DOWNLOAD_SLOTS, 0);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
@@ -135,6 +135,10 @@ SettingsManager::SettingsManager()
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
+	setDefault(ADLS_BREAK_ON_FIRST, false);
+	setDefault(TAB_COMPLETION, true);
+	setDefault(OPEN_FAVORITE_HUBS, false);
+	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -272,6 +276,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.51 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.52 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

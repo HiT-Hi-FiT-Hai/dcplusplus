@@ -121,7 +121,7 @@ public:
 	
 	void refresh();
 
-	const FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
+	FavoriteHubEntry::List& getFavoriteHubs() { return favoriteHubs; };
 
 	User::List& getFavoriteUsers() { return users; };
 	
@@ -253,6 +253,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.38 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.39 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

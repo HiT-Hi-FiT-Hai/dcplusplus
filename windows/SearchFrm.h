@@ -33,56 +33,13 @@
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 #define SHOWUI_MESSAGE_MAP 7
 
-class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
+class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, private SearchManagerListener
 {
 public:
 
-	enum {
-		COLUMN_FIRST,
-		COLUMN_NICK = COLUMN_FIRST,
-		COLUMN_FILENAME,
-		COLUMN_TYPE,
-		COLUMN_SIZE,
-		COLUMN_PATH,
-		COLUMN_SLOTS,
-		COLUMN_CONNECTION,
-		COLUMN_HUB,
-		COLUMN_EXACT_SIZE,
-		COLUMN_LAST
-	};
-
-	enum Images {
-		IMAGE_UNKOWN,
-		IMAGE_SLOW,
-		IMAGE_NORMAL,
-		IMAGE_FAST
-	};
-
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", IDR_SEARCH, 0, COLOR_3DFACE)
 
-	SearchFrame() : 
-		searchBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
-		searchContainer("edit", this, SEARCH_MESSAGE_MAP), 
-		sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
-		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
-		sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
-		fileTypeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
-		showUIContainer("BUTTON", this, SHOWUI_MESSAGE_MAP),
-		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
-		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
-		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), commands(0)
-	{	
-		SearchManager::getInstance()->addListener(this);
-	}
-
-	virtual ~SearchFrame() {
-	}
-
-	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
-
-	typedef MDITabChildWindowImpl<SearchFrame> baseClass;
+	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
@@ -102,10 +59,11 @@ public:
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
+		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
-		COMMAND_HANDLER(IDC_FREESLOTS, BN_CLICKED, onFreeSlots)
+		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands, onUserCommand)
@@ -117,6 +75,27 @@ public:
 	ALT_MSG_MAP(SHOWUI_MESSAGE_MAP)
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUI)
 	END_MSG_MAP()
+
+	SearchFrame() : 
+	searchBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
+		searchContainer("edit", this, SEARCH_MESSAGE_MAP), 
+		sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
+		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
+		sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
+		fileTypeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP),
+		showUIContainer("BUTTON", this, SHOWUI_MESSAGE_MAP),
+		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
+		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
+		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
+		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
+		showUI(true), onlyFree(false), closed(false), commands(0)
+	{	
+		SearchManager::getInstance()->addListener(this);
+	}
+
+	virtual ~SearchFrame() {
+	}
+	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -132,6 +111,7 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onUserCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -212,6 +192,26 @@ public:
 	}
 	
 private:
+	enum {
+		COLUMN_FIRST,
+		COLUMN_NICK = COLUMN_FIRST,
+		COLUMN_FILENAME,
+		COLUMN_TYPE,
+		COLUMN_SIZE,
+		COLUMN_PATH,
+		COLUMN_SLOTS,
+		COLUMN_CONNECTION,
+		COLUMN_HUB,
+		COLUMN_EXACT_SIZE,
+		COLUMN_LAST
+	};
+
+	enum Images {
+		IMAGE_UNKOWN,
+		IMAGE_SLOW,
+		IMAGE_NORMAL,
+		IMAGE_FAST
+	};
 
 	enum {
 		IDC_DOWNLOAD_TARGET = 5000,
@@ -299,6 +299,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.18 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

@@ -212,32 +212,11 @@ public:
 		return 0;
 	};
 
-	static int sortSize(LPARAM a, LPARAM b) {
-		int i = sortItem(a, b);
-		if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
-			ItemInfo* c = (ItemInfo*)a;
-			ItemInfo* d = (ItemInfo*)b;
-			return compare(c->size, d->size);			
-		}
-		return i;
-	}
-	static int sortStatus(LPARAM a, LPARAM b) {
-		int i = sortItem(a, b);
-		return (i == ExListViewCtrl::SORT_STRING_NOCASE) ? 0 : i;
-	}
-	static int sortItem(LPARAM a, LPARAM b) {
-		ItemInfo* c = (ItemInfo*)a;
-		ItemInfo* d = (ItemInfo*)b;
-		if(c->type == d->type) {
-			if(c->status == d->status || d->type == ItemInfo::TYPE_UPLOAD) {
-				return ExListViewCtrl::SORT_STRING_NOCASE;
-			} else {
-				return c->status == ItemInfo::STATUS_RUNNING ? -1 : 1;
-			}
-		} else {
-			return c->type == ItemInfo::TYPE_DOWNLOAD ? -1 : 1;
-		}
-	}
+	static int sortSize(LPARAM a, LPARAM b);
+	static int sortStatus(LPARAM a, LPARAM b);
+	static int sortSpeed(LPARAM a, LPARAM b);
+	static int sortTimeLeft(LPARAM a, LPARAM b);
+	static int sortItem(LPARAM a, LPARAM b);
 
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
@@ -245,6 +224,12 @@ public:
 			ctrlTransfers.setSortDirection(!ctrlTransfers.getSortDirection());
 		} else {
 			switch(l->iSubItem) {
+			case COLUMN_TIMELEFT:
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortTimeLeft); 
+				break;
+			case COLUMN_SPEED:
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSpeed); 
+				break;
 			case COLUMN_SIZE:
 				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSize); 
 				break;
@@ -354,6 +339,8 @@ private:
 		COLUMN_FIRST,
 		COLUMN_USER = COLUMN_FIRST,
 		COLUMN_STATUS,
+		COLUMN_TIMELEFT,
+		COLUMN_SPEED,
 		COLUMN_FILE,
 		COLUMN_SIZE,
 		COLUMN_PATH,
@@ -375,12 +362,14 @@ private:
 		};
 
 		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
-			int64_t p = 0, int64_t sz = 0) : user(u), type(t), status(s), pos(p), size(sz) { };
+			int64_t p = 0, int64_t sz = 0) : user(u), type(t), status(s), pos(p), size(sz), speed(0), timeLeft(0) { };
 		User::Ptr user;
 		Types type;
 		Status status;
 		int64_t pos;
 		int64_t size;
+		int64_t speed;
+		int64_t timeLeft;
 	};
 
 	class StringListInfo;
@@ -482,7 +471,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.18 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
  */
 
  

@@ -13,6 +13,9 @@ InstallDir $PROGRAMFILES\DC++
 ; overwrite the old one automatically)
 InstallDirRegKey HKLM SOFTWARE\DC++ "Install_Dir"
 
+LicenseText "DC++ is licensed under the GPL, here's the full text!"
+LicenseData "License.txt"
+
 ; The text to prompt the user to enter a directory
 ComponentText "Welcome to the DC++ installer."
 ; The text to prompt the user to enter a directory
@@ -27,6 +30,7 @@ Section "DC++ (required)"
   File "Readme.txt"
   File "ChangeLog.txt"
   File "Example.xml"
+  File "License.txt"
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DC++ "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
@@ -46,6 +50,7 @@ Section "Start Menu Shortcuts"
   CreateDirectory "$SMPROGRAMS\DC++"
   CreateShortCut "$SMPROGRAMS\DC++\DC++.lnk" "$INSTDIR\DCPlusPlus.exe" "" "$INSTDIR\DCPlusPlus.exe" 0 "" "" "DC++ File Sharing Application"
   CreateShortCut "$SMPROGRAMS\DC++\Readme.lnk" "$INSTDIR\ReadMe.txt"
+  CreateShortCut "$SMPROGRAMS\DC++\License.lnk" "$INSTDIR\License.txt"
   CreateShortCut "$SMPROGRAMS\DC++\Change Log.lnk" "$INSTDIR\ChangeLog.txt"
   CreateShortCut "$SMPROGRAMS\DC++\Uninstall.lnk" "$INSTDIR\uninstall.exe" "" "$INSTDIR\uninstall.exe" 0
 SectionEnd
@@ -63,6 +68,7 @@ Section "Uninstall"
   Delete "$INSTDIR\DCPlusPlus.exe"
   Delete "$INSTDIR\dbghelp.dll"
   Delete "$INSTDIR\DCPlusPlus.pdb"
+  Delete "$INSTDIR\License.txt"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\ReadMe.txt"
   Delete "$INSTDIR\Example.xml"

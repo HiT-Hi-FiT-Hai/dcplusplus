@@ -594,10 +594,9 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		cur = newStr.get();
 	}
 
-	bool sizeOk = (aSearchType != SearchManager::SIZE_ATMOST) || (aSize == 0);
+	bool sizeOk = (aSearchType != SearchManager::SIZE_ATLEAST) || (aSize == 0);
 	if( (cur->empty()) && 
-		((aFileType == SearchManager::TYPE_ANY) && sizeOk) || 
-		(aFileType == SearchManager::TYPE_DIRECTORY) ) {
+		(((aFileType == SearchManager::TYPE_ANY) && sizeOk) || (aFileType == SearchManager::TYPE_DIRECTORY)) ) {
 		// We satisfied all the search words! Add the directory...
 		SearchResult* sr = new SearchResult();
 		sr->setType(SearchResult::TYPE_DIRECTORY);
@@ -697,6 +696,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.53 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.54 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

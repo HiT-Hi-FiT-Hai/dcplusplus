@@ -90,7 +90,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlShowTree.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowTree.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlShowTree.SetFont(ctrlStatus.GetFont());
 	ctrlShowTree.SetCheck(showTree);
 	showTreeContainer.SubclassWindow(ctrlShowTree.m_hWnd);
 	
@@ -283,8 +282,8 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.Invalidate();
 }
 
-void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, string* s /* = NULL*/ ) {
-	TV_INSERTSTRUCT tvi;
+HTREEITEM QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */) {
+	TVINSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_SORT;
 	tvi.item.mask = TVIF_IMAGE | TVIF_PARAM | TVIF_SELECTEDIMAGE | TVIF_TEXT;
 	tvi.item.iImage = tvi.item.iSelectedImage = WinUtil::getDirIconIndex();
@@ -297,7 +296,7 @@ void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, 
 		tvi.item.pszText = FILE_LIST_NAME;
 		tvi.item.lParam = (LPARAM) new string(dir);
 		fileLists = ctrlDirs.InsertItem(&tvi);
-		return;
+		return fileLists;
 	} 
 
 	// More complicated, we have to find the last available tree item and then see...
@@ -306,12 +305,103 @@ void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, 
 
 	HTREEITEM next = ctrlDirs.GetRootItem();
 	HTREEITEM parent = NULL;
-	
+
+	if((next != NULL) && (next == fileLists)) {
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+
+	if(next == NULL) {
+		// First addition, set commonStart to the dir minus the last part...
+		i = dir.rfind('\\', dir.length()-2);
+		if(i != string::npos) {
+			commonStart = dir.substr(0, i+1);
+			string name = commonStart.substr(0, commonStart.length() - 1);
+			tvi.hParent = NULL;
+			tvi.item.pszText = const_cast<char*>(name.c_str());
+			tvi.item.lParam = (LPARAM)new string(commonStart);
+			parent = ctrlDirs.InsertItem(&tvi);
+			next = NULL;
+			i++;
+		} else {
+			// No commonStart...
+			i = 0;
+		}
+	} else {
+		// Check if commonStart is the same as this dir start...
+		if(commonStart.empty()) {
+			// nothing...
+		} else if(Util::strnicmp(dir, commonStart, commonStart.length()) == 0) {
+			// Ok, np, commonstart is equal...
+			i = commonStart.length();
+			dcassert(next != NULL);
+			parent = next;
+			next = ctrlDirs.GetChildItem(next);
+		} else {
+			string oldCommon = commonStart;
+			i = 0;
+			for(;;) {
+				j = dir.find('\\', i);
+				if(j == string::npos) {
+					commonStart = dir.substr(0, i);
+					break;
+				}
+				if(Util::strnicmp(dir, commonStart, j) == 0) {
+					i = j + 1;
+				} else {
+					commonStart = dir.substr(0, i);
+					break;
+				}
+			}
+			if(commonStart.empty()) {
+				// We insert the first part, if not, addDirectory will return the old commonStart
+				// Since this gets sorted before oldCommon, it should work =)
+				i = oldCommon.find('\\');
+				dcassert(i != string::npos);
+				string* tmp = new string(oldCommon.substr(0, i+1));
+				string name = tmp->substr(0, tmp->length() - 1);
+				tvi.hParent = NULL;
+				tvi.item.pszText = const_cast<char*>(name.c_str());
+				tvi.item.lParam = (LPARAM)tmp;
+				ctrlDirs.InsertItem(&tvi);
+				HTREEITEM ht = addDirectory(oldCommon);
+				HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
+				while(ht2 != NULL) {
+					moveNode(ht2, ht);
+					ht2 = ctrlDirs.GetChildItem(next);
+				}
+				delete (string*)ctrlDirs.GetItemData(next);
+				ctrlDirs.DeleteItem(next);
+				next = ctrlDirs.GetRootItem();
+				if((next != NULL) && (next == fileLists)) {
+					next = ctrlDirs.GetNextSiblingItem(next);
+				}
+				i = 0;
+			} else {
+				string name = commonStart.substr(0, commonStart.length() - 1);
+				tvi.hParent = NULL;
+				tvi.item.pszText = const_cast<char*>(name.c_str());
+				tvi.item.lParam = (LPARAM)new string(commonStart);
+				parent = ctrlDirs.InsertItem(&tvi);
+				HTREEITEM ht = addDirectory(oldCommon);
+				HTREEITEM ht2 = ctrlDirs.GetChildItem(next);
+				while(ht2 != NULL) {
+					moveNode(ht2, ht);
+					ht2 = ctrlDirs.GetChildItem(next);
+				}
+				delete (string*)ctrlDirs.GetItemData(next);
+				ctrlDirs.DeleteItem(next);
+
+				next = ctrlDirs.GetChildItem(parent);
+				i = commonStart.length();
+			}
+		}
+	}
+
+
 	while( i < dir.length() ) {
 		while(next != NULL) {
 			if(next == fileLists) {
 				next = ctrlDirs.GetNextSiblingItem(next);
-				continue;
 			}
 			const string& n = getDir(next);
 			if(Util::strnicmp(n.c_str()+i, dir.c_str()+i, n.length()-i) == 0) {
@@ -332,7 +422,7 @@ void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, 
 			string name = dir.substr(i, j-i);
 			tvi.hParent = parent;
 			tvi.item.pszText = const_cast<char*>(name.c_str());
-			tvi.item.lParam = (LPARAM) ((s == NULL) ? new string(dir.substr(0, j+1)) : s);
+			tvi.item.lParam = (LPARAM) new string(dir.substr(0, j+1));
 			
 			parent = ctrlDirs.InsertItem(&tvi);
 			
@@ -342,6 +432,7 @@ void QueueFrame::addDirectory(const string& dir, bool isFileList /* = false */, 
 			i = j + 1;
 		}
 	}
+	return parent;
 }
 
 void QueueFrame::removeDirectory(const string& dir, bool isFileList /* = false */) {
@@ -488,7 +579,6 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			if(!showTree || (dir == curDir)) {
 				dcassert(ctrlQueue.find((LPARAM)qi) != -1);
 				ctrlQueue.DeleteItem(ctrlQueue.find((LPARAM)qi));
-				updateStatus();
 			}
 			
 			pair<DirectoryIter, DirectoryIter> i = directories.equal_range(dir);
@@ -508,7 +598,6 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			delete qi;
 			updateStatus();
 			setDirty();
-			
 		} else if(ti->first == SET_TEXT) {
 			QueueItem* qi = (QueueItem*)ti->second;
 			
@@ -945,16 +1034,21 @@ void QueueFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	SetSplitterRect(rc);
 }
 
-LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(!closed) {
 		QueueManager::getInstance()->removeListener(this);
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
 	} else {
 		QueueFrame::frame = NULL;
+
+		HTREEITEM ht = ctrlDirs.GetRootItem();
+		while(ht != NULL) {
+			clearTree(ht);
+			ht = ctrlDirs.GetNextSiblingItem(ht);
+		}
 
 		SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_SHOW_TREE, ctrlShowTree.GetCheck() == BST_CHECKED);
 		{
@@ -969,7 +1063,7 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		bHandled = FALSE;		
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
@@ -1009,6 +1103,28 @@ void QueueFrame::updateQueue() {
 	updateStatus();
 }
 
+// Put it here to avoid a copy for each recursion...
+static char tmpBuf[1024];
+void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
+	TVINSERTSTRUCT tvis;
+	memset(&tvis, 0, sizeof(tvis));
+	tvis.itemex.hItem = item;
+	tvis.itemex.mask = TVIF_CHILDREN | TVIF_HANDLE | TVIF_IMAGE | TVIF_INTEGRAL | TVIF_PARAM |
+		TVIF_SELECTEDIMAGE | TVIF_STATE | TVIF_TEXT;
+	tvis.itemex.pszText = tmpBuf;
+	tvis.itemex.cchTextMax = 1024;
+	ctrlDirs.GetItem((TVITEM*)&tvis.itemex);
+	tvis.hInsertAfter =	TVI_SORT;
+	tvis.hParent = parent;
+	HTREEITEM ht = ctrlDirs.InsertItem(&tvis);
+	HTREEITEM next = ctrlDirs.GetChildItem(item);
+	while(next != NULL) {
+		moveNode(next, ht);
+		next = ctrlDirs.GetChildItem(item);
+	}
+	ctrlDirs.DeleteItem(item);
+}
+
 void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) throw() { 
 	switch(type) {
 	case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
@@ -1023,7 +1139,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.23 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.24 2003/07/15 14:53:12 arnetheduck Exp $
  */
 
 

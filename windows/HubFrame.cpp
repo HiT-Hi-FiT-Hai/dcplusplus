@@ -33,13 +33,12 @@
 #include "../client/HubManager.h"
 #include "../client/LogManager.h"
 
-CImageList* HubFrame::images = NULL;
 HubFrame::FrameMap HubFrame::frames;
 
-int HubFrame::columnSizes[] = { 100, 75, 100, 75, 100 };
-int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_CONNECTION, COLUMN_EMAIL };
+int HubFrame::columnSizes[] = { 100, 75, 75, 100, 75, 100 };
+int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_TAG, COLUMN_CONNECTION, COLUMN_EMAIL };
 static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
-	ResourceManager::DESCRIPTION, ResourceManager::CONNECTION, ResourceManager::EMAIL };
+ResourceManager::DESCRIPTION, ResourceManager::TAG, ResourceManager::CONNECTION, ResourceManager::EMAIL };
 
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -76,7 +75,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlShowUsers.SetFont(ctrlStatus.GetFont());
+	ctrlShowUsers.SetFont(WinUtil::systemFont);
 	ctrlShowUsers.SetCheck(client->getUserInfo());
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
@@ -96,11 +95,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	ctrlUsers.setSort(COLUMN_NICK, ExListViewCtrl::SORT_FUNC, true, sortNick);
 				
-	if(!images) {
-		images = new CImageList();
-		images->CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
-	}
-	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
+	ctrlUsers.SetImageList(WinUtil::userImages, LVSIL_SMALL);
 
 	userMenu.CreatePopupMenu();
 	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
@@ -370,6 +365,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInf
 			l.push_back(u->getNick());
 			l.push_back(Util::formatBytes(u->getBytesShared()));
 			l.push_back(u->getDescription());
+			l.push_back(u->getTag());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
 			ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
@@ -383,11 +379,12 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInf
 
 	ctrlUsers.SetItemText(i, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
 	ctrlUsers.SetItemText(i, COLUMN_DESCRIPTION, u->getDescription().c_str());
+	ctrlUsers.SetItemText(i, COLUMN_TAG, u->getTag().c_str());
 	ctrlUsers.SetItemText(i, COLUMN_CONNECTION, u->getConnection().c_str());
 	ctrlUsers.SetItemText(i, COLUMN_EMAIL, u->getEmail().c_str());
 	if(sorted && ctrlUsers.getSortColumn() != COLUMN_NICK) {
 		needSort = true;
-	}
+	}	
 	if(!newUser && ui)
 		delete ui;
 	
@@ -424,8 +421,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 		}
 		delete ui;
-	} else if(wParam == REMOVE_USERS) {
+	} else if(wParam == DISCONNECTED) {
 		clearUserList();
+		setTabColor(RGB(255, 0, 0));
+	} else if(wParam == CONNECTED) {
+		addClientLine(STRING(CONNECTED));
+		setTabColor(RGB(0, 255, 0));
 	} else if(wParam == ADD_CHAT_LINE) {
 		string* x = (string*)lParam;
 		addLine(*x);
@@ -532,13 +533,12 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
-LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(!closed) {
 		TimerManager::getInstance()->removeListener(this);
 		client->removeListener(this);
 		client->disconnect();
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -546,7 +546,8 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
 
 		int i = 0;
-		while(i < ctrlUsers.GetItemCount()) {
+		int j = ctrlUsers.GetItemCount();
+		while(i < j) {
 			delete (UserInfo*)ctrlUsers.GetItemData(i);
 			i++;
 		}
@@ -554,7 +555,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::HUBFRAME_ORDER, 
 			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
@@ -815,18 +816,87 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 };
 
 void HubFrame::onTab() {
-	HWND focus = GetFocus();
-	
-	if(focus == ctrlClient.m_hWnd) {
-		ctrlMessage.SetFocus();
-	} else if(focus == ctrlMessage.m_hWnd) {
-		ctrlUsers.SetFocus();
-	} else if(focus == ctrlUsers.m_hWnd) {
-		ctrlClient.SetFocus();
-	} 
+	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd)) {
+		int n = ctrlMessage.GetWindowTextLength();
+		AutoArray<char> buf(n+1);
+		ctrlMessage.GetWindowText(buf, n+1);
+		string text(buf, n);
+		string::size_type textStart = text.find_last_of(" \n\t");
+
+		if(complete.empty()) {
+			if(textStart != string::npos) {
+				complete = text.substr(textStart + 1);
+			} else {
+				complete = text;
+			}
+			if(complete.empty()) {
+				// Still empty, no text entered...
+				return;
+			}
+			int y = ctrlUsers.GetItemCount();
+
+			for(int x = 0; x < y; ++x)
+				ctrlUsers.SetItemState(x, 0, LVNI_FOCUSED | LVNI_SELECTED);
+		}
+
+		if(textStart == string::npos)
+			textStart = 0;
+		else
+			textStart++;
+
+		int start = ctrlUsers.GetNextItem(-1, LVNI_FOCUSED) + 1;
+		int i = start;
+		int j = ctrlUsers.GetItemCount();
+
+		bool firstPass = i < j;
+		if(!firstPass)
+			i = 0;
+		while(firstPass || (!firstPass && i < start)) {
+			UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
+			const string& nick = ui->user->getNick();
+			bool found = (Util::strnicmp(nick, complete, complete.length()) == 0);
+			if(!found) {
+				// Check if there's a [ISP] tag to ignore...
+				if(nick[0] == '[') {
+					string::size_type x = nick.find(']');
+					if(x != string::npos) {
+						found = (Util::strnicmp(nick.c_str() + x + 1, complete.c_str(), complete.length()) == 0);
+					}
+				}
+			}
+			if(found) {
+				if((start - 1) != -1) {
+					ctrlUsers.SetItemState(start - 1, 0, LVNI_SELECTED | LVNI_FOCUSED);
+				}
+				ctrlUsers.SetItemState(i, LVNI_FOCUSED | LVNI_SELECTED, LVNI_FOCUSED | LVNI_SELECTED);
+				ctrlUsers.EnsureVisible(i, FALSE);
+				ctrlMessage.SetSel(textStart, ctrlMessage.GetWindowTextLength(), TRUE);
+				ctrlMessage.ReplaceSel(ui->user->getNick().c_str());
+				return;
+			}
+			i++;
+			if(i == j) {
+				firstPass = false;
+				i = 0;
+			}
+		}
+	} else {
+		HWND focus = GetFocus();
+
+		if(focus == ctrlClient.m_hWnd) {
+			ctrlMessage.SetFocus();
+		} else if(focus == ctrlMessage.m_hWnd) {
+			ctrlUsers.SetFocus();
+		} else if(focus == ctrlUsers.m_hWnd) {
+			ctrlClient.SetFocus();
+		} 
+	}
 }
 
 LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
+		complete.clear();
+
 	switch(wParam) {
 		case VK_TAB:
 			if(uMsg == WM_KEYDOWN) {
@@ -940,7 +1010,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServer() + "...");
 			speak(SET_WINDOW_TITLE, client->getServer());
 			break;
-		case ClientListener::CONNECTED: speak(ADD_STATUS_LINE, STRING(CONNECTED)); break;
+		case ClientListener::CONNECTED: speak(CONNECTED); break;
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
 		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() + ")"); break;
@@ -955,7 +1025,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const string& line) throw() {
 	switch(type) {
 		case ClientListener::SEARCH_FLOOD: speak(ADD_STATUS_LINE, STRING(SEARCH_SPAM_FROM) + line); break;
-		case ClientListener::FAILED: speak(ADD_STATUS_LINE, line); speak(REMOVE_USERS); break;
+		case ClientListener::FAILED: speak(ADD_STATUS_LINE, line); speak(DISCONNECTED); break;
 		case ClientListener::MESSAGE: 
 			if(SETTING(FILTER_MESSAGES)) {
 				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
@@ -1014,5 +1084,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.26 2003/05/21 12:08:43 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.27 2003/07/15 14:53:12 arnetheduck Exp $
  */

@@ -33,8 +33,8 @@ public:
 
 	BEGIN_MSG_MAP(DownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
-		COMMAND_HANDLER(IDC_BROWSEDIR, BN_CLICKED, onClickedBrowseDir)
-		COMMAND_HANDLER(IDC_BROWSETEMPDIR, BN_CLICKED, onClickedBrowseTempDir)
+		COMMAND_ID_HANDLER(IDC_BROWSEDIR, onClickedBrowseDir)
+		COMMAND_ID_HANDLER(IDC_BROWSETEMPDIR, onClickedBrowseTempDir)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -54,5 +54,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.5 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.6 2003/07/15 14:53:12 arnetheduck Exp $
  */

@@ -29,21 +29,6 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* = '\n' */, BufferedSocketListener* l /* = NULL */) throw(SocketException) {
-	BufferedSocket* b = getSocket(sep);
-	if(l != NULL) {
-		b->addListener(l);
-	}
-
-	try {
-		b->Socket::accept(aSocket);
-	} catch(...) {
-		putSocket(b);
-		throw;
-	}
-	return b;
-}
-
 /**
  * Send a chunk of a file
  * @return True if file is finished, false if there's more data to send
@@ -108,7 +93,6 @@ bool BufferedSocket::threadSendFile() {
 					return true;
 				}
 				Socket::write((char*)inbuf, len);
-				Thread::sleep(500);
 				fire(BufferedSocketListener::BYTES_SENT, len);
 				size -= len;
 			}
@@ -147,7 +131,7 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 				throw SocketException(STRING(CONNECTION_TIMEOUT));
 			}
 		}
-		dcassert((bufLen - bytesIn) > 0);
+		dcassert(bufLen > bytesIn);
 		int x = Socket::read(buf + bytesIn, bufLen - bytesIn);
 		if(x <= 0) {
 			// ???
@@ -160,7 +144,9 @@ bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 
 }
 
 void BufferedSocket::threadConnect() {
-	dcdebug("Thread running....\n");
+	dcdebug("threadConnect()\n");
+
+	fire(BufferedSocketListener::CONNECTING);
 
 	u_int32_t start = GET_TICK();
 	string s;
@@ -295,9 +281,9 @@ void BufferedSocket::threadConnect() {
 			outbufPos[k] = 0;
 		}
 		line.clear();
-		fire(BufferedSocketListener::CONNECTED);
-
 		setBlocking(true);
+
+		fire(BufferedSocketListener::CONNECTED);
 	} catch(const SocketException& e) {
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			fail("Socks5: " + e.getError());
@@ -369,18 +355,22 @@ void BufferedSocket::threadRead() {
 }
 
 void BufferedSocket::write(const char* aBuf, int aLen) throw() {
-
 	{
 		Lock l(cs);
+		int newSize = outbufSize[curBuf];
 		
-		while(outbufSize[curBuf] < (aLen + outbufPos[curBuf])) {
+		while(newSize < (aLen + outbufPos[curBuf])) {
+			newSize *= 2;
+		}
+
+		if(newSize > outbufSize[curBuf]) {
 			// Need to grow...
-			outbufSize[curBuf]*=2;
-			dcdebug("Growing outbuf[%d] to %d bytes\n", curBuf, outbufSize[curBuf]);
-			u_int8_t* tmp = new u_int8_t[outbufSize[curBuf]];
+			dcdebug("Growing outbuf[%d] to %d bytes\n", curBuf, newSize);
+			u_int8_t* tmp = new u_int8_t[newSize];
 			memcpy(tmp, outbuf[curBuf], outbufPos[curBuf]);
 			delete[] outbuf[curBuf];
 			outbuf[curBuf] = tmp;
+			outbufSize[curBuf] = newSize;
 		}
 
 		memcpy(outbuf[curBuf] + outbufPos[curBuf], aBuf, aLen);
@@ -426,16 +416,10 @@ int BufferedSocket::run() {
 
 				switch(t) {
 				case SHUTDOWN: threadShutDown(); return 0;
-				case DISCONNECT:
-					if(isConnected()) {
-						Socket::disconnect(); 
-						fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
-					}
-					break;
-
+				case DISCONNECT: if(isConnected()) fail(STRING(DISCONNECTED)); break;
 				case SEND_FILE: if(isConnected()) sendingFile = true; break;
 				case SEND_DATA: dcassert(!sendingFile); if(isConnected()) threadSendData(); break;
-				case CONNECT: threadConnect(); sendingFile = false; break;
+				case CONNECT: sendingFile = false; threadConnect(); break;
 
 				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
@@ -462,5 +446,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.50 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.51 2003/07/15 14:53:10 arnetheduck Exp $
  */

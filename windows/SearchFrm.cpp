@@ -40,8 +40,6 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::USER, Resourc
 
 LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	HFONT const uiFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
-
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
@@ -82,44 +80,43 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
 	searchLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	searchLabel.SetFont(uiFont, FALSE);
+	searchLabel.SetFont(WinUtil::systemFont, FALSE);
 	searchLabel.SetWindowText(CSTRING(SEARCH_FOR));
 
 	sizeLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	sizeLabel.SetFont(uiFont, FALSE);
+	sizeLabel.SetFont(WinUtil::systemFont, FALSE);
 	sizeLabel.SetWindowText(CSTRING(SIZE));
 
 	typeLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	typeLabel.SetFont(uiFont, FALSE);
+	typeLabel.SetFont(WinUtil::systemFont, FALSE);
 	typeLabel.SetWindowText(CSTRING(FILE_TYPE));
 
 	optionLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
-	optionLabel.SetFont(uiFont, FALSE);
+	optionLabel.SetFont(WinUtil::systemFont, FALSE);
 	optionLabel.SetWindowText(CSTRING(SEARCH_OPTIONS));
 
 	ctrlSlots.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, NULL, IDC_FREESLOTS);
 	ctrlSlots.SetButtonStyle(BS_AUTOCHECKBOX, FALSE);
-	ctrlSlots.SetFont(uiFont, FALSE);
+	ctrlSlots.SetFont(WinUtil::systemFont, FALSE);
 	ctrlSlots.SetWindowText(CSTRING(ONLY_FREE_SLOTS));
 	slotsContainer.SubclassWindow(ctrlSlots.m_hWnd);
 
 	ctrlShowUI.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUI.SetButtonStyle(BS_AUTOCHECKBOX, false);
-	ctrlShowUI.SetFont(ctrlStatus.GetFont());
 	ctrlShowUI.SetCheck(1);
 	showUIContainer.SubclassWindow(ctrlShowUI.m_hWnd);
 
 	ctrlDoSearch.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_SEARCH);
 	ctrlDoSearch.SetWindowText(CSTRING(SEARCH));
-	ctrlDoSearch.SetFont(ctrlStatus.GetFont());
+	ctrlDoSearch.SetFont(WinUtil::systemFont);
 	doSearchContainer.SubclassWindow(ctrlDoSearch.m_hWnd);
 
-	ctrlSearchBox.SetFont(uiFont, FALSE);
-	ctrlSize.SetFont(uiFont, FALSE);
-	ctrlMode.SetFont(uiFont, FALSE);
-	ctrlSizeMode.SetFont(uiFont, FALSE);
-	ctrlFiletype.SetFont(uiFont, FALSE);
+	ctrlSearchBox.SetFont(WinUtil::systemFont, FALSE);
+	ctrlSize.SetFont(WinUtil::systemFont, FALSE);
+	ctrlMode.SetFont(WinUtil::systemFont, FALSE);
+	ctrlSizeMode.SetFont(WinUtil::systemFont, FALSE);
+	ctrlFiletype.SetFont(WinUtil::systemFont, FALSE);
 
 	ctrlMode.AddString(CSTRING(NORMAL));
 	ctrlMode.AddString(CSTRING(AT_LEAST));
@@ -156,7 +153,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetBkColor(WinUtil::bgColor);
 	ctrlResults.SetTextBkColor(WinUtil::bgColor);
 	ctrlResults.SetTextColor(WinUtil::textColor);
-	ctrlResults.SetFont(uiFont, FALSE);	// use Util::font instead to obey Appearace settings
+	ctrlResults.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
 	
 	SetWindowText(CSTRING(SEARCH));
 
@@ -172,6 +169,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	resultsMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	resultsMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	opMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
@@ -181,6 +179,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
+	opMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	opMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
@@ -508,12 +507,11 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if(!closed) {
 		SearchManager::getInstance()->removeListener(this);
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -525,7 +523,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
 			SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
@@ -667,6 +665,14 @@ LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 	}
 	return 0;
 };
+
+LRESULT SearchFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		HubManager::getInstance()->addFavoriteUser(((SearchResult*)ctrlResults.GetItemData(i))->getUser());
+	}
+	return 0;
+}
 
 LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	HWND hWnd = (HWND)lParam;
@@ -1026,5 +1032,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.20 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.21 2003/07/15 14:53:12 arnetheduck Exp $
  */

@@ -40,13 +40,6 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 public:
 	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUB, 0, COLOR_3DFACE);
 
-	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		dcassert(frames.find(server) != frames.end());
-		dcassert(frames[server] == this);
-		frames.erase(server);
-		delete this;
-	}
-
 	typedef CSplitterImpl<HubFrame> splitBase;
 	typedef MDITabChildWindowImpl<HubFrame> baseClass;
 	
@@ -84,6 +77,13 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, onContextMenu)
 	END_MSG_MAP()
+
+	virtual void OnFinalMessage(HWND /*hWnd*/) {
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
+		delete this;
+	}
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -195,8 +195,9 @@ private:
 
 	enum { IDC_USER_COMMAND = 3500 };
 
-	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, REMOVE_USERS, ADD_CHAT_LINE,
-		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, PRIVATE_MESSAGE, STATS
+	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, ADD_CHAT_LINE,
+		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, 
+		PRIVATE_MESSAGE, STATS, CONNECTED, DISCONNECTED
 	};
 
 	enum {
@@ -204,8 +205,14 @@ private:
 	};
 	
 	enum {
-		COLUMN_FIRST, COLUMN_NICK = COLUMN_FIRST, COLUMN_SHARED, COLUMN_DESCRIPTION, 
-		COLUMN_CONNECTION, COLUMN_EMAIL, COLUMN_LAST
+		COLUMN_FIRST, 
+		COLUMN_NICK = COLUMN_FIRST, 
+		COLUMN_SHARED, 
+		COLUMN_DESCRIPTION, 
+		COLUMN_TAG,
+		COLUMN_CONNECTION, 
+		COLUMN_EMAIL, 
+		COLUMN_LAST
 	};
 	
 	class UserInfo {
@@ -251,6 +258,7 @@ private:
 	string redirect;
 	bool timeStamps;
 	bool showJoins;
+	string complete;
 
 	string lastKick;
 	string lastRedir;
@@ -280,7 +288,6 @@ private:
 
 	bool closed;
 	
-	static CImageList* images;
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 	
@@ -336,6 +343,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.22 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.23 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

@@ -34,9 +34,9 @@ public:
 
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
-		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, onClickedActive)
-		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, onClickedActive)
-		COMMAND_HANDLER(IDC_SOCKS5, BN_CLICKED, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_ACTIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_PASSIVE, onClickedActive)
+		COMMAND_ID_HANDLER(IDC_SOCKS5, onClickedActive)
 		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_EMAIL, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_DESCRIPTION, EN_CHANGE, onTextChanged)
@@ -63,6 +63,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.5 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.6 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

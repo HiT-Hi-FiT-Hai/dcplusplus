@@ -151,9 +151,6 @@
 				RelativePath="..\client\StringDefs.cpp">
 			</File>
 			<File
-				RelativePath="..\client\StringTokenizer.cpp">
-			</File>
-			<File
 				RelativePath="..\client\Util.cpp">
 			</File>
 		</Filter>

@@ -63,9 +63,9 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
-		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, onClickedRefresh)
-		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
+		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
+		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
+		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
@@ -107,15 +107,14 @@ public:
 		return 0;
 	}
 	
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		if(!closed) {
 			HubManager::getInstance()->removeListener(this);
-			bHandled = TRUE;
 			closed = true;
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
-			bHandled = FALSE;
+			MDIDestroy(m_hWnd);
 			return 0;
 		}
 	}
@@ -193,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.11 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.12 2003/07/15 14:53:12 arnetheduck Exp $
  */

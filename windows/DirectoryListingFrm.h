@@ -34,10 +34,10 @@
 
 #define STATUS_MESSAGE_MAP 9
 
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
-	typedef MDITabChildWindowImpl<DirectoryListingFrame> baseClass;
+	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
 
 	enum {
 		IDC_DOWNLOAD_TARGET = 5000,
@@ -83,9 +83,9 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
-		COMMAND_HANDLER(IDC_FIND, BN_CLICKED, onFind)
-		COMMAND_HANDLER(IDC_NEXT, BN_CLICKED, onNext)
-		COMMAND_HANDLER(IDC_MATCH_QUEUE, BN_CLICKED, onMatchQueue)
+		COMMAND_ID_HANDLER(IDC_FIND, onFind)
+		COMMAND_ID_HANDLER(IDC_NEXT, onNext)
+		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -118,10 +118,10 @@ public:
 		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 	
@@ -254,5 +254,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.16 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.17 2003/07/15 14:53:12 arnetheduck Exp $
  */

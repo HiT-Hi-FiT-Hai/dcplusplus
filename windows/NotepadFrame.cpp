@@ -58,7 +58,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	
 	if(dirty || ctrlPad.GetModify()) {
 		AutoArray<char> buf(ctrlPad.GetWindowTextLength() + 1);
@@ -71,7 +71,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	frame = NULL;
-	bHandled = FALSE;
+	MDIDestroy(m_hWnd);
 	return 0;
 	
 }
@@ -92,7 +92,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.8 2003/05/07 09:52:09 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.9 2003/07/15 14:53:12 arnetheduck Exp $
  */
 
 

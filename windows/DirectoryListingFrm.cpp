@@ -97,17 +97,17 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlFind.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_FIND);
 	ctrlFind.SetWindowText(CSTRING(FIND));
-	ctrlFind.SetFont(ctrlStatus.GetFont());
+	ctrlFind.SetFont(WinUtil::systemFont);
 
 	ctrlFindNext.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_NEXT);
 	ctrlFindNext.SetWindowText(CSTRING(NEXT));
-	ctrlFindNext.SetFont(ctrlStatus.GetFont());
+	ctrlFindNext.SetFont(WinUtil::systemFont);
 
 	ctrlMatchQueue.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON, 0, IDC_MATCH_QUEUE);
 	ctrlMatchQueue.SetWindowText(CSTRING(MATCH_QUEUE));
-	ctrlMatchQueue.SetFont(ctrlStatus.GetFont());
+	ctrlMatchQueue.SetFont(WinUtil::systemFont);
 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
@@ -846,5 +846,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.18 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.19 2003/07/15 14:53:12 arnetheduck Exp $
  */

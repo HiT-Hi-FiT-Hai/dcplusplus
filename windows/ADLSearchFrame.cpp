@@ -143,7 +143,7 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 // Close window
-LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
+LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
 {
 	ADLSearchManager::getInstance()->Save();
 	ADLSearchFrame::frame = NULL;
@@ -151,7 +151,7 @@ LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-	bHandled = FALSE;
+	MDIDestroy(m_hWnd);
 	return 0;
 }
 
@@ -179,7 +179,7 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	ctrlList.MoveWindow(rc);
 
 	// Position buttons
-	const long bwidth = 80;
+	const long bwidth = 90;
 	const long bspace = 10;
 	rc = rect;
 	rc.bottom -= 2;
@@ -361,10 +361,20 @@ LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		"There is a new option in the context menu (right-click) for directory listings. It is called \n"
 		"'Go to directory' and can be used to jump to the original location of the file or directory. \n"
 		"\n"
-		"Extra feature: If you use %y.%m.%d in a search string it will be replaced by todays \n"
-		"date. Switch place on y/m/d, or leave any of them out to alter the substitution. \n"
-		"If you use %[nick] it will be replaced by the nick of the user you download the directory \n"
-		"listing from. \n"
+		"Extra features:\n"
+		"\n"
+		"1) If you use %y.%m.%d in a search string it will be replaced by todays date. Switch \n"
+		"place on y/m/d, or leave any of them out to alter the substitution. If you use %[nick] \n"
+		"it will be replaced by the nick of the user you download the directory listing from. \n"
+		"\n"
+		"2) If you name a destination directory 'discard', it will not be shown in the total result. \n"
+		"Useful with the extra feature 3) below to remove uninteresting results. \n"
+		" \n"
+		"3) There is a switch called 'Break on first ADLSearch match' in Settings->Advanced'.  \n"
+		"If enabled, ADLSearch will stop after the first match for a specific file/directory. \n"
+		"The order in the ADLSearch windows is therefore important. Example: Add a search \n"
+		"item at the top of the list with string='xxx' and destination='discard'. It will catch \n"
+		"many pornographic files and they will not be included in any following search results. \n"
 		;
 
 	MessageBox(message, title, MB_OK);
@@ -592,5 +602,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.5 2003/05/28 11:53:05 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.6 2003/07/15 14:53:11 arnetheduck Exp $
  */

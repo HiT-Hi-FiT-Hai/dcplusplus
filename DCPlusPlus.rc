@@ -78,24 +78,26 @@ IDR_USERS               ICON                    "res\\FavoriteUser.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG  0, 0, 205, 271
+IDD_ABOUTBOX DIALOGEX 0, 0, 205, 271
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,77,250,50,14
     CTEXT           "DC++ v0.20\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
                     IDC_VERSION,31,38,143,49
-    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,21,20
+    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,20,20
     GROUPBOX        "",IDC_STATIC,7,7,191,86
-    GROUPBOX        "Greetz",IDC_STATIC,7,97,191,82,BS_CENTER
-    CTEXT           "",IDC_THANKS,13,105,178,69
+    GROUPBOX        "Greetz && Contributors",IDC_STATIC,7,97,191,82,
+                    BS_CENTER
     GROUPBOX        "Latest version",IDC_STATIC,7,224,191,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,235,179,8
     GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
     CTEXT           "Upload: xx.xx MB, Download: xx.xx MB",IDC_TOTALS,13,193,
                     179,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
+    EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
+                    WS_VSCROLL
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46

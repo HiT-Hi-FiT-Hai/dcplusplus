@@ -136,11 +136,10 @@ LRESULT FinishedULFrame::onRemove(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	return 0;
 }
 
-LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(!closed){
 		FinishedManager::getInstance()->removeListener(this);
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -148,7 +147,7 @@ LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_UL_ORDER, 
 			SettingsManager::FINISHED_UL_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
@@ -193,5 +192,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.3 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.4 2003/07/15 14:53:12 arnetheduck Exp $
  */

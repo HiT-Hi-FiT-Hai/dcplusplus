@@ -211,6 +211,7 @@
 #define IDC_GO_TO_DIRECTORY             1124
 #define IDC_MATCH_QUEUE                 1125
 #define IDC_HELP_CHANGELOG              1126
+#define IDC_EDIT1                       1128
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -230,7 +231,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        235
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1127
+#define _APS_NEXT_CONTROL_VALUE         1129
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

@@ -124,7 +124,7 @@ private:
 	
 	virtual ~ConnectionManager() { shutdown(); };
 	
-	UserConnection* getConnection() throw() {
+	UserConnection* getConnection() throw(SocketException) {
 		UserConnection* uc = new UserConnection();
 		uc->addListener(this);
 		{
@@ -162,5 +162,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.49 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.50 2003/07/15 14:53:10 arnetheduck Exp $
  */

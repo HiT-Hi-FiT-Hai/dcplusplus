@@ -152,12 +152,11 @@ LRESULT UsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
-LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	if(!closed) {
 		HubManager::getInstance()->removeListener(this);
 		ClientManager::getInstance()->removeListener(this);
 
-		bHandled = TRUE;
 		closed = true;
 		PostMessage(WM_CLOSE);
 		return 0;
@@ -165,13 +164,13 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::USERSFRAME_ORDER, 
 			SettingsManager::USERSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		bHandled = FALSE;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 }
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.9 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.10 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

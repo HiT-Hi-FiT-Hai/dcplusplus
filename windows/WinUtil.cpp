@@ -32,14 +32,17 @@
 #include "../client/HubManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
+int WinUtil::fileImageCount;
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
 HFONT WinUtil::font = NULL;
 int WinUtil::fontHeight = 0;
 HFONT WinUtil::boldFont = NULL;
+HFONT WinUtil::systemFont = NULL;
 CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
+CImageList WinUtil::userImages;
 int WinUtil::dirIconIndex = 0;
 StringList WinUtil::lastDirs;
 string WinUtil::lastKick;
@@ -47,6 +50,115 @@ string WinUtil::lastRedirect;
 string WinUtil::lastServer;
 HWND WinUtil::mainWnd = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
+
+void WinUtil::init(HWND hWnd) {
+	mainWnd = hWnd;
+
+	mainMenu.CreateMenu();
+
+	CMenuHandle file;
+	file.CreatePopupMenu();
+
+	file.AppendMenu(MF_STRING, IDC_QUEUE, CSTRING(MENU_FILE_DOWNLOAD_QUEUE));
+	file.AppendMenu(MF_STRING, IDC_FINISHED, CSTRING(FINISHED_DOWNLOADS));
+	file.AppendMenu(MF_STRING, IDC_FINISHED_UL, CSTRING(FINISHED_UPLOADS));
+	file.AppendMenu(MF_STRING, ID_FILE_CONNECT, CSTRING(MENU_FILE_PUBLIC_HUBS));
+	file.AppendMenu(MF_STRING, IDC_FAVORITES, CSTRING(MENU_FILE_FAVORITE_HUBS));
+	file.AppendMenu(MF_STRING, IDC_FAVUSERS, CSTRING(MENU_FILE_FAVORITE_USERS));
+	file.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_FILE_SEARCH));
+	file.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CSTRING(MENU_FILE_ADL_SEARCH));
+	file.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_FILE_SEARCH_SPY));
+	file.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_FILE_NOTEPAD));
+	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(MENU_FILE_OPEN_FILE_LIST));
+	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FILE_FOLLOW_REDIRECT));
+	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_FILE_RECONNECT));
+	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_FILE_SETTINGS));
+	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(MENU_FILE_IMPORT_QUEUE));
+	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	file.AppendMenu(MF_STRING, ID_APP_EXIT, CSTRING(MENU_FILE_EXIT));
+
+	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)file, CSTRING(MENU_FILE));
+
+	CMenuHandle view;
+	view.CreatePopupMenu();
+
+	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_VIEW_TOOLBAR));
+	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CSTRING(MENU_VIEW_STATUS_BAR));
+
+	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CSTRING(MENU_VIEW));
+
+	CMenuHandle window;
+	window.CreatePopupMenu();
+
+	window.AppendMenu(MF_STRING, ID_WINDOW_CASCADE, CSTRING(MENU_WINDOW_CASCADE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_WINDOW_TILE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CSTRING(MENU_WINDOW_ARRANGE));
+	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CSTRING(MENU_WINDOW_MINIMIZE_ALL));
+	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CSTRING(MENU_WINDOW_CLOSE_DISCONNECTED));
+
+	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
+
+	CMenuHandle help;
+	help.CreatePopupMenu();
+
+	help.AppendMenu(MF_STRING, IDC_HELP_README, CSTRING(MENU_HELP_README));
+	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CSTRING(MENU_HELP_CHANGELOG));
+	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CSTRING(MENU_HELP_ABOUT));
+	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HELP_HOMEPAGE));
+	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_HELP_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CSTRING(MENU_HELP_FAQ));
+	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CSTRING(MENU_HELP_HELP_FORUM));
+	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CSTRING(MENU_HELP_DISCUSS));
+	help.AppendMenu(MF_STRING, IDC_HELP_REQUEST_FEATURE, CSTRING(MENU_HELP_REQUEST_FEATURE));
+	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CSTRING(MENU_HELP_REPORT_BUG));
+	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CSTRING(MENU_HELP_DONATE));
+
+	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)help, CSTRING(MENU_HELP));
+
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		fileImages.Create(16, 16, ILC_COLOR8, 16, 16);
+		fileImages.SetBkColor(SETTING(BACKGROUND_COLOR));
+		::SHGetFileInfo(".", FILE_ATTRIBUTE_DIRECTORY, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		fileImages.AddIcon(fi.hIcon);
+		::DestroyIcon(fi.hIcon);
+		dirIconIndex = fileImageCount++;	
+	} else {
+		fileImages.CreateFromImage(IDB_FOLDERS, 16, 3, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+		dirIconIndex = 0;
+	}
+
+	userImages.CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+
+	LOGFONT lf;
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, encodeFont(lf));
+	decodeFont(SETTING(TEXT_FONT), lf);
+
+	bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
+	textColor = SETTING(TEXT_COLOR);
+	bgColor = SETTING(BACKGROUND_COLOR);
+	font = ::CreateFontIndirect(&lf);
+	fontHeight = WinUtil::getTextHeight(mainWnd, font);
+	lf.lfWeight = FW_BOLD;
+	boldFont = ::CreateFontIndirect(&lf);
+	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
+}
+
+void WinUtil::uninit() {
+	fileImages.Destroy();
+	userImages.Destroy();
+	DeleteObject(font);
+	DeleteObject(boldFont);
+	DeleteObject(bgBrush);
+
+	mainMenu.DestroyMenu();
+
+}
 
 void WinUtil::decodeFont(const string& setting, LOGFONT &dest) {
 	StringTokenizer st(setting, ',');
@@ -107,7 +219,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 	return false;
 }
 
-bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */, const string& initialDir /* = Util::emptyString */) {
+bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */, const string& initialDir /* = Util::emptyString */, const char* types /* = NULL */) {
 	char buf[MAX_PATH];
 	OPENFILENAME ofn;       // common dialog box structure
 	
@@ -117,12 +229,14 @@ bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* =
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = owner;
 	ofn.lpstrFile = buf;
+	ofn.lpstrFilter = types;
+	ofn.nFilterIndex = 1;
 
 	if(!initialDir.empty()) {
 		ofn.lpstrInitialDir = initialDir.c_str();
 	}
 	ofn.nMaxFile = sizeof(buf);
-	ofn.Flags = save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
 	
 	// Display the Open dialog box. 
 	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
@@ -132,73 +246,6 @@ bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* =
 	return false;
 }
 
-void WinUtil::buildMenu() {
-	mainMenu.CreateMenu();
-	
-	CMenuHandle file;
-	file.CreatePopupMenu();
-	
-	file.AppendMenu(MF_STRING, IDC_QUEUE, CSTRING(MENU_FILE_DOWNLOAD_QUEUE));
-	file.AppendMenu(MF_STRING, IDC_FINISHED, CSTRING(FINISHED_DOWNLOADS));
-	file.AppendMenu(MF_STRING, IDC_FINISHED_UL, CSTRING(FINISHED_UPLOADS));
-	file.AppendMenu(MF_STRING, ID_FILE_CONNECT, CSTRING(MENU_FILE_PUBLIC_HUBS));
-	file.AppendMenu(MF_STRING, IDC_FAVORITES, CSTRING(MENU_FILE_FAVORITE_HUBS));
-	file.AppendMenu(MF_STRING, IDC_FAVUSERS, CSTRING(MENU_FILE_FAVORITE_USERS));
-	file.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_FILE_SEARCH));
-	file.AppendMenu(MF_STRING, IDC_FILE_ADL_SEARCH, CSTRING(MENU_FILE_ADL_SEARCH));
-	file.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_FILE_SEARCH_SPY));
-	file.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_FILE_NOTEPAD));
-	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(MENU_FILE_OPEN_FILE_LIST));
-	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FILE_FOLLOW_REDIRECT));
-	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_FILE_RECONNECT));
-	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_FILE_SETTINGS));
-	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(MENU_FILE_IMPORT_QUEUE));
-	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	file.AppendMenu(MF_STRING, ID_APP_EXIT, CSTRING(MENU_FILE_EXIT));
-	
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)file, CSTRING(MENU_FILE));
-	
-	CMenuHandle view;
-	view.CreatePopupMenu();
-	
-	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_VIEW_TOOLBAR));
-	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CSTRING(MENU_VIEW_STATUS_BAR));
-	
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CSTRING(MENU_VIEW));
-	
-	CMenuHandle window;
-	window.CreatePopupMenu();
-	
-	window.AppendMenu(MF_STRING, ID_WINDOW_CASCADE, CSTRING(MENU_WINDOW_CASCADE));
-	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_WINDOW_TILE));
-	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CSTRING(MENU_WINDOW_ARRANGE));
-	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CSTRING(MENU_WINDOW_MINIMIZE_ALL));
-	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CSTRING(MENU_WINDOW_CLOSE_DISCONNECTED));
-
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
-	
-	CMenuHandle help;
-	help.CreatePopupMenu();
-	
-	help.AppendMenu(MF_STRING, IDC_HELP_README, CSTRING(MENU_HELP_README));
-	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CSTRING(MENU_HELP_CHANGELOG));
-	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CSTRING(MENU_HELP_ABOUT));
-	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HELP_HOMEPAGE));
-	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_HELP_DOWNLOADS));
-	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CSTRING(MENU_HELP_FAQ));
-	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CSTRING(MENU_HELP_HELP_FORUM));
-	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CSTRING(MENU_HELP_DISCUSS));
-	help.AppendMenu(MF_STRING, IDC_HELP_REQUEST_FEATURE, CSTRING(MENU_HELP_REQUEST_FEATURE));
-	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CSTRING(MENU_HELP_REPORT_BUG));
-	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CSTRING(MENU_HELP_DONATE));
-
-	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)help, CSTRING(MENU_HELP));
-	
-}
 
 void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
 	StringTokenizer t(tokens, ',');
@@ -336,7 +383,29 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 	SettingsManager::getInstance()->set(widths, tmp);
 }
 
+int WinUtil::getIconIndex(const string& aFileName) {
+	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
+		SHFILEINFO fi;
+		string x = Util::getFileName(aFileName);
+		string::size_type i = x.rfind('.');
+		if(i != string::npos) {
+			x = x.substr(i);
+			ImageIter j = fileIndexes.find(x);
+			if(j != fileIndexes.end())
+				return j->second;
+		}
+
+		::SHGetFileInfo(x.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
+		fileImages.AddIcon(fi.hIcon);
+		::DestroyIcon(fi.hIcon);
+
+		fileIndexes[x] = fileImageCount++;
+		return fileImageCount - 1;
+	} else {
+		return 2;
+	}
+}
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.16 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.17 2003/07/15 14:53:12 arnetheduck Exp $
  */

@@ -32,7 +32,7 @@
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>, private ClientManagerListener
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)>, private ClientManagerListener
 {
 public:
 	enum {
@@ -45,6 +45,8 @@ public:
 		delete this;
 	}
 
+	typedef MDITabChildWindowImpl<PrivateFrame, RGB(0, 255, 255)> baseClass;
+
 	BEGIN_MSG_MAP(PrivateFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -53,7 +55,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
-		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
+		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -144,12 +146,14 @@ private:
 	void updateTitle() {
 		if(user->isOnline()) {
 			SetWindowText(user->getFullNick().c_str());
+			setTabColor(RGB(0, 255, 255));
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
 				SetWindowText(user->getFullNick().c_str());
 			} else {
 				SetWindowText((user->getFullNick() + " [" + STRING(OFFLINE) + "]").c_str());
 			}
+			setTabColor(RGB(255, 0, 0));
 		}
 	}
 	
@@ -161,6 +165,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.11 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

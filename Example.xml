@@ -7,6 +7,7 @@
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
 		<String Name="AddressNotAvailable">Address not available</String>
+		<String Name="AdlDiscard">Discard</String>
 		<String Name="AdlSearch">Automatic Directory Listing Search</String>
 		<String Name="AllDownloadSlotsTaken">All download slots taken</String>
 		<String Name="AllUsersOffline">All %d users offline</String>
@@ -64,7 +65,7 @@
 		<String Name="DownloadQueue">Download queue</String>
 		<String Name="DownloadWholeDir">Download whole directory</String>
 		<String Name="DownloadWholeDirTo">Download whole directory to...</String>
-		<String Name="DownloadedLeft">Downloaded %s (%.01f%%), %s/s, %s left</String>
+		<String Name="DownloadedBytes">Downloaded %s (%.01f%%) in %s</String>
 		<String Name="DownloadedFrom"> downloaded from </String>
 		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
@@ -238,6 +239,7 @@
 		<String Name="Server">Server</String>
 		<String Name="SetPriority">Set priority</String>
 		<String Name="SettingsAdvanced">Advanced</String>
+		<String Name="SettingsAdvancedAdlsBreakOnFirst">Break on first ADLSearch match</String>
 		<String Name="SettingsAdvancedAntiFrag">Use antifragmentation method for downloads</String>
 		<String Name="SettingsAdvancedAutoAway">Auto-away on minimize (and back on restore)</String>
 		<String Name="SettingsAdvancedAutoFollow">Automatically follow redirects</String>
@@ -250,6 +252,8 @@
 		<String Name="SettingsAdvancedKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsAdvancedName">Name</String>
 		<String Name="SettingsAdvancedNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsAdvancedOpenFavoriteHubs">Open the favorite hubs window at startup</String>
+		<String Name="SettingsAdvancedOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsAdvancedOpenPublic">Open the public hubs window at startup</String>
 		<String Name="SettingsAdvancedOpenQueue">Open the download queue window at startup</String>
 		<String Name="SettingsAdvancedPopupOffline">Popup messages from users that are not online (if not ignoring, messages go to main chat if enabled)</String>
@@ -259,6 +263,7 @@
 		<String Name="SettingsAdvancedShowProgressBars">Show progress bars for transfers (uses some CPU)</String>
 		<String Name="SettingsAdvancedSkipZeroByte">Skip zero-byte files</String>
 		<String Name="SettingsAdvancedSmallSendBuffer">Use small send buffer (enable if uploads slow downloads a lot)</String>
+		<String Name="SettingsAdvancedTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsAdvancedUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
 		<String Name="SettingsAppearance">Appearance</String>
 		<String Name="SettingsAppearanceFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
@@ -294,9 +299,11 @@
 		<String Name="SpecifySearchString">Specify a search string</String>
 		<String Name="Speed">Speed</String>
 		<String Name="Status">Status</String>
+		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
 		<String Name="Tb">TB</String>
 		<String Name="Time">Time</String>
+		<String Name="TimeLeft">Time left</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
 		<String Name="Total">Total: </String>
@@ -308,7 +315,7 @@
 		<String Name="UnsupportedFilelistFormat">Unsupported filelist format</String>
 		<String Name="UploadFinishedIdle">Upload finished, idle...</String>
 		<String Name="UploadStarting">Upload starting...</String>
-		<String Name="UploadedLeft">Uploaded %s (%.01f%%), %s/s, %s left</String>
+		<String Name="UploadedBytes">Uploaded %s (%.01f%%) in %s</String>
 		<String Name="UploadedTo"> uploaded to </String>
 		<String Name="User">User</String>
 		<String Name="UserDescription">User Description</String>

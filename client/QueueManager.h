@@ -252,10 +252,10 @@ public:
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, bool isDirectory = false) throw(QueueException, FileException) {
 		string x = aUser->getNick();
-		string::size_type i;
-		while((i = x.find('\\')) != string::npos)
+		string::size_type i = 0;
+		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
-		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
+		string file = Util::getAppPath() + "FileLists\\" + Util::filterFileName(x) + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false, QueueItem::DEFAULT, Util::emptyString, true, isDirectory);
 	}
 
@@ -385,6 +385,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.36 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.37 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

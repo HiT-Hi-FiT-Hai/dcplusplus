@@ -31,7 +31,7 @@ public:
 	enum { numPages = 6 };
 
 	BEGIN_MSG_MAP(PropertiesDlg)
-		COMMAND_HANDLER(IDOK, BN_CLICKED, onOK)
+		COMMAND_ID_HANDLER(IDOK, onOK)
 	END_MSG_MAP()
 
 	PropertiesDlg(SettingsManager *s);
@@ -49,5 +49,5 @@ protected:
 
 /**
  * @file
- * $Id: PropertiesDlg.h,v 1.4 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PropertiesDlg.h,v 1.5 2003/07/15 14:53:12 arnetheduck Exp $
  */

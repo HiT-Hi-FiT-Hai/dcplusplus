@@ -33,7 +33,7 @@
 class FavoriteHubsFrame : public MDITabChildWindowImpl<FavoriteHubsFrame>, private HubManagerListener
 {
 public:
-	FavoriteHubsFrame() : startup(true) { };
+	FavoriteHubsFrame() : nosave(true) { };
 	virtual ~FavoriteHubsFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FavoriteHubsFrame", IDR_FAVORITES, 0, COLOR_3DFACE);
@@ -48,10 +48,12 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
-		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
-		COMMAND_HANDLER(IDC_EDIT, BN_CLICKED, onEdit)
-		COMMAND_HANDLER(IDC_NEWFAV, BN_CLICKED, onNew)
+		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
+		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
+		COMMAND_ID_HANDLER(IDC_NEWFAV, onNew)
+		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp);
+		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown);
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
@@ -68,6 +70,8 @@ public:
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	bool checkNick();
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -124,14 +128,15 @@ private:
 	
 	CButton ctrlConnect;
 	CButton ctrlRemove;
-	CButton ctrlEdit;
 	CButton ctrlNew;
 	CButton ctrlProps;
+	CButton ctrlUp;
+	CButton ctrlDown;
 	CMenu hubsMenu;
 	
 	ExListViewCtrl ctrlHubs;
 
-	bool startup;
+	bool nosave;
 	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
@@ -139,13 +144,13 @@ private:
 	void updateList(const FavoriteHubEntry::List& fl) {
 		ctrlHubs.SetRedraw(FALSE);
 		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			addEntry(*i);
+			addEntry(*i, ctrlHubs.GetItemCount());
 		}
 		ctrlHubs.SetRedraw(TRUE);
 		ctrlHubs.Invalidate();
 	}
 
-	void addEntry(FavoriteHubEntry* entry) {
+	void addEntry(FavoriteHubEntry* entry, int pos) {
 		StringList l;
 		l.push_back(entry->getName());
 		l.push_back(entry->getDescription());
@@ -154,7 +159,7 @@ private:
 		l.push_back(entry->getServer());
 		l.push_back(entry->getUserDescription());
 		bool b = entry->getConnect();
-		int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
+		int i = ctrlHubs.insert(pos, l, 0, (LPARAM)entry);
 		ctrlHubs.SetCheckState(i, b);
 	}
 	
@@ -165,6 +170,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.10 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.11 2003/07/15 14:53:12 arnetheduck Exp $
  */
 

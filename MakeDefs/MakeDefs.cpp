@@ -83,13 +83,14 @@ int __cdecl main(int argc, char* argv[])
 		ex.addTag("Strings");
 		ex.stepIn();
 		int a = 0;
+		string name;
+		string def;
+		string s;
 		for(i = l.begin(); i != l.end(); i++) {
-			string name;
-			string def;
 
-			string s = *i;
+			name.clear();
+			s = *i;
 
-			
 			bool u = true;
 			for(k = s.find_first_not_of(" \t"); s[k] != ','; k++) {
 				if(s[k] == '_') {
@@ -108,13 +109,13 @@ int __cdecl main(int argc, char* argv[])
 			ex.addTag("String", def.substr(1, def.size() - 2));
 			ex.addChildAttrib("Name", name);
 
-			varStr += def + ", ";
-			varName += '\"' + name + "\", ";
+			varStr += def + ", \r\n";
+			varName += '\"' + name + "\", \r\n";
 
-			if(((++a) % 10) == 0) {
+			/*if(((++a) % 5) == 0) {
 				varStr += "\r\n";
 				varName += "\r\n";
-			}
+			}*/
 
 		}
 

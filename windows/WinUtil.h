@@ -32,6 +32,9 @@ class UserCommand;
 class WinUtil {
 public:
 	static CImageList fileImages;
+	static int fileImageCount;
+	static CImageList userImages;
+
 	typedef HASH_MAP<string, int> ImageMap;
 	typedef ImageMap::iterator ImageIter;
 	static ImageMap fileIndexes;
@@ -41,6 +44,7 @@ public:
 	static HFONT font;
 	static int fontHeight;
 	static HFONT boldFont;
+	static HFONT systemFont;
 	static CMenu mainMenu;
 	static int dirIconIndex;
 	static StringList lastDirs;
@@ -51,7 +55,9 @@ public:
 	static FlatTabCtrl* tabCtrl;
 	static string commands;
 
-	static void buildMenu();
+	static void init(HWND hWnd);
+	static void uninit();
+
 	static void decodeFont(const string& setting, LOGFONT &dest);
 
 	/**
@@ -118,32 +124,10 @@ public:
 		return res;
 	}
 	
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString);
+	static bool browseFile(string& target, HWND owner = NULL, bool save = true, const string& initialDir = Util::emptyString, const char* types = NULL);
 	static bool browseDirectory(string& target, HWND owner = NULL);
 
-	static int getIconIndex(const string& aFileName) {
-		if(BOOLSETTING(USE_SYSTEM_ICONS)) {
-			SHFILEINFO fi;
-			string x = Util::getFileName(aFileName);
-			string::size_type i = x.rfind('.');
-			if(i != string::npos) {
-				x = x.substr(i);
-				ImageIter j = fileIndexes.find(x);
-				if(j != fileIndexes.end())
-					return j->second;
-			}
-			CImageList il = (HIMAGELIST)::SHGetFileInfo((SETTING(DOWNLOAD_DIRECTORY) + Util::getFileName(aFileName)).c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
-			while(il.GetImageCount() > fileImages.GetImageCount()) {
-				HICON hi = il.GetIcon(fileImages.GetImageCount());
-				fileImages.AddIcon(hi);
-				DestroyIcon(hi);
-			}
-			fileIndexes[x] = fi.iIcon;
-			return fi.iIcon;
-		} else {
-			return 2;
-		}
-	}
+	static int getIconIndex(const string& aFileName);
 
 	static int getDirIconIndex() {
 		return dirIconIndex;
@@ -164,5 +148,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.11 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.12 2003/07/15 14:53:12 arnetheduck Exp $
  */

@@ -46,6 +46,8 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::CLEAR_SEARCH, ResourceManager::SETTINGS_ADVANCED_CLEAR_SEARCH },
 	{ SettingsManager::OPEN_PUBLIC, ResourceManager::SETTINGS_ADVANCED_OPEN_PUBLIC },
 	{ SettingsManager::OPEN_QUEUE, ResourceManager::SETTINGS_ADVANCED_OPEN_QUEUE },
+	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::SETTINGS_ADVANCED_OPEN_FAVORITE_HUBS },
+	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::SETTINGS_ADVANCED_OPEN_FINISHED_DOWNLOADS },
 	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_ADVANCED_AUTO_SEARCH },
 	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_ADVANCED_POPUP_PMS },
 	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_ADVANCED_IGNORE_OFFLINE },
@@ -61,6 +63,8 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::ANTI_FRAG, ResourceManager::SETTINGS_ADVANCED_ANTI_FRAG },
 	{ SettingsManager::NO_AWAYMSG_TO_BOTS, ResourceManager::SETTINGS_ADVANCED_NO_AWAYMSG_TO_BOTS },
 	{ SettingsManager::SKIP_ZERO_BYTE, ResourceManager::SETTINGS_ADVANCED_SKIP_ZERO_BYTE },
+	{ SettingsManager::ADLS_BREAK_ON_FIRST, ResourceManager::SETTINGS_ADVANCED_ADLS_BREAK_ON_FIRST },
+	{ SettingsManager::TAB_COMPLETION, ResourceManager::SETTINGS_ADVANCED_TAB_COMPLETION },
 	{ 0, ResourceManager::SETTINGS_ADVANCED_AUTO_AWAY }
 };
 
@@ -163,6 +167,6 @@ void AdvancedPage::write()
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.13 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.14 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

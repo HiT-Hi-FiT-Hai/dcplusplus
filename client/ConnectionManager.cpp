@@ -282,16 +282,18 @@ void ConnectionManager::onTimerMinute(u_int32_t aTick) {
  * It's always the other fellow that starts sending if he made the connection.
  */
 void ConnectionManager::onIncomingConnection() throw() {
-	UserConnection* uc = getConnection();
+	UserConnection* uc = NULL;
 	
 	try { 
+		uc = getConnection();
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setState(UserConnection::STATE_NICK);
 		uc->setLastActivity(GET_TICK());
 		uc->accept(socket);
-	} catch(const Exception& e) {
+	} catch(const SocketException& e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
-		putConnection(uc);
+		if(uc)
+			putConnection(uc);
 	}
 }
 
@@ -299,10 +301,16 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	if(shuttingDown)
 		return;
 
-	UserConnection* c = getConnection();
-	c->setNick(aNick);
-	c->setState(UserConnection::STATE_CONNECT);
-	c->connect(aServer, aPort);
+	UserConnection* uc = NULL;
+	try {
+		uc = getConnection();
+		uc->setNick(aNick);
+		uc->setState(UserConnection::STATE_CONNECT);
+		uc->connect(aServer, aPort);
+	} catch(const SocketException&) {
+		if(uc)
+			putConnection(uc);
+	}
 }
 
 void ConnectionManager::onConnected(UserConnection* aSource) throw() {
@@ -599,5 +607,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.60 2003/04/15 10:13:52 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.61 2003/07/15 14:53:10 arnetheduck Exp $
  */

@@ -96,6 +96,7 @@ public:
 	GETSETREF(string, nick, Nick);
 	GETSETREF(string, email, Email);
 	GETSETREF(string, description, Description);
+	GETSETREF(string, tag, Tag);
 	GETSETREF(string, lastHubIp, LastHubIp);
 	GETSETREF(string, lastHubName, LastHubName);
 	GETSET(int64_t, bytesShared, BytesShared);
@@ -110,6 +111,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.27 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: User.h,v 1.28 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

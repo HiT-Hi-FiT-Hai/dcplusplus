@@ -30,7 +30,7 @@
 
 #include "Util.h"
 
-
+#include "SettingsManager.h"
 #include "StringSearch.h"
 #include "StringTokenizer.h"
 
@@ -280,6 +280,9 @@ public:
 	void Load();
 	void Save();
 
+	// Settings
+	GETSET(bool, breakOnFirst, BreakOnFirst);		
+
 	// Search for file match
 	void MatchesFile(DirectoryListing::File *currentFile, string& fullPath)
 	{
@@ -315,6 +318,11 @@ public:
 				copyFile->setAdls(true);
 				destDirVector[is->ddIndex].dir->files.push_back(copyFile);
 				destDirVector[is->ddIndex].fileAdded = true;
+				if(breakOnFirst)
+				{
+					// Found a match, search no more
+					break;
+				}
 			}
 		}
 	}
@@ -352,6 +360,11 @@ public:
 				destDirVector[is->ddIndex].subdir = 
 					new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
 				destDirVector[is->ddIndex].dir->directories.push_back(destDirVector[is->ddIndex].subdir);
+				if(breakOnFirst)
+				{
+					// Found a match, search no more
+					break;
+				}
 			}
 		}
 	}
@@ -424,10 +437,17 @@ public:
 	// Finalize destination directories
 	void FinalizeDestinationDirectories(DirectoryListing::Directory* root)
 	{
+		string szDiscard = "<<<" + STRING(ADL_DISCARD) + ">>>";
+
 		// Add non-empty destination directories to the top level
 		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id)
 		{
 			if(id->dir->files.size() == 0 && id->dir->directories.size() == 0)
+			{
+				delete (id->dir);
+			}
+			else
+			if(Util::stricmp(id->dir->getName(), szDiscard) == 0)
 			{
 				delete (id->dir);
 			}
@@ -457,5 +477,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.5 2003/05/28 11:53:04 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.6 2003/07/15 14:53:10 arnetheduck Exp $
  */

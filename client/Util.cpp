@@ -175,7 +175,7 @@ string Util::validateMessage(string tmp, bool reverse) {
 static const char badChars[] = { 
 	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
 		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-		31, '<', '>', '/', '"', '|',0
+		31, '<', '>', '/', '"', '|', '?', '*', 0
 };
 
 /**
@@ -444,19 +444,27 @@ string Util::getOsVersion() {
 				os = "Win2000";
 			} else if(ver.dwMinorVersion == 1) {
 				os = "WinXP";
+			} else if(ver.dwMinorVersion == 2) {
+				os = "Win2003";
+			} else {
+				os = "Unknown WinNT5";
 			}
 
-			if(ver.wProductType == VER_NT_WORKSTATION)
+			if(ver.wProductType & VER_NT_WORKSTATION)
 				os += " Pro";
-			else if(ver.wProductType == VER_NT_SERVER)
+			else if(ver.wProductType & VER_NT_SERVER)
 				os += " Server";
-			else if(ver.wProductType == VER_NT_DOMAIN_CONTROLLER)
+			else if(ver.wProductType & VER_NT_DOMAIN_CONTROLLER)
 				os += " DC";
 		}
 
-		if(ver.szCSDVersion[0] != 0) {
-			os += " ";
-			os += ver.szCSDVersion;
+		if(ver.wServicePackMajor != 0) {
+			os += "SP";
+			os += Util::toString(ver.wServicePackMajor);
+			if(ver.wServicePackMinor != 0) {
+				os += '.';
+				os += Util::toString(ver.wServicePackMinor);
+			}
 		}
 	}
 
@@ -474,9 +482,8 @@ string Util::getOsVersion() {
 #endif // WIN32
 }
 
-
 /**
  * @file
- * $Id: Util.cpp,v 1.25 2003/05/28 11:53:04 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.26 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

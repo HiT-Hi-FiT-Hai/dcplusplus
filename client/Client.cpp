@@ -25,20 +25,18 @@
 #include "SearchManager.h"
 #include "ShareManager.h"
 
-Client::Counts Client::counts = { 0, 0, 0 };
+Client::Counts Client::counts;
 
 Client::~Client() throw() {
 	TimerManager::getInstance()->removeListener(this);
+	socket->removeListener(this);
 	removeListeners();
-
-	if(socket) {
-		socket->removeListener(this);
-		BufferedSocket::putSocket(socket);
-		socket = NULL;
-	}
 
 	clearUsers();
 	updateCounts(true);
+
+	BufferedSocket::putSocket(socket);
+	socket = NULL;
 };
 
 void Client::updateCounts(bool aRemove) {
@@ -80,18 +78,12 @@ void Client::connect() {
 	registered = false;
 	reconnect = true;
 
-	if(!socket) {
-		socket = BufferedSocket::getSocket('|');
-	}
-	
 	if(socket->isConnected()) {
 		disconnect();
 	}
 
 	state = STATE_LOCK;
 
-	socket->addListener(this);
-	fire(ClientListener::CONNECTING, this);
 	socket->connect(server, port);
 }
 
@@ -251,7 +243,17 @@ void Client::onLine(const string& aLine) throw() {
 		j = param.find('$', i);
 		if(j == string::npos)
 			return;
-		u->setDescription(Util::validateMessage(param.substr(i, j-i), true));
+		string tmpDesc = Util::validateMessage(param.substr(i, j-i), true);
+		// Look for a tag...
+		if(tmpDesc.size() > 0 && tmpDesc[tmpDesc.size()-1] == '>') {
+			string::size_type x = tmpDesc.rfind('<');
+			if(x != string::npos) {
+				// Hm, we have something...
+				u->setTag(tmpDesc.substr(x));
+				tmpDesc.erase(x);
+			}
+		}
+		u->setDescription(tmpDesc);
 		i = j + 3;
 		j = param.find('$', i);
 		if(j == string::npos)
@@ -491,10 +493,10 @@ void Client::myInfo() {
 	string tmp5 = "+N9";
 	string::size_type i;
 	
-	for(i = 0; i < tmp1.size(); i++) {
+	for(i = 0; i < 6; i++) {
 		tmp1[i]++;
 	}
-	for(i = 0; i < tmp2.size(); i++) {
+	for(i = 0; i < 3; i++) {
 		tmp2[i]++; tmp3[i]++; tmp4[i]++; tmp5[i]++;
 	}
 	char modeChar = '?';
@@ -507,8 +509,7 @@ void Client::myInfo() {
 	
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	send("$MyINFO $ALL " + Util::validateNick(getNick()) + " " + Util::validateMessage(getDescription(), false) + 
-		tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
-		tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
+		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(CONNECTION) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|");
 }
@@ -518,11 +519,7 @@ void Client::disconnect() throw() {
 	socket->disconnect();
 	{ 
 		Lock l(cs);
-		
-		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
-			ClientManager::getInstance()->putUserOffline(i->second);
-		}
-		users.clear();
+		clearUsers();
 	}
 }
 
@@ -640,6 +637,8 @@ void Client::onAction(BufferedSocketListener::Types type, const string& aLine) t
 
 void Client::onAction(BufferedSocketListener::Types type) throw() {
 	switch(type) {
+	case BufferedSocketListener::CONNECTING:
+		fire(ClientListener::CONNECTING, this); break;
 	case BufferedSocketListener::CONNECTED:
 		lastActivity = GET_TICK();
 		fire(ClientListener::CONNECTED, this);
@@ -651,6 +650,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.52 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.53 2003/07/15 14:53:10 arnetheduck Exp $
  */
 

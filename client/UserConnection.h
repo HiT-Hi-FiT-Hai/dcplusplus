@@ -207,21 +207,11 @@ public:
 	void setLineMode() { dcassert(socket); socket->setLineMode(); };
 
 	void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
-		if(socket == NULL) {
-			socket = BufferedSocket::getSocket('|');
-			socket->addListener(this);
-		}
-		
 		socket->connect(aServer, aPort);
 	}
 	
 	void UserConnection::accept(const ServerSocket& aServer) throw(SocketException) {
-		if(socket != NULL) {
-			socket->removeListener(this);
-			BufferedSocket::putSocket(socket);
-			socket = NULL;
-		}
-		socket = BufferedSocket::accept(aServer, '|', this);
+		socket->accept(aServer);
 	}
 	
 	void disconnect() { if(socket) socket->disconnect(); };
@@ -258,14 +248,16 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection() : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL) { };
+	UserConnection() throw(SocketException) : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), 
+		socket(BufferedSocket::getSocket('|')), download(NULL) { 
+		
+		socket->addListener(this);
+	};
 
 	virtual ~UserConnection() {
-		if(socket != NULL) {
-			socket->removeListener(this);
-			BufferedSocket::putSocket(socket);
-		}
+		socket->removeListener(this);
 		removeListeners();
+		BufferedSocket::putSocket(socket);
 	};
 	friend struct DeleteFunction<UserConnection*>;
 
@@ -293,6 +285,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.54 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.55 2003/07/15 14:53:11 arnetheduck Exp $
  */
 

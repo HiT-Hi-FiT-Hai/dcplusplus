@@ -107,7 +107,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 			string name = aSeeker.substr(4);
 			// Good, we have a passive seeker, those are easier...
 			string str;
-			char* buf = new char[1024];
+			char* buf = new char[4096];
 			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 				SearchResult* sr = *i;
 				if(sr->getType() == SearchResult::TYPE_FILE) {
@@ -129,7 +129,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				aClient->searchResults(str);
 			
 		} else {
-			char* buf = new char[2048];
+			char* buf = new char[4096];
 
 			try {
 				string ip, file;
@@ -298,22 +298,23 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) throw() {
 	switch(type) {
-	case ClientListener::NICK_LIST:		// Fall through...
+	case ClientListener::NICK_LIST:
+		{
+			string tmp;
+			// Let's assume 16 bytes / getinfo...
+			tmp.reserve(aList.size() * 16); 
+			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+				tmp += "$GetINFO " + (*i)->getNick() + '|';
+			}
+			if(!tmp.empty()) {
+				client->send(tmp);
+			}
+		} break;
 	case ClientListener::OP_LIST:
 		{
 			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				// Make sure we're indeed connected (if the server resets on the first getInfo, 
-				// we'll keep on trying aNicks.size times...not good...)
-				if(!client->isConnected()) {
-					break;
-				}
-				
-				if(type == OP_LIST) {
-					if((*i)->getNick() == client->getNick())
-						client->setOp(true);
-				} else {
-					client->getInfo(*i);
-				}
+				if((*i)->getNick() == client->getNick())
+					client->setOp(true);
 			}
 		}
 		break;
@@ -343,6 +344,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.34 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.35 2003/07/15 14:53:10 arnetheduck Exp $
  */
-

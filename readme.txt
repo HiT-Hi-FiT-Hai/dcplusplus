@@ -2,7 +2,7 @@ DC++ 0.24 Readme
 
 --------------------------------------------------
 DC++
-Copyright (C) 2001-2002 Jacek Sieka, jacek@creatio.se
+Copyright (C) 2001-2003 Jacek Sieka, jacek@creatio.se
 
 License
 
@@ -25,6 +25,8 @@ This Readme will give you a quick startup guide and explain some features
 that are NOT obvious :)
 So this is especially for NMDC upgraders.
 Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
+There you can also find a FAQ (Frequenty Asked Questions) and a forum
+(http://dcplusplus.sf.net/forum).
 
 Contents
 --------
@@ -42,7 +44,10 @@ Contents
 
  1 Installation
 ---------------
-  DC++ got a regular installer now ...
+
+  Just run the installer and fire it up, then enter the settings to set it up according to your
+  preferences (most important is nick, download location and shared folders).
+
   version without installer available at http://sourceforge.net/projects/dcplusplus
 
  2 Upgrade
@@ -61,7 +66,7 @@ Contents
  3 Uninstall
 ------------
   There is an uninstaller as well ...
-  If you didn't use the isntaller: Just delete the folder, there are no .dll's or registry settings :)
+  If you didn't use the installer: Just delete the folder, there are no .dll's or registry settings :)
 
  4 Available commands (type in main chat or pm)
 ----------------------------------------
@@ -96,7 +101,7 @@ Contents
     Active:              The usual connection mode, you can specify your IP
                           if detection fails and a port of your choice if you need to.
                           This mode will use a random port between 1025 and 32000
-                          chosen anew on restart if nothin is set in settings.
+                          chosen anew on restart if nothing is set in settings.
     Passive:             Compatibility connection mode for users behind
                           Firewalls they can't change to let DC++
                           connections trough.

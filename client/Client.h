@@ -84,7 +84,7 @@ public:
 	User::NickMap& lockUserList() throw() { cs.enter(); return users; };
 	void unlockUserList() throw() { cs.leave(); };
 
-	bool isConnected() { if(!socket) return false; else return socket->isConnected(); };
+	bool isConnected() { return socket->isConnected(); };
 	void disconnect() throw();
 	void myInfo();
 	
@@ -172,7 +172,7 @@ public:
 		return string(buf, sprintf(buf, "%d/%d/%d", counts.normal, counts.registered, counts.op));
 	}
 
-	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
+	const string& getIp() {	return socket->getIp().empty() ? server : socket->getIp(); };
 	const short getPort() { return port; }
 	
 	string getLocalIp() { 
@@ -186,15 +186,16 @@ public:
 			return Util::getLocalIp();
 		return tmp;
 	}
+
+	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
+	void setDescription(const string& aDesc) { description = aDesc; };
+
 	GETSETREF(string, nick, Nick);
+	GETSETREF(string, defpassword, Password);
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
-	GETSETREF(string, defpassword, Password);
-	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
-	void setDescription(const string& aDesc) { description = aDesc; };
 private:
-	string description;
 	enum States {
 		STATE_CONNECT,
 		STATE_LOCK,
@@ -211,8 +212,11 @@ private:
 
 	string server;
 	short port;
-	BufferedSocket* socket;
+
 	string name;
+	string description;
+
+	BufferedSocket* socket;
 	u_int32_t lastActivity;
 
 	CriticalSection cs;
@@ -220,6 +224,7 @@ private:
 	User::NickMap users;
 
 	struct Counts {
+		Counts(long n = 0, long r = 0, long o = 0) : normal(n), registered(r), op(o) { };
 		long normal;
 		long registered;
 		long op;
@@ -241,9 +246,12 @@ private:
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), 
-		lastActivity(GET_TICK()), countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
+	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), 
+		socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
+		countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
+		socket->addListener(this);
+	
 	};
 	
 	virtual ~Client() throw();
@@ -274,6 +282,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.66 2003/06/20 10:49:27 arnetheduck Exp $
+ * $Id: Client.h,v 1.67 2003/07/15 14:53:10 arnetheduck Exp $
  */
 
