@@ -67,6 +67,7 @@
 		<String Name="Destination">Destination</String>
 		<String Name="Directory">Directory</String>
 		<String Name="DirectoryAlreadyShared">Directory already shared</String>
+		<String Name="DirectoryAddError">Directory or directory name already exists</String>
 		<String Name="DiscFull">Disk full(?)</String>
 		<String Name="DisconnectUser">Disconnect user(s)</String>
 		<String Name="Disconnected">Disconnected</String>
@@ -103,6 +104,8 @@
 		<String Name="Executable">Executable</String>
 		<String Name="FavJoinShowingOff">Join/part of favorite users showing off</String>
 		<String Name="FavJoinShowingOn">Join/part of favorite users showing on</String>
+		<String Name="FavoriteDirName">Favorite name</String>
+		<String Name="FavoriteDirNameLong">Under what name you see the directory</String>
 		<String Name="FavoriteHubAdded">Favorite hub added</String>
 		<String Name="FavoriteHubIdentity">Identification (leave blank for defaults)</String>
 		<String Name="FavoriteHubProperties">Favorite Hub Properties</String>
@@ -354,6 +357,8 @@
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate €€€:s! (ok, dirty dollars are fine as well =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
+		<String Name="SettingsFavoriteDirsPage">Downloads\\Download to</String>
+		<String Name="SettingsFavoriteDirs">Favorite download to directories</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>

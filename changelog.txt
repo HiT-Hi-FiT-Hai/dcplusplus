@@ -1,4 +1,4 @@
-﻿-- 0.4035 --
+﻿-- 0.666 2004-11-03 --
 * Fixed copy nick to clipboard (thanks trem) [bug 173]
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)
