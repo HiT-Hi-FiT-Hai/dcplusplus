@@ -743,8 +743,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,6,6,7
- PRODUCTVERSION 0,6,6,7
+ FILEVERSION 0,6,7,0
+ PRODUCTVERSION 0,6,7,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -761,12 +761,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 6, 6, 7"
+            VALUE "FileVersion", "0, 6, 7, 0"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2005 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 6, 6, 7"
+            VALUE "ProductVersion", "0, 6, 7, 0"
         END
     END
     BLOCK "VarFileInfo"
