@@ -60,6 +60,7 @@ FlatTabCtrl* WinUtil::tabCtrl = NULL;
 HHOOK WinUtil::hook = NULL;
 tstring WinUtil::tth;
 StringPairList WinUtil::initialDirs;
+DWORD WinUtil::helpCookie = 0;
 
 HLSCOLOR RGB2HLS (COLORREF rgb) {
 	unsigned char minval = min(GetRValue(rgb), min(GetGValue(rgb), GetBValue(rgb)));
@@ -248,6 +249,8 @@ void WinUtil::init(HWND hWnd) {
 	CMenuHandle help;
 	help.CreatePopupMenu();
 
+	help.AppendMenu(MF_STRING, IDC_HELP_CONTENTS, CTSTRING(MENU_CONTENTS));
+	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_README, CTSTRING(MENU_README));
 	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CTSTRING(MENU_CHANGELOG));
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CTSTRING(MENU_ABOUT));
@@ -304,9 +307,13 @@ void WinUtil::init(HWND hWnd) {
 	registerMagnetHandler();
 
 	hook = SetWindowsHookEx(WH_KEYBOARD, &KeyboardProc, NULL, GetCurrentThreadId());
+
+	HtmlHelp(NULL, NULL, HH_INITIALIZE, (DWORD)&helpCookie);
 }
 
 void WinUtil::uninit() {
+	HtmlHelp(NULL, NULL, HH_UNINITIALIZE, helpCookie);
+
 	fileImages.Destroy();
 	userImages.Destroy();
 	::DeleteObject(font);
@@ -556,17 +563,16 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 		if(param.empty()) {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		} else {
-			WinUtil::openLink(_T("http://www.google.com/search?q=") + param);
+			WinUtil::openLink(_T("http://www.google.com/search?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("imdb")) == 0) {
 		if(param.empty()) {
 			status = TSTRING(SPECIFY_SEARCH_STRING);
 		} else {
-			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + param);
+			WinUtil::openLink(_T("http://www.imdb.com/find?q=") + Text::toT(Util::encodeURI(Text::fromT(param))));
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("rebuild")) == 0) {
 		HashManager::getInstance()->rebuild();
-		status = TSTRING(HASH_REBUILT);
 	} else {
 		return false;
 	}
@@ -944,5 +950,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.60 2004/09/26 07:55:35 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.61 2004/09/27 12:02:44 arnetheduck Exp $
  */

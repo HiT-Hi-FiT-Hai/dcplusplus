@@ -25,12 +25,6 @@
 
 #include "../client/SettingsManager.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
-
 PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES }, 
 	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_DOWNLOAD_DIRECTORY },
@@ -116,7 +110,17 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 	return 0;
 }
 
+LRESULT DownloadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_DOWNLOADPAGE);
+	return 0;
+}
+
+LRESULT DownloadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_DOWNLOADPAGE);
+	return 0;
+}
+
 /**
  * @file
- * $Id: DownloadPage.cpp,v 1.12 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.13 2004/09/27 12:02:42 arnetheduck Exp $
  */

@@ -49,6 +49,7 @@
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
 #define IDC_DESCRIPTION                 1003
+#define IDC_HELP_CONTENTS               1004
 #define IDC_CONNECTION                  1005
 #define IDC_USERS                       1006
 #define IDC_ACTIVE                      1006

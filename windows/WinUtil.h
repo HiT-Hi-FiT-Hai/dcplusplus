@@ -152,6 +152,7 @@ public:
 	static HHOOK hook;
 	static tstring tth;
 	static StringPairList initialDirs;
+	static DWORD helpCookie;
 
 	static void init(HWND hWnd);
 	static void uninit();
@@ -236,6 +237,10 @@ public:
 	
 	static tstring encodeFont(LOGFONT const& font);
 	
+	static tstring getHelpFile() {
+		return Text::toT(Util::getAppPath() + "DCPlusPlus.chm");
+	}
+
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
@@ -290,5 +295,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.35 2004/09/26 07:55:35 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.36 2004/09/27 12:02:44 arnetheduck Exp $
  */

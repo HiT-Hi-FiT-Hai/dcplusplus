@@ -198,6 +198,7 @@
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuChangelog">Change Log</String>
+		<String Name="MenuContents">Help &amp;Contents	F1</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
 		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads</String>

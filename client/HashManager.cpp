@@ -443,6 +443,13 @@ int HashManager::Hasher::run() {
 		s.wait();
 		if(stop)
 			break;
+		if(rebuild) {
+			Lock l(cs);
+			HashManager::getInstance()->store.rebuild();
+			rebuild = false;
+			LogManager::getInstance()->message(STRING(HASH_REBUILT));
+			continue;
+		}
 		{
 			Lock l(cs);
 			if(!w.empty()) {
@@ -542,5 +549,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.25 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.26 2004/09/27 12:02:33 arnetheduck Exp $
  */

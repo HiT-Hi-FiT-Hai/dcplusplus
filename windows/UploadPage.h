@@ -23,14 +23,17 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <atlcrack.h>
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
+#include "WinUtil.h"
 
 class UploadPage : public CPropertyPage<IDD_UPLOADPAGE>, public PropPage
 {
 public:
 	UploadPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_UPLOADS));
+		m_psp.dwFlags |= PSP_HASHELP;
 	};
 	~UploadPage() {
 		ctrlDirectories.Detach();
@@ -40,23 +43,26 @@ public:
 	BEGIN_MSG_MAP(UploadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_DROPFILES, onDropFiles)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemchangedDirectories)
 		COMMAND_ID_HANDLER(IDC_ADD, onClickedAdd)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onClickedRemove)
 		COMMAND_ID_HANDLER(IDC_SHAREHIDDEN, onClickedShareHidden)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onDropFiles(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT onClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedShareHidden(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onItemchangedDirectories(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+	LRESULT onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
 	virtual void write();
-	virtual void setTitle(const tstring& t) { SetTitle(t.c_str()); };
 	
 protected:
 	static Item items[];
@@ -71,6 +77,6 @@ protected:
 
 /**
  * @file
- * $Id: UploadPage.h,v 1.12 2004/09/13 14:58:33 arnetheduck Exp $
+ * $Id: UploadPage.h,v 1.13 2004/09/27 12:02:44 arnetheduck Exp $
  */
 

@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv="content-type">
+  <link href="office11.css" rel="stylesheet" type="text/css">
+  <title>User Commands</title>
+</head>
+<body>
+<h1>User Commands</h1>
+<h2>Command Types:</h2>
+<dl style="margin-left: 40px;">
+  <dt>Separator</dt>
+  <dd>Adds a separator to the menu</dd>
+  <dt>Raw</dt>
+  <dd>Sends raw command to the hub (experts only, end it with '|'!)</dd>
+  <dt>Chat</dt>
+  <dd>Sends command as if you were typing it in the chat</dd>
+  <dt>PM</dt>
+  <dd>Sends command as if you sent it by pm</dd>
+</dl>
+<h2>Context</h2>
+Contexts determine where the command is shown.<br>
+<dl style="margin-left: 40px;">
+  <dt>Hub Menu</dt>
+  <dd>Hub tab (at the bottom of the screen) right-click menu</dd>
+  <dt>Chat Menu<br>
+  </dt>
+  <dd>User right-click menu in chat and PM tab menu</dd>
+  <dt>Search Menu</dt>
+  <dd>Search right-click menu<br>
+  </dd>
+</dl>
+<h2>Parameters</h2>
+<dl style="margin-left: 40px;">
+  <dt>Name</dt>
+  <dd>Name (use '\' to create submenus)</dd>
+  <dt>Command</dt>
+  <dd>Command text (may contain any of the variables listed below)</dd>
+  <dt>Hub<br>
+  </dt>
+  <dd>Hub ip as typed when connecting (empty = all hubs, "op" = hubs
+where you're op)</dd>
+  <dt>To</dt>
+  <dd>Private Message recipient</dd>
+  <dt>Only once</dt>
+  <dd>Send only once per user from search frame</dd>
+</dl>
+<h2>Variables</h2>
+In the parameters, you can use %[<span style="font-weight: bold;">xxx</span>]
+variables and <a href="settings_logs_and_sound.html">date/time
+specifiers</a> (%Y, %m, ...).&nbsp; The following variables are also
+available:<br>
+<ul style="margin-left: 40px;">
+  <li>%[mynick]: your own nick</li>
+  <li>%[nick]: the user's nick (user &amp; search context only)</li>
+  <li>%[tag]: user tag (user &amp; search context only)</li>
+  <li>%[description]: user description (user &amp; search context only)</li>
+  <li>%[email]: user email (user &amp;&amp; search context only)</li>
+  <li>%[share]: user shared bytes (exact) (user &amp;&amp; search
+context only)</li>
+  <li>%[shareshort]: user shared bytes (formatted) (user &amp;&amp;
+search context only)</li>
+  <li>%[ip]: user ip (if supported by hub)</li>
+  <li>%[file]: filename (search context only)</li>
+  <li>%[filesize]: file size (search context only)</li>
+  <li>%[filesizeshort]: file size, short version including units
+(search context only)<br>
+  </li>
+  <li>%[line:reason]: opens up a window asking for "reason"</li>
+  <li>%[mycid]: your ADC CID<br>
+  </li>
+  <li>%[cid]: user's ADC CID<br>
+  </li>
+</ul>
+</body>
+</html>

@@ -46,7 +46,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
-				AdditionalDependencies="unicows.lib kernel32.lib advapi32.lib user32.lib comctl32.lib Ws2_32.lib"
+				AdditionalDependencies="htmlhelp.lib unicows.lib kernel32.lib advapi32.lib user32.lib comctl32.lib Ws2_32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -121,8 +121,8 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
-				AdditionalDependencies="unicows.lib comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
+				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
+				AdditionalDependencies="htmlhelp.lib unicows.lib comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib"
 				OutputFile="./App/DCPlusPlus.exe"
 				Version=""
 				LinkIncremental="1"

@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <atlcrack.h>
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
@@ -31,6 +32,7 @@ class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
 public:
 	AdvancedPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_ADVANCED));
+		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
 	virtual ~AdvancedPage() { 
@@ -38,9 +40,13 @@ public:
 
 	BEGIN_MSG_MAP(AdvancedPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 	END_MSG_MAP()
 
-	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -57,6 +63,6 @@ protected:
 
 /**
  * @file
- * $Id: AdvancedPage.h,v 1.9 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: AdvancedPage.h,v 1.10 2004/09/27 12:02:42 arnetheduck Exp $
  */
 

@@ -23,30 +23,35 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include <atlcrack.h>
 #include "PropPage.h"
-#include "atldlgs.h"
 
 class GeneralPage : public CPropertyPage<IDD_GENERALPAGE>, public PropPage
 {
 public:
 	GeneralPage(SettingsManager *s) : PropPage(s) { 
 		SetTitle(CTSTRING(SETTINGS_GENERAL));
+		m_psp.dwFlags |= PSP_HASHELP;
 	};
 	virtual ~GeneralPage() { };
 
 	BEGIN_MSG_MAP(GeneralPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_ACTIVE, onClickedActive)
 		COMMAND_ID_HANDLER(IDC_PASSIVE, onClickedActive)
 		COMMAND_ID_HANDLER(IDC_SOCKS5, onClickedActive)
 		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_EMAIL, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_DESCRIPTION, EN_CHANGE, onTextChanged)
+		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onTextChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -65,6 +70,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.10 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.11 2004/09/27 12:02:42 arnetheduck Exp $
  */
 

@@ -1,4 +1,4 @@
--- 0.4033 --
+﻿-- 0.4033 --
 *** WARNING *** 
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version
@@ -49,7 +49,7 @@ international filenames in it - they will not be correctly converted.
 * Fixed a crash issue with invalid DcLst:s (thanks garg)
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
-
+* Added Help file - make sure you read it (thanks garg)
 	
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists

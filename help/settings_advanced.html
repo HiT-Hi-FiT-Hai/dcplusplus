@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <title>Advanced</title>
+  <meta http-equiv="content-type" content="text/html; charset=us-ascii">
+  <link href="office11.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+<h1>Advanced</h1>
+<h2>Numeric Options</h2>
+<dl>
+  <dd>
+    <dl>
+      <dt>Rollback</dt>
+      <dd>Measured in bytes. (default: 4096)</dd>
+      <dt>Max Hash Speed</dt>
+      <dd>Measured in megabytes per second. (no default)</dd>
+      <dt>Write Buffer Size</dt>
+      <dd>Measured in kilobytes. (default: 16)</dd>
+      <dt>Max Tab Rows</dt>
+      <dd>The maximum number of rows of tabs that DC++ will make. Any
+tabs that do not fit will be accessible through the chevron at the
+right of the tab control. (default: 2)</dd>
+    </dl>
+  </dd>
+</dl>
+<h2>Boolean Options</h2>
+<div style="margin-left: 40px;">
+<dl>
+  <dt>Auto-away on Minimize</dt>
+  <dd>Switch to away mode whenever the client is minimized (and to back
+whenever restored).</dd>
+  <dt>Automatically Follow Redirects</dt>
+  <dd>A connected hub can send out a redirect request, asking your
+client to disconnect from the current hub and joining another one.
+Enable this to automatically join that other hub. (You will be
+disconnected from the current hub no matter what.) If you leave it
+disabled, you can use the Follow Redirect button to manually follow the
+redirect.</dd>
+  <dt>Clear Search Box After Each Search</dt>
+  <dd>After each search, your search terms will be cleared. The last 10
+terms will be accessible through the drop-down.</dd>
+  <dt>Open the Public Hubs Window at Startup</dt>
+  <dd>Opens the Public Hub window at startup, and automatically
+downloads the <a href="settings_downloads.html">configured public hub
+list</a>.</dd>
+  <dt>Open the Download Queue Window at Startup</dt>
+  <dd>Shows the Download Queue window at startup.</dd>
+  <dt>Open the Favorite Hubs Window at Startup</dt>
+  <dd>Shows the Favorite Hubs window at startup.</dd>
+  <dt>Open the Finished Downloads Window at Startup</dt>
+  <dd>Shows the Finished Downloads window at startup.</dd>
+  <dt>Automatically Search for Alternative Download Locations</dt>
+  <dd>Every few minutes, the client will search for files in your
+Download Queue to find more download locations (more users/sources). If
+the download was started with a TTH root hash available, the autosearch
+will find exact matches by searching via hash. Otherwise, the
+autosearch will try to find matches by searching with a slightly
+modified version of the filename.</dd>
+  <dt>Open Private Messages in Their Own Window</dt>
+  <dd>If you disable this option, a private message from a user appears
+as a status line in main chat instead of in a separate window. This
+could cause you to miss some messages if you don't check the chat
+regularly. <span style="font-style: italic;">You may not care much for
+private messages from other users. Ignoring them however, not only
+lessens the (user-friendly) Direct Connect experience, but is not
+always wise because failing to reply to a message from an Operator can
+get you kicked or, in the worst case, permanently banned from that hub.</span></dd>
+  <dt>Ignore Private Messages From Offline Users</dt>
+  <dd>Enable this if you wish to ignore private messages from users
+that are not online on the hub. These messages originate from hub bots
+and generally contain useful information, like hub specific rules or
+warnings.</dd>
+  <dt>Open Private Messages From Offline Users in Their Own Window</dt>
+  <dd>Enable this if you want messages from hub bots in their own
+window. When disabled they get sent as a status message in main chat
+instead which is less annoying yet still informative. <span
+ style="font-style: italic;">This option only matters if you're not
+ignoring private messages from offline users (previous option).</span></dd>
+  <dt>Open New File List Windows in the Background</dt>
+  <dd>Keep this disabled if you want newly downloaded filelists to pop
+up in front of other windows. <span style="font-style: italic;">It can
+be very annoying to have a new window pop up when you're typing
+something.</span></dd>
+  <dt>Open New Private Message Windows in the Background</dt>
+  <dd>Keep this disabled if you want new private messages filelists to
+pop up in front of other windows.</dd>
+  <dt>Keep Duplicate Files in Your File List</dt>
+  <dd>Decides whether to remove duplicate files from your share or to
+list them but subtract their size from your total reported share size.
+Duplicate files never count towards your share size, no matter what
+this is set to.</dd>
+  <dt>Register with Windows to Handle dchub:// URL Links</dt>
+  <dd>When set, DC++ will be the default handler for all dchub://
+links. These links can appear on web pages, internet shortcuts on your
+computer, or be&nbsp;typed and run as a program from
+the&nbsp;Start&nbsp;Menu. Disable this if you prefer for a different
+application to handle Direct Connect hub links.</dd>
+  <dt>Register with Windows to Handle manget: URI Links</dt>
+  <dd>When set, DC++ will register itself to handle magnet: links.
+These links will let you search the Direct Connect network for a file
+matching a given file hash, given that the magnet link contains
+information appropriate for the Direct Connect network. DC++ uses
+Magnethandler to give a choice between supported P2P applications when
+magnet.exe is installed on the system or is located in the
+application's directory.</dd>
+  <dt>Use Small Send Buffer</dt>
+  <dd>Enable this option if download speeds slow down when uploading
+files. Users on asynchronous lines with less upstream than downstream
+will often notice this. Acknowledgement packets for incoming data have
+to wait in line between the outgoing data. This results in slower
+sending of acknowledgements packets resulting in a slowdown in the
+incoming data transfer. Enabling this option will break the outgoing
+data up into smaller packets so acknowledgement packets can get through
+more quickly.</dd>
+  <dt>Don't Delete File Lists When Exiting</dt>
+  <dd>If this option is disabled, DC++ will delete the contents of the
+FileLists directory, where file lists are stored, when
+exiting.&nbsp;However, you can open already downloaded filelists
+instead of downloading them again. These file lists have a chance of
+being out of date, but for users on slow connections, keeping file
+lists can save time. <em>Since the file list isn't curent, don't be
+surprised if the files you enqueue to download have been removed by the
+user, or moved.</em></dd>
+  <dt>Automatically Disconnect Users Who Leave the Hub</dt>
+  <dd>The Direct Connect spirit is all about sharing. You are only
+sharing when you are connected to one or more hubs. In the past, users
+of questionable integrity and spirit logged onto a hub, selected a
+download, and disconnected from the hub again. If everyone did that,
+there would be nothing to download. Enable this option to avert that
+kind of behaviour. <em>Note that you might need to disable this option
+if you're connected to a hub that has a bad connection. The user will
+regain his/her slot if he/she reconnects within 10 minutes, but you
+might have opened up another slot for another user in the mean time.
+This could cause a situation where you have way more upload slots in
+use than you selected in the settings. Also, if you quit the hub,
+people downloading from you will not be disconnected.</em></dd>
+  <dt>Show Progress Bars for Transfers</dt>
+  <dd>Enable this if you have CPU cycles to spare, and you will get
+colored progress bars in the Transfer View.</dd>
+  <dt>Enable Automatic SFV Checking</dt>
+  <dd>Simple File Verification (SFV) is a scheme in which a set of
+files are accompanied by a so-called sfv-file which contains CRC32
+checksums of each file. If there is an sfv-file included, DC++ will
+check that your download is free of corruption and retry the download
+that wasn't the case.</dd>
+  <dt>Automatically Refresh Share List Every Hour</dt>
+  <dd>If you have a dynamic share (files getting added, moved or
+deleted all the time) enabling this option is a must. Your filelist
+will be refreshed every hour, keeping the users on the hub up to date
+with your current share. <span style="font-style: italic;">Disabling
+this option is really only needed for really large shares where
+refreshing takes so much time that the client is unusable in the mean
+time.</span></dd>
+  <dt>Use AntiFragmentation Method for Downloads</dt>
+  <dd>This option will try to reserve the full space needed for a file
+when starting the download. This should reduce the fragmentation of
+files on your hard drive. (Fragmentation is bad because reading files
+from your drive will take longer because the drive head has to hop from
+place to place instead of reading in a continuous fashion.) <span
+ style="font-style: italic;">Enable if unsure. The drawbacks are a
+short pause at the start of every download during which the drive space
+is reserved, less drive space being available while you are
+downloading, and possibly losing progress on your download if Windows
+crashes and DC++ cannot exit cleanly.</span></dd>
+  <dt>Don't Send the Away Message to Bots</dt>
+  <dd>When in away mode, don't send the away message to users that
+appear to be bots. Having this option disabled is very annoying if you
+get messages from bots that link chat from multiple users (the most
+well known example is the Operator Chat facility found in many hubs).
+Users are judged to be bots if they have an empty Connection type. <span
+ style="font-style: italic;">Enable if unsure.</span></dd>
+  <dt>Skip Zero-Byte Files</dt>
+  <dd>When this option is enabled, any zero byte files you try to
+download will be silently skipped. Sometimes empty files contain
+information through their naming. However every file, even an empty
+one, will consume some drive space.</dd>
+  <dt>Break on First ADLSearch Match</dt>
+  <dd>If you're using the ADLSearch features, keeping this option
+enabled will make a file show up in only the first search it matches.
+If disabled, it may appear multiple times, if it matches more than one
+search.<span style="font-style: italic;">Disable if unsure.</span></dd>
+  <dt>Tab Completion of Nicks in Chat</dt>
+  <dd>You can use the tab key to complete partial (beginnings) of
+nicknames from the main chat text input field (press tab multiple times
+to switch between multiple nicks). A partial nick will also match if
+comes after something between brackets (e.g. "arne&lt;tab&gt;" would
+match "[BBB]arnetheduck").</dd>
+  <dt>Enable Safe and Compressed Transfers</dt>
+  <dd>When transfering data with a compatible client, DC++ will try to
+use ZLIB compression with integrity checks. This uses some CPU cycles,
+but can dramatically speed up transfers of uncompressed files as well
+as ensure file integrity (reduce the chance of corruption to near zero).<span
+ style="font-style: italic;">Enable if unsure.</span></dd>
+  <dt>Accept Custom User Command From Hub</dt>
+  <dd>This option lets you enable or disable DC++'s ability to retrieve
+custom commands from a remote&nbsp;hub. Custom User Commands may show
+when you click on the hub's tab, or on a user in the Transfer View,
+Search Window, or User List, and can enable you to read the rules,
+perform operator functions, interact with hub bots, etcetera.</dd>
+  <dt>Automatically Match Queue for Auto Search Hits</dt>
+  <dd>Enable to automatically download a user's list and match them as
+sources for files in your Download Queue when they've been discovered
+as a source for one of the files you're downloading. If you download
+files in sets, that user is probably a source for many more files
+you're downloading.<span style="font-style: italic;">Enable if unsure.
+The drawbacks are that it might add slower sources, possibly increasing
+the time needed to complete a download, and that you'll download a lot
+of file lists.</span></dd>
+  <dt>Log Filelist transfers</dt>
+  <dd>Add successful file lists transfers&nbsp;to your upload and
+download logs. Otherwise only transferred files are logged. <em>Enabled
+by default.</em></dd>
+  <dt>Send Unknown /commands to the Hub</dt>
+  <dd>Enable this to send <a href="chat_commands.html">/commands</a>
+that DC++ does not recognize to the hub as normal chat.</dd>
+  <dt>Add Finished Files to Share Instantly</dt>
+  <dd>If you download files directly to a shared directory, enabling
+this option will add the files to your share as soon as they're
+finished. Searches will return the file, and users can download it. It
+will not appear in your file list until the next refresh.</dd>
+  <dt>Use UPnP Control</dt>
+  <dd>This option is available on Windows XP and above, with the proper
+services enabled.&nbsp; It will auto-configure the Windows Firewall and
+any UPnP (Universal Plug and Play) routers to enable DC++ to operate in
+active mode without configuring an IP address or port on the <a
+ href="settings_general.html">General Settings</a> page.<br>
+  </dd>
+</dl>
+</div>
+</body>
+</html>

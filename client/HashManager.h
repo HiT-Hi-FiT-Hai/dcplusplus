@@ -87,8 +87,7 @@ public:
 	 * Rebuild hash data file
 	 */
 	void rebuild() {
-		Lock l(cs);
-		store.rebuild();
+		hasher.scheduleRebuild();
 	}
 
 	void startup() {
@@ -108,7 +107,7 @@ private:
 	class Hasher : public Thread {
 	public:
 		enum { MIN_BLOCK_SIZE = 64*1024 };
-		Hasher() : stop(false), running(false), total(0) { }
+		Hasher() : stop(false), running(false), total(0), rebuild(false) { }
 
 		void hashFile(const string& fileName, int64_t size) {
 			Lock l(cs);
@@ -149,6 +148,10 @@ private:
 			stop = true;
 			s.signal();
 		}
+		void scheduleRebuild() {
+			rebuild = true;
+			s.signal();
+		}
 
 	private:
 		// Case-sensitive (faster), it is rather unlikely that case changes, and if it does it's harmless.
@@ -162,6 +165,7 @@ private:
 
 		bool stop;
 		bool running;
+		bool rebuild;
 		int64_t total;
 		string file;
 	};
@@ -255,5 +259,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.17 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.18 2004/09/27 12:02:34 arnetheduck Exp $
  */

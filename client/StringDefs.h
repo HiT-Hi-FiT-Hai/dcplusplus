@@ -202,6 +202,7 @@ enum Strings { // @DontAdd
 	MENU_HELP, // "&Help"
 	MENU_ABOUT, // "About DC++..."
 	MENU_CHANGELOG, // "Change Log"
+	MENU_CONTENTS, // "Help &Contents\tF1"
 	MENU_DISCUSS, // "DC++ discussion forum"
 	MENU_DONATE, // "Donate €€€/$$$ (paypal)"
 	MENU_HELP_DOWNLOADS, // "Downloads"

@@ -25,12 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/HubManager.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "WinUtil.h"
 
 PropPage::TextItem UCPage::texts[] = {
 	{ IDC_MOVE_UP, ResourceManager::MOVE_UP },
@@ -171,9 +166,18 @@ void UCPage::write() {
 	PropPage::write((HWND)*this, items);
 }
 
+LRESULT UCPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	return 0;
+}
+
+LRESULT UCPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	return 0;
+}
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.10 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.11 2004/09/27 12:02:43 arnetheduck Exp $
  */
 

@@ -25,12 +25,7 @@
 
 #include "../client/SettingsManager.h"
 #include "../client/HubManager.h"
-
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+#include "WinUtil.h"
 
 PropPage::TextItem AdvancedPage::texts[] = {
 	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
@@ -103,8 +98,18 @@ void AdvancedPage::write() {
 	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
 }
 
+LRESULT AdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);
+	return 0;
+}
+
+LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED2PAGE);
+	return 0;
+}
+
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.37 2004/09/24 20:48:27 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.38 2004/09/27 12:02:42 arnetheduck Exp $
  */
 

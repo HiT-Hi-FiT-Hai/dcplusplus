@@ -38,6 +38,11 @@ Note 3;	If you have problems, read the forum posts before posting. Somebody else
 	mistake already. The word to note in the last sentence is 'your', so let me articulate a bit more,
 	it works on my computer, so it's yours that is not correctly set up.
 
+Note 4;	To build the HTML Help file, you will need to download and install the HTML Help Workshop 
+	application.  The custom build setup relies on it being installed to the the default path, which 
+	is: "C:\Program Files\HTML Help Workshop\"
+	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/htmlhelp/html/hwMicrosoftHTMLHelpDownloads.asp
+
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...
 
