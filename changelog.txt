@@ -21,6 +21,10 @@
   you with a large number of files in your share, post on the forum if you notice
   any big increase in CPU usage)
 * Added option not to download files already in share (by TTH) (thanks TPO)
+* Help file work (garg, ullner)
+* Added petabytes (PiB) (thanks garg)
+* Clicking on active tab will deactivate it (thanks garg)
+
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)

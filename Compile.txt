@@ -53,8 +53,7 @@ completely random, which just might be the case. Popular reasons for rejecting a
 ugly code, abusable features, feature that I don't like that bloat the applications and incompatibility with other 
 modifications I've already done. 
 To increase the chances of your patch being accepted, mail them to me (j_s@telia.com) as diffs against the latest 
-code you can find (for the moment, it should be the cvs repository on sourceforge, but sometimes I forget to 
-update it, so check the source code distribution of the latest release as well...). You can find a lot of 
+code you can find (in the cvs repository on sourceforge most probably). You can find a lot of 
 information about diff and patch by googling for it. I like unified format (diff -uNr). 
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
 the copyright is split out over a million people, each of which could stop further distribution of DC++. If you don't

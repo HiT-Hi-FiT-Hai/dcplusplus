@@ -153,6 +153,8 @@ private:
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(OutputStream& xmlFile, string& indent, string& tmp2);
 
+		File::Iter findFile(const string& aFile) { return find_if(files.begin(), files.end(), Directory::File::StringComp(aFile)); }
+
 		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 	private:
@@ -221,6 +223,7 @@ private:
 	u_int32_t lastFullUpdate;
 
 	mutable RWLock cs;
+	CriticalSection listGenLock;
 
 	// Map real name to directory structure
 	Directory::Map directories;
@@ -273,6 +276,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.59 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.60 2004/10/17 19:25:23 arnetheduck Exp $
  */
 

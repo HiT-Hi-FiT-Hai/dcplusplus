@@ -296,6 +296,7 @@
 #define IDC_FH_NICK                     1248
 #define IDC_FH_PASSWORD                 1249
 #define IDC_FH_USER_DESC                1250
+#define IDC_USER_CMD_OPEN_HELP          1251
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -332,7 +333,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        240
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1251
+#define _APS_NEXT_CONTROL_VALUE         1252
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

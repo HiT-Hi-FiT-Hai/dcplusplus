@@ -52,7 +52,7 @@ const string SettingsManager::settingTags[] =
 	"MaxCompression", "FinishedDirty", "QueueDirty", "TabDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
-	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
+	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed", "OpenUserCmdHelp",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared",
@@ -154,6 +154,7 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_SYSTEM, false);
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);
+	setDefault(OPEN_USER_CMD_HELP, true);
 	setDefault(GET_USER_COUNTRY, true);
 	setDefault(FAV_SHOW_JOINS, false);
 	setDefault(LOG_STATUS_MESSAGES, false);
@@ -314,6 +315,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.90 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.91 2004/10/17 19:25:23 arnetheduck Exp $
  */
 

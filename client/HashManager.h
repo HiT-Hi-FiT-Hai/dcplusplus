@@ -71,7 +71,7 @@ public:
 	 * Retrieves TTH root or queue's file for hashing.
 	 * @return TTH root if available, otherwise NULL
 	 */
-	TTHValue* getTTH(const string& aFileName);
+	TTHValue* getTTH(const string& aFileName, int64_t aSize);
 
 	bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tt);
 
@@ -259,5 +259,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.18 2004/09/27 12:02:34 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.19 2004/10/17 19:25:23 arnetheduck Exp $
  */

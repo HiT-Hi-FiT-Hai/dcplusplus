@@ -45,6 +45,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	SetDlgItemText(IDC_SETTINGS_TO, CTSTRING(USER_CMD_TO));
 	SetDlgItemText(IDC_SETTINGS_ONCE, CTSTRING(USER_CMD_ONCE));
 	SetDlgItemText(IDC_USER_CMD_PREVIEW, CTSTRING(USER_CMD_PREVIEW));
+	SetDlgItemText(IDC_USER_CMD_OPEN_HELP, CTSTRING(SETTINGS_OPEN_USER_CMD_HELP));
 
 #define ATTACH(id, var) var.Attach(GetDlgItem(id))
 	ATTACH(IDC_RESULT, ctrlResult);
@@ -62,7 +63,11 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ATTACH(IDC_COMMAND, ctrlCommand);
 
 	// launch the help file, instead of having the help in the dialog
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	bool openHelp(BOOLSETTING(OPEN_USER_CMD_HELP));
+	::CheckDlgButton(m_hWnd, IDC_USER_CMD_OPEN_HELP, openHelp);
+	if(openHelp) {
+		HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	}
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
 		ctrlSeparator.SetCheck(BST_CHECKED);
@@ -140,6 +145,7 @@ LRESULT CommandDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		if(type != 0) {
 			type = (ctrlOnce.GetCheck() == BST_CHECKED) ? 2 : 1;
 		}
+		SettingsManager::getInstance()->set(SettingsManager::OPEN_USER_CMD_HELP, IsDlgButtonChecked(IDC_USER_CMD_OPEN_HELP) == BST_CHECKED);
 	}
 	EndDialog(wID);
 	return 0;
@@ -181,5 +187,5 @@ LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.12 2004/10/17 12:51:31 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.13 2004/10/17 19:25:24 arnetheduck Exp $
 */

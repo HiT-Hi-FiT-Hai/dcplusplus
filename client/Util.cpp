@@ -292,8 +292,10 @@ string Util::formatBytes(int64_t aBytes) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0), CSTRING(MB));
 	} else if(aBytes < (int64_t)1024*1024*1024*1024) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0), CSTRING(GB));
-	} else {
+	} else if(aBytes < (int64_t)1024*1024*1024*1024*1024) {
 		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0), CSTRING(TB));
+	} else {
+		sprintf(buf, "%.02f %s", (double)aBytes/(1024.0*1024.0*1024.0*1024.0*1024.0), CSTRING(PIB));
 	}
 
 	return buf;
@@ -846,6 +848,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.70 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.71 2004/10/17 19:25:24 arnetheduck Exp $
  */
 

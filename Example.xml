@@ -73,7 +73,6 @@
 		<String Name="DisconnectedUser">Disconnected user leaving the hub: </String>
 		<String Name="Document">Document</String>
 		<String Name="Done">Done</String>
-		<String Name="DontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="DontShareTempDirectory">The temporary download directory cannot be shared</String>
 		<String Name="Download">Download</String>
 		<String Name="DownloadFailed">Download failed: </String>
@@ -278,6 +277,7 @@
 		<String Name="Path">Path</String>
 		<String Name="Paused">Paused</String>
 		<String Name="PermissionDenied">Permission denied</String>
+		<String Name="Pib">PiB</String>
 		<String Name="Picture">Picture</String>
 		<String Name="Port">Port: </String>
 		<String Name="PortIsBusy">Port %d is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++</String>
@@ -344,6 +344,7 @@
 		<String Name="SettingsConnectionType">Connection Type</String>
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirectories">Directories</String>
+		<String Name="SettingsDontDlAlreadyShared">Don't download files already in share</String>
 		<String Name="SettingsDownloadDirectory">Default download directory</String>
 		<String Name="SettingsDownloadLimits">Limits</String>
 		<String Name="SettingsDownloads">Downloads</String>
