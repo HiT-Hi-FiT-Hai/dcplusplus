@@ -111,7 +111,7 @@ public:
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0), onlyTTH(false), timerID(0)
+		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0), onlyTTH(BOOLSETTING(SEARCH_ONLY_TTH)), timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -484,6 +484,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.52 2005/02/04 14:40:51 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.53 2005/02/19 12:44:30 arnetheduck Exp $
  */
 

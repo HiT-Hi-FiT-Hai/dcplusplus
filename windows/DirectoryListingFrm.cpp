@@ -366,27 +366,24 @@ LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
-	if(ii != NULL) {
-		TTHValue tmp(Text::fromT(ii->getText(COLUMN_TTH)));
-		WinUtil::searchHash(&tmp);
+	if(ii != NULL && ii->type == ItemInfo::FILE && ii->file->getTTH() != NULL) {
+		WinUtil::searchHash(ii->file->getTTH());
 	}
 	return 0;
 }
 
 LRESULT DirectoryListingFrame::onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
-	if(ii != NULL) {
-		TTHValue tmp(Text::fromT(ii->getText(COLUMN_TTH)));
-		WinUtil::bitziLink(&tmp);
+	if(ii != NULL && ii->type == ItemInfo::FILE && ii->file->getTTH() != NULL) {
+		WinUtil::bitziLink(ii->file->getTTH());
 	}
 	return 0;
 }
 
 LRESULT DirectoryListingFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
-	if(ii != NULL) {
-		TTHValue tmp(Text::fromT(ii->getText(COLUMN_TTH)));
-		WinUtil::copyMagnet(&tmp, ii->getText(COLUMN_FILENAME));
+	if(ii != NULL && ii->type == ItemInfo::FILE && ii->file->getTTH() != NULL) {
+		WinUtil::copyMagnet(ii->file->getTTH(), ii->getText(COLUMN_FILENAME));
 	}
 	return 0;
 }
@@ -488,8 +485,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			targetMenu.DeleteMenu(0, MF_BYPOSITION);
 		}
 
-		tstring hash = ii->getText(COLUMN_TTH);
-		if (ctrlList.GetSelectedCount() == 1 && hash.length() == 39) {
+		if (ctrlList.GetSelectedCount() == 1 && ii->type == ItemInfo::FILE && ii->file->getTTH() != NULL) {
 			fileMenu.EnableMenuItem(IDC_SEARCH_ALTERNATES, MF_ENABLED);
 			fileMenu.EnableMenuItem(IDC_BITZI_LOOKUP, MF_ENABLED);
 			fileMenu.EnableMenuItem(IDC_COPY_MAGNET, MF_ENABLED);
@@ -955,5 +951,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.53 2005/02/04 14:40:51 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.54 2005/02/19 12:44:30 arnetheduck Exp $
  */
