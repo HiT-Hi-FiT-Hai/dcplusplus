@@ -7,6 +7,9 @@
 * Fixes to ADC implementation, see http://developer.berlios.de/projects/ddc/ for a 
   somewhat compatible hub in development
 * Some linux patches (thanks tim burton)
+* PgUp/PgDn now scroll the chat window (thanks jonathan stone)
+* Small fix with line history (thanks jonathan stone)
+
 
 -- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)

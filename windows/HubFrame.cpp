@@ -861,6 +861,8 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 					//replace current chat buffer with current command
 					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
 				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
 			} else {
 				bHandled = FALSE;
 			}
@@ -880,9 +882,19 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 					ctrlMessage.SetWindowText(currentCommand.c_str());
 					++curCommandPosition;
 				}
+				// move cursor to end of line
+				ctrlMessage.SetSel(ctrlMessage.GetWindowTextLength(), ctrlMessage.GetWindowTextLength());
 			} else {
 				bHandled = FALSE;
 			}
+
+			break;
+		case VK_PRIOR: // page up
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEUP);
+
+			break;
+		case VK_NEXT: // page down
+			ctrlClient.SendMessage(WM_VSCROLL, SB_PAGEDOWN);
 
 			break;
 		case VK_HOME:
@@ -1108,5 +1120,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.88 2004/11/22 00:13:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.89 2004/11/24 17:22:20 arnetheduck Exp $
  */
