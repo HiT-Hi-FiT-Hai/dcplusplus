@@ -2,7 +2,7 @@
 * Fixed disappearing queue items bug
 * Fixed displaying of upload compression in progress bar
 * Added compression ratio column
-
+* Fixed doubled name when downloading directories from search frame
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)
