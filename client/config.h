@@ -96,6 +96,12 @@ typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
 #endif
 
+#ifdef _MSC_VER
+#define _LL(x) x##I64
+#else
+#define _LL(x) x##LL
+#endif
+
 #ifdef _WIN32
 #define PATH_SEPARATOR '\\'
 #define PATH_SEPARATOR_STR "\\"
@@ -108,5 +114,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.19 2004/01/07 14:14:52 arnetheduck Exp $
+ * $Id: config.h,v 1.20 2004/01/24 20:44:22 arnetheduck Exp $
  */

@@ -71,7 +71,7 @@ public:
 					StringTokenizer t(uc.getName(), '\\');
 					for(StringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
 						if(i+1 == t.getTokens().end()) {
-							cur.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
+							cur.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, i->c_str());
 						} else {
 							bool found = false;
 							char buf[1024];
@@ -115,5 +115,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.4 2003/12/26 11:16:28 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.5 2004/01/24 20:44:37 arnetheduck Exp $
 */

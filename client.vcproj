@@ -223,6 +223,9 @@
 				RelativePath=".\client\Thread.cpp">
 			</File>
 			<File
+				RelativePath=".\client\TigerHash.cpp">
+			</File>
+			<File
 				RelativePath=".\client\TimerManager.cpp">
 			</File>
 			<File
@@ -249,6 +252,9 @@
 			</File>
 			<File
 				RelativePath=".\client\BitOutputStream.h">
+			</File>
+			<File
+				RelativePath=".\client\BloomFilter.h">
 			</File>
 			<File
 				RelativePath=".\client\BufferedSocket.h">
@@ -306,6 +312,9 @@
 			</File>
 			<File
 				RelativePath=".\client\LogManager.h">
+			</File>
+			<File
+				RelativePath=".\client\MerkleTree.h">
 			</File>
 			<File
 				RelativePath=".\client\Pointer.h">
@@ -369,6 +378,9 @@
 			</File>
 			<File
 				RelativePath=".\client\Thread.h">
+			</File>
+			<File
+				RelativePath=".\client\TigerHash.h">
 			</File>
 			<File
 				RelativePath=".\client\TimerManager.h">

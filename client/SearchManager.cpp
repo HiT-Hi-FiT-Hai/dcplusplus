@@ -204,8 +204,24 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 	}
 }
 
+string SearchManager::clean(const string& aSearchString) {
+	static const char* badChars = "$|.[]()-_+";
+	string::size_type i = aSearchString.find_first_of(badChars);
+	if(i == string::npos)
+		return aSearchString;
+
+	string tmp = aSearchString;
+	// Remove all strange characters from the search string
+	do {
+		tmp[i] = ' ';
+	} while ( (i = tmp.find_first_of(badChars, i)) != string::npos);
+
+	return tmp;
+}
+
+
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.31 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.32 2004/01/24 20:42:32 arnetheduck Exp $
  */
 

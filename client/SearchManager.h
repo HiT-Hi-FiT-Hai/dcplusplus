@@ -124,20 +124,7 @@ public:
 	void search(Client::List& who, const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
 		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
-	static string clean(const string& aSearchString) {
-		static const char* badChars = "$|.[]()-_+";
-		string::size_type i = aSearchString.find_first_of(badChars);
-		if(i == string::npos)
-			return aSearchString;
-
-		string tmp = aSearchString;
-		// Remove all strange characters from the search string
-		do {
-			tmp[i] = ' ';
-		} while ( (i = tmp.find_first_of(badChars, i)) != string::npos);
-		
-		return tmp;
-	}
+	static string clean(const string& aSearchString);
 
 	void setPort(short aPort) throw(SocketException);
 	void disconnect() throw();
@@ -172,5 +159,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.30 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.31 2004/01/24 20:42:35 arnetheduck Exp $
  */

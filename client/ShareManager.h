@@ -31,6 +31,7 @@
 #include "CriticalSection.h"
 #include "StringSearch.h"
 #include "Singleton.h"
+#include "BloomFilter.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -199,6 +200,7 @@ private:
 
 	Directory::Map directories;
 	StringMap dirs;
+	BloomFilter<5> bloom;
 	
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
@@ -212,6 +214,7 @@ private:
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
+
 	
 };
 
@@ -219,6 +222,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.40 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.41 2004/01/24 20:43:44 arnetheduck Exp $
  */
 

@@ -127,7 +127,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			int64_t start = File::getSize(target);
 
 			// Only use antifrag if we don't have a previous non-antifrag part
-			if( BOOLSETTING(ANTI_FRAG) && (start == -1) && d->getSize() != -1 ) {
+			if( BOOLSETTING(ANTI_FRAG) && (start == -1) && (d->getSize() != -1) ) {
 				int64_t aSize = File::getSize(target + Download::ANTI_FRAG_EXT);
 
 				if(aSize == d->getSize())
@@ -141,7 +141,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			int rollback = SETTING(ROLLBACK);
 			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
 			
-			if( (rollback + cutoff) > start) {
+			if((rollback + cutoff) > start) {
 				d->setPos(0);
 			} else {
 				d->setPos(start - rollback - cutoff);
@@ -678,5 +678,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.87 2004/01/07 14:14:52 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.88 2004/01/24 20:42:06 arnetheduck Exp $
  */

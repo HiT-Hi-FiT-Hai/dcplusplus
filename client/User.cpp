@@ -50,13 +50,6 @@ const string& User::getClientNick() const {
 	}
 }
 
-void User::update() {
-	RLock l(cs);
-	if(client) {
-		client->getInfo(this);
-	}
-}
-
 void User::updated(User::Ptr& aUser) {
 	RLock l(aUser->cs);
 	if(aUser->client) {
@@ -222,6 +215,6 @@ void User::setUserDescription(const string& aDescription) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.28 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: User.cpp,v 1.29 2004/01/24 20:43:59 arnetheduck Exp $
  */
 

@@ -71,7 +71,6 @@ public:
 	void setClient(Client* aClient);
 	void connect();
 	const string& getClientNick() const;
-	void update();
 	const string& getClientName() const;
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
@@ -132,6 +131,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.37 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: User.h,v 1.38 2004/01/24 20:44:12 arnetheduck Exp $
  */
 

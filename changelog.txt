@@ -1,4 +1,9 @@
- -- 0.306 --
+ -- 0.307 --
+* Fixed full name being displayed in user commands with submenus
+* Bloom filters implemented to improve search efficiency
+
+
+ -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")
 * Changed autosearch so that it only searches if less than 5 sources are online, this should stop galloping
   filelist downloads as well

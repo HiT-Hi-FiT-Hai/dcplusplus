@@ -447,13 +447,14 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 	if(aTarget.length() > MAX_PATH) {
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
 	}
-	// Check that target starts with a drive
-	if(aTarget[1] != ':' || aTarget[2] != '\\') {
+	// Check that target starts with a drive or is an UNC path
+	if( (aTarget[1] != ':' || aTarget[2] != '\\') &&
+		(aTarget[0] != '\\' && aTarget[1] != '\\') ) {
 		throw QueueException(STRING(INVALID_TARGET_FILE));
 	}
 #else
 	// Check that target contains at least one directory...we don't want headless files...
-	if(aTarget.find('\\') == string::npos) {
+	if(aTarget[0] != '/') {
 		throw QueueException(STRING(INVALID_TARGET_FILE));
 	}
 #endif
@@ -740,9 +741,10 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				}
 			}
 		} else {
-			string tgt = aDownload->getDownloadTarget();
-			if(!tgt.empty() && Util::stricmp(tgt, aDownload->getTarget()) != 0)
-				File::deleteFile(tgt);
+			if(!aDownload->getTempTarget().empty() && aDownload->getTempTarget() != aDownload->getTarget()) {
+				File::deleteFile(aDownload->getTempTarget() + Download::ANTI_FRAG_EXT);
+				File::deleteFile(aDownload->getTempTarget());
+			}
 		}
 		aDownload->setUserConnection(NULL);
 		delete aDownload;
@@ -1235,7 +1237,7 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 						QueueItem::DEFAULT, Util::emptyString, false);
 					dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 					// Only download list for exact matches
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (target == fileName))
+					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (Util::stricmp(target, fileName) == 0) )
 						addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 				} catch(const Exception&) {
 					// ...
@@ -1285,5 +1287,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.69 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.70 2004/01/24 20:42:15 arnetheduck Exp $
  */

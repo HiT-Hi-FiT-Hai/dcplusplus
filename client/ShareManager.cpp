@@ -39,7 +39,7 @@
 ShareManager* Singleton<ShareManager>::instance = NULL;
 
 ShareManager::ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(false), 
-	update(false), listN(0), lFile(NULL), bFile(NULL), lastUpdate(GET_TICK()) { 
+	update(false), listN(0), lFile(NULL), bFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) { 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 	/* Common search words used to make search more efficient, should be more dynamic */
@@ -63,6 +63,11 @@ ShareManager::ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(fa
 	words.push_back("wav");
 	words.push_back("exe");
 	words.push_back("ccd");
+//	words.push_back("the");
+//	words.push_back("of");
+//	words.push_back("dvdr");
+//	words.push_back("cd1");
+//	words.push_back("cd2");
 
 };
 
@@ -237,6 +242,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	Directory* dir = new Directory(aName.substr(aName.rfind(PATH_SEPARATOR) + 1), aParent);
 	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
 	dir->addSearchType(getMask(dir->getName()));
+	bloom.add(Util::toLower(dir->getName()));
 
 #ifdef _WIN32
 	WIN32_FIND_DATA data;
@@ -269,6 +275,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 					dir->addType(getType(name));
 					lastFileIter = dir->files.insert(lastFileIter, make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
 					dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
+					
+					bloom.add(Util::toLower(name));
 				}
 			}
 		} while(FindNextFile(hFind, &data));
@@ -698,8 +706,11 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
 	
 	RLock l(cs);
-	StringTokenizer t(aString, '$');
+	StringTokenizer t(Util::toLower(aString), '$');
 	StringList& sl = t.getTokens();
+	if(!bloom.match(sl))
+		return;
+
 	StringSearch::List ssl;
 	for(StringList::iterator i = sl.begin(); i != sl.end(); ++i) {
 		if(!i->empty()) {
@@ -739,6 +750,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.71 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.72 2004/01/24 20:42:41 arnetheduck Exp $
  */
 
