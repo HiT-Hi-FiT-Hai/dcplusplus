@@ -211,7 +211,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(cmd.c_str(), _T("userlist")) == 0) {
 				ctrlShowUsers.SetCheck(SETTING(GET_USER_INFO) ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(cmd.c_str(), _T("connection")) == 0) {
-				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)))));
+				addClientLine(Text::toT((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)) + "/" + Util::toString(SETTING(UDP_PORT)))));
 			} else if((Util::stricmp(cmd.c_str(), _T("favorite")) == 0) || (Util::stricmp(cmd.c_str(), _T("fav")) == 0)) {
 				addAsFavorite();
 			} else if(Util::stricmp(cmd.c_str(), _T("getlist")) == 0){
@@ -1120,5 +1120,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.89 2004/11/24 17:22:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.90 2004/11/26 13:49:01 arnetheduck Exp $
  */

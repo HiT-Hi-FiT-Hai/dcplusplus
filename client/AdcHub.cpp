@@ -298,7 +298,7 @@ void AdcHub::info(bool /*alwaysSend*/) {
 	ADDPARAM("VE", "++\\ " VERSIONSTRING);
 	ADDPARAM("I4", "0.0.0.0");
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		ADDPARAM("U4", Util::toString(SETTING(IN_PORT)));
+		ADDPARAM("U4", Util::toString(SETTING(UDP_PORT)));
 	} else {
 		ADDPARAM("U4", "");
 	}
@@ -341,5 +341,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.26 2004/11/22 14:15:43 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.27 2004/11/26 13:48:54 arnetheduck Exp $
  */

@@ -53,7 +53,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		case ' ': 
 			// New parameter...
 			{
-				if(!fromSet) {
+				if(!nmdc && !fromSet) {
 					from = CID(cur);
 					fromSet = true;
 				} else if(type == TYPE_DIRECT && !toSet) {
@@ -93,8 +93,10 @@ string Command::toString(bool nmdc /* = false */) const {
 
 	tmp += cmdChar;
 
-	tmp += ' ';
-	tmp += from.toBase32();
+	if(!nmdc) {
+		tmp += ' ';
+		tmp += from.toBase32();
+	}
 
 	if(getType() == TYPE_DIRECT) {
 		tmp += ' ';
@@ -137,5 +139,5 @@ bool Command::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.4 2004/11/22 14:15:44 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.5 2004/11/26 13:48:54 arnetheduck Exp $
  */

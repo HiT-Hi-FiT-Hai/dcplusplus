@@ -267,7 +267,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	bHandled = FALSE;
 	return 0;
 }
-
+/**
+ * @todo Fix this, it's dead ugly...
+ */
 void MainFrame::startSocket() {
 	SearchManager::getInstance()->disconnect();
 	ConnectionManager::getInstance()->disconnect();
@@ -281,7 +283,6 @@ void MainFrame::startSocket() {
 			try {
 				ConnectionManager::getInstance()->setPort(lastPort);
 				WSAAsyncSelect(ConnectionManager::getInstance()->getServerSocket().getSocket(), m_hWnd, SERVER_SOCKET_MESSAGE, FD_ACCEPT);
-				SearchManager::getInstance()->setPort(lastPort);
 				break;
 			} catch(const Exception& e) {
 				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
@@ -298,6 +299,30 @@ void MainFrame::startSocket() {
 				lastPort = newPort;
 			}
 		}
+
+		lastPort = (short)SETTING(UDP_PORT);
+		firstPort = lastPort;
+
+		while(true) {
+			try {
+				SearchManager::getInstance()->setPort(lastPort);
+				break;
+			} catch(const Exception& e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+				SettingsManager::getInstance()->setDefault(SettingsManager::UDP_PORT, newPort);
+				if(SETTING(UDP_PORT) == lastPort || (firstPort == newPort)) {
+					// Changing default didn't change port, a fixed port must be in use...(or we
+					// tried all ports
+					AutoArray<TCHAR> buf(STRING(PORT_IS_BUSY).size() + 8);
+					_stprintf(buf, CTSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					MessageBox(buf, _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
+					break;
+				}
+				lastPort = newPort;
+			}
+		}
+
 	}
 }
 
@@ -566,6 +591,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	PropertiesDlg dlg(SettingsManager::getInstance());
 
 	short lastPort = (short)SETTING(IN_PORT);
+	short lastUDP = (short)SETTING(UDP_PORT);
 	int lastConn = SETTING(CONNECTION_TYPE);
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
@@ -574,7 +600,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(missedAutoConnect && !SETTING(NICK).empty()) {
 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
 		}
-		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort) {
+		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort || SETTING(UDP_PORT) != lastUDP) {
 			startSocket();
 		}
 		ClientManager::getInstance()->infoUpdated();
@@ -1150,5 +1176,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.75 2004/11/22 00:13:33 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.76 2004/11/26 13:49:02 arnetheduck Exp $
  */
