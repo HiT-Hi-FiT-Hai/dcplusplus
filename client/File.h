@@ -141,7 +141,15 @@ public:
 	}
 
 	static void deleteFile(const string& aFileName) { ::DeleteFile(aFileName.c_str()); };
-	static void renameFile(const string& source, const string& target) { ::MoveFile(source.c_str(), target.c_str()); };
+	static void renameFile(const string& source, const string& target) throw(FileException) { 
+		if(!::MoveFile(source.c_str(), target.c_str())) {
+			// Can't move, try copy/delete...
+			if(!CopyFile(source.c_str(), target.c_str(), FALSE)) {
+				throw FileException(Util::translateError(GetLastError()));
+			}
+			deleteFile(source);
+		}
+	};
 
 	static int64_t getSize(const string& aFileName) {
 		WIN32_FIND_DATA fd;
@@ -346,6 +354,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.14 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: File.h,v 1.15 2002/06/13 18:47:00 arnetheduck Exp $
  */
 

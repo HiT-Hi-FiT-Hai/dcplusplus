@@ -77,6 +77,7 @@ public:
 
 	GETSETREF(string, source, Source);
 	GETSETREF(string, target, Target);
+	GETSETREF(string, tempTarget, TempTarget);
 private:
 	u_int8_t* rollbackBuffer;
 	int rollbackSize;
@@ -180,5 +181,5 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.44 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.45 2002/06/13 18:46:59 arnetheduck Exp $
  */

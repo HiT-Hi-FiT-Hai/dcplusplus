@@ -30,10 +30,12 @@ public:
 	BEGIN_MSG_MAP(DownloadPage)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_HANDLER(IDC_BROWSEDIR, BN_CLICKED, onClickedBrowseDir)
+		COMMAND_HANDLER(IDC_BROWSETEMPDIR, BN_CLICKED, onClickedBrowseTempDir)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
 	LRESULT onClickedBrowseDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedBrowseTempDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -47,5 +49,5 @@ protected:
 
 /**
  * @file DownloadPage.h
- * $Id: DownloadPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.3 2002/06/13 18:47:01 arnetheduck Exp $
  */

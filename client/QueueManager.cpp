@@ -127,8 +127,24 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	}
 }
 
+enum { TEMP_LENGTH = 8 };
+string QueueManager::getTempName(const string& aFileName) {
+	
+	string tmp(TEMP_LENGTH, ' ');
+	for(int i = 0; i < TEMP_LENGTH; i++) {
+		tmp[i] = 'a' + (char)( ((double)('z'-'a')) * (((double)rand()) / ((double)RAND_MAX) ) );
+	}
+	string::size_type j = aFileName.rfind('.');
+	if(j == string::npos) {
+		return aFileName + tmp;
+	} else {
+		return aFileName.substr(0, j) + tmp + aFileName.substr(j);
+	}
+}
+
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw(QueueException, FileException) {
+					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
+					   const string& aTempTarget /* = Util::emptyString */) throw(QueueException, FileException) {
 	// Check that we're not downloading from ourselves...
 	if(aUser->getClientNick() == aUser->getNick()) {
 		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
@@ -164,6 +180,16 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		if(newItem) {
 			queue.insert(make_pair(q->getTarget(), q));
 			fire(QueueManagerListener::ADDED, q);
+
+			if(!q->isSet(QueueItem::USER_LIST)) {
+				if(aTempTarget.empty()) {
+					if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty()) {
+						q->setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(q->getTargetFileName()));
+					}
+				} else {
+					q->setTempTarget(aTempTarget);
+				}
+			}
 		}
 
 		fire(QueueManagerListener::SOURCES_UPDATED, q);
@@ -235,6 +261,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser) {
 		Download* d = new Download(q->isSet(QueueItem::RESUME), q->isSet(QueueItem::USER_LIST));
 		d->setSource(q->getCurrent()->getPath());
 		d->setTarget(q->getTarget());
+		d->setTempTarget(q->getTempTarget());
 		d->setSize(q->getSize());
 		return d;
 	}
@@ -400,7 +427,7 @@ void QueueManager::saveQueue() {
 				xml.addChildAttrib("Resume", d->isSet(QueueItem::RESUME));
 				xml.addChildAttrib("Size", d->getSize());
 				xml.addChildAttrib("Priority", (int)d->getPriority());
-
+				xml.addChildAttrib("TempTarget", d->getTempTarget());
 				xml.stepIn();
 				for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
 					QueueItem::Source* s = *j;
@@ -446,6 +473,7 @@ void QueueManager::load(SimpleXML* aXml) {
 		aXml->stepIn();
 		
 		while(aXml->findChild("Download")) {
+			const string& tempTarget = aXml->getChildAttrib("TempTarget");
 			const string& target = aXml->getChildAttrib("Target");
 			bool resume = aXml->getBoolChildAttrib("Resume");
 			int64_t size = aXml->getLongLongChildAttrib("Size");
@@ -456,7 +484,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				const string& path = aXml->getChildAttrib("Path");
 				
 				try {
-					add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p);
+					add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p, tempTarget);
 				} catch(Exception e) {
 					// ...
 				}
@@ -599,5 +627,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.30 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.31 2002/06/13 18:47:00 arnetheduck Exp $
  */

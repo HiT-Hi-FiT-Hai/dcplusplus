@@ -179,27 +179,31 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_DOWNLOADDIR,14,19,186,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DOWNLOADDIR,14,19,184,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,204,19,44,14
-    EDITTEXT        IDC_DOWNLOADS,201,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_TEMP_DOWNLOAD_DIRECTORY,14,56,184,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSETEMPDIR,204,56,43,14
+    EDITTEXT        IDC_DOWNLOADS,201,93,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,230,56,11,14
-    EDITTEXT        IDC_MAXSPEED,201,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
+                    UDS_NOTHOUSANDS,230,93,11,14
+    EDITTEXT        IDC_MAXSPEED,201,111,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,230,74,11,14
-    EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
+                    UDS_NOTHOUSANDS,230,111,11,14
+    EDITTEXT        IDC_PROXY,14,153,235,14,ES_AUTOHSCROLL
+    LTEXT           "kB/s",IDC_STATIC,234,114,16,8
     GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
-    GROUPBOX        "Options",IDC_STATIC,7,45,248,93
-    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,14,59,87,8
+    GROUPBOX        "Options",IDC_STATIC,7,82,248,93
+    LTEXT           "Download slots (0 = infinite)",IDC_STATIC,14,96,87,8
     LTEXT           "Don't start new downloads if download speed is more than",
-                    IDC_STATIC,14,77,184,8
-    LTEXT           "kB/s",IDC_STATIC,234,77,16,8
+                    IDC_STATIC,14,114,184,8
     LTEXT           "HTTP proxy address for downloading the hub list (i e www.proxy.com:8080)",
-                    IDC_STATIC,14,105,237,8
+                    IDC_STATIC,14,142,237,8
     LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",
-                    IDC_STATIC,14,90,233,8
+                    IDC_STATIC,14,127,233,8
+    GROUPBOX        "Unfinished files temporary directory (leave empty to disable)",
+                    IDC_STATIC,7,44,248,33
 END
 
 IDD_UPLOADPAGE DIALOGEX 0, 0, 275, 225
@@ -351,8 +355,11 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 255
         VERTGUIDE, 14
+        VERTGUIDE, 198
+        VERTGUIDE, 204
         VERTGUIDE, 230
         VERTGUIDE, 234
+        VERTGUIDE, 247
         TOPMARGIN, 7
         BOTTOMMARGIN, 217
     END

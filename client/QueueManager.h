@@ -133,6 +133,7 @@ public:
 	Source::List& getSources() { return sources; };
 	string getTargetFileName() { return Util::getFileName(getTarget()); };
 	
+	GETSETREF(string, tempTarget, TempTarget);
 	GETSETREF(string, target, Target);
 	GETSET(int64_t, size, Size);
 	GETSET(Status, status, Status);
@@ -197,11 +198,11 @@ class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManager
 public:
 	
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException) {
-		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p);
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString) throw(QueueException, FileException) {
+		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p, aTempTarget);
 	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
 		string file = Util::getAppPath() + "FileLists\\" + aUser->getNick() + ".DcLst";
@@ -272,7 +273,7 @@ private:
 	SearchList recent;
 
 	static const string USER_LIST_NAME;
-	
+	string getTempName(const string& aFileName);
 	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
 
 	void removeAll(QueueItem* q);
@@ -299,6 +300,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.27 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.28 2002/06/13 18:47:00 arnetheduck Exp $
  */
 

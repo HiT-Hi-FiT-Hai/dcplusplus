@@ -32,6 +32,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 PropPage::Item DownloadPage::items[] = {
+	{ IDC_TEMP_DOWNLOAD_DIRECTORY, SettingsManager::TEMP_DOWNLOAD_DIRECTORY, PropPage::T_STR },
 	{ IDC_DOWNLOADDIR,	SettingsManager::DOWNLOAD_DIRECTORY, PropPage::T_STR }, 
 	{ IDC_DOWNLOADS, SettingsManager::DOWNLOAD_SLOTS, PropPage::T_INT },
 	{ IDC_MAXSPEED, SettingsManager::MAX_DOWNLOAD_SPEED, PropPage::T_INT },
@@ -66,7 +67,7 @@ void DownloadPage::write()
 
 LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	string dir;
+	string dir = SETTING(DOWNLOAD_DIRECTORY);
 	if(WinUtil::browseDirectory(dir))
 	{
 		// Adjust path string
@@ -78,7 +79,21 @@ LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	string dir = SETTING(TEMP_DOWNLOAD_DIRECTORY);
+	if(WinUtil::browseDirectory(dir))
+	{
+		// Adjust path string
+		if(dir.size() > 0 && dir[dir.size() - 1] != '\\')
+			dir += '\\';
+
+		SetDlgItemText(IDC_TEMP_DOWNLOAD_DIRECTORY, dir.c_str());
+	}
+	return 0;
+}
+
 /**
  * @file DownloadPage.cpp
- * $Id: DownloadPage.cpp,v 1.3 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.4 2002/06/13 18:47:01 arnetheduck Exp $
  */

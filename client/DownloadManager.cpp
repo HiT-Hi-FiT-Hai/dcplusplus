@@ -73,7 +73,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 		
 		if(d->isSet(Download::RESUME)) {
-			int64_t size = File::getSize(d->getTarget());
+			int64_t size = File::getSize(d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
 			int rollback = SETTING(ROLLBACK);
 			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
 
@@ -110,8 +110,8 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-	Util::ensureDirectory(d->getTarget());
-	string target = d->getTarget();
+	string target = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
+	Util::ensureDirectory(target);
 	if(d->isSet(Download::USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
 		target.replace(target.size() - 5, 5, "bz2");
 	}
@@ -244,6 +244,16 @@ void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 		LOG(DOWNLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_DOWNLOAD), params));
 	}
 
+	// Check if we need to move the file
+	if( !d->getTempTarget().empty() && (Util::stricmp(d->getTarget().c_str(), d->getTempTarget().c_str()) != 0) ) {
+		try {
+			Util::ensureDirectory(d->getTarget());
+			File::renameFile(d->getTempTarget(), d->getTarget());
+			d->setTempTarget(Util::emptyString);
+		} catch(FileException e) {
+			// Huh??? Now what??? Oh well...let it be...
+		}
+	}
 	fire(DownloadManagerListener::COMPLETE, d);
 	
 	aSource->setDownload(NULL);
@@ -386,5 +396,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.65 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.66 2002/06/13 18:46:59 arnetheduck Exp $
  */
