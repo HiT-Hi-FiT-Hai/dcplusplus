@@ -205,6 +205,10 @@ SOURCE=.\windows\ExListViewCtrl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\windows\ExtendedTrace.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\windows\FavHubProperties.cpp
 # End Source File
 # Begin Source File
@@ -307,6 +311,10 @@ SOURCE=.\windows\DownloadPage.h
 # Begin Source File
 
 SOURCE=.\windows\ExListViewCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\ExtendedTrace.h
 # End Source File
 # Begin Source File
 

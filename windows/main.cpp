@@ -27,6 +27,30 @@ extern void shutdown();
 
 CAppModule _Module;
 
+#ifdef _DEBUG
+#include "ExtendedTrace.h"
+CriticalSection cs;
+enum { DEBUG_BUFSIZE = 2048 };
+char buf[DEBUG_BUFSIZE];
+
+LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
+{
+	Lock l(cs);
+	
+	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
+	
+	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
+
+	sprintf(buf, "Unhandled Exception\r\n  Code: %x\r\n", exceptionCode ) ;
+
+	f.write(buf);
+	STACKTRACE(f);
+
+	return EXCEPTION_CONTINUE_SEARCH;
+}
+
+#endif
+
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 	CMessageLoop theLoop;
@@ -57,7 +81,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	// make the EXE free threaded. This means that calls come in on a random RPC thread.
 	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	//	ATLASSERT(SUCCEEDED(hRes));
-	
+	EXTENDEDTRACEINITIALIZE( NULL );
+	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
+
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	
@@ -75,11 +101,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	_Module.Term();
 	::CoUninitialize();
-	
+	EXTENDEDTRACEUNINITIALIZE();
 	return nRet;
 }
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: main.cpp,v 1.3 2002/04/18 08:13:45 arnetheduck Exp $
  */

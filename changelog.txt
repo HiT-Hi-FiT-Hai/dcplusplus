@@ -30,8 +30,10 @@
 * Yet more internationalization, everything except the settings dialogs should be translatable now
 * Improved the formatting of the output XML file
 * Improved XML loading speed a lot
-* Added a chevron menu to the tab bar at the bottom that shows invisible windows
+* Added a chevron menu to the tab bar at the bottom that shows the missing window tabs
 * Added current search string to the title of the search window
+* Fixed missing/bad connection type bug
+* Fixed some user handling problems (when having the same nick on multiple hubs...)
 
  -- 0.163 2002-04-04 --
 * More internationalization
