@@ -109,7 +109,28 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	}
 	return tmp;
 #else
-#warning FIXME
+	wchar_t *ptr;
+	size_t len;
+ 
+	// NULL = calculate size
+	len = mbstowcs(NULL, str.c_str(), 0);
+ 
+	// -1 = error in encoding
+	if (len == -1)	return tmp;
+ 
+	// allocate needed space
+	ptr = new wchar_t[len + 1];
+	if (!ptr) return tmp;
+ 
+	// do the conversion
+	mbstowcs(ptr, str.c_str(), len);
+ 
+	// not sure if this is nessecary
+	ptr[len] = L'\0';
+ 
+	tmp = ptr;
+	delete[] ptr;
+	return tmp;
 #endif
 }
 
@@ -136,7 +157,27 @@ string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
 	}
 	return tmp;
 #else
-#warning FIXME
+	char *ptr;
+	size_t len;
+ 
+	//calculate needed space
+	len = wcstombs(NULL, str.c_str(), 0);
+ 
+	// -1 means some characters cannot be converted
+	if (len == -1) return tmp;
+ 
+	// allocate space for the string
+	ptr = new char[len + 1];
+	if (!ptr) return tmp;
+ 
+	// convert
+	wcstombs(ptr, str.c_str(), len);
+ 
+	ptr[len] = '\0';
+ 
+	tmp = ptr;
+	delete[] ptr;
+	return tmp;
 #endif
 }
 
@@ -188,5 +229,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.4 2004/09/23 09:06:26 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.5 2004/11/07 17:04:28 arnetheduck Exp $
  */

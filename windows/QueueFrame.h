@@ -191,6 +191,7 @@ private:
 			SourceInfo& operator=(const QueueItem::Source& s) {
 				*((Flags*)this) = s;
 				user = s.getUser();
+				return *this;
 			}
 			User::Ptr& getUser() { return user; };
 
@@ -423,5 +424,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.44 2004/10/29 15:53:41 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.45 2004/11/07 17:04:09 arnetheduck Exp $
  */

@@ -343,6 +343,21 @@ void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh)
 	setDirty();
 }
 
+void ShareManager::renameDirectory(const string& oName, const string& nName) throw(ShareException) {
+	StringPairIter i;
+	WLock l(cs);
+	//Find the virtual name
+	i = lookupVirtual(oName);
+	if (lookupVirtual(nName) != virtualMap.end()) {
+		throw ShareException(STRING(VIRTUAL_NAME_EXISTS));
+	} else {
+		// Valid newName, lets rename
+		i->first = nName;
+		setDirty();
+		refresh(true, true, false);
+	}
+}
+
 int64_t ShareManager::getShareSize(const string& aDir) throw() {
 	RLock l(cs);
 	dcassert(aDir.size()>0);
@@ -436,21 +451,81 @@ private:
 	HANDLE handle;
 #else
 public:
-	// TODO...
-	FileFindIter() { }
-	FileFindIter(const string&) { }
+	FileFindIter() {
+		dir = NULL;
+		data.ent = NULL;
+	}
 	
-	FileFindIter& operator++() { }
-	bool operator !=(const FileFindIter& rhs) const { return true; }
+	~FileFindIter() {
+		if (dir) closedir(dir);
+	}
+
+	FileFindIter(const string& name) {
+		if (!dir) return;
+
+		base = name;
+		if (name[name.size() - 1] != PATH_SEPARATOR)
+			base = base + PATH_SEPARATOR;
+		dir = opendir(name.c_str());
+
+		data.ent = readdir(dir);
+		if (!data.ent) {
+			closedir(dir);
+			dir = NULL;
+		} else {
+			data.currentFile = base + data.ent->d_name;
+		}
+	}
+	
+	FileFindIter& operator++() {
+		if (!dir) return *this;
+		data.ent = readdir(dir);
+		if (!data.ent) {
+			closedir(dir);
+			dir = NULL;
+		} else {
+			data.currentFile = base + data.ent->d_name;
+		}
+		return *this;
+	}
+	
+	bool operator !=(const FileFindIter& rhs) const {
+		return dir != rhs.dir;
+	}
 
 	struct DirData {
-		string getFileName() { return Util::emptyString; }
-		bool isDirectory() { return false; }
-		bool isHidden() { return false; }
-		int64_t getSize() { return 0; }
-		u_int32_t getLastWriteTime() { return 0; }
+		string getFileName() {
+			if (!ent) return Util::emptyString;
+			return string(ent->d_name);
+		}
+		bool isDirectory() {
+			struct stat inode;
+			if (!ent) return false;
+			if (stat(currentFile.c_str(), &inode) == -1) return false;
+			return S_ISDIR(inode.st_mode);
+		}
+		bool isHidden() {
+			if (!ent) return false;
+			return ent->d_name[0] == '.';
+		}
+		int64_t getSize() {
+			struct stat inode;
+			if (!ent) return false;
+			if (stat(currentFile.c_str(), &inode) == -1) return 0;
+			return inode.st_size;
+		}
+		u_int32_t getLastWriteTime() {
+			struct stat inode;
+			if (!ent) return false;
+			if (stat(currentFile.c_str(), &inode) == -1) return 0;
+			return inode.st_mtime;
+		}
+		struct dirent* ent;
+		string currentFile;
 	};
-#warning FIXME Implement this
+private:
+	DIR* dir;
+	string base;
 #endif
 
 public:
@@ -470,6 +545,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	Directory::File::Iter lastFileIter = dir->files.begin();
 
 	FileFindIter end;
+	#ifdef _WIN32
 	for(FileFindIter i(aName + "*"); i != end; ++i) {
 		string name = i->getFileName();
 
@@ -1198,6 +1274,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.110 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.111 2004/11/07 17:04:28 arnetheduck Exp $
  */
 

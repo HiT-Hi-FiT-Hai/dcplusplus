@@ -352,10 +352,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-						if(showJoins) {
-							if (!favShowJoins | u->isFavoriteUser()) {
-								addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u->getNick()));
-							}
+						if (!favShowJoins | u->isFavoriteUser()) {
+							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u->getNick()));
 						}
 					} else {
 						resort = true;
@@ -371,10 +369,8 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if( j != -1 ) {
 						UserInfo* ui = ctrlUsers.getItemData(j);
 						ctrlUsers.DeleteItem(j);
-						if(showJoins) {
-							if (!favShowJoins | u->isFavoriteUser()) {
-								addLine(Text::toT("*** " + STRING(PARTS) + u->getNick()));
-							}
+						if (!favShowJoins | u->isFavoriteUser()) {
+							addLine(Text::toT("*** " + STRING(PARTS) + u->getNick()));
 						}
 						dcassert(userMap[u] == ui);
 						userMap.erase(u);
@@ -1108,5 +1104,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.84 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.85 2004/11/07 17:04:09 arnetheduck Exp $
  */

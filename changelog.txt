@@ -3,6 +3,9 @@
 * Fixed some favdirs issues (thanks naga)
 * Fixed a status logging issue (thanks naga)
 * Fixed annoying login issue
+* Added possibility to rename shares (thanks naga)
+* Fixed show joins for fav users (thanks ullner)
+
 
 -- 0.666 2004-11-03 --
 * [bug 173] Fixed copy nick to clipboard (thanks trem)

@@ -60,7 +60,8 @@ public:
 		}
 
 		File& operator=(const File& rhs) {
-			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot ? new TTHValue(*rhs.tthRoot) : NULL; 
+			name = rhs.name; size = rhs.size; parent = rhs.parent; tthRoot = rhs.tthRoot ? new TTHValue(*rhs.tthRoot) : NULL;
+			return *this;
 		}
 
 		~File() {
@@ -179,5 +180,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.34 2004/11/03 19:26:11 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.35 2004/11/07 17:04:28 arnetheduck Exp $
  */

@@ -62,6 +62,7 @@ To increase the chances of your patch being accepted, mail them to me (j_s@telia
 code you can find (in the cvs repository on sourceforge most probably). You can find a lot of 
 information about diff and patch by googling for it. I like unified format (diff -uNr). 
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
-the copyright is split out over a million people, each of which could stop further distribution of DC++. If you don't
+the copyright is split out over a million people, each of which could stop further distribution of DC++, and also
+to make it easier for us to defend the gpl against violators. If you don't
 like this, start your own distribution, if you're lucky it might become more popular than the original =). Please
 state explicitly in the email that you give me copyright over the code if the submission is larger than trivial.
