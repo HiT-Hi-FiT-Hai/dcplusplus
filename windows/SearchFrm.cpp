@@ -605,6 +605,11 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(sel);
 		ucParams["nick"] = sr->getUser()->getNick();
+		ucParams["tag"] = sr->getUser()->getTag();
+		ucParams["description"] = sr->getUser()->getDescription();
+		ucParams["email"] = sr->getUser()->getEmail();
+		ucParams["share"] = Util::toString(sr->getUser()->getBytesShared());
+		ucParams["shareshort"] = Util::formatBytes(sr->getUser()->getBytesShared());
 		ucParams["mynick"] = sr->getUser()->getClientNick();
 		ucParams["file"] = sr->getFile();
 		sr->getUser()->send(Util::formatParams(uc.getCommand(), ucParams));
@@ -917,5 +922,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.28 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.29 2003/10/22 01:21:02 arnetheduck Exp $
  */

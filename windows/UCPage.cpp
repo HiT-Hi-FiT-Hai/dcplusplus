@@ -67,8 +67,23 @@ LRESULT UCPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		ctrlCommands.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
 	// Do specialized reading here
-	
+	UserCommand::List lst = HubManager::getInstance()->getUserCommands();
+	for(UserCommand::Iter i = lst.begin(); i != lst.end(); ++i) {
+		UserCommand& uc = *i;	
+		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) {
+			StringList lst;
+			if(uc.getType() == UserCommand::TYPE_SEPARATOR) 
+				lst.push_back(STRING(SEPARATOR));
+			else
+				lst.push_back(uc.getName());
 
+			lst.push_back(uc.getCommand());
+			lst.push_back(uc.getHub());
+			ctrlCommands.insert(lst, 0, (LPARAM)uc.getId());
+
+		}
+	}
+	
 	return TRUE;
 }
 
@@ -76,36 +91,52 @@ LRESULT UCPage::onAddMenu(WORD , WORD , HWND , BOOL& ) {
 	CommandDlg dlg;
 
 	if(dlg.DoModal() == IDOK) {
+		UserCommand uc = HubManager::getInstance()->addUserCommand(dlg.type, dlg.ctx, 0, dlg.name, dlg.command, dlg.hub);
 		StringList lst;
 		lst.push_back(dlg.name);
 		lst.push_back(dlg.command);
 		lst.push_back(dlg.hub);
-		ctrlCommands.insert(lst);
+		ctrlCommands.insert(lst, 0, (LPARAM)uc.getId());
 	}
 	return 0;
 }
 
-#define BUFLEN 256
 LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 	if(ctrlCommands.GetSelectedCount() == 1) {
 		int sel = ctrlCommands.GetSelectedIndex();
-		char buf[BUFLEN];
+		UserCommand uc;
+		HubManager::getInstance()->getUserCommand(ctrlCommands.GetItemData(sel), uc);
+		
 		CommandDlg dlg;
-		ctrlCommands.GetItemText(sel, 0, buf, BUFLEN);
-		dlg.name = buf;
-		ctrlCommands.GetItemText(sel, 1, buf, BUFLEN);
-		dlg.command = buf;
-		ctrlCommands.GetItemText(sel, 2, buf, BUFLEN);
-		dlg.hub = buf;
-		ctrlCommands.GetItemText(sel, 3, buf, BUFLEN);
-		dlg.nick = buf;
+		dlg.type = uc.getType();
+		dlg.ctx = uc.getCtx();
+		dlg.name = uc.getName();
+		dlg.command = uc.getCommand();
+		dlg.hub = uc.getHub();
 
 		if(dlg.DoModal() == IDOK) {
-			ctrlCommands.SetItemText(sel, 0, dlg.name.c_str());
+			if(dlg.type == UserCommand::TYPE_SEPARATOR)
+				ctrlCommands.SetItemText(sel, 0, CSTRING(SEPARATOR));
+			else
+				ctrlCommands.SetItemText(sel, 0, dlg.name.c_str());
 			ctrlCommands.SetItemText(sel, 1, dlg.command.c_str());
 			ctrlCommands.SetItemText(sel, 2, dlg.hub.c_str());
-			ctrlCommands.SetItemText(sel, 3, dlg.nick.c_str());
+			uc.setName(dlg.name);
+			uc.setCommand(dlg.command);
+			uc.setHub(dlg.hub);
+			uc.setType(dlg.type);
+			uc.setCtx(dlg.ctx);
+			HubManager::getInstance()->updateUserCommand(uc);
 		}
+	}
+	return 0;
+}
+
+LRESULT UCPage::onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlCommands.GetSelectedCount() == 1) {
+		int i = ctrlCommands.GetNextItem(-1, LVNI_SELECTED);
+		HubManager::getInstance()->removeUserCommnad(ctrlCommands.GetItemData(i));
+		ctrlCommands.DeleteItem(i);
 	}
 	return 0;
 }
@@ -116,6 +147,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.1 2003/10/21 17:12:22 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.2 2003/10/22 01:21:02 arnetheduck Exp $
  */
 

@@ -246,6 +246,24 @@ LRESULT PrivateFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
+void PrivateFrame::runUserCommand(UserCommand& uc) {
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+		return;
+
+	ucParams["mynick"] = user->getClientNick();
+
+	ucParams["nick"] = user->getNick();
+	ucParams["tag"] = user->getTag();
+	ucParams["description"] = user->getDescription();
+	ucParams["email"] = user->getEmail();
+	ucParams["share"] = Util::toString(user->getBytesShared());
+	ucParams["shareshort"] = Util::formatBytes(user->getBytesShared());
+	user->send(Util::formatParams(uc.getCommand(), ucParams));
+	return;
+};
+
+
+
 LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
@@ -314,7 +332,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.18 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.19 2003/10/22 01:21:02 arnetheduck Exp $
  */
 
 

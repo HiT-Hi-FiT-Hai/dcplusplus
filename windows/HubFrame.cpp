@@ -110,8 +110,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
-	tabMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	tabMenu.AppendMenu(MF_STRING, ID_FILE_CLOSE, CSTRING(CLOSE));
 
 	showJoins = BOOLSETTING(SHOW_JOINS);
 
@@ -656,13 +654,21 @@ void HubFrame::addLine(const string& aLine) {
 
 LRESULT HubFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	tabMenuShown = true;
+	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getServer(), client->getOp());
+	tabMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	tabMenu.AppendMenu(MF_STRING, ID_FILE_CLOSE, CSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
 	return TRUE;
 }
 
 LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+	tabMenuShown = false;
 
 	ctrlClient.GetClientRect(&rc);
 	if(uMsg == WM_CONTEXTMENU)
@@ -726,11 +732,20 @@ void HubFrame::runUserCommand(UserCommand& uc) {
 
 	ucParams["mynick"] = client->getNick();
 
-	int sel = -1;
-	while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
-		UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
-		ucParams["nick"] = u->user->getNick();
+	if(tabMenuShown) {
 		client->send(Util::formatParams(uc.getCommand(), ucParams));
+	} else {
+		int sel = -1;
+		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
+			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
+			ucParams["nick"] = u->user->getNick();
+			ucParams["tag"] = u->user->getTag();
+			ucParams["description"] = u->user->getDescription();
+			ucParams["email"] = u->user->getEmail();
+			ucParams["share"] = Util::toString(u->user->getBytesShared());
+			ucParams["shareshort"] = Util::formatBytes(u->user->getBytesShared());
+			client->send(Util::formatParams(uc.getCommand(), ucParams));
+		}
 	}
 	return;
 };
@@ -1017,5 +1032,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.34 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.35 2003/10/22 01:21:02 arnetheduck Exp $
  */

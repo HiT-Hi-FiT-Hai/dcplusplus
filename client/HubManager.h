@@ -172,27 +172,69 @@ public:
 		return publicHubs;
 	}
 
-	void addUserCommand(int type, int ctx, const string& name, const string& command, const string& hub) {
+	UserCommand addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub) {
+		// No dupes, add it...
+		Lock l(cs);
+		userCommands.push_back(UserCommand(lastId++, type, ctx, flags, name, command, hub));
+		UserCommand& uc = userCommands.back();
+		if(!uc.isSet(UserCommand::FLAG_NOSAVE)) 
+			save();
+		return userCommands.back();
+	}
+
+	bool getUserCommand(int id, UserCommand& uc) {
+		Lock l(cs);
 		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
-			if(name == i->getName()) {
-				return;
+			if(i->getId() == id) {
+				uc = *i;
+				return true;
 			}
 		}
-		// No dupes, add it...
-		userCommands.push_back(UserCommand(type, ctx, name, command, hub));
-		if(!(ctx & UserCommand::FLAG_NOSAVE)) 
+		return false;
+	}
+
+	void updateUserCommand(const UserCommand& uc) {
+		bool nosave = true;
+		Lock l(cs);
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+			if(i->getId() == uc.getId()) {
+				*i = uc;
+				nosave = uc.isSet(UserCommand::FLAG_NOSAVE);
+				break;
+			}
+		}
+		if(!nosave)
 			save();
 	}
 
+	void removeUserCommnad(int id) {
+		bool nosave = true;
+		Lock l(cs);
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+			if(i->getId() == id) {
+				nosave = i->isSet(UserCommand::FLAG_NOSAVE);
+				userCommands.erase(i);
+				break;
+			}
+		}
+		if(!nosave)
+			save();
+	}
+	void removeUserCommand(const string& srv) {
+		Lock l(cs);
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+			if((i->getHub() == srv) && i->isSet(UserCommand::FLAG_NOSAVE)) {
+				i = userCommands.erase(i);
+			} else {
+				++i;
+			}
+		}
+	}
+
+	UserCommand::List getUserCommands() { Lock l(cs); return userCommands; };
 	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
 
-	UserCommand::List& getUserCommands() {
-		return userCommands;
-	}
-
-	bool isDownloading() {
-		return running;
-	}
+	bool isDownloading() { return running; };
 
 	void save();
 private:
@@ -211,13 +253,14 @@ private:
 	bool running;
 	HttpConnection* c;
 	int lastServer;
+	int lastId;
 
 	/** Used during loading to prevent saving. */
 	bool dontSave;
 
 	friend class Singleton<HubManager>;
 	
-	HubManager() : running(false), c(NULL), lastServer(0), dontSave(false) {
+	HubManager() : running(false), c(NULL), lastServer(0), lastId(0), dontSave(false) {
 		SettingsManager::getInstance()->addListener(this);
 	}
 
@@ -262,6 +305,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.42 2003/10/21 17:10:40 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.43 2003/10/22 01:21:02 arnetheduck Exp $
  */
 

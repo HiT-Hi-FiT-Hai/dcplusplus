@@ -74,6 +74,7 @@ void HubManager::save() {
 	if(dontSave)
 		return;
 
+	Lock l(cs);
 	try {
 		SimpleXML xml(8);
 
@@ -107,12 +108,9 @@ void HubManager::save() {
 		xml.stepIn();
 		for(UserCommand::Iter k = userCommands.begin(); k != userCommands.end(); ++k) {
 			if(!k->isSet(UserCommand::FLAG_NOSAVE)) {
-				int ctx = (k->isSet(UserCommand::CONTEXT_CHAT) ? UserCommand::CONTEXT_CHAT : 0)
-					| (k->isSet(UserCommand::CONTEXT_HUB) ? UserCommand::CONTEXT_HUB : 0)
-					| (k->isSet(UserCommand::CONTEXT_SEARCH) ? UserCommand::CONTEXT_SEARCH : 0);
 				xml.addTag("UserCommand");
 				xml.addChildAttrib("Type", k->getType());
-				xml.addChildAttrib("Context", ctx);
+				xml.addChildAttrib("Context", k->getCtx());
 				xml.addChildAttrib("Name", k->getName());
 				xml.addChildAttrib("Command", k->getCommand());
 				xml.addChildAttrib("Hub", k->getHub());
@@ -141,11 +139,11 @@ void HubManager::load() {
 	// Add standard op commands
 	static const char kickstr[] = 
 		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
-	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB | UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB, UserCommand::FLAG_NOSAVE, 
 		STRING(KICK_USER), kickstr, "op");
 	static const char redirstr[] =
 		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
-	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB | UserCommand::FLAG_NOSAVE, 
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB, UserCommand::FLAG_NOSAVE, 
 		STRING(REDIRECT_USER), redirstr, "op");
 
 	try {
@@ -193,10 +191,10 @@ void HubManager::load(SimpleXML* aXml) {
 			if(nick.empty()) {
 				// Old mainchat style command
 				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, 
-					name, "<%[mynick]> " + command + "|", hub);
+					0, name, "<%[mynick]> " + command + "|", hub);
 			} else {
 				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH,
-					name, "$To: " + nick + " From: %[mynick] $" + command + "|", hub);
+					0, name, "$To: " + nick + " From: %[mynick] $" + command + "|", hub);
 			}
 		}
 		aXml->stepOut();
@@ -237,7 +235,7 @@ void HubManager::load(SimpleXML* aXml) {
 		aXml->stepIn();
 		while(aXml->findChild("UserCommand")) {
 			addUserCommand(aXml->getIntChildAttrib("Type"), aXml->getIntChildAttrib("Context"),
-				aXml->getChildAttrib("Name"), aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"));
+				0, aXml->getChildAttrib("Name"), aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"));
 		}
 		aXml->stepOut();
 	}
@@ -267,21 +265,12 @@ void HubManager::refresh() {
 	}
 }
 
-// HttpConnectionListener
-void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
-	switch(type) {
-	case HttpConnectionListener::DATA:
-		downloadBuf.append((char*)buf, len); break;
-	default:
-		dcassert(0);
-	}
-}
-
 UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool op) {
+	Lock l(cs);
 	UserCommand::List lst;
 	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
 		UserCommand& uc = *i;
-		if(uc.getFlags() & ctx) {
+		if(uc.getCtx() & ctx) {
 			if( (uc.getHub().empty()) || 
 				(op && uc.getHub() == "op") || 
 				(Util::stricmp(hub, uc.getHub()) == 0) )
@@ -291,6 +280,16 @@ UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool o
 		}
 	}
 	return lst;
+}
+
+// HttpConnectionListener
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) throw() {
+	switch(type) {
+	case HttpConnectionListener::DATA:
+		downloadBuf.append((char*)buf, len); break;
+	default:
+		dcassert(0);
+	}
 }
 
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
@@ -332,5 +331,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.33 2003/10/21 17:10:40 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.34 2003/10/22 01:21:02 arnetheduck Exp $
  */

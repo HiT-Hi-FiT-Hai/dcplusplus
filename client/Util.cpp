@@ -148,7 +148,7 @@ string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 			i++;
 		}
 		while( (i = tmp.find("&amp;", i)) != string::npos) {
-			tmp.replace(i, 6, "|");
+			tmp.replace(i, 5, "&");
 			i++;
 		}
 		if(checkNewLines) {
@@ -502,6 +502,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.28 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.29 2003/10/22 01:21:02 arnetheduck Exp $
  */
 

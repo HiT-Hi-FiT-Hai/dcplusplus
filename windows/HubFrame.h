@@ -303,6 +303,8 @@ private:
 	bool closed;
 
 	StringMap ucParams;
+	StringMap tabParams;
+	bool tabMenuShown;
 	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
@@ -360,6 +362,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.27 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.28 2003/10/22 01:21:02 arnetheduck Exp $
  */
 

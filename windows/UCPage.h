@@ -48,13 +48,7 @@ public:
 
 	LRESULT onAddMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onChangeMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(ctrlCommands.GetSelectedCount() == 1) {
-			ctrlCommands.DeleteItem(ctrlCommands.GetNextItem(-1, LVNI_SELECTED));
-		}
-		return 0;
-	}
+	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -71,6 +65,6 @@ protected:
 
 /**
  * @file
- * $Id: UCPage.h,v 1.1 2003/10/21 17:12:22 arnetheduck Exp $
+ * $Id: UCPage.h,v 1.2 2003/10/22 01:21:02 arnetheduck Exp $
  */
 

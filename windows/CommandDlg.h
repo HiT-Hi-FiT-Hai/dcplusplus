@@ -23,17 +23,29 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "../client/Util.h"
+
 class CommandDlg : public CDialogImpl<CommandDlg>
 {
 	CEdit ctrlName;
 	CEdit ctrlCommand;
 	CEdit ctrlHub;
 	CEdit ctrlNick;
+	CButton ctrlSeparator;
+	CButton ctrlRaw;
+	CButton ctrlChat;
+	CButton ctrlPM;
+	CButton ctrlHubMenu;
+	CButton ctrlUserMenu;
+	CButton ctrlSearchMenu;
+	CEdit ctrlResult;
+
 public:
+	int type;
+	int ctx;
 	string name;
 	string command;
 	string hub;
-	string nick;
 
 	enum { IDD = IDD_USER_COMMAND };
 
@@ -46,77 +58,103 @@ public:
 		COMMAND_ID_HANDLER(IDC_SETTINGS_RAW, onType)
 		COMMAND_ID_HANDLER(IDC_SETTINGS_CHAT, onType)
 		COMMAND_ID_HANDLER(IDC_SETTINGS_PM, onType)
+		COMMAND_HANDLER(IDC_COMMAND, EN_CHANGE, onChange)
+		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onChange)
 	END_MSG_MAP()
 
-	CommandDlg() { };
+	CommandDlg() : type(0), ctx(0) { };
 
 	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlName.SetFocus();
 		return FALSE;
 	}
 
-	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-
-#define ATTACH(id, var, txt) \
-		var.Attach(GetDlgItem(id)); \
-		var.SetWindowText(txt.c_str());
-
-		ATTACH(IDC_NAME, ctrlName, name);
-		ATTACH(IDC_COMMAND, ctrlCommand, command);
-		ATTACH(IDC_HUB, ctrlHub, hub);
-		ATTACH(IDC_NICK, ctrlNick, nick);
-#undef ATTACH
-
-		SetDlgItemText(IDC_COMMAND_DESCRIPTION, "\
-You can add parameters to your commands using the same format as for the logs, %[parameter], choosing from these:\n\
-nick\t\tNick of the user\n\
-mynick\t\tYour nick on that hub\n\
-file\t\tFilename (search only)\n\
-line:desc\tFor each of these, a one line dialog will ask what to put there (try and you'll understand).\n\
-Date and time specifiers work as well (%Y, %m, ...)\n\
-\n\
-Example: +ban %[nick] %[line:Time] %[line:Reason]");
-		ctrlName.SetFocus();
-
-		CenterWindow(GetParent());
-		return FALSE;
-	}
-
+	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onType(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
+		updateContext();
 		if(wID == IDOK) {
 			char buf[256];
+
+			if((type != 0) && 
+				((ctrlName.GetWindowTextLength() == 0) || (ctrlCommand.GetWindowTextLength()== 0)))
+			{
+				MessageBox("Name and command must not be empty");
+				return 0;
+			}
 
 #define GET_TEXT(id, var) \
 			GetDlgItemText(id, buf, 256); \
 			var = buf;
 
 			GET_TEXT(IDC_NAME, name);
-			GET_TEXT(IDC_COMMAND, command);
 			GET_TEXT(IDC_HUB, hub);
-			GET_TEXT(IDC_NICK, nick);
 
-			if(name.empty() || command.empty()) {
-				MessageBox("Name and command must not be empty");
-				return 0;
-			}
-			if(command.find_first_of("|$") != string::npos) {
-				MessageBox("Command may not contain $ or |");
-				return 0;
-			}
+			if(type != 0)
+				type = 1;
 		}
 		EndDialog(wID);
 		return 0;
 	}
-
+private:
+	void updateType() {
+		if(ctrlSeparator.GetCheck() == BST_CHECKED) {
+			type = 0;
+		} else if(ctrlRaw.GetCheck() == BST_CHECKED) {
+			type = 1;
+		} else if(ctrlChat.GetCheck() == BST_CHECKED) {
+			type = 2;
+		} else if(ctrlPM.GetCheck() == BST_CHECKED) {
+			type = 3;
+		}
+	}
+	enum { BUF_LEN = 1024 };
+	void updateCommand() {
+		char buf[BUF_LEN];
+		if(type == 0) {
+			command.clear();
+		} else if(type == 1) {
+			ctrlCommand.GetWindowText(buf, BUF_LEN-1);
+			command = buf;
+		} else if(type == 2) {
+			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
+			command = "<%[mynick]> " + Util::validateMessage(buf, false) + "|";
+		} else if(type == 3) {
+			ctrlNick.GetWindowText(buf, BUF_LEN - 1);
+			string to(buf);
+			ctrlCommand.GetWindowText(buf, BUF_LEN - 1);
+			command = "$To: " + to + " From: %[mynick] $<%[mynick]> " + Util::validateMessage(buf, false) + "|";
+		}
+	}
+	void updateControls() {
+		switch(type) {
+		case 0:
+			ctrlName.EnableWindow(FALSE);
+			ctrlCommand.EnableWindow(FALSE);
+			ctrlNick.EnableWindow(FALSE);
+			break;
+		case 1:
+		case 2:
+			ctrlName.EnableWindow(TRUE);
+			ctrlCommand.EnableWindow(TRUE);
+			ctrlNick.EnableWindow(FALSE);
+			break;
+		case 3:
+			ctrlName.EnableWindow(TRUE);
+			ctrlCommand.EnableWindow(TRUE);
+			ctrlNick.EnableWindow(TRUE);
+			break;
+		}
+	}
+	void updateContext();
 };
 
 #endif // !defined(AFX_CommandDlg_H__A7EB85C3_1EEA_4FEC_8450_C090219B8619__INCLUDED_)
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.4 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.5 2003/10/22 01:21:02 arnetheduck Exp $
  */

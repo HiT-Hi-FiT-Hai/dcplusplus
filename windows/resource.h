@@ -272,8 +272,8 @@
 #define IDC_SETTINGS_COMMAND            1204
 #define IDC_SETTINGS_HUB                1205
 #define IDC_SETTINGS_TO                 1206
-#define IDC_EDIT1                       1207
 #define IDC_FINAL_TEXT                  1207
+#define IDC_RESULT                      1207
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

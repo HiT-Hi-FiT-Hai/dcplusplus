@@ -291,9 +291,14 @@ void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 }
 
 // ClientListener
+void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line) {
+	if(type == ClientListener::FAILED) {
+		HubManager::getInstance()->removeUserCommand(client->getServer());
+	}
+}
 void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(type == ClientListener::USER_COMMAND) {
-		HubManager::getInstance()->addUserCommand(aType, ctx, name, command, client->getServer());
+		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getServer());
 	}
 }
 
@@ -370,5 +375,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.38 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.39 2003/10/22 01:21:02 arnetheduck Exp $
  */

@@ -23,6 +23,8 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Util.h"
+
 class UserCommand : public Flags {
 public:
 	typedef vector<UserCommand> List;
@@ -37,14 +39,31 @@ public:
 		CONTEXT_CHAT = 0x02,
 		CONTEXT_SEARCH = 0x04,
 		CONTEXT_MASK = CONTEXT_HUB | CONTEXT_CHAT | CONTEXT_SEARCH,
-		FLAG_NOSAVE = 0x08
 	};
 
-	UserCommand() { };
-	UserCommand(int aType, int aFlags, const string& aName, const string& aCommand, const string& aHub) throw() 
-		: Flags(aFlags), type(aType), name(aName), command(aCommand), hub(aHub) { };
+	enum {
+		FLAG_NOSAVE = 0x01
+	};
 
-	GETSETREF(int, type, Type);
+	UserCommand() : id(0), type(0) { };
+	UserCommand(int aId, int aType, int aCtx, int aFlags, const string& aName, const string& aCommand, const string& aHub) throw() 
+		: Flags(aFlags), id(aId), type(aType), ctx(aCtx), name(aName), command(aCommand), hub(aHub) { };
+	
+	UserCommand(const UserCommand& rhs) : Flags(rhs), id(rhs.id), type(rhs.type), 
+		ctx(rhs.ctx), name(rhs.name), command(rhs.command), hub(rhs.hub) 
+	{
+		
+	}
+
+	UserCommand& operator=(const UserCommand& rhs) {
+		id = rhs.id; type = rhs.type; ctx = rhs.ctx;
+		name = rhs.name; command = rhs.command; hub = rhs.hub;
+		*((Flags*)this) = rhs;
+		return *this;
+	}
+	GETSET(int, id, Id);
+	GETSET(int, type, Type);
+	GETSET(int, ctx, Ctx);
 	GETSETREF(string, name, Name);
 	GETSETREF(string, command, Command);
 	GETSETREF(string, hub, Hub);

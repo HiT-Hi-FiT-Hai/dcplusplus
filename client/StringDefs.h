@@ -246,6 +246,7 @@ enum Strings { // @DontAdd
 	SEARCH_STRING, // "Search String"
 	SEARCHING_FOR, // "Searching for "
 	SEND_PRIVATE_MESSAGE, // "Send private message"
+	SEPARATOR, // "Separator"
 	SERVER, // "Server"
 	SET_PRIORITY, // "Set priority"
 	SETTINGS_ADD_FOLDER, // "&Add folder"
