@@ -129,11 +129,12 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			if(seeker.find(getLocalIp()) != string::npos) {
+			if(seeker == (getLocalIp() + ":" + Util::toString(getPort()))) {
 				return;
 			}
 		} else {
-			if(Util::stricmp(seeker, getNick()) == 0) {
+			// Hub:seeker
+			if(Util::stricmp(seeker.c_str() + 4, getNick().c_str()) == 0) {
 				return;
 			}
 		}
@@ -195,7 +196,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		if(param.size() > 0) {
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::Search(), this, seeker, a, Util::toInt64(size), type, param);
 			
-			if(seeker.find("Hub:") != string::npos) {
+			if(seeker.compare(0, 4, "Hub:") == 0) {
 				User::Ptr u;
 				{
 					Lock l(cs);
@@ -716,6 +717,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.5 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.6 2004/06/13 11:27:32 arnetheduck Exp $
  */
 

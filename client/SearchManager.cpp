@@ -238,7 +238,7 @@ void SearchManager::onData(const u_int8_t* buf, int aLen, const string& address)
 			file, hubName, hubIpPort, address);
 		fire(SearchManagerListener::SR(), sr);
 		sr->decRef();
-	} else if(x.compare(1, 4, "RES ")) {
+	} else if(x.compare(1, 4, "RES ") == 0) {
 		Command c(x);
 		if(c.getParameters().empty())
 			return;
@@ -289,6 +289,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.39 2004/04/30 07:14:49 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.40 2004/06/13 11:27:32 arnetheduck Exp $
  */
 

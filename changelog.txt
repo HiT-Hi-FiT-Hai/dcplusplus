@@ -34,7 +34,12 @@
 * Automatic search matching is now done exclusively by tth for those items that have a TTH root and 
   by exact filename for those that don't.
 * Dropped support for bzip2 file lists
-
+* Show joins parts for fav users only option added (thanks psf8500)
+* Added possibility to log hub status messages (thanks torgny nyblom)
+* Removed full-row-select option (blame garg)
+* Added possibility to drag-drop tabs (thanks trem)
+* Added toggles for transferview showing (thanks trem)
+* HTTPS added as chat click link (thanks torgny)
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue
@@ -666,7 +671,8 @@ Minor:
   and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in 
   € (euros) now, which is, of course, my preferred currency =)
 * The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. 
-  I would open an alternative forum if I could get the old posts, but because all network connections to the server are      broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat 
+  I would open an alternative forum if I could get the old posts, but because all network connections to the server are      
+  broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat 
   limited). For the most desperate ones, I opened a new conference on sourceforge (where the old forums were) that
   you can use, or if you feel like it, try one of the forums that people have put up on their own (I won't read
   them though, don't have time). Anyway, lichlord should be up soon I hope...

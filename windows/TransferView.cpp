@@ -43,12 +43,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
-	} else {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
-	}
+	ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
 	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
@@ -588,5 +583,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.31 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.32 2004/06/13 11:27:33 arnetheduck Exp $
  */

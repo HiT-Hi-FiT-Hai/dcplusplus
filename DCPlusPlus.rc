@@ -287,13 +287,13 @@ BEGIN
     PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
 END
 
-IDD_ADVANCED2PAGE DIALOGEX 0, 0, 275, 225
+IDD_ADVANCED2PAGE DIALOGEX 0, 0, 275, 237
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 EXSTYLE WS_EX_STATICEDGE
 CAPTION "Logs and Sound"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Logging",IDC_SETTINGS_LOGGING,6,6,264,162
+    GROUPBOX        "Logging",IDC_SETTINGS_LOGGING,6,6,264,174
     RTEXT           "Directory",IDC_SETTINGS_LOG_DIR,18,19,39,8
     EDITTEXT        IDC_LOG_DIRECTORY,60,18,150,12,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSE_LOG,216,18,41,12
@@ -315,13 +315,15 @@ BEGIN
     EDITTEXT        IDC_POST_UPLOAD,60,138,198,12,ES_AUTOHSCROLL
     CONTROL         "Log system messages",IDC_LOG_SYSTEM,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,18,153,240,10
-    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,174,264,42
+    CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
+    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,186,264,42
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,186,246,10
+                    WS_TABSTOP,18,198,246,10
     CONTROL         "Make an annoying sound when a private message window is opened",
                     IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,198,246,10
+                    WS_TABSTOP,18,210,246,10
 END
 
 IDD_USER_COMMAND DIALOGEX 0, 0, 435, 282
@@ -630,15 +632,18 @@ END
 
 IDR_MAINFRAME ACCELERATORS 
 BEGIN
-    "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
-    "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
-    "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_CONNECT,        VIRTKEY, CONTROL, NOINVERT
     "R",            ID_FILE_RECONNECT,      VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SEARCH,         VIRTKEY, CONTROL, NOINVERT
-    "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
-    "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
+    "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
     "U",            IDC_FAVUSERS,           VIRTKEY, CONTROL, NOINVERT
+    "T",            IDC_FOLLOW,             VIRTKEY, CONTROL, NOINVERT
+    "N",            IDC_NOTEPAD,            VIRTKEY, CONTROL, NOINVERT
+    "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
+    "S",            IDC_SEND_MESSAGE,       VIRTKEY, ALT, NOINVERT
+    "1",            ID_VIEW_TOOLBAR,        VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_VIEW_STATUS_BAR,     VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_VIEW_TRANSFER_VIEW,  VIRTKEY, CONTROL, NOINVERT
 END
 
 IDR_PUBLICHUBS ACCELERATORS 

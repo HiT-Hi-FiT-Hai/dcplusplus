@@ -48,12 +48,8 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlQueue.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
-	} else {
-		ctrlQueue.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
-	}
+	ctrlQueue.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
+	
 
 	ctrlDirs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
 		TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, 
@@ -1293,7 +1289,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.51 2004/05/22 18:17:35 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.52 2004/06/13 11:27:33 arnetheduck Exp $
  */
 
 

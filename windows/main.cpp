@@ -35,6 +35,7 @@ enum { DEBUG_BUFSIZE = 8192 };
 static char guard[DEBUG_BUFSIZE];
 static int recursion = 0;
 static char tth[192*8/(5*8)+2];
+static bool firstException = true;
 
 static char buf[DEBUG_BUFSIZE];
 
@@ -68,7 +69,22 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 
 #endif
 
-	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE | File::TRUNCATE);
+	if(firstException) {
+		File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+		firstException = false;
+	}
+
+	if(File::getSize(Util::getAppPath() + "DCPlusPlus.pdb") == -1) {
+		// No debug symbols, we're not interested...
+		::MessageBox(NULL, "DC++ has crashed and you don't have debug symbols installed. Hence, I can't find out why it crashed, so don't report this as a bug unless you find a solution...", "DC++ has crashed", MB_OK);
+#ifndef _DEBUG
+		exit(1);
+#else
+		return EXCEPTION_CONTINUE_SEARCH;
+#endif
+	}
+
+	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
 	DWORD exceptionCode = e->ExceptionRecord->ExceptionCode ;
@@ -102,10 +118,11 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	f.close();
 
+	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
+
 #ifndef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 	
-	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "DC++ Has Crashed", MB_OK | MB_ICONERROR);
 	exit(-1);
 #else
 	return EXCEPTION_CONTINUE_SEARCH;
@@ -224,7 +241,7 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	CEdit dummy;
 	CEdit splash;
-	
+
 	CRect rc;
 	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
 	rc.top = (rc.bottom / 2) - 20;
@@ -358,5 +375,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.20 2004/05/09 22:06:24 arnetheduck Exp $
+ * $Id: main.cpp,v 1.21 2004/06/13 11:27:33 arnetheduck Exp $
  */

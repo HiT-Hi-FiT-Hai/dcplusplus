@@ -40,13 +40,8 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FINISHED_UL);
+	ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
-	} else {
-		ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
-	}
-	
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
@@ -196,5 +191,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.16 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.17 2004/06/13 11:27:33 arnetheduck Exp $
  */

@@ -101,6 +101,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_SEARCH, OnFileSearch)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
+		COMMAND_ID_HANDLER(ID_VIEW_TRANSFER_VIEW, OnViewTransferView)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
@@ -143,6 +144,7 @@ public:
 	BEGIN_UPDATE_UI_MAP(MainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_TRANSFER_VIEW, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
 
@@ -166,7 +168,9 @@ public:
 	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFinishedUploads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -231,15 +235,6 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
-		::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
-		UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
-		UpdateLayout();
-		return 0;
-	}
-
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		WinUtil::openFile(SETTING(DOWNLOAD_DIRECTORY));
 		return 0;
@@ -347,7 +342,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.34 2004/05/22 15:28:07 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.35 2004/06/13 11:27:33 arnetheduck Exp $
  */
 
  

@@ -264,6 +264,7 @@ private:
 	string redirect;
 	bool timeStamps;
 	bool showJoins;
+	bool favShowJoins;
 	string complete;
 
 	string lastKick;
@@ -392,6 +393,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.45 2004/04/30 07:14:56 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.46 2004/06/13 11:27:33 arnetheduck Exp $
  */
 

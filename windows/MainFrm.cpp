@@ -161,6 +161,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	UIAddToolBar(hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
+	UISetCheck(ID_VIEW_TRANSFER_VIEW, 1);
 
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -179,6 +180,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, IDC_FAVORITES);
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS))
 		PostMessage(WM_COMMAND, IDC_FINISHED);
+
+	if(!BOOLSETTING(SHOW_STATUSBAR))
+		PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
+	if(!BOOLSETTING(SHOW_TOOLBAR))
+		PostMessage(WM_COMMAND, ID_VIEW_TOOLBAR);
+	if(!BOOLSETTING(SHOW_TRANSFERVIEW))
+		PostMessage(WM_COMMAND, ID_VIEW_TRANSFER_VIEW);
 
 	if(!(GetAsyncKeyState(VK_SHIFT) & 0x8000))
 		PostMessage(WM_SPEAKER, AUTO_CONNECT);
@@ -906,6 +914,33 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	rebar.ShowBand(nBandIndex, bVisible);
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_TOOLBAR, bVisible);
+	return 0;
+}
+
+LRESULT MainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
+	::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+	UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
+	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_STATUSBAR, bVisible);
+	return 0;
+}
+
+LRESULT MainFrame::OnViewTransferView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	BOOL bVisible = !transferView.IsWindowVisible();
+	if(!bVisible) {	
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_TOP);
+	} else { 
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_NONE);
+	}
+	UISetCheck(ID_VIEW_TRANSFER_VIEW, bVisible);
+	UpdateLayout();
+	SettingsManager::getInstance()->set(SettingsManager::SHOW_TRANSFERVIEW, bVisible);
 	return 0;
 }
 
@@ -968,5 +1003,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.52 2004/05/22 15:28:07 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.53 2004/06/13 11:27:33 arnetheduck Exp $
  */

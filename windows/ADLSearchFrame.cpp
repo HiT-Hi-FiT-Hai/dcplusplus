@@ -62,17 +62,8 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Create list control
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
+	ctrlList.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	listContainer.SubclassWindow(ctrlList.m_hWnd);
-
-	// Ev. set full row select
-	if(BOOLSETTING(FULL_ROW_SELECT)) 
-	{
-		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
-	} 
-	else 
-	{
-		ctrlList.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
-	}
 
 	// Set background color
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -595,5 +586,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.10 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.11 2004/06/13 11:27:33 arnetheduck Exp $
  */

@@ -46,6 +46,7 @@ PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
 	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
+	{ IDC_SETTINGS_LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -62,6 +63,7 @@ PropPage::Item Advanced2Page::items[] = {
 	{ IDC_POST_UPLOAD, SettingsManager::LOG_FORMAT_POST_UPLOAD, PropPage::T_STR },
 	{ IDC_MAIN_CHAT, SettingsManager::LOG_FORMAT_MAIN_CHAT, PropPage::T_STR },
 	{ IDC_PRIVATE_CHAT, SettingsManager::LOG_FORMAT_PRIVATE_CHAT, PropPage::T_STR },
+	{ IDC_SETTINGS_LOG_STATUS_MESSAGES, SettingsManager::LOG_STATUS_MESSAGES, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -119,6 +121,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.9 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.10 2004/06/13 11:27:33 arnetheduck Exp $
  */
 

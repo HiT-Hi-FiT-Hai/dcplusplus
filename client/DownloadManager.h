@@ -87,7 +87,7 @@ public:
 		}
 		cmd.addParam(Util::toAdcFile(getSource()));
 		cmd.addParam(Util::toString(getPos()));
-		cmd.addParam(Util::toString(getSize()));
+		cmd.addParam(Util::toString(getSize() - getPos()));
 
 		if(zlib && getSize() != -1 && BOOLSETTING(COMPRESS_TRANSFERS)) {
 			setFlag(FLAG_ZDOWNLOAD);
@@ -227,5 +227,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.62 2004/05/22 18:17:35 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.63 2004/06/13 11:27:32 arnetheduck Exp $
  */

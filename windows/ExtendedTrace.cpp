@@ -300,7 +300,8 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		f.write(symInfo, strlen(symInfo));
 		f.write(LIT("\r\n"));
 
-		for( ULONG index = 0; ; index++ ) 
+		// Max 100 stack lines...
+		for( ULONG index = 0; index < 100; index++ ) 
 		{
 			bResult = StackWalk(
 				IMAGE_FILE_MACHINE_I386,
@@ -328,7 +329,6 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			f.write(LIT("\r\n"));
 
 		}
-
 		if ( hThread != GetCurrentThread() )
 			ResumeThread( hThread );
 }

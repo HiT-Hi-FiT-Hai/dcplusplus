@@ -61,12 +61,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
-	
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
-	} else {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
-	}
+	ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_FULLROWSELECT);
 
 	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
@@ -111,6 +106,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 
 	showJoins = BOOLSETTING(SHOW_JOINS);
+	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
 	m_hMenu = WinUtil::mainMenu;
 
@@ -201,6 +197,13 @@ void HubFrame::onEnter() {
 				} else {
 					addClientLine(STRING(JOIN_SHOWING_OFF));
 				}
+			} else if( Util::stricmp(cmd.c_str(), "favshowjoins") == 0 ) {
+				favShowJoins = !favShowJoins;
+				if(favShowJoins) {
+					addClientLine(STRING(FAV_JOIN_SHOWING_ON));
+				} else {
+					addClientLine(STRING(FAV_JOIN_SHOWING_OFF));
+				}
 			} else if(Util::stricmp(cmd.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
 			} else if(Util::stricmp(cmd.c_str(), "userlist") == 0) {
@@ -217,7 +220,7 @@ void HubFrame::onEnter() {
 					}
 				}
 			} else if(Util::stricmp(cmd.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>");
+				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>");
 			} else if(Util::stricmp(cmd.c_str(), "pm") == 0) {
 				string::size_type j = param.find(' ');
 				if(j != string::npos) {
@@ -345,8 +348,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-						if(showJoins)
-							addLine("*** " + STRING(JOINS) + u->getNick());
+						if(showJoins) {
+							if (!favShowJoins | u->isFavoriteUser()) {
+								addLine("*** " + STRING(JOINS) + u->getNick());
+							}
+						}
 					} else {
 						resort = true;
 					}
@@ -362,7 +368,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 						UserInfo* ui = ctrlUsers.getItemData(j);
 						ctrlUsers.DeleteItem(j);
 						if(showJoins) {
-							addLine("*** " + STRING(PARTS) + u->getNick());
+							if (!favShowJoins | u->isFavoriteUser()) {
+								addLine("*** " + STRING(PARTS) + u->getNick());
+							}
 						}
 						dcassert(userMap[u] == ui);
 						userMap.erase(u);
@@ -567,7 +575,8 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		
 		if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
 			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
-			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) )	{
+			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) ||
+			(Util::strnicmp(x.c_str() + start, "https://", 8) == 0) )	{
 
 			bHandled = true;
 			// Web links...
@@ -1027,7 +1036,9 @@ void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine("*** " + aLine);
 	}
-
+	if(BOOLSETTING(LOG_STATUS_MESSAGES) && inChat /*&& BOOLSETTING(FILTER_MESSAGES)*/) {
+		LOGDT(client->getAddressPort() + "_Status", aLine);
+	}
 }
 
 void HubFrame::closeDisconnected() {
@@ -1129,5 +1140,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.61 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.62 2004/06/13 11:27:33 arnetheduck Exp $
  */

@@ -40,7 +40,7 @@ const string SettingsManager::settingTags[] =
 	"FinishedULWidths", "FinishedULOrder", "CID",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
+	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "AutoAutoSearchString", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"ListDuplicates", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
@@ -53,7 +53,8 @@ const string SettingsManager::settingTags[] =
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
-	"GetUserCountry",
+	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
+	"ShowToolbar", "ShowTransferview",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -84,7 +85,6 @@ SettingsManager::SettingsManager()
 	setDefault(ROLLBACK, 4096);
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
-	setDefault(FULL_ROW_SELECT, true);
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(FILTER_MESSAGES, true);
 	setDefault(MINIMIZE_TRAY, false);
@@ -152,6 +152,11 @@ SettingsManager::SettingsManager()
 	setDefault(SEND_UNKNOWN_COMMANDS, true);
 	setDefault(MAX_HASH_SPEED, 0);
 	setDefault(GET_USER_COUNTRY, true);
+	setDefault(FAV_SHOW_JOINS, false);
+	setDefault(LOG_STATUS_MESSAGES, false);
+	setDefault(SHOW_TRANSFERVIEW, true);
+	setDefault(SHOW_STATUSBAR, true);
+	setDefault(SHOW_TOOLBAR, true);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -295,6 +300,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.75 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.76 2004/06/13 11:27:32 arnetheduck Exp $
  */
 

@@ -59,11 +59,8 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		}
 		
 		// See if we're already trying to connect
-		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-			if(i->first->getUser() == aUser) {
-				return;
-			}
-		}
+		if(find(pendingDown.begin(), pendingDown.end(), aUser) != pendingDown.end())
+			return;
 
 		// Check if we have an active download connection already
 		for(ConnectionQueueItem::Iter j = active.begin(); j != active.end(); ++j) {
@@ -75,7 +72,7 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		// Add it to the pending...
 		cqi = new ConnectionQueueItem(aUser);
 		cqi->setState(ConnectionQueueItem::WAITING);
-		pendingDown.insert(make_pair(cqi, 0));
+		pendingDown.push_back(cqi);
 
 		fire(ConnectionManagerListener::Added(), cqi);
 	}
@@ -116,13 +113,13 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
 			active.erase(find(active.begin(), active.end(), aSource->getCQI()));
 			
-			pendingDown[cqi] = GET_TICK();
+			cqi->setLastAttempt(GET_TICK());
+			pendingDown.push_back(cqi);
 		} else {
 			{
 				Lock l(cs);
 				dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
 				active.erase(find(active.begin(), active.end(), aSource->getCQI()));
-
 			}
 			putConnection(aSource);
 		}
@@ -190,29 +187,29 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 
 		int attempts = 0;
 		
-		ConnectionQueueItem::TimeIter i = pendingDown.begin();
+		ConnectionQueueItem::Iter i = pendingDown.begin();
 		while(i != pendingDown.end()) {
-			ConnectionQueueItem* cqi = i->first;
+			ConnectionQueueItem* cqi = *i;
 			dcassert(cqi->getUser());
 
 			if(!cqi->getUser()->isOnline()) {
 				// Not online anymore...remove him from the pending...
-				pendingDown.erase(i++);
+				i = pendingDown.erase(i);
 				removed.push_back(cqi);
 				continue;
 			}
 
-			if( ((i->second + 60*1000) < aTick) && (attempts < 2) ) {
-				i->second = aTick;
+			if( ((cqi->getLastAttempt() + 60*1000) < aTick) && (attempts < 2) ) {
+				cqi->setLastAttempt(aTick);
 
 				if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-					pendingDown.erase(i++);
+					i = pendingDown.erase(i);
 					removed.push_back(cqi);
 					continue;
 				}
 
 				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)) {
-					pendingDown.erase(i++);
+					i = pendingDown.erase(i);
 					failPassive.push_back(cqi);
 					continue;
 				}
@@ -235,7 +232,7 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 				} else if(cqi->getState() == ConnectionQueueItem::NO_DOWNLOAD_SLOTS && startDown) {
 					cqi->setState(ConnectionQueueItem::WAITING);
 				}
-			} else if(((i->second + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
+			} else if(((cqi->getLastAttempt() + 50*1000) < aTick) && (cqi->getState() == ConnectionQueueItem::CONNECTING)) {
 				fire(ConnectionManagerListener::Failed(), cqi, STRING(CONNECTION_TIMEOUT));
 				cqi->setState(ConnectionQueueItem::WAITING);
 			}
@@ -354,9 +351,10 @@ void ConnectionManager::on(UserConnectionListener::MyNick, UserConnection* aSour
 	// First, we try looking in the pending downloads...hopefully it's one of them...
 	{
 		Lock l(cs);
-		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-			if(i->first->getUser()->getNick() == aNick) {
-				aSource->setUser(i->first->getUser());
+		for(ConnectionQueueItem::Iter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+			ConnectionQueueItem* cqi = *i;
+			if(cqi->getUser()->getNick() == aNick) {
+				aSource->setUser(cqi->getUser());
 				// Indicate that we're interested in this file...
 				aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 			}
@@ -468,17 +466,13 @@ void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource,
 
 		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
 			// See if we have a matching user in the pending connections...
-			ConnectionQueueItem::TimeIter i;
-			for(i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-				if(i->first->getUser() == aSource->getUser())
-					break;
-			}
+			ConnectionQueueItem::Iter i = find(pendingDown.begin(), pendingDown.end(), aSource->getUser());
 
 			if(i == pendingDown.end()) {
 				putConnection(aSource);
 				return;
 			}
-			cqi = i->first;
+			cqi = *i;
 			pendingDown.erase(i);
 			cqi->setConnection(aSource);
 		} else {
@@ -577,5 +571,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.74 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.75 2004/06/13 11:27:32 arnetheduck Exp $
  */

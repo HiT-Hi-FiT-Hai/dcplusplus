@@ -222,6 +222,7 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CSTRING(MENU_STATUS_BAR));
+	view.AppendMenu(MF_STRING, ID_VIEW_TRANSFER_VIEW, CSTRING(MENU_TRANSFER_VIEW));
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CSTRING(MENU_VIEW));
 
@@ -647,5 +648,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.42 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.43 2004/06/13 11:27:33 arnetheduck Exp $
  */

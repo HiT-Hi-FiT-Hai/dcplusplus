@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="windows-1252"?>
+<?xml version="1.0" encoding="windows-1252" standalone="yes"?>
 <Language Name="Example Language">
 	<Strings>
 		<String Name="Active">Active</String>
@@ -180,8 +180,9 @@
 		<String Name="MenuRequestFeature">Request a feature</String>
 		<String Name="MenuReportBug">Report a bug</String>
 		<String Name="MenuView">&amp;View</String>
-		<String Name="MenuStatusBar">&amp;Status bar</String>
-		<String Name="MenuToolbar">&amp;Toolbar</String>
+		<String Name="MenuStatusBar">&amp;Status bar	Ctrl+2</String>
+		<String Name="MenuToolbar">&amp;Toolbar	Ctrl+1</String>
+		<String Name="MenuTransferView">T&amp;ransfers	Ctrl+3</String>
 		<String Name="MenuWindow">&amp;Window</String>
 		<String Name="MenuArrange">Arrange icons</String>
 		<String Name="MenuCascade">Cascade</String>
@@ -298,7 +299,6 @@
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
-		<String Name="SettingsFullRowSelect">Full row select in lists</String>
 		<String Name="SettingsGeneral">General</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
@@ -368,6 +368,7 @@
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
 		<String Name="SettingsWriteBuffer">Write buffer size</String>
 		<String Name="SettingsGetUserCountry">Get User Country</String>
+		<String Name="SettingsLogStatusMessages">Log status messages</String>
 		<String Name="Settings">Settings</String>
 		<String Name="SfvInconsistency">CRC32 inconsistency (SFV-Check)</String>
 		<String Name="Shared">Shared</String>

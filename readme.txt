@@ -82,6 +82,8 @@ Contents
   /clear            Clears the main chat windows
   /ts               Switches timestamps in chat windows on and off
   /showjoins        Toggles joins/parts messages for the current hub
+  /favshowjoins     Toggles joins/parts messages of favorite users for the current hub
+                     (requires showjoins to be enabled)
   /search <string>  Searches for <string>
   /join <hub>       Joins <hub>
   /dc++             Gives a comment about DC++ and shows the URL where

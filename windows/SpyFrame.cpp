@@ -34,11 +34,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlSearches.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_RESULTS);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlSearches.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
-
+	ctrlSearches.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	ctrlSearches.SetBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextBkColor(WinUtil::bgColor);
 	ctrlSearches.SetTextColor(WinUtil::textColor);
@@ -176,5 +172,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.18 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.19 2004/06/13 11:27:33 arnetheduck Exp $
  */

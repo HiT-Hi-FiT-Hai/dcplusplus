@@ -48,7 +48,7 @@ public:
 
 	enum { FT_EXTRA_SPACE = 18 };
 
-	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), inTab(false) { 
+	FlatTabCtrlImpl() : closing(NULL), rows(1), height(0), active(NULL), moving(NULL), inTab(false) { 
 		black.CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
 	};
 	~FlatTabCtrlImpl() { }
@@ -183,6 +183,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
+		MESSAGE_HANDLER(WM_LBUTTONUP, onLButtonUp)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
 		COMMAND_ID_HANDLER(IDC_CHEVRON, onChevron)
@@ -200,12 +201,40 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(wParam & MK_SHIFT) ::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
-					else ::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
+					if(wParam & MK_SHIFT) 
+						::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
+					else 
+						moving = t;
 				}
 				break;
 			}
 		}
+		return 0;
+	}
+
+	LRESULT onLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		int xPos = GET_X_LPARAM(lParam); 
+		int yPos = GET_Y_LPARAM(lParam); 
+		int row = getRows() - ((yPos / getTabHeight()) + 1);
+
+		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
+			TabInfo* t = *i;
+			if((row == t->row) && (xPos >= t->xpos) && (xPos < (t->xpos + t->getWidth())) ) {
+				// Bingo, this was clicked
+				HWND hWnd = GetParent();
+				if(hWnd) {
+					if(t == moving) 
+						::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
+					else{
+						//check if the pointer is on the left or right half of the tab
+						//to determine where to insert the tab
+						moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
+					}
+				}
+				break;
+			}
+		}
+
 		return 0;
 	}
 
@@ -476,6 +505,35 @@ private:
 		}
 	};
 
+	void moveTabs(TabInfo* aTab, bool after){
+		if(moving == NULL)
+			return;
+
+		TabInfo::ListIter i, j;
+		//remove the tab we're moving
+		for(j = tabs.begin(); j != tabs.end(); ++j){
+			if((*j) == moving){
+				tabs.erase(j);
+				break;
+			}
+		}
+
+		//find the tab we're going to insert before or after
+		for(i = tabs.begin(); i != tabs.end(); ++i){
+			if((*i) == aTab){
+				if(after)
+					++i;
+				break;
+			}
+		}
+
+		tabs.insert(i, moving);
+		moving = NULL;
+
+		calcRows(false);
+		Invalidate();	
+	}
+
 	HWND closing;
 	CButton chevron;
 	CMenu mnu;
@@ -484,6 +542,7 @@ private:
 	int height;
 
 	TabInfo* active;
+	TabInfo* moving;
 	TabInfo::List tabs;
 	CPen black;
 
@@ -744,5 +803,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.27 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.28 2004/06/13 11:27:33 arnetheduck Exp $
  */

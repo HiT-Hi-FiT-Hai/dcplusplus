@@ -36,13 +36,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_USERS);
-
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES);
-	} else {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES);
-	}
-	
+	ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextColor(WinUtil::textColor);
@@ -167,6 +161,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.20 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.21 2004/06/13 11:27:33 arnetheduck Exp $
  */
 

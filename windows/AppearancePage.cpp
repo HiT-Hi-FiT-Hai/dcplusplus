@@ -55,13 +55,13 @@ PropPage::Item AppearancePage::items[] = {
 };
 
 PropPage::ListItem AppearancePage::listItems[] = {
-	{ SettingsManager::FULL_ROW_SELECT, ResourceManager::SETTINGS_FULL_ROW_SELECT },
 	{ SettingsManager::FILTER_MESSAGES, ResourceManager::SETTINGS_FILTER_MESSAGES },
 	{ SettingsManager::MINIMIZE_TRAY, ResourceManager::SETTINGS_MINIMIZE_TRAY },
 	{ SettingsManager::TIME_STAMPS, ResourceManager::SETTINGS_TIME_STAMPS },
 	{ SettingsManager::CONFIRM_EXIT, ResourceManager::SETTINGS_CONFIRM_EXIT },
 	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_STATUS_IN_CHAT },
 	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_SHOW_JOINS },
+	{ SettingsManager::FAV_SHOW_JOINS, ResourceManager::SETTINGS_FAV_SHOW_JOINS },
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
@@ -193,5 +193,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.14 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.15 2004/06/13 11:27:33 arnetheduck Exp $
  */

@@ -60,9 +60,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
+	ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	
 	ctrlList.SetBkColor(WinUtil::bgColor);
 	ctrlList.SetTextBkColor(WinUtil::bgColor);
@@ -756,5 +754,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.31 2004/03/27 11:51:34 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.32 2004/06/13 11:27:33 arnetheduck Exp $
  */

@@ -140,6 +140,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 			if(free && supportsFree && allowedFree) {
 				extraSlot = true;
 			} else {
+				delete is;
 				aSource->maxedOut();
 				aSource->disconnect();
 				return false;
@@ -318,8 +319,11 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
 	int64_t aStartPos = Util::toInt64(c.getParam(2));
+	const string& fname = c.getParam(1);
+	const string& type = c.getParam(0);
+	string tmp;
 
-	if(prepareFile(aSource, c.getParam(0), Util::toNmdcFile(c.getParam(1)), aStartPos, aBytes)) {
+	if(prepareFile(aSource, type, Util::toNmdcFile(Util::toAcp(fname, tmp)), aStartPos, aBytes)) {
 		Upload* u = aSource->getUpload();
 		dcassert(u != NULL);
 		if(aBytes == -1)
@@ -384,5 +388,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.62 2004/05/23 18:22:54 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.63 2004/06/13 11:27:32 arnetheduck Exp $
  */

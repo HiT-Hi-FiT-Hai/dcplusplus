@@ -28,6 +28,7 @@
 #pragma warning(disable: 4512) // can't generate assignment operator
 #pragma warning(disable: 4710) // function not inlined
 #pragma warning(disable: 4127) // conditional expression is constant
+#pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
 
 #ifndef CDECL
 #define CDECL _cdecl
@@ -117,5 +118,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.22 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: config.h,v 1.23 2004/06/13 11:27:32 arnetheduck Exp $
  */
