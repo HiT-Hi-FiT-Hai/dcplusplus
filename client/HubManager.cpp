@@ -100,8 +100,10 @@ void HubManager::onHttpFinished() throw() {
 		} else {
 			i = 0;
 
-			while( (i < x->size()) && ((j=x->find("\r\n", i)) != string::npos)) {
-				StringTokenizer<string> tok(x->substr(i, j-i), '|');
+			string utfText = Text::acpToUtf8(*x);
+
+			while( (i < utfText.size()) && ((j=utfText.find("\r\n", i)) != string::npos)) {
+				StringTokenizer<string> tok(utfText.substr(i, j-i), '|');
 				i = j + 2;
 				if(tok.getTokens().size() < 4)
 					continue;
@@ -432,5 +434,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.54 2004/09/13 23:02:43 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.55 2004/09/26 08:45:33 arnetheduck Exp $
  */

@@ -149,6 +149,7 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	int i = -1;
 	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		item.iItem = i;
+		item.iSubItem = 1;
 		ctrlDirectories.GetItem(&item);
 		ShareManager::getInstance()->removeDirectory(Text::fromT(buf));
 		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
@@ -212,6 +213,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.25 2004/09/21 08:19:56 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.26 2004/09/26 08:45:38 arnetheduck Exp $
  */
 
