@@ -217,6 +217,8 @@ public:
 			int xPos = GET_X_LPARAM(lParam); 
 			int yPos = GET_Y_LPARAM(lParam); 
 			int row = getRows() - ((yPos / getTabHeight()) + 1);
+			
+			bool moveLast = true;
 
 			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
@@ -232,9 +234,12 @@ public:
 							moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
 						}
 					}
+					moveLast = false;
 					break;
 				}
 			}
+			if(moveLast)
+				moveTabs(tabs.back(), true);
 			moving = NULL;
 		}
 		return 0;
@@ -810,5 +815,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.32 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.33 2004/08/11 22:18:16 arnetheduck Exp $
  */

@@ -1118,16 +1118,16 @@ void HubFrame::on(Message, Client*, const string& line) throw() {
 		if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
 			// Do nothing...
 		} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-			speak(ADD_SILENT_STATUS_LINE, line);
+			speak(ADD_SILENT_STATUS_LINE, Util::toDOS(line));
 		} else {
-			speak(ADD_CHAT_LINE, line);
+			speak(ADD_CHAT_LINE, Util::toDOS(line));
 		}
 	} else {
-		speak(ADD_CHAT_LINE, line);
+		speak(ADD_CHAT_LINE, Util::toDOS(line));
 	}
 }
 void HubFrame::on(PrivateMessage, Client*, const User::Ptr& user, const string& line) throw() { 
-	speak(PRIVATE_MESSAGE, user, line);
+	speak(PRIVATE_MESSAGE, user, Util::toDOS(line));
 }
 void HubFrame::on(NickTaken, Client*) throw() { 
 	speak(ADD_STATUS_LINE, STRING(NICK_TAKEN));
@@ -1139,5 +1139,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.69 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.70 2004/08/11 22:18:16 arnetheduck Exp $
  */

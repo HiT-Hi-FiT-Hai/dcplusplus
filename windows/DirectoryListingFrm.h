@@ -236,7 +236,7 @@ private:
 			if(a->type == DIRECTORY) {
 				if(b->type == DIRECTORY) {
 					switch(col) {
-					case COLUMN_SIZE: return compare(a->dir->getSize(), b->dir->getSize());
+					case COLUMN_SIZE: return compare(a->dir->getTotalSize(), b->dir->getTotalSize());
 					default: return Util::stricmp(a->columns[col], b->columns[col]);
 					}
 				} else {
@@ -294,5 +294,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.37 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.38 2004/08/11 22:18:16 arnetheduck Exp $
  */

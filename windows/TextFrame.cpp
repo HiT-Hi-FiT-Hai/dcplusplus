@@ -40,7 +40,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlPad.SetFont(WinUtil::monoFont);
 	string tmp;
 	try {
-		tmp = File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN);
+		tmp = Util::toDOS(File(file, File::READ, File::OPEN).read(MAX_TEXT_LEN));
 		string::size_type i = 0;
 		while((i = tmp.find('\n', i)) != string::npos) {
 			if(i == 0 || tmp[i-1] != '\r') {
@@ -81,7 +81,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.7 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.8 2004/08/11 22:18:16 arnetheduck Exp $
  */
 
 

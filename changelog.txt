@@ -1,3 +1,12 @@
+ -- 0.4033 --
+ * Fixed a rare download crash (thanks farcry)
+ * Fixed tab dropping in the last position (thanks trem)
+ * Fixed directory sorting in the file listings (thanks trem)
+ * Files that can't be moved to the target drive from the temp folder
+   are now renamed to their real name
+ * Text with unix and mac line end encodings should now be correctly displayed
+ 
+ 
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done

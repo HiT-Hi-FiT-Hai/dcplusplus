@@ -241,6 +241,8 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 
+	static string toDOS(const string& tmp);
+
 	static string getShortTimeString();
 
 	static string getTimeString() {
@@ -579,5 +581,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.92 2004/08/08 11:01:39 arnetheduck Exp $
+ * $Id: Util.h,v 1.93 2004/08/11 22:18:16 arnetheduck Exp $
  */

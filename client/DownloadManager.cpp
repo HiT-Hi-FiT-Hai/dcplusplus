@@ -734,7 +734,19 @@ noCRC:
 			}
 			d->setTempTarget(Util::emptyString);
 		} catch(const FileException&) {
-			// Huh??? Now what??? Oh well...let it be...
+			try {
+				if(!SETTING(DOWNLOAD_DIRECTORY).empty()) {
+					File::renameFile(d->getTempTarget(), SETTING(DOWNLOAD_DIRECTORY) + d->getTargetFileName());
+				} else {
+					File::renameFile(d->getTempTarget(), Util::getFilePath(d->getTempTarget()) + d->getTargetFileName());
+				}
+			} catch(const FileException&) {
+				try {
+					File::renameFile(d->getTempTarget(), Util::getFilePath(d->getTempTarget()) + d->getTargetFileName());
+				} catch(const FileException&) {
+					// Ignore...
+				}
+			}
 		}
 	}
 
@@ -815,10 +827,12 @@ void DownloadManager::removeDownload(Download* d, bool full, bool finished /* = 
 	}
 
 	if(d->getFile()) {
-		try {
-			d->getFile()->flush();
-		} catch(const Exception&) {
-			finished = false;
+		if(d->getActual() > 0) {
+			try {
+				d->getFile()->flush();
+			} catch(const Exception&) {
+				finished = false;
+			}
 		}
 		delete d->getFile();
 		d->setFile(NULL);
@@ -896,5 +910,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.112 2004/08/07 09:36:05 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.113 2004/08/11 22:18:16 arnetheduck Exp $
  */
