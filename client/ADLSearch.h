@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom@home.se
+ * Henrik Engström, henrikengstrom at home se
  */
 
 #if !defined(__ADLSEARCH_H__)
@@ -303,5 +303,5 @@ public:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.17 2004/10/14 18:12:55 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.18 2004/10/26 13:53:58 arnetheduck Exp $
  */

@@ -107,7 +107,10 @@ private:
 			File() : size(0), parent(NULL), tth(NULL) { };
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
-
+			
+			~File() {
+				delete tth;
+			}
 			string getADCPath() const { return parent->getADCPath() + name; }
 			string getFullName() const { return parent->getFullName() + getName(); }
 
@@ -256,7 +259,7 @@ private:
 	virtual void on(DownloadManagerListener::Complete, Download* d) throw();
 
 	// HashManagerListener
-	virtual void on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw();
+	virtual void on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw();
 
 	// SettingsManagerListener
 	virtual void on(SettingsManagerListener::Save, SimpleXML* xml) throw() {
@@ -277,6 +280,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.62 2004/10/23 17:06:26 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.63 2004/10/26 13:53:58 arnetheduck Exp $
  */
 

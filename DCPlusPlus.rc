@@ -733,10 +733,10 @@ IDR_ADLSEARCH ACCELERATORS
 BEGIN
     "N",            IDC_ADD,                VIRTKEY, ALT, NOINVERT
     "P",            IDC_EDIT,               VIRTKEY, ALT, NOINVERT
-    "R",            IDC_REMOVE,             VIRTKEY, ALT, NOINVERT
-    "U",            IDC_MOVE_UP,            VIRTKEY, ALT, NOINVERT
+    "H",            IDC_HELP_FAQ,           VIRTKEY, ALT, NOINVERT
     "D",            IDC_MOVE_DOWN,          VIRTKEY, ALT, NOINVERT
-    "T",            IDC_HELP_FAQ,           VIRTKEY, ALT, NOINVERT
+    "U",            IDC_MOVE_UP,            VIRTKEY, ALT, NOINVERT
+    "R",            IDC_REMOVE,             VIRTKEY, ALT, NOINVERT
 END
 
 IDR_FAVORITES ACCELERATORS 

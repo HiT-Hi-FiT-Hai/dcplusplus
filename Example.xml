@@ -248,7 +248,7 @@
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
 		<String Name="NickUnknown"> (Nick unknown)</String>
-		<String Name="No">No</String>
+		<String Name="NoStr">No</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
 		<String Name="NoErrors">No errors</String>
@@ -512,8 +512,7 @@
 		<String Name="WaitingToRetry">Waiting to retry...</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>
-		<String Name="WhatsThis">What's &amp;this?</String>
-		<String Name="Yes">Yes</String>
+		<String Name="YesStr">Yes</String>
 		<String Name="YouAreBeingRedirected">You are being redirected to </String>
 	</Strings>
 </Language>

@@ -53,7 +53,13 @@ public:
 	CriticalSection() throw() {
 		pthread_mutexattr_t attr;
 		pthread_mutexattr_init(&attr);
+#if defined(PTHREAD_MUTEX_RECURSIVE_NP)
 		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
+#elif defined(PTHREAD_MUTEX_RECURSIVE)
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); // Mac OS X fix
+#else
+#error Can not find mutex type attribute.
+#endif
 		pthread_mutex_init(&mtx, &attr);
 		pthread_mutexattr_destroy(&attr);
 	};
@@ -97,7 +103,13 @@ private:
 	FastCriticalSection() { 
 		pthread_mutexattr_t attr;
 		pthread_mutexattr_init(&attr);
+#if defined(PTHREAD_MUTEX_FAST_NP)
 		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_FAST_NP);
+#elif defined(PTHREAD_MUTEX_NORMAL)
+		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_NORMAL);	// Mac OS X fix
+#else
+#error Can not find mutex type attribute.
+#endif
 		pthread_mutex_init(&mtx, &attr);
 		pthread_mutexattr_destroy(&attr);
 	};
@@ -174,5 +186,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.22 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.23 2004/10/26 13:53:58 arnetheduck Exp $
  */

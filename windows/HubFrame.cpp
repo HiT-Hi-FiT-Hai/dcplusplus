@@ -134,6 +134,8 @@ void HubFrame::openWindow(const tstring& aServer) {
 		frames[aServer] = frm;
 		frm->CreateEx(WinUtil::mdiClient);
 	} else {
+		if(::IsIconic(i->second->m_hWnd))
+			::ShowWindow(i->second->m_hWnd, SW_RESTORE);
 		i->second->MDIActivate(i->second->m_hWnd);
 	}
 }
@@ -1109,5 +1111,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.81 2004/10/24 11:25:41 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.82 2004/10/26 13:53:59 arnetheduck Exp $
  */

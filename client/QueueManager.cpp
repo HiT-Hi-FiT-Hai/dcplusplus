@@ -46,6 +46,10 @@
 #define FILELISTS_DIR "filelists/"
 #endif
 
+#ifdef ff
+#undef ff
+#endif
+
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 const string QueueManager::TEMP_EXTENSION = ".dctmp";
 
@@ -1254,5 +1258,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.107 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.108 2004/10/26 13:53:58 arnetheduck Exp $
  */

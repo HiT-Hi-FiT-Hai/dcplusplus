@@ -200,7 +200,7 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 								  
 	string::size_type i;
 	string::size_type j = 0;
-	while( (i = aFile.find(PATH_SEPARATOR, j)) != string::npos) {
+	while( (i = aFile.find('\\', j)) != string::npos) {
 		mi = d->directories.find(aFile.substr(j, i-j));
 		j = i + 1;
 		if(mi == d->directories.end())
@@ -517,8 +517,10 @@ void ShareManager::addTree(const string& fullName, Directory* dir) {
 		// We're not changing anything cruical...
 		Directory::File& f = const_cast<Directory::File&>(f2);
 		string fileName = fullName + f.getName();
-
-		f.setTTH(HashManager::getInstance()->getTTH(fileName, f.getSize()));
+		try {
+			f.setTTH(new TTHValue(HashManager::getInstance()->getTTH(fileName, f.getSize())));
+		} catch(const HashException&) {
+		}
 
 		if(f.getTTH() != NULL) {
 			addFile(dir, i++);
@@ -1159,7 +1161,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 	}
 }
 
-void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValue* root) throw() {
+void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw() {
 	WLock l(cs);
 	Directory* d = getDirectory(fname);
 	if(d != NULL) {
@@ -1171,12 +1173,12 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			}
 			// Get rid of false constness...
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
-			f->setTTH(root);
-			tthIndex.insert(make_pair(root, i));
+			f->setTTH(new TTHValue(root));
+			tthIndex.insert(make_pair(f->getTTH(), i));
 		} else {
 			string name = Util::getFileName(fname);
 			int64_t size = File::getSize(fname);
-			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
+			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, new TTHValue(root))).first;
 			addFile(d, it);
 		}
 		setDirty();
@@ -1196,6 +1198,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.109 2004/10/21 10:27:16 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.110 2004/10/26 13:53:58 arnetheduck Exp $
  */
 

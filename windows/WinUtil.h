@@ -117,7 +117,17 @@ public:
 			frame = new T();
 			frame->CreateEx(WinUtil::mdiClient, frame->rcDefault, CTSTRING_I(ResourceManager::Strings(title)));
 		} else {
-			frame->MDIActivate(frame->m_hWnd);
+			// match the behavior of MainFrame::onSelected()
+			HWND hWnd = frame->m_hWnd;
+			if(frame->MDIGetActive() != hWnd) {
+				frame->MDIActivate(hWnd);
+			} else {
+				::SetWindowPos(hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+				frame->MDINext(hWnd);
+				hWnd = frame->MDIGetActive();
+			}
+			if(::IsIconic(hWnd))
+				::ShowWindow(hWnd, SW_RESTORE);
 		}
 	}
 };
@@ -295,5 +305,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.36 2004/09/27 12:02:44 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.37 2004/10/26 13:53:59 arnetheduck Exp $
  */

@@ -125,6 +125,8 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, const tstring& msg) {
 		p->CreateEx(WinUtil::mdiClient);
 	} else {
 		p = i->second;
+		if(::IsIconic(p->m_hWnd))
+			::ShowWindow(p->m_hWnd, SW_RESTORE);
 		p->MDIActivate(p->m_hWnd);
 	}
 	if(!msg.empty())
@@ -360,7 +362,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.37 2004/10/17 12:51:31 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.38 2004/10/26 13:53:59 arnetheduck Exp $
  */
 
 

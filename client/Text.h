@@ -100,7 +100,7 @@ public:
 
 	static char asciiToLower(char c) { dcassert((((u_int8_t)c) & 0x80) == 0); return asciiLower[(u_int8_t)c]; }
 
-	static wchar_t toLower(wchar_t c) { return lower[(unsigned short)c]; }
+	static wchar_t toLower(wchar_t c) { return lower[(u_int16_t)c]; }
 	static wstring toLower(const wstring& str) throw() {
 		wstring tmp;
 		return toLower(str, tmp);
@@ -121,5 +121,5 @@ private:
 
 /**
  * @file
- * $Id: Text.h,v 1.5 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: Text.h,v 1.6 2004/10/26 13:53:58 arnetheduck Exp $
  */

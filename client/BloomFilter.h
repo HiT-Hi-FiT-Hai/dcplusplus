@@ -80,7 +80,12 @@ private:
 			}
 		} 
 	}
-	size_t getPos(const string& s, size_t i, size_t l) { return (HashFunc()(&s[i], l) % table.size()); }
+
+	/* Same functionality, but the old one did not want to compile for some reason. */
+	size_t getPos(const string& s, size_t i, size_t l) {
+		HashFunc hf;
+		return (hf(&s[i], l) % table.size());
+	}
 	
 	vector<bool> table;
 };
@@ -89,5 +94,5 @@ private:
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.7 2004/09/09 09:27:35 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.8 2004/10/26 13:53:58 arnetheduck Exp $
  */

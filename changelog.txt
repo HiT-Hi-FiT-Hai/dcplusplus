@@ -35,6 +35,10 @@
 * Fixed broken redirect (thanks garg) [bug 5]
 * Added spy frame column saving (thanks garg)
 * ADL Search autoqueue saved now (thanks garg)
+* Window minimization issue fix (thanks garg)
+* Fixed some issues with downloading >4GiB files
+* ADL Search goto directory fixed (thanks garg)
+* Some fixes for compiling on osx (thanks jonathan jansson)
 
 
 -- 0.4034 2004-10-03 --

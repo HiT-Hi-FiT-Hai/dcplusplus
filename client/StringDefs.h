@@ -252,7 +252,7 @@ enum Strings { // @DontAdd
 	NICK, // "Nick"
 	NICK_TAKEN, // "Your nick was already taken, please change to something else!"
 	NICK_UNKNOWN, // " (Nick unknown)"
-	NO, // "No"
+	NO_STR, // "No"
 	NO_DIRECTORY_SPECIFIED, // "No directory specified"
 	NO_DOWNLOADS_FROM_SELF, // "You're trying to download from yourself!"
 	NO_ERRORS, // "No errors"
@@ -516,8 +516,7 @@ enum Strings { // @DontAdd
 	WAITING_TO_RETRY, // "Waiting to retry..."
 	WAITING_USER_ONLINE, // "Waiting (User online)"
 	WAITING_USERS_ONLINE, // "Waiting (%d of %d users online)"
-	WHATS_THIS, // "What's &this?"
-	YES, // "Yes"
+	YES_STR, // "Yes"
 	YOU_ARE_BEING_REDIRECTED, // "You are being redirected to "
 	LAST // @DontAdd
 };

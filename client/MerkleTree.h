@@ -50,7 +50,7 @@ public:
 	typedef typename MerkleList::iterator MerkleIter;
 
 	MerkleTree() : fileSize(0), timeStamp(0), blockSize(baseBlockSize) { }
-	MerkleTree(size_t aBlockSize, u_int32_t aTimeStamp = 0) : fileSize(0), timeStamp(aTimeStamp), blockSize(aBlockSize) {
+	MerkleTree(int64_t aBlockSize, u_int32_t aTimeStamp = 0) : fileSize(0), timeStamp(aTimeStamp), blockSize(aBlockSize) {
 	}
 
 	/**
@@ -58,7 +58,7 @@ public:
 	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
 	 *             stored consecutively left to right
 	 */
-	MerkleTree(int64_t aFileSize, u_int32_t aTimeStamp, size_t aBlockSize, u_int8_t* aData) : 
+	MerkleTree(int64_t aFileSize, u_int32_t aTimeStamp, int64_t aBlockSize, u_int8_t* aData) : 
 		fileSize(aFileSize), timeStamp(aTimeStamp), blockSize(aBlockSize) 
 	{
 		size_t n = calcBlocks(aFileSize, aBlockSize);
@@ -71,14 +71,14 @@ public:
 	~MerkleTree() {
 	}
 
-	static size_t calcBlockSize(int64_t aFileSize, int maxLevels) {
-		size_t tmp = baseBlockSize;
+	static int64_t calcBlockSize(int64_t aFileSize, int maxLevels) {
+		int64_t tmp = baseBlockSize;
 		int64_t maxHashes = ((int64_t)1) << (maxLevels - 1);
 		while((maxHashes * tmp) < aFileSize)
 			tmp *= 2;
 		return tmp;
 	}
-	static size_t calcBlocks(int64_t aFileSize, size_t aBlockSize) {
+	static size_t calcBlocks(int64_t aFileSize, int64_t aBlockSize) {
 		return max((size_t)((aFileSize + aBlockSize - 1) / aBlockSize), (size_t)1);
 	}
 
@@ -132,8 +132,8 @@ public:
 	MerkleList& getLeaves() { return leaves; }
 	const MerkleList& getLeaves() const { return leaves; }
 
-	size_t getBlockSize() const { return blockSize; }
-	void setBlockSize(size_t aSize) { blockSize = aSize; }
+	int64_t getBlockSize() const { return blockSize; }
+	void setBlockSize(int64_t aSize) { blockSize = aSize; }
 
 	int64_t getFileSize() const { return fileSize; }
 	void setFileSize(int64_t aSize) { fileSize = aSize; }
@@ -162,7 +162,7 @@ private:
 	/** Last modification date of data */
 	u_int32_t timeStamp;
 	/** Final block size */
-	size_t blockSize;
+	int64_t blockSize;
 	
 	MerkleValue getHash(int64_t start, int64_t length) {
 		dcassert((start % blockSize) == 0);
@@ -236,7 +236,7 @@ private:
 	size_t pos;
 };
 struct TTFilter {
-	TTFilter(size_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
+	TTFilter(int64_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
 	void operator()(const void* data, size_t len) { tt.update(data, len); }
 	TigerTree& getTree() { tt.finalize(); return tt; }
 private:
@@ -247,5 +247,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.17 2004/09/21 08:19:55 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.18 2004/10/26 13:53:58 arnetheduck Exp $
  */

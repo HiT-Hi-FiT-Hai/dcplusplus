@@ -48,23 +48,24 @@ public:
 		FLAG_NOSAVE = 0x01
 	};
 
-	UserCommand() : id(0), type(0), ctx(0) { };
+	UserCommand() : cid(0), type(0), ctx(0) { };
 	UserCommand(int aId, int aType, int aCtx, int aFlags, const string& aName, const string& aCommand, const string& aHub) throw() 
-		: Flags(aFlags), id(aId), type(aType), ctx(aCtx), name(aName), command(aCommand), hub(aHub) { };
+		: Flags(aFlags), cid(aId), type(aType), ctx(aCtx), name(aName), command(aCommand), hub(aHub) { };
 	
-	UserCommand(const UserCommand& rhs) : Flags(rhs), id(rhs.id), type(rhs.type), 
+	UserCommand(const UserCommand& rhs) : Flags(rhs), cid(rhs.cid), type(rhs.type), 
 		ctx(rhs.ctx), name(rhs.name), command(rhs.command), hub(rhs.hub) 
 	{
 		
 	}
 
 	UserCommand& operator=(const UserCommand& rhs) {
-		id = rhs.id; type = rhs.type; ctx = rhs.ctx;
+		cid = rhs.cid; type = rhs.type; ctx = rhs.ctx;
 		name = rhs.name; command = rhs.command; hub = rhs.hub;
 		*((Flags*)this) = rhs;
 		return *this;
 	}
-	GETSET(int, id, Id);
+
+	GETSET(int, cid, Id);
 	GETSET(int, type, Type);
 	GETSET(int, ctx, Ctx);
 	GETSET(string, name, Name);
@@ -76,6 +77,6 @@ public:
 
 /**
  * @file
- * $Id: UserCommand.h,v 1.8 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: UserCommand.h,v 1.9 2004/10/26 13:53:58 arnetheduck Exp $
  */
 

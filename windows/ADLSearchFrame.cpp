@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom@home.se
+ * Henrik Engström, henrikengstrom at home se
  */
 
 #include "stdafx.h"
@@ -108,7 +108,7 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	ctrlHelp.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_HELP_FAQ);
-	ctrlHelp.SetWindowText(CTSTRING(WHATS_THIS));
+	ctrlHelp.SetWindowText(CTSTRING(MENU_HELP));
 	ctrlHelp.SetFont(WinUtil::font);
 
 	// Create context menu
@@ -317,48 +317,8 @@ LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 // Help
-LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
-{
-	TCHAR title[] =
-		_T("ADLSearch brief description");
-
-	TCHAR message[] = 
-		_T("ADLSearch is a tool for fast searching of directory listings downloaded from users. \n")
-		_T("Create a new ADLSearch entering 'avi' as search string for example. When you \n")
-		_T("download a directory listing from a user, all avi-files will be placed in a special folder \n")
-		_T("called <<<ADLSearch>>> for easy finding. It is almost the same as using the standard \n")
-		_T("'Find' multiple times in a directory listing. \n")
-		_T("\n")
-		_T("Special options: \n")
-		_T("- 'Active' check box selects if the search is used or not. \n")
-		_T("- 'Source Type' can be the following options; 'Filename' matches search against filename, \n")
-		_T("   'Directory' matches against current subdirectory and places the whole structure in the \n")
-		_T("   special folder, 'Full Path' matches against whole directory + filename. \n")
-		_T("- 'Destination Directory' selects the special output folder for a search. Multiple folders \n")
-		_T("   with different names can exist simultaneously. \n")
-		_T("- 'Min/Max Size' sets file size limits. This is not used for 'Directory' type searches. \n")
-		_T("- 'Move Up'/'Move Down' can be used to organize the list of searches. \n")
-		_T("\n")
-		_T("There is a new option in the context menu (right-click) for directory listings. It is called \n")
-		_T("'Go to directory' and can be used to jump to the original location of the file or directory. \n")
-		_T("\n")
-		_T("Extra features:\n")
-		_T("\n")
-		_T("1) If you use %y.%m.%d in a search string it will be replaced by todays date. Switch \n")
-		_T("place on y/m/d, or leave any of them out to alter the substitution. If you use %[nick] \n")
-		_T("it will be replaced by the nick of the user you download the directory listing from. \n")
-		_T("\n")
-		_T("2) If you name a destination directory 'discard', it will not be shown in the total result. \n")
-		_T("Useful with the extra feature 3) below to remove uninteresting results. \n")
-		_T(" \n")
-		_T("3) There is a switch called 'Break on first ADLSearch match' in Settings->Advanced'.  \n")
-		_T("If enabled, ADLSearch will stop after the first match for a specific file/directory. \n")
-		_T("The order in the ADLSearch windows is therefore important. Example: Add a search \n")
-		_T("item at the top of the list with string='xxx' and destination='discard'. It will catch \n")
-		_T("many pornographic files and they will not be included in any following search results. \n")
-		;
-
-	MessageBox(message, title, MB_OK);
+LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 	return 0;
 }
 
@@ -583,5 +543,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.17 2004/10/03 15:11:02 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.18 2004/10/26 13:53:59 arnetheduck Exp $
  */

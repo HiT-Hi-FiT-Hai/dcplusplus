@@ -38,14 +38,16 @@ protected:
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
-	name(const string& aError) throw() : Exception(#name ": " + aError) { }; \
-	virtual ~name() { }; \
+	name() throw() : Exception(#name) { } \
+	name(const string& aError) throw() : Exception(#name ": " + aError) { } \
+	virtual ~name() { } \
 }
 
 #else // _DEBUG
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
+	name() throw() : Exception() { } \
 	name(const string& aError) throw() : Exception(aError) { }; \
 	virtual ~name() { }; \
 }
@@ -55,6 +57,6 @@ public:\
 
 /**
  * @file
- * $Id: Exception.h,v 1.14 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: Exception.h,v 1.15 2004/10/26 13:53:58 arnetheduck Exp $
  */
 

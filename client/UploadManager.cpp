@@ -280,9 +280,9 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 		if(!u->isSet(Upload::FLAG_USER_LIST)) {
 			// work-around, getTTH will queue the file for hashing if it gets a NULL TTH
-			TTHValue *hash = HashManager::getInstance()->getTTH(u->getFileName(), u->getSize());
-			if(hash != NULL) {
-				params["tth"] = hash->toBase32();
+			try {
+                params["tth"] = HashManager::getInstance()->getTTH(u->getFileName(), u->getSize()).toBase32();
+			} catch(const HashException&) {
 			}
 		}
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
@@ -397,5 +397,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.73 2004/10/21 10:27:16 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.74 2004/10/26 13:53:58 arnetheduck Exp $
  */

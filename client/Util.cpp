@@ -202,10 +202,18 @@ string Util::validateFileName(string tmp) {
 	while( (i = tmp.find("\\.\\", i)) != string::npos) {
 		tmp.erase(i+1, 2);
 	}
+	i = 0;
+	while( (i = tmp.find("/./", i)) != string::npos) {
+		tmp.erase(i+1, 2);
+	}
 
 	// Remove any double \\ that are not at the beginning of the path...
 	i = 1;
 	while( (i = tmp.find("\\\\", i)) != string::npos) {
+		tmp.erase(i+1, 1);
+	}
+	i = 1;
+	while( (i = tmp.find("//", i)) != string::npos) {
 		tmp.erase(i+1, 1);
 	}
 
@@ -217,6 +225,14 @@ string Util::validateFileName(string tmp) {
 		tmp[i + 3] = '_';
 		i += 2;
 	}
+	i = 0;
+	while( ((i = tmp.find("/../", i)) != string::npos) ) {
+		tmp[i + 1] = '_';
+		tmp[i + 2] = '_';
+		tmp[i + 3] = '_';
+		i += 2;
+	}
+
 	return tmp;
 }
 
@@ -848,6 +864,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.71 2004/10/17 19:25:24 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.72 2004/10/26 13:53:58 arnetheduck Exp $
  */
 

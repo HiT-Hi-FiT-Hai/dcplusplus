@@ -513,7 +513,6 @@ string ResourceManager::strings[] = {
 "Waiting to retry...", 
 "Waiting (User online)", 
 "Waiting (%d of %d users online)", 
-"What's &this?", 
 "Yes", 
 "You are being redirected to ", 
 };
@@ -765,7 +764,7 @@ string ResourceManager::names[] = {
 "Nick", 
 "NickTaken", 
 "NickUnknown", 
-"No", 
+"NoStr", 
 "NoDirectorySpecified", 
 "NoDownloadsFromSelf", 
 "NoErrors", 
@@ -1029,7 +1028,6 @@ string ResourceManager::names[] = {
 "WaitingToRetry", 
 "WaitingUserOnline", 
 "WaitingUsersOnline", 
-"WhatsThis", 
-"Yes", 
+"YesStr", 
 "YouAreBeingRedirected", 
 };

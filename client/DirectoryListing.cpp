@@ -31,6 +31,10 @@
 #include "BZUtils.h"
 #include "CryptoManager.h"
 
+#ifdef ff
+#undef ff
+#endif
+
 void DirectoryListing::loadFile(const string& name, bool doAdl) {
 	string txt;
 
@@ -330,5 +334,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.38 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.39 2004/10/26 13:53:58 arnetheduck Exp $
  */

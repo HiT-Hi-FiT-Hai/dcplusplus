@@ -79,8 +79,8 @@ SettingsManager::SettingsManager()
 		int64Settings[k] = 0;
 	}
 	
-	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads\\");
-	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete\\");
+	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads" PATH_SEPARATOR_STR);
+	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete" PATH_SEPARATOR_STR);
 	setDefault(SLOTS, 1);
 	//setDefault(SERVER, Util::getLocalIp());
 	setDefault(IN_PORT, Util::rand(1025, 32000));
@@ -102,7 +102,7 @@ SettingsManager::SettingsManager()
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.xml.bz2");
 	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
-	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
+	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs" PATH_SEPARATOR_STR);
 	setDefault(LOG_UPLOADS, false);
 	setDefault(LOG_DOWNLOADS, false);
 	setDefault(LOG_PRIVATE_CHAT, false);
@@ -301,12 +301,12 @@ void SettingsManager::save(string const& aFileName) {
 	fire(SettingsManagerListener::Save(), &xml);
 
 	try {
-		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		BufferedOutputStream<false> f(&ff);
+		File out(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&out);
 		f.write(SimpleXML::utf8Header);
 		xml.toXML(&f);
 		f.flush();
-		ff.close();
+		out.close();
 		File::deleteFile(aFileName);
 		File::renameFile(aFileName + ".tmp", aFileName);
 	} catch(const FileException&) {
@@ -316,6 +316,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.93 2004/10/25 14:42:09 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.94 2004/10/26 13:53:58 arnetheduck Exp $
  */
 
