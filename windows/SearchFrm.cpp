@@ -335,7 +335,7 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
 				tgt + si->fileName);
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt + Util::getLastDir(si->sr->getFile()));
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt);
 		}
 	} catch(const Exception&) {
 	}
@@ -357,7 +357,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), tgt);
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt + Util::getLastDir(si->sr->getFile()));
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), tgt);
 		}
 	} catch(const Exception&) {
 	}
@@ -867,5 +867,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.37 2003/11/13 15:32:16 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.38 2003/11/24 18:46:30 arnetheduck Exp $
  */

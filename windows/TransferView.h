@@ -47,6 +47,7 @@ public:
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
+		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
@@ -78,11 +79,15 @@ public:
 		return 0;
 	}
 
-	LRESULT TransferView::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		ctrlTransfers.forEachSelected(&ItemInfo::removeAll);
 		return 0;
 	}
 
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		ctrlTransfers.forEach(&ItemInfo::deleteSelf);
+		return 0;
+	}
 private:
 	class ItemInfo;
 public:
@@ -160,6 +165,7 @@ private:
 
 		void disconnect();
 		void removeAll();
+		void deleteSelf() { delete this; }
 
 		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
 
@@ -235,5 +241,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.7 2003/11/21 17:00:56 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.8 2003/11/24 18:46:30 arnetheduck Exp $
  */

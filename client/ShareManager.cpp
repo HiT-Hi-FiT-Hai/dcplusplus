@@ -694,26 +694,25 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	}
 }
 
-SearchResult::List ShareManager::search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
+void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
 	
 	RLock l(cs);
 	StringTokenizer t(aString, '$');
 	StringList& sl = t.getTokens();
 	StringSearch::List ssl;
-
 	for(StringList::iterator i = sl.begin(); i != sl.end(); ++i) {
 		if(!i->empty()) {
 			ssl.push_back(StringSearch(*i));
 		}
 	}
+	if(ssl.empty())
+		return;
 	u_int32_t mask = getMask(sl);
-	SearchResult::List results;
 
 	for(Directory::MapIter j = directories.begin(); (j != directories.end()) && (results.size() < maxResults); ++j) {
 		j->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
 	}
 	
-	return results;
 }
 
 // SettingsManagerListener
@@ -739,6 +738,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.65 2003/11/19 22:51:59 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.66 2003/11/24 18:46:30 arnetheduck Exp $
  */
 

@@ -401,7 +401,7 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 			} else {
 				i->statusString = buf;
 			}
-			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED;
+			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 
 			v->push_back(i);
 		}
@@ -479,7 +479,7 @@ void TransferView::onUploadTick(const Upload::List& ul) {
 				i->statusString = buf;
 			}
 
-			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED;
+			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED | ItemInfo::MASK_RATIO;
 			v->push_back(i);
 		}
 	}
@@ -560,5 +560,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.15 2003/11/21 17:00:55 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.16 2003/11/24 18:46:30 arnetheduck Exp $
  */

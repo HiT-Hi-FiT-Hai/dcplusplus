@@ -31,6 +31,15 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
+BufferedSocket::~BufferedSocket() {
+	delete[] inbuf;
+	for(int i = 0; i < BUFFERS; i++) {
+		delete[] outbuf[i];
+	}
+	if(comp != NULL)
+		delete comp;
+}
+
 /**
  * Send a chunk of a file
  * @return True if file is finished, false if there's more data to send
@@ -451,5 +460,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.59 2003/11/21 17:00:53 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.60 2003/11/24 18:46:30 arnetheduck Exp $
  */

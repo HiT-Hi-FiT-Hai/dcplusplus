@@ -77,7 +77,11 @@ class ZDecompressor {
 public:
 	
 	ZDecompressor() throw(CryptoException);
-	~ZDecompressor() { 	inflateEnd(&zs); };
+	~ZDecompressor() { 	
+		dcdebug("Decompression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
+		inflateEnd(&zs); 
+		delete outbuf;
+	};
 
 	/**
 	 * To decompress some given bytes, keep calling this until inbytes
@@ -99,7 +103,7 @@ public:
 	 */
 	ZCompressor(File& file, int64_t maxBytes = -1, int aStrength = SETTING(MAX_COMPRESSION)) throw(CryptoException);
 	~ZCompressor() throw() {
-		dcdebug("Compression ending, %ld/%ld = %.02f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
+		dcdebug("Compression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
 		deflateEnd(&zs);
 		delete inbuf;
 	};
@@ -195,5 +199,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.26 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.27 2003/11/24 18:46:30 arnetheduck Exp $
  */

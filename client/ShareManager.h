@@ -48,10 +48,10 @@ public:
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
-	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
-		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
+	void search(SearchResult::List& l, const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
+		return search(l, aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
 	}
-	SearchResult::List search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
+	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 
 	int64_t getShareSize() {
 		RLock l(cs);
@@ -219,6 +219,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.38 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.39 2003/11/24 18:46:30 arnetheduck Exp $
  */
 

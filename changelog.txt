@@ -3,6 +3,9 @@
 * Fixed displaying of upload compression in progress bar
 * Added compression ratio column
 * Fixed doubled name when downloading directories from search frame
+* Fixed a mem leak for safe transfers
+* Fixed a crash during downloads
+* Fixed speed problems with user list
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)
@@ -122,7 +125,7 @@
 * Moved to Visual Studio 7.1, 7.0 project files are available, but won't be maintained...
 * Own icon always set to blue (DC++) (thanks atomicjo)
 * Edges around the settings (thanks opera)
-* Fixed right-click issue in the hub frame (thanks bzbetty)
+* Fixed right-click issue in the hub frame (thanks twink)
 * Fixed a problem with detecting protocol extensions
 * Updates to the queue frame (bugs fixed and smarter when using with multiple drives)
 * Fixes to zblock sends (thanks sandos)

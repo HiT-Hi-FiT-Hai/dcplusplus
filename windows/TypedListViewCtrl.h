@@ -45,7 +45,8 @@ public:
 	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
 		NMLVDISPINFO* di = (NMLVDISPINFO*)pnmh;
 		if(di->item.mask & LVIF_TEXT) {
-			di->item.pszText = const_cast<char*>(getItemData(di->item.iItem)->getText(di->item.iSubItem).c_str());
+			di->item.mask |= LVIF_DI_SETITEM;
+			di->item.pszText = const_cast<char*>(((T*)di->item.lParam)->getText(di->item.iSubItem).c_str());
 		}
 		return 0;
 	}
@@ -67,7 +68,7 @@ public:
 	}
 	void resort() {
 		if(sortColumn != -1) {
-			SortItemsEx(&compareFunc, (LPARAM)this);
+			SortItems(&compareFunc, (LPARAM)this);
 		}
 	}
 
@@ -83,14 +84,11 @@ public:
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return FindItem(&fi, -1);
 	}
-	int findItem(const string& b, int col = 0) {
-		int n = GetItemCount();
-		for(int i = 0; i < n; ++i) {
-			if(Util::stricmp(getItemData(i)->getText(col), b) == 0)
-				return i;
-		}
-		return -1;
+	int findItem(const string& b) {
+		LVFINDINFO fi = { LVFI_STRING, b.c_str() };
+		return FindItem(&fi, -1);
 	}
+
 	void forEach(void (T::*func)()) {
 		int n = GetItemCount();
 		for(int i = 0; i < n; ++i)
@@ -175,7 +173,7 @@ private:
 	
 	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		thisClass* t = (thisClass*)lParamSort;
-		int result = T::compareItems(t->getItemData(lParam1), t->getItemData(lParam2), t->sortColumn);
+		int result = T::compareItems((T*)lParam1, (T*)lParam2, t->sortColumn);
 		return (t->sortAscending ? result : -result);
 	}
 };
@@ -184,5 +182,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.6 2003/11/19 19:50:45 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.7 2003/11/24 18:46:30 arnetheduck Exp $
 */

@@ -174,12 +174,7 @@ private:
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
-	virtual ~BufferedSocket() {
-		delete[] inbuf;
-		for(int i = 0; i < BUFFERS; i++) {
-			delete[] outbuf[i];
-		}
-	}
+	virtual ~BufferedSocket();
 
 	CriticalSection cs;
 
@@ -239,5 +234,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.52 2003/11/21 17:00:53 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.53 2003/11/24 18:46:30 arnetheduck Exp $
  */

@@ -104,7 +104,8 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 		return;
 	}
 	
-	SearchResult::List l = ShareManager::getInstance()->search(aString, aSearchType, aSize, aFileType, aClient, (pos == string::npos) ? 10 : 5);
+	SearchResult::List l;
+	ShareManager::getInstance()->search(l, aString, aSearchType, aSize, aFileType, aClient, (pos == string::npos) ? 10 : 5);
 //		dcdebug("Found %d items (%s)\n", l.size(), aString.c_str());
 	if(l.size() > 0) {
 		if(pos != string::npos) {
@@ -360,5 +361,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.45 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.46 2003/11/24 18:46:30 arnetheduck Exp $
  */

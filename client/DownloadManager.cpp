@@ -309,8 +309,8 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 					if(l != 0) {
 						// Uhm, this client must be sending junk data after the compressed block...
 						aSource->disconnect();
-						return;
 					}
+					return;
 				}
 			} catch(const CryptoException&) {
 				// Oops, decompression error...could happen for many reasons
@@ -666,5 +666,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.81 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.82 2003/11/24 18:46:30 arnetheduck Exp $
  */
