@@ -32,7 +32,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
 
 	ctrlUsers.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100, 0);
 	ctrlUsers.InsertColumn(1, _T("Shared"), LVCFMT_LEFT, 50, 1);
@@ -72,11 +72,16 @@ LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.2 2001/11/24 10:37:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/24 10:37:09  arnetheduck
+ * onQuit is now handled
+ * User list sorting
+ * File sizes correcly cut down to B, kB, MB, GB and TB
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

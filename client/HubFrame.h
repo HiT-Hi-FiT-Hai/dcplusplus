@@ -26,6 +26,7 @@
 #include "ClientListener.h"
 #include "DCClient.h"
 #include "ProtocolHandler.h"
+#include "ExListViewCtrl.h"
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
@@ -44,13 +45,31 @@ protected:
 		addClientLine("Unknown: " + aCommand);
 	}
 	virtual void onQuit(const string& aNick) {
-
+		ctrlUsers.deleteItem(aNick);
 	}
 	virtual void onHubName(const string& aHubName) {
 		SetWindowText(aHubName.c_str());
 	}
 	virtual void onConnectionFailed(const string& aReason) {
 		addClientLine("Connection failed: " + aReason);
+	}
+
+	string convertBytes(const string& aString) {
+		char buf[64];
+		__int64 x = _atoi64(aString.c_str());
+		if(x < 1024) {
+			sprintf(buf, "%d B", x );
+		} else if(x < 1024*1024) {
+			sprintf(buf, "%.02f kB", (double)x/(1024.0) );
+		} else if(x < 1024*1024*1024) {
+			sprintf(buf, "%.02f MB", (double)x/(1024.0*1024.0) );
+		} else if(x < 1024I64*1024I64*1024I64*1024I64) {
+			sprintf(buf, "%.02f GB", (double)x/(1024.0*1024.0*1024.0) );
+		} else {
+			sprintf(buf, "%.02f TB", (double)x/(1024.0*1024.0*1024.0*1024.0));
+		}
+
+		return buf;
 	}
 	virtual void onMyInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail,
 		const string& aBytesShared) {
@@ -62,7 +81,7 @@ protected:
 		if(i == -1) {
 			i = ctrlUsers.InsertItem(ctrlUsers.GetItemCount(), aNick.c_str());
 		}
-		ctrlUsers.SetItemText(i, 1, aBytesShared.c_str());
+		ctrlUsers.SetItemText(i, 1, convertBytes(aBytesShared).c_str());
 		ctrlUsers.SetItemText(i, 2, aDescription.c_str());
 		ctrlUsers.SetItemText(i, 3, aSpeed.c_str());
 		ctrlUsers.SetItemText(i, 4, aEmail.c_str());
@@ -105,7 +124,7 @@ public:
 
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
-	CListViewCtrl ctrlUsers;
+	ExListViewCtrl ctrlUsers;
 	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
@@ -115,9 +134,24 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT onColumnClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		if(l->iSubItem == ctrlUsers.getSortColumn()) {
+			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
+		} else {
+			if(l->iSubItem == 2) {
+				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			} else {
+				ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING);
+			}
+		}
+		return 0;
+	}
 
 	void addLine(const string& aLine) {
 		ctrlClient.AppendText(aLine.c_str());
@@ -166,9 +200,14 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.3 2001/11/24 10:37:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.3  2001/11/24 10:37:09  arnetheduck
+ * onQuit is now handled
+ * User list sorting
+ * File sizes correcly cut down to B, kB, MB, GB and TB
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.
