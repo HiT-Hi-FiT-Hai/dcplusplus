@@ -100,6 +100,7 @@ public:
 			CMD(SCH);
 			CMD(RES);
 			CMD(CTM);
+			CMD(GPA);
 			CMD(PAS);
 			CMD(QUI);
 			CMD(DSC);
@@ -114,5 +115,5 @@ public:
 
 /**
 * @file
-* $Id: AdcCommand.h,v 1.2 2004/04/08 18:17:59 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.3 2004/04/18 13:44:47 arnetheduck Exp $
 */

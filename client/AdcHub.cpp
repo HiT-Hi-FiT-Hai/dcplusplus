@@ -148,7 +148,7 @@ void AdcHub::handle(Command& c, Command::MSG) {
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
 	if(!p)
 		return;
-	string msg = '<' + p->getNick() + "> " + c.getParameters()[1];
+	string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[1]);
 	fire(ClientListener::Message(), this, msg);
 }
 
@@ -200,18 +200,18 @@ void AdcHub::redirect(const User* user, const string& aHub, const string& aMessa
 }
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	string strtmp;
-	strtmp += "BSCH " + getMe()->getCID().toBase32();
+	strtmp += "BSCH " + getMe()->getCID().toBase32() + " ";
 	if(aSizeMode == SearchManager::SIZE_ATLEAST) {
-		strtmp += ">=" + Util::toString(aSize);
+		strtmp += ">=" + Util::toString(aSize) + " ";
 	} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
-		strtmp += "<=" + Util::toString(aSize);
+		strtmp += "<=" + Util::toString(aSize) + " ";
 	}
 	StringTokenizer st(aString, ' ');
 	string tmp;
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-		strtmp += "++" + Command::escape(Util::toUtf8(*i, tmp));
+		strtmp += "++" + Command::escape(Util::toUtf8(*i, tmp)) + " ";
 	}
-	strtmp += "\n";
+	strtmp[strtmp.length() - 1] = '\n';
 	send(strtmp);
 }
 void AdcHub::password(const string& pwd) { 
@@ -224,7 +224,7 @@ void AdcHub::password(const string& pwd) {
 		TigerHash th;
 		th.update(x.data(), x.length());
 		th.update(buf, SALT_SIZE);
-		send("HPWD " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
+		send("HPAS " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
 		salt.clear();
 	}
 }
@@ -274,5 +274,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.4 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.5 2004/04/18 13:44:47 arnetheduck Exp $
  */

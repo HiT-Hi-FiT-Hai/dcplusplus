@@ -118,14 +118,6 @@ void User::clientMessage(const string& aMsg) {
 	}
 }
 
-void User::clientPM(const string& aTo, const string& aMsg) {
-	RLock l(cs);
-	if(client) {
-		//client->privateMessage(aTo, aMsg);
-		dcassert(0);
-	}
-}
-
 void User::setClient(Client* aClient) { 
 	WLock l(cs); 
 	client = aClient; 
@@ -214,6 +206,6 @@ void User::setUserDescription(const string& aDescription) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.30 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: User.cpp,v 1.31 2004/04/18 13:44:47 arnetheduck Exp $
  */
 

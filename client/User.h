@@ -86,7 +86,6 @@ public:
 	string getClientAddressPort() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
-	void clientPM(const string& aTo, const string& aMsg);
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp() const;
@@ -143,5 +142,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.40 2004/04/10 20:54:26 arnetheduck Exp $
+ * $Id: User.h,v 1.41 2004/04/18 13:44:47 arnetheduck Exp $
  */
