@@ -33,7 +33,6 @@ class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
 		FLAG_USER_LIST = 0x01,
-		FLAG_SMALL_FILE = 0x02,
 		FLAG_ZUPLOAD = 0x04
 	};
 
@@ -86,6 +85,13 @@ public:
 	
 	int getRunning() { return running; };
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+	bool getAutoSlot() {
+		if(SETTING(MIN_UPLOAD_SPEED) == 0)
+			return false;
+		if(getLastGrant() + 30*1000 < GET_TICK())
+			return false;
+		return (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed();
+	}
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
 	
 	void reserveSlot(const User::Ptr& aUser) {
@@ -100,7 +106,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(u_int32_t, lastAutoGrant, LastAutoGrant);
+	GETSET(u_int32_t, lastGrant, LastGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -143,12 +149,12 @@ private:
 	virtual void on(Command::STA, UserConnection*, const Command&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
-	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
+	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.62 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.63 2004/04/24 20:56:27 arnetheduck Exp $
  */

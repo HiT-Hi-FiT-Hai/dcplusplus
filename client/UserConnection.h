@@ -204,6 +204,7 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
+	void fileNotAvail() { send("$Error File Not Available|"); }
 
 	void send(const Command& c) {
 		send(c.toString(true));
@@ -325,6 +326,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.70 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.71 2004/04/24 20:56:27 arnetheduck Exp $
  */
 

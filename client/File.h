@@ -408,7 +408,7 @@ public:
 	virtual size_t flush() throw(Exception) {
 		if(pos > 0)
 			s->write(buf, pos);
-		return s->flush();
+		return 0;
 	}
 
 	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
@@ -417,7 +417,7 @@ public:
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
 				s->write(b, len);
-				return l2;
+				break;
 			} else {
 				size_t n = min(bufSize - pos, len);
 				memcpy(buf + pos, b, n);
@@ -454,6 +454,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.34 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: File.h,v 1.35 2004/04/24 20:56:27 arnetheduck Exp $
  */
 

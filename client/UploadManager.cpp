@@ -31,7 +31,7 @@
 
 static const string UPLOAD_AREA = "Uploads";
 
-UploadManager::UploadManager() throw() : running(0), extra(0), lastAutoGrant(0) { 
+UploadManager::UploadManager() throw() : running(0), extra(0), lastGrant(0) { 
 	ClientManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 };
@@ -49,157 +49,140 @@ UploadManager::~UploadManager() throw() {
 	}
 }
 
-bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aStartPos, int64_t aBytes) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
-		dcdebug("UM:onGet Wrong state, ignoring\n");
+		dcdebug("UM:prepFile Wrong state, ignoring\n");
 		return false;
 	}
 	
 	dcassert(aFile.size() > 0);
-	
+
+	InputStream* is = NULL;
+	int64_t size = 0;
+
 	bool userlist = false;
+	bool free = false;
 
 	string file;
-	try {
-		file = ShareManager::getInstance()->translateFileName(aFile);
-	} catch(const ShareException&) {
-		aSource->error("File Not Available");
-		return false;
-	}
-	
-	if( (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) || Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0) {
-		userlist = true;
-	}
 
-	int64_t sz = File::getSize(file);
-	if(sz == -1) {
-		aSource->error("File Not Available");
-		return false;
-	} else if(aResume >= sz) {
-		// Can't do...
-		aSource->disconnect();
-		return false;
-	}
+	if(aType == "file") {
+		userlist = (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) || (Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0);
 
-	bool smallfile = (sz < (int64_t)(32 * 1024) );
+		try {
+			file = ShareManager::getInstance()->translateFileName(aFile);
+			File* f = new File(file, File::READ, File::OPEN);
 
-	cs.enter();
-	SlotIter ui = reservedSlots.find(aSource->getUser());
+			size = f->getSize();
 
-	if( (!aSource->isSet(UserConnection::FLAG_HASSLOT)) && 
-		(getFreeSlots()<=0) && 
-		(ui == reservedSlots.end()) &&
-		(!aSource->getUser()->getFavoriteGrantSlot())) 
-	{
-		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()).c_str());
-		if( ((getLastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
-			if( !(smallfile || userlist) ||
-				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) || (aSource->getUser()->isSet(User::OP)) ) || 
-				!(aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS)) 
-				) 
-			{
-				cs.leave();
-				aSource->maxedOut();
-				removeConnection(aSource);
+			free = userlist || (size <= (int64_t)(64 * 1024) );
+
+			if(aBytes == -1) {
+				aBytes = size - aStartPos;
+			}
+
+			if((aBytes < 0) || ((aStartPos + aBytes) > size)) {
+				aSource->fileNotAvail();
 				return false;
 			}
-		}
-		setLastAutoGrant(GET_TICK());
-	}
 
-	File* f;
-	try {
-		f = new File(file, File::READ, File::OPEN);
-	} catch(const FileException&) {
-		// Why isn't this possible?...let's reload the directory listing...
-		if(Util::stricmp(aFile.c_str(), "MyList.DcLst") == 0 || userlist) {
-			
-			ShareManager::getInstance()->refresh(true, true, true);
-			try {
-				f = new File(file, File::READ, File::OPEN);
-			} catch(const FileException&) {
-				// Still not...very strange...?
-				cs.leave();
-				aSource->error("File Not Available");
-				return false;
+			f->setPos(aStartPos);
+
+			is = f;
+
+			if((aStartPos + aBytes) < size) {
+				is = new LimitedInputStream<true>(is, aBytes);
 			}
-		} else {
-			cs.leave();
-			aSource->error("File Not Available");
+
+		} catch(const Exception&) {
+			aSource->fileNotAvail();
 			return false;
 		}
+
+	} else if(aType == "tthl") {
+		// TTH Leaves...
+		aSource->fileNotAvail();
+		return false;
+	} else {
+		aSource->fileNotAvail();
+		return false;
 	}
-	
+
+	Lock l(cs);
+
+	bool extraSlot = false;
+
+	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
+		bool hasReserved = (reservedSlots.find(aSource->getUser()) != reservedSlots.end());
+		bool isFavorite = aSource->getUser()->getFavoriteGrantSlot();
+
+		if(!(hasReserved || isFavorite || getFreeSlots() > 0 || getAutoSlot())) {
+			bool supportsFree = aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS);
+			bool allowedFree = aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || aSource->getUser()->isSet(User::OP) || getFreeExtraSlots() > 0;
+			if(free && supportsFree && allowedFree) {
+				extraSlot = true;
+			} else {
+				aSource->maxedOut();
+				aSource->disconnect();
+				return false;
+			}
+		}
+
+		setLastGrant(GET_TICK());
+	}
+
 	Upload* u = new Upload();
 	u->setUserConnection(aSource);
-	u->setFile(f);
-	u->setSize(f->getSize());
-	f->setPos(aResume);
-	u->setPos(aResume);
+	u->setFile(is);
+	u->setSize(size);
+	u->setPos(aStartPos);
 	u->setFileName(aFile);
 	u->setLocalFileName(file);
 
-	if(aBytes != -1 && (aResume + aBytes) < f->getSize()) {
-		u->setFile(new LimitedInputStream<true>(u->getFile(), aBytes));
-	}
-
-	if(smallfile)
-		u->setFlag(Upload::FLAG_SMALL_FILE);
 	if(userlist)
 		u->setFlag(Upload::FLAG_USER_LIST);
 
 	dcassert(aSource->getUpload() == NULL);
 	aSource->setUpload(u);
 	uploads.push_back(u);
+
 	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
-		if(ui != reservedSlots.end()) {
+		if(extraSlot) {
+			if(!aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
+				aSource->setFlag(UserConnection::FLAG_HASEXTRASLOT);
+				extra++;
+			}
+		} else {
+			if(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
+				aSource->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
+				extra--;
+			}
 			aSource->setFlag(UserConnection::FLAG_HASSLOT);
 			running++;
-			reservedSlots.erase(ui);
-		} else {
-			if( (getFreeSlots() == 0) && (smallfile || userlist)) {
-				if(!aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
-					extra++;
-					aSource->setFlag(UserConnection::FLAG_HASEXTRASLOT);
-				}
-			} else {
-				running++;
-				aSource->setFlag(UserConnection::FLAG_HASSLOT);
-			}
 		}
 	}
-	
-	if(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) && aSource->isSet(UserConnection::FLAG_HASSLOT)) {
-		extra--;
-		aSource->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
-	}
-	
-	cs.leave();
+
 	return true;
 }
 
 void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) {
-	if(prepareFile(aSource, aFile, aResume, -1)) {
+	if(prepareFile(aSource, "file", aFile, aResume, -1)) {
 		aSource->setState(UserConnection::STATE_SEND);
 		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
 	}
 }
 
-void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z) {
+void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aStartPos, int64_t aBytes, bool z) {
 	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
-		if(prepareFile(aSource, aFile, aResume, aBytes)) {
+		if(prepareFile(aSource, "file", aFile, aStartPos, aBytes)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
 			if(aBytes == -1)
-				aBytes = aResume - u->getSize();
+				aBytes = aStartPos - u->getSize();
 
-			if(aBytes < 0 || (u->getPos() + aBytes) > u->getSize()) {
-				// Can't do...
-				aSource->disconnect();
-				return;
-			}
+			dcassert(aBytes >= 0);
 
 			u->setStart(GET_TICK());
+
 			if(z) {
 				u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
 				u->setFlag(Upload::FLAG_ZUPLOAD);
@@ -351,5 +334,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.57 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.58 2004/04/24 20:56:27 arnetheduck Exp $
  */

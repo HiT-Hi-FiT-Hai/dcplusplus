@@ -184,8 +184,9 @@ private:
 	}
 	
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr&) throw() {
-		PostMessage(WM_SPEAKER, USER_UPDATED);
+	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
+		if(aUser == user)
+			PostMessage(WM_SPEAKER, USER_UPDATED);
 	}
 };
 
@@ -193,6 +194,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.17 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.18 2004/04/24 20:56:27 arnetheduck Exp $
  */
 

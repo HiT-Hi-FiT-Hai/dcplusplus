@@ -23,6 +23,9 @@
 * Copy address to clipboard from public hub list (thanks joakim tosteberg)
 * Changed to IEC binary multiple units (MiB, KiB etc)
 * GETSETREF templetized (thanks farcry)
+* Small files size increased to 64KiB
+* Op's that use a client that supports minislots always get a minislot (for small files / user lists), 
+  regardless of how many minislots are already taken.
 
 
  -- 0.401 2004-03-28 --
