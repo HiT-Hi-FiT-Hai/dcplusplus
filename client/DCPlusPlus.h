@@ -138,14 +138,19 @@ template<typename T> struct ReferenceSelector<T,true> {
 	typedef const T& ResultType;
 };
 
-template<typename T> struct TypeTraits {
-	typedef typename ReferenceSelector<T,(sizeof(T)>sizeof(char*))>::ResultType
-		ParameterType;
+template<typename T> class IsOfClassType {
+private:
+	struct Overloads {
+		template<typename U> static char check(int U::*);
+		template<typename U> static float check(...);
+	};
+public:
+	enum { Result = (sizeof(IsOfClassType<T>::Overloads::check<T>(0)) == 1) };
 };
 
-// Force string to be returned by reference
-template<> struct TypeTraits<string> {
-	typedef ReferenceSelector<string, true>::ResultType ParameterType;
+template<typename T> struct TypeTraits {
+	typedef typename ReferenceSelector<T,IsOfClassType<T>::Result || 
+		(sizeof(T)>sizeof(char*))>::ResultType ParameterType;
 };
 
 #define GETSET(type, name, name2) \
@@ -159,6 +164,6 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.41 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.42 2004/10/17 12:51:30 arnetheduck Exp $
  */
 

@@ -93,8 +93,11 @@ with the specified search.</dd>
 entries to files that are no longer shared, or old hashes for files
 that have since changed.&nbsp; This runs in the main DC++ thread, so
 the interface will freeze until the rebuild is finished.</dd>
-  <dt>/log</dt>
-  <dd>Launches the log file with the associated viewer in Windows.</dd>
+  <dt>/log &lt;status, system, downloads, uploads&gt;</dt>
+  <dd>If no parameter is specified, it launches the log for the hub or
+private chat with the associated application in Windows. If one of the
+parameters is specified it opens that log file. The status log is
+available only in the hub frame.</dd>
 </dl>
 </body>
 </html>

@@ -189,7 +189,7 @@ void PrivateFrame::onEnter()
 			} else if(Util::stricmp(s.c_str(), _T("log")) == 0) {
 				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + user->getNick() + ".log")));
 			} else if(Util::stricmp(s.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log"));
+				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);
@@ -360,7 +360,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.36 2004/10/14 18:12:57 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.37 2004/10/17 12:51:31 arnetheduck Exp $
  */
 
 

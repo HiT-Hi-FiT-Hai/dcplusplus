@@ -73,14 +73,16 @@ public:
 	string getListLenString() { return Util::toString(getListLen()); };
 	
 	SearchManager::TypeModes getType(const string& fileName);
-	u_int32_t getMask(const string& fileName);
-	u_int32_t getMask(StringList& l);
-	u_int32_t getMask(StringSearch::List& l);
 
 	void addHits(u_int32_t aHits) {
 		hits += aHits;
 	}
-	
+
+	BOOLEAN isTTHShared(TTHValue* tth){
+		HashFileIter i = tthIndex.find(tth);
+		return (i != tthIndex.end());
+	}
+
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzXmlFile, BZXmlFile);
@@ -124,7 +126,7 @@ private:
 		File::Set files;
 
 		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
-			size(0), name(aName), parent(aParent), fileTypes(0), searchTypes(0) { 
+			size(0), name(aName), parent(aParent), fileTypes(0) { 
 		};
 
 		~Directory();
@@ -133,13 +135,6 @@ private:
 			return ( (type == SearchManager::TYPE_ANY) || (fileTypes & (1 << type)) );
 		}
 		void addType(u_int32_t type) throw();
-		bool hasSearchType(u_int32_t mask) const throw() {
-			return (searchTypes & mask) == mask;
-		}
-		void addSearchType(u_int32_t mask) throw();
-		u_int32_t getSearchTypes() throw() {
-			return searchTypes;
-		}
 
 		string getADCPath() const throw();
 		string getFullName() const throw(); 
@@ -152,8 +147,8 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
-		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
+		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw();
+		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults) throw();
 
 		void toNmdc(string& nmdc, string& indent, string& tmp2);
 		void toXml(OutputStream& xmlFile, string& indent, string& tmp2);
@@ -163,8 +158,6 @@ private:
 	private:
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
 		u_int32_t fileTypes;
-		/** Set of flags that say which common search phrases a directory contains */
-		u_int32_t searchTypes;
 	};
 	friend class Directory;
 
@@ -227,9 +220,6 @@ private:
 	u_int32_t lastNmdcUpdate;
 	u_int32_t lastFullUpdate;
 
-	/** Words that are commonly searched for. */	 
-	StringList words;
-
 	mutable RWLock cs;
 
 	// Map real name to directory structure
@@ -283,6 +273,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.58 2004/10/01 22:45:03 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.59 2004/10/17 12:51:30 arnetheduck Exp $
  */
 

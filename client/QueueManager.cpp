@@ -406,6 +406,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
 	}
 
+	// Check if we're not downloading something already in our share
+	if (BOOLSETTING(DONT_DL_ALREADY_SHARED) && root != NULL){
+		TTHValue* r = const_cast<TTHValue*>(root);
+		if (ShareManager::getInstance()->isTTHShared(r)){
+			throw QueueException(STRING(TTH_ALREADY_SHARED));
+		}
+	}
+    
 	bool utf8 = (aFlags & QueueItem::FLAG_SOURCE_UTF8) > 0;
 	aFlags &= ~QueueItem::FLAG_SOURCE_UTF8;
 
@@ -1246,5 +1254,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.106 2004/10/03 20:49:44 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.107 2004/10/17 12:51:30 arnetheduck Exp $
  */

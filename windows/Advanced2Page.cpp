@@ -101,7 +101,7 @@ void Advanced2Page::write()
 
 LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	tstring dir;
+	tstring dir = Text::toT(SETTING(LOG_DIRECTORY));
 	if(WinUtil::browseDirectory(dir, m_hWnd))
 	{
 		// Adjust path string
@@ -125,6 +125,6 @@ LRESULT Advanced2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.14 2004/09/27 12:02:41 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.15 2004/10/17 12:51:31 arnetheduck Exp $
  */
 

@@ -50,28 +50,6 @@ ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	HashManager::getInstance()->addListener(this);
-	/* Common search words used to make search more efficient, should be more dynamic */
-	words.push_back("avi");
-	words.push_back("mp3");
-	words.push_back("bin");
-	words.push_back("zip");
-	words.push_back("jpg");
-	words.push_back("mpeg");
-	words.push_back("mpg");
-	words.push_back("rar");
-	words.push_back("ace");
-	words.push_back("bin");
-	words.push_back("iso");
-	words.push_back("dev");
-	words.push_back("flt");
-	words.push_back("ccd");
-	words.push_back("txt");
-	words.push_back("sub");
-	words.push_back("nfo");
-	words.push_back("wav");
-	words.push_back("exe");
-	words.push_back("ccd");
-
 };
 
 ShareManager::~ShareManager() {
@@ -217,7 +195,6 @@ StringPairIter ShareManager::lookupVirtual(const string& name) {
 }
 
 bool ShareManager::checkFile(const string& dir, const string& aFile) {
-
 	Directory::MapIter mi = directories.find(dir);
 	if(mi == directories.end())
 		return false;
@@ -391,13 +368,6 @@ void ShareManager::Directory::addType(u_int32_t type) throw() {
 			getParent()->addType(type);
 	}
 }
-void ShareManager::Directory::addSearchType(u_int32_t mask) throw() {
-	if(!hasSearchType(mask)) {
-		searchTypes |= mask;
-		if(getParent() != NULL)
-			getParent()->addSearchType(mask);
-	}
-}
 
 class FileFindIter {
 #ifdef _WIN32
@@ -481,7 +451,6 @@ private:
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
 	Directory* dir = new Directory(Util::getLastDir(aName), aParent);
 	dir->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
-	dir->addSearchType(getMask(dir->getName()));
 
 	Directory::File::Iter lastFileIter = dir->files.begin();
 
@@ -502,7 +471,6 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			string newName = aName + name + PATH_SEPARATOR;
 			if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
 				dir->directories[name] = buildTree(newName, dir);
-				dir->addSearchType(dir->directories[name]->getSearchTypes()); 
 			}
 		} else {
 			// Not a directory, assume it's a file...make sure we're not sharing the settings file...
@@ -560,7 +528,6 @@ void ShareManager::addFile(Directory* dir, Directory::File::Iter i) {
 		}
 	}
 
-	dir->addSearchType(getMask(f.getName()));
 	dir->addType(getType(f.getName()));
 
 	tthIndex.insert(make_pair(f.getTTH(), i));
@@ -889,62 +856,15 @@ SearchManager::TypeModes ShareManager::getType(const string& aFileName) {
 }
 
 /**
- * The mask is a set of bits that say which words a file matches. Each bit means
- * that a fileName matches the word at position n-1 in the words list where n is
- * the bit number. bit 0 is only set when no words match.
- */
-u_int32_t ShareManager::getMask(const string& fileName) {
-	u_int32_t mask = 0;
-	int n = 1;
-	for(StringIter i = words.begin(); i != words.end(); ++i, n++) {
-		if(Util::findSubString(fileName, *i) != string::npos) {
-			mask |= (1 << n);
-		}
-	}
-	return (mask == 0) ? 1 : mask;
-}
-
-u_int32_t ShareManager::getMask(StringList& l) {
-	u_int32_t mask = 0;
-	int n = 1;
-
-	for(StringIter i = words.begin(); i != words.end(); ++i, n++) {
-		for(StringIter j = l.begin(); j != l.end(); ++j) {
-			if(Util::findSubString(*j, *i) != string::npos) {
-				mask |= (1 << n);
-			}
-		}
-	}
-	return (mask == 0) ? 1 : mask;	
-}
-
-u_int32_t ShareManager::getMask(StringSearch::List& l) {
-	u_int32_t mask = 0;
-	int n = 1;
-
-	for(StringIter i = words.begin(); i != words.end(); ++i, n++) {
-		for(StringSearch::Iter j = l.begin(); j != l.end(); ++j) {
-			if(Util::findSubString(j->getPattern(), *i) != string::npos) {
-				mask |= (1 << n);
-			}
-		}
-	}
-	return (mask == 0) ? 1 : mask;	
-}
-
-/**
  * Alright, the main point here is that when searching, a search string is most often found in 
  * the filename, not directory name, so we want to make that case faster. Also, we want to
  * avoid changing StringLists unless we absolutely have to --> this should only be done if a string
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw() {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) throw() {
 	// Skip everything if there's nothing to find here (doh! =)
 	if(!hasType(aFileType))
-		return;
-
-	if(!hasSearchType(mask))
 		return;
 
 	StringSearch::List* cur = &aStrings;
@@ -958,10 +878,6 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			}
 			dcassert(find(newStr->begin(), newStr->end(), *k) != newStr->end());
 			newStr->erase(find(newStr->begin(), newStr->end(), *k));
-			u_int32_t xmask = ShareManager::getInstance()->getMask(k->getPattern());
-			if(xmask != 1) {
-				mask &= ~xmask;
-			}
 		}
 	}
 
@@ -1009,7 +925,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	}
 
 	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < maxResults); ++l) {
-		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient, maxResults, mask);
+		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 }
 
@@ -1045,10 +961,9 @@ void ShareManager::search(SearchResult::List& results, const string& aString, in
 	}
 	if(ssl.empty())
 		return;
-	u_int32_t mask = getMask(sl);
 
 	for(Directory::MapIter j = directories.begin(); (j != directories.end()) && (results.size() < maxResults); ++j) {
-		j->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults, mask);
+		j->second->search(results, ssl, aSearchType, aSize, aFileType, aClient, maxResults);
 	}
 }
 
@@ -1087,10 +1002,7 @@ ShareManager::AdcSearch::AdcSearch(const StringList& params) : include(&includeX
 	}
 }
 
-void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw() {
-	if(!hasSearchType(mask))
-		return;
-
+void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults) throw() {
 	StringSearch::List* cur = aStrings.include;
 	StringSearch::List* old = aStrings.include;
 
@@ -1104,10 +1016,6 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 			}
 			dcassert(find(newStr->begin(), newStr->end(), *k) != newStr->end());
 			newStr->erase(find(newStr->begin(), newStr->end(), *k));
-			u_int32_t xmask = ShareManager::getInstance()->getMask(k->getPattern());
-			if(xmask != 1) {
-				mask &= ~xmask;
-			}
 		}
 	}
 
@@ -1158,7 +1066,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 	}
 
 	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < maxResults); ++l) {
-		l->second->search(aResults, aStrings, aClient, maxResults, mask);
+		l->second->search(aResults, aStrings, aClient, maxResults);
 	}
 	aStrings.include = old;
 }
@@ -1187,10 +1095,8 @@ void ShareManager::search(SearchResult::List& results, const StringList& params,
 			return;
 	}
 
-	u_int32_t mask = getMask(srch.includeX);
-
 	for(Directory::MapIter j = directories.begin(); (j != directories.end()) && (results.size() < maxResults); ++j) {
-		j->second->search(results, srch, aClient, maxResults, mask);
+		j->second->search(results, srch, aClient, maxResults);
 	}
 }
 
@@ -1271,6 +1177,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.106 2004/10/09 12:18:16 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.107 2004/10/17 12:51:30 arnetheduck Exp $
  */
 

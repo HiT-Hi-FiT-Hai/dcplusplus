@@ -19,6 +19,7 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
+#include "../client/ResourceManager.h"
 
 #include "../client/UserCommand.h"
 
@@ -26,6 +27,24 @@
 
 LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Translate
+	SetWindowText(CTSTRING(USER_CMD_WINDOW));
+	SetDlgItemText(IDC_SETTINGS_TYPE, CTSTRING(USER_CMD_TYPE));
+	SetDlgItemText(IDC_SETTINGS_SEPARATOR, CTSTRING(SEPARATOR));
+	SetDlgItemText(IDC_SETTINGS_RAW, CTSTRING(USER_CMD_RAW));
+	SetDlgItemText(IDC_SETTINGS_CHAT, CTSTRING(USER_CMD_CHAT));
+	SetDlgItemText(IDC_SETTINGS_PM, CTSTRING(USER_CMD_PM));
+	SetDlgItemText(IDC_SETTINGS_CONTEXT, CTSTRING(USER_CMD_CONTEXT));
+	SetDlgItemText(IDC_SETTINGS_HUB_MENU, CTSTRING(USER_CMD_HUB_MENU));
+	SetDlgItemText(IDC_SETTINGS_USER_MENU, CTSTRING(USER_CMD_USER_MENU));
+	SetDlgItemText(IDC_SETTINGS_SEARCH_MENU, CTSTRING(USER_CMD_SEARCH_MENU));
+	SetDlgItemText(IDC_SETTINGS_PARAMETERS, CTSTRING(USER_CMD_PARAMETERS));
+	SetDlgItemText(IDC_SETTINGS_NAME, CTSTRING(HUB_NAME));
+	SetDlgItemText(IDC_SETTINGS_COMMAND, CTSTRING(USER_CMD_COMMAND));
+	SetDlgItemText(IDC_SETTINGS_HUB, CTSTRING(USER_CMD_HUB));
+	SetDlgItemText(IDC_SETTINGS_TO, CTSTRING(USER_CMD_TO));
+	SetDlgItemText(IDC_SETTINGS_ONCE, CTSTRING(USER_CMD_ONCE));
+	SetDlgItemText(IDC_USER_CMD_PREVIEW, CTSTRING(USER_CMD_PREVIEW));
 
 #define ATTACH(id, var) var.Attach(GetDlgItem(id))
 	ATTACH(IDC_RESULT, ctrlResult);
@@ -42,34 +61,8 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ATTACH(IDC_NICK, ctrlNick);
 	ATTACH(IDC_COMMAND, ctrlCommand);
 
-	SetDlgItemText(IDC_COMMAND_DESCRIPTION, _T("\
-Command Types:\r\n\
-Separator: Adds a separator to the menu\r\n\
-Raw: Sends raw command to the hub (experts only, end it with '|'!)\r\n\
-Chat: Sends command as if you were typing it in the chat\r\n\
-PM: Sends command as if you sent it by pm\r\n\
-Contexts determine where the command is shown:\r\n\
-Hub Menu: Hub tab (at the bottom of the screen) right-click menu\r\n\
-Chat Menu: User right-click menu in chat and PM tab menu\r\n\
-Search Menu: Search right-click menu\r\n\
-Parameters:\r\n\
-Name: Name (use '\\' to create submenus)\r\n\
-Command: Command text (may contain parameters)\r\n")
-_T("Hub: Hub ip as typed when connecting (empty = all hubs, \"op\" = hubs where you're op)\r\n\
-To: PM recipient\r\n\
-Only once: Send only once per user from search frame\r\n\
-In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m, ...). The following are available:\r\n\
-%[mynick]: your own nick\r\n\
-%[nick]: the users nick (user && search context only)\r\n\
-%[tag]: user tag (user && search context only)\r\n\
-%[description]: user description (user && search context only)\r\n\
-%[email]: user email (user && search context only)\r\n\
-%[share]: user shared bytes (exact) (user && search context only)\r\n\
-%[shareshort]: user shared bytes (formatted) (user && search context only)\r\n\
-%[ip]: user ip (if supported by hub)\r\n\
-%[file]: filename (search context only)\r\n\
-%[line:reason]: opens up a window asking for \"reason\"\
-"));
+	// launch the help file, instead of having the help in the dialog
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
 
 	if(type == UserCommand::TYPE_SEPARATOR) {
 		ctrlSeparator.SetCheck(BST_CHECKED);
@@ -176,7 +169,17 @@ void CommandDlg::updateContext() {
 		ctx |= UserCommand::CONTEXT_SEARCH;
 }
 
+LRESULT CommandDlg::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	return 0;
+}
+
+LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_UCPAGE);
+	return 0;
+}
+
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.11 2004/09/10 14:44:17 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.12 2004/10/17 12:51:31 arnetheduck Exp $
 */

@@ -55,7 +55,7 @@ const string SettingsManager::settingTags[] =
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
-	"AddFinishedInstantly", "UseUPnP",
+	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -167,6 +167,7 @@ SettingsManager::SettingsManager()
 	setDefault(MAGNET_ACTION, MAGNET_AUTO_SEARCH);
 	setDefault(ADD_FINISHED_INSTANTLY, false);
 	setDefault(SETTINGS_USE_UPNP, false);
+	setDefault(DONT_DL_ALREADY_SHARED, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -313,6 +314,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.89 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.90 2004/10/17 12:51:30 arnetheduck Exp $
  */
 

@@ -13,6 +13,14 @@
   DC++ build (see compile.txt)
 * Added /log to show log for current hub / user (thanks garg)
 * More internationalization (thanks garg)
+* Updated some template code (thanks farcry)
+* Extended log command (thanks ullner)
+* Fixed issue with utf-8 nicks during login to some hubs (thanks garg)
+* Fixed issue with utf-8 time formatting for certain languages in certain locales
+* Removed search optimisation obsoleted by tth's and bloom filters (those of
+  you with a large number of files in your share, post on the forum if you notice
+  any big increase in CPU usage)
+* Added option not to download files already in share (by TTH) (thanks TPO)
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)

@@ -219,9 +219,13 @@ void HubFrame::onEnter() {
 					}
 				}
 			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
-				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
+				if(param.empty()) {
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
+				} else if(Util::stricmp(param.c_str(), _T("status")) == 0) {
+					WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + "_Status.log")));
+				}
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log"));
+				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log <status, system, downloads, uploads>"));
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				string::size_type j = param.find(_T(' '));
 				if(j != string::npos) {
@@ -1109,5 +1113,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.79 2004/10/14 18:12:56 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.80 2004/10/17 12:51:31 arnetheduck Exp $
  */

@@ -45,6 +45,12 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		// Translate static strings
+		SetWindowText(CTSTRING(HASH_PROGRESS));
+		SetDlgItemText(IDOK, CTSTRING(HASH_PROGRESS_BACKGROUND));
+		SetDlgItemText(IDC_STATISTICS, CTSTRING(HASH_PROGRESS_STATS));
+		SetDlgItemText(IDC_HASH_INDEXING, CTSTRING(HASH_PROGRESS_TEXT));
+
 		string tmp;
 		startTime = GET_TICK();
 		HashManager::getInstance()->getStats(tmp, startBytes, startFiles);
@@ -143,6 +149,6 @@ private:
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.5 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.6 2004/10/17 12:51:31 arnetheduck Exp $
  */
 

@@ -159,7 +159,7 @@
 #define IDC_NAME                        1111
 #define IDC_COMMAND                     1112
 #define IDC_HUB                         1113
-#define IDC_COMMAND_DESCRIPTION         1114
+#define IDC_USER_CMD_PREVIEW            1114
 #define IDC_APPEARANCE_BOOLEANS         1115
 #define IDC_DEFAULT_AWAY_MESSAGE        1116
 #define IDC_MAX_TAB_ROWS                1117

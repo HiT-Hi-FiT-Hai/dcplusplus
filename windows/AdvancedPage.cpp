@@ -82,6 +82,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::SEND_UNKNOWN_COMMANDS, ResourceManager::SETTINGS_SEND_UNKNOWN_COMMANDS },
 	{ SettingsManager::ADD_FINISHED_INSTANTLY, ResourceManager::SETTINGS_ADD_FINISHED_INSTANTLY },
 	{ SettingsManager::SETTINGS_USE_UPNP, ResourceManager::SETTINGS_USE_UPNP },
+	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::DONT_DL_ALREADY_SHARED },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -110,6 +111,6 @@ LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.39 2004/10/14 18:12:56 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.40 2004/10/17 12:51:31 arnetheduck Exp $
  */
 
