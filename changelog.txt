@@ -39,6 +39,7 @@
 * Fixed some issues with downloading >4GiB files
 * ADL Search goto directory fixed (thanks garg)
 * Some fixes for compiling on osx (thanks jonathan jansson)
+* Removed Makedefs in favour of a python script
 
 
 -- 0.4034 2004-10-03 --

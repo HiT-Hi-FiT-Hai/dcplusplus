@@ -35,6 +35,10 @@ Note 4;	To build the HTML Help file, you will need to download and install the H
 	is: "C:\Program Files\HTML Help Workshop\"
 	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/htmlhelp/html/hwMicrosoftHTMLHelpDownloads.asp
 
+Note 5; You need to have python installed if you change StringDefs.h, as a small python script is automatically
+	run to generate StringDefs.cpp and Example.xml. To turn it off or change python path, go to 
+	client->Header Files->StringDefs.h->Properties->Custom build step and change the appropriate values.
+
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...
 

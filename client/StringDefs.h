@@ -328,7 +328,7 @@ enum Strings { // @DontAdd
 	SETTINGS, // "Settings"
 	SETTINGS_ADD_FINISHED_INSTANTLY, // "Add finished files to share instantly (if shared)"
 	SETTINGS_ADD_FOLDER, // "&Add folder"
-	SETTINGS_ADLS_BREAK_ON_FIRST,  // "Break on first ADLSearch match"
+	SETTINGS_ADLS_BREAK_ON_FIRST, // "Break on first ADLSearch match"
 	SETTINGS_ADVANCED, // "Advanced"
 	SETTINGS_ADVANCED_SETTINGS, // "Advanced settings"
 	SETTINGS_ANTI_FRAG, // "Use antifragmentation method for downloads"
