@@ -67,14 +67,23 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	h[0] = bs->readerEvent;
 	
 	try {
+		h[1] = bs->getEvent();
 		if(!bs->isConnected()) {
 			bs->Socket::connect(bs->server, bs->port);
+			if(WaitForMultipleObjects(2, h, FALSE, 10000) != WAIT_OBJECT_0 + 1) {
+				// Either timeout or window stopped...don't care which really...
+				bs->disconnect();
+				bs->fireError("Connection Timeout.");
+				bs->readerThread = NULL;
+				return 0;
+			}
+				
 			bs->fireConnected();
 		}
-		h[1] = bs->getEvent();
 	} catch (SocketException e) {
 		bs->disconnect();
 		bs->fireError(e.getError());
+		bs->readerThread = NULL;
 		return 0;
 	}
 
@@ -143,9 +152,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.9 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.9  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.8  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

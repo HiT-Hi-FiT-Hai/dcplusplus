@@ -94,11 +94,10 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 	
-	if(is[pos++] != 'H' || is[pos++] != 'E' || is[pos++] != '3') {
+	if(is[pos] != 'H' || is[pos+1] != 'E' || !(is[pos+2] == '3' || is[pos+2] == '0')) {
 		return;
 	}
-	pos++;
-	pos++;
+	pos+=5;
 
 	int size;
 	size = *(int*)&is[pos];
@@ -324,9 +323,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.6 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.6  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.5  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

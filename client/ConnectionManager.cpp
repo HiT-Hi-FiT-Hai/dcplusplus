@@ -66,6 +66,7 @@ int ConnectionManager::getDownloadConnection(User* aUser) {
 	// Alright, set up a new connection attempt.
 	try {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			aUser->getClient()->connectToMe(aUser);
 		} else {
 			aUser->getClient()->revConnectToMe(aUser);
 		}
@@ -198,9 +199,12 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.5 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.6 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.6  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.5  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

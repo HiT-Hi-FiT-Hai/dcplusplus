@@ -64,20 +64,23 @@ string SocketException::errorToString(int aError) {
 	}
 }
 
-Socket::Socket() : event(NULL), connected(false), sock(-1) {
+Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
+	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 }
 
 Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
+	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	connect(ip, port);	
 }
 
 Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
+	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	connect(ip, port);	
 }
 
@@ -105,12 +108,10 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
 	SOCKADDR_IN  serv_addr;
 	hostent* host;
 
-	if(sock != -1 || connected) {
-		closesocket(sock);
+	if(connected) {
+		disconnect();
 	}
 
-	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
-	
 	memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_port = htons(port);
 	serv_addr.sin_family = AF_INET;
@@ -127,8 +128,13 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
         serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
     } 
 	
-    checksockerr(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr))); 
-	
+    if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
+		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
+		if(errno != EWOULDBLOCK) {
+			checksockerr(SOCKET_ERROR);
+		}
+	}			
+	// This is not really true if we got EWOULDBLOCK, but what the heck..it's close enough, the socket's busy connecting...
 	connected = true;
 
 }
@@ -177,9 +183,12 @@ void Socket::write(const string& aData) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.7  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

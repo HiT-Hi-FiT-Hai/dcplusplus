@@ -94,6 +94,17 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 	}
 }
 
+void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
+	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
+		if(*i == aConn) {
+			aConn->removeListener(this);
+			connections.erase(i);
+			ConnectionManager::getInstance()->putDownloadConnection(aConn);
+			break;
+		}
+	}
+}
+
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		if(aConn->getUser() == (*i)->getUser()) {
@@ -121,8 +132,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 	}
 	// Connection not needed any more, return it to the ConnectionManager...
-	aConn->removeListener(this);
-	ConnectionManager::getInstance()->putDownloadConnection(aConn);
+	removeConnection(aConn);
 }
 
 void DownloadManager::onData(UserConnection* aSource, BYTE* aData, int aLen) {
@@ -201,16 +211,30 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 	
 	fireFailed(d, "No slots available");
 	running.erase(i);
-	aSource->removeListener(this);
-	ConnectionManager::getInstance()->putDownloadConnection(aSource);
+	removeConnection(aSource);
 	queue.insert(queue.begin(), d);
-};
+}
+
+void DownloadManager::onError(UserConnection* aSource, const string& aError) {
+	Download::MapIter i = running.find(aSource);
+	
+	dcassert(i != running.end());
+
+	Download* d = i->second;
+
+	fireFailed(d, aError);
+
+}
+
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.7  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

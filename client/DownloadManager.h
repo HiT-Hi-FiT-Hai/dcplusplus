@@ -80,10 +80,7 @@ class DownloadManager : public Speaker<DownloadManagerListener>, public UserConn
 {
 public:
 
-	virtual void onDisconnected(UserConnection* aSource) {
-		removeConnection(aSource);
-	}
-	
+	virtual void onError(UserConnection* aSource, const string& aError);
 	virtual void onData(UserConnection* aSource, BYTE* aData, int aLen);
 	virtual void onFileLength(UserConnection* aSource, const string& aFileLength);
 	virtual void onMaxedOut(UserConnection* aSource);
@@ -126,20 +123,12 @@ public:
 		checkDownloads(conn);
 	}
 	
-	void removeConnection(UserConnection::Ptr aConn) {
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-			if(*i == aConn) {
-				aConn->removeListener(this);
-				connections.erase(i);
-				return;
-			}
-		}
-	}
+	void removeConnection(UserConnection::Ptr aConn);
 	
 	void removeConnections() {
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			(*i)->removeListener(this);
-			connections.erase(i);
+			i = connections.erase(i);
 		}
 	}
 
@@ -218,9 +207,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.7  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

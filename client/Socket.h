@@ -106,6 +106,8 @@ public:
 	Socket(const string& ip, short port) throw(SocketException);
 	virtual ~Socket() {
 		disconnect();
+		closesocket(sock);
+		
 	};
 	
 	virtual void connect(const string& ip, short port) throw(SocketException);
@@ -118,6 +120,7 @@ public:
 			CloseHandle(event);
 			event = NULL;
 		}
+		checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	}
 
 	int getAvailable() {
@@ -146,7 +149,7 @@ public:
 			if(event == NULL)
 				throw SocketException(WSAGetLastError());
 			
-			checksockerr(WSAEventSelect(sock, event, FD_ACCEPT | FD_READ | FD_WRITE | FD_CLOSE));
+			checksockerr(WSAEventSelect(sock, event, FD_CONNECT | FD_ACCEPT | FD_READ | FD_WRITE | FD_CLOSE));
 		}
 		return event;
 	}
@@ -180,9 +183,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Socket.h,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.7  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

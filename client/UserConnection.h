@@ -46,7 +46,6 @@ public:
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResumeFrom) { };
 	virtual void onFileLength(UserConnection* aSource, const string& aFileLength) { };
 	virtual void onSend(UserConnection* aSource) { };
-	virtual void onDisconnected(UserConnection* aSource) { };
 	virtual void onGetListLen(UserConnection* aSource) { };
 	virtual void onMaxedOut(UserConnection* aSource) { };
 	virtual void onModeChange(UserConnection* aSource, int aNewMode) { };
@@ -160,7 +159,6 @@ public:
 	void waitForConnection(short aPort = 412);
 	void disconnect() {
 		socket.disconnect();
-		fireDisconnected();
 	}
 	
 	void transmitFile(HANDLE f) {
@@ -227,15 +225,6 @@ private:
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDirection(this, aDirection, aNumber);
-		}
-	}
-	void fireDisconnected() {
-		listenerCS.enter();
-		dcdebug("UserConnection::fireDisconnected\n");
-		UserConnectionListener::List tmp = listeners;
-		listenerCS.leave();
-		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onDisconnected(this);
 		}
 	}
 	void fireError(const string& aError) {
@@ -343,9 +332,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.9 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.9  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.8  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

@@ -65,18 +65,6 @@ public:
 		fireTick(u);
 	}
 
-	virtual void onDisconnected(UserConnection* aSource) {
-		Upload * u;
-		Upload::MapIter i = uploads.find(aSource);
-		if(i != uploads.end()) {
-			u = i->second;
-			fireFailed(u, "Disconnected");
-			uploads.erase(i);
-			delete u;
-		}
-		removeConnection(aSource);
-	}
-
 	virtual void onError(UserConnection* aSource, const string& aError) {
 		Upload* u;
 		Upload::MapIter i = uploads.find(aSource);
@@ -182,6 +170,7 @@ public:
 				aConn->removeListener(this);
 				connections.erase(i);
 				ConnectionManager::getInstance()->putUploadConnection(aConn);
+				break;
 			}
 		}
 	}
@@ -265,9 +254,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.8 2001/12/05 14:27:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.8  2001/12/05 14:27:35  arnetheduck
+ * Premature disconnection bugs removed.
+ *
  * Revision 1.7  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.
