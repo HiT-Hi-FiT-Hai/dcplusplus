@@ -20,7 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "HubFrame.h"
-#include "DownloadManager.h"
+#include "QueueManager.h"
 #include "LineDlg.h"
 #include "ShareManager.h"
 #include "SearchFrm.h"
@@ -212,9 +212,9 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 			User::Ptr& u = client->getUser(user);
 			try {
 				if(u)
-					DownloadManager::getInstance()->downloadList(u);
+					QueueManager::getInstance()->addList(u);
 				else 
-					DownloadManager::getInstance()->downloadList(user);
+					QueueManager::getInstance()->addList(user);
 			} catch(...) {
 				// ...
 			}
@@ -258,9 +258,9 @@ LRESULT HubFrame::onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		User::Ptr& u = client->getUser(user);
 		try {
 			if(u)
-				DownloadManager::getInstance()->downloadList(u);
+				QueueManager::getInstance()->addList(u);
 			else 
-				DownloadManager::getInstance()->downloadList(user);
+				QueueManager::getInstance()->addList(user);
 		} catch(...) {
 			// ...
 		}
@@ -445,15 +445,23 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches withing 7 seconds)").c_str());
 
+	} else if(wParam == DISCONNECT) {
+		Lock l(cs);
+		if(client)
+			client->disconnect();
 	}
 	return 0;
 };
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.29 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.30 2002/02/01 02:00:29 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.30  2002/02/01 02:00:29  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.29  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

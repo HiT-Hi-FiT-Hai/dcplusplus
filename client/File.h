@@ -133,7 +133,24 @@ public:
 	DWORD write(const string& aString) {
 		return write((void*)aString.data(), aString.size());
 	}
+	
+	static void deleteFile(const string& aFileName) {
+		::DeleteFile(aFileName.c_str());
+	}
 
+	static LONGLONG getSize(const string& aFileName) {
+		WIN32_FIND_DATA fd;
+		HANDLE hFind;
+		
+		hFind = FindFirstFile(aFileName.c_str(), &fd);
+		
+		if (hFind == INVALID_HANDLE_VALUE) {
+			return -1;
+		} else {
+			FindClose(hFind);
+			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
+		}
+	}
 private:
 	HANDLE h;
 
@@ -143,9 +160,13 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: File.h,v 1.3 2002/02/01 02:00:29 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.3  2002/02/01 02:00:29  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.2  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -1,4 +1,15 @@
  -- --
+* Added a new queue window, to reduce clutter in the transfer window at the bottom
+* Totally reworked the queue managment code, queue related bugs should now be a lot easier to find...=)
+* Added a check to ensure the minimum 1 slot
+* The client now disconnects on a received redirect request (if the user's disabled automatic following of redirects). This should 
+  be a reasonable tradeoff between users that don't want to be redirected and hub owners that are too lazy or feel too important
+  to fix their scripts...
+* Added option to remove (keep) finished downloads in the queue
+* Fixed a small error with the rollback
+
+
+ -- 0.14 2002-01-26 --
 * Fixed upload slots bug
 * Fixed download resume bug
 * Fixed security bug (allowing people to download arbitrary files on the hd...thanx Simon E.)
@@ -13,8 +24,18 @@
 * Corrected transfer list display (Offline/Online users)
 * Added search flood detection (If more than 5 searches are received from the same user within 7 seconds, DC++ will send
   out a warning)
-* Added /dc++, /search <string>, /slots #, /refresh and /join <hub> commands to the main chat
-* Enabled multi-line messages in chat and in pm window
+* Added /dc++, /search <string>, /slots #, /refresh and /join <hub> commands in the main chat
+* Added option to disable clearing of the search box
+* Added option to select full rows in all list boxes
+* Added option to automatically remove download sources if "File Not Available" is received
+* Fixed close hub window bug
+* Hopefully fixed another crash bug
+* Added text and background color selection
+* Added font selection (Only for chat windows so far...)
+* Added option to remove hidden files from share
+* Increased the size of the toolbar icons a bit
+* Fixed another bug where users could download files that were not shared
+
 
  -- 0.132 2002-01-21 --
 * Fixed a bug when downloading tiny file lists (people with 0b share...)

@@ -228,20 +228,6 @@ public:
 		
 	}	
 	
-	static LONGLONG getFileSize(const string& aName) {
-		WIN32_FIND_DATA fd;
-		HANDLE hFind;
-		
-		hFind = FindFirstFile(aName.c_str(), &fd);
-		
-		if (hFind == INVALID_HANDLE_VALUE) {
-			return -1;
-		} else {
-			FindClose(hFind);
-			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
-		}
-	}
-
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
 	}
@@ -425,9 +411,13 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.24 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: Util.h,v 1.25 2002/02/01 02:00:48 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.25  2002/02/01 02:00:48  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.24  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

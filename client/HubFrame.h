@@ -336,7 +336,8 @@ private:
 		CLIENT_UNKNOWN,
 		CLIENT_VALIDATEDENIED,
 		CLIENT_SEARCH_FLOOD,
-		STATS
+		STATS,
+		DISCONNECT
 	};
 
 	enum {
@@ -396,6 +397,8 @@ private:
 			redirect = line;
 			if(BOOLSETTING(AUTO_FOLLOW)) {
 				PostMessage(WM_COMMAND, IDC_FOLLOW);
+			} else {
+				PostMessage(WM_SPEAKER, DISCONNECT);
 			}
 			
 			break;
@@ -474,9 +477,13 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.44 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.45 2002/02/01 02:00:30 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.45  2002/02/01 02:00:30  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.44  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

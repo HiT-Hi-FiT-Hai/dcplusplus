@@ -50,8 +50,8 @@ public:
 	}
 	SearchResult::List search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient);
 
-
 	LONGLONG getShareSize() {
+		Lock l(cs);
 		LONGLONG tmp = 0;
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			tmp += i->second->getSize();
@@ -59,6 +59,7 @@ public:
 		return tmp;
 	}
 	LONGLONG getShareSize(const string& aDir) {
+		Lock l(cs);
 		dcassert(aDir.size()>0);
 		Directory::MapIter i;
 		if(aDir[aDir.size()-1] =='\\')
@@ -182,9 +183,13 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.16 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.17 2002/02/01 02:00:45 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.17  2002/02/01 02:00:45  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.16  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

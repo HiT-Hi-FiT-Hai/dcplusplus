@@ -21,6 +21,7 @@
 
 #include "SearchFrm.h"
 #include "LineDlg.h"
+#include "QueueManager.h"
 
 LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -150,10 +151,10 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(Util::browseSaveFile(target)) {
 			try {
 				if(sr->getUser())
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), target);
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
 				else
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), target);
-			} catch(Exception e) {
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), target);
+			} catch(QueueException e) {
 				MessageBox(e.getError().c_str());
 			}
 		}
@@ -174,10 +175,10 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
 		try {
 			if(sr->getUser())
-				DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 			else
-				DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
-		} catch(Exception e) {
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+		} catch(QueueException e) {
 			MessageBox(e.getError().c_str());
 		}
 	} 
@@ -291,7 +292,7 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 			int n = 0;
 			
-			targets = DownloadManager::getInstance()->getTargetsBySize(sr->getSize());
+			targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE;
 				mi.fType = MFT_STRING;
@@ -378,11 +379,65 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0; 
 };
 
+LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		try {
+			if(sr->getUser())
+				QueueManager::getInstance()->addList(sr->getUser());
+			else
+				QueueManager::getInstance()->addList(sr->getNick());
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+
+LRESULT SearchFrame::onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+	
+	if(item->iItem != -1) {
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(item->iItem);
+		try { 
+			if(sr->getUser())
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
+			else
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
+		} catch(QueueException e) {
+			MessageBox(e.getError().c_str());
+		}
+	}
+	return 0;
+	
+}
+
+void SearchFrame::downloadSelected(const string& aDir) {
+	int i=-1;
+	
+	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		try { 
+			if(sr->getUser())
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
+			else
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), aDir + sr->getFileName());
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
+	}
+}
+
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.22 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.23 2002/02/01 02:00:41 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.23  2002/02/01 02:00:41  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.22  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

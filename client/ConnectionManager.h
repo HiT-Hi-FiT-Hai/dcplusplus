@@ -30,12 +30,67 @@
 #include "TimerManager.h"
 #include "Util.h"
 
-class ConnectionManager : public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
+class ConnectionQueueItem {
+public:
+	typedef ConnectionQueueItem* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	typedef map<Ptr, DWORD> TimeMap;
+	typedef TimeMap::iterator TimeIter;
+	typedef map<UserConnection*, Ptr> QueueMap;
+	typedef QueueMap::iterator QueueIter;
+
+	enum Status {
+		CONNECTING,
+		WAITING
+	};
+
+	ConnectionQueueItem(const User::Ptr& aUser) : connection(NULL), user(aUser), status(CONNECTING) { };
+	
+	void setUser(const User::Ptr& aUser) { user = aUser; };
+	User::Ptr& getUser() { return user; };
+	
+	GETSET(Status, status, Status);
+	GETSET(UserConnection*, connection, Connection);
+private:
+	User::Ptr user;
+};
+
+class ConnectionManagerListener {
+public:
+	typedef ConnectionManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+	enum Types {
+		ADDED,
+		CONNECTED,
+		REMOVED,
+		FAILED,
+		STATUS_CHANGED
+	};
+	virtual void onAction(Types type, ConnectionQueueItem* aItem) { };
+	virtual void onAction(Types type, ConnectionQueueItem* aItem, const string& aLine) { };
+};
+
+
+class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
 {
 public:
-	int getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 
+	ConnectionQueueItem* getQueueItem(UserConnection* aConn) {
+		if(connections.find(aConn) != connections.end()) {
+			return connections[aConn];
+		}
+		dcassert(0);
+		return NULL;
+	}
+	
+	void removeConnection(ConnectionQueueItem* aCqi);
+	
+	void getDownloadConnection(const User::Ptr& aUser);
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
+	void retryDownload(ConnectionQueueItem* aCqi);
 	void putUploadConnection(UserConnection* aSource) {
 		putConnection(aSource);
 	}
@@ -52,14 +107,18 @@ public:
 
 private:
 
+
 	/** Main critical section for the connection manager */
 	CriticalSection cs;
 
-	map<User::Ptr, DWORD> pendingDown;
-	UserConnection::List pool;
-	UserConnection::List downPool;
+	ConnectionQueueItem::TimeMap pendingDown;
+	UserConnection::List pendingDelete;
+	ConnectionQueueItem::QueueMap downPool;
+	ConnectionQueueItem::QueueMap connections;
+	ConnectionQueueItem::List pendingAdd;
+
 	ServerSocket socket;
-	
+
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager() {
 		TimerManager::getInstance()->addListener(this);
@@ -70,7 +129,7 @@ private:
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
 		// Time to empty the pool...
-		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
+		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
 			dcdebug("Deleting connection %p\n", *i);
 			delete *i;
 		}
@@ -123,20 +182,8 @@ private:
 	 * Returns an connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
-		UserConnection* uc;
-		{
-			Lock l(cs);
 
-			// We want to keep a few connections in the pool, so that they have time to stop...
-			if(pool.size() <= 5) {
-				uc = new UserConnection();
-			} else {
-				uc = pool.front();
-				pool.erase(pool.begin());
-				dcdebug("ConnectionManager::getConnection %p, %d listeners\n", uc, uc->listeners.size());
-			}
-		}
-
+		UserConnection* uc = new UserConnection();
 		uc->addListener(this);
 		return uc;
 	}
@@ -147,13 +194,26 @@ private:
 	 * we might as well reuse them instead of always deleting and creating new ones...
 	 */
 	void putConnection(UserConnection* aConn) {
-		aConn->reset();
-
+		TimerManager::getInstance()->removeListener(aConn);
+		aConn->removeListeners();
+		ConnectionQueueItem* cqi = NULL;
 		{
 			Lock l(cs);
-			if(find(pool.begin(), pool.end(), aConn) == pool.end()) {
-				pool.push_back(aConn);
+			
+			ConnectionQueueItem::QueueIter i = connections.find(aConn);
+			if(i != connections.end()) {
+				cqi = i->second;
+				connections.erase(i);
 			}
+			if(find(pendingDelete.begin(), pendingDelete.end(), aConn) == pendingDelete.end()) {
+				pendingDelete.push_back(aConn);
+			} else {
+				dcdebug("ConnectionManager::putConnection %p put back twice\n", aConn);
+			}
+		}
+		if(cqi) {
+			fire(ConnectionManagerListener::REMOVED, cqi);
+			delete cqi;
 		}
 	}
 };
@@ -162,9 +222,13 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.23 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.24 2002/02/01 02:00:25 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.24  2002/02/01 02:00:25  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.23  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

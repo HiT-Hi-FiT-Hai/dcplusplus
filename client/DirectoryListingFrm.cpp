@@ -21,7 +21,7 @@
 
 #include "DirectoryListingFrm.h"
 #include "DirectoryListing.h"
-#include "DownloadManager.h"
+#include "QueueManager.h"
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
@@ -222,6 +222,13 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	}
 
+	ctrlList.SetBkColor(Util::bgColor);
+	ctrlList.SetTextBkColor(Util::bgColor);
+	ctrlList.SetTextColor(Util::textColor);
+
+	ctrlTree.SetBkColor(Util::bgColor);
+	ctrlTree.SetTextColor(Util::textColor);
+	
 	ctrlList.InsertColumn(COLUMN_FILENAME, _T("Filename"), LVCFMT_LEFT, 400, COLUMN_FILENAME);
 	ctrlList.InsertColumn(COLUMN_SIZE, _T("Size"), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	
@@ -311,7 +318,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			int n = 0;
 			CMenuItemInfo mi;
 
-			targets = DownloadManager::getInstance()->getTargetsBySize(f->getSize());
+			targets = QueueManager::getInstance()->getTargetsBySize(f->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE;
 				mi.fType = MFT_STRING;
@@ -359,21 +366,25 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
 		try {
 			if(user->isOnline())
-				DownloadManager::getInstance()->download(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
+				QueueManager::getInstance()->add(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
 			else
-				DownloadManager::getInstance()->download(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
-		} catch(Exception e) {
+				QueueManager::getInstance()->add(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+		} catch(QueueException e) {
 			MessageBox(e.getError().c_str());
 		}
-	} 
+	}
 	return 0;
 }
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.20 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.21 2002/02/01 02:00:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.21  2002/02/01 02:00:26  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.20  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

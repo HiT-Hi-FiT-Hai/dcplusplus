@@ -27,58 +27,31 @@
 #include "UserConnection.h"
 #include "Util.h"
 #include "TimerManager.h"
-
-class SimpleXML;
+#include "QueueManager.h"
 
 STANDARD_EXCEPTION(DownloadException);
 
-class Download : public Transfer {
+class Download : public Transfer, public Flags {
 public:
-	class Source {
-	public:
-		typedef Source* Ptr;
-		typedef vector<Ptr> List;
-		typedef List::iterator Iter;
-
-		Source(const string& aNick, const string& aFileName, const string& aPath, const User::Ptr& aUser = User::nuser) : nick(aNick),
-			fileName(aFileName), path(aPath), user(aUser) { };
-
-		User::Ptr& getUser() { return user; };
-		void setUser(const User::Ptr& aUser) {
-			user = aUser;
-		}
-
-		GETSETREF(string, fileName, FileName);
-		GETSETREF(string, nick, Nick);
-		GETSETREF(string, path, Path);
-		
-	private:
-		User::Ptr user;
-	};
-
 	typedef Download* Ptr;
-	typedef list<Ptr> List;
-	typedef List::iterator Iter;
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
-	typedef map<User::Ptr, Ptr> UserMap;
-	typedef UserMap::iterator UserIter;
 	
-	Download() : flags(0), currentSource(NULL), rollbackBuffer(NULL) { }
+	Download(QueueItem* aQI, ConnectionQueueItem* aCqi) : Transfer(aCqi), queueItem(aQI), rollbackBuffer(NULL), rollbackSize(0) { 
+		if(aQI->isSet(QueueItem::USER_LIST))
+			setFlag(Download::USER_LIST);
+		if(aQI->isSet(QueueItem::RESUME))
+			setFlag(Download::RESUME);
+	};
 	~Download() {
 		if(rollbackBuffer)
 			delete rollbackBuffer;
-
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			delete *i;
-		}
 	}
 
 	enum {
 		USER_LIST = 0x01,
-		RUNNING = 0x02,
-		RESUME = 0x04,
-		ROLLBACK = 0x08
+		RESUME = 0x02,
+		ROLLBACK = 0x04
 	};
 
 	BYTE* getRollbackBuffer() { return rollbackBuffer; };
@@ -96,88 +69,21 @@ public:
 
 	int getRollbackSize() { return rollbackSize; };
 
-	const string& getTarget() { return target; };
-	void setTarget(const string& aTarget) { target = aTarget; };
-
-	Source::Ptr addSource(const string& aNick, const string& aFileName, const string& aPath) {
-		Source::Ptr s = new Source(aNick, aFileName, aPath);
-		sources.push_back(s);
-		return s;
-	}
-	Source::Ptr addSource(const User::Ptr& aUser, const string& aFileName, const string& aPath) {
-		Source::Ptr s = new Source(aUser->getNick(), aFileName, aPath, aUser);
-		sources.push_back(s);
-		return s;
-	}
-
-	void removeSource(Source* aSource) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if(*i == aSource) {
-				sources.erase(i);
-				break;
-			}
+	const string& getTarget() { dcassert(getQueueItem()); return getQueueItem()->getTarget(); };
+	string getTargetFileName() {
+		int i = getTarget().rfind('\\');
+		if(i != string::npos) {
+			return getTarget().substr(i + 1);
+		} else {
+			return getTarget();
 		}
-	}
-	
-	Source::Ptr getSource(const User::Ptr& aUser) {
-		// First, search by user...or nick...
-		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser)
-				return *i;
-		}
-
-		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
-			if( !((*j)->getUser() && (*j)->getUser()->isOnline()) && ((*j)->getNick() == aUser->getNick())) {
-				(*j)->setUser(aUser);
-				return *j;
-			}
-		}
-		
-		return NULL;
-	}
-	
-	bool isSource(const User::Ptr& aUser) const {
-		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser)
-				return true;
-		}
-		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
-			if( (((*j)->getUser() && !(*j)->getUser()->isOnline()) || !(*j)->getUser()) && ((*j)->getNick() == aUser->getNick())) {
-				(*j)->setUser(aUser);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool isSource(const string& aUser) const {
-		for(Source::List::const_iterator j = sources.begin(); j != sources.end(); ++j) {
-			if((*j)->getNick() == aUser) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	Source::List& getSources() { return sources; };
-
-	Source* getCurrentSource() { return currentSource; };
-	void setCurrentSource(Source* aSource) { currentSource = aSource; };
-	
-	bool isSet(int aFlag) { return (flags & aFlag) > 0; };
-	void setFlag(int aFlag) { flags |= aFlag; };
-	void unsetFlag(int aFlag) { flags &= ~aFlag; };
+	};
+	GETSET(QueueItem*, queueItem, QueueItem);
 private:
-
-	int flags;
-	string target;
-	Source* currentSource;
-	
 	BYTE* rollbackBuffer;
 	int rollbackSize;
-	
-	Source::List sources;
 };
+
 
 class DownloadManagerListener {
 public:
@@ -186,20 +92,17 @@ public:
 	typedef List::iterator Iter;
 
 	enum Types {
-		ADDED,
+		/** This is the last message sent before a download is deleted. No more messages will be sent after it. */
 		COMPLETE,
-		CONNECTING,
+		/** This indicates some sort of failure with a particular download */
 		FAILED,
-		REMOVED,
-		SOURCE_ADDED,
-		SOURCE_REMOVED,
-		SOURCE_UPDATED,
+		/** This is the first message sent before a download starts. No other messages will be sent before. */
 		STARTING,
+		/** Sent once a second if something has actually been downloaded. */
 		TICK
 	};
 
 	virtual void onAction(Types type, Download* aDownload) { };
-	virtual void onAction(Types type, Download* aDownload, Download::Source* aSource) { };
 	virtual void onAction(Types type, Download* aDownload, const string& aReason) { };
 	
 };
@@ -207,123 +110,55 @@ public:
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
 {
 public:
-	void download(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
-		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
-	}
-	void download(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
 
-	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
-		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
+	bool isConnected(const User::Ptr& aUser) {
+		Lock l(cs);
+		for(Download::MapIter i = running.begin(); i != running.end(); ++i) {
+			if(i->first->getUser() == aUser)
+				return true;
+		}
+		return false;
 	}
-	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
-	void downloadList(const User::Ptr& aUser) throw(DownloadException);
-	void downloadList(const string& aUser) throw(DownloadException);
-	void connectFailed(const User::Ptr& aUser);
-	
-	void removeDownload(Download* aDownload);
+
+	void removeDownload(QueueItem* aItem);
+	void removeDownload(UserConnection* aConn);
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
-		
-		{
-			Lock l(cs);
-			waiting.erase(conn->getUser());
-			connections.push_back(conn);
-		}
-
 		checkDownloads(conn);
 	}
-	StringList getTargetsBySize(LONGLONG aSize) {
-		Lock l(cs);
-		StringList sl;
 
-		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if((*i)->getSize() == aSize) {
-				sl.push_back((*i)->getTarget());
-			}
-		}
-		return sl;
-	}
-	void removeSource(Download* aDownload, Download::Source::Ptr aSource);
-
-	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
-	void removeConnections(); 
-
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
 private:
-
-	void failDownload(UserConnection* c, Download* d, const string& aReason) {
-		{
-			Lock l(cs);
-			running.erase(c);
-		}
-		
-		d->unsetFlag(Download::RUNNING);
-		d->resetTotal();
-		
-		d->setFile(NULL);
-		
-		fire(DownloadManagerListener::FAILED, d, aReason);
-		removeSource(d, d->getCurrentSource());
-		
-		d->setCurrentSource(NULL);
-
-		removeConnection(c);
-	}
+	
+	bool checkRollback(Download* aDownload, const BYTE* aBuf, int aLen);
+	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
 
 	friend class Singleton<DownloadManager>;
-	DownloadManager() : dirty(0) { 
+	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
+
 	};
 	virtual ~DownloadManager() {
 		TimerManager::getInstance()->removeListener(this);
-		removeConnections();
-		for(StringIter i = userLists.begin(); i!= userLists.end(); ++i) {
-			DeleteFile(i->c_str());
-		}
-		// Delete queued items...
+
+		Download* d = NULL;
 		{
 			Lock l(cs);
-			for(Download::Iter j = queue.begin(); j != queue.end(); ++j) {
-				delete *j;
+			
+			// Check the running downloads...
+			for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
+				UserConnection* conn = j->first;
+				d = j->second;
+				removeConnection(conn);
+				QueueManager::getInstance()->putDownload(d);
 			}
-			queue.empty();
 		}
 	};
 	
 	CriticalSection cs;
-	bool dirty;			// Indicates whether the queue needs saving
 	
-	Download::List queue;
-	map<User::Ptr, DWORD> waiting;
 	Download::Map running;
 	
-	UserConnection::List connections;
-	StringList userLists;
-	
-	Download* getNextDownload(const User::Ptr& aUser) {
-		Lock l(cs);
-		Download* d = NULL;
-		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if((*i)->isSource(aUser) ) {
-				if( !(*i)->isSet(Download::RUNNING) ) {
-					if((*i)->getSize() < 16*1024 || (*i)->isSet(Download::USER_LIST)) {
-						d = *i;
-						dcdebug("Found better download for %s: %s\n", aUser->getNick().c_str(), d->getTarget().c_str());
-						break;
-					}
-
-					if(d == NULL) {
-						d = *i;
-						dcdebug("Found download for %s: %s\n", aUser->getNick().c_str(), d->getTarget().c_str());
-					}
-				}
-			}
-		}
-		return d;
-	}
-
 	void checkDownloads(UserConnection* aConn);
 	
 	// UserConnectionListener
@@ -366,14 +201,9 @@ private:
 		switch(type) {
 		case TimerManagerListener::SECOND:
 			onTimerSecond(aTick); break;
-		case TimerManagerListener::MINUTE:
-			onTimerMinute(aTick); break;
-		default:
-			dcassert(0);			
 		}
 	}
 	void onTimerSecond(DWORD aTick);
-	void onTimerMinute(DWORD aTick);
 
 };
 
@@ -381,9 +211,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.30 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.31 2002/02/01 02:00:28 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.31  2002/02/01 02:00:28  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.30  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

@@ -28,6 +28,7 @@
 #include "TimerManager.h"
 #include "User.h"
 #include "File.h"
+#include "Util.h"
 
 class UserConnection;
 
@@ -65,6 +66,8 @@ public:
 	virtual void onAction(Types, UserConnection*, int) { };
 };
 
+class ConnectionQueueItem;
+
 class Transfer {
 public:
 	File* getFile() { return file; };
@@ -99,8 +102,11 @@ public:
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
 
-	Transfer() : total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
+	Transfer(ConnectionQueueItem* aQI) : cqi(aQI), total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) delete file; };
+
+	GETSET(ConnectionQueueItem*, cqi, CQI);
+	
 private:
 	DWORD start;
 	DWORD last;
@@ -113,7 +119,7 @@ private:
 };
 class ServerSocket;
 
-class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, TimerManagerListener
+class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, private TimerManagerListener, public Flags
 {
 public:
 	friend class ConnectionManager;
@@ -124,19 +130,18 @@ public:
 	typedef map<string, Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 	
-	enum {	
+	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
 		MODE_DATA = BufferedSocket::MODE_DATA
 	};
 
-	enum {
+	enum Status {
 		CONNECTING,
-		LOGIN,
 		BUSY,
-		FREE
+		IDLE
 	};
 
-	enum {
+	enum Flags {
 		FLAG_UPLOAD = 0x01,
 		FLAG_DOWNLOAD = 0x02,
 		FLAG_INCOMING = 0x04
@@ -173,8 +178,8 @@ public:
 	}
 
 	const string& getDirectionString() {
-		dcassert(flags & (FLAG_UPLOAD | FLAG_DOWNLOAD));
-		return (flags & UserConnection::FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
+		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
+		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
 	const string& getNick() {
 		if(nick.empty()) {
@@ -189,19 +194,13 @@ public:
 	
 	User::Ptr& getUser() { return user; };
 
-	void setFlag(DWORD aFlag) { flags |= aFlag; };
-	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
-	bool isSet(DWORD aFlag) const { return (flags&aFlag) > 0; };
-	
+	GETSET(Status, status, Status);
+	GETSETREF(string, server, Server);
+	GETSET(short, port, Port);
+	GETSET(DWORD, lastActivity, lastActivity);
 private:
 	string nick;
-	string server;
-	short port;
 	BufferedSocket socket;
-	
-	int state;
-	int flags;
-	DWORD lastActivity;
 	User::Ptr user;
 	
 	static const string UPLOAD, DOWNLOAD;
@@ -210,26 +209,12 @@ private:
 		user = aUser;
 	}
 
-
-	void reset() {
-		dcdebug("UserConnection(%p)::reset\n", this );
-
-		TimerManager::getInstance()->removeListener(this);
-		removeListeners();
-		disconnect();
-		user = User::nuser;
-		flags = 0;
-		state = LOGIN;
-		server = "";
-		port = 0;
-		lastActivity = 0;
-	}
-
 	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0), port(0), lastActivity(0) { 
+	UserConnection() : socket('|'), status(CONNECTING), port(0), lastActivity(0) { 
 		socket.addListener(this);
 	};
 	virtual ~UserConnection() {
+		TimerManager::getInstance()->removeListener(this);
 		dcdebug("UserConnection destroyer\n", this );
 	};
 
@@ -308,9 +293,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.29 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.30 2002/02/01 02:00:47 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.30  2002/02/01 02:00:47  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.29  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

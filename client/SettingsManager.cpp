@@ -21,7 +21,7 @@
 #include "SimpleXML.h"
 #include "SettingsManager.h"
 #include "ShareManager.h"
-#include "DownloadManager.h"
+#include "QueueManager.h"
 #include "HubManager.h"
 #include "NotepadFrame.h"
 #include "Util.h"
@@ -35,7 +35,7 @@ char const* SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
-	"BackgroundColor", "TextColor", "ShareHidden",
+	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished",
 	"SENTRY"
 };
 
@@ -63,7 +63,8 @@ SettingsManager::SettingsManager()
 	setDefault(BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	setDefault(SHARE_HIDDEN, false);
-
+	setDefault(REMOVE_FINISHED, true);
+	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	setDefault(TEXT_FONT, Util::encodeFont(lf));			
@@ -126,7 +127,7 @@ void SettingsManager::load(string const& aFileName)
 	xml.resetCurrentChild();
 	ShareManager::getInstance()->load(&xml);
 	xml.resetCurrentChild();
-	DownloadManager::getInstance()->load(&xml);
+	QueueManager::getInstance()->load(&xml);
 	xml.resetCurrentChild();
 	HubManager::getInstance()->load(&xml);
 	xml.resetCurrentChild();
@@ -187,7 +188,7 @@ void SettingsManager::save(string const& aFileName) const
 	xml.stepOut();
 	
 	ShareManager::getInstance()->save(&xml);
-	DownloadManager::getInstance()->save(&xml);
+	QueueManager::getInstance()->save(&xml);
 	HubManager::getInstance()->save(&xml);
 	NotepadFrame::save(&xml);
 	
@@ -201,9 +202,13 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.12 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.13 2002/02/01 02:00:44 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.13  2002/02/01 02:00:44  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.12  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

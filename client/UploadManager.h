@@ -39,6 +39,8 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
+	Upload(ConnectionQueueItem* aQI) : Transfer(aQI) { };
+
 	void setUser(User::Ptr& aUser) { user = aUser; if(user) nick = user->getNick(); };
 	User::Ptr& getUser() { return user; };
 	
@@ -70,27 +72,9 @@ public:
 class UploadManager : private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
-	void removeUpload(Upload* aUpload) {
-		cs.enter();
-		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-			if(i->second == aUpload) {
-				fire(UploadManagerListener::FAILED, aUpload, "Aborted");
-				uploads.erase(i);
-				if(isExtra(aUpload)) {
-					extra--;
-				} else {
-					running--;
-				}
-				
-				cs.leave();
-				removeConnection(i->first);
-				delete aUpload;
-				return;
-			}
-		}
-		cs.leave();
-	}
-
+	void removeUpload(Upload* aUpload);
+	void removeUpload(UserConnection* aUpload);
+	
 	int getUploads() { Lock l(cs); return uploads.size(); };
 	int getFreeSlots() { int i =  (SETTING(SLOTS) - running); return (i > 0) ? i : 0; }
 	int getFreeExtraSlots() { int i = 3 - getExtra(); return (i > 0) ? i : 0; };
@@ -227,9 +211,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.34 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.35 2002/02/01 02:00:46 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.35  2002/02/01 02:00:46  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.34  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

@@ -223,6 +223,14 @@ SOURCE=.\client\PublicHubsFrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\QueueFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\QueueManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\SearchFrm.cpp
 # End Source File
 # Begin Source File
@@ -421,6 +429,14 @@ SOURCE=.\client\PropPage.h
 # Begin Source File
 
 SOURCE=.\client\PublicHubsFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\QueueFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\QueueManager.h
 # End Source File
 # Begin Source File
 

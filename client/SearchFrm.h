@@ -24,7 +24,6 @@
 #endif // _MSC_VER >= 1000
 
 #include "FlatTabCtrl.h"
-#include "DownloadManager.h"
 #include "SearchManager.h"
 #include "ExListViewCtrl.h"
 #include "StringTokenizer.h"
@@ -138,57 +137,11 @@ public:
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
-	void downloadSelected(const string& aDir) {
-		int i=-1;
-		
-		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-			try { 
-				if(sr->getUser())
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
-				else
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), aDir + sr->getFileName());
-			} catch(Exception e) {
-				MessageBox(e.getError().c_str());
-			}
-		}
-	}
-
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i=-1;
-		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-			try {
-				if(sr->getUser())
-					DownloadManager::getInstance()->downloadList(sr->getUser());
-				else
-					DownloadManager::getInstance()->downloadList(sr->getNick());
-			} catch(...) {
-				// ...
-			}
-		}
-		return 0;
-	}
+	void downloadSelected(const string& aDir); 
 	
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-		
-		if(item->iItem != -1) {
-			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(item->iItem);
-			try { 
-				if(sr->getUser())
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
-				else
-					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
-			} catch(Exception e) {
-				MessageBox(e.getError().c_str());
-			}
-		}
-		return 0;
-		
-	}
-
+	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		ctrlSearch.SetFocus();
 		return 0;
@@ -369,9 +322,13 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.24 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.25 2002/02/01 02:00:43 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.25  2002/02/01 02:00:43  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.24  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

@@ -23,7 +23,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "DownloadManager.h"
+#include "QueueManager.h"
 
 class DirectoryListing  
 {
@@ -112,7 +112,7 @@ public:
 			File* file = *i;
 			try {
 				download(file, aUser, target + file->getName());
-			} catch(DownloadException e) {
+			} catch(QueueException e) {
 				// Catch it here to allow parts of directories to be added...
 			}
 		}
@@ -129,17 +129,17 @@ public:
 			File* file = *i;
 			try {
 				download(file, aUser, target + file->getName());
-			} catch(DownloadException e) {
+			} catch(QueueException e) {
 				// Catch it here to allow parts of directories to be added...
 			}
 		}
 	}
 	
 	void download(File* aFile, const string& aUser, const string& aTarget) {
-		DownloadManager::getInstance()->download(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
+		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
 	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
-		DownloadManager::getInstance()->download(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
+		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
 	}
 	
 	void load(string& i);
@@ -164,9 +164,13 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.7 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.8 2002/02/01 02:00:26 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.8  2002/02/01 02:00:26  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.7  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "UploadManager.h"
+#include "ConnectionManager.h"
 
 UploadManager* UploadManager::instance = NULL;
 
@@ -43,7 +44,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			userlist = true;
 		}
 
-		if( Util::getFileSize(file) < (LONGLONG)(16 * 1024) ) {
+		if( File::getSize(file) < (LONGLONG)(16 * 1024) ) {
 			smallfile = true;
 		}
 
@@ -99,7 +100,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			return;
 		}
 		
-		u = new Upload();
+		u = new Upload(ConnectionManager::getInstance()->getQueueItem(aSource));
 		u->setFile(f, true);
 		u->setPos(aResume, true);
 		u->setFileName(aFile);
@@ -242,11 +243,71 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	
 }
 
+void UploadManager::removeUpload(Upload* aUpload) {
+
+	bool found = false;
+	UserConnection* c;
+
+	{
+		Lock l(cs);
+		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+			if(i->second == aUpload) {
+				c = i->first;
+				found = true;
+				uploads.erase(i);
+				if(isExtra(aUpload)) {
+					extra--;
+				} else {
+					running--;
+				}
+				
+			}
+		}
+	}
+
+	if(found) {
+		fire(UploadManagerListener::FAILED, aUpload, "Aborted");
+		removeConnection(c);
+		
+		delete aUpload;	
+	} else {
+		dcassert("Upload not found!");
+	}
+}
+
+void UploadManager::removeUpload(UserConnection* aConn) {
+	
+	dcassert(uploads.find(aConn) != uploads.end());
+	Upload* u;
+	
+	{
+		Lock l(cs);
+		u = uploads[aConn];
+		uploads.erase(aConn);
+
+		if(isExtra(u)) {
+			extra--;
+		} else {
+			running--;
+		}
+		
+	}
+	
+	fire(UploadManagerListener::FAILED, u, "Aborted");
+	removeConnection(aConn);
+	
+	delete u;	
+}
+
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.12 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.13 2002/02/01 02:00:45 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.13  2002/02/01 02:00:45  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.12  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

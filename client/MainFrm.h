@@ -34,7 +34,8 @@
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener
+		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener,
+		private ConnectionManagerListener
 {
 public:
 	MainFrame() : lastUpload(-1), stopperThread(NULL), menuItems(0) { 
@@ -49,18 +50,10 @@ public:
 	CCommandBarCtrl2 m_CmdBar;
 
 	enum {
-		UPLOAD_COMPLETE,
-		UPLOAD_FAILED,
-		UPLOAD_STARTING,
-		UPLOAD_TICK,
-		DOWNLOAD_ADDED,
-		DOWNLOAD_COMPLETE,
-		DOWNLOAD_CONNECTING,
-		DOWNLOAD_FAILED,
-		DOWNLOAD_REMOVED,
-		DOWNLOAD_STARTING,
-		DOWNLOAD_SOURCEADDED,
-		DOWNLOAD_TICK,
+		ADD_UPLOAD_ITEM,
+		ADD_DOWNLOAD_ITEM,
+		REMOVE_ITEM,
+		SET_TEXT,		
 		DOWNLOAD_LISTING,
 		STATS,
 		AUTO_CONNECT
@@ -114,6 +107,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
+		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		CHAIN_MDI_CHILD_COMMANDS()
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, (IDC_BROWSELIST + menuItems), onBrowseList)
@@ -149,6 +143,7 @@ public:
 
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -167,10 +162,7 @@ public:
 		while( (item.iItem = ctrlTransfers.GetNextItem(item.iItem, LVNI_SELECTED)) != -1) {
 			ctrlTransfers.GetItem(&item);
 
-			if(item.iImage == IMAGE_DOWNLOAD)
-				DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
-			else
-				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
+			ConnectionManager::getInstance()->removeConnection((ConnectionQueueItem*)item.lParam);
 		}
 	}
 	
@@ -290,12 +282,13 @@ private:
 	};
 
 	enum {
-		COLUMN_FILE,
+		COLUMN_USER,
 		COLUMN_STATUS,
+		COLUMN_FILE,
 		COLUMN_SIZE,
-		COLUMN_USER
+		COLUMN_LAST
 	};
-	
+
 	int menuItems;
 	
 	class StringInfo {
@@ -305,12 +298,16 @@ private:
 		LPARAM lParam;
 	};
 
+	class StringListInfo;
+	friend class StringListInfo;
+
 	class StringListInfo {
 	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
-		StringList l;
+		StringListInfo(LPARAM lp = NULL) : lParam(lp) { memset(columns, 0, sizeof(columns)); };
 		LPARAM lParam;
+		string columns[COLUMN_LAST];
 	};
+
 	class DirectoryListInfo {
 	public:
 		DirectoryListInfo(LPARAM lp = NULL) : lParam(lp) { };
@@ -346,7 +343,7 @@ private:
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) {
 		switch(type) {
 		case UploadManagerListener::COMPLETE:
-			PostMessage(WM_SPEAKER, UPLOAD_COMPLETE, (LPARAM)aUpload); break;
+			onUploadComplete(aUpload); break;
 		case UploadManagerListener::STARTING:
 			onUploadStarting(aUpload); break;
 		case UploadManagerListener::TICK:
@@ -359,7 +356,7 @@ private:
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload, const string& aReason) {
 		switch(type) {
 		case UploadManagerListener::FAILED:
-			PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); break;
+/*			PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); */break;
 		default:
 			dcassert(0);
 		}
@@ -367,36 +364,54 @@ private:
 
 	void onUploadStarting(Upload* aUpload);
 	void onUploadTick(Upload* aUpload);
+	void onUploadComplete(Upload* aUpload);
 	
 	// DownloadManagerListener
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload);
-	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, Download::Source* aSource) {
+	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload) {
 		switch(type) {
-		case DownloadManagerListener::SOURCE_ADDED:		// Fallthrough
-		case DownloadManagerListener::SOURCE_REMOVED:	// Fallthrough
-		case DownloadManagerListener::SOURCE_UPDATED:
-			onDownloadSourceAdded(aDownload, aSource); break;
-		default:
-			dcassert(0);
-			
+		case DownloadManagerListener::COMPLETE: onDownloadComplete(aDownload); break;
+		case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
+		case DownloadManagerListener::TICK: onDownloadTick(aDownload); break;
+		default: dcassert(0); break;
 		}
 	}
+	
 	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
 		switch(type) {
-		case DownloadManagerListener::FAILED:
-			onDownloadFailed(aDownload, aReason); break;
-		default:
-			dcassert(0);
+		case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
+		default: dcassert(0); break;
+		}
+	}
+
+	void onDownloadComplete(Download* aDownload);
+	void onDownloadFailed(Download* aDownload, const string& aReason);
+	void onDownloadStarting(Download* aDownload);
+	void onDownloadTick(Download* aDownload);
+
+	// ConnectionManagerListener
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) { 
+		switch(type) {
+		case ConnectionManagerListener::ADDED: onConnectionAdded(aCqi); break;
+		case ConnectionManagerListener::CONNECTED: onConnectionConnected(aCqi); break;
+		case ConnectionManagerListener::REMOVED: onConnectionRemoved(aCqi); break;
+		case ConnectionManagerListener::STATUS_CHANGED: onConnectionStatus(aCqi); break;
+		default: dcassert(0); break;
+		}
+	};
+
+	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi, const string& aLine) { 
+		switch(type) {
+		case ConnectionManagerListener::FAILED: onConnectionFailed(aCqi, aLine); break;
+		default: dcassert(0); break;
 		}
 	}
 	
-	void onDownloadAdded(Download* aDownload);
-	void onDownloadComplete(Download* aDownload);
-	void onDownloadFailed(Download* aDownload, const string& aReason);
-	void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
-	void onDownloadStarting(Download* aDownload);
-	void onDownloadTick(Download* aDownload);
-	
+	void onConnectionAdded(ConnectionQueueItem* aCqi);
+	void onConnectionConnected(ConnectionQueueItem* aCqi) { };
+	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
+	void onConnectionRemoved(ConnectionQueueItem* aCqi);
+	void onConnectionStatus(ConnectionQueueItem* aCqi) { };
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		if(type == TimerManagerListener::SECOND) {
@@ -441,9 +456,13 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.36 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.37 2002/02/01 02:00:37 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.37  2002/02/01 02:00:37  arnetheduck
+ * A lot of work done on the new queue manager, hopefully this should reduce
+ * the number of crashes...
+ *
  * Revision 1.36  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *
