@@ -286,6 +286,9 @@
 				RelativePath=".\windows\FavHubProperties.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\FavoriteDirsPage.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\FavoritesFrm.cpp">
 			</File>
 			<File
@@ -411,6 +414,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FavHubProperties.h">
+			</File>
+			<File
+				RelativePath=".\windows\FavoriteDirsPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\FavoritesFrm.h">

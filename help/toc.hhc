@@ -45,6 +45,12 @@
 			<param name="Name" value="Downloads">
 			<param name="Local" value="settings_downloads.html">
 			</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Download to">
+				<param name="Local" value="settings_favoritedirs.html">
+				</OBJECT>
+		</UL>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Sharing">
 			<param name="Local" value="settings_sharing.html">

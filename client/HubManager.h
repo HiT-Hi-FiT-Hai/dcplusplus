@@ -149,6 +149,10 @@ public:
 	void addFavorite(const FavoriteHubEntry& aEntry);
 	void removeFavorite(FavoriteHubEntry* entry);
 	
+	bool addFavoriteDir(tstring& aDirectory,tstring & aName);
+	bool removeFavoriteDir(tstring& aName);
+	TStringPairList getFavoriteDirs() { return favoriteDirs; }
+
 	FavoriteHubEntry* getFavoriteHubEntry(const string& aServer) {
 		for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
 			FavoriteHubEntry* hub = *i;
@@ -188,6 +192,7 @@ private:
 
 	HubEntry::List publicHubs;
 	FavoriteHubEntry::List favoriteHubs;
+	TStringPairList favoriteDirs;
 	UserCommand::List userCommands;
 	User::List users;
 
@@ -253,6 +258,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.60 2004/10/29 15:53:38 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.61 2004/11/02 11:03:14 arnetheduck Exp $
  */
 

@@ -158,6 +158,39 @@ void HubManager::removeFavorite(FavoriteHubEntry* entry) {
 	save();
 }
 
+bool HubManager::addFavoriteDir(tstring& aDirectory, tstring & aName){
+	tstring path = aDirectory;
+
+	if( path[ path.length() -1 ] != PATH_SEPARATOR )
+		path += PATH_SEPARATOR;
+
+	for(TStringPairIter i = favoriteDirs.begin(); i != favoriteDirs.end(); ++i) {
+		if((Util::strnicmp(path, i->first, i->first.length()) == 0) && (Util::strnicmp(path, i->first, path.length()) == 0)) {
+			return false;
+		}
+		if(Util::stricmp(aName, i->second) == 0) {
+			return false;
+		}
+	}
+	favoriteDirs.push_back(make_pair(aDirectory, aName));
+	return true;
+}
+
+bool HubManager::removeFavoriteDir(tstring& aName) {
+	tstring d(aName);
+
+	if(d[d.length() - 1] != PATH_SEPARATOR)
+		d = PATH_SEPARATOR;
+
+	for(TStringPairIter j = favoriteDirs.begin(); j != favoriteDirs.end(); ++j) {
+		if(Util::stricmp(j->first.c_str(), d.c_str()) == 0) {
+			favoriteDirs.erase(j);
+			return true;
+		}
+	}
+	return false;
+}
+
 void HubManager::onHttpFinished() throw() {
 	string::size_type i, j;
 	string* x;
@@ -292,6 +325,15 @@ void HubManager::save() {
 				xml.addChildAttrib("Command", k->getCommand());
 				xml.addChildAttrib("Hub", k->getHub());
 			}
+		}
+		xml.stepOut();
+		//Favorite download to dirs
+		xml.addTag("FavoriteDirs");
+		xml.stepIn();
+		TStringPairList spl = getFavoriteDirs();
+		for(TStringPairIter i = spl.begin(); i != spl.end(); ++i) {
+			xml.addTag("Directory", Text::fromT(i->first));
+			xml.addChildAttrib("Name", Text::fromT(i->second));
 		}
 		xml.stepOut();
 
@@ -442,6 +484,17 @@ void HubManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+	//Favorite download to dirs
+	aXml->resetCurrentChild();
+	if(aXml->findChild("FavoriteDirs")) {
+		aXml->stepIn();
+		while(aXml->findChild("Directory")) {
+			tstring virt = Text::toT(aXml->getChildAttrib("Name"));
+			tstring d(Text::toT(aXml->getChildData()));
+			HubManager::getInstance()->addFavoriteDir(d, virt);
+		}
+		aXml->stepOut();
+	}
 
 	dontSave = false;
 }
@@ -517,5 +570,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.56 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.57 2004/11/02 11:03:14 arnetheduck Exp $
  */

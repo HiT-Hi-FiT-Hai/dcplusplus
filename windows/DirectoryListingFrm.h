@@ -32,6 +32,7 @@
 
 #include "../client/DirectoryListing.h"
 #include "../client/StringSearch.h"
+#include "../client/HubManager.h"
 
 #define STATUS_MESSAGE_MAP 9
 
@@ -85,6 +86,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_COPY_MAGNET, onCopyMagnet)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET_DIR, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_FAVORITE_DIRS, IDC_DOWNLOAD_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadFavoriteDirs)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + HubManager::getInstance()->getFavoriteDirs().size(), onDownloadWholeFavoriteDirs)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -108,7 +111,9 @@ public:
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	
+	LRESULT onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	void downloadList(const tstring& aTarget, bool view = false);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -298,5 +303,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.42 2004/09/24 20:48:28 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.43 2004/11/02 11:03:05 arnetheduck Exp $
  */

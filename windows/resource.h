@@ -45,6 +45,7 @@
 #define IDR_NET_STATS                   237
 #define IDD_MAGNET                      238
 #define IDD_HASH_PROGRESS               239
+#define IDD_FAVORITE_DIRSPAGE					240
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -297,6 +298,8 @@
 #define IDC_FH_PASSWORD                 1249
 #define IDC_FH_USER_DESC                1250
 #define IDC_USER_CMD_OPEN_HELP          1251
+#define IDC_SETTINGS_FAVORITE_DIRECTORIES	1252
+#define IDC_FAVORITE_DIRECTORIES			1253
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -313,6 +316,8 @@
 #define IDC_PRIORITY_HIGHEST            7005
 #define IDC_DOWNLOAD_WHOLE_TARGET       7500
 #define IDC_REMOVE_SOURCES              8000
+#define IDC_DOWNLOAD_FAVORITE_DIRS				8500
+#define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS		9000
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

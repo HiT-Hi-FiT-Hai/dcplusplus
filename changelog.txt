@@ -43,6 +43,7 @@
 * FastAlloc disabled in debug builds
 * Fixed a crash with offline users and user commands (thanks naga) [bug 266]
 * Fixed a case insensitivity issue (thanks farcry)
+* Added favorite download directories (thanks naga)
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)

@@ -29,6 +29,7 @@
 #include "AdvancedPage.h"
 #include "Advanced2Page.h"
 #include "UCPage.h"
+#include "FavoriteDirsPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SETTINGS))
 {
@@ -39,6 +40,7 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CTSTRING(SE
 	pages[4] = new Advanced2Page(s);
 	pages[5] = new AdvancedPage(s);
 	pages[6] = new UCPage(s);
+	pages[7] = new FavoriteDirsPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());
@@ -77,6 +79,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.9 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.10 2004/11/02 11:03:06 arnetheduck Exp $
  */
 
