@@ -62,10 +62,10 @@ public:
 	const string& getConnection() const { return connection; };
 	void setConnection(const string& aConnection) { connection = aConnection; };
 	
-	LONGLONG getBytesShared() const { return _atoi64(sharing.c_str()); };
+	LONGLONG getBytesShared() const { return sharingLong; };
 	const string& getBytesSharedString() const { return sharing; };
-	void setBytesShared(LONGLONG aSharing) { char buf[24]; sharing = _i64toa(aSharing, buf, 10); };
-	void setBytesShared(const string& aSharing) { sharing = aSharing; };
+	void setBytesShared(LONGLONG aSharing) { sharing = Util::toString(aSharing); sharingLong = aSharing; };
+	void setBytesShared(const string& aSharing) { sharing = aSharing; sharingLong = Util::toInt64(aSharing); };
 
 	void setFlag(DWORD aFlag) { flags |= aFlag; };
 	void unsetFlag(DWORD aFlag) { flags &= ~aFlag; };
@@ -74,7 +74,7 @@ public:
 	bool isOnline() const { return (flags & ONLINE) != 0; };
 
 	User() : client(NULL), flags(0) { };
-	User(const string& aNick, DWORD aFlags = 0) : client(NULL), nick(aNick), flags(aFlags) { };
+	User(const string& aNick, DWORD aFlags = 0) : sharingLong(0), client(NULL), nick(aNick), flags(aFlags) { };
 	~User() { };
 
 private:
@@ -83,6 +83,7 @@ private:
 	string connection;
 	string nick;
 	string sharing;
+	LONGLONG sharingLong;		// Cache this...requested very frequently...
 	string email;
 	string description;
 };
@@ -91,9 +92,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.5 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: User.h,v 1.6 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.6  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.5  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

@@ -180,7 +180,7 @@ public:
 		if (PtInRect(&rc, pt)) 
 		{ 
 			ctrlResults.ClientToScreen(&pt);
-			resultsMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			
 			return TRUE; 
 		}
@@ -435,9 +435,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.14 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.15 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.15  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.14  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

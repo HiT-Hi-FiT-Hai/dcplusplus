@@ -153,37 +153,42 @@ void Client::onLine(const string& aLine) {
 		fireValidateDenied();
 	} else if(cmd == "$NickList") {
 		StringList v;
-		int j;
-		while( (j=param.find("$$")) != string::npos) {
-			string nick = param.substr(0, j);
+		int j, k = 0;
+		while( (j=param.find("$$", k)) != string::npos) {
+			string nick = param.substr(k, j-k);
 			cs.enter();
 			if(users.find(nick) == users.end()) {
 				User::Ptr u = new User(nick, User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
+				fireMyInfo(u);
 			}
 			cs.leave();
 			v.push_back(nick);
-			param = param.substr(j+2);
+			k = j + 2;
 		}
 		
 		fireNickList(v);
 		
 	} else if(cmd == "$OpList") {
 		StringList v;
-		int j;
-		while( (j=param.find("$$")) != string::npos) {
-			string nick = param.substr(0, j);
+		int j, k;
+		k = 0;
+		while( (j=param.find("$$", k)) != string::npos) {
+			string nick = param.substr(k, j-k);
 			cs.enter();
-			if(users.find(nick) == users.end()) {
+			User::NickIter i = users.find(nick);
+			if( i == users.end()) {
 				User::Ptr u = new User(nick, User::OP | User::ONLINE);
 				u->setClient(this);
 				users[nick] = u;
+			} else {
+				i->second->setFlag(User::OP);
 			}
-			users[nick]->setFlag(User::OP);
 			cs.leave();
+			fireMyInfo(users[nick]);
 			v.push_back(nick);
-			param = param.substr(j+2);
+			k = j + 2;
 		}
 		fireOpList(v);
 	} else if(cmd == "$To:") {
@@ -212,9 +217,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.15 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.16 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.16  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.15  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

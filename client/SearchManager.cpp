@@ -32,37 +32,61 @@ void SearchManager::search(const string& aName, LONGLONG aSize, DWORD aFlags /* 
 void SearchManager::onData(const BYTE* buf, int aLen) {
 	string x((char*)buf, aLen);
 	if(x.find("$SR") != string::npos) {
-		SearchResult* sr=new SearchResult();
+		SearchResult sr;
 		
+		int i, j;
+
 		// Find out if this is a file or directory...skip the directories for now...
 		if(x.find('/') > x.find((char)5)) {
-			x = x.substr(4);
-			sr->setNick(x.substr(0, x.find(' ')));
-			x = x.substr(x.find(' ') + 1);
-			sr->setFile(x.substr(0, x.find((char)5)));
-			x = x.substr(x.find((char)5) + 1);
-			sr->setSize(x.substr(0, x.find(' ')));
-			x = x.substr(x.find(' ') + 1);
-			sr->setFreeSlots(x.substr(0, x.find('/')));
-			x = x.substr(x.find('/') + 1);
-			sr->setSlots(x.substr(0, x.find((char)5)));
-			x = x.substr(x.find((char)5)+1);
-			sr->setHubName(x.substr(0, x.rfind(" (")));
-			x = x.substr(x.rfind(" (")+2);
-			sr->setHubAddress(x.substr(0, x.find(')')));
+			i = 4;
+			if( (j = x.find(' ', i)) == string::npos) {
+				return;
+			}
+			sr.setNick(x.substr(i, j-i));
+			i = j + 1;
+			if( (j = x.find((char)5, i)) == string::npos) {
+				return;
+			}
+			sr.setFile(x.substr(i, j-i));
+			i = j + 1;
+			if( (j = x.find(' ', i)) == string::npos) {
+				return;
+			}
+			sr.setSize(x.substr(i, j-i));
+			i = j + 1;
+			if( (j = x.find('/', i)) == string::npos) {
+				return;
+			}
+			sr.setFreeSlots(x.substr(i, j-i));
+			i = j + 1;
+			if( (j = x.find((char)5, i)) == string::npos) {
+				return;
+			}
+			sr.setSlots(x.substr(i, j-i));
+			i = j + 1;
+			if( (j = x.rfind(" (")) == string::npos) {
+				return;
+			}
+			sr.setHubName(x.substr(i, j-i));
+			i = j + 2;
+			if( (j = x.rfind(')', i)) == string::npos) {
+				return;
+			}
+			sr.setHubAddress(x.substr(i, j-i));
 		}
 
-		fireResult(sr);
-		delete sr;
+		fireResult(&sr);
 	}
-	dcdebug("Search: %s\n", x.c_str());
 }
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.8 2002/01/07 23:05:48 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.9 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.9  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.8  2002/01/07 23:05:48  arnetheduck
  * Resume rollback implemented
  *

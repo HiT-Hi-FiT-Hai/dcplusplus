@@ -1,3 +1,10 @@
+ -- 0.12 --
+* Improved search efficiency a tiny bit
+* Changed default option in the search window to 'At Least'. All files are at least 0 bytes long anyway...
+* Added file extension tab in search
+* Fixed a bug where the application could stop working if a right-button menu was displayed
+* Added PM and browse file list to uploads right button menu as well
+
  -- 0.11 2002-01-08 --
 * Fixed annoying reconnect bug
 * Fixed annoying Private Messaging bug

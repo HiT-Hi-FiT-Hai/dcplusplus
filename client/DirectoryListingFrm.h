@@ -85,7 +85,7 @@ public:
 		if (PtInRect(&rc, pt)) 
 		{ 
 			ctrlList.ClientToScreen(&pt);
-			fileMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			
 			return TRUE; 
 		} else { 
@@ -98,7 +98,7 @@ public:
 			if (PtInRect(&rc, pt)) 
 			{ 
 				ctrlTree.ClientToScreen(&pt);
-				directoryMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 				
 				return TRUE; 
 			} 
@@ -184,9 +184,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.8 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.9 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.9  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.8  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

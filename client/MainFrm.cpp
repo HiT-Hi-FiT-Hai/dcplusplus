@@ -136,7 +136,11 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	i->l.push_back(aUpload->getFileName());
 	i->l.push_back("Connecting...");
 	i->l.push_back(Util::formatBytes(aUpload->getSize()));
-	i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
+	if(aUpload->getUser()->isOnline()) {
+		i->l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
+	} else {
+		i->l.push_back(aUpload->getUser()->getNick() + " (Offline)");
+	}
 	PostMessage(WM_SPEAKER, UPLOAD_STARTING, (LPARAM)i);
 }
 
@@ -381,7 +385,6 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 	// Get the bounding rectangle of the client area. 
 	ctrlTransfers.GetClientRect(&rc);
 	ctrlTransfers.ScreenToClient(&pt); 
-	cs.enter();
 	if (PtInRect(&rc, pt)) 
 	{ 
 		// Remove all old items
@@ -400,6 +403,7 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 		transferMenu.InsertMenuItem(n++, TRUE, &mi);
 		
 		if(ctrlTransfers.GetSelectedCount() == 1) {
+			cs.enter();
 			
 			mi.fMask = MIIM_TYPE;
 			mi.fType = MFT_SEPARATOR;
@@ -448,13 +452,34 @@ LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 					transferMenu.InsertMenuItem(n++, TRUE, &mi);
 					
 				}
+			} else {
+				Upload* u = (Upload*) lvi.lParam;
+				string str = "Browse " + u->getUser()->getNick() + "'s files";
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.cch = str.size();
+				mi.dwTypeData = (LPSTR)str.c_str();
+				mi.dwItemData = NULL;
+				mi.wID = IDC_TRANSFERITEM + menuItems++;
+				transferMenu.InsertMenuItem(n++, TRUE, &mi);
+				
+				str = "Send Message To " + u->getUser()->getNick();
+				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
+				mi.fType = MFT_STRING;
+				mi.cch = str.size();
+				mi.dwTypeData = (LPSTR)str.c_str();
+				mi.dwItemData = NULL;
+				mi.wID = IDC_TRANSFERITEM + menuItems++;
+				transferMenu.InsertMenuItem(n++, TRUE, &mi);
+				
 			}
+			cs.leave();
 		}
 		
 		ctrlTransfers.ClientToScreen(&pt);
 		
-		transferMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		
+		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
 		return TRUE; 
 	}
 	cs.leave();
@@ -545,7 +570,6 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	
-	int cmd = (wID - IDC_TRANSFERITEM) % 3;
 	if(ctrlTransfers.GetSelectedCount() == 1) {
 		
 		LVITEM lvi;
@@ -559,13 +583,14 @@ LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 			Download* d = (Download*)lvi.lParam;
 			CMenuItemInfo mi;
 			mi.fMask = MIIM_DATA;
+			int cmd = (wID - IDC_TRANSFERITEM) % 3;
 			
 			transferMenu.GetMenuItemInfo(wID, FALSE, &mi);
 			Download::Source* s = (Download::Source*)mi.dwItemData;
 			switch(cmd) {
 			case 0:
 				try {
-					DownloadManager::getInstance()->downloadList(s->getNick());
+					DownloadManager::getInstance()->downloadList(s->getUser());
 				} catch(...) {
 					// ...
 				}
@@ -584,6 +609,29 @@ LRESULT MainFrame::onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 					}
 				}
 				break;
+			}
+		} else {
+			Upload* u = (Upload*)lvi.lParam;
+			int cmd = (wID - IDC_TRANSFERITEM) % 2;
+			switch(cmd) {
+			case 0:
+				try {
+					DownloadManager::getInstance()->downloadList(u->getUser());
+				} catch(...) {
+					// ...
+				}
+				break;
+			case 1:
+				if(u->getUser()->isOnline()) {
+					PrivateFrame* frm = PrivateFrame::getFrame(u->getUser(), m_hWndClient);
+					if(frm->m_hWnd == NULL) {
+						frm->setTab(&ctrlTab);
+						frm->CreateEx(m_hWndClient);
+					} else {
+						frm->MDIActivate(frm->m_hWnd);
+					}
+				}
+				
 			}
 		}
 	}
@@ -619,9 +667,12 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.34 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.35 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.35  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.34  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

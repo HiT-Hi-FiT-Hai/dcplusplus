@@ -226,7 +226,7 @@ void CryptoManager::recurseLookup(vector<BYTE>* table, Node* node, vector<BYTE>&
 }
 
 /**
- * Builds a hash table over the characters available (for fast lookup).
+ * Builds a table over the characters available (for fast lookup).
  * Stores each character as a set of bytes with values {0, 1}.
  */
 void CryptoManager::buildLookup(vector<BYTE>* table, Node* aRoot) {
@@ -324,9 +324,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.13 2002/01/09 19:01:35 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.14 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.14  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.13  2002/01/09 19:01:35  arnetheduck
  * Made some small changed to the key generation and search frame...
  *

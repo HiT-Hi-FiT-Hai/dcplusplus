@@ -221,13 +221,13 @@ private:
 
 		for(HubEntry::Iter i = aList.begin(); i != aList.end(); ++i) {
 			StringList l;
-			l.push_back(i->name);
-			l.push_back(i->description);
-			l.push_back(i->users);
-			l.push_back(i->server);
+			l.push_back(i->getName());
+			l.push_back(i->getDescription());
+			l.push_back(i->getUsers());
+			l.push_back(i->getServer());
 			ctrlHubs.insert(l);
 			hubs++;
-			users += atoi(i->users.c_str());
+			users += Util::toInt(i->getUsers());
 		}
 
 		ctrlHubs.SetRedraw(TRUE);
@@ -248,9 +248,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.10 2002/01/07 20:17:59 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.11 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.11  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.10  2002/01/07 20:17:59  arnetheduck
  * Finally fixed the reconnect bug that's been annoying me for a whole day...
  * Hopefully the app works better in w95 now too...

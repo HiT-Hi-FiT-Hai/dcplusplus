@@ -99,7 +99,7 @@ private:
 		}
 	}
 	virtual void onClientPrivateMessage(Client* aClient, const string& aUser, const string& aMessage) {
-		string* msg = new string("Private message from " + aUser + " (unrecognized user)\r\n" + aMessage);
+		string* msg = new string("Private message from " + aUser + "\r\n" + aMessage);
 		SendNotifyMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
 	}
 	
@@ -215,9 +215,9 @@ public:
 		{ 
 			ctrlUsers.ClientToScreen(&pt);
 			if(op) {
-				opMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			} else {
-				userMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			}
 			
 			return TRUE; 
@@ -395,9 +395,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.30 2002/01/08 00:24:10 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.31 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.31  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.30  2002/01/08 00:24:10  arnetheduck
  * Last bugs fixed before 0.11
  *

@@ -32,13 +32,43 @@ class HubEntry {
 public:
 	typedef vector<HubEntry> List;
 	typedef List::iterator Iter;
-	string name;
-	string server;
-	string description;
-	string users;
+	
 	HubEntry(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) : 
 	name(aName), server(aServer), description(aDescription), users(aUsers) { };
 	HubEntry() { };
+	HubEntry(const HubEntry& rhs) : name(rhs.name), server(rhs.server), description(rhs.description), users(rhs.users) { }
+
+	GETSETREF(string, name, Name);
+	GETSETREF(string, server, Server);
+	GETSETREF(string, description, Description);
+	GETSETREF(string, users, Users);
+	
+};
+
+class FavoriteHubEntry : public HubEntry {
+public:
+	typedef vector<FavoriteHubEntry> List;
+	typedef List::iterator Iter;
+
+	FavoriteHubEntry(const HubEntry& rhs) : HubEntry(rhs) { };
+	
+	FavoriteHubEntry(const FavoriteHubEntry& rhs) : HubEntry(rhs), nick(rhs.nick), password(rhs.password), connect(rhs.connect) { };
+	
+	const string& getNick() {
+		if(nick.size() > 0) 
+			return nick;
+		else 
+			return Settings::getNick();
+	}
+
+	void setNick(const string& aNick) {
+		nick = aNick;
+	}
+
+	GETSETREF(string, password, Password);
+	GETSET(bool, connect, Connect);
+private:
+	string nick;
 };
 
 class HubManagerListener {
@@ -51,9 +81,14 @@ public:
 	virtual void onHubFinished(HubEntry::List& aList) { };
 };
 
+class SimpleXML;
+
 class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener
 {
 public:
+	
+	void load(SimpleXML* aXml);
+	void save(SimpleXML* aXml);
 	
 	static HubManager* getInstance() {
 		dcassert(instance);
@@ -68,6 +103,18 @@ public:
 	static void deleteInstance() {
 		delete instance;
 		instance = NULL;
+	}
+	
+	FavoriteHubEntry::List& getFavoriteHubList() {
+		return favoriteHubs;
+	}
+
+	void addFavorite(const HubEntry& aEntry) {
+		favoriteHubs.push_back(aEntry);
+	}
+
+	void addFavorite(const FavoriteHubEntry& aEntry) {
+		favoriteHubs.push_back(aEntry);
 	}
 	
 	void getPublicHubList(bool aRefresh = false) { 
@@ -108,10 +155,12 @@ public:
 		}
 	}
 private:
-	
 
 	static HubManager* instance;
+
 	HubEntry::List publicHubs;
+	FavoriteHubEntry::List favoriteHubs;
+	
 	CriticalSection cs;
 	HttpConnection* conn;
 	bool running;
@@ -120,7 +169,6 @@ private:
 	}
 
 	~HubManager() {
-
 		if(conn) {
 			conn->removeListener(this);
 			delete conn;
@@ -159,9 +207,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.13 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.14 2002/01/10 12:33:14 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.14  2002/01/10 12:33:14  arnetheduck
+ * Various fixes
+ *
  * Revision 1.13  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *
