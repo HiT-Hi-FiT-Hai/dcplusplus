@@ -242,7 +242,8 @@ private:
 	};
 
 	HubFrame(const string& aServer, const string& aNick, const string& aPassword, const string& aDescription) : 
-	waitingForPW(false), server(aServer), closed(false), updateUsers(false), curCommandPosition(0),
+	waitingForPW(false), extraSort(false), server(aServer), closed(false), 
+		updateUsers(false), curCommandPosition(0),
 		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
 		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
 		clientContainer("edit", this, EDIT_MESSAGE_MAP)
@@ -277,6 +278,7 @@ private:
 	string lastServer;
 	
 	bool waitingForPW;
+	bool extraSort;
 
 	StringList prevCommands;
 	string currentCommand;
@@ -378,6 +380,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.34 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.35 2003/11/19 22:52:00 arnetheduck Exp $
  */
 

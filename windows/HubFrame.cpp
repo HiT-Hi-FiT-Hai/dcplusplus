@@ -362,8 +362,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
-		if(userAdded || (userUpdated && (ctrlUsers.getSortColumn() != COLUMN_NICK)))
+		if(extraSort || userAdded || (userUpdated && (ctrlUsers.getSortColumn() != COLUMN_NICK)))
 			ctrlUsers.resort();
+		extraSort = false;
 
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
@@ -1093,7 +1094,9 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const User::List& aList) throw() {
 	switch(type) {
-		case ClientListener::OP_LIST: // Fall through
+		case ClientListener::OP_LIST: 
+			extraSort = true;
+			// Fall through
 		case ClientListener::NICK_LIST: 
 			{
 				Lock l(updateCS);
@@ -1116,5 +1119,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.44 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.45 2003/11/19 22:52:00 arnetheduck Exp $
  */

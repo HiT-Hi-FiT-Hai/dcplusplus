@@ -245,7 +245,7 @@
 		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
-		<String Name="SearchStringInefficient"/>
+		<String Name="SearchStringInefficient">Specifying the same search string for more than 5 files for a passive connection or 10 files for an active connection is inefficient. Would you like to continue with the operation?</String>
 		<String Name="SearchingFor">Searching for </String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
@@ -284,6 +284,7 @@
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFullRowSelect">Full row select in lists</String>
 		<String Name="SettingsGeneral">General</String>
+		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>

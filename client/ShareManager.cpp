@@ -210,14 +210,21 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 void ShareManager::removeDirectory(const string& aDirectory) {
 	WLock l(cs);
 
-	Directory::MapIter i = directories.find(aDirectory);
+	string d;
+	if(aDirectory[aDirectory.size() - 1] == PATH_SEPARATOR) {
+		d = aDirectory.substr(0, aDirectory.size()-1);
+	} else {
+		d = aDirectory;
+	}
+
+	Directory::MapIter i = directories.find(d);
 	if(i != directories.end()) {
 		delete i->second;
 		directories.erase(i);
 	}
 
 	for(StringMapIter j = dirs.begin(); j != dirs.end(); ++j) {
-		if(Util::stricmp(j->second.c_str(), aDirectory.c_str()) == 0) {
+		if(Util::stricmp(j->second.c_str(), d.c_str()) == 0) {
 			dirs.erase(j);
 			break;
 		}
@@ -732,6 +739,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.64 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.65 2003/11/19 22:51:59 arnetheduck Exp $
  */
 

@@ -17,12 +17,12 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.303"
-#define VERSIONFLOAT 0.303
+#define VERSIONSTRING "0.304"
+#define VERSIONFLOAT 0.304
 
 /* Update the .rc file as well... */
 
 /**
  * @file
- * $Id: version.h,v 1.50 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: version.h,v 1.51 2003/11/19 22:51:59 arnetheduck Exp $
  */
