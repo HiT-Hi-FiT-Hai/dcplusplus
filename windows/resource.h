@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by f:\Programmering\C++\dcplusplusdiff\DCPlusPlus.rc
+// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -312,7 +312,7 @@
 #define IDC_LIST_LIST                   1262
 #define IDC_RENAME                      1263
 #define IDC_LIST_EDIT                   1264
-#define IDC_OPEN_OWN_LIST				1265
+#define IDC_OPEN_OWN_LIST               1265
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

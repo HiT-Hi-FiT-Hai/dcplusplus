@@ -1,4 +1,4 @@
-﻿-- 0.667 --
+﻿-- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)
 * Fixed some favdirs issues (thanks naga)
 * Fixed a status logging issue (thanks naga)
