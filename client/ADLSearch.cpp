@@ -161,7 +161,7 @@ void ADLSearchManager::Save()
 		// Save string to file			
 		try {
 			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
-			fout.write(SimpleXML::w1252Header);
+			fout.write(SimpleXML::utf8Header);
 			fout.write(xml.toXML());
 			fout.close();
 		} catch(const FileException&) {
@@ -287,6 +287,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.13 2004/09/07 01:36:51 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.14 2004/09/11 06:46:46 arnetheduck Exp $
 */
 

@@ -458,7 +458,9 @@
 		<String Name="Users">Users</String>
 		<String Name="Video">Video</String>
 		<String Name="ViewAsText">View as text</String>
+		<String Name="VirtualName">Virtual name</String>
 		<String Name="VirtualNameExists">Virtual directory name already exists</String>
+		<String Name="VirtualNameLong">Name under which the others see the directory</String>
 		<String Name="Waiting">Waiting...</String>
 		<String Name="WaitingUserOnline">Waiting (User online)</String>
 		<String Name="WaitingUsersOnline">Waiting (%d of %d users online)</String>

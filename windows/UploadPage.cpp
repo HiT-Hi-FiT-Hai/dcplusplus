@@ -23,6 +23,7 @@
 #include "UploadPage.h"
 #include "WinUtil.h"
 #include "HashProgressDlg.h"
+#include "LineDlg.h"
 
 #include "../client/Util.h"
 #include "../client/ShareManager.h"
@@ -184,12 +185,18 @@ LRESULT UploadPage::onClickedShareHidden(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-void UploadPage::addDirectory(tstring path){
+void UploadPage::addDirectory(const tstring& path){
 	try {
-		ShareManager::getInstance()->addDirectory(Text::fromT(path), Util::getLastDir(Text::fromT(path)));
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
-		ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
-		ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
+		LineDlg virt;
+		virt.title = TSTRING(VIRTUAL_NAME);
+		virt.description = TSTRING(VIRTUAL_NAME_LONG);
+		virt.line = Util::getLastDir(path);
+		if(virt.DoModal() == IDOK) {
+			ShareManager::getInstance()->addDirectory(Text::fromT(path), Text::fromT(virt.line));
+			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), path);
+			ctrlDirectories.SetItemText(i, 1, Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize(Text::fromT(path)))).c_str());
+			ctrlTotal.SetWindowText(Text::toT(Util::formatBytes(ShareManager::getInstance()->getShareSize())).c_str());
+		}
 	} catch(const ShareException& e) {
 		MessageBox(Text::toT(e.getError()).c_str(), _T(APPNAME) _T(" ") _T(VERSIONSTRING), MB_ICONSTOP | MB_OK);
 	}
@@ -197,6 +204,6 @@ void UploadPage::addDirectory(tstring path){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.22 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.23 2004/09/11 06:46:46 arnetheduck Exp $
  */
 

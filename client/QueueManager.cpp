@@ -382,13 +382,12 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 }
 
 string QueueManager::getTempName(const string& aFileName, const TTHValue* aRoot) {
-	string tmp;
-	tmp.clear();
+	string tmp(aFileName);
 	if(aRoot != NULL) {
 		TTHValue tmpRoot(*aRoot);
-		tmp = tmpRoot.toBase32() + ".";
+		tmp += "." + tmpRoot.toBase32();
 	}
-	tmp += aFileName + TEMP_EXTENSION;
+	tmp += TEMP_EXTENSION;
 	return tmp;
 }
 
@@ -1274,5 +1273,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.98 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.99 2004/09/11 06:46:46 arnetheduck Exp $
  */

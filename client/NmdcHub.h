@@ -249,7 +249,7 @@ private:
 	void onLine(const string& aLine) throw();
 
 	string fromNmdc(const string& str) const { return Text::acpToUtf8(str); }
-	string toNmdc(const string& str) const { return toNmdc(str); }
+	string toNmdc(const string& str) const { return Text::utf8ToAcp(str); }
 	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second, u_int32_t aTick) throw();
@@ -265,6 +265,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.9 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.10 2004/09/11 06:46:46 arnetheduck Exp $
  */
 
