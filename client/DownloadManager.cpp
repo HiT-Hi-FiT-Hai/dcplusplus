@@ -541,7 +541,7 @@ void DownloadManager::on(UserConnectionListener::Data, UserConnection* aSource, 
 			aSource->setLineMode();
 		}
 		if(d->getPos() > d->getSize()) {
-			throw Exception(STRING(TOO_MUCH_DATA));
+			//throw Exception(STRING(TOO_MUCH_DATA));
 		}
 	} catch(const RollbackException& e) {
 		string target = d->getTarget();
@@ -913,5 +913,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.117 2004/09/21 08:19:55 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.118 2004/09/22 10:40:17 arnetheduck Exp $
  */
