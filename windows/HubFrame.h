@@ -244,6 +244,7 @@ private:
 		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
 		client->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
+		showUsers = BOOLSETTING(GET_USER_INFO);
 	}
 
 	~HubFrame() {
@@ -288,6 +289,7 @@ private:
 	CStatusBarCtrl ctrlStatus;
 
 	bool closed;
+	bool showUsers;
 
 	StringMap ucParams;
 	TStringMap tabParams;
@@ -316,7 +318,7 @@ private:
 	bool updateUser(const User::Ptr& u);
 	void addAsFavorite();
 
-	bool getUserInfo() { return ctrlShowUsers.GetCheck() == BST_CHECKED; }
+	bool getUserInfo() { return showUsers; }
 
 	void clearUserList() {
 		{
@@ -386,6 +388,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.56 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.57 2005/01/06 20:21:08 arnetheduck Exp $
  */
 

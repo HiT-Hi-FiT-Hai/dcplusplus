@@ -126,8 +126,11 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	dirMenu.AppendMenu(MF_SEPARATOR);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CTSTRING(REMOVE));
 
+	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCES, CTSTRING(ALL));
 	removeMenu.AppendMenu(MF_SEPARATOR);
-	removeMenu.AppendMenu(MF_STRING, IDC_REMOVE_SOURCE_ALL, CTSTRING(REMOVE_ALL));
+
+	readdMenu.AppendMenu(MF_STRING, IDC_READD, CTSTRING(ALL));
+	readdMenu.AppendMenu(MF_SEPARATOR);
 
 	addQueueList(QueueManager::getInstance()->lockQueue());
 	QueueManager::getInstance()->unlockQueue();
@@ -747,7 +750,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			browseMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
 		while(removeMenu.GetMenuItemCount() > 2) {
-			removeMenu.RemoveMenu(0, MF_BYPOSITION);
+			removeMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
 		while(removeAllMenu.GetMenuItemCount() > 0) {
 			removeAllMenu.RemoveMenu(0, MF_BYPOSITION);
@@ -755,8 +758,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		while(pmMenu.GetMenuItemCount() > 0) {
 			pmMenu.RemoveMenu(0, MF_BYPOSITION);
 		}
-		while(readdMenu.GetMenuItemCount() > 0) {
-			readdMenu.RemoveMenu(0, MF_BYPOSITION);
+		while(readdMenu.GetMenuItemCount() > 2) {
+			readdMenu.RemoveMenu(2, MF_BYPOSITION);
 		}
 
 		ctrlQueue.ClientToScreen(&pt);
@@ -774,8 +777,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				mi.dwItemData = (ULONG_PTR)&(*i);
 				mi.wID = IDC_BROWSELIST + menuItems;
 				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				mi.wID = IDC_REMOVE_SOURCE + menuItems;
-				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
+				mi.wID = IDC_REMOVE_SOURCE + 1 + menuItems; // "All" is before sources
+				removeMenu.InsertMenuItem(menuItems + 2, TRUE, &mi); // "All" and separator come first
 				mi.wID = IDC_REMOVE_SOURCES + menuItems;
 				removeAllMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				if(i->getUser()->isOnline()) {
@@ -792,8 +795,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
 				mi.dwItemData = (ULONG_PTR)&(*i);
-				mi.wID = IDC_READD + readdItems;
-				readdMenu.InsertMenuItem(readdItems, TRUE, &mi);
+				mi.wID = IDC_READD + 1 + readdItems;  // "All" is before sources
+				readdMenu.InsertMenuItem(readdItems + 2, TRUE, &mi);  // "All" and separator come first
 				readdItems++;
 			}
 
@@ -938,11 +941,18 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		mi.fMask = MIIM_DATA;
 		
 		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		try {
-			QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
-		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
+		if(wID == IDC_READD) {
+			// re-add all sources
+			for(QueueItemInfo::SourceIter s = ii->getBadSources().begin(); s != ii->getBadSources().end(); ) {
+				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+			}
+		} else {
+			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
+			try {
+				QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
+			} catch(const Exception& e) {
+				ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
+			}
 		}
 	}
 	return 0;
@@ -953,23 +963,17 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
-		CMenuItemInfo mi;
-		mi.fMask = MIIM_DATA;
-		
-		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
-		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), s->getUser(), QueueItem::Source::FLAG_REMOVED);
-	}
-	return 0;
-}
+		if(wID == IDC_REMOVE_SOURCE) {
+			for(QueueItemInfo::SourceIter si = ii->getSources().begin(); si != ii->getSources().end(); ) {
+				QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), si->getUser(), QueueItem::Source::FLAG_REMOVED);
+			}
+		} else {
+			CMenuItemInfo mi;
+			mi.fMask = MIIM_DATA;
 
-LRESULT QueueFrame::onRemoveSourceAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlQueue.GetSelectedCount() == 1) {
-		QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
-		
-		QueueItemInfo::SourceIter i;
-		for(i = ii->getSources().begin(); i != ii->getSources().end(); ) {
-			QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), i->getUser(), QueueItem::Source::FLAG_REMOVED);
+			removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
+			QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
+			QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 		}
 	}
 	return 0;
@@ -1266,7 +1270,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.66 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.67 2005/01/06 20:21:08 arnetheduck Exp $
  */
 
 

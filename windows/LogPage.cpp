@@ -63,6 +63,8 @@ LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		pair.second = Text::toT(LogManager::getInstance()->getSetting(i, LogManager::FORMAT));
 		options.push_back(pair);
 	}
+
+	oldSelection = -1;
 	
 	// Do specialized reading here
 	return TRUE;
@@ -71,12 +73,7 @@ LRESULT LogPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
 	logOptions.Attach(GetDlgItem(IDC_LOG_OPTIONS));
 	
-	TCHAR buf[512];
-	
-	if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
-		options[oldSelection].first = buf;
-	if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
-		options[oldSelection].second = buf;
+	getValues();
 	
 	int sel = logOptions.GetSelectedIndex();
 		
@@ -97,6 +94,17 @@ LRESULT LogPage::onItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandle
 	return 0;
 }
 
+void LogPage::getValues() {
+	if(oldSelection >= 0) {
+		TCHAR buf[512];
+
+		if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
+			options[oldSelection].first = buf;
+		if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
+			options[oldSelection].second = buf;
+	}
+}
+
 void LogPage::write()
 {
 	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_LOG_OPTIONS));
@@ -109,12 +117,7 @@ void LogPage::write()
 
 	//make sure we save the last edit too, the user
 	//might not have changed the selection
-	TCHAR buf[512];
-
-	if(GetDlgItemText(IDC_LOG_FILE, buf, 512) > 0)
-		options[oldSelection].first = buf;
-	if(GetDlgItemText(IDC_LOG_FORMAT, buf, 512) > 0)
-		options[oldSelection].second = buf;
+	getValues();
 
 	for(int i = 0; i < LogManager::LAST; ++i) {
 		string tmp = Text::fromT(options[i].first);
@@ -152,6 +155,6 @@ LRESULT LogPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOO
 
 /**
  * @file
- * $Id: LogPage.cpp,v 1.2 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: LogPage.cpp,v 1.3 2005/01/06 20:21:08 arnetheduck Exp $
  */
 

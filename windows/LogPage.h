@@ -68,12 +68,14 @@ protected:
 	//if the user cancels the dialog.
 	//.first is filename and .second is format
 	TStringPairList options;
+
+	void getValues();
 };
 
 #endif //LOGPAGE_H
 
 /**
  * @file
- * $Id: LogPage.h,v 1.2 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: LogPage.h,v 1.3 2005/01/06 20:21:08 arnetheduck Exp $
  */
 

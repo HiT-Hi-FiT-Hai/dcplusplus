@@ -19,7 +19,7 @@
 * Temporary targetnames are now filled in when download starts, not when item is added to queue,
   which makes temp target dir changes happen for current queue items as well, plus we get a huge
   memory save on huge queues.
-* Added "Remove All Sources" to queue (thanks izzzo)
+* Added "Remove All Sources" to queue (thanks izzzo & garg)
 * Queue menu items greyed out when there are no itels (thanks izzzo)
 * Fixed a crash with certain empty lists (thanks garg)
 * Added "restore all" to undo "minimize all" (thanks guitarm)
@@ -33,6 +33,8 @@
 * ADC hub connectivity improved
 * Fixed unnecessary COM initialisation (thanks garg)
 * Some linux compile fixes
+* Added readd all sources (thanks garg)
+* Fixed a deadlock when closing hub windows (thanks trem)
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

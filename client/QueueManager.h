@@ -235,7 +235,6 @@ private:
 
 	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
 
-	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
 
 	void setDirty() {
@@ -260,6 +259,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.64 2005/01/06 18:19:48 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.65 2005/01/06 20:21:11 arnetheduck Exp $
  */
 

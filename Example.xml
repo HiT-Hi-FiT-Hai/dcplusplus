@@ -24,6 +24,7 @@
 		<String Name="AllUsersOffline">All %d users offline</String>
 		<String Name="All3UsersOffline">All 3 users offline</String>
 		<String Name="All4UsersOffline">All 4 users offline</String>
+		<String Name="All">All</String>
 		<String Name="Any">Any</String>
 		<String Name="AtLeast">At least</String>
 		<String Name="AtMost">At most</String>

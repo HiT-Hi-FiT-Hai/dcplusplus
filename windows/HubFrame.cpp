@@ -936,6 +936,7 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED)) {
+		showUsers = true;
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, true);
 		User::NickMap& lst = client->lockUserList();
 		ctrlUsers.SetRedraw(FALSE);
@@ -946,6 +947,7 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
 	} else {
+		showUsers = false;
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, false);
 		clearUserList();
 	}
@@ -1131,5 +1133,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.96 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.97 2005/01/06 20:21:09 arnetheduck Exp $
  */
