@@ -46,7 +46,7 @@ typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef StringList::const_iterator StringIterC;
 
-typedef map<string, string> StringMap;
+typedef HASH_MAP<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
 #include "resource.h"
@@ -70,9 +70,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.17 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.18 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.18  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.17  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

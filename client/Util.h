@@ -336,18 +336,18 @@ public:
 		// We take the first ip as default, but if we can find a better one, use it instead...
 		memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
 		tmp = inet_ntoa(dest.sin_addr);
-		if( strncmp(tmp.c_str(), "192", 3) == 0 || 
-			strncmp(tmp.c_str(), "169", 3) == 0 || 
-			strncmp(tmp.c_str(), "127", 3) == 0 || 
-			strncmp(tmp.c_str(), "10", 2) == 0 ) {
+		if( strcmp(tmp.c_str(), "192") == 0 || 
+			strcmp(tmp.c_str(), "169") == 0 || 
+			strcmp(tmp.c_str(), "127") == 0 || 
+			strcmp(tmp.c_str(), "10") == 0 ) {
 			
 			while(he->h_addr_list[i]) {
 				memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
 				string tmp2 = inet_ntoa(dest.sin_addr);
-				if(	strncmp(tmp2.c_str(), "192", 3) != 0 &&
-					strncmp(tmp2.c_str(), "169", 3) != 0 &&
-					strncmp(tmp2.c_str(), "127", 3) != 0 &&
-					strncmp(tmp2.c_str(), "10", 2) != 0) {
+				if(	strcmp(tmp2.c_str(), "192") != 0 &&
+					strcmp(tmp2.c_str(), "169") != 0 &&
+					strcmp(tmp2.c_str(), "127") != 0 &&
+					strcmp(tmp2.c_str(), "10") != 0) {
 					
 					tmp = tmp2;
 				}
@@ -362,16 +362,21 @@ public:
 	 */
 	static string::size_type findSubString(const string& aString, const string& aSubString) {
 		
-		string::size_type alen = aString.size();
 		string::size_type blen = aSubString.size();
+		if(blen == 0)
+			return 0;
+		string::size_type alen = aString.size();
 		
 		if(alen >= blen) {
 			const char* a = aString.c_str();
 			const char* b = aSubString.c_str();
-			
+			char bl = (char)tolower(b[0]);
+			char bu = (char)toupper(b[0]);
 			for(string::size_type pos = 0; pos < alen - blen + 1; pos++) {
-				if(strnicmp(a+pos, b, blen) == 0)
-					return pos;
+				if( (a[pos] == bl) || (a[pos] == bu) ) {
+					if(strnicmp(a+pos+1, b+1, blen-1) == 0)
+						return pos;
+				}
 			}
 		}
 		return (string::size_type)string::npos;
@@ -425,9 +430,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.30 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: Util.h,v 1.31 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.31  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.30  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

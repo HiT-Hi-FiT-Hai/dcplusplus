@@ -48,13 +48,17 @@ public:
 	};
 	void disconnect() {
 		stopWaiter();
-		closesocket(sock);
-		CloseHandle(sockEvent);
-		sockEvent = NULL;
-		sock = NULL;
+		if(sock != NULL) {
+			closesocket(sock);
+			sock = NULL;
+		}
+		if(sockEvent != NULL) {
+			CloseHandle(sockEvent);
+			sockEvent = NULL;
+		}
 	}
 	virtual ~ServerSocket() {
-		stopWaiter();
+		disconnect();
 	}
 	
 	HANDLE getReadEvent() throw(SocketException) {
@@ -106,9 +110,12 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.9 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.10 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.10  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.9  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

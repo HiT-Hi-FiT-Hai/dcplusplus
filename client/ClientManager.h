@@ -89,17 +89,9 @@ public:
 		return false;
 	}
 
-	void putUserOffline(User::Ptr& aUser) {
-		Lock l(cs);
-		aUser->setClient(NULL);
-	}
-
+	void putUserOffline(User::Ptr& aUser);
 private:
-#ifdef HAS_HASH
-	typedef hash_multimap<string, User::Ptr> UserMap;
-#else
-	typedef multimap<string, User::Ptr> UserMap;
-#endif
+	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	typedef pair<UserIter, UserIter> UserPair;
 
@@ -171,11 +163,11 @@ private:
 	void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		if(type == TimerManagerListener::MINUTE) {
 			if(minutes++ >= 5) {
+				minutes = 0;
 				Lock l(cs);
 				UserIter i = users.begin();
 				while(i != users.end()) {
 					if(i->second->unique()) {
-						dcdebug("Removing unique user %s\n", i->second->getNick().c_str());
 						users.erase(i++);
 					} else {
 						++i;
@@ -190,9 +182,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.16 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.17 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.17  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.16  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

@@ -25,7 +25,7 @@
 #include "Util.h"
 
 CriticalSection PrivateFrame::cs;
-map<User::Ptr, PrivateFrame*> PrivateFrame::frames;
+PrivateFrame::FrameMap PrivateFrame::frames;
 
 LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -60,7 +60,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab) {
 	PrivateFrame* p = NULL;
 	Lock l(cs);
-	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
+	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
 		bool found = false;
 		for(i = frames.begin(); i != frames.end(); ++i) {
@@ -94,7 +94,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab) {
 	PrivateFrame* p = NULL;
 	Lock l(cs);
-	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
+	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
 		bool found = false;
 		for(i = frames.begin(); i != frames.end(); ++i) {
@@ -140,9 +140,12 @@ void PrivateFrame::onEnter()
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.18 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.19 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.19  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.18  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -71,15 +71,11 @@ class ConnectionQueueItem;
 class Transfer {
 public:
 	File* getFile() { return file; };
-	void setFile(File* aFile, bool aUpdate = false) { 
+	void setFile(File* aFile) { 
 		if(file) {
 			delete file;
 		}
-
 		file = aFile;
-		if(aUpdate && file) {
-			size = file->getSize();
-		}
 	}
 
 	LONGLONG getPos() { return pos; };
@@ -114,6 +110,8 @@ private:
 
 };
 class ServerSocket;
+class Upload;
+class Download;
 
 class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, public Flags
 {
@@ -211,6 +209,12 @@ public:
 	GETSETREF(string, server, Server);
 	GETSET(short, port, Port);
 	GETSET(DWORD, lastActivity, LastActivity);
+
+	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
+	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
+	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
+	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
+
 private:
 	string nick;
 	BufferedSocket socket;
@@ -218,12 +222,17 @@ private:
 	
 	static const string UPLOAD, DOWNLOAD;
 	
+	union {
+		Download* download;
+		Upload* upload;
+	};
+
 	void setUser(const User::Ptr& aUser) {
 		user = aUser;
 	}
 
 	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), status(CONNECTING), port(0), lastActivity(0) { 
+	UserConnection() : socket('|'), status(CONNECTING), port(0), lastActivity(0), download(NULL) { 
 		socket.addListener(this);
 	};
 	UserConnection(const UserConnection&) { dcassert(0); };
@@ -293,9 +302,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.36 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.37 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.37  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.36  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -34,3 +34,14 @@
 // Hint: the once that comes with mcvc++ doesn't have hashes...
 #define HAS_HASH 1
 
+// --- Shouldn't have to change anything under here...
+
+// User maps instead of hash_maps if they're not available...(even if there's
+// no need for the data to be sorted...
+#ifdef HAS_HASH
+#define HASH_MAP hash_map
+#define HASH_MULTIMAP hash_multimap
+#else
+#define HASH_MAP map
+#define HASH_MULTIMAP multimap
+#endif

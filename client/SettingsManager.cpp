@@ -99,8 +99,6 @@ void SettingsManager::load(string const& aFileName)
 	SimpleXML xml;
 	xml.fromXML(xmltext);
 
-	// We load the old settings as well for now...
-	oldLoad(&xml);
 	xml.resetCurrentChild();
 	
 	xml.stepIn();
@@ -143,25 +141,6 @@ void SettingsManager::load(string const& aFileName)
 	xml.resetCurrentChild();
 	NotepadFrame::load(&xml);
 	xml.stepOut();
-}
-
-void SettingsManager::oldLoad(SimpleXML* xml)
-{
-	xml->stepIn();
-	
-	if(xml->findChild("User"))
-	{
-		set(NICK, xml->getChildAttrib("Nick"));
-		set(EMAIL, xml->getChildAttrib("EMail"));
-		set(DESCRIPTION, xml->getChildAttrib("Description"));
-		set(CONNECTION, xml->getChildAttrib("Connection"));
-		set(SERVER, xml->getChildAttrib("Server"));
-		set(DOWNLOAD_DIRECTORY, xml->getChildAttrib("DownloadDirectory"));
-		set(PORT, xml->getChildAttrib("Port"));
-		set(CONNECTION_TYPE, xml->getChildAttrib("ConnectionType"));
-		set(SLOTS, xml->getChildAttrib("Slots"));	
-	}
-	xml->stepOut();
 }
 
 void SettingsManager::save(string const& aFileName) const
@@ -217,9 +196,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.20 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.21 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.21  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.20  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

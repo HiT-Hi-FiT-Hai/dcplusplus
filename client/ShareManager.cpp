@@ -33,6 +33,7 @@ enum {
 };
 
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
+	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
 		return getListFile();
 	} else {
@@ -42,6 +43,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		
 		string aDir = aFile.substr(0, i);
 
+		RLock l(cs);
 		StringMapIter j = dirs.find(aDir);
 		if(j == dirs.end()) {
 			throw ShareException("File Not Available");
@@ -55,7 +57,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(Util::findSubString(aFile, "DCPlusPlus.xml") != string::npos) {
 			throw ShareException("Don't think so");
 		}
-
+		
 		if(!checkFile(j->second, aFile.substr(i + 1))) {
 			throw ShareException("File Not Available");
 		}
@@ -67,8 +69,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 }
 
 bool ShareManager::checkFile(const string& dir, const string& aFile) {
-	Lock l(cs);
-
 	string::size_type i = 0;
 
 	Directory::MapIter mi = directories.find(dir);
@@ -94,8 +94,9 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 
 	return true;
 }
+
 void ShareManager::load(SimpleXML* aXml) {
-	Lock l(cs);
+	WLock l(cs);
 
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
@@ -112,7 +113,8 @@ void ShareManager::load(SimpleXML* aXml) {
 }
 
 void ShareManager::save(SimpleXML* aXml) {
-	Lock l(cs);
+	RLock l(cs);
+	
 	aXml->addTag("Share");
 	aXml->stepIn();
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
@@ -127,8 +129,8 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	}
 
 	{
-		Lock l(cs);
-
+		WLock l(cs);
+		
 		string d;
 		if(aDirectory[aDirectory.size() - 1] == '\\') {
 			d = aDirectory.substr(0, aDirectory.size()-1);
@@ -165,7 +167,8 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 }
 
 void ShareManager::removeDirectory(const string& aDirectory) {
-	Lock l(cs);
+	WLock l(cs);
+	
 	Directory::MapIter i = directories.find(aDirectory);
 	if(i != directories.end()) {
 		delete i->second;
@@ -209,7 +212,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 }
 
 StringList ShareManager::getDirectories() {
-	Lock l(cs);
+	RLock l(cs);
 
 	StringList tmp;
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
@@ -241,8 +244,8 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 
 	string tmp, tmp2;
 	{
-		Lock l(sm->cs);
-
+		WLock l(sm->cs);
+		
 		if(sm->refreshDirs) {
 			StringList dirs = sm->getDirectories();
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
@@ -283,7 +286,7 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 		tmp += i->second->toString(dupes, ident + 1);
 	}
 	
-	map<string, LONGLONG>::iterator j = files.begin();
+	HASH_MAP<string, LONGLONG>::iterator j = files.begin();
 	while(j != files.end()) {
 		bool dupe = false;
 		pair<DupeIter, DupeIter> p = dupes.equal_range(j->second);
@@ -310,129 +313,148 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 
 #define IS_TYPE(x) (Util::findSubString(aString, x) != -1)
 
+static const string types[] = { 
+	".mp3", ".mp2", ".mid", ".wav", ".au", ".aiff",				// 0-6
+	".zip", ".ace", ".rar",										// 6-9
+	".htm", ".doc",												// 9-11
+	".exe",														// 11-12
+	".eps", ".ai", ".ps", ".img", ".pct", ".pict", ".psp", ".pic", ".png", ".tif", ".rle", ".bmp", ".pcx",	// 12-25
+	".mpg", ".mov", ".mpeg", ".asf", ".avi", ".rm", ".pxp"		// 25-32
+};
+
 bool checkType(const string& aString, int aType) {
-	bool found = true;
+	bool found = false;
 	switch(aType) {
-	case SearchManager::TYPE_ANY: break;
+	case SearchManager::TYPE_ANY: found = true; break;
 	case SearchManager::TYPE_AUDIO:
-		if(!( IS_TYPE(".mp3") || IS_TYPE(".mp2") || IS_TYPE(".mid") ||
-			IS_TYPE(".wav") || IS_TYPE(".au") || IS_TYPE(".aiff") ) ) {
-			found = false;
+		{
+			for(int i = 0; i < 6; i++) {
+				if(IS_TYPE(types[i])) {
+					found = true;
+					break;
+				}
+			}
 		}
 		break;
 	case SearchManager::TYPE_COMPRESSED:
-		if(!( IS_TYPE(".zip") || IS_TYPE(".ace") || IS_TYPE(".rar") ) ) {
-			found = false;
+		if( IS_TYPE(types[6]) || IS_TYPE(types[7]) || IS_TYPE(types[8]) ) {
+			found = true;
 		}
 		break;
 	case SearchManager::TYPE_DOCUMENT:
-		if(!( IS_TYPE(".htm") || IS_TYPE(".doc") ) ) {
-			found = false;
+		if( IS_TYPE(types[9]) || IS_TYPE(types[10]) ) {
+			found = true;
 		}
 		break;
 	case SearchManager::TYPE_EXECUTABLE:
-		if(!( IS_TYPE(".exe") ) ) {
-			found = false;
+		if(IS_TYPE(types[11] ) ) {
+			found = true;
 		}
 		break;
 	case SearchManager::TYPE_FOLDER:
-		found = false;
 		break;
 	case SearchManager::TYPE_PICTURE:
-		if(!( IS_TYPE(".eps") || IS_TYPE(".ai") || IS_TYPE(".ps") ||
-			IS_TYPE(".img") || IS_TYPE(".pct") || IS_TYPE(".pict") ||
-			IS_TYPE(".psp") || IS_TYPE(".pic") || IS_TYPE(".png") ||
-			IS_TYPE(".tif") || IS_TYPE(".rle") || IS_TYPE(".bmp") ||
-			IS_TYPE(".pcx") ) ) {
-			found = false;
+		{
+			for(int i = 12; i < 25; i++) {
+				if(IS_TYPE(types[i])) {
+					found = true;
+					break;
+				}
+			}
 		}
 		break;
 	case SearchManager::TYPE_VIDEO:
-		if(!( IS_TYPE(".mpg") || IS_TYPE(".mov") || IS_TYPE(".mpeg") ||
-			IS_TYPE(".asf") || IS_TYPE(".avi") || IS_TYPE(".rm") ||
-			IS_TYPE(".pxp") ) ) {
-			found = false;
+		{
+			for(int i = 25; i < 32; i++) {
+				if(IS_TYPE(types[i])) {
+					found = true;
+					break;
+				}
+			}
 		}
 		break;
 	}
 	return found;		
 }
-
+/**
+ * Alright, the main point here is that when searching, a search string is most often found in 
+ * the filename, not directory name, so we want to make that case faster. Also, we want to
+ * avoid changing StringLists unless we absolutely have to --> this should only be done if a string
+ * has been matched in the directory name. This new stringlist should also be used in all descendants,
+ * but not the parents...
+ */
 void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
-	bool found = true;
+	StringList* cur = &aStrings;
+	StringList newStr;
 
-	StringList notFound;
-	if( (aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_FOLDER) ) {
-		for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
-			if(Util::findSubString(name, *k) == string::npos) {
-				found = false;
-				notFound.push_back(*k);
-			}
+	// Find any matches in the directory name
+	for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
+		if(Util::findSubString(name, *k) != string::npos) {
+			newStr.push_back(*k);
 		}
-	} else {
-		found = false;
 	}
 
-	if(found && aSearchType == SearchManager::SIZE_DONTCARE) {
-		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end() && (aResults.size() < MAX_RESULTS); ++i) {
-			if(checkType(i->first, aFileType)) {
-				SearchResult* sr = new SearchResult();
-				sr->setFile(getFullName() + i->first);
-				sr->setSize(i->second);
-				int slots = UploadManager::getInstance()->getFreeSlots();
-				sr->setFreeSlots(slots <= 0 ? 0 : slots);
-				sr->setSlots(SETTING(SLOTS));
-				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				sr->setHubAddress(aClient->getIp());
-				sr->setHubName(aClient->getName());
-				aResults.push_back(sr);
+	if(newStr.size() > 0) {
+		// Alright, we want to put the strings not found in newStr, and remove those already found
+		// to avoid using another stringlist...
+		for(StringIter m = aStrings.begin(); m != aStrings.end(); ++m) {
+			StringIter n = find(newStr.begin(), newStr.end(), *m);
+			if(n == newStr.end()) {
+				newStr.push_back(*m);
+			} else {
+				newStr.erase(n);
 			}
+		}
+		cur = &newStr;
+	}
+
+	bool found = true;
+	for(FileIter i = files.begin(); i != files.end(); ++i) {
+
+		if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
+			continue;
+		} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
+			continue;
 		}	
-	} else {
 		
-		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end(); ++i) {
-			found = true;
-			for(StringIter j = notFound.begin(); (j != notFound.end()); ++j) {
-				if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
-					found = false;
-					break;
-				} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
-					found = false;
-					break;
-				} else if(Util::findSubString(i->first, *j) == -1) {
-					found = false;
-					break;
-				}
+		found = true;
+		for(StringIter j = cur->begin(); (j != cur->end()); ++j) {
+			if(Util::findSubString(i->first, *j) == string::npos) {
+				found = false;
+				break;
 			}
+		}
+		
+		if(!found)
+			continue;
 
-			// Check file type...
-			if(found && checkType(i->first, aFileType)) {
+		// Check file type...
+		if(checkType(i->first, aFileType)) {
 
-				SearchResult* sr = new SearchResult();
-				sr->setFile(getFullName() + i->first);
-				sr->setSize(i->second);
-				int slots = UploadManager::getInstance()->getFreeSlots();
-				sr->setFreeSlots(slots <= 0 ? 0 : slots);
-				sr->setSlots(SETTING(SLOTS));
-				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				sr->setHubAddress(aClient->getIp());
-				sr->setHubName(aClient->getName());
-				aResults.push_back(sr);
+			SearchResult* sr = new SearchResult();
+			sr->setFile(getFullName() + i->first);
+			sr->setSize(i->second);
+			sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+			sr->setSlots(SETTING(SLOTS));
+			sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
+			sr->setHubAddress(aClient->getIp());
+			sr->setHubName(aClient->getName());
+			aResults.push_back(sr);
 
-				if(aResults.size() >= MAX_RESULTS) {
-					break;
-				}
+			if(aResults.size() >= MAX_RESULTS) {
+				break;
 			}
 		}
 	}
 
 	for(Directory::MapIter l = directories.begin(); (l != directories.end()) && (aResults.size() < MAX_RESULTS); ++l) {
-		l->second->search(aResults, aStrings, aSearchType, aSize, aFileType, aClient);
+		l->second->search(aResults, *cur, aSearchType, aSize, aFileType, aClient);
 	}
 }
-SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
-	Lock l(cs);
 
+SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
+	
+	RLock l(cs);
 	StringTokenizer t(aString, '$');
 	StringList& sl = t.getTokens();
 	SearchResult::List results;
@@ -440,14 +462,18 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 	for(Directory::MapIter i = directories.begin(); i != directories.end() && results.size() < MAX_RESULTS; ++i) {
 		i->second->search(results, sl, aSearchType, aSize, aFileType, aClient);
 	}
+	
 	return results;
 }
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.28 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.29 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.29  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.28  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -31,10 +31,10 @@ class CriticalSection
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
-		dcdrun(InterlockedIncrement(&counter););	
+		dcdrun(counter++);	
 	}
 	void leave() throw() {
-		dcdrun(dcassert(InterlockedDecrement(&counter) >= 0););
+		dcdrun(dcassert(--counter >= 0););
 		LeaveCriticalSection(&cs);
 	}
 	CriticalSection() throw() {
@@ -56,13 +56,67 @@ public:
 	~Lock() throw() { cs.leave(); };
 };
 
+class RWLock
+{
+	long readers;
+	CRITICAL_SECTION cs;
+public:
+	void enterRead() throw() {
+		EnterCriticalSection(&cs);
+		readers++;
+		LeaveCriticalSection(&cs);
+	}
+	void leaveRead() throw() {
+		readers--;
+		dcassert(readers >= 0);
+	}
+	void enterWrite() throw() {
+		EnterCriticalSection(&cs);
+		while(readers > 0) {
+			LeaveCriticalSection(&cs);
+			Sleep(0);
+			EnterCriticalSection(&cs);
+		}
+	}
+	void leaveWrite() {
+		LeaveCriticalSection(&cs);
+	}
+
+	RWLock() throw() : readers(0) {
+		InitializeCriticalSection(&cs);
+	}
+	~RWLock() throw() {
+		dcassert(readers==0);
+		DeleteCriticalSection(&cs);
+	}
+};
+
+class RLock {
+private:
+	RWLock& cs;
+public:
+	RLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterRead(); };
+	~RLock() throw() { cs.leaveRead(); };
+};
+
+class WLock {
+private:
+	RWLock& cs;
+public:
+	WLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterWrite(); };
+	~WLock() throw() { cs.leaveWrite(); };
+};
+
 #endif // !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.7 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.7  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

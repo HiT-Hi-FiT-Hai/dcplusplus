@@ -188,7 +188,6 @@ void HubFrame::onEnter() {
 				}
 			} else if(stricmp(s.c_str(), "join")==0) {
 				if(!param.empty()) {
-					Lock l(cs);
 					if(client)
 						client->connect(param);
 				} else {
@@ -204,7 +203,6 @@ void HubFrame::onEnter() {
 					ctrlStatus.SetText(0, "Specify a search string");
 				}
 			} else if(stricmp(s.c_str(), "dc++") == 0) {
-				Lock l(cs);
 				if(client)
 					client->sendMessage(msgs[TimerManager::getTick() % MSGS]);
 			} else if(stricmp(s.c_str(), "clear") == 0) {
@@ -225,7 +223,6 @@ void HubFrame::onEnter() {
 				}
 			}
 		} else {
-			Lock l(cs);
 			if(client)
 				client->sendMessage(s);
 		}
@@ -241,7 +238,6 @@ void HubFrame::onEnter() {
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	char buf[256];
-	Lock l(cs);
 
 	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
@@ -259,7 +255,6 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	char buf[256];
-	Lock l(cs);
 	if(client && client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
@@ -274,7 +269,6 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	char buf[256];
 
-	Lock l(cs);
 	if(client && client->isConnected() && item->iItem != -1) {
 		ctrlUsers.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
 		try {
@@ -298,11 +292,8 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			char buf[256];
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-			{
-				Lock l(cs);
-				if(client) {
-					ClientManager::getInstance()->getUser(buf, client->getIp())->kick(dlg.line);
-				}
+			if(client) {
+				ClientManager::getInstance()->getUser(buf, client->getIp())->kick(dlg.line);
 			}
 		}
 	}
@@ -315,11 +306,8 @@ LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		char buf[256];
 		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-		{
-			Lock l(cs);
-			if(client) {
-				UploadManager::getInstance()->reserveSlot(ClientManager::getInstance()->getUser(buf, client->getIp()));
-			}
+		if(client) {
+			UploadManager::getInstance()->reserveSlot(ClientManager::getInstance()->getUser(buf, client->getIp()));
 		}
 	}
 	return 0; 
@@ -342,11 +330,8 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				char buf[256];
 				ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-				{
-					Lock l(cs);
-					if(client) {
-						client->opForceMove(ClientManager::getInstance()->getUser(buf, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
-					}
+				if(client) {
+					client->opForceMove(ClientManager::getInstance()->getUser(buf, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
 				}
 			}
 		}
@@ -398,7 +383,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 		}
 	} else if(wParam==STATS) {
-		Lock l(cs);
 		if(client) {
 			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " users").c_str());
 			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
@@ -414,7 +398,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			ctrlUsers.DeleteItem(item);
 		}
 	} else if(wParam == CLIENT_GETPASSWORD) {
-		Lock l(cs);
 		if(client) {
 			if(client->getPassword().size() > 0) {
 				client->password(client->getPassword());
@@ -433,7 +416,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 		}
 	} else if(wParam == CLIENT_CONNECTING) {
-		Lock l(cs);
 		if(client) {
 			addClientLine("Connecting to " + client->getServer() + "...");
 			SetWindowText(client->getServer().c_str());
@@ -444,14 +426,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete (string*)lParam;
 		//ctrlClient.Invalidate();
 	} else if(wParam == CLIENT_HUBNAME) {
-		Lock l(cs);
 		if(client) {
 			SetWindowText( (client->getName() + " (" + client->getServer() + ")").c_str());
 			addClientLine("Connected");
 		}
 	} else if(wParam == CLIENT_VALIDATEDENIED) {
 		addClientLine("Your nick was already taken, please change to something else!");
-		Lock l(cs);
 		if(client)
 			client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
@@ -476,7 +456,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		addClientLine("Search spam detected from " + (*x) + " (more than 5 searches within 7 seconds)");
 		delete x;
 	} else if(wParam == REDIRECT) {
-		Lock l(cs);
 		if(client)
 			client->disconnect();
 
@@ -487,11 +466,46 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	return 0;
 };
 
+void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+	
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+		
+		ctrlStatus.SetParts(3, w);
+	}
+	
+	CRect rc = rect;
+	rc.bottom -=28;
+	SetSplitterRect(rc);
+	
+	rc = rect;
+	rc.bottom -= 2;
+	rc.top = rc.bottom - 22;
+	rc.left +=2;
+	rc.right -=2;
+	ctrlMessage.MoveWindow(rc);
+	
+}
+	
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.40 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.41 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.41  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.40  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

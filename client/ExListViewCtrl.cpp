@@ -99,7 +99,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 				comp = compare(b, string(buf)); break;
 			case SORT_STRING_NOCASE:
 				GetItemText(loc, sortColumn, buf, 128);
-				comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+				comp =  stricmp(b.c_str(), buf);
 				break;
 			case SORT_INT:
 				GetItemText(loc, sortColumn, buf, 128);
@@ -138,7 +138,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		case SORT_STRING:
 			comp = compare(b, string(buf)); break;
 		case SORT_STRING_NOCASE:
-			comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
+			comp =  stricmp(b.c_str(), buf);
 			break;
 		case SORT_INT:
 			comp = compare(c, atoi(buf)); break;
@@ -202,9 +202,12 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.6 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.cpp,v $
+ * Revision 1.6  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.5  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -49,7 +49,14 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 	wait[1] = s->getReadEvent();
 	dcdebug("Waiting for incoming connections...\n");
 	while(WaitForMultipleObjects(2, wait, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		s->fire(ServerSocketListener::INCOMING_CONNECTION);
+		// Make an extra check that there really is something to accept...
+		fd_set fd;
+		FD_ZERO(&fd);
+		FD_SET(s->sock, &fd);
+		TIMEVAL t = { 0, 0 };
+		select(1, &fd, NULL, NULL, &t);
+		if(FD_ISSET(s->sock, &fd))
+			s->fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
 	return 0;
@@ -57,9 +64,12 @@ DWORD WINAPI ServerSocket::waiter(void* p) {
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.5 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.6 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.6  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.5  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

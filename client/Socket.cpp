@@ -42,8 +42,7 @@ SocketException::SocketException(int aError) {
 Socket::Stats Socket::stats = { 0, 0, 0, 0 };
 
 string SocketException::errorToString(int aError) {
-	return strerror(aError);
-/*	switch(aError) {
+	switch(aError) {
 	case EWOULDBLOCK:
 		return "Operation would block execution";
 	case EACCES:
@@ -72,7 +71,7 @@ string SocketException::errorToString(int aError) {
 		char tmp[128];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
 		return tmp;
-	}*/
+	}
 }
 
 Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
@@ -104,8 +103,10 @@ void Socket::bind(short aPort) throw (SocketException){
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
-	create();
-	dcassert(type == TYPE_TCP);
+	if(sock != INVALID_SOCKET) {
+		Socket::disconnect();
+	}
+	type = TYPE_TCP;
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
 	connected = true;
@@ -197,15 +198,13 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
 				TIMEVAL t = { 0, 500 };
-				fd_set rfd, wfd, efd;
+				fd_set rfd, wfd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
-				FD_ZERO(&efd);
 				FD_SET(sock, &rfd);
 				FD_SET(sock, &wfd);
-				FD_SET(sock, &efd);
 				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, &efd, &t);
+				select(1, &rfd, &wfd, NULL, &t);
 			} else if(errno == ENOBUFS) {
 				TIMEVAL t = { 1, 0 };
 				fd_set rfd, wfd, efd;
@@ -240,9 +239,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.23 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.24 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.24  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.23  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

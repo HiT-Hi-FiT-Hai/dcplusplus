@@ -36,7 +36,7 @@ class SimpleXML
 {
 public:
 	SimpleXML() : found(false) { root = current = new Tag("BOGUSROOT", "", NULL); };
-	~SimpleXML() { delete current; }
+	~SimpleXML() { delete root; }
 	
 	void addTag(const string& aName, const string& aData = "");
 	void addTag(const string& aName, int aData) {
@@ -203,9 +203,12 @@ private:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.11 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.12 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.12  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.11  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

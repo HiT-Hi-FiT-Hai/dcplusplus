@@ -6,8 +6,21 @@
   (that only allow incoming data on port >1024)
 * Updated user handling, issues related to diffent users with same nick should work out better now 
   (also increased performance in user handling) (Major change...)
+* Fixed some minor ui bugs
+* Added options to ignore or popup messages from bots and other offline users
+* Fixed some more minor memory and resource leaks
+* Improved incoming search performance, also fixed some minor search result bugs
+* Improved general window updating performance (when getting info about users and closing windows)
+* Should have fixed the scroll problem (although I've never experienced it myself...)
+* Increased time between kickmsg and actual kick...wonder if it's enough or needs to be increased more...
+* Fixed a bug where files that already existed on the target location were being added to the queue
+* Did some more work on the queue managment to reduce crash frequency
+* Improved file transfer perfomance a bit
+* Fixed so that priorities are saved / loaded
+* Improved rollback buffering, the app now discards the last <rollback> bytes, and 
+  then checks the <rollback> bytes before that for inconsistensies.
 
- -- 0.154 2002-02-11 --
+ -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.
   (detected when the user searches or tries to connect to you)
 * Added a primitive search history

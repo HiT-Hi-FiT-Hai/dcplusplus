@@ -87,6 +87,15 @@ public:
 	}
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
+	void disconnectAll() {
+		Lock l(cs);
+		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
+			delete *i;
+		}
+		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+			delete *j;
+		}
+	}		
 	
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
@@ -139,11 +148,6 @@ private:
 	~ConnectionManager() {
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
-		// Time to empty the pool...
-		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
-			dcdebug("Deleting connection %p\n", *i);
-			delete *i;
-		}
 	}
 	// ServerSocketListener
 	virtual void onAction(ServerSocketListener::Types type) {
@@ -216,9 +220,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.29 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.30 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.30  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.29  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

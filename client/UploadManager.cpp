@@ -82,8 +82,6 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		}
 	}
 
-	dcassert(uploads.find(aSource) == uploads.end());
-
 	File* f;
 	try {
 		f = new File(file, File::READ, File::OPEN);
@@ -94,19 +92,20 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	}
 	
 	u = new Upload(ConnectionManager::getInstance()->getQueueItem(aSource));
-	u->setFile(f, true);
+	u->setFile(f);
+	u->setSize(f->getSize());
 	u->setPos(aResume, true);
-	u->setFileName(aFile);
 	u->setUser(aSource->getUser());
+	u->setFileName(aFile);
 	if(smallfile)
 		u->setFlag(Upload::SMALL_FILE);
 	if(userlist)
 		u->setFlag(Upload::USER_LIST);
 
 	aSource->setStatus(UserConnection::BUSY);
-	
-	uploads[aSource] = u;
-	
+	dcassert(aSource->getUpload() == NULL);
+	aSource->setUpload(u);
+	uploads.push_back(u);
 	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
 		if(ui != reservedSlots.end()) {
 			aSource->setFlag(UserConnection::FLAG_HASSLOT);
@@ -143,13 +142,8 @@ void UploadManager::onSend(UserConnection* aSource) {
 		return;
 	}
 
-	Upload* u;
-	{
-		Lock l(cs);
-		dcassert(uploads.find(aSource) != uploads.end());
-
-		u = uploads[aSource];
-	}
+	Upload* u = aSource->getUpload();
+	dcassert(u != NULL);
 
 	u->setStart(TimerManager::getTick());
 	aSource->setState(UserConnection::STATE_DONE);
@@ -159,29 +153,23 @@ void UploadManager::onSend(UserConnection* aSource) {
 
 void UploadManager::onBytesSent(UserConnection* aSource, DWORD aBytes) {
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
-	Upload* u = NULL;
-
-	{
-		Lock l(cs);
-		dcassert(uploads.find(aSource) != uploads.end());
-		u = uploads[aSource];
-	}
+	Upload* u = aSource->getUpload();
+	dcassert(u != NULL);
 	u->addPos(aBytes);
 }
 
 void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
-	Upload* u = NULL;
-	{
-		Lock l(cs);
-		Upload::MapIter i = uploads.find(aSource);
-		if(i != uploads.end()) {
-			u = i->second;
-			uploads.erase(i);
-		}
-	}
+	Upload* u = aSource->getUpload();
 
 	if(u) {
+		aSource->setUpload(NULL);
 		fire(UploadManagerListener::FAILED, u, aError);
+		{
+			Lock l(cs);
+			dcassert(find(uploads.begin(), uploads.end(), u) != uploads.end());
+			uploads.erase(find(uploads.begin(), uploads.end(), u));
+		}
+
 		dcdebug("UM::onFailed: Removing upload\n");
 		delete u;
 	}
@@ -191,17 +179,16 @@ void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 void UploadManager::onTransmitDone(UserConnection* aSource) {
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
-	Upload* u = NULL;
+	Upload* u = aSource->getUpload();
+	dcassert(u != NULL);
 
 	{
 		Lock l(cs);
-		Upload::MapIter i = uploads.find(aSource);
-		dcassert(i != uploads.end());
-		u = i->second;
-		dcdebug("UM::onTransmitDone: Removing upload\n");
-		uploads.erase(i);
+		dcassert(find(uploads.begin(), uploads.end(), u) != uploads.end());
+		uploads.erase(find(uploads.begin(), uploads.end(), u));
 	}
-
+	
+	aSource->setUpload(NULL);
 	aSource->setStatus(UserConnection::IDLE);
 	aSource->setState(UserConnection::STATE_GET);
 
@@ -211,6 +198,7 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 }
 
 void UploadManager::removeConnection(UserConnection::Ptr aConn) {
+	dcassert(aConn->getUpload() == NULL);
 	aConn->removeListener(this);
 
 	{
@@ -262,9 +250,12 @@ void UploadManager::onTimerMinute(DWORD aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.20 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.21 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.21  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.20  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

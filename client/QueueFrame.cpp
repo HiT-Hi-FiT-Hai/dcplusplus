@@ -305,7 +305,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			QueueItem* q = NULL;
 			{
 				Lock l(cs);
-				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)lvi.lParam);
+				QueueIter j = queue.find((QueueItem*)lvi.lParam);
 				if(j == queue.end())
 					return FALSE;
 				q = j->second;
@@ -346,7 +346,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		{
 			Lock l(cs);
-			map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+			QueueIter j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
 			if(j == queue.end())
 				return FALSE;
 
@@ -446,7 +446,7 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 		QueueItem::Priority p;
 		{
 			Lock l(cs);
-			map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+			QueueIter j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
 			if(j == queue.end())
 				continue;
 			
@@ -466,9 +466,12 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.11 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.11  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.10  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -25,8 +25,8 @@
 
 #include "UserConnection.h"
 #include "CryptoManager.h"
-#include "Client.h"
 #include "ClientManager.h"
+#include "QueueManager.h"
 
 ConnectionManager* ConnectionManager::instance = NULL;
 
@@ -205,6 +205,7 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 
 	for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
 		fire(ConnectionManagerListener::STATUS_CHANGED, *k);
+		(*k)->getConnection()->removeListener(this);
 		DownloadManager::getInstance()->addConnection((*k)->getConnection());
 	}
 
@@ -461,9 +462,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.33 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.34 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.34  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.33  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

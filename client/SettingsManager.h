@@ -103,9 +103,6 @@ public:
 	void save(const string& aFileName) const;
 
 private:
-	static string ReadStringFromFile(string const& aFileName);
-	static bool WriteStringToFile(string const& aFileName, string const& text);
-
 	friend class Singleton<SettingsManager>;
 	SettingsManager();
 
@@ -168,9 +165,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.16 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.17 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.17  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.16  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

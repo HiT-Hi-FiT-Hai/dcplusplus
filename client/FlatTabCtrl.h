@@ -208,63 +208,63 @@ private:
 	TabInfo* active;
 	vector<TabInfo*> tabs;
 
-/**
- * Draws a tab
- * @return The width of the tab
- */
-int drawTab(CDC& dc, TabInfo* tab, int pos, bool aActive = false) {
-	
-	CPen black;
-	black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
-	HPEN oldpen = dc.SelectPen(black);
-	
-	POINT p[4];
-	dc.BeginPath();
-	dc.MoveTo(pos, 0);
-	p[0].x = pos + tab->getWidth() + (getTabHeight()+1)/2;
-	p[0].y = 0;
-	p[1].x = pos + tab->getWidth();
-	p[1].y = getTabHeight();
-	p[2].x = pos + (getTabHeight()+1)/2;
-	p[2].y = getTabHeight();
-	p[3].x = pos;
-	p[3].y = 0;
-	
-	dc.PolylineTo(p, 4);
-	dc.CloseFigure();
-	dc.EndPath();
-	
-	HBRUSH oldbrush = dc.SelectBrush(GetSysColorBrush(aActive ? COLOR_WINDOW : COLOR_BTNFACE));
-	dc.FillPath();
-	
-	dc.MoveTo(p[1].x + 1, p[1].y);
-	dc.LineTo(p[0].x + 1, p[0].y);
-	dc.MoveTo(p[2]);
-	dc.LineTo(p[3]);
-	
-	CPen grey;
-	grey.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(128,128,128));
-	dc.SelectPen(grey);
-	dc.MoveTo(p[1]);
-	dc.LineTo(p[0]);
-	dc.MoveTo(p[1]);
-	dc.LineTo(p[2]);
-	
-	dc.SelectPen(oldpen);
-	dc.SelectBrush(oldbrush);
-	
-	dc.SetBkMode(TRANSPARENT);
+	/**
+	 * Draws a tab
+	 * @return The width of the tab
+	 */
+	int drawTab(CDC& dc, TabInfo* tab, int pos, bool aActive = false) {
+		
+		CPen black;
+		black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
+		HPEN oldpen = dc.SelectPen(black);
+		
+		POINT p[4];
+		dc.BeginPath();
+		dc.MoveTo(pos, 0);
+		p[0].x = pos + tab->getWidth() + (getTabHeight()+1)/2;
+		p[0].y = 0;
+		p[1].x = pos + tab->getWidth();
+		p[1].y = getTabHeight();
+		p[2].x = pos + (getTabHeight()+1)/2;
+		p[2].y = getTabHeight();
+		p[3].x = pos;
+		p[3].y = 0;
+		
+		dc.PolylineTo(p, 4);
+		dc.CloseFigure();
+		dc.EndPath();
+		
+		HBRUSH oldbrush = dc.SelectBrush(GetSysColorBrush(aActive ? COLOR_WINDOW : COLOR_BTNFACE));
+		dc.FillPath();
+		
+		dc.MoveTo(p[1].x + 1, p[1].y);
+		dc.LineTo(p[0].x + 1, p[0].y);
+		dc.MoveTo(p[2]);
+		dc.LineTo(p[3]);
+		
+		CPen grey;
+		grey.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(128,128,128));
+		dc.SelectPen(grey);
+		dc.MoveTo(p[1]);
+		dc.LineTo(p[0]);
+		dc.MoveTo(p[1]);
+		dc.LineTo(p[2]);
+		
+		dc.SelectPen(oldpen);
+		dc.SelectBrush(oldbrush);
+		
+		dc.SetBkMode(TRANSPARENT);
 
-	if(tab->dirty) {
-		HFONT f = dc.SelectFont(boldFont);
-		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
-		dc.SelectFont(f);		
-	} else {
-		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
-	}
-	
-	return tab->getWidth();
-};
+		if(tab->dirty) {
+			HFONT f = dc.SelectFont(boldFont);
+			dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
+			dc.SelectFont(f);		
+		} else {
+			dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
+		}
+		
+		return tab->getWidth();
+	};
 
 };
 
@@ -339,9 +339,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.8 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.8  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.7  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -44,6 +44,9 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 
 PropertiesDlg::~PropertiesDlg()
 {
+	for(int i=0; i<numPages; i++) {
+		delete pages[i];
+	}
 }
 
 void PropertiesDlg::write()

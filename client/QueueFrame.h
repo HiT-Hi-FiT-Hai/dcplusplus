@@ -113,7 +113,7 @@ public:
 			string tmp;
 			{
 				Lock l(cs);
-				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+				QueueIter j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
 				if(j == queue.end())
 					continue;
 				
@@ -194,7 +194,7 @@ public:
 			ctrlQueue.DeleteAllItems();
 			{
 				Lock l(cs);
-				for(map<QueueItem*, QueueItem*>::iterator i = queue.begin(); i != queue.end(); ++i) {
+				for(QueueIter i = queue.begin(); i != queue.end(); ++i) {
 					delete i->second;
 				}
 				queue.clear();
@@ -288,8 +288,9 @@ private:
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
-	
-	map<QueueItem*, QueueItem*> queue;
+	typedef map<QueueItem*, QueueItem*> QueueMap;
+	typedef QueueMap::iterator QueueIter;
+	QueueMap queue;
 
 	CriticalSection cs;
 	ExListViewCtrl ctrlQueue;
@@ -301,9 +302,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.8 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.9 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.9  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.8  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

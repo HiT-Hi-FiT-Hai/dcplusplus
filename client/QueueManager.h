@@ -49,6 +49,7 @@ public:
 		FINISHED
 	};
 	enum Priority {
+		DEFAULT = -1,
 		PAUSED = 0,
 		LOW,
 		NORMAL,
@@ -150,6 +151,7 @@ private:
 				// Bingo!
 				delete *i;
 				sources.erase(i);
+				
 				return;
 			}
 		}
@@ -186,7 +188,7 @@ private:
 		}
 		return false;
 	}
-
+	
 };
 
 class QueueManagerListener {
@@ -205,18 +207,19 @@ public:
 
 	virtual void onAction(Types, QueueItem*) { };
 };
+class ConnectionQueueItem;
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, private SearchManagerListener
 {
 public:
 	
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-			 bool aResume = true) throw(QueueException, FileException) {
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException) {
 
-		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume);
+		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p);
 	}
 	void add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
-			 bool aResume = true) throw(QueueException, FileException);
+		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
 		string file = Util::getAppPath() + aUser->getNick() + ".DcLst";
@@ -241,9 +244,14 @@ public:
 		return sl;
 	}
 
-	Download* getDownload(UserConnection* aUserConnection);
-	bool hasDownload(const User::Ptr& aUser);
+	Download* getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi);
+	bool hasDownload(const User::Ptr& aUser) {
+		Lock l(cs);
+		return users.find(aUser) != users.end();
+	}
+	
 	void putDownload(Download* aDownload, bool finished = false);
+	void userUpdated(User::Ptr& aUser);
 	
 	void getQueue() {
 		Lock l(cs);
@@ -279,11 +287,24 @@ private:
 	CriticalSection cs;
 	QueueItem::List queue;
 	StringList userLists;
-	map<string, DWORD> search;
-	
+	typedef hash_map<string, DWORD> SearchMap;
+	SearchMap search;
+	typedef map<User::Ptr, int> UserMap;
+	UserMap users;
+
 	static const string USER_LIST_NAME;
 	
-	void remove(QueueItem* aQI) throw(QueueException);
+	void removeFromUserMap(QueueItem* aQI) {
+		for(QueueItem::Source::Iter i = aQI->getSources().begin(); i != aQI->getSources().end(); ++i) {
+			UserMap::iterator j = users.find((*i)->getUser());
+			dcassert(j != users.end());
+			if(j->second == 1) {
+				users.erase(j); 
+			} else {
+				j->second--;
+			}
+		}
+	};
 
 	QueueItem* findByTarget(const string& aTarget) {
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
@@ -312,9 +333,12 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.11 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.11  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.10  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -22,6 +22,7 @@
 #include "ClientManager.h"
 #include "ShareManager.h"
 #include "SearchManager.h"
+#include "QueueManager.h"
 
 ClientManager* ClientManager::instance = NULL;
 
@@ -117,10 +118,9 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					Socket s;
 					s.create(Socket::TYPE_UDP);
 					string ip, file;
-					short port = 412;
+					short port = (short)SETTING(PORT);
 					Util::decodeUrl(aSeeker, ip, port, file);
 					s.connect(ip, port);
-					char* buf = new char[1024];
 					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 						SearchResult* sr = *i;
 						sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
@@ -176,9 +176,11 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 
 	// Check for an offline user that was on that hub that we can put online again
 	for(UserIter j = p.first; j != p.second; ++j) {
-		if(!j->second->isOnline() && j->second->getLastHubIp() == aClient->getIp()) {
-			if(putOnline)
+		if( (!j->second->isOnline()) && (j->second->getLastHubIp() == aClient->getIp()) ) {
+			if(putOnline) {
 				j->second->setClient(aClient);
+				QueueManager::getInstance()->userUpdated(j->second);
+			}
 			return j->second;
 		}
 	}
@@ -186,25 +188,38 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 	// Check for any offline user that we can put online again
 	for(UserIter m = p.first; m != p.second; ++m) {
 		if(!m->second->isOnline()) {
-			if(putOnline)
+			if(putOnline) {
 				m->second->setClient(aClient);
+				QueueManager::getInstance()->userUpdated(m->second);
+			}
 			return m->second;
 		}
 	}
 	
-	dcdebug("Allocating %d bytes for user %s (#%d)\n", sizeof(User), aNick.c_str(), users.size());
 	// Create a new user
 	UserIter k = users.insert(make_pair(aNick, new User(aNick)));
-	if(putOnline)
+	if(putOnline) {
 		k->second->setClient(aClient);
+	}
 	return k->second;
+}
+
+void ClientManager::putUserOffline(User::Ptr& aUser) {
+	{
+		Lock l(cs);
+		aUser->setClient(NULL);
+	}
+	QueueManager::getInstance()->userUpdated(aUser);
 }
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.11 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.12 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.12  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.11  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

@@ -90,7 +90,7 @@ public:
 			DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
 			DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
 			
-			return strnicmp(e->getName().c_str(), f->getName().c_str(), min(e->getName().size(), f->getName().size()));
+			return stricmp(e->getName().c_str(), f->getName().c_str());
 		} else {
 			if(d->iImage == IMAGE_DIRECTORY) {
 				return 1;
@@ -100,7 +100,7 @@ public:
 			DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
 			DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
 			
-			return strnicmp(e->getName().c_str(), f->getName().c_str(), min(e->getName().size(), f->getName().size()));
+			return stricmp(e->getName().c_str(), f->getName().c_str());
 		}
 	}
 	
@@ -239,9 +239,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.15 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.16 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.16  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.15  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -100,7 +100,7 @@ void Client::onLine(const string& aLine) throw() {
 		bool spam = false;
 		{
 			Lock l(cs);
-			map<string, int>::iterator s = searchFlood.find(seeker);
+			FloodIter s = searchFlood.find(seeker);
 			if(s != searchFlood.end()) {
 				if(++s->second > 5) {
 					// We have a search spammer!!!
@@ -141,7 +141,7 @@ void Client::onLine(const string& aLine) throw() {
 		j = param.find(' ', i);
 		nick = param.substr(i, j-i);
 		i = j + 1;
-		User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
+		User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
 
 		{
 			Lock l(cs);
@@ -227,7 +227,7 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
 		
-		User::Ptr& u = ClientManager::getInstance()->getUser(param, this);
+		User::Ptr u = ClientManager::getInstance()->getUser(param, this);
 		{
 			Lock l(cs);
 			users[param] = u;
@@ -252,7 +252,7 @@ void Client::onLine(const string& aLine) throw() {
 		int j, k = 0;
 		while( (j=param.find("$$", k)) != string::npos) {
 			string nick = param.substr(k, j-k);
-			User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
+			User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
 			users[param] = u;
 			fire(ClientListener::MY_INFO, this, u);
 
@@ -268,7 +268,7 @@ void Client::onLine(const string& aLine) throw() {
 		k = 0;
 		while( (j=param.find("$$", k)) != string::npos) {
 			string nick = param.substr(k, j-k);
-			User::Ptr& u = ClientManager::getInstance()->getUser(nick, this);
+			User::Ptr u = ClientManager::getInstance()->getUser(nick, this);
 			{
 				Lock l(cs);
 				users[nick] = u;
@@ -323,9 +323,12 @@ void Client::disconnect(bool rl /* = true */) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.29 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.30 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.30  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.29  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

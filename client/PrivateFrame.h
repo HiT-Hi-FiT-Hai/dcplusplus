@@ -193,7 +193,9 @@ private:
 	
 	HWND parent;
 	bool created;
-	static map<User::Ptr, PrivateFrame*> frames;
+	typedef map<User::Ptr, PrivateFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	static FrameMap frames;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
 	CStatusBarCtrl ctrlStatus;
@@ -208,9 +210,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.14 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.15 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.15  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.14  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

@@ -42,6 +42,10 @@
 
 MainFrame::~MainFrame() {
 	arrows.Destroy();
+	images.Destroy();
+	largeImages.Destroy();
+	DeleteObject(Util::bgBrush);
+	DeleteObject(Util::font);
 }
 
 DWORD WINAPI MainFrame::stopper(void* p) {
@@ -55,6 +59,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 			wnd2 = wnd;
 		}
 	}
+	ConnectionManager::getInstance()->disconnectAll();
 	TimerManager::getInstance()->removeListeners();
 	
 	SettingsManager::getInstance()->save();
@@ -710,9 +715,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.63 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.64 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.64  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.63  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

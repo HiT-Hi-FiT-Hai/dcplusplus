@@ -45,7 +45,7 @@ public:
 		COLUMN_CONNECTION,
 		COLUMN_EMAIL
 	};
-	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
+	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
 		client->setPassword(aPassword);
@@ -60,14 +60,6 @@ public:
 
 	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_HUB);
 
-	CEdit ctrlClient;
-	CEdit ctrlMessage;
-	ExListViewCtrl ctrlUsers;
-	CStatusBarCtrl ctrlStatus;
-	CriticalSection cs;
-
-	HANDLE stopperThread;
-	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
 	}
@@ -104,8 +96,10 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
-	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlMessage.SetFocus();
+		bHandled = FALSE;
+		return 0;
 	}
 		
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -129,7 +123,6 @@ public:
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(!redirect.empty()) {
 			server = redirect;
-			Lock l(cs);
 			if(client)
 				client->connect(redirect);
 		}
@@ -137,7 +130,6 @@ public:
 	}
 
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		Lock l(cs);
 		
 		if(client && client->isConnected()) {
 			clearUserList();
@@ -173,75 +165,22 @@ public:
 		return FALSE; 
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		DWORD id;
-		if(stopperThread) {
-			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-				PostMessage(WM_CLOSE);
-				return 0;
-			}
-			int i = 0;
-			while(i < ctrlUsers.GetItemCount()) {
-				delete (UserInfo*)ctrlUsers.GetItemData(i);
-				i++;
-			}
-			CloseHandle(stopperThread);
-			stopperThread = NULL;
-			bHandled = FALSE;
-		} else {
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-		
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		int i = 0;
+
+		TimerManager::getInstance()->removeListener(this);
+		ClientManager::getInstance()->putClient(client);
+		client = NULL;
+
+		while(i < ctrlUsers.GetItemCount()) {
+			delete (UserInfo*)ctrlUsers.GetItemData(i);
+			i++;
 		}
+
 		return 0;
 	}
 
-	static DWORD WINAPI stopper(void* p) {
-		HubFrame* f = (HubFrame*)p;
-
-		TimerManager::getInstance()->removeListener(f);
-		{
-			Lock l(f->cs);
-			ClientManager::getInstance()->putClient(f->client);
-			f->client = NULL;
-		}
-		f->PostMessage(WM_CLOSE);
-		return 0;
-	}
-
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-		
-		CRect rc = rect;
-		rc.bottom -=28;
-		SetSplitterRect(rc);
-		
-		rc = rect;
-		rc.bottom -= 2;
-		rc.top = rc.bottom - 22;
-		rc.left +=2;
-		rc.right -=2;
-		ctrlMessage.MoveWindow(rc);
-
-	}
-	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		ctrlMessage.SetFocus();
@@ -249,7 +188,6 @@ public:
 	}
 	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		Lock l(cs);
 		if(client) {
 			clearUserList();
 			client->connect(server);
@@ -310,7 +248,7 @@ public:
 		CRect r;
 		ctrlClient.GetClientRect(r);
 
-		if( r.PtInRect(p))
+		if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
 			noscroll = FALSE;
 		else {
 			ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
@@ -402,6 +340,20 @@ private:
 	string lastRedir;
 	string lastServer;
 
+	Client::Ptr client;
+	string server;
+	CContainedWindow ctrlMessageContainer;
+	CMenu userMenu;
+	CMenu opMenu;
+	bool op;
+	
+	CEdit ctrlClient;
+	CEdit ctrlMessage;
+	ExListViewCtrl ctrlUsers;
+	CStatusBarCtrl ctrlStatus;
+	
+	static CImageList* images;
+	
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
@@ -529,14 +481,6 @@ private:
 			PostMessage(WM_SPEAKER, STATS);
 	}
 
-	Client::Ptr client;
-	string server;
-	CContainedWindow ctrlMessageContainer;
-	CMenu userMenu;
-	CMenu opMenu;
-	bool op;
-
-	static CImageList* images;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -548,9 +492,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.55 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.56 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.56  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.55  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

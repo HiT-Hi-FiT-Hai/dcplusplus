@@ -35,16 +35,15 @@ public:
 	};
 
 	typedef Upload* Ptr;
-	typedef map<UserConnection::Ptr, Ptr> Map;
-	typedef Map::iterator MapIter;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
 	
 	Upload(ConnectionQueueItem* aQI) : Transfer(aQI) { };
 
-	void setUser(User::Ptr& aUser) { user = aUser; if(user) nick = user->getNick(); };
+	void setUser(User::Ptr& aUser) { user = aUser;};
 	User::Ptr& getUser() { return user; };
 	
 	GETSETREF(string, fileName, FileName);
-	GETSETREF(string, nick, Nick);
 private:
 	User::Ptr user;	
 
@@ -91,14 +90,11 @@ public:
 		}
 	}
 
-	void removeConnection(UserConnection::Ptr aConn);
-	void removeConnections();
-	
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
 private:
 	UserConnection::List connections;
-	Upload::Map uploads;
+	Upload::List uploads;
 	CriticalSection cs;
 	map<User::Ptr, DWORD> reservedSlots;
 
@@ -111,22 +107,25 @@ private:
 		removeConnections();
 		{
 			Lock l(cs);
-			for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
-				delete j->second;
+			for(Upload::Iter j = uploads.begin(); j != uploads.end(); ++j) {
+				delete *j;
 			}
 			uploads.clear();
 		}
 
 	}
 
+	void removeConnection(UserConnection::Ptr aConn);
+	void removeConnections();
+	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		switch(type) {
 		case TimerManagerListener::SECOND: 
 			{
 				Lock l(cs);
-				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-					fire(UploadManagerListener::TICK, i->second);
+				for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+					fire(UploadManagerListener::TICK, *i);
 				}
 			}
 			break;
@@ -179,9 +178,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.39 2002/02/25 15:39:29 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.40 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.40  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.39  2002/02/25 15:39:29  arnetheduck
  * Release 0.154, lot of things fixed...
  *

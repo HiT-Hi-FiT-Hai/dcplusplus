@@ -32,40 +32,44 @@ QueueManager* QueueManager::instance = NULL;
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 void QueueManager::onTimerMinute(DWORD /*aTick*/) {
-
-	{
-		Lock l(cs);
-
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			QueueItem* q = *i;
+	if(BOOLSETTING(AUTO_SEARCH)) {
+		{
+			Lock l(cs);
 			
-			if(q->getStatus() == QueueItem::RUNNING) {
-				continue;
-			}
-			
-			if(BOOLSETTING(AUTO_SEARCH) && q->getPriority() != QueueItem::PAUSED) {
-				bool online = false;
-				for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
-					if(((*j)->getUser()) && (*j)->getUser()->isOnline()) {
-						online = true;
-						break;
+			if(queue.size() > 0) {
+				for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+					QueueItem* q = *i;
+					
+					if(q->getStatus() == QueueItem::RUNNING) {
+						continue;
 					}
-				}
-
-				if(!online) {
-					if(search.find(q->getTarget()) == search.end()) {
-						search[q->getTarget()] = TimerManager::getTick();
+					
+					if( q->getPriority() != QueueItem::PAUSED ) {
+						bool online = false;
+						for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+							if((*j)->getUser()->isOnline()) {
+								online = true;
+								break;
+							}
+						}
+						
+						if(!online) {
+							if(search.find(q->getTarget()) == search.end()) {
+								search[q->getTarget()] = TimerManager::getTick();
+							}
+						}
 					}
 				}
 			}
 		}
-		for(map<string, DWORD>::iterator k = search.begin(); k != search.end(); ++k) {
+		
+		for(SearchMap::iterator k = search.begin(); k != search.end();) {
 			if( (k->second + 3*60*1000) < TimerManager::getTick() ) {
 				QueueItem* q = findByTarget(k->first);
 				if(q != NULL) {
 					bool online = false;
 					for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
-						if( ((*j)->getUser()) && (*j)->getUser()->isOnline()) {
+						if((*j)->getUser()->isOnline()) {
 							online = true;
 							break;
 						}
@@ -75,8 +79,14 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 						SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, 0, SearchManager::SIZE_ATLEAST);
 						search.erase(k);
 						break;
+					} else {
+						search.erase(k++);
 					}
+				} else {
+					++k;
 				}
+			} else {
+				++k;
 			}
 		}
 	}
@@ -88,21 +98,38 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 }
 
 void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
-					   bool aResume) throw(QueueException, FileException) {
+					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw(QueueException, FileException) {
 
-	// Alright, first we get a queue item, new or old...
+	// Check that the file doesn't already exist...
+	if( (aSize != -1) && (aSize <= File::getSize(aTarget)) )  {
+		throw FileException("A file of equal or larger size already exists at the target location");
+	}
+	
+	// Alright, get a queue item, new or old...
 	bool newItem = false;
-	QueueItem* q = getQueueItem(aFile, aTarget, aSize,aResume, newItem);
+	QueueItem* q = getQueueItem(aFile, aTarget, aSize, aResume, newItem);
 	QueueItem::Source* s = NULL;
 
 	{
 		Lock l(cs);
-		s = q->addSource(aUser, aFile);
+		if(!q->isSource(aUser)) {
+			s = q->addSource(aUser, aFile);
+			UserMap::iterator ui = users.find(aUser);
+			if(ui == users.end()) {
+				users[aUser] = 1;
+			} else {
+				ui->second++;
+			}
+		}
 		if(newItem) {
 			queue.push_back(q);
 		}
 	}
 
+	if(p != QueueItem::DEFAULT) {
+		q->setPriority(p);
+	}
+	
 	// Good, now notify the listeners of the changes
 	if(newItem)
 		fire(QueueManagerListener::ADDED, q);
@@ -131,10 +158,6 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 			throw QueueException("A file with a different size already exists in the queue");
 		}
 
-		if( (q->getSize() != -1) && (q->getSize() <= File::getSize(aTarget)) )  {
-			throw FileException("A file of equal or larger size already exists at the target location");
-		}
-
 		if(aFile == USER_LIST_NAME) {
 			throw QueueException("Already getting that list");
 		}
@@ -143,7 +166,7 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 	return q;
 }
 
-Download* QueueManager::getDownload(UserConnection* aUserConnection) {
+Download* QueueManager::getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi) {
 
 	QueueItem* q = NULL;
 
@@ -152,17 +175,17 @@ Download* QueueManager::getDownload(UserConnection* aUserConnection) {
 
 		// Find a suitable download for this user
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if( ((*i)->isSource(aUserConnection->getUser())) && 
+			if( ((*i)->isSource(aUser)) && 
 				((*i)->getStatus() == QueueItem::WAITING) && 
 				((*i)->getPriority() != QueueItem::PAUSED) ) {
 
 				if(q == NULL) {
 					q = *i;
-					dcdebug("Found download for %s: %s\n", aUserConnection->getUser()->getNick().c_str(), q->getTarget().c_str());
+					dcdebug("Found download for %s: %s\n", aUser->getNick().c_str(), q->getTarget().c_str());
 					continue;
 				} else if(q->getPriority() < (*i)->getPriority()) {
 					q = *i;
-					dcdebug("Found better download for %s: %s\n", aUserConnection->getUser()->getNick().c_str(), q->getTarget().c_str());
+					dcdebug("Found better download for %s: %s\n", aUser->getNick().c_str(), q->getTarget().c_str());
 				}
 			}
 		}
@@ -171,57 +194,50 @@ Download* QueueManager::getDownload(UserConnection* aUserConnection) {
 
 		// Set the flag to running, so that we don't get the same download twice...
 		q->setStatus(QueueItem::RUNNING);
-		q->setCurrent(aUserConnection->getUser());
-	}
-	fire(QueueManagerListener::STATUS_UPDATED, q);
-	return new Download(q, ConnectionManager::getInstance()->getQueueItem(aUserConnection));
-}
+		q->setCurrent(aUser);
 
-bool QueueManager::hasDownload(const User::Ptr& aUser) {
-	
-	{
-		Lock l(cs);
+		fire(QueueManagerListener::STATUS_UPDATED, q);
 		
-		// Find a suitable download for this user
-		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if( ((*i)->isSource(aUser)) && 
-				((*i)->getStatus() == QueueItem::WAITING) && 
-				((*i)->getPriority() != QueueItem::PAUSED) ) {
-				
-				return true;
-			}
-		}
+		Download* d = new Download(cqi, q->isSet(QueueItem::RESUME), q->isSet(QueueItem::USER_LIST));
+		d->setSource(q->getCurrent()->getPath());
+		d->setTarget(q->getTarget());
+		d->setSize(q->getSize());
+		return d;
 	}
-
-	return false;
 }
 
 void QueueManager::putDownload(Download* aDownload, bool finished /* = false */) {
+	{
+		Lock l(cs);
+		QueueItem* q = findByTarget(aDownload->getTarget());
 
-	if(finished) {
-		aDownload->getQueueItem()->setStatus(QueueItem::FINISHED);
-		fire(QueueManagerListener::STATUS_UPDATED, aDownload->getQueueItem());
+		if(q) {
+			if(finished) {
+	
+				if(q->isSet(QueueItem::USER_LIST) || BOOLSETTING(REMOVE_FINISHED)) {
+					dcassert(find(queue.begin(), queue.end(), q) != queue.end());
+					removeFromUserMap(q);
+					queue.erase(find(queue.begin(), queue.end(), q));
+					
+					fire(QueueManagerListener::REMOVED, q);
+					
+					delete q;
+					delete aDownload;
+				} else {
+					q->setStatus(QueueItem::FINISHED);
+					fire(QueueManagerListener::STATUS_UPDATED, q);
+				}
 
-		if(aDownload->isSet(Download::USER_LIST) || BOOLSETTING(REMOVE_FINISHED)) {
-			{
-				Lock l(cs);
-				dcassert(find(queue.begin(), queue.end(), aDownload->getQueueItem()) != queue.end());
-
-				queue.erase(find(queue.begin(), queue.end(), aDownload->getQueueItem()));
+				dirty = true;
+				
+			} else {
+				q->setStatus(QueueItem::WAITING);
+				q->setCurrent(NULL);
+				fire(QueueManagerListener::STATUS_UPDATED, q);
+				delete aDownload;
 			}
-
-			fire(QueueManagerListener::REMOVED, aDownload->getQueueItem());
 			
-			delete aDownload->getQueueItem();
-			delete aDownload;
 		}
-		dirty = true;
-		
-	} else {
-		aDownload->getQueueItem()->setStatus(QueueItem::WAITING);
-		aDownload->getQueueItem()->setCurrent(NULL);
-		fire(QueueManagerListener::SOURCES_UPDATED, aDownload->getQueueItem());
-		delete aDownload;
 	}
 }
 
@@ -232,7 +248,7 @@ void QueueManager::remove(const string& aTarget) throw(QueueException) {
 	QueueItem* q = findByTarget(aTarget);
 	if(q != NULL) {
 		if(q->getStatus() == QueueItem::RUNNING) {
-			DownloadManager::getInstance()->removeDownload(q);
+			DownloadManager::getInstance()->abortDownload(q->getTarget());
 		}
 		
 		QueueItem::Iter i = find(queue.begin(), queue.end(), q);
@@ -240,20 +256,9 @@ void QueueManager::remove(const string& aTarget) throw(QueueException) {
 			queue.erase(i);
 			fire(QueueManagerListener::REMOVED, q);
 			dirty = true;
+			removeFromUserMap(q);
 			delete q;
 		}
-	}
-}
-
-void QueueManager::remove(QueueItem* aQI) throw(QueueException) {
-	dcassert(aQI != NULL);
-	
-	QueueItem::Iter i = find(queue.begin(), queue.end(), aQI);
-	if(i != queue.end()) {
-		queue.erase(i);
-		fire(QueueManagerListener::REMOVED, aQI);
-		dirty = true;
-		delete aQI;
 	}
 }
 
@@ -266,14 +271,23 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, bool re
 			dcassert(q->getCurrent());
 			if(q->getCurrent()->getUser() == aUser) {
 				// Oops...
-				DownloadManager::getInstance()->removeDownload(q);
+				DownloadManager::getInstance()->abortDownload(q->getTarget());
 			}
 		}
 		if(q->isSet(QueueItem::USER_LIST)) {
-			remove(q);
+			remove(q->getTarget());
 		} else {
 			q->removeSource(aUser);
 			fire(QueueManagerListener::SOURCES_UPDATED, q);
+
+			UserMap::iterator j = users.find(aUser);
+			dcassert(j != users.end());
+			if(j->second == 1) {
+				users.erase(j); 
+			} else {
+				j->second--;
+			}
+			
 			dirty = true;
 		}
 	}
@@ -332,16 +346,14 @@ void QueueManager::load(SimpleXML* aXml) {
 			const string& target = aXml->getChildAttrib("Target");
 			bool resume = aXml->getBoolChildAttrib("Resume");
 			LONGLONG size = aXml->getLongLongChildAttrib("Size");
+			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib("Priority");
 			aXml->stepIn();
 			while(aXml->findChild("Source")) {
 				const string& nick = aXml->getChildAttrib("Nick");
 				const string& path = aXml->getChildAttrib("Path");
 				
-				/** @todo Remove this when a few versions have passed (from 0.14...) */
-				const string& file = aXml->getChildAttrib("FileName");
-				
 				try {
-					add(path + file, size, ClientManager::getInstance()->getUser(nick), target, resume);
+					add(path, size, ClientManager::getInstance()->getUser(nick), target, resume, p);
 				} catch(Exception e) {
 					// ...
 				}
@@ -381,11 +393,33 @@ void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
 	}
 }
 
+void QueueManager::userUpdated(User::Ptr& aUser) {
+	bool connect = false;
+	{
+		Lock l(cs);
+		if(users.find(aUser) != users.end()) {
+			for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+				if((*i)->isSource(aUser)) {
+					fire(QueueManagerListener::SOURCES_UPDATED, *i);
+					if(aUser->isOnline())
+						connect = true;
+				}
+			}
+		}
+	}
+
+	if(connect)
+		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+}
+
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.9 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.10 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.10  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.9  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

@@ -41,28 +41,28 @@ public:
 	enum Types {
 		
 		BAD_PASSWORD,
-			CONNECT_TO_ME,
-			CONNECTED,
-			CONNECTING,
-			FAILED,
-			FORCE_MOVE,
-			GET_PASSWORD,
-			HELLO,
-			HUB_NAME,
-			HUB_FULL,
-			LOCK,
-			LOGGED_IN,
-			MESSAGE,
-			MY_INFO,
-			NICK_LIST,
-			OP_LIST,
-			PRIVATE_MESSAGE,
-			REV_CONNECT_TO_ME,
-			SEARCH,
-			QUIT,
-			UNKNOWN,
-			VALIDATE_DENIED,
-			SEARCH_FLOOD
+		CONNECT_TO_ME,
+		CONNECTED,
+		CONNECTING,
+		FAILED,
+		FORCE_MOVE,
+		GET_PASSWORD,
+		HELLO,
+		HUB_NAME,
+		HUB_FULL,
+		LOCK,
+		LOGGED_IN,
+		MESSAGE,
+		MY_INFO,
+		NICK_LIST,
+		OP_LIST,
+		PRIVATE_MESSAGE,
+		REV_CONNECT_TO_ME,
+		SEARCH,
+		QUIT,
+		UNKNOWN,
+		VALIDATE_DENIED,
+		SEARCH_FLOOD
 	};
 	
 	virtual void onAction(Types, Client*) { };
@@ -224,11 +224,11 @@ public:
 	void setNick(const string& aNick) {
 		nick = aNick;
 	}
-
+	
 	const string& getIp() {
 		return socket.getIp();
 	}
-
+	
 	GETSET(bool, op, Op);
 	GETSETREF(string, defpassword, Password);
 private:
@@ -244,7 +244,10 @@ private:
 
 	User::NickMap users;
 
-	map<string, int> searchFlood;
+	typedef HASH_MAP<string, int> FloodMap;
+	typedef FloodMap::iterator FloodIter;
+	FloodMap searchFlood;
+	
 	DWORD lastSearchFlood;
 
 	Client() : lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
@@ -318,9 +321,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.40 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: Client.h,v 1.41 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.41  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.40  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

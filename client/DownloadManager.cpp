@@ -21,10 +21,8 @@
 
 #include "DownloadManager.h"
 #include "ConnectionManager.h"
-#include "Client.h"
 #include "User.h"
-#include "ClientManager.h"
-#include "SimpleXML.h"
+#include "QueueManager.h"
 
 DownloadManager* DownloadManager::instance = NULL;
 
@@ -32,102 +30,52 @@ void DownloadManager::onTimerSecond(DWORD /*aTick*/) {
 	Lock l(cs);
 
 	// Tick each ongoing download
-	for(Download::MapIter m = running.begin(); m != running.end(); ++m) {
-		if(m->second->getPos() > 0) {
-			fire(DownloadManagerListener::TICK, m->second);
+	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
+		if((*i)->getPos() > 0) {
+			fire(DownloadManagerListener::TICK, *i);
 		}
 	}
 }
-
-void DownloadManager::removeDownload(QueueItem* aItem) {
-	UserConnection* conn = NULL;
-	Download* d = NULL;
-	{
-		Lock l(cs);
-		
-		// Check the running downloads...
-		for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
-			if(j->second->getQueueItem() == aItem) {
-				conn = j->first;
-				d = j->second;
-				running.erase(j);
-				break;
-			}
-		}
-	}
-	
-	dcassert(conn);
-	removeConnection(conn);
-	dcassert(d);
-	QueueManager::getInstance()->putDownload(d);
-}
-
-void DownloadManager::removeDownload(UserConnection* aConn, bool pause) {
-	Download* d = NULL;
-	{
-		Lock l(cs);
-		
-		// Check the running downloads...
-		for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
-			if(j->second->getCQI()->getConnection() == aConn) {
-				UserConnection* conn = j->first;
-				d = j->second;
-				running.erase(j);
-				removeConnection(conn);
-				if(pause) {
-					QueueManager::getInstance()->setPriority(j->second->getQueueItem()->getTarget(), QueueItem::PAUSED);
-				}
-				break;
-			}
-		}
-	}
-	
-	dcassert(d);
-	QueueManager::getInstance()->putDownload(d);
-}
-
 
 void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
+	dcassert(aConn->getDownload() == NULL);
 	aConn->removeListener(this);
 	ConnectionManager::getInstance()->putDownloadConnection(aConn, reuse);
-	
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
-	dcdebug("Checking downloads...");
+	Download* d = QueueManager::getInstance()->getDownload(aConn->getUser(), ConnectionManager::getInstance()->getQueueItem(aConn));
 	
-	Download* d = QueueManager::getInstance()->getDownload(aConn);
-
 	if(d) {
+		dcassert(aConn->getDownload() == NULL);
+		aConn->setDownload(d);
+		aConn->setState(UserConnection::STATE_FILELENGTH);
 		{
 			Lock l(cs);
-
-			dcassert(running.find(aConn) == running.end());
-			running[aConn] = d;
-
-			if(d->isSet(Download::RESUME)) {
-				LONGLONG x = File::getSize(d->getTarget());
-				if(x < (LONGLONG)SETTING(ROLLBACK)) {
-					d->setPos(0);
-				} else {
-					d->setPos(x - (LONGLONG)SETTING(ROLLBACK));
-					d->setFlag(Download::ROLLBACK);
-				}
-				
-			} else {
-				d->setPos(0);
-			}
-
+			downloads.push_back(d);
 		}
-		aConn->setState(UserConnection::STATE_FILELENGTH);
-		aConn->get(d->getQueueItem()->getSourcePath(aConn->getUser()), d->getPos());
-		dcdebug("Found!\n");
+
+		if(d->isSet(Download::RESUME)) {
+			LONGLONG x = File::getSize(d->getTarget());
+
+			dcassert( (d->getSize() != -1));
+			if( ( (SETTING(ROLLBACK)*2) > x) || (d->getSize() < (SETTING(ROLLBACK)*2) ) ) {
+				d->setPos(0);
+			} else {
+				d->setPos(x - (SETTING(ROLLBACK)*2) );
+				d->setRollbackBuffer(SETTING(ROLLBACK));
+				d->setFlag(Download::ROLLBACK);
+			}
+		} else {
+			d->setPos(0);
+		}
+		
+		
+		aConn->get(d->getSource(), d->getPos());
 		return;
 	}
+
 	// Connection not needed any more, return it to the ConnectionManager...
-	dcdebug("Not found!\n");
-	
-	// No more downloads for this user...
 	removeConnection(aConn, true);
 }
 
@@ -172,54 +120,34 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 
 	LONGLONG fileLength = Util::toInt64(aFileLength);
 	
-	cs.enter();
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
 
-	Download::MapIter i = running.find(aSource);
-	dcassert(i != running.end());
-
-	Download* d = i->second;
-	
 	Util::ensureDirectory(d->getTarget());
 	
 	File* file;
 	try {
 		file = new File(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
 	} catch(FileException e) {
-		running.erase(i);
-		cs.leave();
-		
 		fire(DownloadManagerListener::FAILED, d, "Could not open target file:" + e.getError());
-		QueueManager::getInstance()->putDownload(d);
+		aSource->setDownload(NULL);
+		removeDownload(d);
 		removeConnection(aSource);
 		return;
 	}
-	
-	d->setFile(file, true);
-	
-	if(d->isSet(Download::RESUME) && d->isSet(Download::ROLLBACK)) {
-		if(fileLength > SETTING(ROLLBACK)) {
-			d->setPos(file->getSize() - SETTING(ROLLBACK), true);
-			d->setRollbackBuffer(SETTING(ROLLBACK));
-		} else {
-			d->setPos(0, true);
-			d->setRollbackBuffer((int)fileLength);
-			d->unsetFlag(Download::ROLLBACK);
-		}
-	}
-	
+
+	dcassert(d->getPos() != -1);
+	file->setPos(d->getPos());
+	d->setFile(file);
 	d->setSize(fileLength);
-	
+
 	if(d->getSize() <= d->getPos()) {
-		running.erase(i);
-		cs.leave();
-		
-		QueueManager::getInstance()->putDownload(d, true);
+		aSource->setDownload(NULL);
+		removeDownload(d, true);
 		removeConnection(aSource);
 	} else {
 		d->setStart(TimerManager::getTick());
 		aSource->setState(UserConnection::STATE_DONE);
-
-		cs.leave();
 		
 		fire(DownloadManagerListener::STARTING, d);
 		
@@ -230,41 +158,33 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 
 void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
-	dcassert(i != running.end());
 
-	Download* d = i->second;
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
 
 	try {
 		if(d->isSet(Download::ROLLBACK)) {
 			if(!checkRollback(d, aData, aLen)) {
-				running.erase(i);
-				cs.leave();
-
 				fire(DownloadManagerListener::FAILED, d, "Rollback inconsistency, existing file does not match the one being downloaded");
 				
 				string target = d->getTarget();
 				
-				QueueManager::getInstance()->putDownload(d);
+				aSource->setDownload(NULL);
+				removeDownload(d);				
+
 				QueueManager::getInstance()->removeSource(target, aSource->getUser());
-				
 				removeConnection(aSource);
 				return;
-			} else {
-				cs.leave();
-			}
+			} 
 		} else {
 			d->getFile()->write(aData, aLen);
-			cs.leave();
 		}
 		d->addPos(aLen);
 	} catch(FileException e) {
-		running.erase(i);
 		fire(DownloadManagerListener::FAILED, d, e.getError());
-		cs.leave();
 		
-		QueueManager::getInstance()->putDownload(d);
+		aSource->setDownload(NULL);
+		removeDownload(d);
 		removeConnection(aSource);
 		return;
 	}
@@ -274,24 +194,18 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
-	Download* d = NULL;
-	{
-		Lock l(cs);
-
-		Download::MapIter i = running.find(aSource);
-		dcassert(i != running.end());
-		
-		d = i->second;
-		running.erase(i);
-		
-	}
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
 
 	dcassert(d->getPos() == d->getSize());
 	d->setFile(NULL);
 	
 	dcdebug("Download finished: %s, size %I64d\n", d->getTarget().c_str(), d->getSize());
+
 	fire(DownloadManagerListener::COMPLETE, d);
-	QueueManager::getInstance()->putDownload(d, true);
+	
+	aSource->setDownload(NULL);
+	removeDownload(d, true);
 	checkDownloads(aSource);
 }
 
@@ -301,53 +215,68 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 		return;
 	}
 
-	Download* d = NULL;
-	{
-		Lock l(cs);
-		Download::MapIter i = running.find(aSource);
-		dcassert(i != running.end());
-		d = i->second;
-		running.erase(i);
-	}
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
 
 	fire(DownloadManagerListener::FAILED, d, "No slots available");
-	QueueManager::getInstance()->putDownload(d);
+
+	aSource->setDownload(NULL);
+	removeDownload(d);
 	removeConnection(aSource);
 }
 
 void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
-	
-	if(i == running.end()) {
-		cs.leave();
+	Download* d = aSource->getDownload();
+
+	if(d == NULL) {
 		removeConnection(aSource);
 		return;
 	}
-
-	Download* d = i->second;
-	running.erase(i);
-
-	cs.leave();
 	
 	d->setFile(NULL);
 	fire(DownloadManagerListener::FAILED, d, aError);
 
 	string target = d->getTarget();
-	QueueManager::getInstance()->putDownload(d);
-
-	if(BOOLSETTING(REMOVE_NOT_AVAILABLE) && (aError == "File Not Available")) {
-		QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
+	aSource->setDownload(NULL);
+	removeDownload(d);
+	
+	if(aError == "File Not Available") {
+		if(SETTING(REMOVE_NOT_AVAILABLE))
+			QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
 	}
 
 	removeConnection(aSource);
 }
 
+void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
+	{
+		Lock l(cs);
+		dcassert(find(downloads.begin(), downloads.end(), d) != downloads.end());
+		downloads.erase(find(downloads.begin(), downloads.end(), d));
+	}
+	QueueManager::getInstance()->putDownload(d, finished);
+	
+}
+
+void DownloadManager::abortDownload(const string& aTarget) {
+	Lock l(cs);
+	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
+		Download* d = *i;
+		if(d->getTarget() == aTarget) {
+			d->getCQI()->getConnection()->disconnect();
+			break;
+		}
+	}
+}
+
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.49 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.50 2002/03/04 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.50  2002/03/04 23:52:30  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.49  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

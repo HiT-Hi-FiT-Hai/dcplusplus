@@ -45,11 +45,7 @@ public:
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-#ifdef HAS_HASH
-	typedef hash_map<string,Ptr> NickMap;
-#else
-	typedef map<string,Ptr> NickMap;
-#endif
+	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 
 	static Ptr nuser;
@@ -104,9 +100,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.12 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: User.h,v 1.13 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.13  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.12  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

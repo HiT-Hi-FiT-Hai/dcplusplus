@@ -23,29 +23,30 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "Exception.h"
 #include "UserConnection.h"
 #include "Util.h"
 #include "TimerManager.h"
-#include "QueueManager.h"
 
-STANDARD_EXCEPTION(DownloadException);
+class QueueItem;
+class ConnectionQueueItem;
 
 class Download : public Transfer, public Flags {
 public:
 	typedef Download* Ptr;
-	typedef map<UserConnection::Ptr, Ptr> Map;
-	typedef Map::iterator MapIter;
-	
-	Download(QueueItem* aQI, ConnectionQueueItem* aCqi) : Transfer(aCqi), queueItem(aQI), rollbackBuffer(NULL), rollbackSize(0) { 
-		if(aQI->isSet(QueueItem::USER_LIST))
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+
+	Download(ConnectionQueueItem* aCqi, bool aResume, bool aUserList) : Transfer(aCqi), rollbackBuffer(NULL), rollbackSize(0) { 
+		if(aUserList)
 			setFlag(Download::USER_LIST);
-		if(aQI->isSet(QueueItem::RESUME))
+		if(aResume)
 			setFlag(Download::RESUME);
 	};
 	~Download() {
 		if(rollbackBuffer)
 			delete rollbackBuffer;
+
+		
 	}
 
 	enum {
@@ -69,7 +70,6 @@ public:
 
 	int getRollbackSize() { return rollbackSize; };
 
-	const string& getTarget() { dcassert(getQueueItem()); return getQueueItem()->getTarget(); };
 	string getTargetFileName() {
 		int i = getTarget().rfind('\\');
 		if(i != string::npos) {
@@ -78,10 +78,13 @@ public:
 			return getTarget();
 		}
 	};
-	GETSET(QueueItem*, queueItem, QueueItem);
+
+	GETSETREF(string, source, Source);
+	GETSETREF(string, target, Target);
 private:
 	BYTE* rollbackBuffer;
 	int rollbackSize;
+
 };
 
 
@@ -104,35 +107,27 @@ public:
 
 	virtual void onAction(Types, Download*) { };
 	virtual void onAction(Types, Download*, const string&) { };
-	
 };
 
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
 {
 public:
 
-	bool isConnected(const User::Ptr& aUser) {
-		Lock l(cs);
-		for(Download::MapIter i = running.begin(); i != running.end(); ++i) {
-			if(i->first->getUser() == aUser)
-				return true;
-		}
-		return false;
-	}
-
-	void removeDownload(QueueItem* aItem);
-	void removeDownload(UserConnection* aConn, bool pause = false);
-
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		checkDownloads(conn);
 	}
 
+	void abortDownload(const string& aTarget);
 private:
+	
+	CriticalSection cs;
+	Download::List downloads;
 	
 	bool checkRollback(Download* aDownload, const BYTE* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
-
+	void removeDownload(Download* aDown, bool finished = false);
+	
 	friend class Singleton<DownloadManager>;
 	DownloadManager() { 
 		TimerManager::getInstance()->addListener(this);
@@ -140,24 +135,8 @@ private:
 	};
 	virtual ~DownloadManager() {
 		TimerManager::getInstance()->removeListener(this);
-
-		Download* d = NULL;
-		{
-			Lock l(cs);
-			
-			// Check the running downloads...
-			for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
-				UserConnection* conn = j->first;
-				d = j->second;
-				removeConnection(conn);
-				QueueManager::getInstance()->putDownload(d);
-			}
-		}
+		dcassert(downloads.empty());
 	};
-	
-	CriticalSection cs;
-	
-	Download::Map running;
 	
 	void checkDownloads(UserConnection* aConn);
 	
@@ -211,9 +190,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.34 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.35 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.35  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.34  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

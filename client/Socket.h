@@ -113,7 +113,7 @@ public:
 	Socket(const string& ip, const string& port) throw(SocketException);
 	Socket(const string& ip, short port) throw(SocketException);
 	virtual ~Socket() {
-		disconnect();
+		Socket::disconnect();
 		
 	};
 	virtual void bind(short aPort);
@@ -226,9 +226,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.22 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: Socket.h,v 1.23 2002/03/04 23:52:31 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.23  2002/03/04 23:52:31  arnetheduck
+ * Updates and bugfixes, new user handling almost finished...
+ *
  * Revision 1.22  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *
