@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -102,5 +102,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.6 2004/10/14 18:12:56 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.7 2005/01/05 19:30:19 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,6 +158,6 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.28 2005/01/01 18:09:54 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.29 2005/01/05 19:30:26 arnetheduck Exp $
  */
 

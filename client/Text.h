@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,5 +121,5 @@ private:
 
 /**
  * @file
- * $Id: Text.h,v 1.6 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: Text.h,v 1.7 2005/01/05 19:30:24 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
-* Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+* Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -164,6 +164,6 @@ private:
 
 /**
 * @file
-* $Id: PublicHubsListDlg.h,v 1.3 2004/11/13 11:54:11 arnetheduck Exp $
+* $Id: PublicHubsListDlg.h,v 1.4 2005/01/05 19:30:21 arnetheduck Exp $
 */
 

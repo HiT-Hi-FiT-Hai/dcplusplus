@@ -2,8 +2,7 @@ DC++ Readme
 
 --------------------------------------------------
 DC++
-Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
-
+Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail com
 License
 
 This program is licensed under GPL-2 with the notable exception

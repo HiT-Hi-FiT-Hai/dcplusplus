@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -226,5 +226,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.56 2004/12/04 00:33:39 arnetheduck Exp $
+ * $Id: Socket.h,v 1.57 2005/01/05 19:30:25 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,5 +60,5 @@ template<class T> T* Singleton<T>::instance = NULL;
 
 /**
  * @file
- * $Id: Singleton.h,v 1.8 2004/12/04 00:33:38 arnetheduck Exp $
+ * $Id: Singleton.h,v 1.9 2005/01/05 19:30:25 arnetheduck Exp $
  */

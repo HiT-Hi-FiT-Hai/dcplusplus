@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -105,7 +105,7 @@ LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.19 2004/09/26 07:55:35 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.20 2005/01/05 19:30:19 arnetheduck Exp $
  */
 
 

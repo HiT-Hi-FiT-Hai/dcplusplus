@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -824,5 +824,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.36 2004/10/22 17:03:33 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.37 2005/01/05 19:30:21 arnetheduck Exp $
  */

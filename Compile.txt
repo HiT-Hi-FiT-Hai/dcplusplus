@@ -58,7 +58,7 @@ original distribution. I will then consider whether I like the patch or not base
 completely random, which just might be the case. Popular reasons for rejecting a patch include, but are not limited to,
 ugly code, abusable features, feature that I don't like that bloat the applications and incompatibility with other 
 modifications I've already done. 
-To increase the chances of your patch being accepted, mail them to me (j_s@telia.com) as diffs against the latest 
+To increase the chances of your patch being accepted, mail them to me (arnetheduck on gmail com) as diffs against the latest 
 code you can find (in the cvs repository on sourceforge most probably). You can find a lot of 
 information about diff and patch by googling for it. I like unified format (diff -uNr). 
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,6 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 
 /**
  * @file
- * $Id: ServerSocket.cpp,v 1.14 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.15 2005/01/05 19:30:27 arnetheduck Exp $
  */
 

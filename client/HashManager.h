@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -267,5 +267,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.25 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.26 2005/01/05 19:30:27 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -960,7 +960,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = links.discuss; break;
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
-	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
+	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=arnetheduck%40gmail.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
 	default: dcassert(0);
 	}
 
@@ -1183,5 +1183,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.80 2004/12/29 19:52:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.81 2005/01/05 19:30:21 arnetheduck Exp $
  */

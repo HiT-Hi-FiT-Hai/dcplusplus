@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,5 +46,5 @@ public:
 
 /**
 * @file
-* $Id: ConnectionManagerListener.h,v 1.4 2004/09/06 12:32:41 arnetheduck Exp $
+* $Id: ConnectionManagerListener.h,v 1.5 2005/01/05 19:30:25 arnetheduck Exp $
 */

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -213,6 +213,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.39 2004/12/04 00:33:39 arnetheduck Exp $
+ * $Id: User.cpp,v 1.40 2005/01/05 19:30:26 arnetheduck Exp $
  */
 

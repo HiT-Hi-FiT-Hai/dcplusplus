@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001-2004 Jacek Sieka, j_s at telia com
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -470,6 +470,6 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.33 2004/11/29 23:21:20 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.34 2005/01/05 19:30:20 arnetheduck Exp $
  */
 
