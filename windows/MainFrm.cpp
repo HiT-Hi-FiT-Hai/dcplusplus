@@ -43,6 +43,7 @@
 #include "../client/UploadManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/SimpleXML.h"
+#include "../client/ShareManager.h"
 
 MainFrame::~MainFrame() {
 	m_CmdBar.m_hImageList = NULL;
@@ -793,6 +794,15 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
+LRESULT MainFrame::onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ShareManager::getInstance()->setDirty();
+	ShareManager::getInstance()->refresh(true);
+	string line = "[" + Util::getShortTimeString() + "] " +
+		STRING(FILE_LIST_REFRESHED);
+	ctrlStatus.SetText(0, line.c_str());
+	return 0;
+}
+
 LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	if (lParam == WM_LBUTTONUP) {
@@ -913,6 +923,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.38 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.39 2003/12/02 15:40:24 arnetheduck Exp $
  */
 

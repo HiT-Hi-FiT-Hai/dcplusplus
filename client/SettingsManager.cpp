@@ -52,7 +52,7 @@ const string SettingsManager::settingTags[] =
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
-	"HubUserCommands",
+	"HubUserCommands", "AutoSearchAutoMatch",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -99,7 +99,7 @@ SettingsManager::SettingsManager()
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
 	setDefault(HUBLIST_SERVERS, "http://www.hublist.org/PublicHubList.config.bz2");
-	setDefault(DOWNLOAD_SLOTS, 0);
+	setDefault(DOWNLOAD_SLOTS, 3);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
 	setDefault(LOG_DIRECTORY, Util::getAppPath() + "Logs\\");
 	setDefault(LOG_UPLOADS, false);
@@ -145,6 +145,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(HUB_USER_COMMANDS, true);
+	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -283,6 +284,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.58 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.59 2003/12/02 15:40:23 arnetheduck Exp $
  */
 

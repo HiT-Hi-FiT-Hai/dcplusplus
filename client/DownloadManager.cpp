@@ -97,10 +97,11 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* 
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 
-	if( ((SETTING(DOWNLOAD_SLOTS) != 0) && getDownloads() >= SETTING(DOWNLOAD_SLOTS)) ||
-		((SETTING(MAX_DOWNLOAD_SPEED) != 0 && getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)) ) ) {
-		
-		if(!QueueManager::getInstance()->hasDownload(aConn->getUser(), QueueItem::HIGHEST)) {
+	bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= SETTING(DOWNLOAD_SLOTS));
+	bool speedFull = (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
+	if( slotsFull || speedFull ) {
+		bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= (SETTING(DOWNLOAD_SLOTS)+3));
+		if(extraFull || !QueueManager::getInstance()->hasDownload(aConn->getUser(), QueueItem::HIGHEST)) {
 			removeConnection(aConn);
 			return;
 		}
@@ -668,5 +669,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.83 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.84 2003/12/02 15:40:23 arnetheduck Exp $
  */

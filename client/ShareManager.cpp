@@ -180,7 +180,7 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		}
 		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			if(Util::stricmp(d, i->first)) {
+			if(Util::stricmp(d, i->first) == 0) {
 				// Trying to share an already shared directory
 				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
 			} else if(Util::findSubString(d, i->first + PATH_SEPARATOR) != string::npos) {
@@ -743,6 +743,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.67 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.68 2003/12/02 15:40:24 arnetheduck Exp $
  */
 

@@ -188,6 +188,12 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
+LRESULT PublicHubsFrame::onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
+	bHandled = true;
+	ctrlFilter.SetFocus();
+	return 0;
+}
+
 LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
@@ -392,6 +398,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.16 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.17 2003/12/02 15:40:24 arnetheduck Exp $
  */
 

@@ -51,8 +51,7 @@ public:
 		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0) {}
 
 	// Prepare search
-		void Prepare(StringMap& params)
-		{
+		void Prepare(StringMap& params) {
 			// Prepare quick search of substrings
 			stringSearchList.clear();
 
@@ -61,10 +60,8 @@ public:
 
 			// Split into substrings
 			StringTokenizer st(stringParams, ' ');
-			for(StringList::iterator i = st.getTokens().begin(); i != st.getTokens().end(); ++i)
-			{
-				if(i->size() > 0)
-				{
+			for(StringList::iterator i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+				if(i->size() > 0) {
 					// Add substring search
 					stringSearchList.push_back(StringSearch(*i));
 				}
@@ -78,37 +75,28 @@ public:
 	bool isActive;
 
 	// Search source type
-	enum SourceType
-	{
+	enum SourceType {
 		TypeFirst = 0,
 		OnlyFile = TypeFirst,
 		OnlyDirectory,
 		FullPath,
 		TypeLast
 	} sourceType;
-	SourceType StringToSourceType(const string& s)
-	{
-		if(Util::stricmp(s.c_str(), "Filename") == 0)
-		{
+
+	SourceType StringToSourceType(const string& s) {
+		if(Util::stricmp(s.c_str(), "Filename") == 0) {
 			return OnlyFile;
-		}
-		else if(Util::stricmp(s.c_str(), "Directory") == 0)
-		{
+		} else if(Util::stricmp(s.c_str(), "Directory") == 0) {
 			return OnlyDirectory;
-		}
-		else if(Util::stricmp(s.c_str(), "Full Path") == 0)
-		{
+		} else if(Util::stricmp(s.c_str(), "Full Path") == 0) {
 			return FullPath;
-		}
-		else
-		{
+		} else {
 			return OnlyFile;
 		}
 	}
-	string SourceTypeToString(SourceType t)
-	{
-		switch(t)
-		{
+
+	string SourceTypeToString(SourceType t) {
+		switch(t) {
 		default:
 		case OnlyFile:		return "Filename";
 		case OnlyDirectory:	return "Directory";
@@ -120,44 +108,28 @@ public:
 	// Negative values means do not check.
 	int64_t minFileSize;
 	int64_t maxFileSize;
-	enum SizeType
-	{
+	enum SizeType {
 		SizeBytes     = TypeFirst,
 		SizeKiloBytes,
 		SizeMegaBytes,
 		SizeGigaBytes
 	};
 	SizeType typeFileSize;
-	SizeType StringToSizeType(const string& s)
-	{
-		if(Util::stricmp(s.c_str(), "B") == 0)
-		{
+	SizeType StringToSizeType(const string& s) {
+		if(Util::stricmp(s.c_str(), "B") == 0) {
 			return SizeBytes;
-		}
-		else 
-		if(Util::stricmp(s.c_str(), "kB") == 0)
-		{
+		} else if(Util::stricmp(s.c_str(), "kB") == 0) {
 			return SizeKiloBytes;
-		}
-		else 
-		if(Util::stricmp(s.c_str(), "MB") == 0)
-		{
+		} else if(Util::stricmp(s.c_str(), "MB") == 0) {
 			return SizeMegaBytes;
-		}
-		else 
-		if(Util::stricmp(s.c_str(), "GB") == 0)
-		{
+		} else if(Util::stricmp(s.c_str(), "GB") == 0) {
 			return SizeGigaBytes;
-		}
-		else
-		{
+		} else {
 			return SizeBytes;
 		}
 	}
-	string SizeTypeToString(SizeType t)
-	{
-		switch(t)
-		{
+	string SizeTypeToString(SizeType t) {
+		switch(t) {
 		default:
 		case SizeBytes:		return "B";
 		case SizeKiloBytes:	return "kB";
@@ -165,10 +137,8 @@ public:
 		case SizeGigaBytes:	return "GB";
 		}
 	}
-	string SizeTypeToStringInternational(SizeType t)
-	{
-		switch(t)
-		{
+	string SizeTypeToStringInternational(SizeType t) {
+		switch(t) {
 		default:
 		case SizeBytes:		return CSTRING(B);
 		case SizeKiloBytes:	return CSTRING(KB);
@@ -176,10 +146,8 @@ public:
 		case SizeGigaBytes:	return CSTRING(GB);
 		}
 	}
-	int64_t GetSizeBase()
-	{
-		switch(typeFileSize)
-		{
+	int64_t GetSizeBase() {
+		switch(typeFileSize) {
 		default:
 		case SizeBytes:		return (int64_t)1;
 		case SizeKiloBytes:	return (int64_t)1024;
@@ -193,32 +161,26 @@ public:
 	unsigned long ddIndex;
 
 	// Search for file match 
-	bool MatchesFile(const string& f, const string& fp, int64_t size)
-	{
+	bool MatchesFile(const string& f, const string& fp, int64_t size) {
 		// Check status
-		if(!isActive)
-		{
+		if(!isActive) {
 			return false;
 		}
 
 		// Check size for files
-		if(size >= 0 && (sourceType == OnlyFile || sourceType == FullPath))
-		{
-			if(minFileSize >= 0 && size < minFileSize * GetSizeBase())
-			{
+		if(size >= 0 && (sourceType == OnlyFile || sourceType == FullPath)) {
+			if(minFileSize >= 0 && size < minFileSize * GetSizeBase()) {
 				// Too small
 				return false;
 			}
-			if(maxFileSize >= 0 && size > maxFileSize * GetSizeBase())
-			{
+			if(maxFileSize >= 0 && size > maxFileSize * GetSizeBase()) {
 				// Too large
 				return false;
 			}
 		}
 
 		// Do search
-		switch(sourceType)
-		{
+		switch(sourceType) {
 		default:
 		case OnlyDirectory:	return false;
 		case OnlyFile:		return SearchAll(f);
@@ -227,15 +189,12 @@ public:
 	}
 
 	// Search for directory match 
-	bool MatchesDirectory(const string& d)
-	{
+	bool MatchesDirectory(const string& d) {
 		// Check status
-		if(!isActive)
-		{
+		if(!isActive) {
 			return false;
 		}
-		if(sourceType != OnlyDirectory)
-		{
+		if(sourceType != OnlyDirectory) {
 			return false;
 		}
 
@@ -247,13 +206,10 @@ private:
 
 	// Substring searches
 	StringSearch::List stringSearchList;
-	bool SearchAll(const string& s)
-	{
+	bool SearchAll(const string& s) {
 		// Match all substrings
-		for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i)
-		{
-			if(!i->match(s))
-			{
+		for(StringSearch::Iter i = stringSearchList.begin(); i != stringSearchList.end(); ++i) {
+			if(!i->match(s)) {
 				return false;
 			}
 		}
@@ -271,8 +227,7 @@ class ADLSearchManager : public Singleton<ADLSearchManager>
 {
 public:
 	// Destination directory indexing
-	struct DestDir
-	{
+	struct DestDir {
 		string name;
 		DirectoryListing::Directory* dir;
 		DirectoryListing::Directory* subdir;
@@ -324,8 +279,7 @@ public:
 				copyFile->setAdls(true);
 				destDirVector[is->ddIndex].dir->files.insert(copyFile);
 				destDirVector[is->ddIndex].fileAdded = true;
-				if(breakOnFirst)
-				{
+				if(breakOnFirst) {
 					// Found a match, search no more
 					break;
 				}
@@ -359,8 +313,7 @@ public:
 				destDirVector[is->ddIndex].subdir = 
 					new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
 				destDirVector[is->ddIndex].dir->directories.insert(destDirVector[is->ddIndex].subdir);
-				if(breakOnFirst)
-				{
+				if(breakOnFirst) {
 					// Found a match, search no more
 					break;
 				}
@@ -440,10 +393,9 @@ public:
 	}
 };
 
-
 #endif
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.9 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.10 2003/12/02 15:40:23 arnetheduck Exp $
  */

@@ -308,6 +308,7 @@
 #define IDC_FOLLOW                      32784
 #define IDC_SEND_MESSAGE                32786
 #define IDC_DELETE_WORD                 32787
+#define IDC_FILTER_FOCUS                32788
 #define ID_WINDOW_MINIMIZE_ALL          57654
 
 // Next default values for new objects

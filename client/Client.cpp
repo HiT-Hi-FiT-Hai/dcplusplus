@@ -37,7 +37,6 @@ Client::Client() : supportFlags(0), userInfo(true),
 	socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
 	countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) 
 {
-	me = ClientManager::getInstance()->getUser(SETTING(NICK), this, false);
 	TimerManager::getInstance()->addListener(this);
 	socket->addListener(this);
 
@@ -56,7 +55,7 @@ Client::~Client() throw() {
 };
 
 void Client::setNick(const string& aNick) {
-	dcassert(state = STATE_CONNECT);
+	dcassert(state == STATE_CONNECT);
 
 	me = ClientManager::getInstance()->getUser(aNick, this, false);
 }
@@ -729,6 +728,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.64 2003/11/27 10:33:14 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.65 2003/12/02 15:40:23 arnetheduck Exp $
  */
 

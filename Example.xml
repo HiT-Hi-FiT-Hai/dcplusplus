@@ -68,6 +68,7 @@
 		<String Name="DownloadQueue">Download queue</String>
 		<String Name="DownloadWholeDir">Download whole directory</String>
 		<String Name="DownloadWholeDirTo">Download whole directory to...</String>
+		<String Name="Downloaded">Downloaded</String>
 		<String Name="DownloadedBytes">Downloaded %s (%.01f%%) in %s</String>
 		<String Name="DownloadedFrom"> downloaded from </String>
 		<String Name="Downloading">Downloading...</String>
@@ -95,7 +96,7 @@
 		<String Name="FileType">File type</String>
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
 		<String Name="Filename">Filename</String>
-		<String Name="Filter">Filter</String>
+		<String Name="Filter">F&amp;ilter</String>
 		<String Name="Find">Find</String>
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>
@@ -128,6 +129,7 @@
 		<String Name="Kbps">kB/s</String>
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
+		<String Name="LastChange">Last change: </String>
 		<String Name="LastHub">Hub (last seen on if offline)</String>
 		<String Name="LastSeen">Time last seen</String>
 		<String Name="Loading">Loading DC++, please wait...</String>
@@ -263,6 +265,7 @@
 		<String Name="SettingsAutoFollow">Automatically follow redirects</String>
 		<String Name="SettingsAutoKick">Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)</String>
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
+		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoSearchAutoString">Use default search strings in auto search when no string is specified</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
 		<String Name="SettingsChange">&amp;Change</String>

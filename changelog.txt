@@ -18,7 +18,14 @@
 * Added ".wmv" and ".ogm" as video extensions
 * Fixed some issues with same-named fav users
 * Fixed small mem leak in fav users
-
+* Max download slots default changed to 3
+* Max 3 slots more than max download slots are used for highest priority downloads
+* Added option to automatically download filelist and match it on autosearch match. This will dramatically speed up
+  autosearching, lessening the strain on the hubs as less searches have to be done.
+* Added accelerator for filtering in public hubs (thanks gargoyle)
+* Fixed some translations (thanks ciber)
+* Added "downloaded bytes" to queue (thanks ciber)
+* Fixed refresh file list from main menu
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)

@@ -250,8 +250,8 @@ private:
 	{
 		client = ClientManager::getInstance()->getClient();
 		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
-		if(!aNick.empty())
-			client->setNick(aNick);
+		client->setNick(aNick.empty() ? SETTING(NICK) : aNick);
+			
 		if (!aDescription.empty())
 			client->setDescription(aDescription);
 		client->setPassword(aPassword);
@@ -380,6 +380,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.35 2003/11/19 22:52:00 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.36 2003/12/02 15:40:24 arnetheduck Exp $
  */
 

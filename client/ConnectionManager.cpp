@@ -217,9 +217,10 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					continue;
 				}
 
-				// Always start high-priority downloads...
+				// Always start high-priority downloads unless we have 3 more than maxdownslots already...
 				if(!startDown) {
-					startDown = QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
+					bool extraFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (DownloadManager::getInstance()->getDownloads() >= (SETTING(DOWNLOAD_SLOTS)+3));
+					startDown = !extraFull && QueueManager::getInstance()->hasDownload(cqi->getUser(), QueueItem::HIGHEST);
 				}
 				if(cqi->getState() == ConnectionQueueItem::WAITING) {
 					if(startDown) {
@@ -627,5 +628,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.65 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.66 2003/12/02 15:40:23 arnetheduck Exp $
  */

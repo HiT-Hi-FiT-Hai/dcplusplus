@@ -60,6 +60,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
+		COMMAND_ID_HANDLER(IDC_FILTER_FOCUS, onFilterFocus)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
 		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
@@ -78,6 +79,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onEnter(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -192,5 +194,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.15 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.16 2003/12/02 15:40:24 arnetheduck Exp $
  */

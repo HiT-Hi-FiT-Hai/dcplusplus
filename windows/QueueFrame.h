@@ -35,9 +35,6 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, public StaticFrame<
 	private QueueManagerListener, public CSplitterImpl<QueueFrame>
 {
 public:
-	enum {
-	};
-
 	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
 
 	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
@@ -174,6 +171,7 @@ private:
 		COLUMN_TARGET = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_SIZE,
+		COLUMN_DOWNLOADED,
 		COLUMN_PRIORITY,
 		COLUMN_USERS,
 		COLUMN_PATH,
@@ -197,6 +195,7 @@ private:
 			MASK_TARGET = 1 << COLUMN_TARGET,
 			MASK_STATUS = 1 << COLUMN_STATUS,
 			MASK_SIZE = 1 << COLUMN_SIZE,
+			MASK_DOWNLOADED = 1 << COLUMN_DOWNLOADED,
 			MASK_PRIORITY = 1 << COLUMN_PRIORITY,
 			MASK_USERS = 1 << COLUMN_USERS,
 			MASK_PATH = 1 << COLUMN_PATH,
@@ -213,6 +212,8 @@ private:
 		u_int32_t updateMask;
 		void update();
 
+		void remove() { QueueManager::getInstance()->remove(getTarget()); }
+
 		// TypedListViewCtrl functions
 		const string& getText(int col) const {
 			return columns[col];
@@ -221,6 +222,7 @@ private:
 			switch(col) {
 				case COLUMN_SIZE: return compare(a->getSize(), b->getSize());
 				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
+				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
 				default: return Util::stricmp(a->columns[col], b->columns[col]);
 			}
 		}
@@ -329,10 +331,7 @@ private:
 	}
 
 	void removeSelected() {
-		int i = -1;
-		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->remove(ctrlQueue.getItemData(i)->getTarget());
-		}
+		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
 	
 	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };
@@ -363,5 +362,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.29 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.30 2003/12/02 15:40:24 arnetheduck Exp $
  */

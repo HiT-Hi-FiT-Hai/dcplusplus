@@ -31,12 +31,12 @@
 
 #define FILE_LIST_NAME "File Lists"
 
-int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
+int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
 COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200, 200, 100 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, 
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
 ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
 ResourceManager::ADDED };
 
@@ -71,7 +71,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	WinUtil::splitTokens(columnSizes, SETTING(QUEUEFRAME_WIDTHS), COLUMN_LAST);
 	
 	for(int j=0; j<COLUMN_LAST; j++) {
-		int fmt = (j == COLUMN_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		int fmt = (j == COLUMN_SIZE || j == COLUMN_DOWNLOADED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
 		ctrlQueue.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
@@ -201,6 +201,12 @@ void QueueFrame::QueueItemInfo::update() {
 	if(colMask & MASK_SIZE) {
 		columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
 	}
+	if(colMask & MASK_DOWNLOADED) {
+		if(getSize() > 0)
+			columns[COLUMN_DOWNLOADED] = Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)";
+		else
+			columns[COLUMN_DOWNLOADED].clear();
+	}
 	if(colMask & MASK_PRIORITY) {
 		switch(getPriority()) {
 		case QueueItem::PAUSED: columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
@@ -209,7 +215,7 @@ void QueueFrame::QueueItemInfo::update() {
 		case QueueItem::NORMAL: columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
 		case QueueItem::HIGH: columns[COLUMN_PRIORITY] = STRING(HIGH); break;
 		case QueueItem::HIGHEST: columns[COLUMN_PRIORITY] = STRING(HIGHEST); break;
-		default: dcassert(0); break;
+		default: dcasserta(0); break;
 		}
 	}
 
@@ -543,6 +549,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 
 		ii->setPriority(aQI->getPriority());
 		ii->setStatus(aQI->getStatus());
+		ii->setDownloadedBytes(aQI->getDownloadedBytes());
 
 		{
 			for(QueueItem::Source::Iter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
@@ -574,7 +581,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				}
 			}
 		}
-		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS;
+		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
 	}
 
 	speak(UPDATE_ITEM, ii);
@@ -1262,7 +1269,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.39 2003/11/28 13:08:07 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.40 2003/12/02 15:40:24 arnetheduck Exp $
  */
 
 

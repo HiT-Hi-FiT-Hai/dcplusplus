@@ -129,6 +129,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
 		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
+		COMMAND_ID_HANDLER(IDC_REFRESH_FILE_LIST, onRefreshFileList)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -169,7 +170,8 @@ public:
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCloseDisconnected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onServerSocket(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	
+	LRESULT onRefreshFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const string& cmdLine);
@@ -334,7 +336,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.28 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.29 2003/12/02 15:40:24 arnetheduck Exp $
  */
 
  

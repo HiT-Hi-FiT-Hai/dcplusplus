@@ -242,7 +242,8 @@ void PrivateFrame::addLine(const string& aLine) {
 	} else {
 		ctrlClient.AppendText(("\r\n" + aLine).c_str());
 	}
-	addClientLine("Last change: " + Util::getTimeString());
+	addClientLine(CSTRING(LAST_CHANGE) + Util::getTimeString());
+
 	setDirty();
 }
 
@@ -340,7 +341,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.23 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.24 2003/12/02 15:40:24 arnetheduck Exp $
  */
 
 
