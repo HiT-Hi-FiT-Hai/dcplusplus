@@ -44,7 +44,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 public:
 	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
 		lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
-		closing(false) 
+		closing(false), missedAutoConnect(false) 
 	{ 
 		memset(statusSizes, 0, sizeof(statusSizes));
 	};
@@ -315,6 +315,8 @@ private:
 	
 	HANDLE stopperThread;
 
+	bool missedAutoConnect;
+
 	HWND createToolbar();
 	void buildMenu();
 	void updateTray(bool add = true);
@@ -342,7 +344,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.35 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.36 2004/06/23 18:48:48 arnetheduck Exp $
  */
 
  

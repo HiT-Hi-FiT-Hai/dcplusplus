@@ -337,7 +337,7 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 		cmd.addParam(c.getParam(0));
 		cmd.addParam(c.getParam(1));
 		cmd.addParam(c.getParam(2));
-		cmd.addParam(Util::toString(u->getSize()));
+		cmd.addParam(Util::toString(aBytes));
 
 		if(c.hasFlag("ZL", 4)) {
 			u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
@@ -388,5 +388,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.63 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.64 2004/06/23 18:48:48 arnetheduck Exp $
  */

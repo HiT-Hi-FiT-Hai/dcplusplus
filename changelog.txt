@@ -40,6 +40,8 @@
 * Added possibility to drag-drop tabs (thanks trem)
 * Added toggles for transferview showing (thanks trem)
 * HTTPS added as chat click link (thanks torgny)
+* Autoconnect postponed if no nick has been set (thanks sed)
+
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue

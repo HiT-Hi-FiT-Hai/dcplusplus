@@ -527,6 +527,9 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		SettingsManager::getInstance()->save();
+ 		if(missedAutoConnect && !SETTING(NICK).empty()) {
+ 			PostMessage(WM_SPEAKER, AUTO_CONNECT);
+ 		}
 		if(SETTING(CONNECTION_TYPE) != lastConn || SETTING(IN_PORT) != lastPort) {
 			startSocket();
 		}
@@ -639,11 +642,16 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 }
 
 void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
+ 	missedAutoConnect = false;
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
-		if(entry->getConnect())
-			HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
-	}
+ 		if(entry->getConnect()) {
+ 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
+				HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+ 			else
+ 				missedAutoConnect = true;
+ 		}
+ 	}
 }
 
 void MainFrame::updateTray(bool add /* = true */) {
@@ -1003,5 +1011,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.53 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.54 2004/06/23 18:48:48 arnetheduck Exp $
  */
