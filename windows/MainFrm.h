@@ -123,6 +123,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
+		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
@@ -160,6 +161,7 @@ public:
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -335,7 +337,7 @@ private:
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload);
 	virtual void onAction(UploadManagerListener::Types type, const Upload::List& ul);
 	void onUploadStarting(Upload* aUpload);
-	void onUploadTick(const Upload::List aUpload);
+	void onUploadTick(const Upload::List& aUpload);
 	void onUploadComplete(Upload* aUpload);
 	
 	// DownloadManagerListener
@@ -345,7 +347,7 @@ private:
 	void onDownloadComplete(Download* aDownload);
 	void onDownloadFailed(Download* aDownload, const string& aReason);
 	void onDownloadStarting(Download* aDownload);
-	void onDownloadTick(const Download::List aDownload);
+	void onDownloadTick(const Download::List& aDownload);
 
 	// ConnectionManagerListener
 	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi);
@@ -369,7 +371,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.8 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.9 2002/06/13 17:50:38 arnetheduck Exp $
  */
 
  

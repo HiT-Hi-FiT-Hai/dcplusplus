@@ -124,6 +124,7 @@ void WinUtil::buildMenu() {
 	file.CreatePopupMenu();
 	
 	file.AppendMenu(MF_STRING, IDC_QUEUE, CSTRING(MENU_FILE_DOWNLOAD_QUEUE));
+	file.AppendMenu(MF_STRING, IDC_FINISHED, CSTRING(FINISHED_DOWNLOADS));
 	file.AppendMenu(MF_STRING, ID_FILE_CONNECT, CSTRING(MENU_FILE_PUBLIC_HUBS));
 	file.AppendMenu(MF_STRING, IDC_FAVORITES, CSTRING(MENU_FILE_FAVORITE_HUBS));
 	file.AppendMenu(MF_STRING, IDC_FAVUSERS, CSTRING(MENU_FILE_FAVORITE_USERS));
@@ -180,5 +181,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.7 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.8 2002/06/13 17:50:38 arnetheduck Exp $
  */

@@ -183,7 +183,6 @@ private:
 	int outbufSize[BUFFERS];
 	int outbufPos[BUFFERS];
 	int curBuf;
-	CriticalSection bufCS[BUFFERS];
 
 	File* file;
 	int64_t size;
@@ -227,5 +226,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.41 2002/06/01 19:38:28 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.42 2002/06/13 17:50:38 arnetheduck Exp $
  */

@@ -105,7 +105,9 @@ public:
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlTree.DeleteAllItems();
+		ctrlList.SetRedraw(FALSE);
 		clearList();
+		ctrlList.SetRedraw(TRUE);
 		bHandled = FALSE;
 		return 0;
 	}
@@ -200,5 +202,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.9 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.10 2002/06/13 17:50:38 arnetheduck Exp $
  */

@@ -31,6 +31,7 @@
 #include "HubManager.h"
 #include "SettingsManager.h"
 #include "StringTokenizer.h"
+#include "FinishedManager.h"
 
 void startup(void (*f)(void*, const string&), void* p) {
 	Util::initialize();
@@ -51,6 +52,7 @@ void startup(void (*f)(void*, const string&), void* p) {
 	UploadManager::newInstance();
 	HubManager::newInstance();
 	QueueManager::newInstance();
+	FinishedManager::newInstance();
 
 	SettingsManager::getInstance()->load();	
 
@@ -96,6 +98,7 @@ void shutdown() {
 	TimerManager::getInstance()->removeListeners();
 	SettingsManager::getInstance()->save();
 	
+	FinishedManager::deleteInstance();
 	ShareManager::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
@@ -113,6 +116,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.18 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.19 2002/06/13 17:50:38 arnetheduck Exp $
  */
 

@@ -123,26 +123,35 @@ public:
 		WAIT_WRITE = 0x04
 	};
 
-	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
-	
-	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
-		connect(ip, port);	
-	}
-	
-	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
-		connect(ip, port);	
-	}
-	
-	virtual ~Socket() {
-		Socket::disconnect();
+	enum {
+		TYPE_TCP,
+		TYPE_UDP
 	};
 
+	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(ip, port); };
+	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) { connect(ip, port); };
+	virtual ~Socket() { Socket::disconnect(); };
+
 	virtual void bind(short aPort) throw(SocketException);
-	
 	virtual void connect(const string& ip, short port) throw(SocketException);
-	void Socket::connect(const string& ip, const string& port) throw(SocketException) {
-		connect(ip, (short)Util::toInt(port));
-	}
+	virtual void connect(const string& ip, const string& port) throw(SocketException) { connect(ip, (short)Util::toInt(port)); };
+	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
+	virtual void write(const char* buffer, int len) throw(SocketException);
+	virtual void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
+	virtual void writeTo(const string& ip, short port, const char* buffer, int len) throw(SocketException);
+	virtual void writeTo(const string& ip, short port, const string& aData) throw(SocketException) { writeTo(ip, port, aData.data(), aData.length()); };
+
+	int read(void* aBuffer, int aBufLen) throw(SocketException); 
+	bool wait(u_int32_t millis, int& waitFor) throw(SocketException);
+	bool isConnected() { return connected; };
+	
+	static string resolve(const string& aDns);
+	static void resetStats() { stats.up = stats.down = 0; };
+	static u_int32_t getDown() { return stats.down; };
+	static u_int32_t getUp() { return stats.up; };
+	static u_int64_t getTotalDown() { return stats.totalDown; };
+	static u_int64_t getTotalUp() { return stats.totalUp; };
 	
 	virtual void disconnect() {
 		if(sock != INVALID_SOCKET) {
@@ -153,10 +162,6 @@ public:
 
 		sock = INVALID_SOCKET;
 	}
-	enum {
-		TYPE_TCP = 0,
-		TYPE_UDP = 1
-	};
 
 	virtual void create(int aType = TYPE_TCP) throw(SocketException) {
 		if(sock != INVALID_SOCKET)
@@ -181,20 +186,6 @@ public:
 		return i;
 	}
 
-	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
-	virtual void write(const char* buffer, int len) throw(SocketException);
-	virtual void write(const string& aData) throw(SocketException) {
-		write(aData.data(), aData.length());
-	}
-	virtual void writeTo(const string& ip, short port, const char* buffer, int len) throw(SocketException);
-	virtual void writeTo(const string& ip, short port, const string& aData) throw(SocketException) {
-		writeTo(ip, port, aData.data(), aData.length());
-	}
-
-	bool isConnected() { return connected; };
-
-	bool wait(u_int32_t millis, int& waitFor) throw(SocketException);
-
 #ifdef WIN32
 	void setBlocking(bool block) throw(SocketException) {
 		u_long b = block ? 0 : 1;
@@ -204,8 +195,6 @@ public:
 	void setBlocking(bool block) throw(SocketException) {
 	}
 #endif
-
-	int read(void* aBuffer, int aBufLen) throw(SocketException); 
 	
 	string getLocalIp() {
 		sockaddr_in sock_addr;
@@ -215,13 +204,6 @@ public:
 		}
 		return Util::emptyString;
 	}
-
-	static string resolve(const string& aDns);
-	static void resetStats() { stats.up = stats.down = 0; };
-	static u_int32_t getDown() { return stats.down; };
-	static u_int32_t getUp() { return stats.up; };
-	static u_int64_t getTotalDown() { return stats.totalDown; };
-	static u_int64_t getTotalUp() { return stats.totalUp; };
 
 	GETSETREF(string, ip, Ip);
 protected:
@@ -248,6 +230,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.37 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: Socket.h,v 1.38 2002/06/13 17:50:38 arnetheduck Exp $
  */
 

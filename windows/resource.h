@@ -154,7 +154,8 @@
 #define IDC_FIND                        1081
 #define IDC_MAIN_CHAT                   1081
 #define IDC_NEXT                        1082
-#define IDC_PRIVATE_CHAT                1082
+#define IDC_PRIVATE_CHAT                1083
+#define IDC_FINISHED					1084
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

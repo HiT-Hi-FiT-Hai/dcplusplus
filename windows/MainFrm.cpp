@@ -32,6 +32,7 @@
 #include "NotepadFrame.h"
 #include "QueueFrame.h"
 #include "SpyFrame.h"
+#include "FinishedFrame.h"
 
 #include "../client/ConnectionManager.h"
 #include "../client/DownloadManager.h"
@@ -198,7 +199,7 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
-void MainFrame::onUploadTick(const Upload::List ul) {
+void MainFrame::onUploadTick(const Upload::List& ul) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(ul.size());
 	
@@ -255,7 +256,7 @@ void MainFrame::onDownloadStarting(Download* aDownload) {
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
-void MainFrame::onDownloadTick(const Download::List dl) {
+void MainFrame::onDownloadTick(const Download::List& dl) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(dl.size());
 
@@ -959,6 +960,17 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+ 	if(FinishedFrame::frame == NULL) {
+ 		FinishedFrame* pChild = new FinishedFrame();
+ 		pChild->setTab(&ctrlTab);
+ 		pChild->CreateEx(m_hWndClient);
+ 	} else {
+ 		MDIActivate(FinishedFrame::frame->m_hWnd);
+	}
+	return 0;
+}
+
 void MainFrame::onAction(UploadManagerListener::Types type, Upload* aUpload) {
 	switch(type) {
 		case UploadManagerListener::COMPLETE: onUploadComplete(aUpload); break;
@@ -1037,6 +1049,6 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.13 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.14 2002/06/13 17:50:38 arnetheduck Exp $
  */
 

@@ -72,6 +72,7 @@
 		<String Name="Filename">Filename</String>
 		<String Name="Filter">Filter</String>
 		<String Name="Find">Find</String>
+		<String Name="FinishedDownloads">Finished downloads</String>
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GB</String>
 		<String Name="GetFileList">Get file list</String>
@@ -175,6 +176,7 @@
 		<String Name="Refresh">Refresh</String>
 		<String Name="RefreshUserList">Refresh user list</String>
 		<String Name="Remove">Remove</String>
+		<String Name="RemoveAll">Remove all</String>
 		<String Name="RemoveAllSubdirectories">Remove all subdirectories before adding this one</String>
 		<String Name="RemoveSource">Remove source</String>
 		<String Name="RollbackInconsistency">Rollback inconsistency, existing file does not match the one being downloaded</String>
@@ -200,8 +202,10 @@
 		<String Name="SocketShutDown">Socket has been shut down</String>
 		<String Name="SpecifyServer">Specify a server to connect to</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
+		<String Name="Speed">Speed</String>
 		<String Name="Status">Status</String>
 		<String Name="Tb">TB</String>
+		<String Name="Time">Time</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
 		<String Name="Total">Total: </String>

@@ -165,16 +165,7 @@
 				RelativePath=".\res\DCPlusPlus.ico">
 			</File>
 			<File
-				RelativePath=".\client\res\DCPlusPlus.ico">
-			</File>
-			<File
 				RelativePath=".\DCPlusPlus.rc">
-			</File>
-			<File
-				RelativePath=".\client\res\DCPlusPlusdoc.ico">
-			</File>
-			<File
-				RelativePath=".\res\DCPlusPlusdoc.ico">
 			</File>
 			<File
 				RelativePath=".\res\Directory.ico">
@@ -201,16 +192,7 @@
 				RelativePath=".\res\arrows.bmp">
 			</File>
 			<File
-				RelativePath=".\res\bitmap1.bmp">
-			</File>
-			<File
 				RelativePath=".\res\folders.bmp">
-			</File>
-			<File
-				RelativePath=".\res\idr_mdid.ico">
-			</File>
-			<File
-				RelativePath=".\res\mdichild.bmp">
 			</File>
 			<File
 				RelativePath=".\res\notepad.ico">
@@ -257,6 +239,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FavoritesFrm.cpp">
+			</File>
+			<File
+				RelativePath="windows\FinishedFrame.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\GeneralPage.cpp">
@@ -351,6 +336,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\FavoritesFrm.h">
+			</File>
+			<File
+				RelativePath="windows\FinishedFrame.h">
 			</File>
 			<File
 				RelativePath=".\windows\FlatTabCtrl.h">
