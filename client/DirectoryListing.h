@@ -55,12 +55,8 @@ public:
 		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString) : name(aName), parent(aParent) { };
 		
 		~Directory() {
-			for(Iter i = directories.begin(); i!=directories.end(); ++i) {
-				delete *i;
-			}
-			for(File::Iter j = files.begin(); j!= files.end(); ++j) {
-				delete *j;
-			}
+			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
+			for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
 
 		int64_t getSize() {
@@ -146,5 +142,5 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.11 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.12 2002/06/29 18:58:49 arnetheduck Exp $
  */

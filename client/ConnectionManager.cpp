@@ -109,6 +109,12 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 			
 			pendingDown[cqi] = GET_TICK();
 		} else {
+			{
+				Lock l(cs);
+				dcassert(find(active.begin(), active.end(), aSource->getCQI()) != active.end());
+				active.erase(find(active.begin(), active.end(), aSource->getCQI()));
+
+			}
 			putConnection(aSource);
 		}
 	}
@@ -244,12 +250,8 @@ void ConnectionManager::onTimerMinute(u_int32_t aTick) {
 		}
 	}
 
-	{
-		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
-			delete *i;
-		}
-		pendingDelete.clear();
-	}
+	for_each(pendingDelete.begin(), pendingDelete.end(), DeleteFunction<UserConnection*>());
+	pendingDelete.clear();
 }
 
 /**
@@ -466,11 +468,8 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 				}
 			}
 		}
-
-		putDownloadConnection(aSource);
-	} else {
-		putConnection(aSource);
 	}
+	putConnection(aSource);
 }
 
 void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
@@ -572,5 +571,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManager.cpp
- * $Id: ConnectionManager.cpp,v 1.55 2002/06/28 20:53:47 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.56 2002/06/29 18:58:49 arnetheduck Exp $
  */

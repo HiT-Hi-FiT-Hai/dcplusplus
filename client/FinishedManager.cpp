@@ -27,9 +27,7 @@ FinishedManager* Singleton<FinishedManager>::instance = NULL;
 FinishedManager::~FinishedManager()
 {
 	Lock l(cs);
-	FinishedItem::Iter it = list.begin();
-	for(; it != list.end(); it++)
-		delete *it;
+	for_each(list.begin(), list.end(), DeleteFunction<FinishedItem*>());
 }
 
 void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)

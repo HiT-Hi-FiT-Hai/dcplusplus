@@ -192,7 +192,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 			if(!q->isSet(QueueItem::USER_LIST)) {
 				if(aTempTarget.empty()) {
-					if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty()) {
+					if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(q->getTarget()) == -1)) {
 						q->setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(q->getTargetFileName()));
 					}
 				} else {
@@ -375,16 +375,32 @@ void QueueManager::removeSource(const string& aTarget, User::Ptr& aUser, int rea
 }
 
 void QueueManager::removeSources(User::Ptr& aUser, int reason)  {
-	Lock l(cs);
-	for(int i = 0; i < QueueItem::LAST; i++) {
-		QueueItem::UserListIter k = userQueue[i].find(aUser);
-		if(k != userQueue[i].end()) {
-			for(QueueItem::Iter j = k->second.begin(); j != k->second.end();) {
-				(*j)->removeSource(aUser, reason);
-				fire(QueueManagerListener::SOURCES_UPDATED, *j);
+	string x;
+	{
+		Lock l(cs);
+		{
+			for(int i = 0; i < QueueItem::LAST; i++) {
+				QueueItem::UserListIter k = userQueue[i].find(aUser);
+				if(k != userQueue[i].end()) {
+					for(QueueItem::Iter j = k->second.begin(); j != k->second.end(); ++j) {
+						(*j)->removeSource(aUser, reason);
+						fire(QueueManagerListener::SOURCES_UPDATED, *j);
+					}
+					userQueue[i].erase(aUser);
+				}
 			}
 		}
-		userQueue[i].erase(aUser);
+		{
+			QueueItem::UserIter j = running.find(aUser);
+			if(j != running.end()) {
+				j->second->removeSource(aUser, reason);
+				fire(QueueManagerListener::SOURCES_UPDATED, j->second);
+				x = j->second->getTarget();
+			}
+		}
+	}
+	if(!x.empty()) {
+		DownloadManager::getInstance()->abortDownload(x);
 	}
 }
 
@@ -644,5 +660,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.33 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.34 2002/06/29 18:58:49 arnetheduck Exp $
  */

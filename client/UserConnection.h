@@ -249,17 +249,6 @@ private:
 		Upload* upload;
 	};
 
-	void setUser(const User::Ptr& aUser) {
-		user = aUser;
-	};
-
-	void onLine(const string& aLine) throw();
-	
-	void send(const string& aString) {
-		lastActivity = GET_TICK();
-		socket->write(aString);
-	}
-	
 	// We only want ConnectionManager to create this...
 	UserConnection() : state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL), cqi(NULL) { };
 	UserConnection(const UserConnection&) { dcassert(0); };
@@ -271,6 +260,18 @@ private:
 		}
 		removeListeners();
 	};
+	friend struct DeleteFunction<UserConnection*>;
+
+	void setUser(const User::Ptr& aUser) {
+		user = aUser;
+	};
+
+	void onLine(const string& aLine) throw();
+	
+	void send(const string& aString) {
+		lastActivity = GET_TICK();
+		socket->write(aString);
+	}
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type);
@@ -285,5 +286,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.49 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.50 2002/06/29 18:58:49 arnetheduck Exp $
  */

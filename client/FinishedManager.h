@@ -93,9 +93,7 @@ public:
 	{
 		{
 			Lock l(cs);
-			FinishedItem::Iter it = list.begin();
-			for(; it != list.end(); it++)
-				delete *it;
+			for_each(list.begin(), list.end(), DeleteFunction<FinishedItem*>());
 			list.clear();
 		}
 
@@ -118,5 +116,5 @@ private:
 
 /**
  * @file FinishedManager.h
- * $Id: FinishedManager.h,v 1.1 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.2 2002/06/29 18:58:49 arnetheduck Exp $
  */

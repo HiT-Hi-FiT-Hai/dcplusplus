@@ -141,9 +141,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				}
 				delete[] buf;
 
-				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-					delete *i;
-				}
+				for_each(l.begin(), l.end(), DeleteFunction<SearchResult*>());
 			}
 		}
 	}
@@ -320,6 +318,6 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.29 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.30 2002/06/29 18:58:49 arnetheduck Exp $
  */
 

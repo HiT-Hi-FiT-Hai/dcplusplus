@@ -99,7 +99,7 @@ public:
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
-		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
+		Source(const Source& aSource) : Flags(aSource), path(aSource.path), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
 		const User::Ptr& getUser() const { return user; };
@@ -114,7 +114,7 @@ public:
 	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
 		status(WAITING), priority(aPriority), current(NULL) { if(aResume) setFlag(RESUME); };
 	
-	QueueItem(const QueueItem& aQi) : target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
+	QueueItem(const QueueItem& aQi) : Flags(aQi), target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
 		current(aQi.current) {
 		Source::List::const_iterator i;
 		for(i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
@@ -325,6 +325,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.30 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.31 2002/06/29 18:58:49 arnetheduck Exp $
  */
 

@@ -201,9 +201,7 @@ private:
 		
 		{
 			Lock l(cs);
-			for(FavoriteHubEntry::Iter i = favoriteHubs.begin(); i != favoriteHubs.end(); ++i) {
-				delete *i;
-			}
+			for_each(favoriteHubs.begin(), favoriteHubs.end(), DeleteFunction<FavoriteHubEntry*>());
 		}
 	}
 	
@@ -238,6 +236,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.32 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.33 2002/06/29 18:58:49 arnetheduck Exp $
  */
 

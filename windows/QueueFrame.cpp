@@ -177,7 +177,7 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
 		if(!sr->isSet(QueueItem::Source::FLAG_REMOVED)) {
 			if(tmp.size() > 0)
 				tmp += ", ";
-
+			tmp += sr->getUser()->getNick();
 			tmp += " (";
 			if(sr->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 				tmp += STRING(FILE_NOT_AVAILABLE);
@@ -315,13 +315,25 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		Lock l(cs);
 		dcassert(queue.find(aQI) != queue.end());
 		qi = queue[aQI];
-		for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
-			delete *i;
+		{
+			for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
+				delete *i;
+			}
+			qi->getSources().clear();
+			for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
+				qi->getSources().push_back(new QueueItem::Source(*(*j)));
+			}
 		}
-		qi->getSources().clear();
-		for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-			qi->getSources().push_back(new QueueItem::Source(*(*j)));
+		{
+			for(QueueItem::Source::Iter i = qi->getBadSources().begin(); i != qi->getBadSources().end(); ++i) {
+				delete *i;
+			}
+			qi->getBadSources().clear();
+			for(QueueItem::Source::Iter j = aQI->getBadSources().begin(); j != aQI->getBadSources().end(); ++j) {
+				qi->getBadSources().push_back(new QueueItem::Source(*(*j)));
+			}
 		}
+
 		qi->setPriority(aQI->getPriority());
 		qi->setStatus(aQI->getStatus());
 		li = new StringListInfo(qi);
@@ -451,6 +463,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				}
 				menuItems++;
 			}
+			readdItems = 0;
 			for(QueueItem::Source::Iter i = q->getBadSources().begin(); i != q->getBadSources().end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
@@ -719,7 +732,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.14 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.15 2002/06/29 18:58:49 arnetheduck Exp $
  */
 
 

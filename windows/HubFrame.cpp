@@ -444,7 +444,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		UserInfo* ui = (UserInfo*)lParam;
 		User::Ptr& u = ui->user;
 		if(updateUser(u, true, ui) && showJoins) {
-			addLine("*** " + STRING(PARTS) + ui->user->getNick());
+			addLine("*** " + STRING(JOINS) + ui->user->getNick());
 		}
 	} else if(wParam == UPDATE_USERS) {
 		User::List* ul = (User::List*)lParam;
@@ -827,5 +827,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.16 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.17 2002/06/29 18:58:49 arnetheduck Exp $
  */
