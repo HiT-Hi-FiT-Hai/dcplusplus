@@ -1,0 +1,21 @@
+ -- 0.03 2001-11-27 --
+* Hub list sorting.
+* Users get deleted from user list when logging off
+* User list sorting
+* File sizes reported in B, kB, MB, GB and TB respectively
+* Downloads!!! (Only user file listings so far)
+* Improved UI a tiny bit
+* New settings, including passive mode and active port selection.
+* Some thread work, but more needed to be done, current model really sucks...
+
+ -- 0.02 2001-11-22 --
+* Settings dialog, to set user name and connection info.
+* Search command recognised.
+* New buttons.
+
+
+ -- 0.01 2001-11-21 --
+
+* Initial release.
+* List hubs, connect to them and chat.
+ 
