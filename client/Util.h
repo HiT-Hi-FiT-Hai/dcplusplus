@@ -65,7 +65,7 @@ struct PointerHash<void> {
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
  */
 template<typename T1>
-int compare(const T1& v1, const T1& v2) { return (v1 < v2) ? -1 : ((v1 == v2) ? 0 : 1); };
+inline int compare(const T1& v1, const T1& v2) { return (v1 < v2) ? -1 : ((v1 == v2) ? 0 : 1); }
 
 class Flags {
 	public:
@@ -252,17 +252,6 @@ public:
 		return buf;
 	}
 
-	static string formatNumber(const string& aString) {
-#ifdef WIN32
-		char buf[64];
-		SetLocaleInfoA(GetUserDefaultLCID(), LOCALE_IDIGITS, "0");
-		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, aString.c_str(), NULL, buf, sizeof(buf)/sizeof(buf[0]));
-#else
-		return aString; //formatNumber(toInt64(aString));
-#endif
-	}
-
-
 	static string toLower(const string& aString) { return toLower(aString.c_str(), aString.length()); };
 	static string toLower(const char* aString, int len = -1) {
 		string tmp;
@@ -309,22 +298,22 @@ public:
 #endif
 	}
 
-	static string toString(const u_int32_t& val) {
+	static string toString(u_int32_t val) {
 		char buf[16];
-		sprintf(buf, "%u", val);
+		sprintf(buf, "%lu", val);
 		return buf;
 	}
-	static string toString(const int& val) {
+	static string toString(int val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;
 	}
-	static string toString(const long& val) {
+	static string toString(long& val) {
 		char buf[16];
 		sprintf(buf, "%ld", val);
 		return buf;
 	}
-	static string toString(const double& val) {
+	static string toString(double& val) {
 		char buf[16];
 		sprintf(buf, "%.2f", val);
 		return buf;
@@ -495,5 +484,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.67 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Util.h,v 1.68 2003/11/11 13:16:10 arnetheduck Exp $
  */

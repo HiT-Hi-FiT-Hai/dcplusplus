@@ -49,6 +49,9 @@ public:
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
+	static u_int32_t getTime() {
+		return (u_int32_t)time(NULL);
+	}
 	static u_int32_t getTick() { 
 #ifdef WIN32
 		return GetTickCount(); 
@@ -83,10 +86,12 @@ private:
 };
 
 #define GET_TICK() TimerManager::getTick()
+#define GET_TIME() TimerManager::getTime()
+
 #endif // !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.19 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.20 2003/11/11 13:16:10 arnetheduck Exp $
  */
 

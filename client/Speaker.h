@@ -27,6 +27,8 @@ class Speaker {
 	typedef typename ListenerList::iterator ListenerIter;
 
 public:
+	Speaker() { };
+	virtual ~Speaker() { };
 
 	void fire(typename Listener::Types type) throw() {
 		Lock l(listenerCS);
@@ -34,7 +36,7 @@ public:
 		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
 		}
-	};
+	}
 
 	template<class T> 
 		void fire(typename Listener::Types type, const T& param) throw () {
@@ -43,7 +45,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, param);
 			}
-		};
+		}
 
 	template<class T, class T2> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2) throw() {
@@ -52,7 +54,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, p, p2);
 			}
-		};
+		}
 	template<class T, class T2, class T3> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
 			Lock l(listenerCS);
@@ -60,7 +62,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, p, p2, p3);
 			}
-		};
+		}
 	template<class T, class T2, class T3, class T4> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4) throw() {
 			Lock l(listenerCS);
@@ -68,7 +70,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, p, p2, p3, p4);
 			}
-		};
+		}
 	template<class T, class T2, class T3, class T4, class T5> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5) throw() {
 			Lock l(listenerCS);
@@ -76,7 +78,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, p, p2, p3, p4, p5);
 			}
-		};
+		}
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
 			Lock l(listenerCS);
@@ -84,7 +86,7 @@ public:
 			for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 				(*i)->onAction(type, p, p2, p3, p4, p5, p6);
 			}
-		};
+		}
 
 
 	void addListener(Listener* aListener) {
@@ -113,5 +115,5 @@ protected:
 #endif // SPEAKER_H
 /**
  * @file
- * $Id: Speaker.h,v 1.1 2003/04/16 17:06:19 arnetheduck Exp $
+ * $Id: Speaker.h,v 1.2 2003/11/11 13:16:10 arnetheduck Exp $
  */

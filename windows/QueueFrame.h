@@ -188,6 +188,7 @@ private:
 		COLUMN_PATH,
 		COLUMN_ERRORS,
 		COLUMN_SEARCHSTRING,
+		COLUMN_ADDED,
 		COLUMN_LAST
 	};
 	enum Tasks {
@@ -209,7 +210,8 @@ private:
 			MASK_USERS = 1 << COLUMN_USERS,
 			MASK_PATH = 1 << COLUMN_PATH,
 			MASK_ERRORS = 1 << COLUMN_ERRORS,
-			MASK_SEARCHSTRING = 1 << COLUMN_SEARCHSTRING
+			MASK_SEARCHSTRING = 1 << COLUMN_SEARCHSTRING,
+			MASK_ADDED = 1 << COLUMN_ADDED
 		};
 
 		QueueItemInfo(const QueueItem& aQi) : QueueItem(aQi), updateMask((u_int32_t)-1) { 
@@ -370,5 +372,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.25 2003/11/04 20:18:15 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.26 2003/11/11 13:16:10 arnetheduck Exp $
  */

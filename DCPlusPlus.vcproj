@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
@@ -20,7 +20,7 @@
 			CharacterSet="0">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm200 "
+				AdditionalOptions="/Zm200"
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
@@ -40,7 +40,22 @@
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"/>
+				CompileAs="0">
+				<IntelOptions
+					Optimization="0"
+					OptimizeForProcessor="2"
+					OptimizeForWindowsApplication="1"
+					StringPooling="1"
+					MinimalRebuild="1"
+					ExceptionHandling="1"
+					SmallerTypeCheck="0"
+					BasicRuntimeChecks="3"
+					RuntimeLibrary="3"
+					BufferSecurityCheck="1"
+					EnableFunctionLevelLinking="1"
+					ForceConformanceInForLoopScope="0"
+					AllOptions="/c  /ZI /nologo /W4 /Od /G6 /GA /D &quot;WIN32&quot; /D &quot;_DEBUG&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /Yu&quot;stdafx.h&quot; /Fp&quot;.\vc7\Debug\windows\/DCPlusPlus.pch&quot; /Fo&quot;.\vc7\Debug\windows\/&quot; /Fd&quot;.\vc7\Debug\windows\/vc70.pdb&quot; /Gd /Zm200"/>
+			</Tool>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -52,7 +67,10 @@
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
-				SubSystem="2"/>
+				SubSystem="2">
+				<IntelOptions
+					AllOptions="/NOLOGO /OUT:&quot;.\App/DCPlusPlus.exe&quot; /INCREMENTAL comctl32.lib Ws2_32.lib /DEBUG /PDB:&quot;.\App/DCPlusPlus.pdb&quot; /SUBSYSTEM:WINDOWS /TLBID:1 /MACHINE:I386 /fixed:no kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/>
+			</Tool>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="_DEBUG"
@@ -92,7 +110,7 @@
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm150 "
+				AdditionalOptions="/Zm150"
 				Optimization="4"
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
@@ -115,7 +133,24 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
-				CallingConvention="1"/>
+				CallingConvention="1">
+				<IntelOptions
+					Optimization="4"
+					GlobalOptimizations="1"
+					InlineFunctionExpansion="2"
+					EnableIntrinsicFunctions="1"
+					FavorSizeOrSpeed="2"
+					OmitFramePointers="1"
+					OptimizeForProcessor="3"
+					OptimizeForWindowsApplication="1"
+					StringPooling="1"
+					MinimalRebuild="1"
+					ExceptionHandling="1"
+					RuntimeLibrary="2"
+					BufferSecurityCheck="1"
+					EnableFunctionLevelLinking="1"
+					AllOptions="/c  /Zi /nologo /W4 /Ox /Og /Ob2 /Oi /Os /Oy /G7 /GA /D &quot;WIN32&quot; /D &quot;NDEBUG&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /D &quot;_STLP_NO_EXCEPTIONS&quot; /D &quot;_ATL_STATIC_REGISTRY&quot; /GF /Gm /EHsc /MD /GS /Gy /Yu&quot;stdafx.h&quot; /Fp&quot;.\vc7\Release\windows/DCPlusPlus.pch&quot; /FAs /Fa&quot;.\vc7\Release\windows/&quot; /Fo&quot;.\vc7\Release\windows/&quot; /Fd&quot;.\vc7\Release\windows/vc70.pdb&quot; /Gr /TP /Zm150"/>
+			</Tool>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -136,7 +171,10 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				SetChecksum="TRUE"
-				TargetMachine="0"/>
+				TargetMachine="0">
+				<IntelOptions
+					AllOptions="/NOLOGO /OUT:&quot;./App/DCPlusPlus.exe&quot; /INCREMENTAL:NO comctl32.lib Ws2_32.lib shlwapi.lib delayimp.lib /DELAYLOAD:&quot;comdlg32.dll&quot; /DELAYLOAD:&quot;dbghelp.dll&quot; /DEBUG /PDB:&quot;./App/DCPlusPlus.pdb&quot; /MAP /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /TLBID:1 /RELEASE /MACHINE:I386 /FIXED:NO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib"/>
+			</Tool>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"
@@ -166,329 +204,236 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
+	<References/>
 	<Files>
 		<Filter
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
-				RelativePath="res\ADLSearch.ico">
-			</File>
+				RelativePath="res\ADLSearch.ico"/>
 			<File
-				RelativePath=".\res\arrows.bmp">
-			</File>
+				RelativePath=".\res\arrows.bmp"/>
 			<File
-				RelativePath=".\res\DCPlusPlus.ico">
-			</File>
+				RelativePath=".\res\DCPlusPlus.ico"/>
 			<File
-				RelativePath=".\res\DCPlusPlus.Manifest">
-			</File>
+				RelativePath=".\res\DCPlusPlus.Manifest"/>
 			<File
-				RelativePath=".\DCPlusPlus.rc">
-			</File>
+				RelativePath=".\DCPlusPlus.rc"/>
 			<File
-				RelativePath=".\res\Directory.ico">
-			</File>
+				RelativePath=".\res\Directory.ico"/>
 			<File
-				RelativePath=".\res\Favorites.ico">
-			</File>
+				RelativePath=".\res\Favorites.ico"/>
 			<File
-				RelativePath="res\FavoriteUser.ico">
-			</File>
+				RelativePath="res\FavoriteUser.ico"/>
 			<File
-				RelativePath="res\FinishedDL.ico">
-			</File>
+				RelativePath="res\FinishedDL.ico"/>
 			<File
-				RelativePath="res\FinishedUL.ico">
-			</File>
+				RelativePath="res\FinishedUL.ico"/>
 			<File
-				RelativePath=".\res\folders.bmp">
-			</File>
+				RelativePath=".\res\folders.bmp"/>
 			<File
-				RelativePath=".\res\Hub.ico">
-			</File>
+				RelativePath=".\res\Hub.ico"/>
 			<File
-				RelativePath=".\res\netstats.ico">
-			</File>
+				RelativePath=".\res\netstats.ico"/>
 			<File
-				RelativePath=".\res\notepad.ico">
-			</File>
+				RelativePath=".\res\notepad.ico"/>
 			<File
-				RelativePath=".\res\PublicHubs.ico">
-			</File>
+				RelativePath=".\res\PublicHubs.ico"/>
 			<File
-				RelativePath="res\queue.ico">
-			</File>
+				RelativePath="res\queue.ico"/>
 			<File
-				RelativePath=".\res\Search.ico">
-			</File>
+				RelativePath=".\res\Search.ico"/>
 			<File
-				RelativePath=".\res\searchspy.ico">
-			</File>
+				RelativePath=".\res\searchspy.ico"/>
 			<File
-				RelativePath=".\res\toolbar.bmp">
-			</File>
+				RelativePath=".\res\toolbar.bmp"/>
 			<File
-				RelativePath=".\res\toolbar20-highlight.bmp">
-			</File>
+				RelativePath=".\res\toolbar20-highlight.bmp"/>
 			<File
-				RelativePath=".\res\toolbar20.bmp">
-			</File>
+				RelativePath=".\res\toolbar20.bmp"/>
 			<File
-				RelativePath=".\res\User.ico">
-			</File>
+				RelativePath=".\res\User.ico"/>
 			<File
-				RelativePath=".\res\users.bmp">
-			</File>
+				RelativePath=".\res\users.bmp"/>
 		</Filter>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="windows\ADLSearchFrame.cpp">
-			</File>
+				RelativePath="windows\ADLSearchFrame.cpp"/>
 			<File
-				RelativePath="windows\ADLSProperties.cpp">
-			</File>
+				RelativePath="windows\ADLSProperties.cpp"/>
 			<File
-				RelativePath=".\windows\Advanced2Page.cpp">
-			</File>
+				RelativePath=".\windows\Advanced2Page.cpp"/>
 			<File
-				RelativePath=".\windows\AdvancedPage.cpp">
-			</File>
+				RelativePath=".\windows\AdvancedPage.cpp"/>
 			<File
-				RelativePath=".\windows\AppearancePage.cpp">
-			</File>
+				RelativePath=".\windows\AppearancePage.cpp"/>
 			<File
-				RelativePath=".\windows\CommandDlg.cpp">
-			</File>
+				RelativePath=".\windows\CommandDlg.cpp"/>
 			<File
-				RelativePath=".\windows\DirectoryListingFrm.cpp">
-			</File>
+				RelativePath=".\windows\DirectoryListingFrm.cpp"/>
 			<File
-				RelativePath=".\windows\DownloadPage.cpp">
-			</File>
+				RelativePath=".\windows\DownloadPage.cpp"/>
 			<File
-				RelativePath=".\windows\ExListViewCtrl.cpp">
-			</File>
+				RelativePath=".\windows\ExListViewCtrl.cpp"/>
 			<File
-				RelativePath=".\windows\ExtendedTrace.cpp">
-			</File>
+				RelativePath=".\windows\ExtendedTrace.cpp"/>
 			<File
-				RelativePath=".\windows\FavHubProperties.cpp">
-			</File>
+				RelativePath=".\windows\FavHubProperties.cpp"/>
 			<File
-				RelativePath=".\windows\FavoritesFrm.cpp">
-			</File>
+				RelativePath=".\windows\FavoritesFrm.cpp"/>
 			<File
-				RelativePath="windows\FinishedFrame.cpp">
-			</File>
+				RelativePath="windows\FinishedFrame.cpp"/>
 			<File
-				RelativePath=".\windows\FinishedULFrame.cpp">
-			</File>
+				RelativePath=".\windows\FinishedULFrame.cpp"/>
 			<File
-				RelativePath=".\windows\GeneralPage.cpp">
-			</File>
+				RelativePath=".\windows\GeneralPage.cpp"/>
 			<File
-				RelativePath=".\windows\HubFrame.cpp">
-			</File>
+				RelativePath=".\windows\HubFrame.cpp"/>
 			<File
-				RelativePath=".\windows\main.cpp">
-			</File>
+				RelativePath=".\windows\main.cpp"/>
 			<File
-				RelativePath=".\windows\MainFrm.cpp">
-			</File>
+				RelativePath=".\windows\MainFrm.cpp"/>
 			<File
-				RelativePath=".\windows\NotepadFrame.cpp">
-			</File>
+				RelativePath=".\windows\NotepadFrame.cpp"/>
 			<File
-				RelativePath=".\windows\PrivateFrame.cpp">
-			</File>
+				RelativePath=".\windows\PrivateFrame.cpp"/>
 			<File
-				RelativePath=".\windows\PropertiesDlg.cpp">
-			</File>
+				RelativePath=".\windows\PropertiesDlg.cpp"/>
 			<File
-				RelativePath=".\windows\PropPage.cpp">
-			</File>
+				RelativePath=".\windows\PropPage.cpp"/>
 			<File
-				RelativePath=".\windows\PublicHubsFrm.cpp">
-			</File>
+				RelativePath=".\windows\PublicHubsFrm.cpp"/>
 			<File
-				RelativePath=".\windows\QueueFrame.cpp">
-			</File>
+				RelativePath=".\windows\QueueFrame.cpp"/>
 			<File
-				RelativePath=".\windows\SearchFrm.cpp">
-			</File>
+				RelativePath=".\windows\SearchFrm.cpp"/>
 			<File
-				RelativePath=".\windows\SpyFrame.cpp">
-			</File>
+				RelativePath=".\windows\SpyFrame.cpp"/>
 			<File
-				RelativePath="windows\StatsFrame.cpp">
-			</File>
+				RelativePath="windows\StatsFrame.cpp"/>
 			<File
 				RelativePath=".\windows\stdafx.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1">
+						<IntelOptions
+							AllOptions="/c /Zm200 /ZI /nologo /W4 /Od /G6 /GA /D &quot;WIN32&quot; /D &quot;_DEBUG&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /Yc&quot;stdafx.h&quot; /Fp&quot;.\vc7\Debug\windows\/DCPlusPlus.pch&quot; /Fo&quot;.\vc7\Debug\windows\/&quot; /Fd&quot;.\vc7\Debug\windows\/vc70.pdb&quot; /Gd"/>
+					</Tool>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1">
+						<IntelOptions
+							AllOptions="/c /Zm150 /Zi /nologo /W4 /Ox /Og /Ob2 /Oi /Os /Oy /G7 /GA /D &quot;WIN32&quot; /D &quot;NDEBUG&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /D &quot;_STLP_NO_EXCEPTIONS&quot; /D &quot;_ATL_STATIC_REGISTRY&quot; /GF /Gm /EHsc /MD /GS /Gy /Yc&quot;stdafx.h&quot; /Fp&quot;.\vc7\Release\windows/DCPlusPlus.pch&quot; /FAs /Fa&quot;.\vc7\Release\windows/&quot; /Fo&quot;.\vc7\Release\windows/&quot; /Fd&quot;.\vc7\Release\windows/vc70.pdb&quot; /Gr /TP"/>
+					</Tool>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="windows\TextFrame.cpp">
-			</File>
+				RelativePath="windows\TextFrame.cpp"/>
 			<File
-				RelativePath="windows\TransferView.cpp">
-			</File>
+				RelativePath="windows\TransferView.cpp"/>
 			<File
-				RelativePath="windows\TreePropertySheet.cpp">
-			</File>
+				RelativePath="windows\TreePropertySheet.cpp"/>
 			<File
-				RelativePath=".\windows\UCPage.cpp">
-			</File>
+				RelativePath=".\windows\UCPage.cpp"/>
 			<File
-				RelativePath=".\windows\UploadPage.cpp">
-			</File>
+				RelativePath=".\windows\UploadPage.cpp"/>
 			<File
-				RelativePath=".\windows\UsersFrame.cpp">
-			</File>
+				RelativePath=".\windows\UsersFrame.cpp"/>
 			<File
-				RelativePath=".\windows\WinUtil.cpp">
-			</File>
+				RelativePath=".\windows\WinUtil.cpp"/>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath=".\windows\AboutDlg.h">
-			</File>
+				RelativePath=".\windows\AboutDlg.h"/>
 			<File
-				RelativePath="windows\ADLSearchFrame.h">
-			</File>
+				RelativePath="windows\ADLSearchFrame.h"/>
 			<File
-				RelativePath="windows\ADLSProperties.h">
-			</File>
+				RelativePath="windows\ADLSProperties.h"/>
 			<File
-				RelativePath=".\windows\Advanced2Page.h">
-			</File>
+				RelativePath=".\windows\Advanced2Page.h"/>
 			<File
-				RelativePath=".\windows\AdvancedPage.h">
-			</File>
+				RelativePath=".\windows\AdvancedPage.h"/>
 			<File
-				RelativePath=".\windows\AppearancePage.h">
-			</File>
+				RelativePath=".\windows\AppearancePage.h"/>
 			<File
-				RelativePath="windows\CommandDlg.h">
-			</File>
+				RelativePath="windows\CommandDlg.h"/>
 			<File
-				RelativePath=".\windows\DirectoryListingFrm.h">
-			</File>
+				RelativePath=".\windows\DirectoryListingFrm.h"/>
 			<File
-				RelativePath=".\windows\DownloadPage.h">
-			</File>
+				RelativePath=".\windows\DownloadPage.h"/>
 			<File
-				RelativePath=".\windows\ExListViewCtrl.h">
-			</File>
+				RelativePath=".\windows\ExListViewCtrl.h"/>
 			<File
-				RelativePath=".\windows\ExtendedTrace.h">
-			</File>
+				RelativePath=".\windows\ExtendedTrace.h"/>
 			<File
-				RelativePath=".\windows\FavHubProperties.h">
-			</File>
+				RelativePath=".\windows\FavHubProperties.h"/>
 			<File
-				RelativePath=".\windows\FavoritesFrm.h">
-			</File>
+				RelativePath=".\windows\FavoritesFrm.h"/>
 			<File
-				RelativePath="windows\FinishedFrame.h">
-			</File>
+				RelativePath="windows\FinishedFrame.h"/>
 			<File
-				RelativePath=".\windows\FinishedULFrame.h">
-			</File>
+				RelativePath=".\windows\FinishedULFrame.h"/>
 			<File
-				RelativePath=".\windows\FlatTabCtrl.h">
-			</File>
+				RelativePath=".\windows\FlatTabCtrl.h"/>
 			<File
-				RelativePath=".\windows\GeneralPage.h">
-			</File>
+				RelativePath=".\windows\GeneralPage.h"/>
 			<File
-				RelativePath=".\windows\HubFrame.h">
-			</File>
+				RelativePath=".\windows\HubFrame.h"/>
 			<File
-				RelativePath=".\windows\LineDlg.h">
-			</File>
+				RelativePath=".\windows\LineDlg.h"/>
 			<File
-				RelativePath=".\windows\MainFrm.h">
-			</File>
+				RelativePath=".\windows\MainFrm.h"/>
 			<File
-				RelativePath=".\windows\NotepadFrame.h">
-			</File>
+				RelativePath=".\windows\NotepadFrame.h"/>
 			<File
-				RelativePath=".\windows\PrivateFrame.h">
-			</File>
+				RelativePath=".\windows\PrivateFrame.h"/>
 			<File
-				RelativePath=".\windows\PropertiesDlg.h">
-			</File>
+				RelativePath=".\windows\PropertiesDlg.h"/>
 			<File
-				RelativePath=".\windows\PropPage.h">
-			</File>
+				RelativePath=".\windows\PropPage.h"/>
 			<File
-				RelativePath=".\windows\PublicHubsFrm.h">
-			</File>
+				RelativePath=".\windows\PublicHubsFrm.h"/>
 			<File
-				RelativePath=".\windows\QueueFrame.h">
-			</File>
+				RelativePath=".\windows\QueueFrame.h"/>
 			<File
-				RelativePath=".\windows\resource.h">
-			</File>
+				RelativePath=".\windows\resource.h"/>
 			<File
-				RelativePath=".\windows\SearchFrm.h">
-			</File>
+				RelativePath=".\windows\SearchFrm.h"/>
 			<File
-				RelativePath="windows\SingleInstance.h">
-			</File>
+				RelativePath="windows\SingleInstance.h"/>
 			<File
-				RelativePath=".\windows\SpyFrame.h">
-			</File>
+				RelativePath=".\windows\SpyFrame.h"/>
 			<File
-				RelativePath="windows\StatsFrame.h">
-			</File>
+				RelativePath="windows\StatsFrame.h"/>
 			<File
-				RelativePath=".\windows\stdafx.h">
-			</File>
+				RelativePath=".\windows\stdafx.h"/>
 			<File
-				RelativePath="windows\TextFrame.h">
-			</File>
+				RelativePath="windows\TextFrame.h"/>
 			<File
-				RelativePath="windows\TransferView.h">
-			</File>
+				RelativePath="windows\TransferView.h"/>
 			<File
-				RelativePath="windows\TreePropertySheet.h">
-			</File>
+				RelativePath="windows\TreePropertySheet.h"/>
 			<File
-				RelativePath=".\windows\TypedListViewCtrl.h">
-			</File>
+				RelativePath=".\windows\TypedListViewCtrl.h"/>
 			<File
-				RelativePath=".\windows\UCHandler.h">
-			</File>
+				RelativePath=".\windows\UCHandler.h"/>
 			<File
-				RelativePath=".\windows\UCPage.h">
-			</File>
+				RelativePath=".\windows\UCPage.h"/>
 			<File
-				RelativePath=".\windows\UploadPage.h">
-			</File>
+				RelativePath=".\windows\UploadPage.h"/>
 			<File
-				RelativePath=".\windows\UsersFrame.h">
-			</File>
+				RelativePath=".\windows\UsersFrame.h"/>
 			<File
-				RelativePath=".\windows\WinUtil.h">
-			</File>
+				RelativePath=".\windows\WinUtil.h"/>
 		</Filter>
 	</Files>
 	<Globals>

@@ -33,6 +33,8 @@
 
 #include "SearchManagerListener.h"
 
+class SearchManager;
+
 class SearchResult {
 public:	
 
@@ -45,31 +47,48 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult() : type(TYPE_FILE), slots(0), freeSlots(0), size(0) { };
-	SearchResult(const SearchResult& rhs) : type(rhs.type), slots(rhs.slots), freeSlots(rhs.freeSlots), size(rhs.size), 
-		file(rhs.file), hubName(rhs.hubName), hubAddress(rhs.hubAddress), user(rhs.user) { };
+	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, int64_t aSize, 
+		const string& aFile, const string& aHubName, const string& aHubIpPort) : 
+	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), size(aSize), slots(aSlots),
+		freeSlots(aFreeSlots), ref(1) { };
 
 	string getFileName();
+	string toSR();
 
 	User::Ptr& getUser() { return user; };
-	void setUser(const User::Ptr& aUser) { user = aUser; };
-	
-	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
-	void setSlots(const string& aSlots) { setSlots(Util::toInt(aSlots)); };
-	void setFreeSlots(const string& aSlots) { setFreeSlots(Util::toInt(aSlots)); };
-	
 	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
-	
-	GETSET(Types, type, Type);
-	GETSET(int, slots, Slots);
-	GETSET(int, freeSlots, FreeSlots);
-	GETSET(int64_t, size, Size);
-	GETSETREF(string, file, File);
-	GETSETREF(string, hubName, HubName);
-	GETSETREF(string, hubAddress, HubAddress);
+
+	const string& getFile() { return file; };
+	const string& getHubIpPort() { return hubIpPort; };
+	const string& getHubName() { return hubName; };
+	int64_t getSize() { return size; };
+	Types getType() { return type; };
+	int getSlots() { return slots; };
+	int getFreeSlots() { return freeSlots; };
+
+	void incRef() { Thread::safeInc(&ref); };
+	void decRef() { if(Thread::safeDec(&ref) == 0) delete this; };
 
 private:
+	friend class SearchManager;
+
+	SearchResult() : size(0), slots(0), freeSlots(0), ref(1) { };
+	~SearchResult() { };
+
+	SearchResult(const SearchResult& rhs) : 
+	   file(rhs.file), hubName(rhs.hubName), hubIpPort(rhs.hubIpPort), 
+		   user(rhs.user), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots), ref(1) { };
+
+	string file;
+	string hubName;
+	string hubIpPort;
 	User::Ptr user;
+	int64_t size;
+	Types type;
+	int slots;
+	int freeSlots;
+
+	long ref;
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
@@ -149,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.26 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.27 2003/11/11 13:16:10 arnetheduck Exp $
  */

@@ -26,6 +26,9 @@
 template<typename T>
 class Singleton {
 public:
+	Singleton() { };
+	virtual ~Singleton() { };
+
 	static T* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -51,5 +54,5 @@ protected:
 
 /**
  * @file
- * $Id: Singleton.h,v 1.3 2003/04/15 10:13:56 arnetheduck Exp $
+ * $Id: Singleton.h,v 1.4 2003/11/11 13:16:10 arnetheduck Exp $
  */

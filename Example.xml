@@ -4,6 +4,7 @@
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Active / Search String</String>
 		<String Name="Add">&amp;Add</String>
+		<String Name="Added">Added</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
 		<String Name="AddressNotAvailable">Address not available</String>

@@ -642,14 +642,9 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	if( (cur->empty()) && 
 		(((aFileType == SearchManager::TYPE_ANY) && sizeOk) || (aFileType == SearchManager::TYPE_DIRECTORY)) ) {
 		// We satisfied all the search words! Add the directory...
-		SearchResult* sr = new SearchResult();
-		sr->setType(SearchResult::TYPE_DIRECTORY);
-		sr->setFile(getFullName());
-		sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
-		sr->setSlots(SETTING(SLOTS));
-		sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-		sr->setHubAddress(aClient->getIpPort());
-		sr->setHubName(aClient->getName());
+		SearchResult* sr = new SearchResult(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false),
+			SearchResult::TYPE_DIRECTORY, SETTING(SLOTS), UploadManager::getInstance()->getFreeSlots(),
+			0, getFullName(), aClient->getName(), aClient->getIpPort());
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 	}
@@ -672,15 +667,9 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 			// Check file type...
 			if(checkType(i->first, aFileType)) {
 				
-				SearchResult* sr = new SearchResult();
-				sr->setType(SearchResult::TYPE_FILE);
-				sr->setFile(getFullName() + i->first);
-				sr->setSize(i->second);
-				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
-				sr->setSlots(SETTING(SLOTS));
-				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				sr->setHubAddress(aClient->getIpPort());
-				sr->setHubName(aClient->getName());
+				SearchResult* sr = new SearchResult(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false),
+					SearchResult::TYPE_FILE, SETTING(SLOTS), UploadManager::getInstance()->getFreeSlots(),
+					i->second, getFullName() + i->first, aClient->getName(), aClient->getIpPort());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
 				if(aResults.size() >= maxResults) {
@@ -740,6 +729,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.59 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.60 2003/11/11 13:16:10 arnetheduck Exp $
  */
 

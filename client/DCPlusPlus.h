@@ -44,7 +44,7 @@ inline void CDECL debugTrace(const char* format, ...)
 	vprintf(format, args);
 #endif // WIN32
 	va_end(args);
-};
+}
 
 #define dcdebug debugTrace
 #ifdef WIN32
@@ -98,6 +98,6 @@ extern void shutdown();
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.32 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.33 2003/11/11 13:16:09 arnetheduck Exp $
  */
 

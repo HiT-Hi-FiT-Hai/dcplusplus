@@ -130,7 +130,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 				string atarget = target + ANTI_FRAG_EXT;
 				int64_t aSize = File::getSize(target + ANTI_FRAG_EXT);
 
-				if(aSize == -1 || aSize == d->getSize())
+				if(aSize == d->getSize())
 					start = d->getPos();
 				else
 					start = 0;
@@ -666,5 +666,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.79 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.80 2003/11/11 13:16:09 arnetheduck Exp $
  */

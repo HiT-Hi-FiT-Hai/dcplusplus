@@ -8,6 +8,7 @@ enum Strings { // @DontAdd
 	ACTIVE, // "Active"
 	ACTIVE_SEARCH_STRING, // "Active / Search String"
 	ADD, // "&Add"
+	ADDED, // "Added"
 	ADD_TO_FAVORITES, // "Add To Favorites"
 	ADDRESS_ALREADY_IN_USE, // "Address already in use"
 	ADDRESS_NOT_AVAILABLE, // "Address not available"

@@ -142,8 +142,8 @@ private:
 		}
 		void add(QueueItem* qi);
 		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
-			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded)
-			throw(QueueException, FileException);
+			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
+			u_int32_t aAdded) throw(QueueException, FileException);
 		QueueItem* find(const string& target);
 		void find(StringList& sl, int64_t aSize, const string& ext);
 		QueueItem* findAutoSearch(StringList& recent);
@@ -242,6 +242,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.45 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.46 2003/11/11 13:16:09 arnetheduck Exp $
  */
 

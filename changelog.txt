@@ -28,6 +28,8 @@
 * Fixed a queue crash bug
 * Changed transfer view sort order (active downloads, active uploads then connection attempts...one
   fine day perhaps it'll be configurable...)
+* Added date added column to queue
+
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

@@ -282,67 +282,67 @@ void SearchFrame::onEnter() {
 	if(!clients.size())
 		return;
 
-		message = new char[ctrlSearch.GetWindowTextLength()+1];
-		ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
-		string s(message, ctrlSearch.GetWindowTextLength());
-		delete[] message;
-		
-		message = new char[ctrlSize.GetWindowTextLength()+1];
-		ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
-		string size(message, ctrlSize.GetWindowTextLength());
-		delete[] message;
-		
-		double lsize = Util::toDouble(size);
-		switch(ctrlSizeMode.GetCurSel()) {
-		case 1:
-			lsize*=1024.0; break;
-		case 2:
-			lsize*=1024.0*1024.0; break;
-		case 3:
-			lsize*=1024.0*1024.0*1024.0; break;
-		}
-
-		int64_t llsize = (int64_t)lsize;
-
-		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
-			delete (SearchResult*)ctrlResults.GetItemData(i);
-		}
-		ctrlResults.DeleteAllItems();
-		
-		SearchManager::SizeModes mode((SearchManager::SizeModes)ctrlMode.GetCurSel());
-		if(llsize == 0)
-			mode = SearchManager::SIZE_DONTCARE;
-
-	SearchManager::getInstance()->search(clients, s, llsize, 
-			(SearchManager::TypeModes)ctrlFiletype.GetCurSel(), mode);
-
-		if(BOOLSETTING(CLEAR_SEARCH)){
-			ctrlSearch.SetWindowText("");
-		} else {
-			lastSearch = TimerManager::getInstance()->getTick();
-		}
-
-		// Add new searches to the last-search dropdown list
-		if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
-		{
-			if(ctrlSearchBox.GetCount() > 9)
-				ctrlSearchBox.DeleteString(9);
-			ctrlSearchBox.InsertString(0, s.c_str());
-
-			while(lastSearches.size() > 9) {
-				lastSearches.erase(lastSearches.begin());
-			}
-			lastSearches.push_back(s);
-		}
-		
-		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + s + "...").c_str());
-		{
-			Lock l(cs);
-			search = StringTokenizer(s, ' ').getTokens();
-		}
-
-		SetWindowText((STRING(SEARCH) + " - " + s).c_str());
+	message = new char[ctrlSearch.GetWindowTextLength()+1];
+	ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
+	string s(message, ctrlSearch.GetWindowTextLength());
+	delete[] message;
+	
+	message = new char[ctrlSize.GetWindowTextLength()+1];
+	ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
+	string size(message, ctrlSize.GetWindowTextLength());
+	delete[] message;
+	
+	double lsize = Util::toDouble(size);
+	switch(ctrlSizeMode.GetCurSel()) {
+	case 1:
+		lsize*=1024.0; break;
+	case 2:
+		lsize*=1024.0*1024.0; break;
+	case 3:
+		lsize*=1024.0*1024.0*1024.0; break;
 	}
+
+	int64_t llsize = (int64_t)lsize;
+
+	for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
+		((SearchResult*)ctrlResults.GetItemData(i))->decRef();
+	}
+	ctrlResults.DeleteAllItems();
+	
+	SearchManager::SizeModes mode((SearchManager::SizeModes)ctrlMode.GetCurSel());
+	if(llsize == 0)
+		mode = SearchManager::SIZE_DONTCARE;
+
+SearchManager::getInstance()->search(clients, s, llsize, 
+		(SearchManager::TypeModes)ctrlFiletype.GetCurSel(), mode);
+
+	if(BOOLSETTING(CLEAR_SEARCH)){
+		ctrlSearch.SetWindowText("");
+	} else {
+		lastSearch = TimerManager::getInstance()->getTick();
+	}
+
+	// Add new searches to the last-search dropdown list
+	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
+	{
+		if(ctrlSearchBox.GetCount() > 9)
+			ctrlSearchBox.DeleteString(9);
+		ctrlSearchBox.InsertString(0, s.c_str());
+
+		while(lastSearches.size() > 9) {
+			lastSearches.erase(lastSearches.begin());
+		}
+		lastSearches.push_back(s);
+	}
+	
+	ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + s + "...").c_str());
+	{
+		Lock l(cs);
+		search = StringTokenizer(s, ' ').getTokens();
+	}
+
+	SetWindowText((STRING(SEARCH) + " - " + s).c_str());
+}
 
 void SearchFrame::onSearchResult(SearchResult* aResult) {
 	// Check that this is really a relevant search result...
@@ -363,8 +363,8 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	if(onlyFree && aResult->getFreeSlots() < 1)
 		return;
 
-	SearchResult* copy = new SearchResult(*aResult);
-	
+	aResult->incRef();
+
 	string file, path;
 	if(aResult->getType() == SearchResult::TYPE_FILE) {
 		if(aResult->getFile().rfind('\\') == string::npos) {
@@ -403,7 +403,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	}
 	l->push_back(aResult->getHubName());
 	l->push_back((aResult->getType() == SearchResult::TYPE_FILE) ? Util::formatNumber(aResult->getSize()) : Util::emptyString);
-	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
+	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)aResult);	
 }
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -512,7 +512,7 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		return 0;
 	} else {
 		for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
-			delete (SearchResult*)ctrlResults.GetItemData(i);
+			((SearchResult*)ctrlResults.GetItemData(i))->decRef();
 		}
 
 		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
@@ -792,7 +792,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		SearchResult* sr2 = (SearchResult*)ctrlResults.GetItemData(i);
 		if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
 			delete (StringList*)wParam;
-			delete sr;
+			sr->decRef();
 			return 0;
 		}
 	}
@@ -1082,5 +1082,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.33 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.34 2003/11/11 13:16:11 arnetheduck Exp $
  */

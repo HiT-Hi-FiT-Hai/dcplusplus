@@ -39,12 +39,12 @@ const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
-						  int64_t aDownloadedBytes) throw(QueueException, FileException) 
+						  int64_t aDownloadedBytes, u_int32_t aAdded) throw(QueueException, FileException) 
 {
 	if(p == QueueItem::DEFAULT)
 		p = (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
 
-	QueueItem* qi = new QueueItem(aTarget, aSize, aSearchString, p, aFlags, aDownloadedBytes);
+	QueueItem* qi = new QueueItem(aTarget, aSize, aSearchString, p, aFlags, aDownloadedBytes, aAdded);
 
 	if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
 		if(aTempTarget.empty()) {
@@ -382,7 +382,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 		QueueItem* q = fileQueue.find(target);
 		if(q == NULL) {
-			q = fileQueue.add(target, aSize, aSearchString, aFlags, p, aTempTarget, 0);
+			q = fileQueue.add(target, aSize, aSearchString, aFlags, p, aTempTarget, 0, GET_TIME());
 			fire(QueueManagerListener::ADDED, q);
 		} else {
 			if(q->getSize() != aSize) {
@@ -919,10 +919,16 @@ void QueueManager::saveQueue() throw() {
 				f.write(Util::toString((int)d->getPriority()));
 				f.write(STRINGLEN("\" TempTarget=\""));
 				f.write(CHECKESCAPE(d->getTempTarget()));
-				f.write(STRINGLEN("\" SearchString=\""));
-				f.write(CHECKESCAPE(d->getSearchString()));
-				f.write(STRINGLEN("\" Downloaded=\""));
-				f.write(Util::toString((int)d->getDownloadedBytes()));
+				if(!d->getSearchString().empty()) {
+					f.write(STRINGLEN("\" SearchString=\""));
+					f.write(CHECKESCAPE(d->getSearchString()));
+				}
+				if(d->getDownloadedBytes() != 0) {
+					f.write(STRINGLEN("\" Downloaded=\""));
+					f.write(Util::toString(d->getDownloadedBytes()));
+				}
+				f.write(STRINGLEN("\" Added=\""));
+				f.write(Util::toString(d->getAdded()));
 				f.write(STRINGLEN("\">\r\n"));
 
 				for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
@@ -991,6 +997,7 @@ void QueueManager::load(SimpleXML* aXml) {
 		const string sPath = "Path";
 		const string sDirectory = "Directory";
 		const string sSearchString = "SearchString";
+		const string sAdded = "Added";
 		string target;
 
 		aXml->stepIn();
@@ -1008,9 +1015,12 @@ void QueueManager::load(SimpleXML* aXml) {
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
 			int64_t downloaded = aXml->getLongLongChildAttrib(sDownloaded);
 			const string& searchString = aXml->getChildAttrib(sSearchString);
+			u_int32_t added = (u_int32_t)aXml->getIntChildAttrib(sAdded);
+			if(added == 0)
+				added = GET_TIME();
 			QueueItem* qi = fileQueue.find(target);
 			if(qi == NULL) {
-				qi = fileQueue.add(target, size, searchString, QueueItem::FLAG_RESUME, p, tempTarget, downloaded);
+				qi = fileQueue.add(target, size, searchString, QueueItem::FLAG_RESUME, p, tempTarget, downloaded, added);
 				fire(QueueManagerListener::ADDED, qi);
 			}
 
@@ -1188,5 +1198,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.54 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.55 2003/11/11 13:16:09 arnetheduck Exp $
  */

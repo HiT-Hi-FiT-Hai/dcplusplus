@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding = "Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
@@ -39,13 +39,31 @@
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0"/>
+				CompileAs="0">
+				<IntelOptions
+					Optimization="0"
+					OptimizeForProcessor="2"
+					OptimizeForWindowsApplication="1"
+					StringPooling="1"
+					MinimalRebuild="1"
+					ExceptionHandling="1"
+					SmallerTypeCheck="0"
+					BasicRuntimeChecks="3"
+					RuntimeLibrary="3"
+					BufferSecurityCheck="1"
+					EnableFunctionLevelLinking="1"
+					ForceConformanceInForLoopScope="1"
+					AllOptions="/c  /ZI /nologo /W3 /Od /G6 /GA /D &quot;WIN32&quot; /D &quot;_DEBUG&quot; /D &quot;_LIB&quot; /D &quot;ZLIB_COMPILE&quot; /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /Zc:forScope /Fo&quot;.\vc7\Debug\zlib/&quot; /Fd&quot;.\vc7\Debug\zlib/vc70.pdb&quot; /Gd"/>
+			</Tool>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)/zlib.lib"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="TRUE">
+				<IntelOptions
+					AllOptions="/OUT:&quot;.\vc7\Debug\zlib/zlib.lib&quot; /NOLOGO"/>
+			</Tool>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -99,13 +117,34 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="3"
-				CallingConvention="1"/>
+				CallingConvention="1">
+				<IntelOptions
+					Optimization="4"
+					GlobalOptimizations="1"
+					InlineFunctionExpansion="2"
+					EnableIntrinsicFunctions="1"
+					FavorSizeOrSpeed="2"
+					OmitFramePointers="1"
+					OptimizeForProcessor="3"
+					OptimizeForWindowsApplication="1"
+					StringPooling="1"
+					MinimalRebuild="1"
+					ExceptionHandling="1"
+					RuntimeLibrary="2"
+					BufferSecurityCheck="1"
+					EnableFunctionLevelLinking="1"
+					ForceConformanceInForLoopScope="1"
+					AllOptions="/c  /Zi /nologo /W4 /Ox /Og /Ob2 /Oi /Os /Oy /G7 /GA /D &quot;WIN32&quot; /D &quot;NDEBUG&quot; /D &quot;_LIB&quot; /D &quot;ZLIB_COMPILE&quot; /GF /Gm /EHsc /MD /GS /Gy /Zc:forScope /FAs /Fa&quot;.\vc7\Release\zlib/&quot; /Fo&quot;.\vc7\Release\zlib/&quot; /Fd&quot;.\vc7\Release\zlib/vc70.pdb&quot; /Gr /TP"/>
+			</Tool>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\vc7\Release\zlib\zlib.lib"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="TRUE">
+				<IntelOptions
+					AllOptions="/OUT:&quot;.\vc7\Release\zlib\zlib.lib&quot; /NOLOGO"/>
+			</Tool>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -128,87 +167,62 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References>
-	</References>
+	<References/>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath=".\zlib\adler32.c">
-			</File>
+				RelativePath=".\zlib\adler32.c"/>
 			<File
-				RelativePath=".\zlib\compress.c">
-			</File>
+				RelativePath=".\zlib\compress.c"/>
 			<File
-				RelativePath=".\zlib\deflate.c">
-			</File>
+				RelativePath=".\zlib\deflate.c"/>
 			<File
-				RelativePath=".\zlib\infblock.c">
-			</File>
+				RelativePath=".\zlib\infblock.c"/>
 			<File
-				RelativePath=".\zlib\infcodes.c">
-			</File>
+				RelativePath=".\zlib\infcodes.c"/>
 			<File
-				RelativePath=".\zlib\inffast.c">
-			</File>
+				RelativePath=".\zlib\inffast.c"/>
 			<File
-				RelativePath=".\zlib\inflate.c">
-			</File>
+				RelativePath=".\zlib\inflate.c"/>
 			<File
-				RelativePath=".\zlib\inftrees.c">
-			</File>
+				RelativePath=".\zlib\inftrees.c"/>
 			<File
-				RelativePath=".\zlib\infutil.c">
-			</File>
+				RelativePath=".\zlib\infutil.c"/>
 			<File
-				RelativePath=".\zlib\trees.c">
-			</File>
+				RelativePath=".\zlib\trees.c"/>
 			<File
-				RelativePath=".\zlib\uncompr.c">
-			</File>
+				RelativePath=".\zlib\uncompr.c"/>
 			<File
-				RelativePath=".\zlib\zutil.c">
-			</File>
+				RelativePath=".\zlib\zutil.c"/>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath=".\zlib\deflate.h">
-			</File>
+				RelativePath=".\zlib\deflate.h"/>
 			<File
-				RelativePath=".\zlib\infblock.h">
-			</File>
+				RelativePath=".\zlib\infblock.h"/>
 			<File
-				RelativePath=".\zlib\infcodes.h">
-			</File>
+				RelativePath=".\zlib\infcodes.h"/>
 			<File
-				RelativePath=".\zlib\inffast.h">
-			</File>
+				RelativePath=".\zlib\inffast.h"/>
 			<File
-				RelativePath=".\zlib\inffixed.h">
-			</File>
+				RelativePath=".\zlib\inffixed.h"/>
 			<File
-				RelativePath=".\zlib\inftrees.h">
-			</File>
+				RelativePath=".\zlib\inftrees.h"/>
 			<File
-				RelativePath=".\zlib\infutil.h">
-			</File>
+				RelativePath=".\zlib\infutil.h"/>
 			<File
-				RelativePath=".\zlib\trees.h">
-			</File>
+				RelativePath=".\zlib\trees.h"/>
 			<File
-				RelativePath=".\zlib\zconf.h">
-			</File>
+				RelativePath=".\zlib\zconf.h"/>
 			<File
-				RelativePath=".\zlib\zlib.h">
-			</File>
+				RelativePath=".\zlib\zlib.h"/>
 			<File
-				RelativePath=".\zlib\zutil.h">
-			</File>
+				RelativePath=".\zlib\zutil.h"/>
 		</Filter>
 	</Files>
-	<Globals>
-	</Globals>
+	<Globals/>
 </VisualStudioProject>

@@ -32,12 +32,13 @@
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING };
+COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200, 200 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200, 200, 100 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, 
-ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING };
+ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
+ResourceManager::ADDED };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -241,8 +242,12 @@ void QueueFrame::QueueItemInfo::update() {
 		columns[COLUMN_ERRORS] = tmp.empty() ? STRING(NO_ERRORS) : tmp;
 	}
 	
-	if(colMask & COLUMN_SEARCHSTRING) {
+	if(colMask & MASK_SEARCHSTRING) {
 		columns[COLUMN_SEARCHSTRING] = getSearchString();
+	}
+
+	if(colMask & MASK_ADDED) {
+		columns[COLUMN_ADDED] = Util::formatTime("%Y-%M-%d %H:%m", getAdded());
 	}
 }
 
@@ -1258,7 +1263,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.35 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.36 2003/11/11 13:16:10 arnetheduck Exp $
  */
 
 

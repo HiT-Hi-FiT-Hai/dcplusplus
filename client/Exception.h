@@ -26,7 +26,8 @@
 class Exception  
 {
 public:
-	Exception(const string& aError = "") throw() : error(aError) { dcdrun(if(error.size()>0)) dcdebug("Thrown: %s\n", error.c_str()); };
+	Exception() { };
+	Exception(const string& aError) throw() : error(aError) { dcdrun(if(error.size()>0)) dcdebug("Thrown: %s\n", error.c_str()); };
 	virtual ~Exception() { };
 	virtual const string& getError() const { return error; };
 protected:
@@ -54,6 +55,6 @@ public:\
 
 /**
  * @file
- * $Id: Exception.h,v 1.12 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Exception.h,v 1.13 2003/11/11 13:16:09 arnetheduck Exp $
  */
 

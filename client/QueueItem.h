@@ -109,15 +109,16 @@ public:
 	};
 
 	QueueItem(const string& aTarget, int64_t aSize, const string& aSearchString, 
-		Priority aPriority, int aFlag, int64_t aDownloadedBytes) : 
+		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded) : 
 	Flags(aFlag), target(aTarget), searchString(aSearchString), 
-		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), priority(aPriority),
-		current(NULL), currentDownload(NULL) { };
+		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
+		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded) 
+	{ };
 
 	QueueItem(const QueueItem& rhs) : 
 	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), searchString(rhs.searchString),
 		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority), 
-		current(rhs.current), currentDownload(rhs.currentDownload) 
+		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added)
 	{
 		// Deep copy the source lists
 		Source::List::const_iterator i;
@@ -182,6 +183,7 @@ public:
 	GETSET(Priority, priority, Priority);
 	GETSET(Source*, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
+	GETSET(u_int32_t, added, Added);
 private:
 	friend class QueueManager;
 	Source::List sources;
@@ -229,5 +231,5 @@ inline bool operator ==(const QueueItem::Source* a, const User::Ptr& b) { return
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.1 2003/11/06 18:54:39 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.2 2003/11/11 13:16:09 arnetheduck Exp $
 */

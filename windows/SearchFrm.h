@@ -144,7 +144,7 @@ public:
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlResults.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-			delete (SearchResult*)ctrlResults.GetItemData(i);
+			((SearchResult*)ctrlResults.GetItemData(i))->decRef();
 			ctrlResults.DeleteItem(i);
 		}
 	}
@@ -394,6 +394,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.24 2003/10/28 15:27:54 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.25 2003/11/11 13:16:11 arnetheduck Exp $
  */
 

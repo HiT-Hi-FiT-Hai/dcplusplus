@@ -114,7 +114,7 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		ctrlStatus.SetText(4, (STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
 	} else if(wParam == TICK_AVG) {
 		float* x = (float*)lParam;
-		ctrlStatus.SetText(2, (STRING(AVERAGE) + Util::toString(*x)).c_str());
+		ctrlStatus.SetText(2, (STRING(AVERAGE) + Util::toString((int)*x)).c_str());
 		delete x;
 	}
 
@@ -185,5 +185,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.16 2003/11/11 13:16:11 arnetheduck Exp $
  */

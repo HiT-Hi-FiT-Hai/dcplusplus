@@ -111,30 +111,20 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 			string name = aSeeker.substr(4);
 			// Good, we have a passive seeker, those are easier...
 			string str;
-			char* buf = new char[4096];
 			for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 				SearchResult* sr = *i;
-				if(sr->getType() == SearchResult::TYPE_FILE) {
-					sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-						Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
-				} else {
-					dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
-					dcassert(sr->getFile().size() > 0);
-					string fname = sr->getFile().substr(0, sr->getFile().length() - 1);
-					sprintf(buf, "$SR %s %s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), fname.c_str(), 
-						sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
-				}
-				str += buf;
-				delete sr;
+				str += sr->toSR();
+				str[str.length()-1] = 5;
+				str += name;
+				str += '|';
+
+				sr->decRef();
 			}
-			delete[] buf;
 			
 			if(str.size() > 0)
 				aClient->searchResults(str);
 			
 		} else {
-			char* buf = new char[4096];
-
 			try {
 				string ip, file;
 				short port = 0;
@@ -143,26 +133,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				if(port == 0) port = 412;
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					if(sr->getType() == SearchResult::TYPE_FILE) {
-						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-					} else {
-						dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
-						dcassert(sr->getFile().size() > 0);
-						string fname = sr->getFile().substr(0, sr->getFile().length() - 1);
-						sprintf(buf, "$SR %s %s %d/%d%c%s (%s)", aClient->getNick().c_str(), fname.c_str(), 
-							sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-					}
-					int len = strlen(buf);
-					if(len > 0 && len < 1400)
-						s.writeTo(ip, port, buf, len);
+					s.writeTo(ip, port, sr->toSR());
+					sr->decRef();
 				}
 			} catch(const SocketException& /* e */) {
 				dcdebug("Search caught error\n");
 			}
-			delete[] buf;
-
-			for_each(l.begin(), l.end(), DeleteFunction<SearchResult*>());
 		}
 	}
 }
@@ -382,5 +358,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.43 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.44 2003/11/11 13:16:08 arnetheduck Exp $
  */

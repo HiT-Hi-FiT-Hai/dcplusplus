@@ -225,7 +225,7 @@ string Util::validateFileName(const string& aFile) {
 
 	i = tmp.length() - 1;
 	// Then, eliminate all ':' that are not the second letter ("c:\...")
-	while(true) {
+	for(;;) {
 		i = tmp.rfind(':', i);
 		if(i == 1 || i == string::npos)
 			break;
@@ -297,7 +297,7 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 
 string Util::getAwayMessage() { 
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
-};
+}
 
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
@@ -546,6 +546,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.34 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.35 2003/11/11 13:16:10 arnetheduck Exp $
  */
 
