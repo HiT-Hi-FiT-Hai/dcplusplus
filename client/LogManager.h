@@ -26,6 +26,7 @@
 #include "File.h"
 #include "CriticalSection.h"
 #include "Singleton.h"
+#include "TimerManager.h"
 
 class LogManagerListener {
 public:
@@ -55,14 +56,14 @@ public:
 	}
 
 	void logDateTime(const string& area, const string& msg) throw() {
-		char buf[20];
-		time_t now = time(NULL);
-		strftime(buf, 20, "%Y-%m-%d %H:%M: ", localtime(&now));
-		log(area, buf + msg);
+		log(area, Util::formatTime("%Y-%m-%d %H:%M: ", TimerManager::getInstance()->getTime()) + msg);
 	}
 
-	void message(const string& m) {
-		fire(LogManagerListener::MESSAGE, m);
+	void message(const string& msg) {
+		if (BOOLSETTING(LOG_SYSTEM)) {
+			log("system", Util::formatTime("%Y-%m-%d %H:%M:%S: ", TimerManager::getInstance()->getTime()) + msg);
+		}
+		fire(LogManagerListener::MESSAGE, msg);
 	}
 
 private:
@@ -81,5 +82,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.8 2004/01/25 10:37:40 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.9 2004/03/19 08:48:57 arnetheduck Exp $
  */

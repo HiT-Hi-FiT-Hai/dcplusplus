@@ -54,6 +54,7 @@
 		<String Name="Directory">Directory</String>
 		<String Name="DirectoryAlreadyShared">Directory already shared</String>
 		<String Name="Disconnected">Disconnected</String>
+		<String Name="DisconnectedUser">Disconnected user leaving the hub: </String>
 		<String Name="DiscFull">Disk full(?)</String>
 		<String Name="Document">Document</String>
 		<String Name="Done">Done</String>
@@ -63,7 +64,7 @@
 		<String Name="DownloadFinishedIdle">Download finished, idle...</String>
 		<String Name="DownloadStarting">Download starting...</String>
 		<String Name="DownloadTo">Download to...</String>
-		<String Name="DownloadQueue">Download queue</String>
+		<String Name="DownloadQueue">Download Queue</String>
 		<String Name="DownloadWholeDir">Download whole directory</String>
 		<String Name="DownloadWholeDirTo">Download whole directory to...</String>
 		<String Name="Downloaded">Downloaded</String>
@@ -72,6 +73,7 @@
 		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
 		<String Name="Downloads">Downloads</String>
+		<String Name="DuplicateFileNotShared">Duplicate file will not be shared: </String>
 		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Edit">Edit</String>
 		<String Name="Email">E-Mail</String>
@@ -90,7 +92,8 @@
 		<String Name="FavoriteUserAdded">Favorite user added</String>
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
-		<String Name="FileListRefreshed">File list refreshed</String>
+		<String Name="FileListRefreshFinished">File list refresh finished</String>
+		<String Name="FileListRefreshInitiated">File list refresh initiated</String>
 		<String Name="FileNotAvailable">File not available</String>
 		<String Name="FileType">File type</String>
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
@@ -159,7 +162,7 @@
 		<String Name="MenuRefreshFileList">Refresh file list</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuSearch">&amp;Search	Ctrl+S</String>
-		<String Name="MenuSearchSpy">Search spy</String>
+		<String Name="MenuSearchSpy">Search Spy</String>
 		<String Name="MenuSettings">Settings...</String>
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuAbout">About DC++...</String>
@@ -293,20 +296,20 @@
 		<String Name="SettingsExampleText">Donate $$$:s! (well, €€€ preferably =) (see help menu)</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
+		<String Name="SettingsFormat">Format</String>
 		<String Name="SettingsFullRowSelect">Full row select in lists</String>
 		<String Name="SettingsGeneral">General</String>
-		<String Name="SettingsHashFiles">Enable TTH file hash features</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
-		<String Name="SettingsLogDir">Log directory</String>
 		<String Name="SettingsLogDownloads">Log downloads</String>
 		<String Name="SettingsLogFilelistTransfers">Log filelist transfers</String>
 		<String Name="SettingsLogMainChat">Log main chat</String>
 		<String Name="SettingsLogPrivateChat">Log private chat</String>
 		<String Name="SettingsLogUploads">Log uploads</String>
+		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogging">Logging</String>
 		<String Name="SettingsLogs">Logs and Sound</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
@@ -328,11 +331,13 @@
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
+		<String Name="SettingsQueueDirty">Set Download Queue tab bold when contents change</String>
 		<String Name="SettingsRemoveDupes">Remove dupes completely from your share (otherwise, only their size is subtracted, but the files can be seen by others)</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
 		<String Name="SettingsSelectTextFace">Select &amp;text style</String>
 		<String Name="SettingsSelectWindowColor">Select &amp;window color</String>
+		<String Name="SettingsSendUnknownCommands">Send unknown /commands to the hub</String>
 		<String Name="SettingsSfvCheck">Enable automatic SFV checking</String>
 		<String Name="SettingsShareHidden">Share hidden files</String>
 		<String Name="SettingsShareSize">Total size:</String>
@@ -395,6 +400,7 @@
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>
+		<String Name="UnknownCommand">Unknown command: </String>
 		<String Name="UnknownError">Unknown error: 0x%x</String>
 		<String Name="UnsupportedFilelistFormat">Unsupported filelist format</String>
 		<String Name="UploadFinishedIdle">Upload finished, idle...</String>

@@ -28,18 +28,20 @@
 #include "../client/CriticalSection.h"
 #include "../client/ConnectionManagerListener.h"
 
+#include "UCHandler.h"
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
 class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener, 
 	private UploadManagerListener, private ConnectionManagerListener, 
-	public UserInfoBaseHandler<TransferView>
+	public UserInfoBaseHandler<TransferView>, public UCHandler<TransferView>
 {
 public:
 	TransferView() { };
 	~TransferView(void);
 
 	typedef UserInfoBaseHandler<TransferView> uibBase;
+	typedef UCHandler<TransferView> ucBase;
 
 	BEGIN_MSG_MAP(TransferView)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_GETDISPINFO, ctrlTransfers.onGetDispInfo)
@@ -55,6 +57,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_COMMANDS(uibBase)
 	END_MSG_MAP()
 
@@ -65,6 +68,7 @@ public:
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	void runUserCommand(UserCommand& uc);
 
 	void prepareClose();
 
@@ -90,7 +94,10 @@ public:
 		ctrlTransfers.forEach(&ItemInfo::deleteSelf);
 		return 0;
 	}
+
 private:
+	/** Parameter map for user commands */
+	StringMap ucParams;
 	class ItemInfo;
 public:
 	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
@@ -250,5 +257,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.11 2004/03/08 10:13:53 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.12 2004/03/19 08:48:58 arnetheduck Exp $
  */

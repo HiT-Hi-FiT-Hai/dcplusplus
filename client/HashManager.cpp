@@ -31,7 +31,7 @@ static const u_int32_t HASH_FILE_VERSION=1;
 TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
 	TTHValue* root = store.getTTH(aFileName, aSize, aTimeStamp);
-	if(root == NULL && BOOLSETTING(HASH_FILES)) {
+	if(root == NULL) {
 		hasher.hashFile(aFileName);
 	}
 	return root;
@@ -364,5 +364,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.11 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.12 2004/03/19 08:48:57 arnetheduck Exp $
  */

@@ -263,8 +263,6 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 	if(CryptoManager::getInstance()->isExtended(aLock)) {
 		StringList feat = features;
-		if(BOOLSETTING(HASH_FILES))
-			feat.push_back("TTHSearch");
 		if(BOOLSETTING(COMPRESS_TRANSFERS))
 			feat.push_back("GetZBlock");
 		client->supports(feat);
@@ -368,5 +366,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.50 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.51 2004/03/19 08:48:57 arnetheduck Exp $
  */

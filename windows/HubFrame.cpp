@@ -226,7 +226,11 @@ void HubFrame::onEnter() {
 					}
 				}
 			} else {
-				client->sendMessage(s);
+				if (BOOLSETTING(SEND_UNKNOWN_COMMANDS)) {
+					client->sendMessage(s);
+				} else {
+					addClientLine(STRING(UNKNOWN_COMMAND) + cmd);
+				}
 			}
 		} else {
 			client->sendMessage(s);
@@ -1087,5 +1091,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.51 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.52 2004/03/19 08:48:58 arnetheduck Exp $
  */

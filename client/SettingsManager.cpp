@@ -49,10 +49,10 @@ const string SettingsManager::settingTags[] =
 	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
 	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
-	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
+	"MaxCompression", "FinishedDirty", "QueueDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
-	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", 
-	"LogFilelistTransfers", "AutoSearchExact", "HashFiles",
+	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
+	"LogFilelistTransfers", "AutoSearchExact", "SendUnknownCommands",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -137,6 +137,7 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_UPDATE_LIST, true);
 	setDefault(MAX_COMPRESSION, 6);
 	setDefault(FINISHED_DIRTY, true);
+	setDefault(QUEUE_DIRTY, true);
 	setDefault(ANTI_FRAG, false);
 	setDefault(NO_AWAYMSG_TO_BOTS, true);
 	setDefault(SKIP_ZERO_BYTE, false);
@@ -148,8 +149,8 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH_AUTO_MATCH, true);
 	setDefault(LOG_FILELIST_TRANSFERS, true);
 	setDefault(AUTO_SEARCH_EXACT, true);
-	setDefault(HASH_FILES, true);
-
+	setDefault(LOG_SYSTEM, false);
+	setDefault(SEND_UNKNOWN_COMMANDS, true);
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
 	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
@@ -292,6 +293,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.68 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.69 2004/03/19 08:48:57 arnetheduck Exp $
  */
 

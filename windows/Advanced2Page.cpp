@@ -32,12 +32,17 @@ static char THIS_FILE[] = __FILE__;
 
 PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
-	{ IDC_SETTINGS_LOG_DIR, ResourceManager::SETTINGS_LOG_DIR},
+	{ IDC_SETTINGS_LOG_DIR, ResourceManager::DIRECTORY},
 	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
 	{ IDC_LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
 	{ IDC_LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
 	{ IDC_LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS }, 
 	{ IDC_LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
+	{ IDC_LOG_SYSTEM, ResourceManager::SETTINGS_LOG_SYSTEM_MESSAGES },
+	{ IDC_SETTINGS_FORMAT1, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FORMAT2, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FORMAT3, ResourceManager::SETTINGS_FORMAT },
+	{ IDC_SETTINGS_FORMAT4, ResourceManager::SETTINGS_FORMAT },
 	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
 	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
@@ -50,6 +55,7 @@ PropPage::Item Advanced2Page::items[] = {
 	{ IDC_LOG_DOWNLOADS, SettingsManager::LOG_DOWNLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_UPLOADS, SettingsManager::LOG_UPLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_DIRECTORY, SettingsManager::LOG_DIRECTORY, PropPage::T_STR },
+	{ IDC_LOG_SYSTEM, SettingsManager::LOG_SYSTEM, PropPage::T_BOOL },
 	{ IDC_PRIVATE_MESSAGE_BEEP, SettingsManager::PRIVATE_MESSAGE_BEEP, PropPage::T_BOOL },
 	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, SettingsManager::PRIVATE_MESSAGE_BEEP_OPEN, PropPage::T_BOOL },
 	{ IDC_POST_DOWNLOAD, SettingsManager::LOG_FORMAT_POST_DOWNLOAD, PropPage::T_STR },
@@ -70,14 +76,18 @@ LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 }
 
 void Advanced2Page::updateEdits() {
-	CButton btn = ::GetDlgItem(m_hWnd, IDC_LOG_MAIN_CHAT);
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_MAIN_CHAT), btn.GetCheck());
-	btn = ::GetDlgItem(m_hWnd, IDC_LOG_PRIVATE_CHAT);
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_PRIVATE_CHAT), btn.GetCheck());
-	btn = ::GetDlgItem(m_hWnd, IDC_LOG_DOWNLOADS);
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_POST_DOWNLOAD), btn.GetCheck());
-	btn = ::GetDlgItem(m_hWnd, IDC_LOG_UPLOADS);
-	::EnableWindow(::GetDlgItem(m_hWnd, IDC_POST_UPLOAD), btn.GetCheck());
+	bool btnState = (IsDlgButtonChecked(IDC_LOG_MAIN_CHAT) != 0);
+	::EnableWindow(GetDlgItem(IDC_MAIN_CHAT), btnState);
+	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT1), btnState);
+	btnState = (IsDlgButtonChecked(IDC_LOG_PRIVATE_CHAT) != 0);
+	::EnableWindow(GetDlgItem(IDC_PRIVATE_CHAT), btnState);
+	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT2), btnState);
+	btnState = (IsDlgButtonChecked(IDC_LOG_DOWNLOADS) != 0);
+	::EnableWindow(GetDlgItem(IDC_POST_DOWNLOAD), btnState);
+	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT3), btnState);
+	btnState = (IsDlgButtonChecked(IDC_LOG_UPLOADS) != 0);
+	::EnableWindow(GetDlgItem(IDC_POST_UPLOAD), btnState);
+	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT4), btnState);
 }
 
 void Advanced2Page::write()
@@ -109,6 +119,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.8 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.9 2004/03/19 08:48:58 arnetheduck Exp $
  */
 

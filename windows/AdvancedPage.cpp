@@ -82,7 +82,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_SEARCH_AUTO_MATCH, ResourceManager::SETTINGS_AUTO_SEARCH_AUTO_MATCH },
 	{ SettingsManager::LOG_FILELIST_TRANSFERS, ResourceManager::SETTINGS_LOG_FILELIST_TRANSFERS },
 	{ SettingsManager::AUTO_SEARCH_EXACT, ResourceManager::SETTINGS_AUTO_SEARCH_EXACT },
-	{ SettingsManager::HASH_FILES, ResourceManager::SETTINGS_HASH_FILES },
+	{ SettingsManager::SEND_UNKNOWN_COMMANDS, ResourceManager::SETTINGS_SEND_UNKNOWN_COMMANDS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -101,6 +101,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.25 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.26 2004/03/19 08:48:58 arnetheduck Exp $
  */
 

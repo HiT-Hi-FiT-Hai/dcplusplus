@@ -250,7 +250,6 @@ string Util::formatBytes(int64_t aBytes) {
 	return buf;
 }
 
-
 string Util::getLocalIp() {
 	string tmp;
 	
@@ -286,118 +285,120 @@ string Util::getLocalIp() {
 	return tmp;
 }
 
-static int cToUtf8(string& str, string::size_type i) {
-	wchar_t c;
-	int l = mblen(str.c_str() + i, str.length() - i);
-	if(l == -1) {
-		// Invalid multibyte character? Erase it...
-		str.erase(i, 1);
-		return 0;
-	}
-
-	if(mbtowc(&c, str.c_str()+i, l) != l) {
-		str.erase(i, l);
-		return 0 - l;
-	}
-	
+static void cToUtf8(wchar_t c, string& str) {
 	if(c >= 0x0800) {
-		if(l < 3)
-			str.insert(i+1, 3-l, (u_int8_t)0x80);
-		else if(l > 3)
-			str.erase(i, l-3);
-
-		str[i] = 0x80 | 0x40 | 0x20 & (c >> 12);
-		str[i+1] = 0x80 & ((c >> 6) & 0x3f);
-		str[i+2] = 0x80 & (c & 0x3f);
-		return 3 - l;
+		str += (char)(0x80 | 0x40 | 0x20 & (c >> 12));
+		str += (char)(0x80 & ((c >> 6) & 0x3f));
+		str += (char)(0x80 & (c & 0x3f));
 	} else if(c >= 0x0080) {
-		if(l < 2)
-            str.insert(i+1, 2-l, 0);
-		else if(l > 2)
-			str.erase(i, l-2);
-		str[i] = 0x80 | 0x40 | (c >> 6);
-		str[i+1] = 0x80 | (c & 0x3f); 
-		return 2 - l;
+		str += (char)(0x80 | 0x40 | (c >> 6));
+		str += (char)(0x80 | (c & 0x3f)); 
 	} else {
-		if(l > 1) {
-			str.erase(i, l-1);
-			str[i] = c & 0x7f;
-		}
-		return 1 - l;
+		str += (char)c;
 	}
 }
 
-int cToAcp(string& str, string::size_type i) {
-	wchar_t c;
+static int utf8ToC(const char* str, wchar_t& c) {
 	int l = 0;
-	if(str[i] & 0x80) {
-		if(str[i] & 0x40) {
-			if(str[i] & 0x20) {
-				if((i + 2 >= str.length()) || 
-					!((((unsigned char)str[i+1]) & ~0x3f) == 0x80) ||
-					!((((unsigned char)str[i+2]) & ~0x3f) == 0x80))
+	if(str[0] & 0x80) {
+		if(str[0] & 0x40) {
+			if(str[0] & 0x20) {
+				if(str[1] == 0 || str[2] ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
+					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
 				{
-					str.erase(i, 1);
 					return -1;
 				}
-				c = ((wchar_t)(unsigned char)str[i] & 0xf) << 12 |
-					((wchar_t)(unsigned char)str[i+1] & 0x3f) << 6 |
-					((wchar_t)(unsigned char)str[i+2] & 0x3f);
+				c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
+					((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
+					((wchar_t)(unsigned char)str[2] & 0x3f);
 				l = 3;
 			} else {
-				if((i + 1 >= str.length()) ||
-					!((((unsigned char)str[i+1]) & ~0x3f) == 0x80)) 
+				if(str[1] == 0 ||
+					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
 				{
-					str.erase(i, 1);
 					return -1;
 				}
-				c = ((wchar_t)(unsigned char)str[i] & 0x1f) << 6 |
-					((wchar_t)(unsigned char)str[i+1] & 0x3f);
+				c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
+					((wchar_t)(unsigned char)str[1] & 0x3f);
 				l = 2;
 			}
 		} else {
-			str.erase(i, 1);
 			return -1;
 		}
 	} else {
-		c = (unsigned char)str[i];
+		c = (unsigned char)str[0];
 		l = 1;
 	}
 
-	// Warning! We assume at most 4 characters in the mb encoding
-	char buf[4];
-	int x = wctomb(buf, c);
-	if(x == -1) {
-		x = 1;
-		buf[0] = '_';
-	}
-
-	if(x < l) {
-		str.erase(i + 1, l-x);
-		l = x;
-	}
-	for(int n = 0; n < x; n++)
-		str[i+n] = buf[n];
-
-	return x - l;
+	return l;
 }
 
 /**
  * Convert a string in the current locale (whatever that happens to be) to UTF-8.
  */
 string& Util::toUtf8(string& str) {
-	for(string::size_type i = 0; i < str.length(); ++i) {
-		if(str[i] & 0x80)
-			i += cToUtf8(str, i);
+	if(str.empty())
+		return str;
+	wstring wtmp(str.length(), 0);
+#ifdef _WIN32
+	int sz = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), str.length(),
+		&wtmp[0], str.length());
+	if(sz <= 0) {
+		str.clear();
+		return str;
+	}
+#else
+	int sz = mbstowcs(&wtmp[0], str.c_str(), wtmp.length());
+	if(sz <= 0) {
+		str.clear();
+		return str;
+	}
+	if(sz < wtmp.length())
+		sz--;
+#endif
+
+	wtmp.resize(sz);
+	str.clear();
+    for(string::size_type i = 0; i < str.length(); ++i) {
+		cToUtf8(wtmp[i], str);
 	}
 	return str;
 }
 
 string& Util::toAcp(string& str) {
-	for(string::size_type i = 0; i < str.length(); ++i) {
-		if(str[i] & 0x80)
-			i += cToAcp(str, i);
+	if(str.empty())
+		return str;
+
+	wstring wtmp;
+	wtmp.reserve(str.length());
+	for(string::size_type i = 0; i < str.length(); ) {
+		wchar_t c = 0;
+		int x = utf8ToC(str.c_str() + i, c);
+		if(x == -1) {
+			i++;
+		} else {
+			i+=x;
+			wtmp += c;
+		}
 	}
+#ifdef WIN32
+	int x = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.length(), NULL, 0, NULL, NULL);
+	if(x == 0) {
+		str.clear();
+		return str;
+	}
+	str.resize(x);
+	WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.length(), &str[0], str.size(), NULL, NULL);
+#else
+	size_t x = wcstombs(NULL, wtmp.c_str(), 0);
+	if(x == (size_t)-1) {
+		str.clear();
+		return str;
+	}
+	str.resize(x);
+	wcstombs(&str[0], wtmp.c_str(), str.size());
+#endif
 	return str;
 }
 
@@ -601,6 +602,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.45 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.46 2004/03/19 08:48:58 arnetheduck Exp $
  */
 

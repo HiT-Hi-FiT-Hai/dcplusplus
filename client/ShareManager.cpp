@@ -24,6 +24,7 @@
 #include "CryptoManager.h"
 #include "UploadManager.h"
 #include "ClientManager.h"
+#include "LogManager.h"
 #include "HashManager.h"
 
 #include "SimpleXML.h"
@@ -353,6 +354,7 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 int ShareManager::run() {
 
 	string tmp, tmp2;
+	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_INITIATED));
 	{
 		WLock l(cs);
 
@@ -452,6 +454,7 @@ int ShareManager::run() {
 		lastUpdate = GET_TICK();
 	}
 
+	LogManager::getInstance()->message(STRING(FILE_LIST_REFRESH_FINISHED));
 	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}
@@ -491,6 +494,7 @@ void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeM
 		for(; k != p.second; ++k) {
 			if(k->second == j->getSize()) {
 				dcdebug("SM::D::toString Dupe found: %s (" I64_FMT " bytes)\n", k->first.c_str(), j->getSize());
+				LogManager::getInstance()->message(STRING(DUPLICATE_FILE_NOT_SHARED) + j->getName() + " (" + STRING(SIZE) + ": " + Util::toString(j->getSize()) + " " + STRING(B) + ") (" + STRING(DIRECTORY) + ": \"" + j->getParent()->getName() + "\")");
 				dupe = true;
 				break;
 			}
@@ -872,6 +876,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.78 2004/03/09 12:20:20 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.79 2004/03/19 08:48:57 arnetheduck Exp $
  */
 

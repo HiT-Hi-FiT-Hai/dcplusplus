@@ -639,7 +639,9 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			
 			delete ii;
 			updateStatus();
-			setDirty();
+			if (BOOLSETTING(QUEUE_DIRTY)) {
+				setDirty();
+			}
 		} else if(ti->first == UPDATE_ITEM) {
 			QueueItemInfo* ii = (QueueItemInfo*)ti->second;
 			if(!showTree || isCurDir(ii->getPath())) {
@@ -1287,7 +1289,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.45 2004/03/12 08:21:04 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.46 2004/03/19 08:48:58 arnetheduck Exp $
  */
 
 

@@ -113,12 +113,46 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	if (PtInRect(&rc, pt) && ctrlTransfers.GetSelectedCount() > 0) 
 	{ 
 		ctrlTransfers.ClientToScreen(&pt);
+		int i = -1;
+		ItemInfo* itemI;
+		bool bCustomMenu = false;
+		if( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			itemI = ctrlTransfers.getItemData(i);
+			bCustomMenu = true;
+
+			prepareMenu(transferMenu, UserCommand::CONTEXT_CHAT, itemI->user->getClientAddressPort(), itemI->user->isClientOp());
+			transferMenu.AppendMenu(MF_SEPARATOR);
+		}
+
 		transferMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
+		if ( bCustomMenu ) {
+			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+			transferMenu.DeleteMenu(transferMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+			cleanMenu(transferMenu);
+		}
 		return TRUE; 
 	}
 	return FALSE; 
 }
+
+void TransferView::runUserCommand(UserCommand& uc) {
+	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
+		return;
+
+	int i = -1;
+	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		ItemInfo* itemI = ctrlTransfers.getItemData(i);
+
+		ucParams["mynick"] = itemI->user->getClientNick();
+
+		itemI->user->getParams(ucParams);
+
+		itemI->user->send(Util::formatParams(uc.getCommand(), ucParams));
+		}
+	return;
+};
+
 
 LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
@@ -273,7 +307,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			ctrlTransfers.updateItem(i);
 		}
 
-		if(ctrlTransfers.getSortColumn() != COLUMN_USER && ctrlTransfers.getSortColumn() != COLUMN_STATUS)
+		if(ctrlTransfers.getSortColumn() != COLUMN_STATUS)
 			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
 		
@@ -583,5 +617,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.24 2004/03/08 10:13:53 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.25 2004/03/19 08:48:58 arnetheduck Exp $
  */

@@ -50,7 +50,7 @@ public:
 			StringPairIter i = find_if(attribs.begin() + hint, attribs.end(), CompareFirst<string, string>(name));
 			if(i == attribs.end()) {
 				i = find_if(attribs.begin(), attribs.begin() + hint, CompareFirst<string, string>(name));
-				return ((i == attribs.end()) ? Util::emptyString : i->second);
+				return ((i == (attribs.begin() + hint)) ? Util::emptyString : i->second);
 			} else {
 				return i->second;
 			}
@@ -283,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.32 2004/03/09 12:20:20 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.33 2004/03/19 08:48:57 arnetheduck Exp $
  */
 

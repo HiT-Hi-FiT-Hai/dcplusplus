@@ -61,7 +61,7 @@ private:
 		SPACE_BOTTOM = 10,
 		SPACE_LEFT = 10,
 		SPACE_RIGHT = 10,
-		TREE_WIDTH = 125,
+		TREE_WIDTH = 150,
 	};
 
 	enum {
@@ -85,5 +85,5 @@ private:
 
 /**
 * @file
-* $Id: TreePropertySheet.h,v 1.2 2003/12/14 20:41:39 arnetheduck Exp $
+* $Id: TreePropertySheet.h,v 1.3 2004/03/19 08:48:58 arnetheduck Exp $
 */

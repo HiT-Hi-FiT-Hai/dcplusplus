@@ -481,7 +481,6 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		try {
 			ShareManager::getInstance()->setDirty();
 			ShareManager::getInstance()->refresh(true);
-			status = STRING(FILE_LIST_REFRESHED);
 		} catch(const ShareException& e) {
 			status = e.getError();
 		}
@@ -626,5 +625,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.39 2004/03/11 21:12:08 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.40 2004/03/19 08:48:58 arnetheduck Exp $
  */

@@ -240,7 +240,13 @@
 #define IDC_OPEN_DOWNLOADS              1213
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1214
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1215
-#define IDC_COPY_TTH					1216
+#define IDC_COPY_TTH                    1216
+#define IDC_SETTINGS_FORMAT1            1217
+#define IDC_SETTINGS_FORMAT2            1218
+#define IDC_SETTINGS_FORMAT3            1219
+#define IDC_SETTINGS_FORMAT4            1220
+#define IDC_SETTINGS_LOG_SYSTEM         1221
+#define IDC_LOG_SYSTEM                  1221
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -256,7 +262,7 @@
 #define IDC_PRIORITY_HIGH               7004
 #define IDC_PRIORITY_HIGHEST            7005
 #define IDC_DOWNLOAD_WHOLE_TARGET       7500
-#define IDC_REMOVE_SOURCES				8000
+#define IDC_REMOVE_SOURCES              8000
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -276,7 +282,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1217
+#define _APS_NEXT_CONTROL_VALUE         1222
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

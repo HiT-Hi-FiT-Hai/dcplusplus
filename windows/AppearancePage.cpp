@@ -64,6 +64,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
 	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
+	{ SettingsManager::QUEUE_DIRTY, ResourceManager::SETTINGS_QUEUE_DIRTY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -190,5 +191,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.12 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.13 2004/03/19 08:48:58 arnetheduck Exp $
  */

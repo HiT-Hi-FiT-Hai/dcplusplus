@@ -1,6 +1,16 @@
  -- 0.30x --
 * Fixed escape in user commands (thanks garg)
-
+* Probably fixed search frame hang
+* Exact size in queue frame (thanks cologic)
+* Ip in search frame (thanks cologic)
+* Small fix to transfer view sorting (thanks torgny nyblom)
+* User commands in transfer view (thanks torgny nyblom)
+* Extra logging in main status bar (thanks garg)
+* Option not to bold queue tab (thanks garg)
+* Option not to send unknown /-commands (thanks garg)
+* Hopefully fixed some encoding issues with the xml filelist
+* Hashing is now mandatory (stop whining, it was only meant to be optional in 0.307)
+* Match files now works correctly with TTH's in queue
 
  -- 0.307 2004-03-10 --
 * Experimental release, lots and lots of core code has changed => high fatal bug probability.
@@ -28,7 +38,7 @@
 * Slight speedup of file list loading
 * File IO rewritten (major change)
 * Rollback no longer depends on buffer size
-* /rebuilddb rebuilds the hash database and potentially reduces the size of the raw hash data file (also checks
+* /rebuild rebuilds the hash database and potentially reduces the size of the raw hash data file (also checks
   its integrity)
 * Ip column in transfer list (thanks cologic)
 * Scrollbar for multiline messages (thanks garg)
