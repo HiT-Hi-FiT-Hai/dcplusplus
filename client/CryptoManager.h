@@ -69,8 +69,9 @@ class CryptoManager : public Singleton<CryptoManager>
 {
 public:
 	string makeKey(const string& aLock);
-	string getLock() { return lock; };
-	string getPk() { return pk; };
+	const string& getLock() { return lock; };
+	const string& getPk() { return pk; };
+	bool isExtended(const string& aLock) { return aLock.find("EXTENDEDPROTOCOL") != string::npos; };
 
 	void decodeHuffman(const BYTE* is, string& os);
 	void encodeHuffman(const string& is, string& os);
@@ -105,9 +106,9 @@ private:
 	};
 	
 
-	string lock;
-	string pk;
-	
+	const string lock;
+	const string pk;
+
 	int countChars(const string& aString, int* c, BYTE& csum);
 	void walkTree(list<Node*>& aTree);
 	void recurseLookup(vector<BYTE>* b, Node* node, vector<BYTE>& bytes);
@@ -125,9 +126,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.11 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.12 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.12  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.11  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -99,7 +99,7 @@ public:
 		char *buf = new char[ctrlPad.GetWindowTextLength() + 1];
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		text = buf;
-		delete buf;
+		delete[] buf;
 		SettingsManager::getInstance()->save();
 		bHandled = FALSE;
 		return 0;
@@ -150,9 +150,12 @@ private:
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.4 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: NotepadFrame.h,v $
+ * Revision 1.4  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.3  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

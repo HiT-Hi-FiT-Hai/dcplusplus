@@ -121,7 +121,9 @@ public:
 	
 	virtual void disconnect() {
 		connected = false;
-		closesocket(sock);
+		if(sock != INVALID_SOCKET)
+			closesocket(sock);
+		
 		sock = INVALID_SOCKET;
 		if(event) {
 			CloseHandle(event);
@@ -225,9 +227,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.24 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: Socket.h,v 1.25 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.25  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.24  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

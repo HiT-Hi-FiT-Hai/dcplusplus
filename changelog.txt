@@ -1,4 +1,12 @@
- -- 0.155 --
+ -- 0.162 2002-03-18 --
+* Fixed another hub counting bug (this is becoming annoying...gee, I should be sleeping...=)
+* Fixed a bug where the kick message was not sent correctly
+
+ -- 0.161 2002-03-18 --
+* Fixed a hub counting bug (this should also reduce the number of redunant description updates, thus lessening the load on the hub)
+* Hopefully fixed the 100% cpu bug (found a very likely candidate at least...=)
+
+ -- 0.16 2002-03-15 --
 * Fixed a resource leak that might have caused the sudden deaths (thanks carxor)
 * Added saving of last kick & redirect reasons (and server...)
 * Added hub name to the password dialog
@@ -35,6 +43,7 @@
 * Added total queue size and number of queue items to the download queue window
 * Added path column to download queue
 * Added a limit so that only 15 users and 1 op kan be kicked at a time from the hub user list
+* Fixed the download directory name bug
 
  -- 0.154 2002-02-25 --
 * Added passive user detection, those that are behind a set of bricks are passive.

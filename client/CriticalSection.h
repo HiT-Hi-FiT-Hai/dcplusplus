@@ -64,6 +64,7 @@ public:
 	void enterRead() throw() {
 		EnterCriticalSection(&cs);
 		readers++;
+		dcassert(readers < 100);
 		LeaveCriticalSection(&cs);
 	}
 	void leaveRead() throw() {
@@ -71,11 +72,14 @@ public:
 		dcassert(readers >= 0);
 	}
 	void enterWrite() throw() {
+		dcdrun(int x=0);
+
 		EnterCriticalSection(&cs);
 		while(readers > 0) {
 			LeaveCriticalSection(&cs);
+			dcassert(x++ < 1000);
 			Sleep(0);
-			dcdebug(".");
+			
 			EnterCriticalSection(&cs);
 		}
 	}
@@ -112,9 +116,12 @@ public:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.8 2002/03/07 19:07:51 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.9 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.9  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.8  2002/03/07 19:07:51  arnetheduck
  * Minor fixes + started code review
  *

@@ -110,14 +110,17 @@ void PropPage::write(HWND page, Item const* items)
 			}
 		}
 	}
-	delete buf;
+	delete[] buf;
 }
 
 /**
  * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.5 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.6 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: PropPage.cpp,v $
+ * Revision 1.6  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.5  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

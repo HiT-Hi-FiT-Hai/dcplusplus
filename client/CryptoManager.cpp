@@ -49,7 +49,7 @@ string CryptoManager::keySubst(string aKey, int n) {
 		}
 	}
 	string tmp((char*)temp, j);
-	delete temp;
+	delete[] temp;
 	return tmp;
 }
 
@@ -77,7 +77,7 @@ string CryptoManager::makeKey(const string& lock) {
 	}
 	
 	string tmp((char*)temp, i);
-	delete temp;
+	delete[] temp;
 	return keySubst(tmp, extra);
 }
 
@@ -155,7 +155,7 @@ void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
 	}
 	buf[pos] = 0;
 	os.assign(buf, size);
-	delete buf;
+	delete[] buf;
 
 	for(i=0; i<treeSize; i++) {
 		delete leaves[i];
@@ -327,9 +327,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.18 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.19 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.19  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.18  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

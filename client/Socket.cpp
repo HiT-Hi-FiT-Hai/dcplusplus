@@ -200,23 +200,17 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
-				TIMEVAL t = { 0, 500000 };
-				fd_set rfd, wfd;
-				FD_ZERO(&rfd);
+				TIMEVAL t;
+
+				// 0.2 seconds...
+				t.tv_sec = 0;
+				t.tv_usec = 200*1000;
+				fd_set wfd;
 				FD_ZERO(&wfd);
-				FD_SET(sock, &rfd);
 				FD_SET(sock, &wfd);
 				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, NULL, &t);
+				checksockerr(select(1, NULL, &wfd, NULL, &t));
 			} else if(errno == ENOBUFS) {
-				TIMEVAL t = { 0, 500000 };
-				fd_set rfd, wfd;
-				FD_ZERO(&rfd);
-				FD_ZERO(&wfd);
-				FD_SET(sock, &rfd);
-				FD_SET(sock, &wfd);
-				// Wait until something happens with the socket...
-				select(1, &rfd, &wfd, NULL, &t);
 				if(sendSize > 32) {
 					sendSize /= 2;
 					dcdebug("Reducing send window size to %d\n", sendSize);
@@ -240,9 +234,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.26 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.27 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.27  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.26  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

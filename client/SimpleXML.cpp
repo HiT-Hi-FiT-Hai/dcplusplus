@@ -90,7 +90,7 @@ string SimpleXML::Tag::toXML() {
 			char* buf = new char[name.length()*2 + tmp.length() + attrib.length() + 8];
 			sprintf(buf, "<%s %s>%s</%s>", name.c_str(), attrib.c_str(), tmp.c_str(), name.c_str());
 			tmp = buf;
-			delete buf;
+			delete[] buf;
 			return tmp;
 		}
 	} else {
@@ -293,9 +293,12 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.11 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.12 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.12  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.11  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

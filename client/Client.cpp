@@ -67,6 +67,11 @@ void Client::onLine(const string& aLine) throw() {
 	if(aLine.length() == 0)
 		return;
 	
+	if(aLine[0] != '$') {
+		fire(ClientListener::MESSAGE, this, aLine);
+		return;
+	}
+
 	string cmd;
 	string param;
 	int x;
@@ -77,7 +82,7 @@ void Client::onLine(const string& aLine) throw() {
 		cmd = aLine.substr(0, x);
 		param = aLine.substr(x+1);
 	}
-	
+
 	if(cmd == "$Search") {
 		int i = 0;
 		int j = param.find(' ', i);
@@ -320,11 +325,10 @@ void Client::onLine(const string& aLine) throw() {
 		fire(ClientListener::BAD_PASSWORD, this);
 	} else if(cmd == "$LogedIn") {
 		fire(ClientListener::LOGGED_IN, this);
-	} else if(cmd[0] == '$') {
-		fire(ClientListener::UNKNOWN, this, aLine);
 	} else {
-		fire(ClientListener::MESSAGE, this, aLine);
-	}
+		dcassert(cmd[0] == '$');
+		fire(ClientListener::UNKNOWN, this, aLine);
+	} 
 }
 
 void Client::disconnect(bool rl /* = true */) throw() {	
@@ -365,9 +369,12 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.34 2002/03/14 16:17:35 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.35 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.35  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.34  2002/03/14 16:17:35  arnetheduck
  * Oops, file buffering bug
  *

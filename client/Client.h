@@ -137,7 +137,7 @@ public:
 	void kick(const User::Ptr& aUser, const string& aMsg) {
 		dcdebug("Client::kick\n");
 		static const char str[] = 
-			"$To: %s $From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+			"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
 		string msg2 = Util::validateMessage(aMsg);
 
 		char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
@@ -163,7 +163,7 @@ public:
 		dcdebug("Client::kick\n");
 		
 		static const char str[] = 
-			"$To: %s $From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+			"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
 		string msg2 = Util::validateMessage(aMsg);
 
 		char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
@@ -252,8 +252,10 @@ private:
 	
 	DWORD lastSearchFlood;
 
-	Client() : lastHubs(0), counted(false), lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
+	Client() : lastHubs(0), counted(true), lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
 		TimerManager::getInstance()->addListener(this);
+		InterlockedIncrement(&hubs);
+
 	};
 	// No copying...
 	Client(const Client&) { dcassert(0); };
@@ -261,6 +263,7 @@ private:
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
 		removeListeners();
+		
 		if(counted)
 			InterlockedDecrement(&hubs);
 	};
@@ -298,11 +301,6 @@ private:
 		case BufferedSocketListener::FAILED:
 			fire(ClientListener::FAILED, this, aLine);
 			disconnect();
-			if(counted) {
-				InterlockedDecrement(&hubs);
-				dcassert( hubs >= 0 );
-				counted = false;
-			}
 			break;
 		default:
 			dcassert(0);
@@ -313,8 +311,6 @@ private:
 		case BufferedSocketListener::CONNECTED:
 			lastActivity = TimerManager::getTick();
 			fire(ClientListener::CONNECTED, this);
-			InterlockedIncrement(&hubs);
-			counted = true;
 			break;
 		}
 	}
@@ -332,9 +328,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.45 2002/03/14 16:17:35 arnetheduck Exp $
+ * $Id: Client.h,v 1.46 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.46  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.45  2002/03/14 16:17:35  arnetheduck
  * Oops, file buffering bug
  *

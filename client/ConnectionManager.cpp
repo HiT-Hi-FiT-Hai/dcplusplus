@@ -319,7 +319,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 		return;
 	}
 
-	if(aLock == CryptoManager::getInstance()->getLock()) {
+	if( CryptoManager::getInstance()->isExtended(aLock) ) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
@@ -461,9 +461,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.35 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.36 2002/03/19 00:41:37 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.36  2002/03/19 00:41:37  arnetheduck
+ * 0.162, hub counting and cpu bug
+ *
  * Revision 1.35  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *
