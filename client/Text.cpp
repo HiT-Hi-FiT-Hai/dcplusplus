@@ -24,13 +24,14 @@
 char Text::asciiLower[128];
 wchar_t Text::lower[65536];
 
+// When using GNU C library; setlocale should be called before Text::initialize 
+
 void Text::initialize() {
 	for(size_t i = 0; i < 65536; ++i) {
 #ifdef _WIN32
 		lower[i] = (wchar_t)CharLowerW((LPWSTR)i);
 #else
-#warning FIXME for non-ascii char codes
-		lower[i] = (char)tolower(i);
+		lower[i] = (char)towlower(i);
 #endif
 	}
 
@@ -109,27 +110,18 @@ wstring& Text::acpToWide(const string& str, wstring& tmp) throw() {
 	}
 	return tmp;
 #else
-	wchar_t *ptr;
-	size_t len;
- 
-	// NULL = calculate size
-	len = mbstowcs(NULL, str.c_str(), 0);
- 
-	// -1 = error in encoding
-	if (len == -1)	return tmp;
- 
-	// allocate needed space
-	ptr = new wchar_t[len + 1];
-	if (!ptr) return tmp;
- 
-	// do the conversion
-	mbstowcs(ptr, str.c_str(), len);
- 
-	// not sure if this is nessecary
-	ptr[len] = L'\0';
- 
-	tmp = ptr;
-	delete[] ptr;
+	//convert from current locale multibyte (equivalent to CP_ACP?) to wide char
+	const char* src = str.c_str();
+	int n = mbsrtowcs(NULL, &src, 0, NULL);
+	if (n < 1) {
+		return tmp;
+	}
+	tmp.resize(n);
+	n = mbsrtowcs(&tmp[0], &src, n, NULL);
+	if (n < 1) {
+		tmp.clear();
+		return tmp;
+	} 
 	return tmp;
 #endif
 }
@@ -157,26 +149,17 @@ string& Text::wideToAcp(const wstring& str, string& tmp) throw() {
 	}
 	return tmp;
 #else
-	char *ptr;
-	size_t len;
- 
-	//calculate needed space
-	len = wcstombs(NULL, str.c_str(), 0);
- 
-	// -1 means some characters cannot be converted
-	if (len == -1) return tmp;
- 
-	// allocate space for the string
-	ptr = new char[len + 1];
-	if (!ptr) return tmp;
- 
-	// convert
-	wcstombs(ptr, str.c_str(), len);
- 
-	ptr[len] = '\0';
- 
-	tmp = ptr;
-	delete[] ptr;
+	const wchar_t* src = str.c_str();
+	int n = wcsrtombs(NULL, &src, 0, NULL);
+	if(n < 1) {
+		return tmp;
+	}
+	tmp.resize(n);
+	n = wcsrtombs(&tmp[0], &src, n, NULL);
+	if(n < 1) {
+		tmp.clear();
+		return tmp;
+	}
 	return tmp;
 #endif
 }
@@ -229,5 +212,5 @@ string& Text::toLower(const string& str, string& tmp) throw() {
 
 /**
  * @file
- * $Id: Text.cpp,v 1.5 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: Text.cpp,v 1.6 2004/11/24 17:00:45 arnetheduck Exp $
  */

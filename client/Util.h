@@ -129,14 +129,13 @@ public:
 		return Text::wideToUtf8(wstring(buf, x));
 #else // _WIN32
 		char buf[PATH_MAX + 1];
-		char* path = getenv("_");
-		if (!path) {
-			if (readlink("/proc/self/exe", buf, sizeof (buf)) == -1) {
+		int n;
+		n = readlink("/proc/self/exe", buf, PATH_MAX);
+		if (n == -1) {
 				return emptyString;
 			}
-			path = buf;
-		}
-		return string(path);
+		buf[n] = '\0';
+		return string(buf);
 #endif // _WIN32
 	}	
 
@@ -562,5 +561,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.111 2004/11/06 12:13:47 arnetheduck Exp $
+ * $Id: Util.h,v 1.112 2004/11/24 17:00:43 arnetheduck Exp $
  */

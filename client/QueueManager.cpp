@@ -488,6 +488,9 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 		throw QueueException(STRING(INVALID_TARGET_FILE));
 	}
 #else
+	if(aTarget.length() > PATH_MAX) {
+		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
+	}
 	// Check that target contains at least one directory...we don't want headless files...
 	if(aTarget[0] != '/') {
 		throw QueueException(STRING(INVALID_TARGET_FILE));
@@ -1258,5 +1261,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.109 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.110 2004/11/24 17:00:45 arnetheduck Exp $
  */

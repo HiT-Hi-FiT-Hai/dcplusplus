@@ -342,13 +342,39 @@ public:
 		return x;
 	}
 
+	// some ftruncate implementations can't extend files like SetEndOfFile,
+	// not sure if the client code needs this...
+	int extendFile(int64_t len) {
+        char zero;
+
+        if ( (lseek(h,(off_t) len,SEEK_SET) != -1) && (::write(h,&zero,1) != -1) ) {
+            ftruncate(h,(off_t)len);
+            return 1;
+        }
+        return -1;
+    }
+
 	virtual void setEOF() throw(FileException) {
-		if(ftruncate(h, (off_t)getPos()) == -1)
+        int64_t pos;
+        int64_t eof;
+        int ret;
+
+        pos = (int64_t) lseek(h,0,SEEK_CUR);
+        eof = (int64_t) lseek(h,0,SEEK_END);
+        if (eof < pos) 
+            ret = extendFile(pos);
+        else
+            ret = ftruncate(h,(off_t)pos);
+        lseek(h,(off_t)pos,SEEK_SET);
+        if (ret == -1)
 			throw FileException(Util::translateError(errno));
 	}
+
 	virtual void setSize(int64_t newSize) throw(FileException) {
-		if(ftruncate(h, (off_t)newSize) == -1)
-			throw FileException(Util::translateError(errno));
+		int64_t pos = getPos();
+		setPos(newSize);
+		setEOF();
+		setPos(pos);		
 	}
 
 	virtual size_t flush() throw(Exception) {
@@ -359,16 +385,35 @@ public:
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
+
+//	static void copyFile(const string& source, const string& target) throw(FileException) { 
+//		File src(source, File::READ, File::OPEN);
+//		File tgt(target, File::WRITE, File::CREATE | File::TRUNCATE);
+//		
+//		const size_t BUF_SIZE = 128 * 1024;
+///		AutoArray<char> buf(BUF_SIZE);
+//		size_t n = BUF_SIZE; 
+//		while( (n = src.read((char*)buf, n)) > 0) {
+//			tgt.write((char*)buf, n);
+//			n = BUF_SIZE;
+//		}
+//	}
+
+	// This doesn't assume all bytes are written in one write call, it is a bit safer
 	static void copyFile(const string& source, const string& target) throw(FileException) { 
-		File src(source, File::READ, File::OPEN);
-		File tgt(target, File::WRITE, File::CREATE | File::TRUNCATE);
+		char buffer[2048];
+		size_t count = sizeof(buffer);
+		File src(source, File::READ, 0);
+		File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);
 		
-		const size_t BUF_SIZE = 128 * 1024;
-		AutoArray<char> buf(BUF_SIZE);
-		size_t n = BUF_SIZE; 
-		while( (n = src.read((char*)buf, n)) > 0) {
-			tgt.write((char*)buf, n);
-			n = BUF_SIZE;
+		while ( src.read((void*)buffer, count) > 0) {
+			char* p = buffer;
+			while (count  > 0) {
+				size_t ret = dst.write(p, count);
+				p += ret;
+				count -= ret;
+			}
+			count = sizeof(buffer);
 		}
 	}
 
@@ -514,6 +559,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.43 2004/11/07 17:14:53 arnetheduck Exp $
+ * $Id: File.h,v 1.44 2004/11/24 17:00:45 arnetheduck Exp $
  */
 

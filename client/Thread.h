@@ -107,7 +107,7 @@ public:
 		return ++v;
 #endif
 	};
-	static long safeDec(volatile long v) { 
+	static long safeDec(volatile long& v) { 
 #ifdef HAVE_ASM_ATOMIC_H
 		atomic_t t = ATOMIC_INIT(v);
 		atomic_dec(&t);
@@ -146,6 +146,6 @@ private:
 
 /**
  * @file
- * $Id: Thread.h,v 1.18 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: Thread.h,v 1.19 2004/11/24 17:00:45 arnetheduck Exp $
  */
 

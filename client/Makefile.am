@@ -8,6 +8,7 @@ libdcppclient_la_LDFLAGS = -export-dynamic -version-info $(LIBDCPP_CURRENT):$(LI
 
 libdcppclient_la_SOURCES= \
 AdcCommand.h \
+AdcCommand.cpp \
 AdcHub.cpp \
 AdcHub.h \
 ADLSearch.cpp \

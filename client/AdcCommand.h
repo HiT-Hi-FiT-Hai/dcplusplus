@@ -20,6 +20,7 @@
 #define ADC_COMMAND_H
 
 #include "CID.h"
+#include "SettingsManager.h"
 
 class Command {
 public:
@@ -188,5 +189,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.12 2004/11/22 13:38:33 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.13 2004/11/24 17:00:45 arnetheduck Exp $
 */

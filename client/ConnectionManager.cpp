@@ -344,7 +344,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const CID& a
 	}
 }
 
-void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&) {
+void ConnectionManager::on(Command::SUP, UserConnection* aSource, const Command&) throw() {
 	if(aSource->getState() != UserConnection::STATE_SUPNICK) {
 		// Already got this once, ignore...
 		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
@@ -685,5 +685,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.83 2004/11/22 13:38:33 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.84 2004/11/24 17:00:45 arnetheduck Exp $
  */

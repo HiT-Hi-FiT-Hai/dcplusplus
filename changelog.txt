@@ -6,6 +6,7 @@
 * Fixed virtual name issue with invalid chars in the virtual name (thanks farcry)
 * Fixes to ADC implementation, see http://developer.berlios.de/projects/ddc/ for a 
   somewhat compatible hub in development
+* Some linux patches (thanks tim burton)
 
 -- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)

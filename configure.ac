@@ -1,17 +1,22 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([DCPlusPlus], 0.4035)
+AC_INIT([DCPlusPlus], 0.667)
+AC_CONFIG_AUX_DIR(build)
+AM_INIT_AUTOMAKE(foreign)
 AC_CONFIG_SRCDIR(client/ADLSearch.cpp)
 AC_GNU_SOURCE
 
-AM_INIT_AUTOMAKE(foreign)
-			      
 dnl Checks for programs.
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
 
 dnl Checks for libraries.
 AC_CHECK_LIB(pthread, pthread_create)
+AC_CHECK_LIB(bz2, BZ2_bzCompressInit)
+AC_CHECK_LIB(z, deflateInit)
 
 dnl Checks for header files.
 AC_HEADER_STDC
