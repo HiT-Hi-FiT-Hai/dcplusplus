@@ -24,7 +24,6 @@
 #include "HubFrame.h"
 #include "SearchFrm.h"
 #include "PublicHubsFrm.h"
-#include "SettingsDlg.h"
 #include "SimpleXML.h"
 #include "PropertiesDlg.h"
 
@@ -863,9 +862,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.46 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.47 2002/01/25 00:15:41 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.47  2002/01/25 00:15:41  arnetheduck
+ * New Settings dialogs
+ *
  * Revision 1.46  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

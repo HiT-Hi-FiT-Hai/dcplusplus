@@ -16,22 +16,34 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
-#include "DCPlusPlus.h"
+#ifndef PROPPAGE_H
+#define PROPPAGE_H
 
-#include "SettingsDlg.h"
+#define SETTINGS_BUF_LEN 1024
 
-/**
- * @file SettingsDlg.cpp
- * $Id: SettingsDlg.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
- * @if LOG
- * $Log: SettingsDlg.cpp,v $
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2001/11/22 19:47:42  arnetheduck
- * A simple XML parser. Doesn't have all the features, but works good enough for
- * the configuration file.
- *
- * @endif
- */
+class SettingsManager;
+
+class PropPage
+{
+public:
+	PropPage(SettingsManager *src);
+	virtual ~PropPage();
+
+	virtual PROPSHEETPAGE *getPSP() = 0;
+	virtual void write() = 0;
+
+	enum Type { T_STR, T_INT, T_BOOL, T_CUSTOM, T_END };
+	struct Item
+	{
+		WORD itemID;
+		int setting;
+		Type type;
+	};
+
+protected:
+	SettingsManager *settings;
+	void read(HWND page, Item const* items);
+	void write(HWND page, Item const* items);
+};
+
+#endif // PROPPAGE_H

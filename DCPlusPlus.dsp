@@ -229,10 +229,6 @@ SOURCE=.\client\ServerSocket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\SettingsDlg.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\client\SettingsManager.cpp
 # End Source File
 # Begin Source File
@@ -431,10 +427,6 @@ SOURCE=.\client\SearchManager.h
 # Begin Source File
 
 SOURCE=.\client\ServerSocket.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SettingsDlg.h
 # End Source File
 # Begin Source File
 
