@@ -46,6 +46,7 @@ public:
 		COLUMN_FIRST,
 		COLUMN_STRING = COLUMN_FIRST,
 		COLUMN_COUNT,
+		COLUMN_TIME,
 		COLUMN_LAST
 	};
 
@@ -101,6 +102,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.18 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.19 2004/10/02 22:22:50 arnetheduck Exp $
  */
 

@@ -2,6 +2,11 @@
 * Help file additions (thanks naga & ullner)
 * Fixed a few issues with files not being hashed correctly (thanks garg)
 * More ADC fixes (thanks sed)
+* Fixed some ADLSearch stuff (thanks garg)
+* Added item count to finished frames (thanks garg)
+* Fixed user commands encoding (thanks garg)
+* Added last search time to search spy (thanks ullner)
+
 
 -- 0.4033 2004-09-27 --
 *** WARNING *** 

@@ -41,6 +41,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlSearches.AddColumn(CTSTRING(SEARCH_STRING), COLUMN_STRING, COLUMN_STRING);
 	ctrlSearches.AddColumn(CTSTRING(COUNT), COLUMN_COUNT, COLUMN_COUNT);
+	ctrlSearches.AddColumn(CTSTRING(TIME), COLUMN_TIME, COLUMN_TIME);
 
 	ctrlSearches.setSort(COLUMN_COUNT, ExListViewCtrl::SORT_INT, false);
 
@@ -121,6 +122,7 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			TStringList a;
 			a.push_back(*x);
 			a.push_back(Text::toT(Util::toString(1)));
+			a.push_back(Text::toT(Util::getTimeString()));
 			ctrlSearches.insert(a);
 			if(ctrlSearches.GetItemCount() > 500) {
 				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
@@ -129,7 +131,11 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			TCHAR tmp[32];
 			ctrlSearches.GetItemText(j, COLUMN_COUNT, tmp, 32);
 			ctrlSearches.SetItemText(j, COLUMN_COUNT, Text::toT(Util::toString(Util::toInt(Text::fromT(tmp))+1)).c_str());
+			ctrlSearches.GetItemText(j, COLUMN_TIME, tmp, 32);
+			ctrlSearches.SetItemText(j, COLUMN_TIME, Text::toT(Util::getTimeString()).c_str());
 			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
+				ctrlSearches.resort();
+			if(ctrlSearches.getSortColumn() == COLUMN_TIME )
 				ctrlSearches.resort();
 		}
 		delete x;
@@ -202,5 +208,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.23 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.24 2004/10/02 22:22:50 arnetheduck Exp $
  */

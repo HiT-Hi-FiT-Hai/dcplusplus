@@ -145,7 +145,7 @@ void TransferView::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		itemI->user->getParams(tmp);
 		itemI->user->clientEscapeParams(tmp);
-		itemI->user->send(Util::formatParams(uc.getCommand(), tmp));
+		itemI->user->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 	}
 	return;
 };
@@ -585,5 +585,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.35 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.36 2004/10/02 22:22:50 arnetheduck Exp $
  */

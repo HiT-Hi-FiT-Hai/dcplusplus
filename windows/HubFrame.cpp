@@ -707,7 +707,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 
 	if(tabMenuShown) {
 		client->escapeParams(ucParams);
-		client->send(Util::formatParams(uc.getCommand(), ucParams));
+		client->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
 	} else {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -715,7 +715,7 @@ void HubFrame::runUserCommand(::UserCommand& uc) {
 			StringMap tmp = ucParams;
 			u->user->getParams(tmp);
 			client->escapeParams(tmp);
-			client->send(Util::formatParams(uc.getCommand(), tmp));
+			client->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 		}
 	}
 	return;
@@ -1109,5 +1109,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.77 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.78 2004/10/02 22:22:49 arnetheduck Exp $
  */

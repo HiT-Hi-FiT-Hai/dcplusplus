@@ -274,7 +274,7 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 	user->getParams(ucParams);
 	user->clientEscapeParams(ucParams);
 
-	user->send(Util::formatParams(uc.getCommand(), ucParams));
+	user->sendUserCmd(Util::formatParams(uc.getCommand(), ucParams));
 	return;
 };
 
@@ -358,7 +358,7 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.34 2004/09/26 07:55:35 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.35 2004/10/02 22:22:49 arnetheduck Exp $
  */
 
 

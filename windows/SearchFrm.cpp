@@ -279,6 +279,7 @@ void SearchFrame::onEnter() {
 	}
 	
 	ctrlStatus.SetText(1, (TSTRING(SEARCHING_FOR) + s + _T("...")).c_str());
+	ctrlStatus.SetText(2, _T(""));
 	{
 		Lock l(cs);
 		search = StringTokenizer<tstring>(s, _T(' ')).getTokens();
@@ -661,7 +662,7 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		StringMap tmp = ucParams;
 		sr->getUser()->getParams(tmp);
 		sr->getUser()->clientEscapeParams(tmp);
-		sr->getUser()->send(Util::formatParams(uc.getCommand(), tmp));
+		sr->getUser()->sendUserCmd(Util::formatParams(uc.getCommand(), tmp));
 	}
 	return;
 };
@@ -777,6 +778,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
 			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
 			ctrlResults.insertItem(si, image);
+			ctrlStatus.SetText(2, Text::toT(Util::toString(ctrlResults.GetItemCount()) + ' ' + STRING(ITEMS)).c_str());
 		}
 		break;
  	case HUB_ADDED: 
@@ -960,5 +962,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.65 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.66 2004/10/02 22:22:49 arnetheduck Exp $
  */

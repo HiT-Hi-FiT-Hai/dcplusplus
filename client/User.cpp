@@ -113,6 +113,10 @@ void User::send(const string& aMsg) {
 	}
 }
 
+void User::sendUserCmd(const string& aUserCmd) {
+	send(aUserCmd);
+}
+
 void User::redirect(const string& aTarget, const string& aReason) {
 	RLock l(cs);
 	if(client) {
@@ -220,6 +224,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.33 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: User.cpp,v 1.34 2004/10/02 22:22:49 arnetheduck Exp $
  */
 

@@ -122,6 +122,9 @@ public:
 		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
 		socket->write(a);
 	}
+	virtual void sendUserCmd(const string& aUserCmd) throw() {
+		send(toNmdc(aUserCmd));
+	}
 	virtual void redirect(const User* aUser, const string& aServer, const string& aMsg);
 	virtual void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& aPass) { send("$MyPass " + toNmdc(aPass) + "|"); }
@@ -265,6 +268,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.11 2004/09/21 08:19:55 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.12 2004/10/02 22:22:49 arnetheduck Exp $
  */
 
