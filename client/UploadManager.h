@@ -34,6 +34,16 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
+	const string& getFileName() { return fileName; };
+	void setFileName(const string& aName) { fileName = aName; };
+
+	void setUser(User::Ptr& aUser) { user = aUser; }
+	User::Ptr& getUser() { return user; };
+	
+private:
+	string fileName;
+	User::Ptr user;	
+
 };
 
 class UploadManagerListener {
@@ -321,9 +331,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.19 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.20 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.20  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.19  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

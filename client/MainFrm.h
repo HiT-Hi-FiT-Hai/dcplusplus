@@ -53,6 +53,7 @@ public:
 		DOWNLOAD_CONNECTING,
 		DOWNLOAD_FAILED,
 		DOWNLOAD_STARTING,
+		DOWNLOAD_SOURCEADDED,
 		DOWNLOAD_TICK
 	};
 
@@ -73,19 +74,20 @@ public:
 	virtual void onDownloadComplete(Download* aDownload);
 	virtual void onDownloadConnecting(Download* aDownload) { PostMessage(WM_SPEAKER, DOWNLOAD_CONNECTING, (LPARAM) aDownload); };
 	virtual void onDownloadFailed(Download* aDownload, const string& aReason);
+	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource);
 	virtual void onDownloadStarting(Download* aDownload);
 	virtual void onDownloadTick(Download* aDownload);
 	
 	virtual void onTimerSecond(DWORD aTick) {
 		if(ctrlStatus.IsWindow()) {
 			char buf[128];
-			sprintf(buf, "D: %s", Util::shortenBytes(Socket::getTotalDown()).c_str());
+			sprintf(buf, "D: %s", Util::formatBytes(Socket::getTotalDown()).c_str());
 			ctrlStatus.SetText(1, buf);
-			sprintf(buf, "U: %s", Util::shortenBytes(Socket::getTotalUp()).c_str());
+			sprintf(buf, "U: %s", Util::formatBytes(Socket::getTotalUp()).c_str());
 			ctrlStatus.SetText(2, buf);
-			sprintf(buf, "D: %s/s", Util::shortenBytes(Socket::getDown()).c_str());
+			sprintf(buf, "D: %s/s", Util::formatBytes(Socket::getDown()).c_str());
 			ctrlStatus.SetText(3, buf);
-			sprintf(buf, "U: %s/s", Util::shortenBytes(Socket::getUp()).c_str());
+			sprintf(buf, "U: %s/s", Util::formatBytes(Socket::getUp()).c_str());
 			ctrlStatus.SetText(4, buf);
 		}
 		Socket::resetStats();
@@ -282,9 +284,17 @@ protected:
 	map<LPARAM, string> uploadTick;
 	map<LPARAM, StringList> downloadAdded;
 	map<LPARAM, string> downloadFailed;
-	map<LPARAM, string> downloadStarting;
+	map<LPARAM, StringList> downloadStarting;
 	map<LPARAM, string> downloadTick;
-
+	class SourceInfo {
+	public:
+		SourceInfo() : d(NULL) { };
+		SourceInfo(Download* aDown, const string& s) : d(aDown), source(s) { };
+		string source;
+		Download* d;
+	};
+	map<LPARAM, SourceInfo> downloadSourceAdded;
+	
 	CriticalSection cs;
 	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;
@@ -304,9 +314,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.20 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.21 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.21  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.20  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

@@ -28,6 +28,8 @@
 
 DownloadManager* DownloadManager::instance = NULL;
 
+static const string USER_LIST_NAME = "MyList.DcLst";
+
 /**
  * Each minute we check whether any of the users in the download queue have gone offline or connected
  */
@@ -35,47 +37,49 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 	cs.enter();
 
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		Download*d = *i;
+		Download* d = *i;
 
 		if(d->isSet(Download::RUNNING)) {
 			continue;
 		}
 
-		// Check if we've got a user pointer at all
-		if(!d->getUser()) {
-			d->setUser(ClientManager::getInstance()->findUser(d->getLastNick()));
-	
-			if(!d->getUser()) {
-				// Still no user, go on to the next one...
+		for(Download::Source::Iter j = d->getSources().begin(); j != d->getSources().end(); ++j) {
+			Download::Source::Ptr s = *j;
+
+			// Check if we've got a user pointer at all
+			if(!s->getUser()) {
+				s->setUser(ClientManager::getInstance()->findUser(s->getNick()));
+				
+				if(!s->getUser()) {
+					// Still no user, go on to the next one...
+					continue;
+				}
+				
+			}
+			
+			// Check if the user is still online
+			if(!s->getUser()->isOnline()) {
+				bool found = false;
+				for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
+					if((*k)->getUser() == s->getUser()) {
+						found = true;
+					}
+				}
+				if(!found) {
+					// Damn, we've lost him...
+					s->setUser(User::nuser);
+				}
 				continue;
 			}
-
-		}
-
-		// Check if the user is still online
-		if(!d->getUser()->isOnline()) {
-			bool found = false;
-			for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-				if((*i)->getUser() == d->getUser()) {
-					found = true;
-				}
+			
+			// Alright, we've made it this far, add the user to the waiting queue (unless he's there already...)
+			map<User::Ptr, DWORD>::iterator i = waiting.find(s->getUser());
+			if(i == waiting.end()) {
+				waiting[s->getUser()] = 0;
 			}
-			if(!found) {
-				// Damn, we've lost him...
-				d->setUser(User::nuser);
-				fireFailed(d, "User is offline");
-			}
-			continue;
-		}
-
-		// Alright, we've made it this far, add the user to the waiting queue (unless he's there already...)
-		map<User::Ptr, DWORD>::iterator i = waiting.find(d->getUser());
-		if(i == waiting.end()) {
-			waiting[d->getUser()] = 0;
 		}
 	}
 	cs.leave();
-
 }
 
 void DownloadManager::onTimerSecond(DWORD aTick) {
@@ -91,8 +95,8 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 			i->second = aTick;
 
 			Download* d = getNextDownload(i->first);
-			if(d && d->getUser()->isOnline()) {
-				int status = ConnectionManager::getInstance()->getDownloadConnection(d->getUser());
+			if(d && i->first->isOnline()) {
+				int status = ConnectionManager::getInstance()->getDownloadConnection(i->first);
 				if(status==UserConnection::CONNECTING) {
 					fireConnecting(d);
 				} else if(status == UserConnection::FREE) {
@@ -145,59 +149,88 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
 void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) {
-	Download* d = NULL;
 
 	cs.enter();
 	
 	// First, search the queue for the same download...
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		Download* dd = *i;
-		if(dd->getTarget() == aTarget) {
-			// Same download it seems, check it it's running...
+		if(strcmpi(dd->getTarget().c_str(), aTarget.c_str()) == 0) {
+			if(dd->getSize() != aSize) {
+				// Same target, but different sizes...not good...
+				cs.leave();
+				return;
+			}
+
+			if(!dd->getSources().empty() && dd->getSources()[0]->getFileName() == USER_LIST_NAME) {
+				// Only one source for user listings...
+				cs.leave();
+				return;
+			}
+
+			// Same download it seems, add this user / path as a source
+			if(!dd->isSource(aUser)) {
+				string fileName, path;
+				
+				if(aFile.find('\\')) {
+					fileName = aFile.substr(aFile.rfind('\\')+1);
+					path = aFile.substr(0, aFile.rfind('\\')+1);
+				} else {
+					fileName = aFile;
+				}
+				fireSourceAdded(dd, dd->addSource(aUser, fileName, path));
+			}
+			
 			if(dd->isSet(Download::RUNNING)) {
 				// Ignore it for now
 				cs.leave();
 				return;
 			}
-			d = dd;
+
+			if(waiting.find(aUser) == waiting.end()) {
+				waiting[aUser] = 0;
+			}
+			cs.leave();
+			return;
 		}
 	}
 
-	if(d == NULL) {
-		// No such download, check if the target file is smaller than the one being downloaded...
-		if(aResume && (aSize != -1) ) {
-			if(Util::getFileSize(aTarget) >= aSize) {
-				cs.leave();
-				return;
-			}
+	// No such download, check if the target file is smaller than the one being downloaded...
+	if(aResume && (aSize != -1) ) {
+		if(Util::getFileSize(aTarget) >= aSize) {
+			cs.leave();
+			return;
 		}
+	}
 
-		d = new Download();
-	
-		if(aFile.find('\\')) {
-			d->setFileName(aFile.substr(aFile.rfind('\\')+1));
-			d->setLast(aUser->getNick(), aFile.substr(0, aFile.rfind('\\')+1));
-		} else {
-			d->setFileName(aFile);
-			d->setLast(aUser->getNick(), "");
-		}
-		if(d->getFileName() == "MyList.DcLst")
-			d->setFlag(Download::USER_LIST); 
-		d->setUser(aUser);
-		d->setTarget(aTarget);
-		d->setSize(aSize);
-		if(aResume)
-			d->setFlag(Download::RESUME);
+	Download* d = new Download();
+	string fileName, path;
 
-		queue.push_back(d);
+	if(aFile.find('\\')) {
+		fileName = aFile.substr(aFile.rfind('\\')+1);
+		path = aFile.substr(0, aFile.rfind('\\')+1);
+	} else {
+		fileName = aFile;
+	}
+	Download::Source::Ptr s = d->addSource(aUser, fileName, path);
 
-		fireAdded(d);
-	} 
+	if(aFile == USER_LIST_NAME)
+		d->setFlag(Download::USER_LIST); 
+
+	d->setTarget(aTarget);
+	d->setSize(aSize);
+	if(aResume)
+		d->setFlag(Download::RESUME);
+
+	queue.push_back(d);
 
 	if(waiting.find(aUser) == waiting.end()) {
-		waiting[d->getUser()] = 0;
+		waiting[aUser] = 0;
 	}
 	
+	fireAdded(d);
+	fireSourceAdded(d, s);
+
 	cs.leave();
 	
 }
@@ -213,7 +246,6 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
 void DownloadManager::download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aTarget, bool aResume /* = true /*/) {
-	Download* d = NULL;
 
 	User::Ptr& user = ClientManager::getInstance()->findUser(aUser);
 	if(user) {
@@ -225,24 +257,52 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 	cs.enter();
 	
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		// First, search the queue for the same download...
 		Download* dd = *i;
-		if(dd->getTarget() == aTarget) {
-			// Same download it seems, remove it...todo: something clever
+		if(strcmpi(dd->getTarget().c_str(), aTarget.c_str()) == 0) {
+			if(dd->getSize() != aSize) {
+				// Same target, but different sizes...not good...
+				cs.leave();
+				return;
+			}
+			
+			if(!dd->getSources().empty() && dd->getSources()[0]->getFileName() == USER_LIST_NAME) {
+				// Only one source for user listings...
+				cs.leave();
+				return;
+			}
+			
+			// Same download it seems, add this user / path as a source
+			if(!dd->isSource(aUser)) {
+				string fileName, path;
+				
+				if(aFile.find('\\')) {
+					fileName = aFile.substr(aFile.rfind('\\')+1);
+					path = aFile.substr(0, aFile.rfind('\\')+1);
+				} else {
+					fileName = aFile;
+				}
+				fireSourceAdded(dd, dd->addSource(aUser, fileName, path));
+			}
+			
 			cs.leave();
 			return;
 		}
 	}
+	
+	Download* d = new Download();
 
-	d = new Download();
-
+	string fileName, path;
+	
 	if(aFile.find('\\')) {
-		d->setFileName(aFile.substr(aFile.rfind('\\')+1));
-		d->setLast(aUser, aFile.substr(0, aFile.rfind('\\')+1));
+		fileName = aFile.substr(aFile.rfind('\\')+1);
+		path = aFile.substr(0, aFile.rfind('\\')+1);
 	} else {
-		d->setFileName(aFile);
-		d->setLast(aUser, "");
+		fileName = aFile;
 	}
+	Download::Source::Ptr s = d->addSource(aUser, fileName, path);
+
+	if(aFile == USER_LIST_NAME)
+		d->setFlag(Download::USER_LIST); 
 
 	d->setTarget(aTarget);
 	d->setSize(aSize);
@@ -250,21 +310,21 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 		d->setFlag(Download::RESUME);
 
 	queue.push_back(d);
-	cs.leave();
-
 	fireAdded(d);
-	fireFailed(d, d->getLastNick() + " has gone offline");
+	fireSourceAdded(d, s);
+
+	cs.leave();
 }
 
 void DownloadManager::downloadList(User::Ptr& aUser) {
 	string file = Settings::getAppPath() + aUser->getNick() + ".DcLst";
-	download("MyList.DcLst", -1, aUser, file, false);
+	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
 }
 
 void DownloadManager::downloadList(const string& aUser) {
 	string file = Settings::getAppPath() + aUser + ".DcLst";
-	download("MyList.DcLst", -1, aUser, file, false);
+	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
 }
 
@@ -328,7 +388,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	Download* d = getNextDownload(aConn->getUser());
 
 	if(d) {
+		Download::Source* s = d->getSource(aConn->getUser());
+		dcassert(s);
+
 		running[aConn] = d;
+		d->setCurrentSource(s);
 		
 		if(d->isSet(Download::RESUME)) {
 			LONGLONG x = Util::getFileSize(d->getTarget());
@@ -338,7 +402,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		}
 		d->setFlag(Download::RUNNING);
 		
-		aConn->get(d->getLastPath()+d->getFileName(), d->getPos());
+		aConn->get(s->getPath()+s->getFileName(), d->getPos());
 		dcdebug("Found!\n");
 		cs.leave();
 		return;
@@ -440,7 +504,7 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 	CloseHandle(p->getFile());
 	p->setFile(NULL);
 
-	dcdebug("Download finished: %s to %s, size %I64d\n", p->getFileName().c_str(), p->getTarget().c_str(), p->getSize());
+	dcdebug("Download finished: %s, size %I64d\n", p->getTarget().c_str(), p->getSize());
 	fireComplete(p);
 	delete p;
 
@@ -501,10 +565,13 @@ void DownloadManager::save(SimpleXML* aXml) {
 			aXml->addChildAttrib("Size", d->getSize());
 
 			aXml->stepIn();
-			aXml->addTag("Source");
-			aXml->addChildAttrib("LastNick", d->getLastNick());
-			aXml->addChildAttrib("LastPath", d->getLastPath());
-			aXml->addChildAttrib("FileName", d->getFileName());
+			for(Download::Source::List::const_iterator j = d->getSources().begin(); j != d->getSources().end(); ++j) {
+				Download::Source* s = *j;
+				aXml->addTag("Source");
+				aXml->addChildAttrib("Nick", s->getNick());
+				aXml->addChildAttrib("Path", s->getPath());
+				aXml->addChildAttrib("FileName", s->getFileName());
+			}
 			aXml->stepOut();
 
 		}
@@ -524,9 +591,9 @@ void DownloadManager::load(SimpleXML* aXml) {
 			bool resume = aXml->getBoolChildAttrib("Resume");
 			LONGLONG size = aXml->getLongLongChildAttrib("Size");
 			aXml->stepIn();
-			if(aXml->findChild("Source")) {
-				const string& nick = aXml->getChildAttrib("LastNick");
-				const string& path = aXml->getChildAttrib("LastPath");
+			while(aXml->findChild("Source")) {
+				const string& nick = aXml->getChildAttrib("Nick");
+				const string& path = aXml->getChildAttrib("Path");
 				const string& file = aXml->getChildAttrib("FileName");
 
 				download(path + file, size, nick, target, resume);
@@ -540,9 +607,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.19 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.20 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.20  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.19  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

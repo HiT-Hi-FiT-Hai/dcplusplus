@@ -38,7 +38,7 @@ ConnectionManager* ConnectionManager::instance = NULL;
  * @return The state of the connection sequence (UserConnection::CONNECTING if a connection is being made, otherwise
  * there's probably already a connection in progress).
  */
-int ConnectionManager::getDownloadConnection(User::Ptr& aUser) {
+int ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	cs.enter();
 
 	if( pendingDown.find(aUser) != pendingDown.end() ) {
@@ -224,9 +224,12 @@ void ConnectionManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.13 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.14 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.14  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.13  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

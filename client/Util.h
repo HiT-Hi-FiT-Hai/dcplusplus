@@ -130,11 +130,11 @@ public:
 			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
 		}
 	}
-	static string shortenBytes(const string& aString) {
-		return shortenBytes(_atoi64(aString.c_str()));
+	static string formatBytes(const string& aString) {
+		return formatBytes(toInt64(aString));
 	}
 
-	static string shortenBytes(LONGLONG aBytes) {
+	static string formatBytes(LONGLONG aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
 			sprintf(buf, "%I64d B", aBytes );
@@ -208,9 +208,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.7 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: Util.h,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.8  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.7  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

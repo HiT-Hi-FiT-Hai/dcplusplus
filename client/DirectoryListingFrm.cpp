@@ -57,14 +57,14 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 			DirectoryListing::Directory* d = *i;
 			StringList l;
 			l.push_back(d->name);
-			l.push_back(Util::shortenBytes(d->getTotalSize()));
+			l.push_back(Util::formatBytes(d->getTotalSize()));
 			ctrlList.insert(l, 0, (LPARAM)d);
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 			
 			StringList l;
 			l.push_back((*j)->name);
-			l.push_back(Util::shortenBytes((*j)->size));
+			l.push_back(Util::formatBytes((*j)->size));
 			ctrlList.insert(l, 2, (LPARAM)*j);
 		}
 	}
@@ -207,11 +207,11 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	updateTree(dl->getRoot(), NULL);
 	files = dl->getTotalFileCount();
-	size = Util::shortenBytes(dl->getTotalSize());
+	size = Util::formatBytes(dl->getTotalSize());
 	
 	sprintf(buf, "Files: %d\n", dl->getTotalFileCount());
 	ctrlStatus.SetText(1, buf);
-	sprintf(buf, "Size: %s\n", Util::shortenBytes(dl->getTotalSize()).c_str());
+	sprintf(buf, "Size: %s\n", Util::formatBytes(dl->getTotalSize()).c_str());
 	ctrlStatus.SetText(2, buf);
 
 	fileMenu.CreatePopupMenu();
@@ -243,9 +243,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.10 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.11 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.11  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.10  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

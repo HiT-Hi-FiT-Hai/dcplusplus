@@ -180,7 +180,7 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	
 	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 	
-	HANDLE hf = CreateFile(sm->listFile.c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	HANDLE hf = CreateFile(sm->getListFile().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	
 	if(hf == INVALID_HANDLE_VALUE) {
 		sm->cs.leave();
@@ -261,9 +261,12 @@ StringList ShareManager::search(const string& aString, int aSearchType, LONGLONG
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.7 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.8  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.7  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

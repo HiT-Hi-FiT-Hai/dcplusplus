@@ -32,6 +32,35 @@ class SimpleXML;
 
 class Download : public Transfer {
 public:
+	class Source {
+	public:
+		typedef Source* Ptr;
+		typedef vector<Ptr> List;
+		typedef List::iterator Iter;
+
+		Source(const string& aNick, const string& aFileName, const string& aPath, User::Ptr& aUser = User::nuser) : nick(aNick),
+			fileName(aFileName), path(aPath), user(aUser) { };
+
+		const string& getNick() const { return nick; };
+		void setNick(const string& aNick) { nick = aNick; };
+
+		const string& getFileName() const { return fileName; };
+		void setFileName(const string& aFileName) { fileName = aFileName; };
+
+		const string& getPath() const { return path; };
+		void setPath(const string& aPath) { path = aPath; };
+
+		User::Ptr& getUser() { return user; };
+		void setUser(User::Ptr& aUser) { user = aUser; };
+
+	private:
+		string nick;
+		string fileName;
+		string path;
+
+		User::Ptr user;
+	};
+
 	typedef Download* Ptr;
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
@@ -40,37 +69,72 @@ public:
 	typedef map<User::Ptr, Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	
-	Download() : flags(0) { }
-	
+	Download() : flags(0), currentSource(NULL) { }
+	~Download() {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			delete *i;
+		}
+	}
+
 	enum {
 		USER_LIST = 0x01,
 		RUNNING = 0x02,
 		RESUME = 0x04
 	};
 
-	string getTarget() { 
-		if(target.length() == 0) {
-			return Settings::getDownloadDirectory() + getFileName();
-		} else {
-			return target;
-		}
-	};
-
+	const string& getTarget() { return target; };
 	void setTarget(const string& aTarget) { target = aTarget; };
 
-	const string& getLastNick() { return lastNick; };
-	const string& getLastPath() { return lastPath; };
-	void setLast(const string& aNick, const string& aPath) { lastNick = aNick; lastPath = aPath; };
+	Source::Ptr addSource(const string& aNick, const string& aFileName, const string& aPath) {
+		Source::Ptr s = new Source(aNick, aFileName, aPath);
+		sources.push_back(s);
+		return s;
+	}
+	Source::Ptr addSource(User::Ptr& aUser, const string& aFileName, const string& aPath) {
+		Source::Ptr s = new Source(aUser->getNick(), aFileName, aPath, aUser);
+		sources.push_back(s);
+		return s;
+	}
+
+	Source::Ptr getSource(const User::Ptr& aUser) {
+		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getUser() == aUser)
+				return *i;
+		}
+		return NULL;
+	}
+	
+	bool isSource(const User::Ptr& aUser) const {
+		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getUser() == aUser)
+				return true;
+		}
+		return false;
+	}
+
+	bool isSource(const string& aUser) const {
+		for(Source::List::const_iterator i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getNick() == aUser)
+				return true;
+		}
+		return false;
+	}
+	
+	Source::List& getSources() { return sources; };
+
+	Source* getCurrentSource() { return currentSource; };
+	void setCurrentSource(Source* aSource) { currentSource = aSource; };
 	
 	bool isSet(int aFlag) { return (flags & aFlag) > 0; };
 	void setFlag(int aFlag) { flags |= aFlag; };
 	void unsetFlag(int aFlag) { flags &= ~aFlag; };
 private:
+
 	int flags;
 	string target;
-	
-	string lastNick;
-	string lastPath;
+	Source* currentSource;
+
+	Source::List sources;
 };
 
 class DownloadManagerListener {
@@ -80,6 +144,7 @@ public:
 	typedef List::iterator Iter;
 	
 	virtual void onDownloadAdded(Download* aDownload) { };
+	virtual void onDownloadSourceAdded(Download* aDownload, Download::Source* aSource) { };
 	virtual void onDownloadComplete(Download* aDownload) { };
 	virtual void onDownloadConnecting(Download* aDownload) { };
 	virtual void onDownloadFailed(Download* aDownload, const string& aReason) { };
@@ -156,8 +221,8 @@ private:
 	
 	Download* getNextDownload(const User::Ptr& aUser) {
 		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if((*i)->getUser() == aUser) {
-				if(!(*i)->isSet(Download::RUNNING))
+			if((*i)->isSource(aUser) ) {
+				if( !(*i)->isSet(Download::RUNNING) )
 					return *i;
 			}
 		}
@@ -213,6 +278,15 @@ private:
 			(*i)->onDownloadFailed(aPtr, aReason);
 		}
 	}
+	void fireSourceAdded(Download::Ptr aPtr, Download::Source::Ptr aSource) {
+		listenerCS.enter();
+		DownloadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
+		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onDownloadSourceAdded(aPtr, aSource);
+		}
+	}
 	void fireStarting(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
@@ -246,9 +320,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.18 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.19 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.19  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.18  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

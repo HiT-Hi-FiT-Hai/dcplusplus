@@ -34,7 +34,7 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
-	DECLARE_FRAME_WND_CLASS("Search", IDR_MDICHILD)
+	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_MDICHILD)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -46,6 +46,7 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
@@ -57,7 +58,13 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
-	
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
+			delete (LONGLONG*)ctrlResults.GetItemData(i);
+		}
+		return 0;
+	}				
+
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		downloadSelected(Settings::getDownloadDirectory());
 		return 0;
@@ -73,8 +80,7 @@ public:
 			if(Util::browseSaveFile(target)) {
 				ctrlResults.GetItemText(i, 0, buf, 512);
 				string user = buf;
-				ctrlResults.GetItemText(i, 2, buf, 512);
-				string size = buf;
+				LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
 				ctrlResults.GetItemText(i, 3, buf, 512);
 				string path = buf;
 				
@@ -98,8 +104,7 @@ public:
 			string user = buf;
 			ctrlResults.GetItemText(i, 1, buf, 512);
 			string file = buf;
-			ctrlResults.GetItemText(i, 2, buf, 512);
-			string size = buf;
+			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
 			ctrlResults.GetItemText(i, 3, buf, 512);
 			string path = buf;
 			
@@ -213,6 +218,9 @@ public:
 			ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 			string s(message, ctrlSearch.GetWindowTextLength());
 			delete message;
+			for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
+				delete (LONGLONG*)ctrlResults.GetItemData(i);
+			}
 			ctrlResults.DeleteAllItems();
 			SearchManager::getInstance()->search(s);
 			//client->sendMessage(s);
@@ -248,12 +256,14 @@ private:
 	virtual void onSearchResult(SearchResult* aResult) {
 		// Check that this is really a relevant search result...
 		for(StringIter j = search.begin(); j != search.end(); ++j) {
-			if(aResult->getFile().find(*j) == string::npos) {
+			if(Util::findSubString(aResult->getFile(), *j) == -1) {
 				return;
 			}
 		}
+		LONGLONG* psize = new LONGLONG;
+		*psize = aResult->getSize();
 
-		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick());
+		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick(), 0, (LPARAM)psize);
 		string file, path;
 		
 		if(aResult->getFile().rfind('\\') == string::npos) {
@@ -263,10 +273,12 @@ private:
 			path = aResult->getFile().substr(0, aResult->getFile().rfind('\\')+1);
 		}
 		ctrlResults.SetItemText(i, 1, file.c_str());
-		ctrlResults.SetItemText(i, 2, Util::shortenBytes(aResult->getSize()).c_str());
+		ctrlResults.SetItemText(i, 2, Util::formatBytes(aResult->getSize()).c_str());
 		ctrlResults.SetItemText(i, 3, path.c_str());
 		ctrlResults.SetItemText(i, 4, aResult->getSlotString().c_str());
 		ctrlResults.SetItemText(i, 5, aResult->getHubName().c_str());
+
+
 	}
 };
 
@@ -279,9 +291,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.7 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.7  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.6  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

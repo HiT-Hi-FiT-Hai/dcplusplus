@@ -57,9 +57,6 @@ public:
 
 class Transfer {
 public:
-	const string& getFileName() { return fileName; };
-	void setFileName(const string& aName) { fileName = aName; };
-
 	HANDLE getFile() { return file; };
 	void setFile(HANDLE aFile, bool aUpdate = false) { 
 		file = aFile;
@@ -89,20 +86,13 @@ public:
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
 
-	void setUser(User::Ptr& aUser) {
-		user = aUser;
-	}
-	User::Ptr& getUser() { return user; };
-
-	Transfer() : total(0), start(0), last(0), user(User::nuser), pos(-1), size(-1), file(NULL) { };
+	Transfer() : total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) CloseHandle(file); };
 private:
 	DWORD start;
 	DWORD last;
 	LONGLONG total;
 	
-	User::Ptr user;
-	string fileName;
 	HANDLE file;
 	LONGLONG pos;
 	LONGLONG size;
@@ -390,9 +380,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.19 2001/12/30 15:03:45 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.20 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.20  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.19  2001/12/30 15:03:45  arnetheduck
  * Added framework to handle incoming searches
  *

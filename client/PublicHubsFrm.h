@@ -61,6 +61,14 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 		
+
+	bool checkNick() {
+		if(Settings::getNick().empty()) {
+			MessageBox("Please enter a nickname in the settings dialog!");
+			return false;
+		}
+		return true;
+	}
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -208,9 +216,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.6 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.6  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.5  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

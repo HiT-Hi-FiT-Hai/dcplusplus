@@ -89,13 +89,13 @@ protected:
 					ui->size = u->getBytesShared();
 					StringList l;
 					l.push_back(u->getNick());
-					l.push_back(Util::shortenBytes(u->getBytesSharedString()));
+					l.push_back(Util::formatBytes(u->getBytesSharedString()));
 					l.push_back(u->getDescription());
 					l.push_back(u->getConnection());
 					l.push_back(u->getEmail());
 					ctrlUsers.insert(l, 0, (LPARAM)ui);
 				} else {
-					ctrlUsers.SetItemText(j, 1, Util::shortenBytes(u->getBytesShared()).c_str());
+					ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
 					ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
 					ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
 					ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
@@ -207,7 +207,7 @@ protected:
 		char buf[256];
 		sprintf(buf, "%d users", client->getUserCount());
 		ctrlStatus.SetText(1, buf);
-		ctrlStatus.SetText(2, Util::shortenBytes(client->getAvailable()).c_str());
+		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
 	}
 
 	Client::Ptr client;
@@ -555,9 +555,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.23 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.24 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.24  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.23  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

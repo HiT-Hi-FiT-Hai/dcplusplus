@@ -1,8 +1,10 @@
- -- 0.09 --
+ -- 0.09 2002-01-02 --
 * Right-button menu in search window
 * Download queue saving
 * Fixed a nasty download queue bug
 * Added some transfer statistics
+* Multiple download sources (Very alpha...)
+* Fixed some problems with case insensitivity in filenames
 
  -- 0.08 2001-12-27 --
 * Private messages

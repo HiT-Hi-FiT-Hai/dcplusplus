@@ -91,12 +91,18 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		downloadFailed.erase(lParam);
 	} else if(wParam == DOWNLOAD_STARTING) {
 		dcassert(downloadStarting.find(lParam) != downloadStarting.end());
-		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam].c_str());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 2, downloadStarting[lParam][0].c_str());
+		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 3, downloadStarting[lParam][1].c_str());
 		downloadStarting.erase(lParam);
 	} else if(wParam == DOWNLOAD_TICK) {
 		dcassert(downloadTick.find(lParam) != downloadTick.end());
 		ctrlTransfers.SetItemText(ctrlTransfers.find(lParam), 1, downloadTick[lParam].c_str());
 		downloadTick.erase(lParam);
+	} else if(wParam == DOWNLOAD_SOURCEADDED) {
+		dcassert(downloadSourceAdded.find(lParam) != downloadSourceAdded.end());
+		SourceInfo& si = downloadSourceAdded[lParam];
+		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)si.d), 3, si.source.c_str());
+		downloadSourceAdded.erase(lParam);
 	}
 	cs.leave();
 
@@ -107,7 +113,7 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	StringList l;
 	l.push_back(aUpload->getFileName());
 	l.push_back("Connecting...");
-	l.push_back(Util::shortenBytes(aUpload->getSize()));
+	l.push_back(Util::formatBytes(aUpload->getSize()));
 	l.push_back(aUpload->getUser()->getNick() + " (" + aUpload->getUser()->getClient()->getName() + ")");
 	cs.enter();
 	uploadStarting[(LPARAM)aUpload] = l;
@@ -127,8 +133,8 @@ void MainFrame::onUploadTick(Upload* aUpload) {
 		}
 	}
 
-	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aUpload->getPos()).c_str(), 
-		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::shortenBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
+	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aUpload->getPos()).c_str(), 
+		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 	cs.enter();
 	uploadTick[(LPARAM)aUpload] = buf;
 	cs.leave();
@@ -137,16 +143,13 @@ void MainFrame::onUploadTick(Upload* aUpload) {
 
 void MainFrame::onDownloadAdded(Download* p) {
 	StringList l;
-	l.push_back(p->isSet(Download::USER_LIST) ? p->getLastNick() + ".DcLst" : p->getFileName());
-	l.push_back("Waiting to connect...");
-	l.push_back((p->getSize() != -1) ? Util::shortenBytes(p->getSize()).c_str() : "Unknown");
-
-	if(p->getUser() && p->getUser()->isOnline()) {
-		l.push_back(p->getUser()->getNick() + " (" + p->getUser()->getClient()->getName() + ")");
-	} else {
-		l.push_back(p->getLastNick() + " (Offline)");
-	}
+	string file;
 	
+	l.push_back(p->getTarget().substr(p->getTarget().rfind('\\') + 1));
+	l.push_back("Waiting to connect...");
+	l.push_back((p->getSize() != -1) ? Util::formatBytes(p->getSize()).c_str() : "Unknown");
+	l.push_back("");
+
 	cs.enter();
 	downloadAdded[(LPARAM)p] = l;
 	cs.leave();
@@ -176,7 +179,7 @@ void MainFrame::onDownloadComplete(Download* p) {
 		delete buf;
 		dl->load(tmp);
 
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getLastNick());
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getCurrentSource()->getNick());
 		pChild->setTab(&ctrlTab);
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
@@ -196,9 +199,43 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 	PostMessage(WM_SPEAKER, DOWNLOAD_FAILED, (LPARAM)aDownload);
 }
 
+void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
+	if(!aDownload->isSet(Download::RUNNING)) {
+		cs.enter();
+		string s;
+		for(Download::Source::Iter i = aDownload->getSources().begin(); i != aDownload->getSources().end(); ++i) {
+			if(s.size() > 0)
+				s += ", ";
+
+			Download::Source::Ptr sr = *i;
+			if(sr->getUser()) {
+				if(sr->getUser()->isOnline()) {
+					s += sr->getUser()->getNick() + " (" + sr->getUser()->getClient()->getName() + ")";
+				} else {
+					s += sr->getUser()->getNick() + " (Offline)";
+				}
+			} else {
+				s += sr->getNick() + " (Offline)";
+			}
+		}
+
+		downloadSourceAdded[(LPARAM) aSource] = SourceInfo(aDownload, s);
+		cs.leave();
+		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)aSource);
+	}
+}
+
 void MainFrame::onDownloadStarting(Download* aDownload) {
 	cs.enter();
-	downloadStarting[(LPARAM)aDownload] = Util::shortenBytes(aDownload->getSize());
+	StringList l;
+	l.push_back(Util::formatBytes(aDownload->getSize()));
+	if(aDownload->getCurrentSource()->getUser()->isOnline()) {
+		l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (" + aDownload->getCurrentSource()->getUser()->getClient()->getName() + ")");
+	} else {
+		l.push_back(aDownload->getCurrentSource()->getUser()->getNick() + " (Offline)");
+	}
+	
+	downloadStarting[(LPARAM)aDownload] = l;
 	cs.leave();
 	PostMessage(WM_SPEAKER, DOWNLOAD_STARTING, (LPARAM)aDownload);
 }
@@ -215,8 +252,8 @@ void MainFrame::onDownloadTick(Download* aDownload) {
 		}
 	}
 	
-	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aDownload->getPos()).c_str(), 
-		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::shortenBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
+	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::formatBytes(aDownload->getPos()).c_str(), 
+		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 	cs.enter();
 	downloadTick[(LPARAM)aDownload] = buf;
 	cs.leave();
@@ -406,9 +443,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.27 2001/12/30 17:41:16 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.28 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.28  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.27  2001/12/30 17:41:16  arnetheduck
  * Fixed some XML parsing bugs
  *

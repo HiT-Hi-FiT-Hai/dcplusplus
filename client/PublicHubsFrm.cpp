@@ -88,6 +88,9 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 }
 
 LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	if(!checkNick())
+		return 0;
+	
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 
 	char buf[1024];
@@ -124,6 +127,9 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndC
 }
 
 LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	if(!checkNick())
+		return 0;
+
 	char buf[256];
 	
 	int i = -1;
@@ -155,6 +161,10 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	char* hub;
 	
 	if(wParam == VK_RETURN && ctrlHub.GetWindowTextLength() > 0) {
+		if(!checkNick()) {
+			return 0;
+		}
+
 		hub = new char[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		string s(hub, ctrlHub.GetWindowTextLength());
@@ -173,9 +183,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.7 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.7  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.6  2001/12/29 13:47:14  arnetheduck
  * Fixing bugs and UI work
  *

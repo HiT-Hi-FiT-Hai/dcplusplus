@@ -50,7 +50,7 @@ public:
 		instance = NULL;
 	}
 
-	int getDownloadConnection(User::Ptr& aUser);
+	int getDownloadConnection(const User::Ptr& aUser);
 	
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false) {
 		cs.enter();
@@ -172,9 +172,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.15 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.16 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.16  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.15  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

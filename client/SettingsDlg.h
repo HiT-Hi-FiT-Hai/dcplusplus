@@ -83,8 +83,8 @@ public:
 			try {
 				ShareManager::getInstance()->addDirectory(target);
 				int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), target);
-				ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
-				ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
+				ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
+				ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 			} catch(ShareException e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -102,7 +102,7 @@ public:
 		item.pszText = buf;
 		if(ctrlDirectories.GetSelectedItem(&item)) {
 			ShareManager::getInstance()->removeDirectory(buf);
-			ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
+			ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 			ctrlDirectories.DeleteItem(item.iItem);
 		}
 
@@ -154,10 +154,10 @@ public:
 		StringList directories = ShareManager::getInstance()->getDirectories();
 		for(StringIter j = directories.begin(); j != directories.end(); j++) {
 			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), *j);
-			ctrlDirectories.SetItemText(i, 1, Util::shortenBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
+			ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(*j)).c_str());
 		}
 
-		ctrlTotal.SetWindowText(Util::shortenBytes(ShareManager::getInstance()->getShareSize()).c_str());
+		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
 
 		CenterWindow(GetParent());
 		return TRUE;
@@ -213,9 +213,12 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.7 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.8  2002/01/02 16:12:33  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.7  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

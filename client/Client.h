@@ -132,7 +132,7 @@ public:
 		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "\x05$" + aEmail + "$" + aBytesShared + "$|");
 	}
 
-	void connectToMe(User::Ptr& aUser) {
+	void connectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		string server = Settings::getServer();
 		string port = Settings::getPortString();
@@ -146,15 +146,15 @@ public:
 
 		send("$ConnectToMe " + aUser->getNick() + " " + server + ":" + port + "|");
 	}
-	void privateMessage(User::Ptr& aUser, const string& aMessage) {
+	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
 		send("$To: " + aUser->getNick() + " From: " + Settings::getNick() + " $" + aMessage + "|");
 	}
-	void revConnectToMe(User::Ptr& aUser) {
+	void revConnectToMe(const User::Ptr& aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
 	}
 
-	void kick(User::Ptr& aUser) {
+	void kick(const User::Ptr& aUser) {
 		dcdebug("Client::kick\n");
 		send("$Kick " + aUser->getNick() + "|");
 	}
@@ -475,9 +475,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.17 2001/12/30 15:03:44 arnetheduck Exp $
+ * $Id: Client.h,v 1.18 2002/01/02 16:12:32 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.18  2002/01/02 16:12:32  arnetheduck
+ * Added code for multiple download sources
+ *
  * Revision 1.17  2001/12/30 15:03:44  arnetheduck
  * Added framework to handle incoming searches
  *
