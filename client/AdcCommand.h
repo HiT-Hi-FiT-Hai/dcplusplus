@@ -97,15 +97,16 @@ public:
 		return getParameters().size() > n ? getParameters()[n] : Util::emptyString;
 	}
 	/** Return a named parameter where the name is a two-letter code */
-	string getParam(const char* name, size_t start) const {
+	bool getParam(const char* name, size_t start, string& ret) const {
 		if(getParameters().size() <= start)
-			return Util::emptyString;
+			return false;
 		for(string::size_type i = start; i < getParameters().size(); ++i) {
 			if(toCode(name) == toCode(getParameters()[0].c_str())) {
-				return getParameters()[i].substr(2);
+				ret = getParameters()[i].substr(2);
+				return true;
 			}
 		}
-		return Util::emptyString;
+		return false;
 	}
 
 	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }
@@ -164,5 +165,5 @@ public:
 #endif // _COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.4 2004/04/24 09:40:58 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.5 2004/04/30 07:14:47 arnetheduck Exp $
 */

@@ -66,7 +66,6 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
-		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
@@ -148,14 +147,6 @@ public:
 		}
 	}
 
-	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(client->isConnected()) {
-			clearUserList();
-			//client->refreshUserList();
-		}
-		return 0;
-	}
-	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		clearUserList();
 		client->addListener(this);
@@ -401,6 +392,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.44 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.45 2004/04/30 07:14:56 arnetheduck Exp $
  */
 

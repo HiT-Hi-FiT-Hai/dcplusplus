@@ -79,7 +79,7 @@ void ClientManager::infoUpdated() {
 	}
 }
 
-void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 									int aFileType, const string& aString) throw() {
 	
 	string::size_type pos = aSeeker.find("Hub:");
@@ -335,5 +335,5 @@ void ClientManager::onAction(ClientListener::Types type, Client* aClient, const 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.55 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.56 2004/04/30 07:14:49 arnetheduck Exp $
  */

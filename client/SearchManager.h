@@ -49,6 +49,8 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
+	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, TTHValue* aTTH);
+
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
 		const string& aHubIpPort, const string& aIp) :
@@ -177,5 +179,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.39 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.40 2004/04/30 07:14:49 arnetheduck Exp $
  */

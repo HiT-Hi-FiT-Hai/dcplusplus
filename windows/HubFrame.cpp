@@ -104,8 +104,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.CreatePopupMenu();
 	appendUserItems(userMenu);
 	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
-	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 	userMenu.SetMenuDefaultItem(IDC_GETLIST);
 
 	tabMenu = CreatePopupMenu();
@@ -470,11 +468,11 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	CRect rc = rect;
 	rc.bottom -= h + 10;
 	if(ctrlShowUsers.GetCheck() != BST_CHECKED) {
-		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
-			SetSinglePaneMode(SPLIT_PANE_LEFT);
-	} else {
 		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
 			SetSinglePaneMode(SPLIT_PANE_NONE);
+	} else {
+		if(GetSinglePaneMode() != SPLIT_PANE_LEFT)
+			SetSinglePaneMode(SPLIT_PANE_LEFT);
 	}
 	SetSplitterRect(rc);
 	
@@ -949,7 +947,6 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
 
-//		client->refreshUserList(true);		
 	} else {
 		clearUserList();
 	}
@@ -1131,5 +1128,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.59 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.60 2004/04/30 07:14:56 arnetheduck Exp $
  */

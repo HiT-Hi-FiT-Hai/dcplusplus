@@ -54,10 +54,8 @@ public:
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
-	void search(SearchResult::List& l, const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
-		search(l, aString, aSearchType, Util::toInt64(aSize), aFileType, aClient, maxResults);
-	}
 	void search(SearchResult::List& l, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
+	void search(SearchResult::List& l, const StringList& params, Client* aClient, StringList::size_type maxResults);
 
 	int64_t getShareSize() {
 		RLock l(cs);
@@ -96,6 +94,10 @@ public:
 	u_int32_t getMask(const string& fileName);
 	u_int32_t getMask(StringList& l);
 	u_int32_t getMask(StringSearch::List& l);
+
+	void addHits(u_int32_t aHits) {
+		hits += aHits;
+	}
 	
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
@@ -103,6 +105,7 @@ public:
 	GETSET(string, bzXmlFile, BZXmlFile);
 
 private:
+	struct AdcSearch;
 
 	class Directory : public FastAlloc<Directory> {
 	public:
@@ -193,8 +196,9 @@ private:
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
-		
+		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
+		void search(SearchResult::List& aResults, AdcSearch& aStrings, Client* aClient, StringList::size_type maxResults, u_int32_t mask) throw();
+
 		void toString(string& tmp, OutputStream* xmlFile, string& indent);
 		
 		GETSET(string, name, Name);
@@ -213,6 +217,39 @@ private:
 	virtual ~ShareManager();
 	
 	StringList loadDirs;
+
+	struct AdcSearch {
+		AdcSearch(const StringList& params);
+
+		bool isExcluded(const string& str) {
+			for(StringSearch::Iter i = exclude.begin(); i != exclude.end(); ++i) {
+				if(i->match(str))
+					return true;
+			}
+			return false;
+		}
+
+		bool hasExt(const string& name) {
+			for(StringIter i = ext.begin(); i != ext.end(); ++i) {
+				if(name.length() >= i->length() && Util::stricmp(name.c_str() + name.length() - i->length(), i->c_str()) == 0)
+					return true;
+			}
+			return false;
+		}
+
+		StringSearch::List* include;
+		StringSearch::List includeX;
+		StringSearch::List exclude;
+		StringList ext;
+
+		int64_t gt;
+		int64_t lt;
+
+		TTHValue root;
+		bool hasRoot;
+
+		bool isDirectory;
+	};
 
 	struct TTHHash {
 		size_t operator()(const TTHValue* tth) const { return *(size_t*)tth; };
@@ -279,6 +316,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.48 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.49 2004/04/30 07:14:50 arnetheduck Exp $
  */
 

@@ -163,8 +163,7 @@ private:
 	virtual void on(Failed, Client*, const string&) throw();
 	virtual void on(HubUpdated, Client* c) throw() { fire(ClientManagerListener::ClientUpdated(), c); }
 	virtual void on(UserCommand, Client*, int, int, const string&, const string&) throw();
-
-	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+	virtual void on(NmdcSearch, Client* aClient, const string& aSeeker, int aSearchType, int64_t aSize, 
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
@@ -175,6 +174,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.47 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.48 2004/04/30 07:14:49 arnetheduck Exp $
  */
 
