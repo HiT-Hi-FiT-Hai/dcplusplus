@@ -142,6 +142,8 @@ protected:
 	Counts lastCounts;
 
 	void updateCounts(bool aRemove);
+
+	void setPort(short aPort) { port = aPort; }
 private:
 
 	enum {
@@ -167,5 +169,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.77 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: Client.h,v 1.78 2004/04/08 18:17:59 arnetheduck Exp $
  */

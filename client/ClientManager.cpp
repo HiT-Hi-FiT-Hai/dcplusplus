@@ -291,7 +291,7 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, int aTy
 	}
 }
 
-void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) throw() {
+void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List&) throw() {
 	switch(type) {
 	case ClientListener::USERS_UPDATED:
 		fire(ClientManagerListener::CLIENT_UPDATED, client);
@@ -322,5 +322,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.52 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.53 2004/04/08 18:18:00 arnetheduck Exp $
  */

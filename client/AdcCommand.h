@@ -62,7 +62,7 @@ public:
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
-	operator ==(u_int32_t aCmd) { return cmdInt == aCmd; }
+	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
 	static string escape(const string& str) {
 		string tmp = str;
@@ -114,5 +114,5 @@ public:
 
 /**
 * @file
-* $Id: AdcCommand.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.2 2004/04/08 18:17:59 arnetheduck Exp $
 */

@@ -20,6 +20,7 @@
 #include "BufferedSocket.h"
 #include "CID.h"
 #include "AdcCommand.h"
+#include "TigerHash.h"
 
 class AdcHub;
 class ClientManager;
@@ -47,20 +48,14 @@ public:
 
 	virtual void connect(const User* user) { };
 	
-	virtual void hubMessage(const string& aMessage) {
-		send("BMSG " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, tmp)) + "\n"); 
-	}
-
-	virtual void privateMessage(const User* user, const string& aMessage) { 
-		send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, tmp)) + " PM\n"); 
-	}
-
-	virtual void kick(const User* user, const string& aMessage) { };
-	virtual void ban(const User* user, const string& aMessage, time_t aSeconds) { };
+	virtual void hubMessage(const string& aMessage);
+	virtual void privateMessage(const User* user, const string& aMessage);
+	virtual void kick(const User* user, const string& aMessage);
+	virtual void ban(const User* user, const string& aMessage, time_t aSeconds);
 	virtual void send(const string& aMessage) { socket->write(aMessage); };
-	virtual void redirect(const User* user, const string& aHub, const string& aMessage) { };
-	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { };
-	virtual void password(const string& pwd) { };
+	virtual void redirect(const User* user, const string& aHub, const string& aMessage);
+	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
+	virtual void password(const string& pwd);
 	virtual void info();
 
 	virtual int getUserCount() const { return 0;};
@@ -75,16 +70,17 @@ public:
 		Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
 	}
 
-	template<> void handle(Command& c, Command::SUP) {
-		if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end())
+	void handle(Command& c, Command::SUP) {
+		if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
+			disconnect();
 			return;
-
+		}
 		info();
 		Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
 	}
 
-	template<> void handle(Command& c, Command::INF);
-	template<> void handle(Command& c, Command::QUI);
+	void handle(Command& c, Command::INF);
+	void handle(Command& c, Command::QUI);
 
 private:
 	struct ClientAdapter : public AdcHubListener {
@@ -117,8 +113,9 @@ private:
 
 	User::NickMap nickMap;
 	User::Ptr hub;
-	string tmp;
 	string lastInfo;
+
+	string salt;
 
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
 	virtual void onAction(BufferedSocketListener::Types type) throw();
@@ -126,5 +123,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.2 2004/04/08 18:17:59 arnetheduck Exp $
  */

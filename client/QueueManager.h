@@ -115,7 +115,11 @@ public:
 
 	void getTargetsBySize(StringList& sl, int64_t aSize, const string& suffix) throw() {
 		Lock l(cs);
-		fileQueue.find(sl, aSize, suffix);
+		QueueItem::List ql;
+		fileQueue.find(ql, aSize, suffix);
+		for(QueueItem::Iter i = ql.begin(); i != ql.end(); ++i) {
+			sl.push_back((*i)->getTarget());
+		}
 	}
 
 	QueueItem::StringMap& lockQueue() throw() { cs.enter(); return fileQueue.getQueue(); } ;
@@ -149,8 +153,11 @@ private:
 		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
 			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
+
 		QueueItem* find(const string& target);
-		void find(StringList& sl, int64_t aSize, const string& ext);
+		void find(QueueItem::List& sl, int64_t aSize, const string& ext);
+		void find(QueueItem::List& ql, TTHValue* tth);
+
 		QueueItem* findAutoSearch(StringList& recent);
 		size_t getSize() { return queue.size(); };
 		QueueItem::StringMap& getQueue() { return queue; };
@@ -248,6 +255,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.53 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.54 2004/04/08 18:18:00 arnetheduck Exp $
  */
 

@@ -61,6 +61,9 @@ void NmdcHub::connect() {
 
 	state = STATE_LOCK;
 
+	if(getPort() == 0) {
+		setPort(411);
+	}
 	socket->connect(getAddress(), getPort());
 }
 
@@ -734,6 +737,6 @@ void NmdcHub::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.2 2004/04/08 18:18:00 arnetheduck Exp $
  */
 

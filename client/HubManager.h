@@ -58,7 +58,7 @@ public:
 	FavoriteHubEntry() throw() : connect(false), bottom(0), top(0), left(0), right(0){ };
 	FavoriteHubEntry(const HubEntry& rhs) throw() : name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), connect(false), bottom(0), top(0), left(0), right(0){ };
 	FavoriteHubEntry(const FavoriteHubEntry& rhs) throw() : userdescription(rhs.userdescription), name(rhs.getName()), server(rhs.getServer()), description(rhs.getDescription()), 
-		password(rhs.getPassword()), connect(rhs.getConnect()), nick(rhs.nick), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()){ };
+		password(rhs.getPassword()), connect(rhs.getConnect()), bottom(rhs.getBottom()), top(rhs.getTop()), left(rhs.getLeft()), right(rhs.getRight()), nick(rhs.nick){ };
 	~FavoriteHubEntry() throw() { }	
 	
 	const string& getNick(bool useDefault = true) const { 
@@ -332,6 +332,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.49 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.50 2004/04/08 18:18:00 arnetheduck Exp $
  */
 

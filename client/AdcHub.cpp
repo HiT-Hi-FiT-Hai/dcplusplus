@@ -22,6 +22,7 @@
 #include "AdcHub.h"
 #include "ClientManager.h"
 #include "ShareManager.h"
+#include "StringTokenizer.h"
 
 void Command::parse(const string& aLine) {
 	if(aLine.length() < 4)
@@ -54,10 +55,10 @@ void Command::parse(const string& aLine) {
 	}
 }
 
-AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), adapter(this) {
+AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), adapter(this), salt(NULL) {
 }
 
-template<> void AdcHub::handle(Command& c, Command::INF) {
+void AdcHub::handle(Command& c, Command::INF) {
 	if(c.getParameters().empty())
 		return;
 	User::Ptr u = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), this, true);
@@ -133,10 +134,64 @@ template<> void AdcHub::handle(Command& c, Command::INF) {
 	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
 }
 
-template<> void AdcHub::handle(Command& c, Command::QUI) {
+void AdcHub::handle(Command& c, Command::QUI) {
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]));
 	ClientManager::getInstance()->putUserOffline(p);
 	Speaker<AdcHubListener>::fire(AdcHubListener::COMMAND, this, c);
+}
+
+void AdcHub::hubMessage(const string& aMessage) {
+	string strtmp;
+	send("BMSG " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+}
+
+void AdcHub::privateMessage(const User* user, const string& aMessage) { 
+	string strtmp;
+	send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + " PM\n"); 
+}
+
+void AdcHub::kick(const User* user, const string& aMessage) { 
+	string strtmp;
+	send("HDSC " + user->getCID().toBase32() + " KK KK " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+}
+void AdcHub::ban(const User* user, const string& aMessage, time_t aSeconds) { 
+	string strtmp;
+	send("HDSC " + user->getCID().toBase32() + " BA BA " + getMe()->getCID().toBase32() + " " + Util::toString(aSeconds) + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+}
+
+void AdcHub::redirect(const User* user, const string& aHub, const string& aMessage) { 
+	string strtmp;
+	send("HDSC " + user->getCID().toBase32() + " RD RD " + getMe()->getCID().toBase32() + " " + aHub + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+}
+void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
+	string strtmp;
+	strtmp += "BSCH " + getMe()->getCID().toBase32();
+	if(aSizeMode == SearchManager::SIZE_ATLEAST) {
+		strtmp += ">=" + Util::toString(aSize);
+	} else if(aSizeMode == SearchManager::SIZE_ATMOST) {
+		strtmp += "<=" + Util::toString(aSize);
+	}
+	StringTokenizer st(aString, ' ');
+	string tmp;
+	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
+		strtmp += "++" + Command::escape(Util::toUtf8(*i, tmp));
+	}
+	strtmp += "\n";
+	send(strtmp);
+}
+void AdcHub::password(const string& pwd) { 
+	if(!salt.empty()) {
+		static const int SALT_SIZE = 192/8;
+		u_int8_t buf[SALT_SIZE];
+		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
+		string tmp;
+		const string& x = Util::toUtf8(pwd, tmp);
+		TigerHash th;
+		th.update(x.data(), x.length());
+		th.update(buf, SALT_SIZE);
+		send("HPWD " + Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE) + "\n");
+		salt.clear();
+	}
 }
 
 void AdcHub::info() {
@@ -184,7 +239,8 @@ void AdcHub::onAction(BufferedSocketListener::Types type, const string& aLine) t
 	switch(type) {
 			case BufferedSocketListener::LINE: dispatch(aLine); break;
 			case BufferedSocketListener::FAILED: 
-				ClientManager::getInstance()->putUserOffline(getMe());
+				if(getMe())
+					ClientManager::getInstance()->putUserOffline(getMe());
 				setMe(NULL);
 				Speaker<AdcHubListener>::fire(AdcHubListener::FAILED, this, aLine); break;
 			default: break;
@@ -212,5 +268,5 @@ void AdcHub::ClientAdapter::onAction(Types, AdcHub*, const Command& cmd) throw()
 
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.1 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.2 2004/04/08 18:17:59 arnetheduck Exp $
  */
