@@ -108,6 +108,18 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return TRUE;
 }
 
+void FavoriteHubsFrame::openSelected() {
+	if(!checkNick())
+		return;
+
+	int i = -1;
+	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
+		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
+	}
+	return;
+}
+
 LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
@@ -119,32 +131,6 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
 	}
 
-	return 0;
-}
-
-LRESULT FavoriteHubsFrame::onEnter(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHandled*/) {
-	if(!checkNick())
-		return 0;
-	
-	int item = ctrlHubs.GetNextItem(-1, LVNI_FOCUSED);
-
-	if(item != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item);
-		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
-	}
-
-	return 0;
-}
-
-LRESULT FavoriteHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(!checkNick())
-		return 0;
-	
-	int i = -1;
-	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
-	}
 	return 0;
 }
 
@@ -202,9 +188,8 @@ LRESULT FavoriteHubsFrame::onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	for(int i = 1; i < j; ++i) {
 		if(ctrlHubs.GetItemState(i, LVIS_SELECTED)) {
 			FavoriteHubEntry* e = fh[i];
-			fh.erase(fh.begin()+i);
+			swap(fh[i], fh[i-1]);
 			ctrlHubs.DeleteItem(i);
-			fh.insert(fh.begin()+(i-1), e);
 			addEntry(e, i-1);
 			ctrlHubs.SetItemState(i-1, LVIS_SELECTED, LVIS_SELECTED);
 			ctrlHubs.EnsureVisible(i-1, FALSE);
@@ -225,10 +210,9 @@ LRESULT FavoriteHubsFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	for(int i = j; i >= 0; --i) {
 		if(ctrlHubs.GetItemState(i, LVIS_SELECTED)) {
 			FavoriteHubEntry* e = fh[i];
-			fh.insert(fh.begin()+(i+2), e);
+			swap(fh[i], fh[i+1]);
 			addEntry(e, i+2);
 			ctrlHubs.SetItemState(i+2, LVIS_SELECTED, LVIS_SELECTED);
-			fh.erase(fh.begin()+i);
 			ctrlHubs.DeleteItem(i);
 			ctrlHubs.EnsureVisible(i, FALSE);
 		}
@@ -307,6 +291,6 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.15 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.16 2003/10/24 23:35:42 arnetheduck Exp $
  */
 

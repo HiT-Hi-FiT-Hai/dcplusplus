@@ -275,6 +275,8 @@
 #define IDC_SETTINGS_TO                 1206
 #define IDC_FINAL_TEXT                  1207
 #define IDC_RESULT                      1207
+#define IDC_BUTTON1                     1208
+#define IDC_BUTTON2                     1209
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -294,7 +296,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1208
+#define _APS_NEXT_CONTROL_VALUE         1210
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

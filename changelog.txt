@@ -1,4 +1,7 @@
  -- 0.264 --
+* *IMPORTANT* Security update, upgrade unless you want to risk losing files anywhere
+  on your hd (this is for all versions prior to this one) (thanks fusbar for bringing 
+  it to my attention) *IMPORTANT*
 * Some code cleanup
 * Added vertical tiling of windows
 * Nick and password are now taken from favorite hubs on redirect (thanks saurod)
@@ -16,7 +19,7 @@
   (thanks gargoyle)
 * Small fixes (thanks gargoyle)
 * Toolbar updates (thanks gargoyle)
-* Speeded up match queue a lot
+* Speeded up match queue a lot (I mean a _lot_)
 * Added a network statistics view
 * Added tab-specific context menus
 * Added support for hub $Supports

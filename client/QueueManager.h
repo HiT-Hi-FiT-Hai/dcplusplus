@@ -268,7 +268,7 @@ public:
 		string::size_type i = 0;
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
-		string file = Util::getAppPath() + "FileLists\\" + Util::filterFileName(x) + ".DcLst";
+		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, 
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
@@ -399,6 +399,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.40 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.41 2003/10/24 23:35:41 arnetheduck Exp $
  */
 

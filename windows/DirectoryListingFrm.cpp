@@ -326,7 +326,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget, bool view /* = f
 		try {
 			if(ii->type == ItemInfo::FILE) {
 				if(view) {
-					File::deleteFile(target+ii->file->getName());
+					File::deleteFile(target + Util::validateFileName(ii->file->getName()));
 				}
 				dl->download(ii->file, target + ii->file->getName(), view);
 			} else if(!view) {
@@ -863,5 +863,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.22 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.23 2003/10/24 23:35:42 arnetheduck Exp $
  */

@@ -293,6 +293,10 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 	if(aTarget.length() > MAX_PATH) {
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
 	}
+	// Check that target starts with a drive
+	if(aTarget[1] != ':' || aTarget[2] != '\\') {
+		throw QueueException(STRING(INVALID_TARGET_FILE));
+	}
 #endif
 
 	// Check that target contains at least one directory...we don't want headless files...
@@ -300,7 +304,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		throw QueueException(STRING(INVALID_TARGET_FILE));
 	}
 
-	string target = Util::filterFileName(aTarget);
+	string target = Util::validateFileName(aTarget);
 	// Check that the file doesn't already exist...
 	if( (aSize != -1) && (aSize <= File::getSize(target)) )  {
 		throw FileException(STRING(LARGER_TARGET_FILE_EXISTS));
@@ -1131,5 +1135,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.47 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.48 2003/10/24 23:35:41 arnetheduck Exp $
  */

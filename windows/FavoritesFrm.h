@@ -83,7 +83,7 @@ public:
 		openSelected();
 		return 0;
 	}
-
+	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
@@ -185,6 +185,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.15 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.16 2003/10/24 23:35:42 arnetheduck Exp $
  */
 

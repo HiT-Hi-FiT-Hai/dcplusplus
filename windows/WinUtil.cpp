@@ -231,7 +231,7 @@ bool WinUtil::browseDirectory(string& target, HWND owner /* = NULL */) {
 bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* = true */, const string& initialDir /* = Util::emptyString */, const char* types /* = NULL */, const char* defExt /* = NULL */) {
 	char buf[MAX_PATH];
 	OPENFILENAME ofn;       // common dialog box structure
-	
+	target = Util::validateFileName(target);
 	memcpy(buf, target.c_str(), target.length() + 1);
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -420,5 +420,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.23 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.24 2003/10/24 23:35:42 arnetheduck Exp $
  */

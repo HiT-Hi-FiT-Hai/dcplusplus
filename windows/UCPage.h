@@ -26,6 +26,8 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
+class UserCommand;
+
 class UCPage : public CPropertyPage<IDD_UCPAGE>, public PropPage
 {
 public:
@@ -42,6 +44,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_MENU, onAddMenu)
 		COMMAND_ID_HANDLER(IDC_REMOVE_MENU, onRemoveMenu)
 		COMMAND_ID_HANDLER(IDC_CHANGE_MENU, onChangeMenu)
+		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
+		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -49,6 +53,8 @@ public:
 	LRESULT onAddMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onChangeMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMoveUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -59,12 +65,14 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
+
+	void addEntry(const UserCommand& uc, int pos);
 };
 
 #endif //ADVANCEDPAGE_H
 
 /**
  * @file
- * $Id: UCPage.h,v 1.2 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: UCPage.h,v 1.3 2003/10/24 23:35:42 arnetheduck Exp $
  */
 

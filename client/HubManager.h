@@ -193,6 +193,18 @@ public:
 		return false;
 	}
 
+	bool moveUserCommand(int id, int pos) {
+		dcassert(pos == -1 || pos == 1);
+		Lock l(cs);
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+			if(i->getId() == id) {
+				swap(*i, *(i + pos));
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void updateUserCommand(const UserCommand& uc) {
 		bool nosave = true;
 		Lock l(cs);
@@ -305,6 +317,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.43 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.44 2003/10/24 23:35:41 arnetheduck Exp $
  */
 
