@@ -35,7 +35,7 @@ public:
 		MINUTE
 	};
 	
-	virtual void onAction(Types type, DWORD aTick) { };
+	virtual void onAction(Types, DWORD) { };
 };
 
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>
@@ -69,8 +69,8 @@ private:
 		if(readerThread != NULL) {
 			SetEvent(stopEvent);
 			
-			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("TimerManager: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+			if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
+				MessageBox(NULL, _T("TimerManager: Unable to stop timer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
 			
 			readerThread = NULL;
@@ -87,9 +87,12 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.7  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

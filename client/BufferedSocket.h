@@ -44,11 +44,11 @@ public:
 		TRANSMIT_DONE
 	};
 	
-	virtual void onAction(Types type) { };
-	virtual void onAction(Types type, DWORD) { };
-	virtual void onAction(Types type, const string&) { };
-	virtual void onAction(Types type, const BYTE*, int) { };
-	virtual void onAction(Types type, int) { };
+	virtual void onAction(Types) { };
+	virtual void onAction(Types, DWORD) { };
+	virtual void onAction(Types, const string&) { };
+	virtual void onAction(Types, const BYTE*, int) { };
+	virtual void onAction(Types, int) { };
 };
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
@@ -148,7 +148,7 @@ public:
 
 	GETSET(char, separator, Separator);
 private:
-	BufferedSocket(const BufferedSocket& aSocket) {
+	BufferedSocket(const BufferedSocket&) {
 		// Copy still not allowed
 	}
 
@@ -224,9 +224,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.25 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.26 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.26  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.25  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

@@ -79,7 +79,7 @@ public:
 		return true;
 	}
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 		
@@ -98,7 +98,7 @@ public:
 		return FALSE; 
 	}
 	
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
@@ -114,12 +114,12 @@ public:
 		return CMDIChildWindowImpl2<FavoriteHubsFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
 			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
@@ -136,7 +136,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 		if(l->iItem != -1) {
 			FavoriteHubEntry* f = (FavoriteHubEntry*)ctrlHubs.GetItemData(l->iItem);
@@ -147,7 +147,7 @@ public:
 	
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	
-	LRESULT onColumnClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
 			ctrlHubs.setSortDirection(!ctrlHubs.getSortDirection());
@@ -261,9 +261,12 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.h,v $
+ * Revision 1.3  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.2  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -69,8 +69,8 @@ public:
 		FAILED,
 		STATUS_CHANGED
 	};
-	virtual void onAction(Types type, ConnectionQueueItem* aItem) { };
-	virtual void onAction(Types type, ConnectionQueueItem* aItem, const string& aLine) { };
+	virtual void onAction(Types, ConnectionQueueItem*) { };
+	virtual void onAction(Types, ConnectionQueueItem*, const string&) { };
 };
 
 
@@ -234,9 +234,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.25 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.26 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.26  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.25  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

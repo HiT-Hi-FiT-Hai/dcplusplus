@@ -297,7 +297,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 	return 0;
 }
 
-LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
@@ -306,7 +306,6 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	ctrlQueue.ScreenToClient(&pt); 
 	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) 
 	{ 
-		int n = 0;
 		CMenuItemInfo mi;
 		
 		while(browseMenu.GetMenuItemCount() > 0) {
@@ -474,9 +473,12 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.5 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.6 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.6  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.5  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

@@ -139,7 +139,6 @@ bool BufferedSocket::threadConnect() {
 					} else {
 						// Should never happen...
 						dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
-						Tasks t = *i;
 					} 
 				}
 				
@@ -213,7 +212,7 @@ void BufferedSocket::threadRead() {
 					fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
 					i = 0;
 				} else {
-					int high = dataBytes < i ? dataBytes - i : i;
+					int high = (int)dataBytes < i ? (int)dataBytes - i : i;
 					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
 					i-=high;
 					
@@ -241,7 +240,6 @@ void BufferedSocket::threadSendData() {
 	if(outbufPos[curBuf] == 0)
 		return;
 	
-	int pos = 0;
 	try {
 		BYTE* buf;
 		int len;
@@ -262,7 +260,6 @@ void BufferedSocket::threadSendData() {
 }
 
 void BufferedSocket::write(const char* aBuf, int aLen) throw(SocketException) {
-	int pos = 0;
 
 	if(!isConnected()) {
 		throw("Not connected");
@@ -359,9 +356,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.26 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.27  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.26  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

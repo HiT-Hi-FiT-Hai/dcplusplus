@@ -202,7 +202,7 @@ public:
 
 	GETSETREF(string, ip, Ip);
 private:
-	Socket(const Socket& aSocket) {
+	Socket(const Socket&) {
 		// Copies not allowed
 	}
 	int type;
@@ -223,9 +223,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.19 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: Socket.h,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.20  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.19  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

@@ -28,7 +28,7 @@
 
 DownloadManager* DownloadManager::instance = NULL;
 
-void DownloadManager::onTimerSecond(DWORD aTick) {
+void DownloadManager::onTimerSecond(DWORD /*aTick*/) {
 	Lock l(cs);
 
 	// Tick each ongoing download
@@ -137,7 +137,7 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) {
 
 	if(d->getTotal() + aLen >= d->getRollbackSize()) {
 		BYTE* buf = new BYTE[d->getRollbackSize()];
-		int len = d->getRollbackSize() - d->getTotal();
+		int len = d->getRollbackSize() - (int)d->getTotal();
 		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, len);
 		
 		d->getFile()->read(buf, d->getRollbackSize());
@@ -156,7 +156,7 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) {
 		d->getFile()->write(aData+len, aLen - len);
 		
 	} else {
-		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen - d->getTotal());
+		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen - (int)d->getTotal());
 	}
 
 	return true;
@@ -190,6 +190,8 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 				QueueManager::getInstance()->removeSource(target, aSource->getUser());
 				
 				removeConnection(aSource);
+			} else {
+				cs.leave();
 			}
 		} else {
 			d->getFile()->write(aData, aLen);
@@ -249,7 +251,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 			d->setRollbackBuffer(SETTING(ROLLBACK));
 		} else {
 			d->setPos(0, true);
-			d->setRollbackBuffer(fileLength);
+			d->setRollbackBuffer((int)fileLength);
 			d->unsetFlag(Download::ROLLBACK);
 		}
 	}
@@ -274,7 +276,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 }
 
 /** Download finished! */
-void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
+void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 	cs.enter();
 
 	Download::MapIter i = running.find(aSource);
@@ -353,9 +355,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.43 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.44 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.44  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.43  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

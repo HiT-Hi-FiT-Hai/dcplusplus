@@ -107,7 +107,7 @@ public:
 		return FALSE;
 	};
 
-	LRESULT onColumnClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlResults.getSortColumn()) {
 			ctrlResults.setSortDirection(!ctrlResults.getSortDirection());
@@ -121,7 +121,7 @@ public:
 		return 0;
 	}
 	
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
 			delete (LONGLONG*)ctrlResults.GetItemData(i);
 		}
@@ -144,18 +144,18 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlSearch.SetFocus();
 		return 0;
 	}
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-	LRESULT onEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 		
-	LRESULT onPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
@@ -216,13 +216,13 @@ public:
 		ctrlSizeMode.MoveWindow(rc);
 	}
 
-	LRESULT onSpeaker(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		ctrlResults.insert(*(StringList*)wParam, 0, lParam);
 		delete (StringList*)wParam;
 		return 0;
 	}
 
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		switch (uMsg) 
 		{ 
         case WM_KEYDOWN: 
@@ -256,7 +256,7 @@ public:
 	
 	LRESULT onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
-	LRESULT onTab(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onTab(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		HWND focus = GetFocus();
 		if(focus == ctrlSearch.m_hWnd) {
 			ctrlMode.SetFocus();
@@ -324,9 +324,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.26 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.27  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.26  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

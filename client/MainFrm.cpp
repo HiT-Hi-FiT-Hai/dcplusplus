@@ -40,10 +40,6 @@
 #include "QueueManager.h"
 #include "QueueFrame.h"
 
-bool MainFrame::away = false;
-string MainFrame::awayMsg;
-const string MainFrame::defaultMsg = "I'm away. I might answer later if you're lucky. <DC++ v" VERSIONSTRING ">";
-
 MainFrame::~MainFrame() {
 	arrows.Destroy();
 }
@@ -147,10 +143,12 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == STATS) {
 		StringList* str = (StringList*)lParam;
 		if(ctrlStatus.IsWindow()) {
+
 			ctrlStatus.SetText(1, (*str)[0].c_str());
 			ctrlStatus.SetText(2, (*str)[1].c_str());
 			ctrlStatus.SetText(3, (*str)[2].c_str());
 			ctrlStatus.SetText(4, (*str)[3].c_str());
+			ctrlStatus.SetText(5, (*str)[4].c_str());
 		}
 		delete str;
 	} else if(wParam == AUTO_CONNECT) {
@@ -194,7 +192,7 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 void MainFrame::onUploadTick(Upload* aUpload) {
 	char buf[128];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aUpload->getStart());
-	int seconds = 0;
+	LONGLONG seconds = 0;
 	LONGLONG avg = 0;
 	if(dif > 0) {
 		avg = aUpload->getTotal() * (LONGLONG)1000 / dif;
@@ -251,7 +249,7 @@ void MainFrame::onDownloadStarting(Download* aDownload) {
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[256];
 	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aDownload->getStart());
-	int seconds = 0;
+	LONGLONG seconds = 0;
 	LONGLONG avg = 0;
 	if(dif > 0) {
 		avg = aDownload->getTotal() * (LONGLONG)1000 / dif;
@@ -360,10 +358,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	Util::decodeFont(SETTING(TEXT_FONT), lf);
 	Util::font = ::CreateFontIndirect(&lf);
 	
-	if(SETTING(SLOTS) < 1) {
-		SettingsManager::getInstance()->set(SettingsManager::SLOTS, 1);
-	}
-
 	// Set window name
 	SetWindowText(APPNAME " " VERSIONSTRING);
 
@@ -440,8 +434,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		try {
-			ConnectionManager::getInstance()->setPort(SETTING(PORT));
-			SearchManager::getInstance()->setPort(SETTING(PORT));
+			ConnectionManager::getInstance()->setPort((short)SETTING(PORT));
+			SearchManager::getInstance()->setPort((short)SETTING(PORT));
 		} catch(Exception e) {
 			dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
 			MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
@@ -486,7 +480,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
-LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT MainFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
@@ -583,8 +577,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 			try {
-				ConnectionManager::getInstance()->setPort(SETTING(PORT));
-				SearchManager::getInstance()->setPort(SETTING(PORT));
+				ConnectionManager::getInstance()->setPort((short)SETTING(PORT));
+				SearchManager::getInstance()->setPort((short)SETTING(PORT));
 			} catch(Exception e) {
 				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
 				MessageBox(("Port " + Util::toString(SETTING(PORT)) + " is busy, please choose another one in the settings dialog, or disable any other application that might be using it and restart DC++").c_str());
@@ -594,11 +588,11 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-void MainFrame::onHttpData(HttpConnection* aConn, const BYTE* aBuf, int aLen) {
+void MainFrame::onHttpData(HttpConnection* /*aConn*/, const BYTE* aBuf, int aLen) {
 	versionInfo += string((const char*)aBuf, aLen);
 }
 
-void MainFrame::onHttpComplete(HttpConnection* aConn)  {
+void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 	try {
 		SimpleXML xml;
 		xml.fromXML(versionInfo);
@@ -656,9 +650,12 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.58 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.59 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.59  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.58  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

@@ -264,17 +264,19 @@ void Client::onLine(const string& aLine) throw() {
 		}
 		fire(ClientListener::OP_LIST, this, v);
 	} else if(cmd == "$To:") {
-		int i = param.find("From:");
+		string::size_type i = param.find("From:");
 		if(i != -1) {
 			i+=6;
-			int j = param.find("$");
-			string from = param.substr(i, j - 1 - i);
-			if(from.size() > 0 && param.size() > (j + 1)) {
-				User::Ptr& user = getUser(from);
-				if(user) {
-					fire(ClientListener::PRIVATE_MESSAGE, this, user, param.substr(j + 1));
-				} else {
-					fire(ClientListener::PRIVATE_MESSAGE, this, from, param.substr(j + 1));
+			string::size_type j = param.find("$");
+			if(j != -1) {
+				string from = param.substr(i, j - 1 - i);
+				if(from.size() > 0 && param.size() > (j + 1)) {
+					User::Ptr& user = getUser(from);
+					if(user) {
+						fire(ClientListener::PRIVATE_MESSAGE, this, user, param.substr(j + 1));
+					} else {
+						fire(ClientListener::PRIVATE_MESSAGE, this, from, param.substr(j + 1));
+					}
 				}
 			}
 		}
@@ -294,9 +296,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.24 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.25 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.25  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.24  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

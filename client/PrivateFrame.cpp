@@ -22,7 +22,7 @@
 #include "PrivateFrame.h"
 #include "Client.h"
 #include "ClientManager.h"
-#include "MainFrm.h"
+#include "Util.h"
 
 CriticalSection PrivateFrame::cs;
 map<User::Ptr, PrivateFrame*> PrivateFrame::frames;
@@ -79,8 +79,8 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 			frames[aUser] = p;
 			p->setTab(aTab);
 			p->addLine(aMessage);
-			if(MainFrame::getAway()) {
-				p->sendMessage(MainFrame::getAwayMessage());
+			if(Util::getAway()) {
+				p->sendMessage(Util::getAwayMessage());
 			}
 		}
 	} else {
@@ -115,7 +115,7 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 	}
 }
 
-LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT PrivateFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(!user->isOnline()) {
 		User::Ptr& p = ClientManager::getInstance()->findUser(user->getNick());
@@ -145,9 +145,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.15 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.16 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.16  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.15  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

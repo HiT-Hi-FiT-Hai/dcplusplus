@@ -21,6 +21,9 @@
 #define _DCPLUSPLUS_H
 
 #ifdef _DEBUG
+// Warning C4130: '==' : logical operation on address of string constant
+#pragma warning (disable:4130)
+
 #define dcdebug ATLTRACE
 #define dcassert(exp) ATLASSERT(exp)
 #define dcdrun(exp) exp
@@ -31,16 +34,13 @@
 #define dcdrun(exp)
 #endif //_DEBUG
 
-// Replace with templates...
+// Make sure we're using the templates from algorithm...
 #ifdef min
 #undef min
 #endif
 #ifdef max
 #undef max
 #endif
-
-template<typename T> T min(T a, T b) { return (a < b) ? a : b; };
-template<typename T> T max(T a, T b) { return (a > b) ? a : b; };
 
 typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
@@ -73,9 +73,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.14 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.15 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.15  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.14  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

@@ -83,6 +83,8 @@ void UserConnection::onLine(const string& aLine) throw () {
 		x = param.find(" Pk=");
 		if(x != string::npos) {
 			fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
+		} else {
+			fire(UserConnectionListener::LOCK, this, param, "");
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
@@ -95,9 +97,12 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.10 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.11 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.11  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.10  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

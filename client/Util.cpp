@@ -28,6 +28,10 @@ COLORREF Util::textColor = 0;
 COLORREF Util::bgColor = 0;
 HFONT Util::font;
 
+bool Util::away = false;
+string Util::awayMsg;
+const string Util::defaultMsg = "I'm away. I might answer later if you're lucky. <DC++ v" VERSIONSTRING ">";
+
 /**
  * Decodes a URL the best it can...
  * Recognised protocols:
@@ -64,7 +68,7 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 
 	if( (i=url.find(':')) != string::npos) {
 		// Port
-		aPort = atoi(aUrl.substr(i+1).c_str());
+		aPort = (short)Util::toInt(aUrl.substr(i+1));
 		url = url.substr(0, i);
 	}
 
@@ -83,7 +87,7 @@ void Util::decodeFont(const string& setting, LOGFONT &dest) {
 		face = sl[0];
 		dest.lfHeight = Util::toInt(sl[1]);
 		dest.lfWeight = Util::toInt(sl[2]);
-		dest.lfItalic = Util::toInt(sl[3]);
+		dest.lfItalic = (BYTE)Util::toInt(sl[3]);
 	}
 
 	if(!face.empty()) {
@@ -95,9 +99,12 @@ void Util::decodeFont(const string& setting, LOGFONT &dest) {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.6 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.7  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.6  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

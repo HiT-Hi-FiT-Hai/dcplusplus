@@ -95,7 +95,7 @@ public:
 	}
 	
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		char *buf = new char[ctrlPad.GetWindowTextLength() + 1];
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		text = buf;
@@ -106,7 +106,7 @@ public:
 		
 	}
 	
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
 		return 0;
 	}
@@ -118,12 +118,12 @@ public:
 		return MDITabChildWindowImpl<NotepadFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 		
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
@@ -150,9 +150,12 @@ private:
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: NotepadFrame.h,v $
+ * Revision 1.3  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.2  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

@@ -40,50 +40,45 @@ template<typename Listener>
 class Speaker {
 public:
 	void fire(Listener::Types type) throw () {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
 		}
-		listenerCS.leave();
 	};
 	
 	template<class T> 
 		void fire(Listener::Types type, const T& param) throw () {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, param);
 		}
-		listenerCS.leave();
 	};
 	
 	template<class T, class T2> 
 		void fire(Listener::Types type, const T& p, const T2& p2) throw() {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2);
 		}
-		listenerCS.leave();
 	};
 	template<class T, class T2, class T3> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3);
 		}
-		listenerCS.leave();
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
 		}
-		listenerCS.leave();
 	};
 	
 	
@@ -258,7 +253,7 @@ public:
 		return buf;
 	}
 	
-	static string formatSeconds(int aSec) {
+	static string formatSeconds(LONGLONG aSec) {
 		char buf[64];
 		sprintf(buf, "%01d:%02d:%02d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
 		return buf;
@@ -267,7 +262,7 @@ public:
 	static string toLower(const string& aString) {
 		string tmp = aString;
 		for(string::size_type i = 0; i < tmp.size(); i++) {
-			tmp[i] = tolower(tmp[i]);
+			tmp[i] = (char)tolower(tmp[i]);
 		}
 		return tmp;
 	}
@@ -369,7 +364,7 @@ public:
 					return pos;
 			}
 		}
-		return string::npos;
+		return (string::size_type)string::npos;
 	}
 
 	static string validateString(const string& aNick) {	
@@ -391,22 +386,24 @@ public:
 		}
 		return tmp;
 	}
+
+	static bool getAway() { return away; };
+	static void setAway(bool aAway) { away = aAway; };
+	static const string& getAwayMessage() { 
+		return awayMsg.empty() ? defaultMsg : awayMsg;
+	};
+	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
+	
 private:
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData) {
+	static bool away;
+	static string awayMsg;
+	static const string defaultMsg;	
+
+	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData) {
 		switch(uMsg) {
 		case BFFM_INITIALIZED: 
-			// WParam is TRUE since you are passing a path.
-			// It would be FALSE if you were passing a pidl.
 			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
 			break;
-			
-/*		case BFFM_SELCHANGED: 
-			// Set the status window to the currently selected path.
-			if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir))
-			{
-				SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
-			}
-			break;*/
 		}
 		return 0;
 	}
@@ -418,9 +415,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.26 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: Util.h,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.27  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.26  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -181,7 +181,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		dcassert(i != -1);
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
+		dcassert((wID - IDC_DOWNLOAD_TARGET) <	(WORD)targets.size());
 		try {
 			if(sr->getUser())
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
@@ -196,7 +196,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	return 0;
 }
 
-LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT SearchFrame::onEnter(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	char* message;
 	
 	if(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 1*1000 < TimerManager::getInstance()->getTick()) {
@@ -210,7 +210,7 @@ LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		string size(message, ctrlSize.GetWindowTextLength());
 		delete message;
 		
-		double lsize = Util::toInt64(size);
+		double lsize = Util::toDouble(size);
 		switch(ctrlSizeMode.GetCurSel()) {
 		case 1:
 			lsize*=1024I64; break;
@@ -279,7 +279,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
 }
 
-LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
@@ -406,7 +406,7 @@ LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
-LRESULT SearchFrame::onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	
 	if(item->iItem != -1) {
@@ -455,9 +455,12 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.26 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.27 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.27  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.26  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

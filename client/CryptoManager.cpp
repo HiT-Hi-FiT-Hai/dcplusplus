@@ -58,13 +58,13 @@ string CryptoManager::makeKey(const string& lock) {
 	BYTE v1;
 	int extra=0;
 	
-	v1 = lock[0]^5;
-	v1 = (v1 >> 4) | (v1 << 4);
+	v1 = (BYTE)(lock[0]^5);
+	v1 = (BYTE)((v1 >> 4) | (v1 << 4));
 	temp[0] = v1;
 	
 	for(string::size_type i = 1; i<lock.length(); i++) {
-		v1 = lock[i]^lock[i-1];
-		v1 = (v1 >> 4) | (v1 << 4);
+		v1 = (BYTE)(lock[i]^lock[i-1]);
+		v1 = (BYTE)((v1 >> 4) | (v1 << 4));
 		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
@@ -173,7 +173,7 @@ int CryptoManager::countChars(const string& aString, int* c, BYTE& csum) {
 	int chars = 0;
 	const BYTE* a = (const BYTE*)aString.data();
 	string::size_type len = aString.length();
-	for(int i=0; i<len; i++) {
+	for(string::size_type i=0; i<len; i++) {
 
 		if(c[a[i]] == 0)
 			chars++;
@@ -315,18 +315,21 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	dcdebug("\nBytes: %d", os.size());
 	bos.skipToByte();
 
-	for(i=0; i<is.size(); i++) {
-		dcassert(lookup[(BYTE)is[i]].size() != 0);
-		bos.put(lookup[(BYTE)is[i]]);
+	for(string::size_type j=0; j<is.size(); j++) {
+		dcassert(lookup[(BYTE)is[j]].size() != 0);
+		bos.put(lookup[(BYTE)is[j]]);
 	}
 	bos.skipToByte();
 }
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.16 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.17 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.17  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.16  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

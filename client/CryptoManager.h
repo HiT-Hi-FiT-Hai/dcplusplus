@@ -59,7 +59,7 @@ public:
 	}
 };
 
-struct std::greater<Node*> { 
+template<> struct std::greater<Node*> { 
 	bool operator() (const Node*& a, const Node*& b) const { 
 		return *a < *b; 
 	}; 
@@ -125,9 +125,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.10 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.11 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.11  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.10  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

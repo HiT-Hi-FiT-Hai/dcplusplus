@@ -31,6 +31,7 @@ ShareManager* ShareManager::instance = NULL;
 enum {
 	MAX_RESULTS = 5
 };
+
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	if(aFile == "MyList.DcLst") {
 		return getListFile();
@@ -238,35 +239,34 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	ShareManager* sm = (ShareManager*)p;
 
 	string tmp, tmp2;
-	sm->cs.enter();
+	{
+		Lock l(sm->cs);
 
-	if(sm->refreshDirs) {
-		StringList dirs = sm->getDirectories();
-		for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
-			sm->removeDirectory(*k);
-			sm->addDirectory(*k);
+		if(sm->refreshDirs) {
+			StringList dirs = sm->getDirectories();
+			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
+				sm->removeDirectory(*k);
+				sm->addDirectory(*k);
+			}
+			sm->refreshDirs = false;
 		}
-		sm->refreshDirs = false;
+		
+		for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
+			tmp = tmp + i->second->toString();
+		}
+		
+		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
+		try {
+			File f(sm->getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
+			f.write(tmp2);
+		} catch(Exception e) {
+			// ...
+			return 1;
+		}
+		
+		sm->listLen = tmp2.length();
+		sm->dirty = false;
 	}
-
-	for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
-		tmp = tmp + i->second->toString();
-	}
-	
-	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
-	try {
-		File f(sm->getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write(tmp2);
-	} catch(Exception e) {
-		// ...
-		sm->cs.leave();
-		return 1;
-	}
-
-	sm->listLen = tmp2.length();
-	sm->dirty = false;
-
-	sm->cs.leave();
 
 	if(sm->update) {
 		ClientManager::getInstance()->infoUpdated();
@@ -426,9 +426,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.24 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.25 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.25  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.24  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

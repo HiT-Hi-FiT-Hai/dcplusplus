@@ -64,8 +64,8 @@ public:
 		TICK
 	};
 
-	virtual void onAction(Types type, Upload* aUpload) { };
-	virtual void onAction(Types type, Upload* aUpload, const string& aReason) { };
+	virtual void onAction(Types, Upload*) { };
+	virtual void onAction(Types, Upload*, const string&) { };
 
 };
 
@@ -76,6 +76,7 @@ public:
 	void removeUpload(UserConnection* aUpload);
 	
 	int getUploads() { Lock l(cs); return uploads.size(); };
+	int getRunning() { return running; };
 	int getFreeSlots() { int i =  (SETTING(SLOTS) - running); return (i > 0) ? i : 0; }
 	int getFreeExtraSlots() { int i = 3 - getExtra(); return (i > 0) ? i : 0; };
 
@@ -115,12 +116,14 @@ public:
 	}
 
 	void removeConnections() {
-		
-		cs.enter();
-		UserConnection::List tmp = connections;
-		connections.clear();
-		slots.clear();
-		cs.leave();
+
+		UserConnection::List tmp;
+		{
+			Lock l(cs);
+			tmp = connections;
+			connections.clear();
+			slots.clear();
+		}
 
 		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->removeListener(this);
@@ -142,18 +145,19 @@ private:
 	};
 	~UploadManager() {
 		TimerManager::getInstance()->removeListener(this);
-		cs.enter();
-		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
-			delete j->second;
+		{
+			Lock l(cs);
+			for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
+				delete j->second;
+			}
+			uploads.clear();
 		}
-		uploads.clear();
-		cs.leave();
 
 		removeConnections();
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		switch(type) {
 		case TimerManagerListener::SECOND: 
 			{
@@ -219,9 +223,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.36 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.37 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.37  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.36  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

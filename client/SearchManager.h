@@ -135,6 +135,9 @@ private:
 			dcdebug("SearchManager::SearchManager caught %s\n", e.getError().c_str());
 		}
 	};
+	// We won't be copying it anyway...
+	SearchManager(const SearchManager&) { dcassert(0); };
+
 	virtual ~SearchManager() { 
 		socket.removeListener(this);
 	};
@@ -153,9 +156,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.11 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.12 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.12  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.11  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

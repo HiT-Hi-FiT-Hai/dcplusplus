@@ -100,11 +100,11 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
-	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 	}
 		
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
 		if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd) {
@@ -145,7 +145,7 @@ public:
 	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 		
@@ -168,7 +168,7 @@ public:
 		return FALSE; 
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
 			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
@@ -195,10 +195,11 @@ public:
 		HubFrame* f = (HubFrame*)p;
 
 		TimerManager::getInstance()->removeListener(f);
-		f->cs.enter();
-		ClientManager::getInstance()->putClient(f->client);
-		f->client = NULL;
-		f->cs.leave();
+		{
+			Lock l(f->cs);
+			ClientManager::getInstance()->putClient(f->client);
+			f->client = NULL;
+		}
 		f->PostMessage(WM_CLOSE);
 		return 0;
 	}
@@ -236,13 +237,13 @@ public:
 
 	}
 	
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		ctrlMessage.SetFocus();
 		return 0;
 	}
 	
-	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
+	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		Lock l(cs);
 		if(client) {
 			client->connect(server);
@@ -258,7 +259,7 @@ public:
 		return MDITabChildWindowImpl<HubFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 		
@@ -277,7 +278,7 @@ public:
 		}
 	}
 
-	LRESULT onColumnClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onColumnClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
 			ctrlUsers.setSortDirection(!ctrlUsers.getSortDirection());
@@ -326,7 +327,7 @@ public:
 	}
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
@@ -380,7 +381,7 @@ private:
 		ctrlUsers.DeleteAllItems();
 	}
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		switch(type) {
 		case TimerManagerListener::SECOND:
 			updateStatusBar(); break;
@@ -405,7 +406,7 @@ private:
 		}
 	}
 	
-	virtual void onAction(ClientListener::Types type, Client* client, const string& line) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line) {
 		string* x;
 		switch(type) {
 		case ClientListener::SEARCH_FLOOD:
@@ -441,7 +442,7 @@ private:
 		}
 	}
 
-	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
 		User::Ptr* x = new User::Ptr();
 		*x = user;
 		switch(type) {
@@ -453,7 +454,7 @@ private:
 		}
 	}
 	
-	virtual void onAction(ClientListener::Types type, Client* client, const StringList& aList) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const StringList& aList) {
 		switch(type) {
 		case ClientListener::OP_LIST:
 			for(StringIterC i = aList.begin(); i != aList.end(); ++i) {
@@ -466,7 +467,7 @@ private:
 		}
 	}
 
-	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user, const string&  line) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) {
 		switch(type) {
 		case ClientListener::PRIVATE_MESSAGE:
 			PMInfo* i = new PMInfo();
@@ -478,7 +479,7 @@ private:
 		}
 	}
 
-	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
+	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line1, const string& line2) {
 		switch(type) {
 		case ClientListener::PRIVATE_MESSAGE:
 			string* msg = new string("Private message from " + line1 + "\r\n" + line2);
@@ -511,9 +512,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.48 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.49 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.49  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.48  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

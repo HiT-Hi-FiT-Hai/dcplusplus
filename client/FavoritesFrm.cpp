@@ -92,7 +92,7 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return TRUE;
 }
 
-LRESULT FavoriteHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
 	
@@ -110,7 +110,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& 
 	return 0;
 }
 
-LRESULT FavoriteHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+LRESULT FavoriteHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
 	
@@ -126,7 +126,7 @@ LRESULT FavoriteHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWn
 	return 0;
 }
 
-LRESULT FavoriteHubsFrame::onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		HubManager::getInstance()->removeFavorite((FavoriteHubEntry*)ctrlHubs.GetItemData(i));
@@ -134,7 +134,7 @@ LRESULT FavoriteHubsFrame::onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	return 0;
 }
 
-LRESULT FavoriteHubsFrame::onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	char buf[256];
 	LineDlg dlg;
 
@@ -169,9 +169,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.4 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.5  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.4  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

@@ -38,7 +38,7 @@ void DownloadPage::write()
 	// settings->set(XX, YY);
 }
 
-LRESULT DownloadPage::onClickedBrowseDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	string dir;
 	if(Util::browseDirectory(dir))

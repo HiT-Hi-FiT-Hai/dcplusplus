@@ -144,7 +144,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onTrayIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		if (lParam == WM_LBUTTONUP)
 		{
@@ -159,7 +159,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -179,7 +179,7 @@ public:
 	
 	static DWORD WINAPI stopper(void* p);
 
-	LRESULT onKeyDownTransfers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 
 		if(kd->wVKey == VK_DELETE) {
@@ -219,7 +219,7 @@ public:
 	}
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
 		if(stopperThread) {
 			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
@@ -236,7 +236,7 @@ public:
 		return 0;
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 
@@ -259,17 +259,18 @@ public:
 
 		if(ctrlStatus.IsWindow()) {
 			CRect sr;
-			int w[5];
+			int w[6];
 			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 416 ? 316 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+			int tmp = (sr.Width()) > 516 ? 416 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
 			
 			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/4;
-			w[2] = w[0] + (tmp-16)*2/4;
-			w[3] = w[0] + (tmp-16)*3/4;
-			w[4] = w[0] + (tmp-16)*4/4;
+			w[1] = w[0] + (tmp-16)*1/5;
+			w[2] = w[0] + (tmp-16)*2/5;
+			w[3] = w[0] + (tmp-16)*3/5;
+			w[4] = w[0] + (tmp-16)*4/5;
+			w[5] = w[0] + (tmp-16)*5/5;
 			
-			ctrlStatus.SetParts(5, w);
+			ctrlStatus.SetParts(6, w);
 		}
 		CRect rc = rect;
 		rc.top = rc.bottom - ctrlTab.getHeight();
@@ -326,16 +327,7 @@ public:
 		return 0;
 	}
 
-	static bool getAway() { return away; };
-	static void setAway(bool aAway) { away = aAway; };
-	static const string& getAwayMessage() { 
-		return awayMsg.empty() ? defaultMsg : awayMsg;
-	};
-	static void setAwayMessage(const string& aMsg) { awayMsg = aMsg; };
 private:
-	static bool away;
-	static string awayMsg;
-	static const string defaultMsg;	
 	enum {
 		COLUMN_USER,
 		COLUMN_STATUS,
@@ -356,7 +348,7 @@ private:
 
 	class StringListInfo {
 	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { memset(columns, 0, sizeof(columns)); };
+		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		LPARAM lParam;
 		string columns[COLUMN_LAST];
 	};
@@ -388,6 +380,7 @@ private:
 
 	HWND createToolbar();
 
+	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) {
 		switch(type) {
@@ -397,15 +390,6 @@ private:
 			onUploadStarting(aUpload); break;
 		case UploadManagerListener::TICK:
 			onUploadTick(aUpload); break;
-		default:
-			dcassert(0);
-		}
-	}
-
-	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload, const string& aReason) {
-		switch(type) {
-		case UploadManagerListener::FAILED:
-/*			PostMessage(WM_SPEAKER, UPLOAD_FAILED, (LPARAM)aUpload); */break;
 		default:
 			dcassert(0);
 		}
@@ -456,15 +440,16 @@ private:
 	}
 	
 	void onConnectionAdded(ConnectionQueueItem* aCqi);
-	void onConnectionConnected(ConnectionQueueItem* aCqi) { };
+	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
 	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
 	void onConnectionRemoved(ConnectionQueueItem* aCqi);
-	void onConnectionStatus(ConnectionQueueItem* aCqi) { };
+	void onConnectionStatus(ConnectionQueueItem* /*aCqi*/) { };
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		if(type == TimerManagerListener::SECOND) {
 			StringList* str = new StringList();
+			str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 			str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 			str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
 			str->push_back("D: " + Util::formatBytes(Socket::getDown()) + "/s");
@@ -505,9 +490,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.41 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.42 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.42  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.41  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

@@ -116,7 +116,7 @@ public:
 
 	string read() {
 		setPos(0);
-		return read(getSize());
+		return read((DWORD)getSize());
 	}
 
 	DWORD write(const void* buf, DWORD len) throw(FileException) {
@@ -160,9 +160,12 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.3 2002/02/01 02:00:29 arnetheduck Exp $
+ * $Id: File.h,v 1.4 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.4  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.3  2002/02/01 02:00:29  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

@@ -134,7 +134,7 @@ public:
 		}
 	}
 
-	LRESULT onColumnClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onColumnClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 
 		if(l->iSubItem == ctrlList.getSortColumn()) {
@@ -158,7 +158,7 @@ public:
 	void downloadList(const string& aTarget);
 	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 	
@@ -239,9 +239,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.13 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.14 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.14  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.13  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

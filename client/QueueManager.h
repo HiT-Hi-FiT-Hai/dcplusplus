@@ -1,6 +1,20 @@
-// QueueManager.h: interface for the QueueManager class.
-//
-//////////////////////////////////////////////////////////////////////
+/* 
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #if !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 #define AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_
@@ -225,7 +239,7 @@ public:
 		QUEUE_ITEM
 	};
 
-	virtual void onAction(Types type, QueueItem* aQI) { };
+	virtual void onAction(Types, QueueItem*) { };
 };
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener
@@ -321,7 +335,7 @@ private:
 
 	QueueItem* findByTarget(const string& aTarget) {
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
-			if((*i)->getTarget() == aTarget)
+			if(stricmp((*i)->getTarget().c_str(), aTarget.c_str()) == 0)
 				return *i;
 		}
 		return NULL;
@@ -341,3 +355,15 @@ private:
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
+
+/**
+ * @file QueueManager.h
+ * $Id: QueueManager.h,v 1.8 2002/02/09 18:13:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: QueueManager.h,v $
+ * Revision 1.8  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
+ * @endif
+ */
+

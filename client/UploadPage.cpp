@@ -84,7 +84,7 @@ void UploadPage::write()
 	ShareManager::getInstance()->refresh();
 }
 
-LRESULT UploadPage::onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT UploadPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	
@@ -93,7 +93,7 @@ LRESULT UploadPage::onItemchangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHa
 	return 0;		
 }
 
-LRESULT UploadPage::onClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	string target;
 	if(Util::browseDirectory(target)) {
@@ -110,7 +110,7 @@ LRESULT UploadPage::onClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
 	return 0;
 }
 
-LRESULT UploadPage::onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	char buf[MAX_PATH];
 	LVITEM item;
@@ -129,9 +129,12 @@ LRESULT UploadPage::onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.4 2002/01/26 16:34:01 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: UploadPage.cpp,v $
+ * Revision 1.5  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.4  2002/01/26 16:34:01  arnetheduck
  * Colors dialog added, as well as some other options
  *

@@ -102,8 +102,8 @@ public:
 		TICK
 	};
 
-	virtual void onAction(Types type, Download* aDownload) { };
-	virtual void onAction(Types type, Download* aDownload, const string& aReason) { };
+	virtual void onAction(Types, Download*) { };
+	virtual void onAction(Types, Download*, const string&) { };
 	
 };
 
@@ -211,9 +211,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.32 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.33 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.33  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.32  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

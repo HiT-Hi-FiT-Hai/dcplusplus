@@ -25,7 +25,7 @@
 
 SearchManager* SearchManager::instance = NULL;
 
-void SearchManager::search(const string& aName, LONGLONG aSize, DWORD aFlags /* = 0 */, int aType /* = 0 */ ) {
+void SearchManager::search(const string& aName, LONGLONG aSize, DWORD /*aFlags*/ /* = 0 */, int aType /* = 0 */ ) {
 	ClientManager::getInstance()->search(aType, aSize, 0, aName);
 }
 
@@ -83,9 +83,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.13 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.14 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.14  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.13  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -170,7 +170,7 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + " $ $" + aSpeed + "\x05$" + Util::removeInvalid(aEmail) + "$" + aBytesShared + "$|");
+		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + "$ $" + aSpeed + "\x05$" + Util::removeInvalid(aEmail) + '$' + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -281,7 +281,8 @@ private:
 	Client() : lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
 		TimerManager::getInstance()->addListener(this);
 	};
-	
+	// No copying...
+	Client(const Client&) { dcassert(0); };
 	virtual ~Client() throw() {
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
@@ -358,9 +359,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.36 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: Client.h,v 1.37 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.37  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.36  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

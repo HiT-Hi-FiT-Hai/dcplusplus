@@ -109,7 +109,7 @@ public:
 	
 private:
 	DWORD start;
-	DWORD last;
+	LONGLONG last;
 	LONGLONG total;
 	
 	File* file;
@@ -212,6 +212,8 @@ private:
 	UserConnection() : socket('|'), status(CONNECTING), port(0), lastActivity(0) { 
 		socket.addListener(this);
 	};
+	UserConnection(const UserConnection&) { dcassert(0); };
+
 	virtual ~UserConnection() {
 		TimerManager::getInstance()->removeListener(this);
 		dcdebug("UserConnection destroyer\n", this );
@@ -292,9 +294,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.31 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.32 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.32  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.31  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

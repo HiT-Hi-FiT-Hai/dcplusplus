@@ -53,6 +53,8 @@ public:
 
 private:
 
+	HttpConnection(const HttpConnection&) { dcassert(0); };
+
 	string file;
 	string server;
 	short port;
@@ -76,7 +78,7 @@ private:
 			fire(HttpConnectionListener::FAILED, this, aLine); break;
 		}
 	}
-	virtual void onAction(BufferedSocketListener::Types type, int mode) {
+	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/) {
 		switch(type) {
 		case BufferedSocketListener::MODE_CHANGE:
 			fire(HttpConnectionListener::COMPLETE, this); socket.disconnect(); break;
@@ -102,9 +104,12 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
+ * Revision 1.7  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

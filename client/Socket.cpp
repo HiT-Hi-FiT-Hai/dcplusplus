@@ -119,7 +119,7 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
  * @throw SocketException If any connection error occurs.
  */
 void Socket::connect(const string& ip, const string& port) throw(SocketException) {
-	connect(ip, atoi(port.c_str()));
+	connect(ip, (short)Util::toInt(port));
 }
 
 void Socket::connect(const string& aip, short port) throw(SocketException) {
@@ -219,9 +219,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.19 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.20  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.19  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

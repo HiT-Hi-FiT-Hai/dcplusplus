@@ -248,21 +248,20 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 void UploadManager::removeUpload(Upload* aUpload) {
 
 	bool found = false;
-	UserConnection* c;
+	UserConnection* c = NULL;
 
 	{
 		Lock l(cs);
 		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
 			if(i->second == aUpload) {
 				c = i->first;
-				found = true;
 				uploads.erase(i);
 				if(isExtra(aUpload)) {
 					extra--;
 				} else {
 					running--;
 				}
-				
+				break;
 			}
 		}
 	}
@@ -303,9 +302,12 @@ void UploadManager::removeUpload(UserConnection* aConn) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.15 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.16 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.16  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.15  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -120,8 +120,11 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 					// Not online anymore...remove him from the pending...
 					cqi->setUser(ClientManager::getInstance()->findUser(cqi->getUser()->getNick()));
 					if(!cqi->getUser()) {
-						i = pendingDown.erase(i);
+						pendingDown.erase(i++);
+						// i = pendingDown.erase(i);	// This works with MSVC++ STL 
 						remove.push_back(cqi);
+					} else {
+						++i;
 					}
 					continue;
 				}
@@ -130,7 +133,8 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 					if((attempts <= 3) ) {
 						// Nothing's happened for 60 seconds, try again...
 						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-							i = pendingDown.erase(i);
+							pendingDown.erase(i++);
+							// i = pendingDown.erase(i);	// This works with MSVC++ STL 
 							remove.push_back(cqi);
 							continue;
 						}
@@ -255,7 +259,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 }
 
-void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw() {
+void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) throw() {
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
 	aSource->setStatus(UserConnection::BUSY);
@@ -317,7 +321,7 @@ void ConnectionManager::connect(const string& aServer, short aPort, const string
 	c->connect(aServer, aPort);
 }
 
-void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) throw() {
+void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError*/) throw() {
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
 		{
 			Lock l(cs);
@@ -346,7 +350,7 @@ void ConnectionManager::updateUser(UserConnection* aConn) {
 	
 }
 
-void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& num) throw() {
+void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& /*num*/) throw() {
 	if(dir == "Upload") {
 		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 	} else {
@@ -402,9 +406,12 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.27 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.28 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.28  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.27  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

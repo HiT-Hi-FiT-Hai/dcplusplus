@@ -30,7 +30,7 @@ void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREE
 	}
 }
 
-LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMTVDISPINFO* p = (NMTVDISPINFO*)pnmh;
 	TVITEM t;
 	t.hItem = p->item.hItem;
@@ -47,7 +47,7 @@ LRESULT DirectoryListingFrame::onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMTREEVIEW* p = (NMTREEVIEW*) pnmh;
 
 	if(p->itemNew.state & TVIS_SELECTED) {
@@ -74,13 +74,12 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int idCtrl, LPNMHDR pnmh,
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
 	char buf[MAX_PATH];
 
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL && item->iItem != -1) {
-		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		
 		LVITEM lvi;
 		lvi.iItem = item->iItem;
@@ -289,7 +288,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	return 1;
 }
 
-LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	
@@ -363,7 +362,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		dcassert(i != -1);
 		DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
-		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
+		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
 		try {
 			if(user->isOnline())
 				QueueManager::getInstance()->add(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
@@ -380,9 +379,12 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.23 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.24 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.24  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.23  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

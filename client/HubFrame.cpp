@@ -24,7 +24,7 @@
 #include "LineDlg.h"
 #include "ShareManager.h"
 #include "SearchFrm.h"
-#include "MainFrm.h"
+#include "Util.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -139,7 +139,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 }
 
 
-LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT HubFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	char* message;
 	
 	if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
@@ -199,11 +199,11 @@ LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 			} else if(stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
 			} else if(stricmp(s.c_str(), "away") == 0) {
-				MainFrame::setAway(true);
-				MainFrame::setAwayMessage(param);
-				addClientLine("Away mode on: " + MainFrame::getAwayMessage());
+				Util::setAway(true);
+				Util::setAwayMessage(param);
+				addClientLine("Away mode on: " + Util::getAwayMessage());
 			} else if(stricmp(s.c_str(), "back") == 0) {
-				MainFrame::setAway(false);
+				Util::setAway(false);
 				addClientLine("Away mode off");
 			}
 		} else {
@@ -258,7 +258,7 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
-LRESULT HubFrame::onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 	string user;
 	char buf[256];
@@ -470,9 +470,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.33 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.34 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.34  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.33  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

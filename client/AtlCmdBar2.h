@@ -322,6 +322,7 @@ public:
 			{
 				BOOL bRet = m_menuDummy.RemoveMenu(0, MF_BYPOSITION);
 				ATLASSERT(bRet);
+				bRet;
 			}
 		}
 
@@ -510,6 +511,7 @@ public:
 		RECT rc;
 		int nItems = ::GetMenuItemCount(m_hMenu);
 		BOOL bRet = GetItemRect(nItems - 1, &rc);
+		bRet;
 		ATLASSERT(bRet);
 		int width = rc.right;
 		GetWindowRect(&rc);
@@ -721,6 +723,7 @@ public:
 
 			int nItems = GetButtonCount();
 			BOOL bRet = GetButton(nItems - 1, &btn);
+			bRet;
 			ATLASSERT(bRet);
 			if(btn.idCommand != IDM_MDI_CLOSE)
 				return;
@@ -730,6 +733,7 @@ public:
 			for(int i = nItems; i > nItems - 4; i--)
 			{
 				BOOL bRet = DeleteButton(i - 1);
+				bRet;
 				ATLASSERT(bRet);
 			}
 

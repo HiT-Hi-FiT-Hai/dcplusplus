@@ -84,7 +84,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 	} else {
 
 		string& b = aList[sortColumn];
-		int c;
+		int c = 0;
 		LPARAM data = NULL;			
 		int low = 0;
 		int high = count-1;
@@ -202,9 +202,12 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.4 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.cpp,v $
+ * Revision 1.5  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.4  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

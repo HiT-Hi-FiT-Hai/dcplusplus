@@ -88,10 +88,10 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 	END_MSG_MAP()
 
-	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		int pos = 0;
 		int xPos = GET_X_LPARAM(lParam); 
-		int yPos = GET_Y_LPARAM(lParam); 
+//		int yPos = GET_Y_LPARAM(lParam); 
 	
 		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* t = *i;
@@ -108,12 +108,12 @@ public:
 		return 0;
 	}
 		
-	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) { return 0; };
+	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { return 0; };
 		
 	int getTabHeight() { return 14; };
 	int getHeight() { return getTabHeight()+1; };
 
-	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		int pos = 0;
 		int activepos = -1;
 		RECT rc;
@@ -213,7 +213,6 @@ private:
  * @return The width of the tab
  */
 int drawTab(CDC& dc, TabInfo* tab, int pos, bool aActive = false) {
-	HWND hWnd = tab->hWnd;
 	
 	CPen black;
 	black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
@@ -340,9 +339,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.5 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.6 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.6  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.5  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

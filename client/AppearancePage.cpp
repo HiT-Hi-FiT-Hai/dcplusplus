@@ -68,7 +68,7 @@ void AppearancePage::write()
 	settings->set(SettingsManager::TEXT_FONT, f);
 }
 
-LRESULT AppearancePage::onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT AppearancePage::onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CColorDialog d(SETTING(BACKGROUND_COLOR), 0, *this);
 	if(d.DoModal() == IDOK)
@@ -82,7 +82,7 @@ LRESULT AppearancePage::onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWn
 }
 
 
-LRESULT AppearancePage::onClickedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT AppearancePage::onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LOGFONT tmp = font;
 	CFontDialog d(&tmp, CF_EFFECTS | CF_SCREENFONTS, NULL, *this);
@@ -116,9 +116,12 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.3  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.2  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

@@ -122,7 +122,7 @@ public:
 		return 0;
 	}
 
-	LRESULT onKeyDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		
 		if(kd->wVKey == VK_DELETE) {
@@ -159,7 +159,7 @@ public:
 		return (g < h) ? -1 : ((g == h) ? 0 : 1);
 	}
 	
-	LRESULT onColumnClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlQueue.getSortColumn()) {
 			ctrlQueue.setSortDirection(!ctrlQueue.getSortDirection());
@@ -205,7 +205,7 @@ public:
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 		
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id = 0;
 
 		if(stopperThread) {
@@ -248,12 +248,12 @@ public:
 		return MDITabChildWindowImpl<QueueFrame>::PreTranslateMessage(pMsg);
 	}
 	
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
 	}
 		
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
 		HDC hdc = BeginPaint(&ps);
@@ -280,7 +280,7 @@ private:
 
 	class StringListInfo {
 	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { memset(columns, 0, sizeof(columns)); };
+		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
 		LPARAM lParam;
 		string columns[COLUMN_LAST];
 	};
@@ -324,9 +324,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.4 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.5  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.4  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

@@ -121,7 +121,7 @@ private:
 			client->validateNick(client->getNick());
 			break;
 		case ClientListener::CONNECT_TO_ME:
-			ConnectionManager::getInstance()->connect(line1, Util::toInt(line2), client->getNick()); break;
+			ConnectionManager::getInstance()->connect(line1, (short)Util::toInt(line2), client->getNick()); break;
 
 		}
 	}
@@ -175,9 +175,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.12 2002/01/26 14:59:22 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.13 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.13  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.12  2002/01/26 14:59:22  arnetheduck
  * Fixed disconnect crash
  *

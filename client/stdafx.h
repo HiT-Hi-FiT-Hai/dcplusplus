@@ -20,16 +20,17 @@
 #if !defined(AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 #define AFX_STDAFX_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_
 
-// Change these values to use different versions
-#define WINVER		0x0400
-#define _WIN32_IE	0x0500
-#define _RICHEDIT_VER	0x0200
-
 #define _WTL_NO_CSTRING
 #define _ATL_NO_OPENGL
 #define _ATL_NO_MSIMG
 #define _ATL_NO_COM
 #define _ATL_NO_HOSTING
+
+// warning C4290: C++ Exception Specification ignored
+// warning C4711: function 'xxx' selected for automatic inline expansion
+#pragma warning (disable:4290 4711)
+
+#include "config.h"
 
 #include <Winsock2.h>
 
@@ -47,14 +48,19 @@ extern CAppModule _Module;
 #include <atlsplit.h>
 #include <Shellapi.h>
 
-#include <ctime>
+#include <time.h>
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <map>
 #include <list>
 #include <deque>
-using namespace std;
+
+#ifdef HAS_HASH
+#include <hash_map>
+#endif
+
+using namespace _STL;
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
@@ -63,9 +69,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.18 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.19 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.19  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.18  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

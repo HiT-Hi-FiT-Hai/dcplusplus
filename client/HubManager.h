@@ -213,7 +213,7 @@ private:
 		return favoriteHubs.end();
 	}
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const BYTE* buf, int len) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
 		switch(type) {
 		case HttpConnectionListener::DATA:
 			onHttpData(buf, len); break;
@@ -221,7 +221,7 @@ private:
 			dcassert(0);
 		}
 	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const string& aLine) {
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn, const string& /*aLine*/) {
 		switch(type) {
 		case HttpConnectionListener::FAILED:
 			conn->removeListener(this);
@@ -247,9 +247,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.19 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.20  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.19  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

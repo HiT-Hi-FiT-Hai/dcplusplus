@@ -51,14 +51,14 @@ void PropertiesDlg::write()
 	for(int i=0; i<numPages; i++)
 	{
 		// Check HWND of page to see if it has been created
-		const HWND const page = PropSheet_IndexToHwnd((HWND)*this, i);
+		const HWND page = PropSheet_IndexToHwnd((HWND)*this, i);
 
 		if(page != NULL)
 			pages[i]->write();
 	}
 }
 
-LRESULT PropertiesDlg::onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
 	write();
 	bHandled = FALSE;

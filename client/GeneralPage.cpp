@@ -87,7 +87,7 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	return TRUE;
 }
 
-LRESULT GeneralPage::onClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT GeneralPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	BOOL const checked = IsDlgButtonChecked(IDC_ACTIVE);
 	::EnableWindow(GetDlgItem(IDC_SERVER), checked);
@@ -95,7 +95,7 @@ LRESULT GeneralPage::onClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 	return 0;
 }
 
-LRESULT GeneralPage::onTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	char buf[SETTINGS_BUF_LEN];
 
@@ -104,7 +104,7 @@ LRESULT GeneralPage::onTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 
 	// Strip '$', '|' and ' ' from text
 	char *b = buf, *f = buf, c;
-	while(c = *b++)
+	while( (c = *b++) != 0 )
 	{
 		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' '))
 			*f++ = c;
@@ -131,9 +131,12 @@ LRESULT GeneralPage::onTextChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.3 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.4 2002/02/09 18:13:51 arnetheduck Exp $
  * @if LOG
  * $Log: GeneralPage.cpp,v $
+ * Revision 1.4  2002/02/09 18:13:51  arnetheduck
+ * Fixed level 4 warnings and started using new stl
+ *
  * Revision 1.3  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *
