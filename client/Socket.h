@@ -106,7 +106,6 @@ public:
 	Socket(const string& ip, short port) throw(SocketException);
 	virtual ~Socket() {
 		disconnect();
-		closesocket(sock);
 		
 	};
 	
@@ -115,12 +114,31 @@ public:
 	
 	virtual void disconnect() {
 		closesocket(sock);
+		sock = NULL;
 		connected = false;
 		if(event) {
 			CloseHandle(event);
 			event = NULL;
 		}
-		checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+	}
+	enum {
+		TYPE_TCP = 0,
+		TYPE_UDP = 1
+	};
+	void create(int aType = TYPE_TCP) throw(SocketException) {
+		if(sock)
+			disconnect();
+
+		switch(aType) {
+		case TYPE_TCP:
+			checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+			break;
+		case TYPE_UDP:
+			checksocket(sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP));
+			break;
+		default:
+			dcassert(0);
+		}
 	}
 
 	int getAvailable() {
@@ -161,14 +179,15 @@ public:
 	static DWORD getUp() { return stats.up; };
 	static LONGLONG getTotalDown() { return stats.totalDown; };
 	static LONGLONG getTotalUp() { return stats.totalUp; };
+	int sock;
 private:
 	Socket(const Socket& aSocket) {
 		// Copies not allowed
 	}
+	int type;
 	HANDLE event;
-	int sock;
 	bool connected;
-	string buffer;
+
 	class Stats {
 	public:
 		DWORD down;
@@ -183,9 +202,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.8 2001/12/05 19:40:13 arnetheduck Exp $
+ * $Id: Socket.h,v 1.9 2001/12/07 20:03:26 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.9  2001/12/07 20:03:26  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.8  2001/12/05 19:40:13  arnetheduck
  * More bugfixes.
  *

@@ -95,6 +95,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 }
 
 void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
+	connectionCS.enter();
 	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 		if(*i == aConn) {
 			aConn->removeListener(this);
@@ -103,6 +104,20 @@ void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 			break;
 		}
 	}
+	connectionCS.leave();
+}
+
+void DownloadManager::removeConnections() {
+	connectionCS.enter();
+	UserConnection::Iter i = connections.begin();
+
+	while(i != connections.end()) {
+		UserConnection* c = *i;
+		i = connections.erase(i);
+		c->removeListener(this);
+		ConnectionManager::getInstance()->putDownloadConnection(c);
+	}
+	connectionCS.leave();
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
@@ -110,7 +125,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		if(aConn->getUser() == (*i)->getUser()) {
 			Download* d = *i;
 			queue.erase(i);
+
+			runningCS.enter();
 			running[aConn] = d;
+			runningCS.leave();
 			
 			if(d->getResume()) {
 				WIN32_FIND_DATA fd;
@@ -136,9 +154,11 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 }
 
 void DownloadManager::onData(UserConnection* aSource, BYTE* aData, int aLen) {
+	runningCS.enter();
 	dcassert(running.find(aSource) != running.end());
 	DWORD len;
 	Download* d = running[aSource];
+	runningCS.leave();
 	
 	WriteFile(d->getFile(), aData, aLen, &len, NULL);
 	d->addPos(len);
@@ -146,6 +166,7 @@ void DownloadManager::onData(UserConnection* aSource, BYTE* aData, int aLen) {
 }
 
 void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+	runningCS.enter();
 	Download::MapIter i = running.find(aSource);
 	dcassert(i != running.end());
 	Download* d = i->second;
@@ -160,6 +181,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		aSource->disconnect();
 		fireFailed(d, "Could not open target file");
 		ConnectionManager::getInstance()->putDownloadConnection(aSource);
+		runningCS.leave();
 		return;
 	}
 	
@@ -180,15 +202,18 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		aSource->setDataMode(d->getSize() - d->getPos());
 		aSource->startSend();
 	}
+	runningCS.leave();
 }
 
 /** Download finished! */
 void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
+	runningCS.enter();
 	Download::MapIter i = running.find(aSource);
 	dcassert(i != running.end());
 	
 	Download::Ptr p = i->second;
 	running.erase(i);
+	runningCS.leave();
 
 	if(p->getPos() != p->getSize())
 		dcdebug("Download incomplete??? : ");
@@ -204,6 +229,7 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 }
 
 void DownloadManager::onMaxedOut(UserConnection* aSource) { 
+	runningCS.enter();
 	Download::MapIter i = running.find(aSource);
 	dcassert(i != running.end());
 
@@ -211,11 +237,14 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 	
 	fireFailed(d, "No slots available");
 	running.erase(i);
+	runningCS.leave();
+
 	removeConnection(aSource);
 	queue.insert(queue.begin(), d);
 }
 
 void DownloadManager::onError(UserConnection* aSource, const string& aError) {
+	runningCS.enter();
 	Download::MapIter i = running.find(aSource);
 	
 	dcassert(i != running.end());
@@ -223,15 +252,23 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 	Download* d = i->second;
 
 	fireFailed(d, aError);
-
+	
+	running.erase(i);
+	runningCS.leave();
+	
+	removeConnection(aSource);
+	queue.insert(queue.begin(), d);
 }
 
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.8 2001/12/07 20:03:06 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.8  2001/12/07 20:03:06  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.7  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

@@ -65,22 +65,13 @@ string SocketException::errorToString(int aError) {
 }
 
 Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(-1) {
-	buffer = "";
-	buffer.reserve(256);
-	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 }
 
 Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
-	buffer = "";
-	buffer.reserve(256);
-	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	connect(ip, port);	
 }
 
 Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
-	buffer = "";
-	buffer.reserve(256);
-	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	connect(ip, port);	
 }
 
@@ -110,6 +101,9 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
 
 	if(connected) {
 		disconnect();
+	}
+	if(sock == NULL) {
+		create();
 	}
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
@@ -156,25 +150,29 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 }
 
 /**
- * Sends data, throwing an error if all data is not sent (note; an error may be thrown
- * even if some data has been sent).
+ * Sends data.
  * @todo Fix the blocking stuff!!! This is really ugly...
  * @param aData The string to send
  * @throw SocketExcpetion Send failed.
  */
 void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	checkconnected();
-resend:
-	if(::send(sock, aBuffer, aLen, 0) == SOCKET_ERROR) {
-		if(errno == EWOULDBLOCK) {
-			Sleep(10);
-			goto resend;
+
+	while(aLen) {
+		int i = ::send(sock, aBuffer, aLen, 0);
+		if(i == SOCKET_ERROR) {
+			if(errno == EWOULDBLOCK) {
+				Sleep(10);
+			} else {
+				checksockerr(SOCKET_ERROR);
+			}
 		} else {
-			checksockerr(SOCKET_ERROR);
+			aLen-=i;
+			stats.up += i;
+			stats.totalUp += i;
+			
 		}
 	}
-	stats.up += aLen;
-	stats.totalUp += aLen;
 }
 
 void Socket::write(const string& aData) throw(SocketException) {
@@ -183,9 +181,12 @@ void Socket::write(const string& aData) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.8 2001/12/05 19:40:13 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.9 2001/12/07 20:03:25 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.9  2001/12/07 20:03:25  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.8  2001/12/05 19:40:13  arnetheduck
  * More bugfixes.
  *

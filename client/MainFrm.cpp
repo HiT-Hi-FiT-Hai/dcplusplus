@@ -33,16 +33,25 @@
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
 #include "ShareManager.h"
+#include "SearchManager.h"
 
 MainFrame::~MainFrame() {
+}
+
+DWORD WINAPI MainFrame::stopper(void* p) {
+	MainFrame* mf = (MainFrame*)p;
+
 	ShareManager::deleteInstance();
 	TimerManager::deleteInstance();
 	ProtocolHandler::deleteInstance();
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
+	SearchManager::deleteInstance();
 	ConnectionManager::deleteInstance();
 	HubManager::deleteInstance();
+	mf->PostMessage(WM_REALLYCLOSE);	
+	return 0;
 }
 
 void MainFrame::onUploadComplete(Upload::Ptr p) {
@@ -73,9 +82,8 @@ void MainFrame::onDownloadAdded(Download* p) {
 	} else {
 		i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), p->getFileName().c_str(), 0, (LPARAM)p);
 	}
-	char buf[24];
 	if(p->getSize() != -1) {
-		ctrlTransfers.SetItemText(i, 2, _i64toa(p->getSize(), buf, 10));
+		ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(p->getSize()).c_str());
 	}
 }
 
@@ -93,13 +101,12 @@ void MainFrame::onDownloadComplete(Download* p) {
 		}
 		DirectoryListing* dl = new DirectoryListing();
 		DWORD size = GetFileSize(h, NULL);
-		char* buf = new char[size];
+		BYTE* buf = new BYTE[size];
 		ReadFile(h, buf, size, &size, NULL);
-		string code(buf, size);
-		delete buf;
 		CloseHandle(h);
 		string tmp;
-		CryptoManager::getInstance()->decodeHuffman(code, tmp);
+		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+		delete buf;
 		dl->load(tmp);
 
 		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getUser());
@@ -189,9 +196,9 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	TimerManager::newInstance();
 	TimerManager::getInstance()->addListener(this);
 	CryptoManager::newInstance();
+	SearchManager::newInstance();
 	ConnectionManager::newInstance();
 	DownloadManager::newInstance();
-	TimerManager::getInstance()->addListener(DownloadManager::getInstance());
 	UploadManager::newInstance();
 	HubManager::newInstance();
 	ProtocolHandler::newInstance();
@@ -217,6 +224,17 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	HubFrame* pChild = new HubFrame(dlg.server);
 	pChild->CreateEx(m_hWndClient);
 
+/*	HANDLE h = CreateFile("c:\\temp\\test.dcl", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	BYTE* buf = new BYTE[GetFileSize(h, NULL)];
+	DWORD x;
+
+	ReadFile(h, buf, GetFileSize(h, NULL), &x, NULL);
+	string tmp1;
+	CloseHandle(h);
+
+	CryptoManager::getInstance()->decodeHuffman(buf, tmp1);
+	delete buf;
+*/	
 	return 0;
 }
 
@@ -255,9 +273,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.12 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.13 2001/12/07 20:03:13 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.13  2001/12/07 20:03:13  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.12  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

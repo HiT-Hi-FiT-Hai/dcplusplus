@@ -66,6 +66,19 @@ void Client::onLine(const string& aLine) {
 		int type = atoi(tmp.substr(0, tmp.find('?')).c_str());
 		tmp = tmp.substr(tmp.find('?')+1);
 		fireSearch(seeker, a, size, type, tmp);
+	} else if(aLine.find("$ConnectToMe") != string::npos) {
+		string tmp = aLine.substr(13);
+		tmp = tmp.substr(tmp.find(' ') + 1);
+		string server = tmp.substr(0, tmp.find(':'));
+		fireConnectToMe(server, tmp.substr(tmp.find(':')+1));
+	} else if(aLine.find("$RevConnectToMe") != string::npos) {
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			string tmp = aLine.substr(16);
+			User::NickIter i = users.find(tmp.substr(0, tmp.find(' ')));
+			if(i != users.end()) {
+				fireRevConnectToMe(i->second);
+			}
+		}
 	} else if(aLine.find("$HubName") != string::npos) {
 		name = aLine.substr(9);
 		fireHubName();
@@ -168,14 +181,6 @@ void Client::onLine(const string& aLine) {
 		string nick = tmp.substr(0, tmp.find("$") - 1);
 		tmp = tmp.substr(tmp.find("$") + 1);
 		firePrivateMessage(nick, tmp);
-	} else if(aLine.find("$ConnectToMe") != string::npos) {
-		string tmp = aLine.substr(13);
-		tmp = tmp.substr(tmp.find(' ') + 1);
-		string server = tmp.substr(0, tmp.find(':'));
-		fireConnectToMe(server, tmp.substr(tmp.find(':')+1));
-	} else if(aLine.find("$RevConnectToMe") != string::npos) {
-		string tmp = aLine.substr(16);
-		fireRevConnectToMe(tmp.substr(tmp.find(' ')+1));
 	} else if(aLine.find("$") != string::npos) {
 		fireUnknown(aLine);
 	} else {
@@ -186,9 +191,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.4 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.5 2001/12/07 20:03:02 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.5  2001/12/07 20:03:02  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.4  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

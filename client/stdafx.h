@@ -29,6 +29,7 @@
 #define _ATL_NO_OPENGL
 #define _ATL_NO_MSIMG
 #define _ATL_NO_COM
+#define _ATL_NO_HOSTING
 
 #include <Winsock2.h>
 #include <Mswsock.h>
@@ -55,7 +56,6 @@ extern CAppModule _Module;
 #include <iosfwd>
 using namespace std;
 
-#include <Wininet.h>
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
@@ -63,9 +63,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.7 2001/12/07 20:03:34 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.7  2001/12/07 20:03:34  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.6  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

@@ -54,6 +54,7 @@ public:
 				break;
 			}				
 		}
+		socket.removeListener(this);
 	};
 	
 	static void addStaticListener(ClientListener::Ptr aListener) {
@@ -126,7 +127,7 @@ public:
 		send("<" + Settings::getNick() + "> " + tmp + "|");
 	}
 	void getInfo(User* aUser) {
-		dcdebug("GetInfo %s\n", aUser->getNick().c_str());
+//		dcdebug("GetInfo %s\n", aUser->getNick().c_str());
 		send("$GetINFO " + aUser->getNick() + " " + Settings::getNick() + "|");
 	}
 	void getInfo(const string& aNick) {
@@ -140,9 +141,11 @@ public:
 	}
 
 	void connectToMe(User* aUser) {
+		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
 		send("$ConnectToMe " + aUser->getNick() + " " + Settings::getServer() + ":" + Settings::getPort() + "|");
 	}
 	void revConnectToMe(User* aUser) {
+		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + Settings::getNick() + " " + aUser->getNick()  + "|");
 	}
 	void connect(const string& aServer, short aPort = 411);
@@ -356,13 +359,13 @@ protected:
 			(*i)->onClientQuit(this, aUser);
 		}
 	}
-	void fireRevConnectToMe(const string& aNick) {
-		dcdebug("fireRevConnectToMe %s\n", aNick.c_str());
+	void fireRevConnectToMe(User* aUser) {
+		dcdebug("fireRevConnectToMe %s\n", aUser->getNick().c_str());
 		listenerCS.enter();
 		ClientListener::List tmp = listeners;
 		listenerCS.leave();
 		for(ClientListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onClientRevConnectToMe(this, aNick);
+			(*i)->onClientRevConnectToMe(this, aUser);
 		}
 	}
 	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
@@ -399,9 +402,12 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.5 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Client.h,v 1.6 2001/12/07 20:03:02 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.6  2001/12/07 20:03:02  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.5  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

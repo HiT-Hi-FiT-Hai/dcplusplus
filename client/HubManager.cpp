@@ -34,17 +34,15 @@ DWORD WINAPI HubManager::lister(void* p) {
 
 	hm->fireMessage("Downloading public server list...");
 	
-	if(hm->readerThread != NULL) {
-		hEvent[1] = hm->readerThread;
-		if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
-			ATLTRACE("Hub Lister Thread ended");
-			hm->listerThread = NULL;
-			return 0;
-		}
+	// Wait for downloaders to finish
+	hEvent[1] = hm->downloadEvent;
+	if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
+		ATLTRACE("Hub Lister Thread ended");
+		hm->listerThread = NULL;
+		return 0;
 	}
 	
-	EnterCriticalSection(&hm->publicCS);
-
+	hm->publicCS.enter();
 	if(hm->publicHubs.size() == 0) {
 		hm->fireMessage("Unable to download public server list. Check your internet connection!");
 	} else {
@@ -56,63 +54,59 @@ DWORD WINAPI HubManager::lister(void* p) {
 		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
 			ATLTRACE("Hub Lister Thread ended");
 			hm->listerThread = NULL;
+			hm->publicCS.leave();
 			hm->fireFinished();
-			LeaveCriticalSection(&hm->publicCS);
 			return 0;
 		}
 		hm->fireHub(i->name, i->server, i->description, i->users);
 	}
 	hm->fireFinished();
 	
-	LeaveCriticalSection(&hm->publicCS);
+	hm->publicCS.leave();
 	hm->listerThread = NULL;
 	return 0;
 }
 
-/**
- * Return a list of hub entries for the currently known public hubs.
- * Locks execution until list has been downloaded.
- * @param aRefresh Refresh list from neomodus server.
- */
-DWORD WINAPI HubManager::reader(void *p) {
-
-	ATLASSERT(p);
-	HubManager* hm = (HubManager*)p;
-	HANDLE hEvent[2];
-	hEvent[0] = hm->readerEvent;
+void HubManager::onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen) {
+	downloadBuf.append((char*)aBuf, aLen);
+	string::size_type i;
 	
-	EnterCriticalSection(&hm->publicCS);
-	
-	hm->publicHubs.clear();
+	publicCS.enter();
 
-	try {
-		StringTokenizer tokens(HttpConnection::DownloadTextFile("http://www.neo-modus.com/PublicHubList.config"));
-		StringList t = tokens.getTokens();
+	while( (i=downloadBuf.find("\r\n")) != string::npos) {
+		StringTokenizer tok(downloadBuf.substr(0, i), '|');
+		downloadBuf = downloadBuf.substr(i+2);
 
-		for(StringIter i = t.begin(); i!=t.end();i++) {
-			StringTokenizer hub(*i, '|');
-			StringIter j = hub.getTokens().begin();
-			string& name = *j++;
-			string& server = *j++;
-			string& desc = *j++;
-			string& users = *j++;
-			hm->publicHubs.push_back(HubEntry(name, server, desc, users));
-		}
-	} catch(Exception e) {
-		dcdebug("Can't get Hub List...");
+		StringIter j = tok.getTokens().begin();
+		string& name = *j++;
+		string& server = *j++;
+		string& desc = *j++;
+		string& users = *j++;
+		publicHubs.push_back(HubEntry(name, server, desc, users));
 	}
 
-	LeaveCriticalSection(&hm->publicCS);
-	hm->readerThread = NULL;
-
-	return 0;	
+	publicCS.leave();
 }
+
+void HubManager::onHttpComplete(HttpConnection* aConn) {
+	SetEvent(downloadEvent);
+	aConn->removeListener(this);
+}
+
+void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
+	SetEvent(downloadEvent);
+	aConn->removeListener(this);
+}
+
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.3 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.4 2001/12/07 20:03:07 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.4  2001/12/07 20:03:07  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.3  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

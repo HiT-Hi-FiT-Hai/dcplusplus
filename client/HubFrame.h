@@ -121,15 +121,19 @@ public:
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
 		CHAIN_MSG_MAP(splitBase)
+		CHAIN_CLIENT_COMMANDS()
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		return 0;
-	};
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		LPMSG pMsg = (LPMSG)lParam;
+		
+		return CMDIChildWindowImpl2<HubFrame>::PreTranslateMessage(pMsg);
+	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		return 0;
@@ -211,9 +215,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.9 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.10 2001/12/07 20:03:07 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.10  2001/12/07 20:03:07  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.9  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

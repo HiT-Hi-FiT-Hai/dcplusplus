@@ -104,12 +104,14 @@ private:
 	UserConnection::NickMap uploaders;
 	
 	UserConnection::List pool;
+	CriticalSection poolCS;
 
 	/**
 	 * Returns an unused connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
 		UserConnection* uc;
+		poolCS.enter();
 		if(pool.size() == 0) {
 			uc = new UserConnection();
 			uc->addListener(this);
@@ -117,6 +119,7 @@ private:
 			uc = pool.back();
 			pool.pop_back();
 		}
+		poolCS.leave();
 		return uc;
 	}
 	/**
@@ -124,7 +127,9 @@ private:
 	 */
 	void putConnection(UserConnection* aConn) {
 		aConn->disconnect();
+		poolCS.enter();
 		pool.push_back(aConn);
+		poolCS.leave();
 	}
 	static ConnectionManager* instance;
 	/**
@@ -142,9 +147,11 @@ private:
 	~ConnectionManager() {
 		socket.removeListener(this);
 		// Time to empty the pool...
+		poolCS.enter();
 		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
 			delete *i;
 		}
+		poolCS.leave();
 	}
 
 	ServerSocket socket;
@@ -154,9 +161,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.7 2001/12/07 20:03:05 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.7  2001/12/07 20:03:05  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

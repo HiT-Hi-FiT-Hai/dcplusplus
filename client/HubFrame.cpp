@@ -24,9 +24,10 @@
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
+		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
+
 	ctrlClient.FmtLines(TRUE);
-	
+
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
 	
@@ -71,15 +72,19 @@ LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 
 LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	client->disconnect();
+	ctrlUsers.DeleteAllItems();
 	client->connect(server);
 	return 0;
 }
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.5 2001/12/05 19:40:13 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.6 2001/12/07 20:03:07 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.6  2001/12/07 20:03:07  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.5  2001/12/05 19:40:13  arnetheduck
  * More bugfixes.
  *

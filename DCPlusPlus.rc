@@ -98,11 +98,11 @@ BEGIN
     END
 END
 
-IDR_MDICHILD MENU DISCARDABLE 
+IDR_MDIDIRECTORY MENU DISCARDABLE 
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Connect to public hub...\tCtrl+T", ID_FILE_CONNECT
+        MENUITEM "&Connect to public hub...\tCtrl+N", ID_FILE_CONNECT
         MENUITEM SEPARATOR
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Download",                   IDC_DOWNLOAD
@@ -128,11 +128,11 @@ BEGIN
     END
 END
 
-IDR_MDIDIRECTORY MENU DISCARDABLE 
+IDR_MDICHILD MENU DISCARDABLE 
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Connect to public hub...\tCtrl+T", ID_FILE_CONNECT
+        MENUITEM "&Connect to public hub...\tCtrl+N", ID_FILE_CONNECT
         MENUITEM SEPARATOR
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM "&Reconnect\tCtrl+R",          ID_FILE_RECONNECT

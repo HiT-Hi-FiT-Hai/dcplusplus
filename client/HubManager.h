@@ -25,6 +25,8 @@
 
 #include "Exception.h"
 #include "Util.h"
+#include "CriticalSection.h"
+#include "HttpConnection.h"
 
 STANDARD_EXCEPTION(HubException);
 
@@ -40,7 +42,7 @@ public:
 	virtual void onHubFinished() { };
 };
 
-class HubManager : public Speaker<HubManagerListener>
+class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener
 {
 public:
 
@@ -61,7 +63,7 @@ public:
 	
 	void getPublicHubs(bool aRefresh=false) {
 		if(aRefresh) {
-			startReader();
+			refresh();
 		}
 
 		startLister();
@@ -87,22 +89,54 @@ private:
 	
 	static HubManager* instance;
 	HubEntry::List publicHubs;
-	CRITICAL_SECTION publicCS;
-	
-	HubManager() : readerThread(NULL), readerEvent(NULL), listerThread(NULL), listerEvent(NULL) {
-		InitializeCriticalSection(&publicCS);
-		startReader();
+	CriticalSection publicCS;
+	HttpConnection* conn;
+		
+	HubManager() : listerThread(NULL), listerEvent(NULL), conn(NULL) {
+		downloadEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+		refresh();
 	}
 
 	~HubManager() {
-		DeleteCriticalSection(&publicCS);
-		stopReader();
+		CloseHandle(downloadEvent);
+
+		stopLister();
+
+		if(conn) {
+			conn->removeListener(this);
+			delete conn;
+		}
 	}
 	
 	HANDLE listerThread;
 	HANDLE listerEvent;
 	static DWORD WINAPI lister(void* p);
 	
+	HANDLE downloadEvent;
+	string downloadBuf;
+
+	// HttpConnectionListener
+	virtual void onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen);
+	virtual void onHttpError(HttpConnection* aConn, const string& aError);
+	virtual void onHttpComplete(HttpConnection* aConn);	
+
+	void refresh() {
+		publicCS.enter();
+		publicHubs.clear();
+		publicCS.leave();
+
+		if(conn) {
+			conn->removeListener(this);
+			delete conn;
+		}
+		ResetEvent(downloadEvent);
+		
+		conn = new HttpConnection();
+		conn->addListener(this);
+		conn->DownloadFile("http://www.neo-modus.com/PublicHubList.config");
+		
+	}
 	void startLister() {
 		stopLister();
 		DWORD threadId;
@@ -119,37 +153,13 @@ private:
 			}
 			
 			listerThread = NULL;
+		}
+		if(listerEvent) {
 			CloseHandle(listerEvent);
 			listerEvent = NULL;
 		}
 	}
 	
-	HANDLE readerThread;
-	HANDLE readerEvent;
-	static DWORD WINAPI reader(void* p);
-
-	void startReader() {
-		stopReader();
-		DWORD threadId;
-		readerEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
-	}
-	
-	void stopReader() {
-		if(readerThread != NULL) {
-			SetEvent(readerEvent);
-			
-			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			
-			readerThread = NULL;
-			CloseHandle(readerEvent);
-			readerEvent = NULL;
-		}
-	}
-	
-
 	void fireMessage(const string& aMessage) {
 		listenerCS.enter();
 		HubManagerListener::List tmp = listeners;
@@ -194,9 +204,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.6 2001/12/07 20:03:10 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.6  2001/12/07 20:03:10  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.5  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

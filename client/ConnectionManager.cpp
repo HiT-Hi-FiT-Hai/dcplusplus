@@ -139,7 +139,8 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) {
 		}
 		
 		try {
-			aSource->direction("Upload", "666");
+			aSource->myNick(Settings::getNick());
+			aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 		} catch(Exception e) {
 			putConnection(aSource);
 		}
@@ -161,6 +162,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 	
 	if(aSource->flags & UserConnection::FLAG_UPLOAD) {
 		// Pass it to the UploadManager
+		aSource->direction("Upload", "666");
 		aSource->state = UserConnection::BUSY;
 		UploadManager::getInstance()->addConnection(aSource);
 	} else if(Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
@@ -199,9 +201,12 @@ void ConnectionManager::connect(const string& aServer, short aPort) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.6 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.7 2001/12/07 20:03:04 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.7  2001/12/07 20:03:04  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.6  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

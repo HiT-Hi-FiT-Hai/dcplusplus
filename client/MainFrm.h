@@ -31,6 +31,7 @@
 #include "TimerManager.h"
 
 #define WM_CREATEDIRECTORYLISTING (WM_USER+1000)
+#define WM_REALLYCLOSE (WM_USER+1001)
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
@@ -38,7 +39,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 {
 public:
 	virtual ~MainFrame();
-	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
+	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
 	CCommandBarCtrl2 m_CmdBar;
 
@@ -84,9 +85,11 @@ public:
 	}
 	typedef CSplitterImpl<MainFrame, false> splitterBase;
 	BEGIN_MSG_MAP(MainFrame)
+		MESSAGE_HANDLER(WM_REALLYCLOSE, OnReallyClose)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CREATEDIRECTORYLISTING, OnCreateDirectory)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -96,6 +99,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
+		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
 		CHAIN_MSG_MAP(splitterBase);
@@ -107,6 +111,19 @@ public:
 	END_UPDATE_UI_MAP()
 
 	LRESULT OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnReallyClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		DestroyWindow();
+		return 0;
+	}
+	
+	static DWORD WINAPI stopper(void* p);
+
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		DWORD id;
+
+		CreateThread(NULL, 0, &stopper, this, 0, &id);
+		return 0;
+	}
 	
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		return 0;
@@ -143,11 +160,6 @@ public:
 			
 			ctrlStatus.SetParts(5, w);
 		}
-		// resize client window
-/*		if(m_hWndClient != NULL)
-			::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
-			rect.right - rect.left, rect.bottom - rect.top,
-			SWP_NOZORDER | SWP_NOACTIVATE);*/
 
 		SetSplitterRect(&rect);
 	}
@@ -210,9 +222,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.9 2001/12/07 20:03:15 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.9  2001/12/07 20:03:15  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.8  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

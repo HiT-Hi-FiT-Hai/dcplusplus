@@ -177,6 +177,7 @@ private:
 		socket.addListener(this);
 	};
 	virtual ~UserConnection() {
+		dcdebug("UserConnection destroyer\n");
 	};
 	
 	void send(const string& aString) {
@@ -211,7 +212,7 @@ private:
 	}
 	void fireData(BYTE* aData, int aLen) {
 		listenerCS.enter();
-		dcdebug("UserConnection::fireData %d\n", aLen);
+//		dcdebug("UserConnection::fireData %d\n", aLen);
 		UserConnectionListener::List tmp = listeners;
 		listenerCS.leave();
 		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
@@ -332,9 +333,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.9 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.10 2001/12/07 20:03:28 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.10  2001/12/07 20:03:28  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.9  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

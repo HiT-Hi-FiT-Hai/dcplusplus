@@ -67,7 +67,7 @@ public:
 		ConnectionManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
 	}
 	
-	virtual void onClientRevConnectoToMe(Client* aClient, User* aUser) {
+	virtual void onClientRevConnectToMe(Client* aClient, User* aUser) {
 		aClient->connectToMe(aUser);
 	}
 	
@@ -98,9 +98,12 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.7 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.8 2001/12/07 20:03:15 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.8  2001/12/07 20:03:15  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.7  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

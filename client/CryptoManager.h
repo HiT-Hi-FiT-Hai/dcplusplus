@@ -71,7 +71,7 @@ public:
 	string getLock() { return lock; };
 	string getPk() { return pk; };
 
-	void decodeHuffman(const string& is, string& os);
+	void decodeHuffman(BYTE* is, string& os);
 	void encodeHuffman(const string& is, string& os);
 	
 	static CryptoManager* getInstance() {
@@ -121,8 +121,8 @@ private:
 	
 	int countChars(const string& aString, int* c, BYTE& csum);
 	void walkTree(list<Node*>& aTree);
-	void recurseLookup(vector<bool>* b, Node* node, vector<bool>& bytes);
-	void buildLookup(vector<bool>* b, Node* root);
+	void recurseLookup(vector<BYTE>* b, Node* node, vector<BYTE>& bytes);
+	void buildLookup(vector<BYTE>* b, Node* root);
 	
 	string keySubst(string aKey, int n);
 	boolean isExtra(BYTE b) {
@@ -136,9 +136,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.5 2001/12/07 20:03:06 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.5  2001/12/07 20:03:06  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

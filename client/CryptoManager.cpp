@@ -90,10 +90,12 @@ string CryptoManager::makeKey(const string& lock) {
 	return keySubst(tmp, extra);
 }
 
-void CryptoManager::decodeHuffman(const string& is, string& os) {
+void CryptoManager::decodeHuffman(BYTE* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
-	
+
+	// We want to operate on the data directly...and this is really faster than operator[]...
+
 	if(is[pos] != 'H' || is[pos+1] != 'E' || !(is[pos+2] == '3' || is[pos+2] == '0')) {
 		return;
 	}
@@ -142,8 +144,10 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 	}
 	
 	bis.skipToByte();
-
-	os.reserve(size+1);
+	
+	// We know the size, so no need to use strange STL stuff...
+	char* buf = new char[size+1];
+	pos = 0;
 	for(i=0; i<size; i++) {
 		DecNode* node = root;
 		while(node->chr == -1) {
@@ -158,9 +162,11 @@ void CryptoManager::decodeHuffman(const string& is, string& os) {
 				return;
 			}
 		}
-		os+= (BYTE)node->chr;
+		buf[pos++] = (BYTE)node->chr;
 	}
-	os[i] = 0;
+	buf[pos] = 0;
+	os.assign(buf, size);
+	delete buf;
 
 	delete[] leaves;
 	delete root;
@@ -209,17 +215,17 @@ void CryptoManager::walkTree(list<Node*>& aTree) {
 /**
  * @todo Make more effective in terms of memory allocations and copies...
  */
-void CryptoManager::recurseLookup(vector<bool>* table, Node* node, vector<bool>& bytes) {
+void CryptoManager::recurseLookup(vector<BYTE>* table, Node* node, vector<BYTE>& bytes) {
 	if(node->chr != -1) {
 		table[node->chr] = bytes;
 		return;
 	}
 
-	vector<bool> left = bytes;
-	vector<bool> right = bytes;
+	vector<BYTE> left = bytes;
+	vector<BYTE> right = bytes;
 	
-	left.push_back(false);
-	right.push_back(true);
+	left.push_back(0);
+	right.push_back(1);
 
 	recurseLookup(table, node->left, left);
 	recurseLookup(table, node->right, right);
@@ -229,12 +235,12 @@ void CryptoManager::recurseLookup(vector<bool>* table, Node* node, vector<bool>&
  * Builds a hash table over the characters available (for fast lookup).
  * Stores each character as a set of bytes with values {0, 1}.
  */
-void CryptoManager::buildLookup(vector<bool>* table, Node* aRoot) {
-	vector<bool> left;
-	vector<bool> right;
+void CryptoManager::buildLookup(vector<BYTE>* table, Node* aRoot) {
+	vector<BYTE> left;
+	vector<BYTE> right;
 
-	left.push_back(false);
-	right.push_back(true);
+	left.push_back(0);
+	right.push_back(1);
 
 	recurseLookup(table, aRoot->left, left);
 	recurseLookup(table, aRoot->right, right);
@@ -242,8 +248,6 @@ void CryptoManager::buildLookup(vector<bool>* table, Node* aRoot) {
 
 /**
  * Encodes a set of data with DC's version of huffman encoding..
- * Uses a byte[] in structure to avoid those strange iostreams where available() doesn't return the whole data set,
- * as we'll be passing multiple times over the data...
  * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
  */
 
@@ -279,14 +283,17 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	dcassert(nodes.size() == 1);
 
 	Node* root = nodes.front();
-	vector<bool> lookup[256];
+	vector<BYTE> lookup[256];
 	
 	// Build a lookup table for fast character lookups
 	buildLookup(lookup, root);
 	delete root;
 
-	os.append("HE3\x0d");
+	// Reserve some memory to avoid all those copies when appending...
+	os.reserve(is.size() * 3 / 4);
 
+	os.append("HE3\x0d");
+	
 	// Checksum
 	os.append(1, csum);
 	string::size_type sz = is.size();
@@ -323,9 +330,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.6 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.7 2001/12/07 20:03:05 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.7  2001/12/07 20:03:05  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.6  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

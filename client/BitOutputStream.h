@@ -29,9 +29,9 @@ public:
 	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { };
 	~BitOutputStream() { };
 	
-	void put(vector<bool>& b) {
-		for(int i=0; i<b.size(); i++) {
-			next |=  ((BYTE)b[i]) << bitPos++;
+	void put(vector<BYTE>& b) {
+		for(vector<BYTE>::iterator i = b.begin(); i != b.end(); ++i) {
+			next |=  (*i) << bitPos++;
 			
 			if(bitPos > 7) {
 				bitPos-=8;
@@ -60,9 +60,12 @@ private:
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.3 2001/12/07 20:02:59 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.h,v $
+ * Revision 1.3  2001/12/07 20:02:59  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.2  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

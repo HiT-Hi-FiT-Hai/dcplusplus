@@ -23,24 +23,86 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class HttpConnection  
+#include "BufferedSocket.h"
+#include "Util.h"
+
+class HttpConnection;
+
+class HttpConnectionListener {
+public:
+	typedef HttpConnectionListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+
+	virtual void onHttpData(HttpConnection* aConn, BYTE* aBuf, int aLen) { };
+	virtual void onHttpError(HttpConnection* aConn, const string& aError) { };
+	virtual void onHttpComplete(HttpConnection* aConn) { };	
+};
+
+class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
 {
 public:
-	static string DownloadTextFile(const string& aUrl);
-	HttpConnection();
-	virtual ~HttpConnection();
+	void DownloadFile(const string& aUrl);
+	HttpConnection() : ok(false), port(false), size(-1) { 	socket.addListener(this); };
+	virtual ~HttpConnection() { socket.removeListener(this); };
 
+private:
+
+	virtual void onConnected();
+	virtual void onLine(const string& aLine);
+	virtual void onData(BYTE* aBuf, int aLen) { fireData(aBuf, aLen); }
+	virtual void onError(const string& aReason) { fireError(aReason); }
+	virtual void onModeChange(int newMode) { fireComplete(); socket.disconnect(); }
+	
+	string file;
+	string server;
+	short port;
+	LONGLONG size;
+	
+	bool ok;
+	BufferedSocket socket;
+	
+	void fireData(BYTE* aBuf, int aLen) {
+		listenerCS.enter();
+		dcdebug("HttpConnection::fireData %d\n", aLen);
+		HttpConnectionListener::List tmp = listeners;
+		listenerCS.leave();
+		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onHttpData(this, aBuf, aLen);
+		}
+	}
+	void fireError(const string& aError) {
+		listenerCS.enter();
+		dcdebug("HttpConnection::fireError %s\n", aError.c_str());
+		HttpConnectionListener::List tmp = listeners;
+		listenerCS.leave();
+		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onHttpError(this, aError);
+		}
+	}
+	void fireComplete() {
+		listenerCS.enter();
+		dcdebug("HttpConnection::fireComplete\n");
+		HttpConnectionListener::List tmp = listeners;
+		listenerCS.leave();
+		for(HttpConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onHttpComplete(this);
+		}
+	}
 };
 
 #endif // !defined(AFX_HTTPCONNECTION_H__47AE2649_8D90_4C38_B048_69B3C26B3954__INCLUDED_)
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.2 2001/12/07 20:03:07 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/12/07 20:03:07  arnetheduck
+ * More work done towards application stability
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

@@ -49,7 +49,7 @@ public:
 		MODE_DATA
 	};
 
-	void setDataMode(LONGLONG aBytes) {
+	void setDataMode(LONGLONG aBytes = -1) {
 		mode = MODE_DATA;
 		dataBytes = aBytes;
 	}
@@ -116,6 +116,7 @@ private:
 		
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		writerThread = CreateThread(NULL, 0, &writer, this, 0, &threadId);
+		SetThreadPriority(writerThread, THREAD_PRIORITY_LOWEST);
 	}
 	
 	void stopWriter() {
@@ -223,9 +224,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.7 2001/12/07 20:03:01 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.7  2001/12/07 20:03:01  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.6  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

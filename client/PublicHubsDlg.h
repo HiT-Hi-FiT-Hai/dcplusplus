@@ -51,17 +51,15 @@ public:
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, OnClickedRefresh)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
-		END_MSG_MAP()
+	END_MSG_MAP()
 	
-	virtual void onMessage(const string& aMessage) {
+	virtual void onHubMessage(const string& aMessage) {
 		SetWindowText(("Public Hub List - " + aMessage).c_str());
 	}
 
 	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
 	virtual void onHubFinished() {
-		HubManager::getInstance()->removeListener(this);
 		listing = false;
-
 		if(wId != -1)
 			EndDialog(wId);
 	}
@@ -97,9 +95,12 @@ public:
 
 /**
  * @file PublicHubsDlg.h
- * $Id: PublicHubsDlg.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: PublicHubsDlg.h,v 1.6 2001/12/07 20:03:24 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.h,v $
+ * Revision 1.6  2001/12/07 20:03:24  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.5  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

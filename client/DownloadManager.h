@@ -109,6 +109,8 @@ public:
 			delete instance;
 		
 		instance = new DownloadManager();
+		// Add ourselves to the Timer Manager
+		TimerManager::getInstance()->addListener(instance);
 	}
 
 	static void deleteInstance() {
@@ -119,29 +121,29 @@ public:
 	
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
+		
+		connectionCS.enter();
 		connections.push_back(conn);
+		connectionCS.leave();
+
 		checkDownloads(conn);
 	}
 	
 	void removeConnection(UserConnection::Ptr aConn);
-	
-	void removeConnections() {
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-			(*i)->removeListener(this);
-			i = connections.erase(i);
-		}
-	}
-
+	void removeConnections(); 
 private:
 
 	Download::List queue;
 	Download::Map running;
 	
+	CriticalSection runningCS;
+	
 	static DownloadManager* instance;
 	StringList expectedNicks;
 	
 	UserConnection::List connections;
-	
+	CriticalSection connectionCS;
+
 	void fireAdded(Download::Ptr aPtr) {
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
@@ -200,6 +202,7 @@ private:
 
 	DownloadManager() { };
 	virtual ~DownloadManager() {
+		removeConnections();
 	};
 };
 
@@ -207,9 +210,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.7 2001/12/05 14:27:35 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.8 2001/12/07 20:03:06 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.8  2001/12/07 20:03:06  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.7  2001/12/05 14:27:35  arnetheduck
  * Premature disconnection bugs removed.
  *

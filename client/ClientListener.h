@@ -86,16 +86,19 @@ public:
 	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
 	virtual void onClientConnectToMe(Client* aClient, const string& aServer, const string& aPort) { };
-	virtual void onClientRevConnectToMe(Client* aClient, const string& aNick) { };
+	virtual void onClientRevConnectToMe(Client* aClient, User* aUser) { };
 };
 
 #endif // !defined(AFX_CLIENTLISTENER_H__607F5375_97B0_47CD_B53B_D230ABF23E7E__INCLUDED_)
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.4 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.5 2001/12/07 20:03:04 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.5  2001/12/07 20:03:04  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.4  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

@@ -21,16 +21,6 @@
 
 #include "HttpConnection.h"
 
-HttpConnection::HttpConnection()
-{
-
-}
-
-HttpConnection::~HttpConnection()
-{
-
-}
-
 /**
  * Downloads a file and returns it as a string
  * @todo Windows dependency
@@ -39,33 +29,51 @@ HttpConnection::~HttpConnection()
  * @param aUrl Full URL of file
  * @return A string with the content, or empty if download failed
  */
-string HttpConnection::DownloadTextFile(const string& aUrl) {
-	HINTERNET hInet = InternetOpen("DC++", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-	HINTERNET hFile = InternetOpenUrl(hInet, aUrl.c_str(), NULL, 0, INTERNET_FLAG_RELOAD, NULL);
+void HttpConnection::DownloadFile(const string& aUrl) {
+
+	Util::decodeUrl(aUrl, server, port, file);
+
+	if(file.empty())
+		file = "/";
+
+	if(port == 0)
+		port = 80;
 	
-	string tmp;
-	char buf[10240];
-	DWORD bytesRead;;
-	while(InternetReadFile(hFile, buf, 10240, &bytesRead)) {
-		if(bytesRead == 0)
-			break;
 
-		tmp = tmp + string(buf, bytesRead);
+	socket.connect(server, port);
+}
+
+void HttpConnection::onConnected() {
+	socket.write("GET " + file + " HTTP/1.1\r\n");
+	socket.write("User-Agent: DC++\r\n");
+	socket.write("Host: " + server + "\r\n");
+	socket.write("Cache-Control: no-cache\r\n\r\n");
+}
+
+void HttpConnection::onLine(const string& aLine) {
+	if(!ok) {
+		if(aLine.find("200") == string::npos) {
+			socket.disconnect();
+			fireError("File Not Available");
+		}
+		ok = true;
+	} else if(aLine == "\x0d") {
+		socket.setDataMode(size);
+	} else if(aLine.find("Content-Length") != string::npos) {
+		size = atoi(aLine.substr(16, aLine.length() - 17).c_str());
 	}
-
-	InternetCloseHandle(hFile);
-	InternetCloseHandle(hInet);
-
-	return tmp;
 }
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.2 2001/12/07 20:03:06 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/12/07 20:03:06  arnetheduck
+ * More work done towards application stability
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

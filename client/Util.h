@@ -59,6 +59,8 @@ protected:
 class Util  
 {
 public:
+	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
+	
 	static string shortenBytes(const string& aString) {
 		return shortenBytes(_atoi64(aString.c_str()));
 	}
@@ -86,9 +88,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.1 2001/12/02 11:18:10 arnetheduck Exp $
+ * $Id: Util.h,v 1.2 2001/12/07 20:03:33 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.2  2001/12/07 20:03:33  arnetheduck
+ * More work done towards application stability
+ *
  * Revision 1.1  2001/12/02 11:18:10  arnetheduck
  * Added transfer totals and speed...
  *
