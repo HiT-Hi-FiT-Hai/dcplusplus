@@ -23,6 +23,7 @@
 #include "CryptoManager.h"
 #include "SimpleXML.h"
 #include "LogManager.h"
+#include "File.h"
 
 HashManager* Singleton<HashManager>::instance = NULL;
 
@@ -189,6 +190,13 @@ void HashLoader::endTag(const string& name, const string& data) {
 	}
 }
 
+HashManager::HashStore::HashStore() : indexFile(Util::getAppPath() + "HashIndex.xml"), 
+dataFile(Util::getAppPath() + "HashData.dat"), dirty(false) 
+{ 
+	if(File::getSize(dataFile) <= 0)
+		createFiles();
+};
+
 /**
  * Creates the data files for storing hash values.
  * The data file is very simple in its format. The first 8 bytes
@@ -213,9 +221,12 @@ void HashManager::HashStore::createFiles() {
 	}
 }
 
+#define BUF_SIZE (64*1024)
+
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::LOW);
 
+	u_int8_t* buf[BUF_SIZE];
 	string fname;
 	for(;;) {
 		s.wait();
@@ -233,11 +244,18 @@ int HashManager::Hasher::run() {
 		}
 
 		if(!fname.empty()) {
-			TigerTree tth;
 			try {
-				tth.hashFile(fname, 10);
+				File f(fname, File::READ, File::OPEN);
+				TigerTree tth(f.getSize(), max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)64*1024));
+				
+				u_int32_t n = 0;
+				do {
+					n = f.read(buf, BUF_SIZE);
+					tth.update(buf, n);
+				} while (n > 0 && !stop);
+				f.close();
+				tth.finalize();			
 				HashManager::getInstance()->hashDone(fname, tth);
-
 			} catch(const FileException&) {
 				// Ignore, it'll be readded on the next share refresh...
 			}
@@ -247,5 +265,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.4 2004/01/28 20:19:20 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.5 2004/01/30 14:12:59 arnetheduck Exp $
  */

@@ -27,6 +27,8 @@
 #include "CriticalSection.h"
 #include "Semaphore.h"
 #include "TimerManager.h"
+#include "Util.h"
+#include "FastAlloc.h"
 
 class HashManagerListener {
 public:
@@ -106,12 +108,7 @@ private:
 
 	class HashStore {
 	public:
-		HashStore() : indexFile(Util::getAppPath() + "HashIndex.xml"), 
-			dataFile(Util::getAppPath() + "HashData.dat"), dirty(false) 
-		{ 
-			if(File::getSize(dataFile) <= 0)
-				createFiles();
-		};
+		HashStore();
 		void addFile(const string& aFileName, TigerTree& tth);
 
 		void load();
@@ -186,5 +183,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.3 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.4 2004/01/30 14:12:59 arnetheduck Exp $
  */

@@ -37,6 +37,10 @@
 #include "StringTokenizer.h"
 
 void startup(void (*f)(void*, const string&), void* p) {
+	// "Dedicated to the near-memory of Nev. Let's start remembering people while they're still alive."
+	// Nev's great contribution to dc++
+	while(1) break;
+
 	Util::initialize();
 
 	ResourceManager::newInstance();
@@ -144,6 +148,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.28 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.29 2004/01/30 14:12:59 arnetheduck Exp $
  */
 
