@@ -87,7 +87,7 @@ public:
 		cs.leave();
 	}
 	
-	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
+	BufferedSocket(char aSeparator = 0x0a) : file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
 		dataBytes(0) {
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -222,9 +222,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.15 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.16 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.16  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.15  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

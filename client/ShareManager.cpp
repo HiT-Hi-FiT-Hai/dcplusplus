@@ -186,14 +186,14 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 
 string ShareManager::Directory::toString(int ident /* = 0 */) {
 	string tmp(ident, '\t');
-	tmp = tmp + name + "\r\n";
+	tmp += name + "\r\n";
 	char buf[24];
 
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		tmp = tmp + i->second->toString(ident + 1);
+		tmp += i->second->toString(ident + 1);
 	}
 	for(map<string, LONGLONG>::iterator j = files.begin(); j != files.end(); ++j) {
-		tmp = tmp + string(ident + 1, '\t') + j->first + "|" + _i64toa(j->second, buf, 10) + "\r\n";
+		tmp += string(ident + 1, '\t') + j->first + "|" + _i64toa(j->second, buf, 10) + "\r\n";
 	}
 
 	return tmp;
@@ -201,9 +201,12 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.5 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.5  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.4  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

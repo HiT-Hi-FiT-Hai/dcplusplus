@@ -134,6 +134,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 		switch( WaitForMultipleObjects(3, h, FALSE, INFINITE) ) {
 		case WAIT_OBJECT_0:				// readerEvent, time to stop
 			dcdebug("BufferedSocket::reader stopped\n");
+			delete buf;
 			return 0;
 		case WAIT_OBJECT_0 + 1:			// writerEvent, send the file
 			dcdebug("BufferedSocket::reader Writer event\n");
@@ -221,14 +222,18 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			dcassert(0);
 		}
 	}
+	delete buf;
 	return 0;
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.18 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.19 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.19  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.18  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

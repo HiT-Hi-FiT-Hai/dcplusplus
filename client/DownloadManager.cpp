@@ -96,7 +96,7 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 			i->second = aTick;
 
 			Download* d = getNextDownload(i->first);
-			if(d) {
+			if(d && d->getUser()->isOnline()) {
 				int status = ConnectionManager::getInstance()->getDownloadConnection(d->getUser());
 				if(status==UserConnection::CONNECTING) {
 					fireConnecting(d);
@@ -199,6 +199,8 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 			d->setFileName(aFile);
 			d->setLast(aUser->getNick(), "");
 		}
+		if(d->getFileName().find(".DcLst") != string::npos)
+			d->setFlag(Download::USER_LIST); 
 		d->setUser(aUser);
 		d->setTarget(aTarget);
 		d->setSize(aSize);
@@ -309,6 +311,7 @@ void DownloadManager::removeDownload(Download* aDownload) {
 		}
 	}
 
+	dcassert(0);
 	// Not found...
 	cs.leave();
 }
@@ -395,6 +398,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	
 	if(file == INVALID_HANDLE_VALUE) {
+		running.erase(i);
 		d->unsetFlag(Download::RUNNING);
 		cs.leave();
 		removeConnection(aSource);
@@ -504,9 +508,12 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.17 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.17  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.16  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

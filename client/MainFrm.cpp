@@ -146,7 +146,7 @@ void MainFrame::onDownloadAdded(Download* p) {
  * @todo Work this out...
  */
 void MainFrame::onDownloadComplete(Download* p) {
-	if(p->getFileName().find(".DcLst")!=string::npos) {
+	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
 		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Preparing file list...");
 		HANDLE h = CreateFile(p->getTarget().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -373,9 +373,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.21 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.22 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.22  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.21  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

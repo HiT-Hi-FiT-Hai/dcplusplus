@@ -24,20 +24,24 @@
 StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */) {
 	string tmp = aString;
 
-	string::size_type i;
-	while( (i=tmp.find_first_of(aToken)) != string::npos ) {
-		tokens.push_back(tmp.substr(0, i));
-		tmp = tmp.substr(i+1);
+	string::size_type i = 0;
+	string::size_type j = 0;
+	while( (i=tmp.find_first_of(aToken, j)) != string::npos ) {
+		tokens.push_back(tmp.substr(j, i-j));
+		j = i + 1;
 	}
 }
 
 /**
  * @file StringTokenizer.cpp
- * $Id: StringTokenizer.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: StringTokenizer.cpp,v 1.2 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: StringTokenizer.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

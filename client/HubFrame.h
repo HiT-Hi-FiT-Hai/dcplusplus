@@ -88,7 +88,7 @@ protected:
 					l.push_back(u->getEmail());
 					ctrlUsers.insert(l);
 				} else {
-					ctrlUsers.SetItemText(j, 1, Util::shortenBytes(u->getBytesSharedString()).c_str());
+					ctrlUsers.SetItemText(j, 1, Util::shortenBytes(u->getBytesShared()).c_str());
 					ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
 					ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
 					ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
@@ -158,7 +158,14 @@ protected:
 		cs.leave();
 		PostMessage(WM_SPEAKER, CLIENT_MYINFO);
 	}
-	
+	virtual void onClientOpList(Client* aClient, StringList& aOps) {
+		for(StringIter i = aOps.begin(); i != aOps.end(); ++i) {
+			if(*i == Settings::getNick()) {
+				op = true;
+				return;
+			}
+		}
+	}
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
 		cs.enter();
 		PrivateFrame* frm = PrivateFrame::getFrame(aUser, GetParent());
@@ -191,10 +198,13 @@ protected:
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
+	CMenu userMenu;
+	CMenu opMenu;
+	bool op;
 
 public:
 
-	HubFrame(const string& aServer) : ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
+	HubFrame(const string& aServer) : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
 		client = ClientManager::getInstance()->getClient();
 		client->addListener(this);
 	}
@@ -227,7 +237,13 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
+		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
+		COMMAND_ID_HANDLER(IDC_KICK, onKick)
+		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
@@ -235,6 +251,74 @@ public:
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		int i=-1;
+		char buf[256];
+		if(client->isConnected()) {
+			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				ctrlUsers.GetItemText(i, 0, buf, 256);
+				string user = buf;
+				User::Ptr& u = client->getUser(user);
+				if(u)
+					DownloadManager::getInstance()->downloadList(u);
+				else 
+					DownloadManager::getInstance()->downloadList(user);
+			}
+		}
+		return 0;
+	}
+
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		int i=-1;
+		char buf[256];
+		if(client->isConnected()) {
+			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				ctrlUsers.GetItemText(i, 0, buf, 256);
+				string user = buf;
+				User::Ptr& u = client->getUser(user);
+				if(u) {
+					PrivateFrame* frm = PrivateFrame::getFrame(u);
+					frm->CreateEx(GetParent());
+				}
+			}
+		}
+		return 0;
+	}
+
+	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		if(client->isConnected()) {
+			ctrlUsers.DeleteAllItems();
+			client->getNickList();
+		}
+		return 0;
+	}
+
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { return 0; };
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { return 0; };
+	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		
+		// Get the bounding rectangle of the client area. 
+		ctrlUsers.GetClientRect(&rc);
+		ctrlUsers.ScreenToClient(&pt); 
+		
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlUsers.ClientToScreen(&pt);
+			if(op) {
+				opMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			} else {
+				userMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			}
+			
+			return TRUE; 
+		}
+
+		return FALSE; 
+	}
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 		DWORD id;
@@ -317,10 +401,10 @@ public:
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 		string user;
-		char buf[1024];
+		char buf[256];
 
 		if(client->isConnected() && item->iItem != -1) {
-			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
+			ctrlUsers.GetItemText(item->iItem, 0, buf, 256);
 			user = buf;
 			User::Ptr& u = client->getUser(user);
 			if(u)
@@ -393,9 +477,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.19 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.20 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.20  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.19  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

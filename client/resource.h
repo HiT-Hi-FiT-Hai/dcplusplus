@@ -37,6 +37,10 @@
 #define IDC_RESULTS                     1019
 #define IDC_PASSWORD                    1019
 #define IDC_DOWNLOADDIRTO               1020
+#define IDC_PRIVATEMESSAGE				1021
+#define IDC_GETLIST						1022
+#define IDC_KICK						1023
+#define IDC_REDIRECT					1024
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

@@ -161,7 +161,7 @@ public:
 	const string& getName() { return name; };
 	const string& getServer() { return server; };
 
-	User::Ptr getUser(const string& aNick) {
+	User::Ptr& getUser(const string& aNick) {
 		dcassert(aNick.length() > 0);
 		cs.enter();
 		User::NickIter j = users.find(aNick);
@@ -170,7 +170,7 @@ public:
 			return j->second;
 		} else {
 			cs.leave();
-			return NULL;
+			return User::nuser;
 		}
 	}
 
@@ -461,9 +461,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.13 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: Client.h,v 1.14 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.14  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.13  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

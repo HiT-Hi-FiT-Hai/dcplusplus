@@ -38,7 +38,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
 
 	ctrlClient.SetFont(ctrlUsers.GetFont());
 	ctrlMessage.SetFont(ctrlUsers.GetFont());
@@ -53,6 +53,47 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.InsertColumn(3, _T("Connection"), LVCFMT_LEFT, 75, 3);
 	ctrlUsers.InsertColumn(4, _T("E-Mail"), LVCFMT_LEFT, 100, 4);
 
+	userMenu.CreatePopupMenu();
+	opMenu.CreatePopupMenu();
+	
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Get File List";
+	mi.wID = IDC_GETLIST;
+	userMenu.InsertMenuItem(0, TRUE, &mi);
+	opMenu.InsertMenuItem(0, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Private Message";
+	mi.wID = IDC_PRIVATEMESSAGE;
+	userMenu.InsertMenuItem(1, TRUE, &mi);
+	opMenu.InsertMenuItem(1, TRUE, &mi);
+
+	mi.fMask = MIIM_TYPE;
+	mi.fType = MFT_SEPARATOR;
+	userMenu.InsertMenuItem(2, TRUE, &mi);
+	opMenu.InsertMenuItem(2, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Refresh User List";
+	mi.wID = IDC_REFRESH;
+	userMenu.InsertMenuItem(3, TRUE, &mi);
+	opMenu.InsertMenuItem(3, TRUE, &mi);
+
+	mi.fMask = MIIM_TYPE;
+	mi.fType = MFT_SEPARATOR;
+	opMenu.InsertMenuItem(4, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Kick User";
+	mi.wID = IDC_KICK;
+	opMenu.InsertMenuItem(5, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Redirect";
+	mi.wID = IDC_REDIRECT;
+	opMenu.InsertMenuItem(6, TRUE, &mi);
+	
 	bHandled = FALSE;
 	client->connect(server);
 	return 1;
@@ -67,9 +108,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.11 2001/12/16 19:47:48 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.12 2001/12/21 23:52:30 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.12  2001/12/21 23:52:30  arnetheduck
+ * Last commit for five days
+ *
  * Revision 1.11  2001/12/16 19:47:48  arnetheduck
  * Reworked downloading and user handling some, and changed some small UI things
  *
