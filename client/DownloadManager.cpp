@@ -451,6 +451,11 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 
 		d->setFile(file);
 
+
+		if(SETTING(BUFFER_SIZE) > 0 ) {
+			d->setFile(new BufferedOutputStream<true>(d->getFile()));
+		}
+
 		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
 
 		if(sfvcheck) {
@@ -458,10 +463,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize, bool
 			Download::CrcOS* crc = new Download::CrcOS(d->getFile());
 			d->setCrcCalc(crc);
 			d->setFile(crc);
-		}
-
-		if(SETTING(BUFFER_SIZE) > 0 ) {
-			d->setFile(new BufferedOutputStream<true>(d->getFile()));
 		}
 
 		/** @todo something when resuming... */
@@ -613,7 +614,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 				return;
 		}
 
-		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST))) {
+		if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST)) && !d->isSet(Download::FLAG_TREE_DOWNLOAD)) {
 			logDownload(aSource, d);
 		}
 
@@ -876,5 +877,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.142 2005/01/14 19:55:42 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.143 2005/01/16 00:26:46 arnetheduck Exp $
  */
