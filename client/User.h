@@ -47,7 +47,8 @@ public:
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 
-	static Ptr nuser;
+	User(const string& aNick) : nick(aNick), client(NULL), sharingLong(0) { };
+	~User() { };
 
 	void setClient(Client* aClient);
 	void connect();
@@ -60,9 +61,9 @@ public:
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp();
 	
-	LONGLONG getBytesShared() const { return sharingLong; };
+	int64_t getBytesShared() const { return sharingLong; };
 	const string& getBytesSharedString() const { return sharing; };
-	void setBytesShared(LONGLONG aSharing) { sharing = Util::toString(aSharing); sharingLong = aSharing; };
+	void setBytesShared(int64_t aSharing) { sharing = Util::toString(aSharing); sharingLong = aSharing; };
 	void setBytesShared(const string& aSharing) { sharing = aSharing; sharingLong = Util::toInt64(aSharing); };
 
 	bool isOnline() const { return isSet(ONLINE); };
@@ -70,9 +71,6 @@ public:
 	
 	static void updated(User::Ptr& aUser);
 	
-	User(const string& aNick) : sharingLong(0), client(NULL), nick(aNick) { };
-	~User() { };
-
 	GETSETREF(string, connection, Connection);
 	GETSETREF(string, nick, Nick);
 	GETSETREF(string, email, Email);
@@ -84,7 +82,7 @@ private:
 	
 	Client* client;
 	string sharing;
-	LONGLONG sharingLong;		// Cache this...requested very frequently...
+	int64_t sharingLong;		// Cache this...requested very frequently...
 	
 };
 
@@ -92,9 +90,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.15 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: User.h,v 1.16 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.16  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.15  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

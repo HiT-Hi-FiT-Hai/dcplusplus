@@ -16,22 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "File.h"
 
 /**
  * @file File.cpp
- * $Id: File.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
- * @if LOG
- * $Log: File.cpp,v $
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * @endif
+ * $Id: File.cpp,v 1.3 2002/04/09 18:43:27 arnetheduck Exp $
  */
 

@@ -24,6 +24,12 @@
 #endif // _MSC_VER > 1000
 
 #include "Util.h"
+#include "Thread.h"
+#include "Semaphore.h"
+
+#ifndef WIN32
+#include <sys/time.h>
+#endif
 
 class TimerManagerListener {
 public:
@@ -35,41 +41,55 @@ public:
 		MINUTE
 	};
 	
-	virtual void onAction(Types, DWORD) { };
+	virtual void onAction(Types, u_int32_t) { };
 };
 
-class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>
+class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
 {
 public:
-	static DWORD getTick() { return GetTickCount(); };
-	void start() { startTicker(); };
+	u_int32_t getTick() { 
+#ifdef WIN32
+		return GetTickCount(); 
+#else
+		timeval tv2;
+		gettimeofday(&tv2, NULL);
+		return (u_int32_t)((tv2.tv_sec - tv.tv_sec) * 1000 ) + ( (tv2.tv_usec - tv.tv_usec) / 1000);
+#endif
+	};
 private:
 
-	HANDLE stopEvent;
-	HANDLE readerThread;
+	Semaphore s;
 
 	friend class Singleton<TimerManager>;
-	TimerManager() : stopEvent(NULL), readerThread(NULL) { 
-			
+	TimerManager() { 
+#ifndef WIN32
+		gettimeofday(&tv, NULL);
+#endif
 	};
 	
 	virtual ~TimerManager() {
-		stopTicker();
+		s.signal();
+		join();
 	};
 	
-	void startTicker();
-	void stopTicker();
-	static DWORD WINAPI ticker(void* p);
-
+	virtual int run();
+	
+#ifndef WIN32
+	timeval tv;
+#endif
 };
 
+#define GET_TICK() TimerManager::getInstance()->getTick()
 #endif // !defined(AFX_TIMERMANAGER_H__2172C2AD_D4FD_4B46_A1B2_7959D7359CCD__INCLUDED_)
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.10 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.11 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.11  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.10  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

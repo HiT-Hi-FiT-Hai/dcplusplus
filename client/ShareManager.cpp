@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "ShareManager.h"
@@ -482,9 +482,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.31 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.32 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.32  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.31  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

@@ -101,12 +101,11 @@ public:
 
 class SimpleXML;
 
-class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>, private TimerManagerListener
+class HubManager : public Speaker<HubManagerListener>, private HttpConnectionListener, public Singleton<HubManager>, 
+	private TimerManagerListener, private SettingsManagerListener
 {
 public:
 	
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
 	void refresh();
 	
 	void getFavoriteHubs() {
@@ -192,9 +191,11 @@ private:
 	
 	HubManager() : running(false), c(NULL), lastServer(0) {
 		TimerManager::getInstance()->addListener(this);
+		SettingsManager::getInstance()->addListener(this);
 	}
 
 	~HubManager() {
+		SettingsManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
@@ -259,15 +260,29 @@ private:
 				refresh();
 		}
 	}
+
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+		switch(type) {
+		case SettingsManagerListener::LOAD: load(xml); break;
+		case SettingsManagerListener::SAVE: save(xml); break;
+		}
+	}
+	
+	void load(SimpleXML* aXml);
+	void save(SimpleXML* aXml);
+	
 };
 
 #endif // !defined(AFX_HUBMANAGER_H__75858D5D_F12F_40D0_B127_5DDED226C098__INCLUDED_)
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.26 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.27 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.27  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.26  2002/04/03 23:20:35  arnetheduck
  * ...
  *

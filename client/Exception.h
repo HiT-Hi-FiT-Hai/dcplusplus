@@ -23,7 +23,7 @@ class Exception
 {
 public:
 	Exception(const string& aError = "") : error(aError) { if(error.size()>0) dcdebug("Thrown: %s\n", error.c_str()); };
-
+	virtual ~Exception() { };
 	virtual const string& getError() const { return error; };
 protected:
 	string error;
@@ -35,6 +35,7 @@ protected:
 public:\
 	name(const Exception& e, const string& aError) : Exception(#name ": " + aError + ":" + e.getError()) { }; \
 	name(const string& aError) : Exception(#name ": " + aError) { }; \
+	virtual ~name() { }; \
 }
 
 #else // _DEBUG
@@ -43,6 +44,7 @@ public:\
 public:\
 	name(const Exception& e, const string& aError) : Exception(aError + ":" + e.getError()) { }; \
 	name(const string& aError) : Exception(aError) { }; \
+	virtual ~name() { }; \
 }
 #endif
 
@@ -50,9 +52,12 @@ public:\
 
 /**
  * @file Exception.h
- * $Id: Exception.h,v 1.5 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Exception.h,v 1.6 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: Exception.h,v $
+ * Revision 1.6  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.5  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

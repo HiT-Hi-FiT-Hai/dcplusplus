@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W4 /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "WIN32" /D "WIN32_LEAN_AND_MEAN" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /D "_REENTRANT" /FAs /Yu"stdafx.h" /Gs256 /FD /GF /c
+# ADD CPP /nologo /G6 /Gr /MD /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_REENTRANT" /FAs /Yu"stdafx.h" /Gs256 /FD /GF /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.15 /subsystem:windows /profile /map /debug /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib Release/client/client.lib /nologo /version:0.15 /subsystem:windows /profile /map /debug /machine:I386 /out:"App/DCPlusPlus.exe"
 
 !ELSEIF  "$(CFG)" == "DCPlusPlus - Win32 Debug"
 
@@ -69,17 +69,17 @@ LINK32=xilink6.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /G6 /Gr /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /D "_REENTRANT" /Yu"stdafx.h" /FD /GZ /Zm200 /c
+# ADD CPP /nologo /G6 /Gr /MDd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_REENTRANT" /Yu"stdafx.h" /FD /GZ /Zm200 /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
-# ADD RSC /l 0x41d /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib /nologo /subsystem:windows /debug /machine:I386
+# ADD LINK32 comctl32.lib Ws2_32.lib wininet.lib mswsock.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Debug/client/client.lib /nologo /subsystem:windows /debug /machine:I386 /out:"App/DCPlusPlus.exe"
 # SUBTRACT LINK32 /profile /map
 
 !ENDIF 
@@ -88,491 +88,6 @@ LINK32=xilink6.exe
 
 # Name "DCPlusPlus - Win32 Release"
 # Name "DCPlusPlus - Win32 Debug"
-# Begin Group "Source Files"
-
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
-# Begin Source File
-
-SOURCE=.\client\Advanced2Page.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\AdvancedPage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\AppearancePage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BitInputStream.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BitOutputStream.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BufferedSocket.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Client.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ClientManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ConnectionManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\CriticalSection.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\CryptoManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DCPlusPlus.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\DCPlusPlus.rc
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DirectoryListing.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DirectoryListingFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DownloadManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DownloadPage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Exception.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ExListViewCtrl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FavHubProperties.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FavoritesFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\File.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FlatTabCtrl.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\GeneralPage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HttpConnection.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HubFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HubManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\LogManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\MainFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\NotepadFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Pointer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PrivateFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PropertiesDlg.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PropPage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PublicHubsFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\QueueFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\QueueManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ResourceManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SearchFrm.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SearchManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Semaphore.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ServerSocket.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SettingsManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ShareManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SimpleXML.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Socket.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SpyFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\stdafx.cpp
-# ADD CPP /Yc"stdafx.h"
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\StringDefs.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\StringTokenizer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\TimerManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UploadManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UploadPage.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\User.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UserConnection.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UsersFrame.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Util.cpp
-# End Source File
-# End Group
-# Begin Group "Header Files"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl"
-# Begin Source File
-
-SOURCE=.\client\AboutDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Advanced2Page.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\AdvancedPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\AppearancePage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\AtlCmdBar2.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BitInputStream.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BitOutputStream.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BufferedSocket.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Client.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ClientManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\config.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ConnectionManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\CriticalSection.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\CryptoManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DCPlusPlus.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DirectoryListing.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DirectoryListingFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DownloadManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\DownloadPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Exception.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ExListViewCtrl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FavHubProperties.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FavoritesFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\File.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\FlatTabCtrl.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\GeneralPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HttpConnection.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HubFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\HubManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\LineDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\LogManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\MainFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\NotepadFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Pointer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PrivateFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PropertiesDlg.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PropPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\PublicHubsFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\QueueFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\QueueManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\resource.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ResourceManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SearchFrm.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SearchManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Semaphore.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ServerSocket.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SettingsManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\ShareManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SimpleXML.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Socket.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\SpyFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\stdafx.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\StringDefs.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\StringTokenizer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\TimerManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UploadManager.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UploadPage.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\User.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UserConnection.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\UsersFrame.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Util.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\version.h
-# End Source File
-# End Group
 # Begin Group "Resource Files"
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
@@ -591,6 +106,14 @@ SOURCE=.\client\res\DCPlusPlus.ico
 # Begin Source File
 
 SOURCE=.\res\DCPlusPlus.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\DCPlusPlus.Manifest
+# End Source File
+# Begin Source File
+
+SOURCE=.\DCPlusPlus.rc
 # End Source File
 # Begin Source File
 
@@ -651,6 +174,215 @@ SOURCE=.\res\User.ico
 # Begin Source File
 
 SOURCE=.\res\users.bmp
+# End Source File
+# End Group
+# Begin Group "Source Files"
+
+# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\windows\Advanced2Page.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\AdvancedPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\AppearancePage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\DirectoryListingFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\DownloadPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\ExListViewCtrl.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FavHubProperties.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FavoritesFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\GeneralPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\HubFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\main.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\MainFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\NotepadFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PrivateFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PropertiesDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PropPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PublicHubsFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\QueueFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\SearchFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\SpyFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\stdafx.cpp
+# ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\UploadPage.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\UsersFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\WinUtil.cpp
+# End Source File
+# End Group
+# Begin Group "Header Files"
+
+# PROP Default_Filter "h;hpp;hxx;hm;inl"
+# Begin Source File
+
+SOURCE=.\windows\AboutDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\Advanced2Page.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\AdvancedPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\AppearancePage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\DirectoryListingFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\DownloadPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\ExListViewCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FavHubProperties.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FavoritesFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FlatTabCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\GeneralPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\HubFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\LineDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\MainFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\NotepadFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PrivateFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PropertiesDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PropPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\PublicHubsFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\QueueFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\SearchFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\SpyFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\stdafx.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\UploadPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\UsersFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\WinUtil.h
 # End Source File
 # End Group
 # End Target

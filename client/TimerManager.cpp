@@ -16,61 +16,41 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "TimerManager.h"
 
-TimerManager* TimerManager::instance;
+TimerManager* TimerManager::instance = NULL;
 
-DWORD WINAPI TimerManager::ticker(void* p) {
-	TimerManager* t = (TimerManager*)p;
-
+int TimerManager::run() {
 	int nextMin = 0;
-	DWORD x = GetTickCount();
-	DWORD nextTick = x + 1000;
 
-	while(WaitForSingleObject(t->stopEvent, nextTick > x ? nextTick - x : 0) == WAIT_TIMEOUT) {
-		DWORD z = GetTickCount();
+	u_int32_t x = getTick();
+	u_int32_t nextTick = x + 1000;
+
+	while(!s.wait(nextTick > x ? nextTick - x : 0)) {
+		u_int32_t z = getTick();
 		nextTick = z + 1000;
-		t->fire(TimerManagerListener::SECOND, z);
+		fire(TimerManagerListener::SECOND, z);
 		if(nextMin++ >= 60) {
-			t->fire(TimerManagerListener::MINUTE, z);
+			fire(TimerManagerListener::MINUTE, z);
 			nextMin = 0;
 		}
-		x = GetTickCount();
+		x = getTick();
 	}
 
 	return 0;
 }
 
-void TimerManager::startTicker() {
-	DWORD threadId;
-	stopTicker();
-	
-	stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-	readerThread=CreateThread(NULL, 0, &ticker, this, 0, &threadId);
-}
-
-void TimerManager::stopTicker() {
-	if(readerThread != NULL) {
-		SetEvent(stopEvent);
-		
-		if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
-			MessageBox(NULL, _T("TimerManager: Unable to stop timer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-		}
-		CloseHandle(readerThread);
-		readerThread = NULL;
-		CloseHandle(stopEvent);
-		stopEvent = NULL;
-	}
-}
-
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.8 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.9 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.9  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.8  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

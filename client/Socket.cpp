@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "Socket.h"
@@ -70,9 +70,11 @@ string SocketException::errorToString(int aError) {
 	case ENOTCONN:
 		return "Not connected";
 	default:
-		char tmp[64];
-		sprintf(tmp, "Unknown error: 0x%x", aError);
-		return tmp;
+		{
+			char tmp[64];
+			sprintf(tmp, "Unknown error: 0x%x", aError);
+			return tmp;
+		}
 	}
 }
 
@@ -94,12 +96,12 @@ void Socket::bind(short aPort) throw (SocketException){
 	dcassert(type == TYPE_UDP);
 	dcassert(!isConnected());
 
-	SOCKADDR_IN sock_addr;
+	sockaddr_in sock_addr;
 		
 	sock_addr.sin_family = AF_INET;
 	sock_addr.sin_port = htons(aPort);
 	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    checksockerr(::bind(sock, (SOCKADDR *)&sock_addr, sizeof(sock_addr)));
+    checksockerr(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
 
 	connected = true;
 }
@@ -126,7 +128,7 @@ void Socket::connect(const string& ip, const string& port) throw(SocketException
 }
 
 void Socket::connect(const string& aip, short port) throw(SocketException) {
-	SOCKADDR_IN  serv_addr;
+	sockaddr_in  serv_addr;
 	hostent* host;
 
 	dcassert(!isConnected());
@@ -196,18 +198,30 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	int pos = 0;
 	int sendSize = min(aLen, 4096);
 
+	bool blockAgain = false;
+
 	while(pos < aLen) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
-				// First make sure we give some time to someone else so that we don't loop 100%...
-				Sleep(0);
+				if(blockAgain) {
+					// Uhm, two blocks in a row...try making the send window smaller...
+					if(sendSize > 32) {
+						sendSize /= 2;
+						dcdebug("Reducing send window size to %d\n", sendSize);
+					} else {
+						throw SocketException("Ran out of buffer space");
+					}
+					blockAgain = false;
+				} else {
+					blockAgain = true;
+				}
 
-				TIMEVAL t;
+				timeval t;
 
-				// 0.2 seconds...
-				t.tv_sec = 0;
-				t.tv_usec = 500*1000;
+				// 2 seconds...
+				t.tv_sec = 2;
+				t.tv_usec = 0;
 				fd_set wfd;
 				FD_ZERO(&wfd);
 				FD_SET(sock, &wfd);
@@ -229,7 +243,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 			stats.up += i;
 			stats.totalUp += i;
-			
+			blockAgain = false;
 		}
 	}
 }
@@ -237,9 +251,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.29 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.30 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.30  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.29  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

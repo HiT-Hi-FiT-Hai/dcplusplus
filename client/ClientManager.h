@@ -59,10 +59,10 @@ public:
 		return c;
 	}
 
-	LONGLONG getAvailable() {
+	int64_t getAvailable() {
 		Lock l(cs);
 		
-		LONGLONG c = 0;
+		int64_t c = 0;
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 			c+=(*i)->getAvailable();
 		}
@@ -80,7 +80,7 @@ public:
 		return false;
 	}
 	
-	void search(int aSizeMode, LONGLONG aSize, int aFileType, const string& aString) {
+	void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
 		Lock l(cs);
 
 		for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
@@ -185,22 +185,25 @@ private:
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
-	void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	void onAction(TimerManagerListener::Types type, u_int8_t aTick) {
 		if(type == TimerManagerListener::MINUTE) {
 			onTimerMinute(aTick);
 		}
 	}
 
-	void onTimerMinute(DWORD aTick);
+	void onTimerMinute(u_int8_t aTick);
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.21 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.22 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.22  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.21  2002/04/03 23:20:35  arnetheduck
  * ...
  *

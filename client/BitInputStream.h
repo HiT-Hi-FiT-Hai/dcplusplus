@@ -30,18 +30,18 @@
 class BitInputStream  
 {
 public:
-	BitInputStream(const BYTE* aStream, int aStart) : is(aStream), bitPos(aStart*8) { };
+	BitInputStream(const u_int8_t* aStream, int aStart) : bitPos(aStart*8), is(aStream) { };
 	~BitInputStream() { };
 	
 	bool get() {
-		bool ret = (((BYTE)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
+		bool ret = (((u_int8_t)is[bitPos>>3]) >> (bitPos&0x07)) & 0x01;
 		bitPos++;
 		return ret;
 	}
 	
 	void skipToByte() {
 		if(bitPos%8 != 0)
-			bitPos = ((bitPos>>3)+1)<<3;
+			bitPos = (bitPos & (~7)) + 8;
 	}
 	
 	void skip(int n) {
@@ -50,16 +50,19 @@ public:
 	}
 private:
 	int bitPos;
-	const BYTE* is;
+	const u_int8_t* is;
 };
 
 #endif // !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.6 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.7 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.h,v $
+ * Revision 1.7  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.6  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

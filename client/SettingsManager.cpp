@@ -16,14 +16,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 #include "SimpleXML.h"
 #include "SettingsManager.h"
 #include "ShareManager.h"
 #include "QueueManager.h"
 #include "HubManager.h"
-#include "NotepadFrame.h"
 #include "Util.h"
 
 SettingsManager* SettingsManager::instance = 0;
@@ -35,7 +34,7 @@ const string SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
-	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "SENTRY", 
+	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
@@ -91,9 +90,6 @@ SettingsManager::SettingsManager()
 	setDefault(STATUS_IN_CHAT, false);
 	setDefault(SHOW_JOINS, false);
 	
-	LOGFONT lf;
-	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	setDefault(TEXT_FONT, Util::encodeFont(lf));			
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -148,19 +144,11 @@ void SettingsManager::load(string const& aFileName)
 		xml.stepOut();
 	}
 	
-	xml.resetCurrentChild();
-	ShareManager::getInstance()->load(&xml);
-	xml.resetCurrentChild();
-	QueueManager::getInstance()->load(&xml);
-	xml.resetCurrentChild();
-	HubManager::getInstance()->load(&xml);
-	xml.resetCurrentChild();
-	NotepadFrame::load(&xml);
+	fire(SettingsManagerListener::LOAD, &xml);
 	xml.stepOut();
 }
 
-void SettingsManager::save(string const& aFileName) const
-{
+void SettingsManager::save(string const& aFileName) {
 	SimpleXML xml;
 	xml.addTag("DCPlusPlus");
 	xml.stepIn();
@@ -192,11 +180,8 @@ void SettingsManager::save(string const& aFileName) const
 	}
 	xml.stepOut();
 	
-	ShareManager::getInstance()->save(&xml);
-	QueueManager::getInstance()->save(&xml);
-	HubManager::getInstance()->save(&xml);
-	NotepadFrame::save(&xml);
-	
+	fire(SettingsManagerListener::SAVE, &xml);
+
 	try {
 		
 		File f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
@@ -212,9 +197,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.29 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.30 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.30  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.29  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

@@ -16,16 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "CriticalSection.h"
 
 /**
  * @file CriticalSection.cpp
- * $Id: CriticalSection.cpp,v 1.3 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: CriticalSection.cpp,v 1.4 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.cpp,v $
+ * Revision 1.4  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.3  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

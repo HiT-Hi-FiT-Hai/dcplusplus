@@ -23,18 +23,18 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "Thread.h"
+
 class CriticalSection  
 {
-	dcdrun(long counter;);
-
-	CRITICAL_SECTION cs;
+#ifdef WIN32
 public:
 	void enter() throw() {
 		EnterCriticalSection(&cs);
 		dcdrun(counter++);	
 	}
 	void leave() throw() {
-		dcdrun(dcassert(--counter >= 0););
+		dcassert(--counter >= 0);
 		LeaveCriticalSection(&cs);
 	}
 	CriticalSection() throw() {
@@ -42,10 +42,17 @@ public:
 		InitializeCriticalSection(&cs);
 	}
 	~CriticalSection() throw() {
-		dcdrun(dcassert(counter==0););
+		dcassert(counter==0);
 		DeleteCriticalSection(&cs);
 	}
-
+private:
+	dcdrun(long counter;);
+	CRITICAL_SECTION cs;
+#else
+public:
+	void enter() throw() { };
+	void leave() throw() { };
+#endif
 };
 
 class Lock {
@@ -58,67 +65,63 @@ public:
 
 class RWLock
 {
-	long readers;
-	CRITICAL_SECTION cs;
 public:
+	RWLock() throw() : readers(0) { }
+	~RWLock() throw() { dcassert(readers==0); }
+
 	void enterRead() throw() {
-		EnterCriticalSection(&cs);
+		Lock l(cs);
 		readers++;
 		dcassert(readers < 100);
-		LeaveCriticalSection(&cs);
 	}
+
 	void leaveRead() throw() {
-		readers--;
+		Thread::safeDec(&readers);
 		dcassert(readers >= 0);
 	}
 	void enterWrite() throw() {
-		dcdrun(int x=0);
-
-		EnterCriticalSection(&cs);
+		cs.enter();
 		while(readers > 0) {
-			LeaveCriticalSection(&cs);
-			dcassert(x++ < 1000);
-			Sleep(0);
+			cs.leave();
+			Thread::yield();
 			
-			EnterCriticalSection(&cs);
+			cs.enter();
 		}
 	}
 	void leaveWrite() {
-		LeaveCriticalSection(&cs);
+		cs.leave();
 	}
-
-	RWLock() throw() : readers(0) {
-		InitializeCriticalSection(&cs);
-	}
-	~RWLock() throw() {
-		dcassert(readers==0);
-		DeleteCriticalSection(&cs);
-	}
+private:
+	CriticalSection cs;
+	long readers;
 };
 
 class RLock {
-private:
-	RWLock& cs;
 public:
 	RLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterRead(); };
 	~RLock() throw() { cs.leaveRead(); };
+private:
+	RWLock& cs;
 };
 
 class WLock {
-private:
-	RWLock& cs;
 public:
 	WLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterWrite(); };
 	~WLock() throw() { cs.leaveWrite(); };
+private:
+	RWLock& cs;
 };
 
 #endif // !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.9 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.10 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.10  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.9  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

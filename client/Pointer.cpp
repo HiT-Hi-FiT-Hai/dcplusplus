@@ -16,16 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "Pointer.h"
 
 /**
  * @file Pointer.cpp
- * $Id: Pointer.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Pointer.cpp,v 1.3 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: Pointer.cpp,v $
+ * Revision 1.3  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.2  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

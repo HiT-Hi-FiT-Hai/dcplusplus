@@ -16,19 +16,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
+
+#include "ResourceManager.h"
 
 #include "BufferedSocket.h"
 #include "File.h"
 
-void BufferedSocket::accept(const ServerSocket& aSocket) {
-	if(isConnected()) {
-		Socket::disconnect();
+BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* = '\n' */, BufferedSocketListener* l /* = NULL */) throw(SocketException){
+	BufferedSocket* b = getSocket(sep);
+	if(l != NULL) {
+		b->addListener(l);
 	}
-	Socket::accept(aSocket);
 
-	dcdebug("Socket accepted\n");
+	try {
+		b->Socket::accept(aSocket);
+	} catch(...) {
+		putSocket(b);
+		throw;
+	}
+	return b;
 }
 
 /**
@@ -36,11 +44,11 @@ void BufferedSocket::accept(const ServerSocket& aSocket) {
  * @return True if everythings ok and the thread should continue reading, false on error
  */
 void BufferedSocket::threadSendFile() {
-	DWORD len;
+	u_int32_t len;
 	dcassert(file != NULL);
 	
 	if(!isConnected()) {
-		fire(BufferedSocketListener::FAILED, "Not connected");
+		fire(BufferedSocketListener::FAILED, STRING(NOT_CONNECTED));
 		return;
 	}
 
@@ -113,7 +121,7 @@ bool BufferedSocket::threadConnect() {
 		switch(WaitForMultipleObjects(2, h, FALSE, 20000)) {
 		case WAIT_TIMEOUT:
 			Socket::disconnect();
-			fire(BufferedSocketListener::FAILED, "Connection Timeout");
+			fire(BufferedSocketListener::FAILED, STRING(CONNECTION_TIMEOUT));
 			return false;
 		case WAIT_OBJECT_0:
 			// Signal the task again since we don't handle it here...
@@ -128,13 +136,13 @@ bool BufferedSocket::threadConnect() {
 				for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
 					if(*i != SHUTDOWN && *i != DISCONNECT && *i != CONNECT) {
 						// Should never happen...
-						dcdebug("Bad tasks in BufferedSocket in threadConnect 2, %d\n", *i);
-						dcassert(0);
+						dcdebug("BufferedSocket::threadConnect Bad task %d\n", *i);
+						dcassert("BufferedSocket::threadConnect Bad task\n" == NULL);
 					} 
 				}
 			}
 #endif
-			return 0x00;
+			return false;
 		case WAIT_OBJECT_0 + 1:
 			// We're connected!
 			setConnected();
@@ -143,7 +151,7 @@ bool BufferedSocket::threadConnect() {
 			SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
 			fire(BufferedSocketListener::CONNECTED);
 			return true;
-		default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
+		default: dcassert("BufferedSocket::threadConnect WaitForMultipleObjects failed" == NULL);
 		}
 	} catch(SocketException e) {
 		dcdebug("BufferedSocket::threadConnect caught: %s\n", e.getError().c_str());
@@ -162,7 +170,7 @@ void BufferedSocket::threadRead() {
 			// We grow the buffer according to how much is actually available...
 			delete[] inbuf;
 			inbufSize *= 2;
-			inbuf = new BYTE[inbufSize];
+			inbuf = new u_int8_t[inbufSize];
 			dcdebug("BufferedSocket::reader: Grown %p's buffer to %d\n", this, inbufSize);
 		}
 		int i = read(inbuf, inbufSize);
@@ -204,7 +212,7 @@ void BufferedSocket::threadRead() {
 					bufpos+=i;
 					i = 0;
 				} else {
-					int high = (int)min(dataBytes, (LONGLONG)i);
+					int high = (int)min(dataBytes, (int64_t)i);
 					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
 					bufpos += high;
 					i-=high;
@@ -234,7 +242,7 @@ void BufferedSocket::threadSendData() {
 		return;
 	
 	try {
-		BYTE* buf;
+		u_int8_t* buf;
 		int len;
 		{
 			Lock l(cs);
@@ -262,7 +270,7 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 			// Need to grow...
 			outbufSize[mybuf]*=2;
 			dcdebug("Growing outbuf[%d] to %d bytes\n", mybuf, outbufSize[mybuf]);
-			BYTE* tmp = new BYTE[outbufSize[mybuf]];
+			u_int8_t* tmp = new u_int8_t[outbufSize[mybuf]];
 			memcpy(tmp, outbuf[mybuf], outbufPos[mybuf]);
 			delete[] outbuf[mybuf];
 			outbuf[mybuf] = tmp;
@@ -307,7 +315,7 @@ void BufferedSocket::threadRun() {
 				case DISCONNECT:
 					{
 						Socket::disconnect(); 
-						fire(BufferedSocketListener::FAILED, "Disconnected");
+						fire(BufferedSocketListener::FAILED, STRING(DISCONNECTED));
 						
 						for(int k = 0; k < BUFFERS; k++) {
 							outbufPos[k] = 0;
@@ -333,9 +341,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.32 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.33 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.33  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.32  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

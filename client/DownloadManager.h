@@ -125,7 +125,7 @@ public:
 		int avg = 0;
 		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			Download* d = *i;
-			LONGLONG dif = (LONGLONG)(TimerManager::getTick() - d->getStart());
+			LONGLONG dif = (LONGLONG)(GET_TICK() - d->getStart());
 			if(dif > 0) {
 				avg += (int)(d->getTotal() * (LONGLONG)1000 / dif);
 			}
@@ -215,9 +215,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.39 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.40 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.40  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.39  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

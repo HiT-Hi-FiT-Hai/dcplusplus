@@ -79,7 +79,7 @@ public:
 	
 	void reserveSlot(const User::Ptr& aUser) {
 		Lock l(cs);
-		reservedSlots[aUser] = TimerManager::getTick();
+		reservedSlots[aUser] = GET_TICK();
 	}
 
 	void addConnection(UserConnection::Ptr conn) {
@@ -183,9 +183,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.41 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.42 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.42  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.41  2002/04/03 23:20:35  arnetheduck
  * ...
  *

@@ -40,7 +40,7 @@ template<typename Listener>
 class Speaker {
 public:
 
-	void fire(Listener::Types type) throw () {
+	void fire(typename Listener::Types type) throw() {
 		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
@@ -49,7 +49,7 @@ public:
 	};
 	
 	template<class T> 
-		void fire(Listener::Types type, const T& param) throw () {
+		void fire(typename Listener::Types type, const T& param) throw () {
 		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
@@ -58,7 +58,7 @@ public:
 	};
 	
 	template<class T, class T2> 
-		void fire(Listener::Types type, const T& p, const T2& p2) throw() {
+		void fire(typename Listener::Types type, const T& p, const T2& p2) throw() {
 		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
@@ -66,7 +66,7 @@ public:
 		}
 	};
 	template<class T, class T2, class T3> 
-		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
+		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
 		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
@@ -74,7 +74,7 @@ public:
 		}
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
-		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
+		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
 		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
@@ -134,49 +134,32 @@ class Util
 {
 public:
 	static string emptyString;
-	static HBRUSH bgBrush;
-	static COLORREF textColor;
-	static COLORREF bgColor;
-	static HFONT font;
-	static CMenu mainMenu;
-	
-	static void buildMenu();
-	static void decodeFont(const string& setting, LOGFONT &dest);
-
-	static string encodeFont(LOGFONT const& font)
-	{
-		string res(font.lfFaceName);
-		res += ',';
-		res += Util::toString(font.lfHeight);
-		res += ',';
-		res += Util::toString(font.lfWeight);
-		res += ',';
-		res += Util::toString(font.lfItalic);
-		return res;
-	}
-	
-	static bool browseFile(string& target, HWND owner = NULL, bool save = true);
-	static bool browseDirectory(string& target, HWND owner = NULL);
 			
 	static void ensureDirectory(const string& aFile)
 	{
+#ifdef WIN32
 		string::size_type start = 0;
 		
 		while( (start = aFile.find('\\', start)) != string::npos) {
 			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
 			start++;
 		}
+#endif
 	}
 	
 	static string getAppPath() {
+#ifdef WIN32
 		TCHAR buf[MAX_PATH+1];
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		int i = (strrchr(buf, '\\') - buf);
 		return string(buf, i + 1);
-		
+#else // WIN32
+		return emptyString;
+#endif // WIN32
 	}	
 
 	static string translateError(int aError) {
+#ifdef WIN32
 		LPVOID lpMsgBuf;
 		FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -193,6 +176,9 @@ public:
 		// Free the buffer.
 		LocalFree( lpMsgBuf );
 		return tmp;
+#else // WIN32
+		return emptyString;
+#endif // WIN32
 	}
 	
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
@@ -219,15 +205,15 @@ public:
 		return buf;
 	}
 	
-	static string formatBytes(LONGLONG aBytes) {
+	static string formatBytes(int64_t aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
-			sprintf(buf, "%I64d B", aBytes );
+			sprintf(buf, "%d B", (int)aBytes );
 		} else if(aBytes < 1024*1024) {
 			sprintf(buf, "%.02f kB", (double)aBytes/(1024.0) );
 		} else if(aBytes < 1024*1024*1024) {
 			sprintf(buf, "%.02f MB", (double)aBytes/(1024.0*1024.0) );
-		} else if(aBytes < 1024I64*1024I64*1024I64*1024I64) {
+		} else if(aBytes < (int64_t)1024*1024*1024*1024) {
 			sprintf(buf, "%.02f GB", (double)aBytes/(1024.0*1024.0*1024.0) );
 		} else {
 			sprintf(buf, "%.02f TB", (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
@@ -236,15 +222,15 @@ public:
 		return buf;
 	}
 
-	static string formatBytesFraction(LONGLONG part, LONGLONG aBytes) {
+	static string formatBytesFraction(int64_t part, int64_t aBytes) {
 		char buf[64];
 		if(aBytes < 1024) {
-			sprintf(buf, "%I64d/%I64d B", part, aBytes );
+			sprintf(buf, "%d/%d B", (int)part, (int)aBytes );
 		} else if(aBytes < 1024*1024) {
 			sprintf(buf, "%.02f/%.02f kB", (double)part/1024.0, (double)aBytes/(1024.0) );
 		} else if(aBytes < 1024*1024*1024) {
 			sprintf(buf, "%.02f/%.02f MB", (double)part/(1024.0*1024.0), (double)aBytes/(1024.0*1024.0) );
-		} else if(aBytes < 1024I64*1024I64*1024I64*1024I64) {
+		} else if(aBytes < (int64_t)1024*1024*1024*1024) {
 			sprintf(buf, "%.02f/%.02f GB", (double)part/(1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0) );
 		} else {
 			sprintf(buf, "%.02f/%.02f TB", (double)part/(1024.0*1024.0*1024.0*1024.0), (double)aBytes/(1024.0*1024.0*1024.0*1024.0));
@@ -253,9 +239,13 @@ public:
 		return buf;
 	}
 	
-	static string formatSeconds(LONGLONG aSec) {
+	static string formatSeconds(int64_t aSec) {
 		char buf[64];
-		sprintf(buf, "%01I64d:%02I64d:%02I64d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
+#ifdef WIN32
+		sprintf(buf, "%01I64d:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
+#else
+		sprintf(buf, "%01lld:%02d:%02d", aSec / (60*60), (int)((aSec / 60) % 60), (int)(aSec % 60));
+#endif		
 		return buf;
 	}
 
@@ -267,8 +257,12 @@ public:
 		return tmp;
 	}
 
-	static LONGLONG toInt64(const string& aString) {
+	static int64_t toInt64(const string& aString) {
+#ifdef WIN32
 		return _atoi64(aString.c_str());
+#else
+		return atoll(aString.c_str());
+#endif
 	}
 
 	static int toInt(const string& aString) {
@@ -283,14 +277,24 @@ public:
 		return (float)atof(aString.c_str());
 	}
 
-	static string toString(LONGLONG val) {
+	static string toString(int64_t val) {
 		char buf[32];
+#ifdef WIN32
 		return _i64toa(val, buf, 10);
+#else
+		sprintf(buf, "%lld", val);
+		return buf;
+#endif
 	}
 
 	static string toString(int val) {
 		char buf[16];
+#ifdef WIN32
 		return itoa(val, buf, 10);
+#else
+		sprintf(buf, "%d", val);
+		return buf;
+#endif
 	}
 
 	static string getLocalIp();
@@ -347,131 +351,12 @@ private:
 	static bool away;
 	static string awayMsg;
 	static const string defaultMsg;	
-
-	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.37 2002/04/03 23:20:35 arnetheduck Exp $
- * @if LOG
- * $Log: Util.h,v $
- * Revision 1.37  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.36  2002/03/25 22:23:25  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.35  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.34  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.33  2002/03/07 20:17:15  arnetheduck
- * Oops...
- *
- * Revision 1.32  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.31  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.30  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.29  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.28  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.27  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.26  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.25  2002/02/01 02:00:48  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.24  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.23  2002/01/26 12:06:40  arnetheduck
- * Småsaker
- *
- * Revision 1.22  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.21  2002/01/22 00:10:38  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.20  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.19  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.18  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * Revision 1.17  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.16  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.15  2002/01/11 16:13:33  arnetheduck
- * Fixed some locks and bugs, added type field to the search frame
- *
- * Revision 1.14  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.13  2002/01/09 19:01:35  arnetheduck
- * Made some small changed to the key generation and search frame...
- *
- * Revision 1.12  2002/01/07 23:05:48  arnetheduck
- * Resume rollback implemented
- *
- * Revision 1.11  2002/01/06 11:13:07  arnetheduck
- * Last fixes before 0.10
- *
- * Revision 1.10  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.8  2002/01/02 16:12:33  arnetheduck
- * Added code for multiple download sources
- *
- * Revision 1.7  2001/12/30 15:03:45  arnetheduck
- * Added framework to handle incoming searches
- *
- * Revision 1.6  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.5  2001/12/19 23:07:59  arnetheduck
- * Added directory downloading from the directory tree (although it hasn't been
- * tested at all) and password support.
- *
- * Revision 1.4  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.3  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.2  2001/12/07 20:03:33  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.1  2001/12/02 11:18:10  arnetheduck
- * Added transfer totals and speed...
- *
- * @endif
+ * $Id: Util.h,v 1.38 2002/04/09 18:43:28 arnetheduck Exp $
  */
 

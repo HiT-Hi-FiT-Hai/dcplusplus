@@ -32,9 +32,9 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult() : size(0), slots(0), freeSlots(0) { };
-	SearchResult(const SearchResult& rhs) : user(rhs.user), file(rhs.file), 
-		hubName(rhs.hubName), hubAddress(rhs.hubAddress), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots) { };
+	SearchResult() : slots(0), freeSlots(0), size(0) { };
+	SearchResult(const SearchResult& rhs) : slots(rhs.slots), freeSlots(rhs.freeSlots), size(rhs.size), 
+		file(rhs.file), hubName(rhs.hubName), hubAddress(rhs.hubAddress), user(rhs.user) { };
 
 	string getFileName() { 
 		string::size_type i;
@@ -49,28 +49,21 @@ public:
 	User::Ptr& getUser() { return user; };
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	
-	LONGLONG getSize() { return size; };
-	void setSize(LONGLONG aSize) { size = aSize; };
-	void setSize(const string& aSize) { size = Util::toInt64(aSize); };
-	
-	int getSlots() { return slots; };
-	int getFreeSlots() { return freeSlots; };
-	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
-	void setSlots(int aSlots) { slots = aSlots; };
+	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 	void setSlots(const string& aSlots) { setSlots(Util::toInt(aSlots)); };
-	
-	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
 	void setFreeSlots(const string& aSlots) { setFreeSlots(Util::toInt(aSlots)); };
 	
+	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
+	
+	GETSET(int, slots, Slots);
+	GETSET(int, freeSlots, FreeSlots);
+	GETSET(int64_t, size, Size);
 	GETSETREF(string, file, File);
 	GETSETREF(string, hubName, HubName);
 	GETSETREF(string, hubAddress, HubAddress);
 
 private:
 	User::Ptr user;	
-	LONGLONG size;
-	int slots;
-	int freeSlots;
 };
 
 class SearchManagerListener {
@@ -104,7 +97,7 @@ public:
 		TYPE_FOLDER
 	};
 	
-	void search(const string& aName, LONGLONG aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
+	void search(const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
 	void search(const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
 		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
@@ -120,44 +113,45 @@ public:
 		return tmp;
 	}
 	void setPort(short aPort) throw(SocketException) {
-		socket.disconnect();
-		socket.create(Socket::TYPE_UDP);
-		socket.bind(aPort);
+		if(!socket) {
+			socket = BufferedSocket::getSocket('|');
+		}
+		socket->disconnect();
+		socket->create(Socket::TYPE_UDP);
+		socket->bind(aPort);
 	}
 
 	void onSearchResult(const string& aLine) {
-		onData((const BYTE*)aLine.data(), aLine.length());
+		onData((const u_int8_t*)aLine.data(), aLine.length());
 	}
 	
 private:
 	
-	BufferedSocket socket;
+	BufferedSocket* socket;
 	short port;
 
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket('|') { 
-		try {
-			socket.addListener(this);
-		} catch(Exception e) {
-			// Not good...
-			dcdebug("SearchManager::SearchManager caught %s\n", e.getError().c_str());
-		}
+	SearchManager() : socket(NULL) { 
 	};
 	// We won't be copying it anyway...
 	SearchManager(const SearchManager&) { dcassert(0); };
 
 	virtual ~SearchManager() { 
-		socket.removeListener(this);
+		if(socket) {
+			socket->removeListener(this);
+			BufferedSocket::putSocket(socket);
+		}
+
 	};
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type, const BYTE* aBuf, int aLen) {
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
 		if(type == BufferedSocketListener::DATA) {
 			onData(aBuf, aLen);
 		}
 	}
-	void onData(const BYTE* buf, int aLen);
+	void onData(const u_int8_t* buf, int aLen);
 
 };
 
@@ -165,9 +159,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.17 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.18 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.18  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.17  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

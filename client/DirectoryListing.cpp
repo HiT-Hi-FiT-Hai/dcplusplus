@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "DirectoryListing.h"
@@ -65,9 +65,12 @@ string DirectoryListing::getPath(Directory* d) {
 
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.7 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.8 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.8  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.7  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

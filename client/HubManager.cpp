@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "HubManager.h"
@@ -36,8 +36,8 @@ void HubManager::onHttpFinished() throw() {
 		i = 0;
 		
 		while( (i < downloadBuf.size()) && ((j=downloadBuf.find("\r\n", i)) != string::npos)) {
-			i = j + 2;
 			StringTokenizer tok(downloadBuf.substr(i, j-i), '|');
+			i = j + 2;
 			if(tok.getTokens().size() < 4)
 				continue;
 
@@ -133,9 +133,12 @@ void HubManager::refresh() {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.21 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.21  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.20  2002/04/03 23:20:35  arnetheduck
  * ...
  *

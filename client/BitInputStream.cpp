@@ -16,16 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "BitInputStream.h"
 
 /**
  * @file BitInputStream.cpp
- * $Id: BitInputStream.cpp,v 1.2 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: BitInputStream.cpp,v 1.3 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.cpp,v $
+ * Revision 1.3  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.2  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

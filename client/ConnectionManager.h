@@ -29,23 +29,25 @@
 #include "CriticalSection.h"
 #include "TimerManager.h"
 #include "Util.h"
+#include "Thread.h"
 
 class ConnectionQueueItem {
 public:
 	typedef ConnectionQueueItem* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
-	typedef map<Ptr, DWORD> TimeMap;
+	typedef map<Ptr, u_int32_t> TimeMap;
 	typedef TimeMap::iterator TimeIter;
 	typedef map<UserConnection*, Ptr> QueueMap;
 	typedef QueueMap::iterator QueueIter;
 
 	enum Status {
 		CONNECTING,
+		IDLE,
 		WAITING
 	};
 
-	ConnectionQueueItem(const User::Ptr& aUser) : connection(NULL), user(aUser), status(CONNECTING) { };
+	ConnectionQueueItem(const User::Ptr& aUser) : status(CONNECTING), connection(NULL), user(aUser)  { };
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	User::Ptr& getUser() { return user; };
@@ -73,21 +75,25 @@ public:
 	virtual void onAction(Types, ConnectionQueueItem*, const string&) { };
 };
 
-
 class ConnectionManager : public Speaker<ConnectionManagerListener>, public UserConnectionListener, ServerSocketListener, TimerManagerListener, public Singleton<ConnectionManager>
 {
 public:
 
 	ConnectionQueueItem* getQueueItem(UserConnection* aConn) {
-		if(connections.find(aConn) != connections.end()) {
-			return connections[aConn];
-		}
-		dcassert(0);
-		return NULL;
+		dcassert(connections.find(aConn) != connections.end());
+		return connections[aConn];
 	}
+
+	void connect(const string& aServer, short aPort, const string& aNick);
+
+	void getDownloadConnection(const User::Ptr& aUser);
+	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
+	void putUploadConnection(UserConnection* aSource) { putConnection(aSource); };
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
+	
 	void disconnectAll() {
+		socket.removeListener(this);
 		socket.disconnect();
 		Lock l(cs);
 		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
@@ -95,20 +101,12 @@ public:
 		}
 	}		
 	
-	void getDownloadConnection(const User::Ptr& aUser);
-	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
-	void putUploadConnection(UserConnection* aSource) {
-		putConnection(aSource);
-	}
-	void connect(const string& aServer, short aPort, const string& aNick);
-	
 	bool isConnected(const User::Ptr& aUser, bool downOnly = true) {
 		Lock l(cs);
 		for(ConnectionQueueItem::QueueIter i = connections.begin(); i != connections.end(); ++i) {
-			if(i->first->getUser() == aUser) {
-				if( !downOnly || i->first->isSet(UserConnection::FLAG_DOWNLOAD) ) {
-					return true;
-				}
+			if( (i->first->getUser() == aUser) && 
+				(!downOnly || i->first->isSet(UserConnection::FLAG_DOWNLOAD)) ) {
+				return true;
 			}
 		}
 		return false;
@@ -118,21 +116,19 @@ public:
 	 * Set this ConnectionManager to listen at a different port.
 	 */
 	void setPort(short aPort) throw(SocketException) {
-		socket.disconnect();
 		socket.waitForConnections(aPort);
 	}
 
 private:
 
-
 	/** Main critical section for the connection manager */
 	CriticalSection cs;
 
 	ConnectionQueueItem::TimeMap pendingDown;
-	UserConnection::List pendingDelete;
 	ConnectionQueueItem::List downPool;
 	ConnectionQueueItem::QueueMap connections;
 	ConnectionQueueItem::List pendingAdd;
+	UserConnection::List pendingDelete;
 	UserConnection::List userConnections;
 
 	ServerSocket socket;
@@ -143,28 +139,43 @@ private:
 		socket.addListener(this);
 	};
 	
-	~ConnectionManager() {
+	virtual ~ConnectionManager() {
+
+		socket.removeListener(this);
+		socket.disconnect();
+		TimerManager::getInstance()->removeListener(this);
+		
+		{
+			Lock l(cs);
+			for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+				(*j)->disconnect();
+			}
+		}
+		
 		while(true) {
 			{
 				Lock l(cs);
-				for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
-					delete *i;
-				}
-				pendingDelete.clear();
-
-				if(userConnections.empty()) {
+				if(userConnections.empty())
 					break;
-				}
-				for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-					(*j)->disconnect();
-				}
 			}
-			::Sleep(100);			
+			Thread::sleep(100);			
 		}
-
-		TimerManager::getInstance()->removeListener(this);
-		socket.removeListener(this);
 	}
+	
+	/**
+	 * Returns a connection, either from the pool or a brand new fresh one.
+	 */
+	UserConnection* getConnection() {
+		UserConnection* uc = new UserConnection();
+		uc->addListener(this);
+		{
+			Lock l(cs);
+			userConnections.push_back(uc);
+		}
+		return uc;
+	}
+	void putConnection(UserConnection* aConn);
+
 	// ServerSocketListener
 	virtual void onAction(ServerSocketListener::Types type) {
 		switch(type) {
@@ -207,38 +218,28 @@ private:
 	void onFailed(UserConnection* aSource, const string& aError) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		switch(type) {
 		case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
 		case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
 		}
 	}
 	
-	void onTimerSecond(DWORD aTick);
-	void onTimerMinute(DWORD aTick);
+	void onTimerSecond(u_int32_t aTick);
+	void onTimerMinute(u_int32_t aTick);
 
-	/**
-	 * Returns a connection, either from the pool or a brand new fresh one.
-	 */
-	UserConnection* getConnection() {
-		UserConnection* uc = new UserConnection();
-		uc->addListener(this);
-		{
-			Lock l(cs);
-			userConnections.push_back(uc);
-		}
-		return uc;
-	}
-	void putConnection(UserConnection* aConn);
 };
 
 #endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.32 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.33 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.33  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.32  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

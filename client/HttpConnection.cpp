@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "HttpConnection.h"
@@ -44,25 +44,30 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	if(port == 0)
 		port = 80;
 	
-	socket.connect(server, port);
+	if(!socket) {
+		socket = BufferedSocket::getSocket();
+		socket->addListener(this);
+	}
+	socket->connect(server, port);
 }
 
 void HttpConnection::onConnected() {
-	socket.write("GET " + file + " HTTP/1.1\r\n");
-	socket.write("User-Agent: DC++ v" VERSIONSTRING "\r\n");
-	socket.write("Host: " + server + "\r\n");
-	socket.write("Cache-Control: no-cache\r\n\r\n");
+	dcassert(socket);
+	socket->write("GET " + file + " HTTP/1.1\r\n");
+	socket->write("User-Agent: DC++ v" VERSIONSTRING "\r\n");
+	socket->write("Host: " + server + "\r\n");
+	socket->write("Cache-Control: no-cache\r\n\r\n");
 }
 
 void HttpConnection::onLine(const string& aLine) {
 	if(!ok) {
 		if(aLine.find("200") == string::npos) {
-			socket.disconnect();
-			fire(HttpConnectionListener::FAILED, this, "File Not Available");
+			socket->disconnect();
+			fire(HttpConnectionListener::FAILED, this, aLine);
 		}
 		ok = true;
 	} else if(aLine == "\x0d") {
-		socket.setDataMode(size);
+		socket->setDataMode(size);
 	} else if(aLine.find("Content-Length") != string::npos) {
 		size = Util::toInt(aLine.substr(16, aLine.length() - 17));
 	}
@@ -70,9 +75,12 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.8 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.9 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.9  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.8  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

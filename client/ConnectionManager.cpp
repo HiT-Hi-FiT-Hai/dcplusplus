@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "ConnectionManager.h"
@@ -28,6 +28,8 @@
 #include "ClientManager.h"
 #include "QueueManager.h"
 
+#include "ResourceManager.h"
+
 ConnectionManager* ConnectionManager::instance = NULL;
 
 /**
@@ -35,7 +37,7 @@ ConnectionManager* ConnectionManager::instance = NULL;
  * DownloadConnection::addConnection will be called as soon as the connection is ready
  * for downloading.
  * @param aUser The user to connect to.
- */
+*/
 void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	dcassert((bool)aUser);
 	ConnectionQueueItem* cqi = NULL;
@@ -45,7 +47,6 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		for(ConnectionQueueItem::Iter j = downPool.begin(); j != downPool.end(); ++j) {
 			if((*j)->getUser() == aUser) {
 				dcassert((*j)->getConnection());
-				(*j)->getConnection()->setStatus(UserConnection::BUSY);
 				
 				pendingAdd.push_back(*j);
 				downPool.erase(j);
@@ -80,13 +81,11 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 		aSource->addListener(this);
 		{
 			Lock l(cs);
-			dcassert(find(downPool.begin(), downPool.end(), aSource) == downPool.end());
-			dcassert(connections.find(aSource) != connections.end());
 			
 			ConnectionQueueItem::QueueIter i = connections.find(aSource);
-			aSource->setStatus(UserConnection::IDLE);
+			dcassert(i != connections.end());
 			downPool.push_back(i->second);
-			aSource->setLastActivity(TimerManager::getTick());
+			aSource->setLastActivity(GET_TICK());
 		}
 		dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
 		
@@ -102,14 +101,13 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 					i->second->setConnection(NULL);
 					i->second->setStatus(ConnectionQueueItem::WAITING);
 					dcassert(pendingDown.find(i->second) == pendingDown.end());
-					pendingDown[i->second] = TimerManager::getTick();
+					pendingDown[i->second] = GET_TICK();
 					connections.erase(i);
 				}
 
-				dcassert(find(pendingDelete.begin(), pendingDelete.end(), aSource) == pendingDelete.end());
 				dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
 				userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
-				pendingDelete.push_back(aSource);
+				delete aSource;
 				return;
 			}
 			
@@ -130,7 +128,6 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 			cqi = i->second;
 			connections.erase(i);
 		}
-		dcassert(find(pendingDelete.begin(), pendingDelete.end(), aConn) == pendingDelete.end());
 		dcassert(find(userConnections.begin(), userConnections.end(), aConn) != userConnections.end());
 		userConnections.erase(find(userConnections.begin(), userConnections.end(), aConn));
 		pendingDelete.push_back(aConn);
@@ -142,11 +139,11 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 }
 
 void ConnectionManager::onTimerSecond(DWORD aTick) {
-	UserConnection::List removed;
 	ConnectionQueueItem::List add;
 	ConnectionQueueItem::List remove;
 	ConnectionQueueItem::List failPassive;
 	ConnectionQueueItem::List connecting;
+
 	int attempts = 0;
 
 	{
@@ -154,7 +151,11 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 		add = pendingAdd;
 		pendingAdd.clear();
 
-		removed = pendingDelete;
+		{
+			for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
+				delete *i;
+			}
+		}
 		pendingDelete.clear();
 
 		ConnectionQueueItem::TimeIter i = pendingDown.begin();
@@ -178,36 +179,35 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 
 			if( ((i->second + 60*1000) < aTick) ) {
 
-				if(startDown && (attempts <= 3) ) {
-					// Nothing's happened for 60 seconds, try again...
-					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-						pendingDown.erase(i++);
-						remove.push_back(cqi);
-						continue;
-					}
-					i->second = aTick;
+				if(startDown) {
+					if( attempts <= 3 ) {
+						// Nothing's happened for 60 seconds, try again...
+						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+							pendingDown.erase(i++);
+							remove.push_back(cqi);
+							continue;
+						}
+						i->second = aTick;
 
-					if(cqi->getUser()->isSet(User::PASSIVE) && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
-						failPassive.push_back(cqi);
-					} else {
-						cqi->getUser()->connect();
-						connecting.push_back(cqi);
-						attempts++;
-						cqi->setStatus(ConnectionQueueItem::CONNECTING);
+						if(cqi->getUser()->isSet(User::PASSIVE) && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
+							failPassive.push_back(cqi);
+						} else {
+							cqi->getUser()->connect();
+							connecting.push_back(cqi);
+							attempts++;
+							cqi->setStatus(ConnectionQueueItem::CONNECTING);
+						}
 					}
+				} else {
+					fire(ConnectionManagerListener::FAILED, cqi, STRING(ALL_DOWNLOAD_SLOTS_TAKEN));
 				}
 			} else if(((i->second + 50*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
-				fire(ConnectionManagerListener::FAILED, cqi, "Connection Timeout");
+				fire(ConnectionManagerListener::FAILED, cqi, STRING(CONNECTION_TIMEOUT));
 				cqi->setStatus(ConnectionQueueItem::WAITING);
 			}
 
 			++i;
 		}
-	}
-
-	for(UserConnection::Iter j = removed.begin(); j != removed.end(); ++j) {
-		dcdebug("UserConnection %p deleted\n", *j);
-		delete *j;
 	}
 
 	for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
@@ -221,7 +221,7 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 		delete *l;
 	}
 	for(ConnectionQueueItem::Iter m = failPassive.begin(); m != failPassive.end(); ++m) {
-		fire(ConnectionManagerListener::FAILED, *m, "Can't connect to passive user while in passive mode");
+		fire(ConnectionManagerListener::FAILED, *m, STRING(CANT_CONNECT_IN_PASSIVE_MODE));
 	}
 	for(ConnectionQueueItem::Iter n = connecting.begin(); n != connecting.end(); ++n) {
 		fire(ConnectionManagerListener::STATUS_CHANGED, *n);
@@ -248,13 +248,25 @@ void ConnectionManager::onIncomingConnection() throw() {
 	try { 
 		uc->accept(socket);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
-		uc->setStatus(UserConnection::CONNECTING);
 		uc->setState(UserConnection::STATE_NICK);
-		
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
 	}
+}
+
+void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
+	UserConnection* c = getConnection();
+	c->setNick(aNick);
+	c->setState(UserConnection::STATE_CONNECT);
+	c->connect(aServer, aPort);
+}
+
+void ConnectionManager::onConnected(UserConnection* aSource) throw() {
+	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
+	aSource->myNick(aSource->getNick());
+	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+	aSource->setState(UserConnection::STATE_NICK);
 }
 
 /**
@@ -326,7 +338,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 		dcdebug("CM::onLock %p received lock twice, ignoring\n", aSource);
 		return;
 	}
-
+	
 	if( CryptoManager::getInstance()->isExtended(aLock) ) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
@@ -346,7 +358,6 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	}
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
-	aSource->setStatus(UserConnection::BUSY);
 	ConnectionQueueItem cqi = NULL;
 	{
 		Lock l(cs);
@@ -394,19 +405,12 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	}
 }
 
-void ConnectionManager::onConnected(UserConnection* aSource) throw() {
-	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
-	aSource->myNick(aSource->getNick());
-	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-	aSource->setState(UserConnection::STATE_NICK);
-}
-
-void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
-	UserConnection* c = getConnection();
-	c->setNick(aNick);
-	c->setStatus(UserConnection::CONNECTING);
-	c->setState(UserConnection::STATE_CONNECT);
-	c->connect(aServer, aPort);
+void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& /*num*/) throw() {
+	if(dir == "Upload") {
+		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
+	} else {
+		aSource->setFlag(UserConnection::FLAG_UPLOAD);
+	}
 }
 
 void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError*/) throw() {
@@ -432,17 +436,7 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 	}
 }
 
-void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& /*num*/) throw() {
-	if(dir == "Upload") {
-		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
-	} else {
-		dcassert(dir == "Download");
-		aSource->setFlag(UserConnection::FLAG_UPLOAD);
-	}
-}
-
 void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
-
 	bool found = false;
 	{
 		Lock l(cs);
@@ -472,5 +466,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.38 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.39 2002/04/09 18:43:27 arnetheduck Exp $
  */

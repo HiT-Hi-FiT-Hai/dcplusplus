@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "UploadManager.h"
@@ -106,7 +106,6 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	if(userlist)
 		u->setFlag(Upload::USER_LIST);
 
-	aSource->setStatus(UserConnection::BUSY);
 	dcassert(aSource->getUpload() == NULL);
 	aSource->setUpload(u);
 	uploads.push_back(u);
@@ -149,7 +148,7 @@ void UploadManager::onSend(UserConnection* aSource) {
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 
-	u->setStart(TimerManager::getTick());
+	u->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
 	aSource->transmitFile(u->getFile());
 	fire(UploadManagerListener::STARTING, u);
@@ -193,7 +192,6 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	}
 	
 	aSource->setUpload(NULL);
-	aSource->setStatus(UserConnection::IDLE);
 	aSource->setState(UserConnection::STATE_GET);
 
 	if(BOOLSETTING(LOG_UPLOADS)) {
@@ -260,9 +258,12 @@ void UploadManager::onTimerMinute(DWORD aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.22 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.23 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.23  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.22  2002/04/03 23:20:35  arnetheduck
  * ...
  *

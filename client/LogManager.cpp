@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "LogManager.h"
@@ -25,5 +25,5 @@ LogManager* LogManager::instance = NULL;
 
 /**
  * @file LogManager.cpp
- * $Id: LogManager.cpp,v 1.1 2002/04/03 23:21:08 arnetheduck Exp $
+ * $Id: LogManager.cpp,v 1.2 2002/04/09 18:43:27 arnetheduck Exp $
  */

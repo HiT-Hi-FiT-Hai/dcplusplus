@@ -2,13 +2,27 @@
 * Fixed the disk full crash
 * Fixed some minor memory handling issues
 * Fixed sorting in the search frame
-* Fixed window looks in winxp ugly mode (added manifest file)
+* Fixed window looks in winxp ugly mode (added manifest file kindly supplied by mike)
 * Added right-click menu to the tab control
 * Replaced the password dialog by a /-command in the main chat (to avoid problems with lost password dialog boxes)
 * Changed so that a second "/away" disables away mode (/back is still working)
 * File lists are now saved in a separate directory to avoid clutter in the main dc++ one...
 * Added option to send status messages to main chat
 * Added option to show joins/parts in main chat, and /showjoins command to toggle for the current hub
+* Upgraded to new WTL, which should fix a lot of minor UI bugs. This should also make it possible to compile the application in VC7.
+* Fixed a bug where multiple notepad frames were opened
+* Source code reorganization, all UI specific code moved to a separate directory (to ease code maintenance and future unix port)
+* Code cleanup, to be more compilant to the ISO C++ / C99 standard
+* First test compile with gcc (note; does not mean that I'm porting to linux...this is just for fun...lotsa' errors tho...)
+* Fixed a potential file corruption issue
+* Fixed a bug with write buffer size = 0
+* Fixed some random crashes
+* Fixed a bug where logs were not written if log directory was changed and DC++ not restarted
+* Some more guessing at the 100% cpu bug...the fact that I never get it doesn't make it easier...if someone could profile it...
+* Fixed some issues with changing nicks while being connected to hubs / users
+* Fixed some minor bugs in the incoming connection handling
+* Fixed some transfer window reporting issues (a few more details on connection progress now...)
+* Improved the search flood protection a bit
 
  -- 0.163 2002-04-04 --
 * More internationalization

@@ -25,14 +25,19 @@
 
 #include "Exception.h"
 
+#ifndef WIN32
+#include <sys/stat.h>
+#include <fcntl.h>
+#endif
+
 STANDARD_EXCEPTION(FileException);
 
 class File  
 {
 public:
 	enum {
-		READ = GENERIC_READ,
-		WRITE = GENERIC_WRITE
+		READ = 0x01,
+		WRITE = 0x02
 	};
 	
 	enum {
@@ -41,7 +46,10 @@ public:
 		TRUNCATE = 0x04
 	};
 
+#ifdef WIN32
 	File(const string& aFileName, int access = WRITE, int mode = OPEN) throw(FileException) {
+		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
+
 		int m = 0;
 		if(mode & OPEN) {
 			if(mode & CREATE) {
@@ -56,16 +64,18 @@ public:
 				throw FileException("Bad creation mode");
 			}
 		}
+		int a = 0;
+		if(access & READ)
+			a |= GENERIC_READ;
+		if(access & WRITE)
+			a |= GENERIC_WRITE;
 
-		h = ::CreateFile(aFileName.c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		h = ::CreateFile(aFileName.c_str(), a, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		
 		if(h == INVALID_HANDLE_VALUE) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
-	}
 
-	virtual ~File() {
-		close();
 	}
 
 	virtual void close() {
@@ -74,34 +84,39 @@ public:
 			h = INVALID_HANDLE_VALUE;
 		}
 	}
-	virtual LONGLONG getSize() {
+	
+	virtual int64_t getSize() {
 		DWORD x;
 		DWORD l = ::GetFileSize(h, &x);
-
-		return (LONGLONG)l | ((LONGLONG)x)<<32;
+		
+		if( (l == INVALID_FILE_SIZE) && (GetLastError() != NO_ERROR))
+			return -1;
+		
+		return (int64_t)l | ((int64_t)x)<<32;
 	}
 
-	virtual LONGLONG getPos() {
+	virtual int64_t getPos() {
 		LONG x = 0;
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
+		
+		return (int64_t)l | ((int64_t)x)<<32;
+	}		
 
-		return (LONGLONG)l | ((LONGLONG)x)<<32;
-	}
-
-	virtual void setPos(LONGLONG pos) {
+	virtual void setPos(int64_t pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_BEGIN);
-	}
-	virtual void setEndPos(LONGLONG pos) {
+	}		
+	virtual void setEndPos(int64_t pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_END);
-	}
-	virtual void movePos(LONGLONG pos) {
+	}		
+
+	virtual void movePos(int64_t pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 	}
-
-	virtual DWORD read(void* buf, DWORD len) throw(FileException) {
+	
+	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
 		DWORD x;
 		if(!::ReadFile(h, buf, len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
@@ -109,9 +124,116 @@ public:
 		return x;
 	}
 
-	virtual string read(DWORD len) throw(FileException) {
-		char* buf = new char[len];
+	virtual void write(const void* buf, u_int32_t len) throw(FileException) {
 		DWORD x;
+		if(!::WriteFile(h, buf, len, &x, NULL)) {
+			throw FileException(Util::translateError(GetLastError()));
+		}
+		if(x < len) {
+			throw FileException("Disk full?");
+		}
+	}
+
+	static void deleteFile(const string& aFileName) { ::DeleteFile(aFileName.c_str()); };
+	static void renameFile(const string& source, const string& target) { ::MoveFile(source.c_str(), target.c_str()); };
+
+	static int64_t getSize(const string& aFileName) {
+		WIN32_FIND_DATA fd;
+		HANDLE hFind;
+		
+		hFind = FindFirstFile(aFileName.c_str(), &fd);
+		
+		if (hFind == INVALID_HANDLE_VALUE) {
+			return -1;
+		} else {
+			FindClose(hFind);
+			return ((int64_t)fd.nFileSizeHigh << 32 | (int64_t)fd.nFileSizeLow);
+		}
+	}
+
+#else // WIN32
+	
+	File(const string& aFileName, int access = WRITE, int mode = OPEN) throw(FileException) {
+		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
+		
+		int m = 0;
+		if(access == READ)
+			m |= O_RDONLY;
+		else if(access == WRITE)
+			m |= O_WRONLY;
+		else
+			m |= O_RDWR;
+		
+		if(mode & CREATE) {
+			m |= O_CREAT;
+		}
+		if(mode & TRUNCATE) {
+			m |= O_TRUNC;
+		}
+		h = open(aFileName.c_str(), m);
+		if(h == -1)
+			throw FileException("Could not open file");
+	}		
+
+	virtual void close() {
+		if(h != -1) {
+			::close(h);
+			h = -1;
+		}
+	}
+
+	virtual int64_t getSize() {
+		struct stat s;
+		if(fstat(h, &s) == -1)
+			return -1;
+		
+		return (int64_t)s.st_size;
+	}
+
+	virtual int64_t getPos() {
+		return (int64_t) lseek(h, 0, SEEK_CUR);
+	}
+
+	virtual void setPos(int64_t pos) { lseek(h, (off_t)pos, SEEK_SET); };
+	virtual void setEndPos(int64_t pos) { lseek(h, (off_t)pos, SEEK_END); };
+	virtual void movePos(int64_t pos) { lseek(h, (off_t)pos, SEEK_CUR); };
+
+	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
+		ssize_t x = ::read(h, buf, (size_t)len);
+		if(x == -1)
+			throw("Read error");
+		return (u_int32_t)x;
+	}
+	
+	virtual void write(const void* buf, u_int32_t len) throw(FileException) {
+		ssize_t x;
+		x = ::write(h, buf, len);
+		if(x == -1)
+			throw FileException("Write error");
+		if(x < (ssize_t)len)
+			throw FileException("Disk full(?)");
+	}
+
+	static void deleteFile(const string& aFileName) { ::unlink(aFileName.c_str()); };
+	static void renameFile(const string& source, const string& target) { ::rename(source.c_str(), target.c_str()); };
+
+	static int64_t getSize(const string& aFileName) {
+		struct stat s;
+		if(stat(aFileName.c_str(), &s) == -1)
+			return -1;
+		
+		return s.st_size;
+	}
+	
+#endif // WIN32
+
+	virtual ~File() {
+		close();
+	}
+
+	virtual string read(u_int32_t len) throw(FileException) {
+		char* buf = new char[len];
+		u_int32_t x;
 		try {
 			x = read(buf, len);
 		} catch(...) {
@@ -125,149 +247,92 @@ public:
 
 	virtual string read() throw(FileException) {
 		setPos(0);
-		return read((DWORD)getSize());
+		return read((u_int32_t)getSize());
 	}
 
-	virtual DWORD write(const void* buf, DWORD len) throw(FileException) {
-		DWORD x;
-		if(!::WriteFile(h, buf, len, &x, NULL)) {
-			throw FileException(Util::translateError(GetLastError()));
-		}
-		if(x < len) {
-			throw FileException("Disk full?");
-		}
-		return x;
+	virtual void write(const string& aString) throw(FileException) {
+		write((void*)aString.data(), aString.size());
 	}
-
-	virtual DWORD write(const string& aString) throw(FileException) {
-		return write((void*)aString.data(), aString.size());
-	}
-	
-	static void deleteFile(const string& aFileName) {
-		::DeleteFile(aFileName.c_str());
-	}
-	static void renameFile(const string& source, const string& target) {
-		::MoveFile(source.c_str(), target.c_str());
-	}
-	
-	static LONGLONG getSize(const string& aFileName) {
-		WIN32_FIND_DATA fd;
-		HANDLE hFind;
 		
-		hFind = FindFirstFile(aFileName.c_str(), &fd);
-		
-		if (hFind == INVALID_HANDLE_VALUE) {
-			return -1;
-		} else {
-			FindClose(hFind);
-			return ((ULONGLONG)fd.nFileSizeHigh << 32 | (ULONGLONG)fd.nFileSizeLow);
-		}
-	}
 private:
+#ifdef WIN32
 	HANDLE h;
+#else
+	int h;
+#endif
 
 };
 
 class BufferedFile : public File {
 public:
-	BufferedFile(const string& aFileName, int access = WRITE, int mode = OPEN, DWORD bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : File(aFileName, access, mode), pos(0), size(bufSize*1024) {
-		buf = new BYTE[size];
+	BufferedFile(const string& aFileName, int access = WRITE, int mode = OPEN, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
+		File(aFileName, access, mode), pos(0), size(bufSize*1024) {
+		
+		buf = new u_int8_t[size];
 	}
 	
 	virtual ~BufferedFile() {
-
 		flush();
 		delete[] buf;
 	}
 
 	void flush() throw(FileException) {
+		dcassert(pos >= 0);
 		if(pos > 0) {
 			try {
-				File::write(buf, pos);
-			} catch(FileException) {
+				File::write(buf, (u_int32_t)pos);
+			} catch( ... ) {
 				pos = 0;
 				throw;
 			}
+			pos = 0;
 		}
-		pos = 0;
 	}
 
-	virtual DWORD write(const void* aBuf, DWORD len) throw(FileException) {
-		int pos2 = 0;
-		while(len) {
-			if(pos == 0 && len > size) {
-				len = 0;
-				File::write(aBuf, len);
-			} else {
-				int i = min(size-pos, len);
-				memcpy(buf+pos, ((char*)aBuf)+pos2, i);
-				pos += i;
-				pos2 += i;
-				dcassert(pos <= size);
-				len -= i;
+	virtual void write(const void* aBuf, u_int32_t len) throw(FileException) {
+		dcassert(pos >= 0);
 
-				if(pos == size)
-					flush();
-				
-			}
+		if( (size == 0) || ((pos == 0) && (len > (u_int32_t)size)) ) {
+			File::write(aBuf, len);
+			return;
 		}
-		return len;
+
+		u_int32_t pos2 = 0;
+		while(pos2 < len) {
+			size_t i = min((size_t)(size-pos), (size_t)(len - pos2));
+			
+			memcpy(buf+pos, ((char*)aBuf)+pos2, i);
+			pos += (int)i;
+			pos2 += (u_int32_t)i;
+			dcassert(pos <= size);
+			dcassert(pos2 <= len);
+
+			if(pos == size)
+				flush();
+		}
 	}
 
-	virtual DWORD write(const string& aStr) throw(FileException) {
-		return write(aStr.c_str(), aStr.size());
-	}
+	virtual void write(const string& aStr) throw(FileException) { write(aStr.c_str(), aStr.size()); };
 
 	virtual void close() { flush(); File::close(); };
-	virtual LONGLONG getSize() { flush(); return File::getSize(); };
-	virtual LONGLONG getPos() { flush(); return File::getPos(); };
-	virtual void setPos(LONGLONG pos) { flush(); File::setPos(pos); };	
-	virtual void movePos(LONGLONG pos) { flush(); File::movePos(pos); };
-	virtual DWORD read(void* aBuf, DWORD len) throw(FileException) { flush(); return File::read(aBuf, len); };
-	virtual string read(DWORD len) throw(FileException) { flush(); return File::read(len); };	
+	virtual int64_t getSize() { flush(); return File::getSize(); };
+	virtual int64_t getPos() { flush(); return File::getPos(); };
+	virtual void setPos(int64_t pos) { flush(); File::setPos(pos); };	
+	virtual void movePos(int64_t pos) { flush(); File::movePos(pos); };
+	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
+	virtual string read(int32_t len) throw(FileException) { flush(); return File::read(len); };	
 	virtual string read() throw(FileException) {  flush(); return File::read(); };
 	
 private:
-	BYTE* buf;
-	DWORD pos;
-	DWORD size;
+	u_int8_t* buf;
+	int pos;
+	int size;
 };
 
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file File.h
- * $Id: File.h,v 1.9 2002/04/07 16:08:14 arnetheduck Exp $
- * @if LOG
- * $Log: File.h,v $
- * Revision 1.9  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.8  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.7  2002/03/14 16:17:35  arnetheduck
- * Oops, file buffering bug
- *
- * Revision 1.6  2002/03/11 22:58:54  arnetheduck
- * A step towards internationalization
- *
- * Revision 1.5  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.4  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.3  2002/02/01 02:00:29  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * @endif
+ * $Id: File.h,v 1.10 2002/04/09 18:43:27 arnetheduck Exp $
  */
 

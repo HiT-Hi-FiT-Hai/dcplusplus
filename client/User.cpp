@@ -16,13 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "User.h"
 #include "Client.h"
-
-User::Ptr User::nuser = User::Ptr(NULL);
 
 void User::connect() {
 	RLock l(cs);
@@ -117,9 +115,12 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.11 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: User.cpp,v 1.12 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.12  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.11  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

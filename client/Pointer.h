@@ -28,16 +28,20 @@ class PointerBase
 public:
 	void inc() {
 		dcassert(ref>=0);
+#ifdef WIN32
 		InterlockedIncrement(&ref);
+#endif
 	}
 
 	void dec() {
 		dcassert(ref>0);
 		
-		if ( InterlockedDecrement(&ref) == 0 ) {
+#ifdef WIN32
+		if ( (InterlockedDecrement(&ref)) == 0 ) {
 			//dcdebug("Smart Object at 0x%08x deleted\n", this);
 			delete this;
 		}
+#endif
 	}
 	bool unique() {
 		return (ref == 1);
@@ -46,8 +50,7 @@ public:
 protected:
 	PointerBase() : ref(0) { };
 	
-	virtual ~PointerBase() = 0 
-	{
+	virtual ~PointerBase() {
 		dcassert(!ref);
 	}
 
@@ -162,9 +165,12 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.7 2002/02/28 00:10:47 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.8 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: Pointer.h,v $
+ * Revision 1.8  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.7  2002/02/28 00:10:47  arnetheduck
  * Some fixes to the new user model
  *

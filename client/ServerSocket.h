@@ -25,6 +25,8 @@
 
 #include "Util.h"
 #include "Socket.h"
+#include "Thread.h"
+#include "Semaphore.h"
 
 class ServerSocketListener {
 public:
@@ -37,30 +39,39 @@ public:
 	virtual void onAction(Types) { };
 };
 
-#include "Util.h"
-
-class ServerSocket : public Speaker<ServerSocketListener>  
+class ServerSocket : public Speaker<ServerSocketListener>, public Thread
 {
 public:
 	void waitForConnections(short aPort) throw(SocketException);
-
-	ServerSocket() : sock(INVALID_SOCKET), waiterEvent(NULL), waiterThread(NULL), sockEvent(NULL) {
+#ifdef WIN32
+	ServerSocket() : sock(INVALID_SOCKET), sockEvent(NULL) {
 	};
-	void disconnect() {
-		stopWaiter();
-		if(sock != INVALID_SOCKET) {
-			closesocket(sock);
-			sock = INVALID_SOCKET;
-		}
-		if(sockEvent != NULL) {
-			CloseHandle(sockEvent);
-			sockEvent = NULL;
-		}
-	}
+#else
+	ServerSocket() : sock(INVALID_SOCKET) { };
+#endif
+
 	virtual ~ServerSocket() {
 		disconnect();
 	}
 	
+	void disconnect() {
+		s.signal();
+		join();
+
+		if(sock != INVALID_SOCKET) {
+			closesocket(sock);
+			sock = INVALID_SOCKET;
+		}
+#ifdef WIN32
+		if(sockEvent != NULL) {
+			CloseHandle(sockEvent);
+			sockEvent = NULL;
+		}
+#endif
+
+	}
+
+#ifdef WIN32	
 	HANDLE getReadEvent() throw(SocketException) {
 		if(sockEvent == NULL) {
 			sockEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -71,28 +82,30 @@ public:
 		}
 		return sockEvent;
 	}
-	
+#endif
+
+	virtual int run();
 	SOCKET getSocket() const { return sock; }
 	
 private:
-	HANDLE sockEvent;
+	Semaphore s;
+
 	SOCKET sock;
-	HANDLE waiterEvent;
-	HANDLE waiterThread;
-
-	static DWORD WINAPI waiter(void* p);
-
-	void startWaiter();
-	void stopWaiter();
+#ifdef WIN32
+	HANDLE sockEvent;
+#endif
 };
 
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.13 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.13  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.12  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

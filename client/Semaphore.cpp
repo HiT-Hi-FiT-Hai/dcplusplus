@@ -16,16 +16,19 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "Semaphore.h"
 
 /**
  * @file Semaphore.cpp
- * $Id: Semaphore.cpp,v 1.1 2002/02/25 19:30:55 arnetheduck Exp $
+ * $Id: Semaphore.cpp,v 1.2 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: Semaphore.cpp,v $
+ * Revision 1.2  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.1  2002/02/25 19:30:55  arnetheduck
  * Semaphore class
  *

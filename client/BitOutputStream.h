@@ -29,13 +29,13 @@ public:
 	BitOutputStream(string& aStream) : is(aStream), bitPos(0), next(0) { };
 	~BitOutputStream() { };
 	
-	void put(vector<BYTE>& b) {
-		for(vector<BYTE>::iterator i = b.begin(); i != b.end(); ++i) {
+	void put(vector<u_int8_t>& b) {
+		for(vector<u_int8_t>::iterator i = b.begin(); i != b.end(); ++i) {
 			next |=  (*i) << bitPos++;
 			
 			if(bitPos > 7) {
 				bitPos-=8;
-				is.append(1, next);
+				is += next;
 				next = 0;
 			}
 			
@@ -45,24 +45,27 @@ public:
 	void skipToByte() {
 		if(bitPos > 0) {
 			bitPos = 0;
-			is.append(1, next);
+			is += next;
 			next = 0;
 		}
 	}
 	
 private:
-	BYTE next;
-	int bitPos;
 	string& is;
+	int bitPos;
+	u_int8_t next;
 };
 
 #endif // !defined(AFX_BITINPUTSTREAM_H__EAF695A9_6D5C_4791_88A2_3FA0D47697AF__INCLUDED_)
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.6 2002/01/20 22:54:45 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.7 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.h,v $
+ * Revision 1.7  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.6  2002/01/20 22:54:45  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

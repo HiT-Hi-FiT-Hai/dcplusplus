@@ -26,6 +26,7 @@
 #include "Socket.h"
 #include "Util.h"
 #include "Semaphore.h"
+#include "Thread.h"
 
 class File;
 
@@ -46,13 +47,13 @@ public:
 	};
 	
 	virtual void onAction(Types) { };
-	virtual void onAction(Types, DWORD) { };
+	virtual void onAction(Types, u_int32_t) { };
 	virtual void onAction(Types, const string&) { };
-	virtual void onAction(Types, const BYTE*, int) { };
+	virtual void onAction(Types, const u_int8_t*, int) { };
 	virtual void onAction(Types, int) { };
 };
 
-class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket  
+class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
 {
 public:
 
@@ -71,30 +72,21 @@ public:
 		BIND
 	};
 
-	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : inbufSize(4096), curBuf(0),
-		file(NULL), separator(aSeparator), workerThread(NULL), mode(MODE_LINE), dataBytes(0), port(0) {
-		
-		if( (workerThread = CreateThread(NULL, 0, &worker, this, 0, &threadId)) == NULL) {
-			throw SocketException(Util::translateError(GetLastError()));
-		}
-
-		inbuf = new BYTE[inbufSize];
-		for(int i = 0; i < BUFFERS; i++) {
-			outbuf[i] = new BYTE[inbufSize];
-			outbufPos[i] = 0;
-			outbufSize[i] = inbufSize;
-		}
+	/**
+	 * BufferedSocket factory
+	 * @param sep Line separator
+	 * @return An unconnected socket
+	 */
+	static BufferedSocket* getSocket(char sep = '\n') throw(SocketException) { 
+		return new BufferedSocket(sep); 
 	};
+	static BufferedSocket* accept(const ServerSocket& aSocket, char sep = '\n', BufferedSocketListener* l = NULL);
 	
-	virtual ~BufferedSocket() {
-		stopWorker();
-		
-		delete[] inbuf;
-		for(int i = 0; i < BUFFERS; i++) {
-			delete[] outbuf[i];
-		}
-	}
-	
+	static void putSocket(BufferedSocket* aSock) { 
+		aSock->removeListeners(); 
+		aSock->addTask(SHUTDOWN); 
+	};
+
 	virtual void disconnect() {
 		Lock l(cs);
 		addTask(DISCONNECT);
@@ -103,7 +95,7 @@ public:
 	/**
 	 * Sets data mode for aBytes bytes long. Must be called within an action method...
 	 */
-	void setDataMode(LONGLONG aBytes = -1) {
+	void setDataMode(int64_t aBytes = -1) {
 		mode = MODE_DATA;
 		dataBytes = aBytes;
 	}
@@ -117,7 +109,11 @@ public:
 		addTask(BIND);
 	}
 
-	virtual void connect(const string& aServer, short aPort) {
+	/**
+	 * Connect to aServer / aPort
+	 * Note; this one doesn't actually throw, but it overrides one that does...
+	 */
+	virtual void connect(const string& aServer, short aPort) throw(SocketException) {
 		Lock l(cs);
 		mode = MODE_LINE;
 		server = aServer;
@@ -125,7 +121,6 @@ public:
 		addTask(CONNECT);
 	}
 	
-	virtual void accept(const ServerSocket& aSocket);
 	virtual void write(const string& aData) throw() {
 		write(aData.data(), aData.length());
 	}
@@ -143,6 +138,37 @@ public:
 
 	GETSET(char, separator, Separator);
 private:
+	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
+		dataBytes(0), inbufSize(4096), curBuf(0), file(NULL) {
+		
+		inbuf = new u_int8_t[inbufSize];
+		
+		// MSVC: Non-standard scope for i
+		{
+			for(int i = 0; i < BUFFERS; i++) {
+				outbuf[i] = new u_int8_t[inbufSize];
+				outbufPos[i] = 0;
+				outbufSize[i] = inbufSize;
+			}
+		}
+		try {
+			start();
+		} catch(ThreadException e) {
+			delete[] inbuf;
+			for(int i = 0; i < BUFFERS; i++) {
+				delete[] outbuf[i];
+			}
+			throw SocketException(e.getError());
+		}
+	};
+	
+	virtual ~BufferedSocket() {
+		delete[] inbuf;
+		for(int i = 0; i < BUFFERS; i++) {
+			delete[] outbuf[i];
+		}
+	}
+
 	BufferedSocket(const BufferedSocket&) {
 		// Copy still not allowed
 	}
@@ -154,28 +180,25 @@ private:
 	string server;
 	short port;
 	int mode;
-	LONGLONG dataBytes;
+	int64_t dataBytes;
 	
 	string line;
-	BYTE* inbuf;
+	u_int8_t* inbuf;
 	int inbufSize;
 	enum {BUFFERS = 2};
-	BYTE* outbuf[BUFFERS];
+	u_int8_t* outbuf[BUFFERS];
 	int outbufSize[BUFFERS];
 	int outbufPos[BUFFERS];
 	int curBuf;
 	
 	File* file;
 
-	HANDLE workerThread;
-	DWORD threadId;
-
-	static DWORD WINAPI worker(void* p) {
-		BufferedSocket* bs = (BufferedSocket*)p;
-		bs->threadRun();
-		return 0;
-	}
+	// We don't want people accepting BufferedSockets this way...
+	virtual void accept(const ServerSocket& ) throw(SocketException) { };
 	
+	// From Thread
+	virtual int run() { threadRun(); return 0; };
+
 	void threadRun();
 	bool threadBind();
 	bool threadConnect();
@@ -193,41 +216,33 @@ private:
 		}
 	}
 
+	/**
+	 * Shut down the socket and delete itself...no variables must be referenced after
+	 * calling threadShutDown, the thread function should exit as soon as possible
+	 */
 	void threadShutDown() {
 		fire(BufferedSocketListener::FAILED, "Closing connection...");
 		removeListeners();
 		Socket::disconnect();
+		delete this;
 	}
 	
 	void addTask(Tasks task) {
 		tasks.push_back(task);
 		taskSem.signal();
 	}
-
-	void stopWorker() {
-		Socket::disconnect();
-		{
-			Lock l(cs);
-			addTask(SHUTDOWN);
-		}
-
-		if(WaitForSingleObject(workerThread, 30000) == WAIT_TIMEOUT) {
-			dcassert("BufferedSocket::stopWorker: Waiting for thread failed!" == NULL);
-		}
-
-		CloseHandle(workerThread);
-		workerThread = NULL;
-	}
-	
 };
 
 #endif // !defined(AFX_BUFFEREDSOCKET_H__0760BAF6_91F5_481F_BFF7_7CA192EE44CC__INCLUDED_)
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.33 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.34 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.34  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.33  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

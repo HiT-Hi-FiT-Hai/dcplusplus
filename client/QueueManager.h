@@ -208,7 +208,8 @@ public:
 };
 class ConnectionQueueItem;
 
-class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, private SearchManagerListener
+class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
+	private SearchManagerListener, private SettingsManagerListener
 {
 public:
 	
@@ -221,7 +222,7 @@ public:
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
-		string file = Util::getAppPath() + "FileLists\" + aUser->getNick() + ".DcLst";
+		string file = Util::getAppPath() + "FileLists\\" + aUser->getNick() + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false);
 		userLists.push_back(file);
 	}
@@ -267,21 +268,20 @@ public:
 
 	void importNMQueue(const string& aFile) throw(FileException);
 	
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
-	
 	GETSET(bool, dirty, Dirty);
 private:
 
 	friend class Singleton<QueueManager>;
 	
 	QueueManager() : dirty(false) { 
+		SettingsManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this); 
 		SearchManager::getInstance()->addListener(this);
-		Util::ensureDirectory(Util::getAppPath() + "FileLists\")
+		Util::ensureDirectory(Util::getAppPath() + "FileLists\\");
 	};
 	
 	virtual ~QueueManager() { 
+		SettingsManager::getInstance()->removeListener(this);
 		SearchManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this); 
 
@@ -321,15 +321,29 @@ private:
 	
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types, SearchResult*);
+
+	// SettingsManagerListener
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+		switch(type) {
+		case SettingsManagerListener::LOAD: load(xml); break;
+		case SettingsManagerListener::SAVE: save(xml); break;
+		}
+	}
+	
+	void load(SimpleXML* aXml);
+	void save(SimpleXML* aXml);
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.14 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.15 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.15  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.14  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

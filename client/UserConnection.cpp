@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "UserConnection.h"
@@ -31,7 +31,8 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 	string cmd;
 	string param;
-	int x;
+
+	string::size_type x;
 	
 	if( (x = aLine.find(' ')) == string::npos) {
 		cmd = aLine;
@@ -43,8 +44,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 	if(aLine.length() == 0) {
 		// Do nothing
 	} else if(cmd == "$MyNick") {
-		string nick = aLine.substr(8);
-		fire(UserConnectionListener::MY_NICK, this, nick);
+		fire(UserConnectionListener::MY_NICK, this, param);
 	} else if(cmd == "$Direction") {
 		x = param.find(" ");
 		if(x != string::npos) {
@@ -59,7 +59,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 	} else if(cmd == "$Get") {
 		x = param.find('$');
 		if(x != string::npos) {
-			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - 1I64);
+			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
 	} else if(cmd == "$Key") {
 		fire(UserConnectionListener::KEY, this, param);
@@ -68,13 +68,14 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
 		} else {
-			// Workaround for faulty linux hubs...
-			x = param.find(" ");
-			if(x != string::npos)
-				fire(UserConnectionListener::LOCK, this, param.substr(0, x), "");
-			else
-				fire(UserConnectionListener::LOCK, this, param, "");
-			
+			// Workaround for faulty linux clients...
+			x = param.find(' ');
+			if(x != string::npos) {
+				setFlag(FLAG_INVALIDKEY);
+				fire(UserConnectionListener::LOCK, this, param.substr(0, x), Util::emptyString);
+			} else {
+				fire(UserConnectionListener::LOCK, this, param, Util::emptyString);
+			}
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
@@ -87,9 +88,12 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.16 2002/03/26 09:17:59 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.17 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.17  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.16  2002/03/26 09:17:59  arnetheduck
  * New UsersFrame
  *

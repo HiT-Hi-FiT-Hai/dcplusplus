@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "SearchManager.h"
@@ -24,11 +24,11 @@
 
 SearchManager* SearchManager::instance = NULL;
 
-void SearchManager::search(const string& aName, LONGLONG aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
+void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
 	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
 }
 
-void SearchManager::onData(const BYTE* buf, int aLen) {
+void SearchManager::onData(const u_int8_t* buf, int aLen) {
 	string x((char*)buf, aLen);
 	if(x.find("$SR") != string::npos) {
 		SearchResult sr;
@@ -82,9 +82,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.17 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.18 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.18  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.17  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

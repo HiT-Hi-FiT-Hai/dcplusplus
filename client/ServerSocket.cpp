@@ -16,20 +16,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
-#include "Socket.h"
 #include "ServerSocket.h"
 
-#define MAX_CONNECTIONS 10
+#define MAX_CONNECTIONS 20
 
 void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
-	if(sock)
-		closesocket(sock);
+	if(sock != INVALID_SOCKET) {
+		s.signal();
+		join();
+	}
 
-	SOCKADDR_IN tcpaddr;
-    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	sockaddr_in tcpaddr;
+    checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	
 	tcpaddr.sin_family = AF_INET;
 	tcpaddr.sin_port = htons(aPort);
@@ -38,57 +39,36 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	checksockerr(bind(sock, (SOCKADDR *)&tcpaddr, sizeof(tcpaddr)));
 	checksockerr(listen(sock, MAX_CONNECTIONS));
 	
-	startWaiter();
+	start();
 }
 
-DWORD WINAPI ServerSocket::waiter(void* p) {
-	ServerSocket* s = (ServerSocket*) p;
-	
+int ServerSocket::run() {
 	HANDLE wait[2];
-	wait[0] = s->waiterEvent;
-	wait[1] = s->getReadEvent();
+	wait[0] = s;
+	wait[1] = getReadEvent();
 	dcdebug("Waiting for incoming connections...\n");
 	while(WaitForMultipleObjects(2, wait, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
 		// Make an extra check that there really is something to accept...
 		fd_set fd;
 		FD_ZERO(&fd);
-		FD_SET(s->sock, &fd);
+		FD_SET(sock, &fd);
 		TIMEVAL t = { 0, 0 };
 		select(1, &fd, NULL, NULL, &t);
-		if(FD_ISSET(s->sock, &fd))
-			s->fire(ServerSocketListener::INCOMING_CONNECTION);
+		if(FD_ISSET(sock, &fd))
+			fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
 	return 0;
 }
 
-void ServerSocket::startWaiter() {
-	DWORD threadId;
-	stopWaiter();
-	
-	waiterEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-	waiterThread=CreateThread(NULL, 0, &waiter, this, 0, &threadId);
-}
-
-void ServerSocket::stopWaiter() {
-	if(waiterThread != NULL) {
-		SetEvent(waiterEvent);
-		
-		if(WaitForSingleObject(waiterThread, 3000) == WAIT_TIMEOUT) {
-			MessageBox(NULL, _T("Unable to stop waiter thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-		}
-		CloseHandle(waiterThread);
-		waiterThread = NULL;
-		CloseHandle(waiterEvent);
-		waiterEvent = NULL;
-	}
-}
-
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.7 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.8 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.cpp,v $
+ * Revision 1.8  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.7  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

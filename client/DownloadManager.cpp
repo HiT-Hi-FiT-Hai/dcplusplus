@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "DownloadManager.h"
@@ -161,7 +161,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		removeDownload(d, true);
 		removeConnection(aSource);
 	} else {
-		d->setStart(TimerManager::getTick());
+		d->setStart(GET_TICK());
 		aSource->setState(UserConnection::STATE_DONE);
 		
 		fire(DownloadManagerListener::STARTING, d);
@@ -292,9 +292,12 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.54 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.55 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.55  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.54  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

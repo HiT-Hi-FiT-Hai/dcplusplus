@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "ClientManager.h"
@@ -165,46 +165,47 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 	dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
 
 	UserPair p = users.equal_range(aNick);
-	
+	UserIter i;
+
 	// Check for a user already online
-	for(UserIter i = p.first; i != p.second; ++i) {
+	for(i = p.first; i != p.second; ++i) {
 		if(i->second->isClient(aClient)) {
 			return i->second;
 		}
 	}
 
 	// Check for an offline user that was on that hub that we can put online again
-	for(UserIter j = p.first; j != p.second; ++j) {
-		if( (!j->second->isOnline()) && (j->second->getLastHubIp() == aClient->getIp()) ) {
+	for(i = p.first; i != p.second; ++i) {
+		if( (!i->second->isOnline()) && (i->second->getLastHubIp() == aClient->getIp()) ) {
 			if(putOnline) {
-				j->second->setClient(aClient);
-				fire(ClientManagerListener::USER_UPDATED, j->second);
+				i->second->setClient(aClient);
+				fire(ClientManagerListener::USER_UPDATED, i->second);
 			}
-			return j->second;
+			return i->second;
 		}
 	}
 
-	// Check for any offline user that we can put online again
-	for(UserIter m = p.first; m != p.second; ++m) {
-		if(!m->second->isOnline()) {
+	// Check for an offline user that was not on another hub
+	for(i = p.first; i != p.second; ++i) {
+		if( (!i->second->isOnline()) && i->second->getLastHubIp().empty() ) {
 			if(putOnline) {
-				m->second->setClient(aClient);
-				fire(ClientManagerListener::USER_UPDATED, m->second);
+				i->second->setClient(aClient);
+				fire(ClientManagerListener::USER_UPDATED, i->second);
 			}
-			return m->second;
+			return i->second;
 		}
 	}
 	
 	// Create a new user
-	UserIter k = users.insert(make_pair(aNick, new User(aNick)));
+	i = users.insert(make_pair(aNick, new User(aNick)));
 	if(putOnline) {
-		k->second->setClient(aClient);
-		fire(ClientManagerListener::USER_UPDATED, k->second);
+		i->second->setClient(aClient);
+		fire(ClientManagerListener::USER_UPDATED, i->second);
 	}
-	return k->second;
+	return i->second;
 }
 
-void ClientManager::onTimerMinute(DWORD aTick) {
+void ClientManager::onTimerMinute(u_int8_t aTick) {
 	if(minutes++ >= 5) {
 		minutes = 0;
 		Lock l(cs);
@@ -227,9 +228,12 @@ void ClientManager::onTimerMinute(DWORD aTick) {
 }
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.16 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.17 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.17  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.16  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

@@ -33,12 +33,10 @@ STANDARD_EXCEPTION(ShareException);
 class SimpleXML;
 class Client;
 
-class ShareManager : public Singleton<ShareManager>
+class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener
 {
 public:
 	StringList getDirectories();
-	void load(SimpleXML* aXml);	
-	void save(SimpleXML* aXml);
 	void addDirectory(const string& aDirectory) throw(ShareException);
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
@@ -96,7 +94,9 @@ private:
 		typedef HASH_MAP<string, LONGLONG> FileMap;
 		typedef FileMap::iterator FileIter;
 
-		Directory(const string& aName = "", Directory* aParent = NULL) : name(aName), parent(aParent), size(0) { };
+		Directory(const string& aName = "", Directory* aParent = NULL) : name(aName), parent(aParent), size(0) { 
+		};
+
 		~Directory() {
 			for(MapIter i = directories.begin(); i!= directories.end(); ++i) {
 				delete i->second;
@@ -140,10 +140,12 @@ private:
 		
 	friend class Singleton<ShareManager>;
 	ShareManager() : update(false), refreshDirs(false), listLen(0), dirty(false), refreshThread(NULL) { 
-		
+		SettingsManager::getInstance()->addListener(this);
 	};
 	
 	virtual ~ShareManager() {
+		SettingsManager::getInstance()->removeListener(this);
+		
 		if(refreshThread) {
 			WaitForSingleObject(refreshThread, INFINITE);
 			CloseHandle(refreshThread);
@@ -153,8 +155,6 @@ private:
 			delete i->second;
 		}
 	}
-	
-	Directory* buildTree(const string& aName, Directory* aParent);
 	
 	LONGLONG listLen;
 	bool dirty;
@@ -166,21 +166,37 @@ private:
 	RWLock cs;
 	HANDLE refreshThread;
 
-	bool checkFile(const string& aDir, const string& aFile);
-
-	static DWORD WINAPI refresher(void* p);
 	Directory::Map directories;
 	StringMap dirs;
+	
+	bool checkFile(const string& aDir, const string& aFile);
+	Directory* buildTree(const string& aName, Directory* aParent);
+	
+	static DWORD WINAPI refresher(void* p);
 
+	// SettingsManagerListener
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+		switch(type) {
+		case SettingsManagerListener::LOAD: load(xml); break;
+		case SettingsManagerListener::SAVE: save(xml); break;
+		}
+	}
+	
+	void load(SimpleXML* aXml);
+	void save(SimpleXML* aXml);
+	
 };
 
 #endif // !defined(AFX_SHAREMANAGER_H__6CD5D87C_D13F_46E2_8C1E_5F116107C118__INCLUDED_)
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.22 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.23 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.23  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.22  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

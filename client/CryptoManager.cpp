@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "BitInputStream.h"
@@ -27,7 +27,7 @@
 CryptoManager* CryptoManager::instance;
 
 string CryptoManager::keySubst(string aKey, int n) {
-	BYTE* temp = new BYTE[aKey.length() + n * 10];
+	u_int8_t* temp = new u_int8_t[aKey.length() + n * 10];
 	
 	int j=0;
 	
@@ -54,23 +54,23 @@ string CryptoManager::keySubst(string aKey, int n) {
 }
 
 string CryptoManager::makeKey(const string& lock) {
-	BYTE* temp = new BYTE[lock.length()];
-	BYTE v1;
+	u_int8_t* temp = new u_int8_t[lock.length()];
+	u_int8_t v1;
 	int extra=0;
 	
-	v1 = (BYTE)(lock[0]^5);
-	v1 = (BYTE)((v1 >> 4) | (v1 << 4));
+	v1 = (u_int8_t)(lock[0]^5);
+	v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
 	temp[0] = v1;
 	
 	for(string::size_type i = 1; i<lock.length(); i++) {
-		v1 = (BYTE)(lock[i]^lock[i-1]);
-		v1 = (BYTE)((v1 >> 4) | (v1 << 4));
+		v1 = (u_int8_t)(lock[i]^lock[i-1]);
+		v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
 		temp[i] = v1;
 		if(isExtra(temp[i]))
 			extra++;
 	}
 	
-	temp[0] = (BYTE)(temp[0] ^ temp[lock.length()-1]);
+	temp[0] = (u_int8_t)(temp[0] ^ temp[lock.length()-1]);
 	
 	if(isExtra(temp[0])) {
 		extra++;
@@ -81,7 +81,7 @@ string CryptoManager::makeKey(const string& lock) {
 	return keySubst(tmp, extra);
 }
 
-void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
+void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
 //	BitInputStream bis;
 	int pos = 0;
 
@@ -151,7 +151,7 @@ void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
 				return;
 			}
 		}
-		buf[pos++] = (BYTE)node->chr;
+		buf[pos++] = (u_int8_t)node->chr;
 	}
 	buf[pos] = 0;
 	os.assign(buf, size);
@@ -169,9 +169,9 @@ void CryptoManager::decodeHuffman(const BYTE* is, string& os) {
  * Counts the occurances of each characters, and adds the total number of
  * different characters to the end of the array.
  */
-int CryptoManager::countChars(const string& aString, int* c, BYTE& csum) {
+int CryptoManager::countChars(const string& aString, int* c, u_int8_t& csum) {
 	int chars = 0;
-	const BYTE* a = (const BYTE*)aString.data();
+	const u_int8_t* a = (const u_int8_t*)aString.data();
 	string::size_type len = aString.length();
 	for(string::size_type i=0; i<len; i++) {
 
@@ -209,14 +209,14 @@ void CryptoManager::walkTree(list<Node*>& aTree) {
 /**
  * @todo Make more effective in terms of memory allocations and copies...
  */
-void CryptoManager::recurseLookup(vector<BYTE>* table, Node* node, vector<BYTE>& bytes) {
+void CryptoManager::recurseLookup(vector<u_int8_t>* table, Node* node, vector<u_int8_t>& u_int8_ts) {
 	if(node->chr != -1) {
-		table[node->chr] = bytes;
+		table[node->chr] = u_int8_ts;
 		return;
 	}
 
-	vector<BYTE> left = bytes;
-	vector<BYTE> right = bytes;
+	vector<u_int8_t> left = u_int8_ts;
+	vector<u_int8_t> right = u_int8_ts;
 	
 	left.push_back(0);
 	right.push_back(1);
@@ -227,11 +227,11 @@ void CryptoManager::recurseLookup(vector<BYTE>* table, Node* node, vector<BYTE>&
 
 /**
  * Builds a table over the characters available (for fast lookup).
- * Stores each character as a set of bytes with values {0, 1}.
+ * Stores each character as a set of u_int8_ts with values {0, 1}.
  */
-void CryptoManager::buildLookup(vector<BYTE>* table, Node* aRoot) {
-	vector<BYTE> left;
-	vector<BYTE> right;
+void CryptoManager::buildLookup(vector<u_int8_t>* table, Node* aRoot) {
+	vector<u_int8_t> left;
+	vector<u_int8_t> right;
 
 	left.push_back(0);
 	right.push_back(1);
@@ -261,7 +261,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		return;
 	}
 	// First, we count all characters
-	BYTE csum = 0;
+	u_int8_t csum = 0;
 	int count[256];
 	memset(count, 0, sizeof(count));
 	int chars = countChars(is, count, csum);
@@ -286,7 +286,7 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	dcassert(nodes.size() == 1);
 
 	Node* root = nodes.front();
-	vector<BYTE> lookup[256];
+	vector<u_int8_t> lookup[256];
 	
 	// Build a lookup table for fast character lookups
 	buildLookup(lookup, root);
@@ -308,8 +308,8 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	// The characters and their bitlengths
 	for(i=0; i<256; i++) {
 		if(count[i] > 0) {
-			os.append(1, (BYTE)i);
-			os.append(1, (BYTE)lookup[i].size());
+			os.append(1, (u_int8_t)i);
+			os.append(1, (u_int8_t)lookup[i].size());
 		}
 	}
 	
@@ -321,21 +321,24 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 		}
 	}
 	
-	dcdebug("\nBytes: %d", os.size());
+	dcdebug("\nu_int8_ts: %d", os.size());
 	bos.skipToByte();
 
 	for(string::size_type j=0; j<is.size(); j++) {
-		dcassert(lookup[(BYTE)is[j]].size() != 0);
-		bos.put(lookup[(BYTE)is[j]]);
+		dcassert(lookup[(u_int8_t)is[j]].size() != 0);
+		bos.put(lookup[(u_int8_t)is[j]]);
 	}
 	bos.skipToByte();
 }
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.21 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.21  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.20  2002/04/03 23:20:35  arnetheduck
  * ...
  *

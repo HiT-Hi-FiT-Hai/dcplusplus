@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "QueueManager.h"
@@ -56,7 +56,7 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 						
 						if(!online) {
 							if(search.find(q->getTarget()) == search.end()) {
-								search[q->getTarget()] = TimerManager::getTick();
+								search[q->getTarget()] = GET_TICK();
 							}
 						}
 					}
@@ -65,7 +65,7 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 		}
 		
 		for(SearchMap::iterator k = search.begin(); k != search.end();) {
-			if( (k->second + 3*60*1000) < TimerManager::getTick() ) {
+			if( (k->second + 3*60*1000) < GET_TICK() ) {
 				QueueItem* q = findByTarget(k->first);
 				if(q != NULL) {
 					bool online = false;
@@ -445,9 +445,12 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.16 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.17 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.17  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.16  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

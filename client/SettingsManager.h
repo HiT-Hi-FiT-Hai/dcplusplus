@@ -19,12 +19,25 @@
 #if !defined(SETTINGSMANAGER_H)
 #define SETTINGSMANAGER_H
 
-#include "stdafx.h"
 #include "Util.h"
 
 class SimpleXML;
 
-class SettingsManager : public Singleton<SettingsManager>
+class SettingsManagerListener {
+public:
+	typedef SettingsManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+	enum Types {
+		LOAD,
+		SAVE
+	};
+	
+	virtual void onAction(Types, SimpleXML*) { };
+};
+
+class SettingsManager : public Singleton<SettingsManager>, public Speaker<SettingsManagerListener>
 {
 public:
 
@@ -35,7 +48,7 @@ public:
 		CLIENTVERSION, TEXT_FONT, MAINFRAME_ORDER, MAINFRAME_WIDTHS, HUBFRAME_ORDER, HUBFRAME_WIDTHS, 
 		LANGUAGE_FILE, SEARCHFRAME_ORDER, SEARCHFRAME_WIDTHS, FAVORITESFRAME_ORDER, FAVORITESFRAME_WIDTHS, 
 		HUBLIST_SERVERS, QUEUEFRAME_ORDER, QUEUEFRAME_WIDTHS, PUBLICHUBSFRAME_ORDER, PUBLICHUBSFRAME_WIDTHS, 
-		USERSFRAME_ORDER, USERSFRAME_WIDTHS, HTTP_PROXY, LOG_DIRECTORY, STR_LAST };
+		USERSFRAME_ORDER, USERSFRAME_WIDTHS, HTTP_PROXY, LOG_DIRECTORY, NOTEPAD_TEXT, STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT, REMOVE_NOT_AVAILABLE, 
@@ -99,13 +112,12 @@ public:
 	void load() {
 		load(Util::getAppPath() + "DCPlusPlus.xml");
 	}
-	void oldLoad(SimpleXML* xml);
-	void save() const {
+	void save() {
 		save(Util::getAppPath() + "DCPlusPlus.xml");
 	}
 
 	void load(const string& aFileName);
-	void save(const string& aFileName) const;
+	void save(const string& aFileName);
 
 private:
 	friend class Singleton<SettingsManager>;
@@ -129,9 +141,12 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.25 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.26 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.26  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.25  2002/04/07 16:08:14  arnetheduck
  * Fixes and additions
  *

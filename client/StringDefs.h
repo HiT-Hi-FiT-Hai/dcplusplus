@@ -1,4 +1,4 @@
-// @Prolog: #include "stdafx.h"
+// @Prolog: #include "stdinc.h"
 // @Prolog: #include "DCPlusPlus.h"
 // @Prolog: #include "ResourceManager.h"
 // @Strings: string ResourceManager::strings[]
@@ -6,6 +6,7 @@
 
 enum Strings { // @DontAdd
 	ADD_TO_FAVORITES, // "Add To Favorites"
+	ALL_DOWNLOAD_SLOTS_TAKEN, // "All download slots taken"
 	ALL_USERS_OFFLINE, // "All %d users offline"
 	ANY, // "Any"
 	AT_LEAST, // "At least"
@@ -16,6 +17,7 @@ enum Strings { // @DontAdd
 	AWAY_MODE_ON, // "Away mode on: "
 	BOTH_USERS_OFFLINE, // "Both users offline"
 	BROWSE, // "Browse..."
+	CANT_CONNECT_IN_PASSIVE_MODE, // "Can't connect to passive user while in passive mode"
 	CLOSE_CONNECTION, // "Close connection"
 	CLOSE, // "Close"
 	COMPRESSED, // "Compressed"
@@ -25,8 +27,10 @@ enum Strings { // @DontAdd
 	CONNECTING_FORCED, // "Connecting (forced)..."
 	CONNECTING_TO, // "Connecting to "
 	CONNECTION, // "Connection"
+	CONNECTION_TIMEOUT, // "Connection timeout"
 	COUNT, // "Count"
 	DESCRIPTION, // "Description"
+	DISCONNECTED, // "Disconnected"
 	DOCUMENT, // "Document"
 	DONE, // "Done"
 	DOWNLOAD, // "Download"
@@ -104,6 +108,7 @@ enum Strings { // @DontAdd
 	NEW, // "New..."
 	NICK, // "Nick"
 	NICK_TAKEN, // "Your nick was already taken, please change to something else!"
+	NOT_CONNECTED, // "Not connected"
 	NO_SLOTS_AVAILABLE, // "No slots available"
 	NO_USERS_TO_DOWNLOAD, // "No users to download from"
 	NORMAL, // "Normal"

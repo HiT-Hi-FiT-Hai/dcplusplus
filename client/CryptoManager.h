@@ -25,8 +25,6 @@
 
 #include "Util.h"
 
-
-
 class Node {
 public:
 	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
@@ -35,14 +33,14 @@ public:
 //	typedef Node* Ptr;
 //	typedef list<Ptr> List;
 //	typedef List::iterator Iter;
+	int chr;
 	int weight;
 	
-	int chr;
 	Node* left;
 	Node* right;
 	
 	Node(int aChr, int aWeight) : chr(aChr), weight(aWeight), left(NULL), right(NULL) { };
-	Node(Node* aLeft, Node* aRight) : left(aLeft), right(aRight), weight(aLeft->weight + aRight->weight), chr(-1) { };
+	Node(Node* aLeft, Node* aRight) :  chr(-1), weight(aLeft->weight + aRight->weight), left(aLeft), right(aRight) { };
 	~Node() {
 		delete left;
 		delete right;
@@ -69,7 +67,7 @@ public:
 	const string& getPk() { return pk; };
 	bool isExtended(const string& aLock) { return aLock.find("EXTENDEDPROTOCOL") != string::npos; };
 
-	void decodeHuffman(const BYTE* is, string& os);
+	void decodeHuffman(const u_int8_t* is, string& os);
 	void encodeHuffman(const string& is, string& os);
 	
 private:
@@ -81,8 +79,8 @@ private:
 
 	class Leaf {
 	public:
-		int len;
 		int chr;
+		int len;
 		Leaf(int aChr, int aLen) : chr(aChr), len(aLen) { };
 		Leaf() : chr(-1), len(-1) { };
 	};
@@ -105,13 +103,13 @@ private:
 	const string lock;
 	const string pk;
 
-	int countChars(const string& aString, int* c, BYTE& csum);
+	int countChars(const string& aString, int* c, u_int8_t& csum);
 	void walkTree(list<Node*>& aTree);
-	void recurseLookup(vector<BYTE>* b, Node* node, vector<BYTE>& bytes);
-	void buildLookup(vector<BYTE>* b, Node* root);
+	void recurseLookup(vector<u_int8_t>* b, Node* node, vector<u_int8_t>& bytes);
+	void buildLookup(vector<u_int8_t>* b, Node* root);
 	
 	string keySubst(string aKey, int n);
-	boolean isExtra(BYTE b) {
+	bool isExtra(u_int8_t b) {
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
 	}
 	
@@ -122,9 +120,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.13 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.14 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.14  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.13  2002/04/03 23:20:35  arnetheduck
  * ...
  *

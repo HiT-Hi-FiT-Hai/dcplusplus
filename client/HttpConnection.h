@@ -48,8 +48,13 @@ class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionList
 {
 public:
 	void downloadFile(const string& aUrl);
-	HttpConnection() : ok(false), port(false), size(-1) { 	socket.addListener(this); };
-	virtual ~HttpConnection() { socket.removeListener(this); };
+	HttpConnection() : ok(false), port(false), size(-1), socket(NULL) { };
+	virtual ~HttpConnection() { 
+		if(socket) {
+			socket->removeListener(this); 
+			BufferedSocket::putSocket(socket);
+		}
+	}
 
 private:
 
@@ -58,10 +63,10 @@ private:
 	string file;
 	string server;
 	short port;
-	LONGLONG size;
+	int64_t size;
 	
 	bool ok;
-	BufferedSocket socket;
+	BufferedSocket* socket;
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type) {
@@ -81,7 +86,7 @@ private:
 	virtual void onAction(BufferedSocketListener::Types type, int /*mode*/) {
 		switch(type) {
 		case BufferedSocketListener::MODE_CHANGE:
-			fire(HttpConnectionListener::COMPLETE, this); socket.disconnect(); break;
+			fire(HttpConnectionListener::COMPLETE, this); socket->disconnect(); break;
 		default:
 			dcassert(0);
 		}
@@ -104,9 +109,12 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.8 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.h,v $
+ * Revision 1.8  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.7  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

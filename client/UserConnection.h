@@ -25,9 +25,9 @@
 
 #include "BufferedSocket.h"
 #include "CriticalSection.h"
+#include "File.h"
 #include "TimerManager.h"
 #include "User.h"
-#include "File.h"
 #include "Util.h"
 
 class UserConnection;
@@ -58,11 +58,11 @@ public:
 	};
 
 	virtual void onAction(Types, UserConnection*) { };
-	virtual void onAction(Types, UserConnection*, DWORD) { };
+	virtual void onAction(Types, UserConnection*, u_int32_t) { };
 	virtual void onAction(Types, UserConnection*, const string&) { };
-	virtual void onAction(Types, UserConnection*, const BYTE*, int) { };
+	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) { };
 	virtual void onAction(Types, UserConnection*, const string&, const string&) { };
-	virtual void onAction(Types, UserConnection*, const string&, LONGLONG) { };
+	virtual void onAction(Types, UserConnection*, const string&, int64_t) { };
 	virtual void onAction(Types, UserConnection*, int) { };
 };
 
@@ -72,60 +72,62 @@ class Transfer {
 public:
 	File* getFile() { return file; };
 	void setFile(File* aFile) { 
-		if(file) {
+		if(file != NULL) {
 			delete file;
 		}
 		file = aFile;
 	}
 
-	LONGLONG getPos() { return pos; };
-	void setPos(LONGLONG aPos) { pos = aPos; };
-	void setPos(LONGLONG aPos, bool aUpdate) { 
+	int64_t getPos() { return pos; };
+	void setPos(u_int64_t aPos) { pos = aPos; };
+	void setPos(u_int64_t aPos, bool aUpdate) { 
 		pos = aPos;
 		if(aUpdate) {
 			file->setPos(aPos);
 		}
 	};
-	void addPos(LONGLONG aPos) { pos += aPos; last+=aPos; total+=aPos; };
+	void addPos(u_int64_t aPos) { pos += aPos; last+=aPos; total+=aPos; };
 	
-	LONGLONG getTotal() { return total; };
+	int64_t getTotal() { return total; };
 	void resetTotal() { total = 0; };
 	
-	LONGLONG getSize() { return size; };
-	void setSize(LONGLONG aSize) { size = aSize; };
+	int64_t getSize() { return size; };
+	void setSize(u_int64_t aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 
-	LONGLONG getAverageSpeed() {
-		LONGLONG dif = (LONGLONG)(TimerManager::getTick() - getStart());
+	int64_t getAverageSpeed() {
+		int64_t dif = (int64_t)(GET_TICK() - getStart());
 		if(dif > 0) {
-			return (int) (getTotal() * (LONGLONG)1000 / dif);
+			return (int) (getTotal() * (int64_t)1000 / dif);
 		} else {
 			return 0;
 		}
 	}
 
-	LONGLONG getSecondsLeft() {
-		LONGLONG avg = getAverageSpeed();
+	int64_t getSecondsLeft() {
+		int64_t avg = getAverageSpeed();
 		if(avg > 0)
 			return (getSize() - getPos()) / avg;
 		else
 			return 0;
 	}
 
-	Transfer(ConnectionQueueItem* aQI) : cqi(aQI), total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
+	Transfer(ConnectionQueueItem* aQI) : cqi(aQI), start(0), last(0), total(0), 
+		file(NULL), pos(-1), size(-1) { };
 	~Transfer() { if(file) delete file; };
 
 	GETSET(ConnectionQueueItem*, cqi, CQI);
-	GETSET(DWORD, start, Start);
+	GETSET(u_int32_t, start, Start);
 private:
-	LONGLONG last;
-	LONGLONG total;
+	int64_t last;
+	int64_t total;
 	
 	File* file;
-	LONGLONG pos;
-	LONGLONG size;
+	int64_t pos;
+	int64_t size;
 
 };
+
 class ServerSocket;
 class Upload;
 class Download;
@@ -144,22 +146,18 @@ public:
 		MODE_DATA = BufferedSocket::MODE_DATA
 	};
 
-	enum Status {
-		CONNECTING,
-		BUSY,
-		IDLE
-	};
-
 	enum Flags {
 		FLAG_UPLOAD = 0x01,
 		FLAG_DOWNLOAD = FLAG_UPLOAD << 1,
 		FLAG_INCOMING = FLAG_DOWNLOAD << 1,
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
-		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1
+		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
+		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1
 	};
 	
 	enum States {
 		// ConnectionManager
+		STATE_UNCONNECTED,
 		STATE_CONNECT,
 		STATE_NICK,
 		STATE_LOCK,
@@ -176,47 +174,46 @@ public:
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
 	void key(const string& aKey) { send("$Key " + aKey + "|"); }
 	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
-	void get(const string& aFile, LONGLONG aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + "|"); };
+	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + "|"); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + "|"); }
 	void startSend() { send("$Send|"); }
 	void error(const string& aError) { send("$Error " + aError + "|"); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
 	void maxedOut() { send("$MaxedOut|"); };
 
-	void setDataMode(LONGLONG aBytes) { socket.setDataMode(aBytes); }
+	void setDataMode(int64_t aBytes) { dcassert(socket); socket->setDataMode(aBytes); }
 
-	void UserConnection::connect(const string& aServer, short aPort) { 
-		dcassert(!socket.isConnected()); 
-		socket.connect(aServer, aPort);
+	void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
+		if(socket == NULL) {
+			socket = BufferedSocket::getSocket('|');
+			socket->addListener(this);
+		}
+		
+		socket->connect(aServer, aPort);
 	}
 	
-	void UserConnection::accept(const ServerSocket& aServer) {
-		dcassert(!socket.isConnected());
-		socket.accept(aServer);
+	void UserConnection::accept(const ServerSocket& aServer) throw(SocketException) {
+		if(socket != NULL) {
+			socket->removeListener(this);
+			BufferedSocket::putSocket(socket);
+			socket = NULL;
+		}
+		socket = BufferedSocket::accept(aServer, '|', this);
 	}
 	
-	void disconnect() { socket.disconnect(); };
-	void transmitFile(File* f) { socket.transmitFile(f); };
+	void disconnect() { dcassert(socket); socket->disconnect(); };
+	void transmitFile(File* f) { socket->transmitFile(f); };
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
 		return isSet(FLAG_UPLOAD) ? UPLOAD : DOWNLOAD;
 	}
 
-	const string& getNick() {
-		if(nick.empty()) {
-			return SETTING(NICK);
-		} else {
-			return nick;
-		}
-	}
-	
-	void setNick(const string& aNick) { nick = aNick; };
 	User::Ptr& getUser() { return user; };
 
 	GETSET(States, state, State);
-	GETSET(Status, status, Status);
-	GETSET(DWORD, lastActivity, LastActivity);
+	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSETREF(string, nick, Nick);
 
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
@@ -224,8 +221,7 @@ public:
 	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
 
 private:
-	string nick;
-	BufferedSocket socket;
+	BufferedSocket* socket;
 	User::Ptr user;
 	
 	static const string UPLOAD, DOWNLOAD;
@@ -237,20 +233,30 @@ private:
 
 	void setUser(const User::Ptr& aUser) {
 		user = aUser;
-	}
-
-	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), status(CONNECTING), lastActivity(0), download(NULL) { 
-		socket.addListener(this);
 	};
+
+	void onLine(const string& aLine) throw();
+	
+	void send(const string& aString) {
+		lastActivity = GET_TICK();
+		socket->write(aString);
+	}
+	
+	// We only want ConnectionManager to create this...
+	UserConnection() : state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL) { };
 	UserConnection(const UserConnection&) { dcassert(0); };
 
 	virtual ~UserConnection() {
+		if(socket != NULL) {
+			socket->removeListener(this);
+			BufferedSocket::putSocket(socket);
+		}
+		removeListeners();
 	};
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type) {
-		lastActivity = TimerManager::getTick();
+		lastActivity = GET_TICK();
 		switch(type) {
 		case BufferedSocketListener::CONNECTED:
 			fire(UserConnectionListener::CONNECTED, this);
@@ -259,8 +265,8 @@ private:
 			fire(UserConnectionListener::TRANSMIT_DONE, this); break;
 		}
 	}
-	virtual void onAction(BufferedSocketListener::Types type, DWORD bytes) {
-		lastActivity = TimerManager::getTick();
+	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes) {
+		lastActivity = GET_TICK();
 		switch(type) {
 		case BufferedSocketListener::BYTES_SENT:
 			fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
@@ -269,18 +275,19 @@ private:
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
-		lastActivity = TimerManager::getTick();
+		lastActivity = GET_TICK();
 		switch(type) {
 		case BufferedSocketListener::LINE:
 			onLine(aLine); break;
 		case BufferedSocketListener::FAILED:
+			setState(STATE_UNCONNECTED);
 			fire(UserConnectionListener::FAILED, this, aLine); break;
 		default:
 			dcassert(0);
 		}
 	}
 	virtual void onAction(BufferedSocketListener::Types type, int mode) {
-		lastActivity = TimerManager::getTick();
+		lastActivity = GET_TICK();
 		switch(type) {
 		case BufferedSocketListener::MODE_CHANGE:
 			fire(UserConnectionListener::MODE_CHANGE, this, mode); break;
@@ -288,8 +295,8 @@ private:
 			dcassert(0);
 		}
 	}
-	virtual void onAction(BufferedSocketListener::Types type, const BYTE* buf, int len) {
-		lastActivity = TimerManager::getTick();
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) {
+		lastActivity = GET_TICK();
 		switch(type) {
 		case BufferedSocketListener::DATA:
 			fire(UserConnectionListener::DATA, this, buf, len); break;
@@ -298,21 +305,18 @@ private:
 		}
 	}
 
-	void onLine(const string& aLine) throw();
-
-	void send(const string& aString) {
-		lastActivity = TimerManager::getTick();
-		socket.write(aString);
-	}
 };
 
 #endif // !defined(AFX_USERCONNECTION_H__52BFD1A0_9924_4C07_BAFA_FB9682884841__INCLUDED_)
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.39 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.40 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.40  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.39  2002/04/03 23:20:35  arnetheduck
  * ...
  *

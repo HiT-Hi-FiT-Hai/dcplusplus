@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "stdafx.h"
+#include "stdinc.h"
 #include "DCPlusPlus.h"
 
 #include "SimpleXML.h"
@@ -293,9 +293,12 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.12 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.13 2002/04/09 18:43:28 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.13  2002/04/09 18:43:28  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.12  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

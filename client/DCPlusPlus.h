@@ -21,15 +21,37 @@
 #define _DCPLUSPLUS_H
 
 #ifdef _DEBUG
-// Warning C4130: '==' : logical operation on address of string constant
-#pragma warning (disable:4130)
 
-#define dcdebug ATLTRACE
-#define dcassert(exp) ATLASSERT(exp)
+// Warning C4130: '==' : logical operation on address of string constant
+#pragma warning (disable: 4130)
+
+inline void _cdecl debugTrace(const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+	
+#ifdef WIN32
+	char buf[512];
+	
+	_vsnprintf(buf, sizeof(buf), format, args);
+	OutputDebugStringA(buf);
+#else // WIN32
+	vprintf(format, args);
+#endif // WIN32
+	va_end(args);
+};
+
+#define dcdebug debugTrace
+#define dcassert(exp) _ASSERTE(exp)
 #define dcdrun(exp) exp
 
 #else //_DEBUG
-#define dcdebug ATLTRACE
+// There are a few of these because variable argument functions are not inlined...
+inline void debugTrace(const char*) { };
+template<class T1> inline void debugTrace(const char*, T1) { };
+template<class T1,class T2> inline void debugTrace(const char*, T1, T2) { };
+template<class T1,class T2, class T3> inline void debugTrace(const char*, T1, T2, T3) { };
+#define dcdebug debugTrace
 #define dcassert(exp) 
 #define dcdrun(exp)
 #endif //_DEBUG
@@ -71,9 +93,12 @@ void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.19 2002/04/03 23:20:35 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.20 2002/04/09 18:43:27 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.20  2002/04/09 18:43:27  arnetheduck
+ * Major code reorganization, to ease maintenance and future port...
+ *
  * Revision 1.19  2002/04/03 23:20:35  arnetheduck
  * ...
  *
