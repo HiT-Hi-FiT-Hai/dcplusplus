@@ -243,7 +243,20 @@ public:
 	static void splitTokens(int* array, const string& tokens, int maxItems = -1) throw();
 	static void saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
 		SettingsManager::StrSetting widths, int n, int* indexes, int* sizes) throw();
-	
+
+	template<class T> static HWND hiddenCreateEx(T& p) throw() {
+		HWND active = (HWND)::SendMessage(mdiClient, WM_MDIGETACTIVE, 0, 0);
+		::LockWindowUpdate(mdiClient);
+		HWND ret = p.CreateEx(mdiClient);
+		if(active && ::IsWindow(active))
+			::SendMessage(mdiClient, WM_MDIACTIVATE, (WPARAM)active, 0);
+		::LockWindowUpdate(0);
+		return ret;
+	}
+	template<class T> static HWND hiddenCreateEx(T* p) throw() {
+		return hiddenCreateEx(*p);
+	}
+
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
 	
@@ -253,5 +266,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.27 2004/06/27 17:59:20 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.28 2004/07/16 09:53:47 arnetheduck Exp $
  */

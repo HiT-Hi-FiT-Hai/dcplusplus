@@ -46,8 +46,6 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ShareManager::getInstance()->setHits(0);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return 1;
 }
@@ -172,5 +170,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.19 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.20 2004/07/16 09:53:47 arnetheduck Exp $
  */

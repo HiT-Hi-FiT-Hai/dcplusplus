@@ -64,8 +64,6 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ClientManager::getInstance()->addListener(this);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return 1;
 }
@@ -220,7 +218,6 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		Lock l(cs);
 		frames.erase(user);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -228,7 +225,10 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 void PrivateFrame::addLine(const string& aLine) {
 	if(!created) {
-		CreateEx(WinUtil::mdiClient);
+		if(BOOLSETTING(POPUNDER_PM))
+			WinUtil::hiddenCreateEx(this);
+		else
+			CreateEx(WinUtil::mdiClient);
 	}
 
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
@@ -335,7 +335,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.27 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.28 2004/07/16 09:53:47 arnetheduck Exp $
  */
 
 

@@ -101,9 +101,15 @@ template<typename T, bool flag> struct ReferenceSelector {
 template<typename T> struct ReferenceSelector<T,true> {
 	typedef const T& ResultType;
 };
+
 template<typename T> struct TypeTraits {
 	typedef typename ReferenceSelector<T,(sizeof(T)>sizeof(char*))>::ResultType
 		ParameterType;
+};
+
+// Force string to be returned by reference
+template<> struct TypeTraits<string> {
+	typedef ReferenceSelector<string, true>::ResultType ParameterType;
 };
 
 #define GETSET(type, name, name2) \
@@ -117,6 +123,6 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.39 2004/05/03 12:38:04 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.40 2004/07/16 09:53:46 arnetheduck Exp $
  */
 

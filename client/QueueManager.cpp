@@ -53,7 +53,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 						  int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException) 
 {
 	if(p == QueueItem::DEFAULT)
-		p = (aSize <= 16*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
+		p = (aSize <= 64*1024) ? QueueItem::HIGHEST : QueueItem::NORMAL;
 
 	QueueItem* qi = new QueueItem(aTarget, aSize, aSearchString, p, aFlags, aDownloadedBytes, aAdded, root);
 
@@ -1323,5 +1323,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.89 2004/07/05 16:02:43 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.90 2004/07/16 09:53:46 arnetheduck Exp $
  */

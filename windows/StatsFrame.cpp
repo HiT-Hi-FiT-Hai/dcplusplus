@@ -31,8 +31,6 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	SetFont(WinUtil::font);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return 1;
 }
@@ -41,7 +39,6 @@ LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(timerId != 0)
 		KillTimer(timerId);
 	
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 }
@@ -215,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.7 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.8 2004/07/16 09:53:47 arnetheduck Exp $
  */

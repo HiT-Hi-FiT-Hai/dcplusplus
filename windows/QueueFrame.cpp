@@ -136,8 +136,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlStatus.SetParts(6, statusSizes);
 	updateStatus();
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return 1;
 }
@@ -1237,7 +1235,6 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WinUtil::saveHeaderOrder(ctrlQueue, SettingsManager::QUEUEFRAME_ORDER, 
 			SettingsManager::QUEUEFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -1296,7 +1293,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.54 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.55 2004/07/16 09:53:47 arnetheduck Exp $
  */
 
 

@@ -108,8 +108,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	showJoins = BOOLSETTING(SHOW_JOINS);
 	favShowJoins = BOOLSETTING(FAV_SHOW_JOINS);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	client->connect();
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
@@ -536,7 +534,6 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			HubManager::getInstance()->save();
 		}
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -1142,5 +1139,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.65 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.66 2004/07/16 09:53:46 arnetheduck Exp $
  */

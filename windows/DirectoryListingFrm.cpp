@@ -31,7 +31,11 @@
 
 void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
 	DirectoryListingFrame* frame = new DirectoryListingFrame(aFile, aUser, start);
-	frame->CreateEx(WinUtil::mdiClient);
+	if(BOOLSETTING(POPUNDER_FILELIST))
+		WinUtil::hiddenCreateEx(frame);
+	else
+		frame->CreateEx(WinUtil::mdiClient);
+		
 }
 
 DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Ptr& aUser, const string& s) :
@@ -139,8 +143,6 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
 	
 	setWindowTitle();
-
-	m_hMenu = WinUtil::mainMenu;
 
 	bHandled = FALSE;
 	return 1;
@@ -698,6 +700,8 @@ void DirectoryListingFrame::findFile(bool findNext)
 			return;
 
 		findStr = dlg.line;
+		if(dl->getUtf8())
+			findStr = Util::toUtf8(findStr);
 		skipHits = 0;
 	} else {
 		skipHits++;
@@ -760,5 +764,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.33 2004/07/05 16:02:43 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.34 2004/07/16 09:53:46 arnetheduck Exp $
  */

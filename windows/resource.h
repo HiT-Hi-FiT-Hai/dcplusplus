@@ -144,6 +144,7 @@
 #define IDC_SOCKS_USER                  1092
 #define IDC_SOCKS_PASSWORD              1093
 #define IDC_FREESLOTS                   1094
+#define IDC_HELP_TRANSLATIONS           1095
 #define IDC_COPY_NICK                   1096
 #define IDC_ADVANCED_BOOLEANS           1096
 #define IDC_ADD_MENU                    1097

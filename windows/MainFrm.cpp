@@ -53,6 +53,7 @@ closing(false), missedAutoConnect(false)
 	
 	links.homepage = "http://dcplusplus.sourceforge.net/";
 	links.downloads = links.homepage + "download/";
+	links.translations = "http://sourceforge.net/tracker/?atid=460289&group_id=40287";
 	links.faq = links.homepage + "faq/faq.php?list=all&prog=1&lang=en";
 	links.help = links.homepage + "forum/";
 	links.discuss = links.homepage + "forum/";
@@ -624,6 +625,10 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 					links.downloads = xml.getChildData();
 				}
 				xml.resetCurrentChild();
+				if(xml.findChild("Translations")) {
+					links.translations = xml.getChildData();
+				}
+				xml.resetCurrentChild();
 				if(xml.findChild("Faq")) {
 					links.faq = xml.getChildData();
 				}
@@ -852,6 +857,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_CHANGELOG: site = Util::getAppPath() + "changelog.txt"; isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
+	case IDC_HELP_TRANSLATIONS: site = links.translations; break;
 	case IDC_HELP_FAQ: site = links.faq; break;
 	case IDC_HELP_HELP_FORUM: site = links.help; break;
 	case IDC_HELP_DISCUSS: site = links.discuss; break;
@@ -1068,5 +1074,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.56 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.57 2004/07/16 09:53:47 arnetheduck Exp $
  */

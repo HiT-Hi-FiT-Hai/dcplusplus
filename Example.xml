@@ -176,7 +176,8 @@
 		<String Name="MenuChangelog">Change Log</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
 		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
-		<String Name="MenuDownloads">Downloads and translations</String>
+		<String Name="MenuHelpDownloads">Downloads</String>
+		<String Name="MenuHelpTranslations">Translations</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
 		<String Name="MenuHelpForum">Help forum</String>
 		<String Name="MenuHomepage">DC++ Homepage</String>

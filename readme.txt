@@ -177,10 +177,10 @@ Contents
 ----------------------------------------------
   * you can doubleclick on a user name in chat to select him in the user list
   * you can doubleclick on stuff starting with www. http:// of ftp:// to open :)
-  * DC++ supports uploading filelists and files <16 kB to other DC++ users
+  * DC++ supports uploading filelists and files <64 kB to other DC++ users
     WITHOUT REQUIRING A SLOT. There's a max of 3 connections in addition to
     normal slots.
-  * Files <16 kB and filelists are downloaded first.
+  * Files <64 kB and filelists are downloaded first.
   * There is information added to the description field:
     <++ V:x,M:x,H:x/y/z,S:x[,O:x]> where
      V = client version,

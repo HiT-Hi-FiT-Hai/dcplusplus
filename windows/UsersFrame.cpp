@@ -67,8 +67,6 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	startup = false;
 
 	bHandled = FALSE;
@@ -154,7 +152,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			delete ctrlUsers.getItemData(i);
 		}
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -162,6 +159,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.23 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.24 2004/07/16 09:53:47 arnetheduck Exp $
  */
 

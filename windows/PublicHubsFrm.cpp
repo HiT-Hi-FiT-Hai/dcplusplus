@@ -112,8 +112,6 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CSTRING(COPY_HUB));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 	
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -244,7 +242,6 @@ LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	} else {
 		WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
 			SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -422,6 +419,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.23 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.24 2004/07/16 09:53:47 arnetheduck Exp $
  */
 

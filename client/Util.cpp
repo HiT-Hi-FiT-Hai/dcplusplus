@@ -299,7 +299,7 @@ string Util::formatExactSize(int64_t aBytes) {
 
 		GetNumberFormatA(LOCALE_USER_DEFAULT, 0, number, &nf, buf, sizeof(buf)/sizeof(buf[0]));
 #else
-		sprintf(buf, "%lld", aNumber);
+		sprintf(buf, "%'lld", aBytes);
 #endif
 		sprintf(buf, "%s %s", buf, CSTRING(B));
 		return buf;
@@ -349,12 +349,12 @@ bool Util::isPrivateIp(string const& ip) {
 
 static void cToUtf8(wchar_t c, string& str) {
 	if(c >= 0x0800) {
-		str += (char)(0x80 | 0x40 | 0x20 & (c >> 12));
-		str += (char)(0x80 & ((c >> 6) & 0x3f));
-		str += (char)(0x80 & (c & 0x3f));
+		str += (char)(0x80 | 0x40 | 0x20  | (c >> 12));
+		str += (char)(0x80 | ((c >> 6) & 0x3f));
+		str += (char)(0x80 | (c & 0x3f));
 	} else if(c >= 0x0080) {
 		str += (char)(0x80 | 0x40 | (c >> 6));
-		str += (char)(0x80 | (c & 0x3f)); 
+		str += (char)(0x80 | (c & 0x3f));
 	} else {
 		str += (char)c;
 	}
@@ -365,7 +365,7 @@ static int utf8ToC(const char* str, wchar_t& c) {
 	if(str[0] & 0x80) {
 		if(str[0] & 0x40) {
 			if(str[0] & 0x20) {
-				if(str[1] == 0 || str[2] ||
+				if(str[1] == 0 || str[2] == 0 ||
 					!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
 					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
 				{
@@ -692,6 +692,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.54 2004/07/05 16:02:43 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.55 2004/07/16 09:53:46 arnetheduck Exp $
  */
 

@@ -14,6 +14,15 @@
 * Added irc:// as web link (thanks ullner)
 * Fixed an issue with the adc parser (thanks sed)
 * TTH trees no longer require a slot
+* Added options to open file lists and pm's in background (thanks sed)
+* Minor number formatting fixes (thanks palm and garg)
+* Some more linux compile fixes (thanks palm)
+* Additional translatioin strings (thanks garg)
+* Fixed own search results bug (thanks garg)
+* <64KiB files auto-highest priority (thanks garg)
+* Fixed search in utf-8 file lists (thanks fleetcommand)
+* Fixed utf-8 encoding/decoding, chinese and other multi-byte scripts should
+  now work ok (thanks liny)
 
 
  -- 0.403 2004-06-27 --

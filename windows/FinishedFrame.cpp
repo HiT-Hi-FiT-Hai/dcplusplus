@@ -74,8 +74,6 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 	ctxMenu.SetMenuDefaultItem(IDC_OPEN_FILE);
 
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return TRUE;
 }
@@ -151,7 +149,6 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		WinUtil::saveHeaderOrder(ctrlList, SettingsManager::FINISHED_ORDER, 
 			SettingsManager::FINISHED_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-		m_hMenu = NULL;
 		bHandled = FALSE;
 		return 0;
 	}
@@ -194,5 +191,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.23 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.24 2004/07/16 09:53:46 arnetheduck Exp $
  */

@@ -248,7 +248,8 @@ void WinUtil::init(HWND hWnd) {
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CSTRING(MENU_ABOUT));
 	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HOMEPAGE));
-	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_DOWNLOADS, CSTRING(MENU_HELP_DOWNLOADS));
+	help.AppendMenu(MF_STRING, IDC_HELP_TRANSLATIONS, CSTRING(MENU_HELP_TRANSLATIONS));
 	help.AppendMenu(MF_STRING, IDC_HELP_FAQ, CSTRING(MENU_FAQ));
 	help.AppendMenu(MF_STRING, IDC_HELP_HELP_FORUM, CSTRING(MENU_HELP_FORUM));
 	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CSTRING(MENU_DISCUSS));
@@ -648,5 +649,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.45 2004/07/05 16:02:44 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.46 2004/07/16 09:53:47 arnetheduck Exp $
  */

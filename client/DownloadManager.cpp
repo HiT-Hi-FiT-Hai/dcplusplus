@@ -276,7 +276,7 @@ void DownloadManager::on(UserConnectionListener::FileLength, UserConnection* aSo
 	}
 
 	if(prepareFile(aSource, aFileLength)) {
-		aSource->setDataMode();
+		aSource->setDataMode(aFileLength - aSource->getDownload()->getStartPos());
 		aSource->startSend();
 	}
 }
@@ -880,5 +880,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.108 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.109 2004/07/16 09:53:46 arnetheduck Exp $
  */

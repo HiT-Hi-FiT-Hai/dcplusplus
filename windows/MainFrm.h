@@ -113,6 +113,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_TRANSLATIONS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
@@ -316,6 +317,7 @@ private:
 	struct {
 		string homepage;
 		string downloads;
+		string translations;
 		string faq;
 		string help;
 		string discuss;
@@ -350,7 +352,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.38 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.39 2004/07/16 09:53:47 arnetheduck Exp $
  */
 
  

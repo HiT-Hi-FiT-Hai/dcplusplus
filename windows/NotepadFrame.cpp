@@ -49,8 +49,6 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetWindowText(tmp.c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
-	m_hMenu = WinUtil::mainMenu;
-
 	bHandled = FALSE;
 	return 1;
 }
@@ -67,7 +65,6 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 
-	m_hMenu = NULL;
 	bHandled = FALSE;
 	return 0;
 	
@@ -89,7 +86,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.14 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.15 2004/07/16 09:53:47 arnetheduck Exp $
  */
 
 

@@ -54,7 +54,7 @@ const string SettingsManager::settingTags[] =
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
-	"ShowToolbar", "ShowTransferview",
+	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -157,6 +157,8 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_TRANSFERVIEW, true);
 	setDefault(SHOW_STATUSBAR, true);
 	setDefault(SHOW_TOOLBAR, true);
+	setDefault(POPUNDER_PM, false);
+	setDefault(POPUNDER_FILELIST, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -300,6 +302,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.76 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.77 2004/07/16 09:53:46 arnetheduck Exp $
  */
 

@@ -79,7 +79,6 @@ public:
 			PostMessage(WM_CLOSE);
 			return 0;
 		} else {
-			m_hMenu = NULL;
 			bHandled = FALSE;
 			return 0;
 		}
@@ -132,6 +131,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.16 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.17 2004/07/16 09:53:47 arnetheduck Exp $
  */
 

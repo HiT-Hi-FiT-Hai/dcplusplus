@@ -658,6 +658,9 @@ public:
 			m_hMenu = ::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(nMenuID));
 #endif //!(_ATL_VER >= 0x0700)
 
+		if(m_hMenu == NULL)
+			m_hMenu = WinUtil::mainMenu;
+
 		dwStyle = T::GetWndStyle(dwStyle);
 		dwExStyle = T::GetWndExStyle(dwExStyle);
 
@@ -742,6 +745,8 @@ public:
 		bHandled = FALSE;
 		dcassert(getTab());
 		getTab()->removeTab(m_hWnd);
+		if(m_hMenu == WinUtil::mainMenu)
+			m_hMenu = NULL;
 
 		BOOL bMaximized = FALSE;
 		if(::SendMessage(m_hWndMDIClient, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized) != NULL)
@@ -803,5 +808,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.28 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.29 2004/07/16 09:53:46 arnetheduck Exp $
  */

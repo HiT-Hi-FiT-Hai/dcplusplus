@@ -129,7 +129,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		// Filter own searches
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			if(seeker == (getLocalIp() + ":" + Util::toString(getPort()))) {
+			if(seeker == (getLocalIp() + ":" + Util::toString(SETTING(IN_PORT)))) {
 				return;
 			}
 		} else {
@@ -717,6 +717,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.7 2004/06/26 13:11:50 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.8 2004/07/16 09:53:46 arnetheduck Exp $
  */
 

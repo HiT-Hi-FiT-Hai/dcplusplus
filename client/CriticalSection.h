@@ -51,7 +51,8 @@ private:
 #else
 public:
 	CriticalSection() throw() {
-		mtx = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+		static pthread_mutex_t init = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+		mtx = init;
 	};
 	~CriticalSection() throw() { pthread_mutex_destroy(&mtx); };
 	void enter() throw() { pthread_mutex_lock(&mtx); };
@@ -91,9 +92,8 @@ private:
 #else
 	// We have to use a pthread (nonrecursive) mutex, didn't find any test_and_set on linux...
 	FastCriticalSection() { 
-		pthread_mutexattr_t attr;
-		pthread_mutexattr_init(&attr);
-		pthread_mutex_init(&mtx, &attr);
+		static pthread_mutex_t init = PTHREAD_MUTEX_INITIALIZER;
+		mtx = init;
 	};
 	~FastCriticalSection() { pthread_mutex_destroy(&mtx); };
 	void enter() { pthread_mutex_lock(&mtx); };
@@ -168,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.19 2004/06/26 13:11:50 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.20 2004/07/16 09:53:46 arnetheduck Exp $
  */
