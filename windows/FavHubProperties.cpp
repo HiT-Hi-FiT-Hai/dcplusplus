@@ -24,9 +24,22 @@
 #include "FavHubProperties.h"
 
 #include "../client/HubManager.h"
+#include "../client/ResourceManager.h"
 
 LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 {
+	// Translate dialog
+	SetWindowText(CTSTRING(FAVORITE_HUB_PROPERTIES));
+	SetDlgItemText(IDC_FH_HUB, CTSTRING(HUB));
+	SetDlgItemText(IDC_FH_IDENT, CTSTRING(FAVORITE_HUB_IDENTITY));
+	SetDlgItemText(IDC_FH_NAME, CTSTRING(HUB_NAME));
+	SetDlgItemText(IDC_FH_ADDRESS, CTSTRING(HUB_ADDRESS));
+	SetDlgItemText(IDC_FH_HUB_DESC, CTSTRING(DESCRIPTION));
+	SetDlgItemText(IDC_FH_NICK, CTSTRING(NICK));
+	SetDlgItemText(IDC_FH_PASSWORD, CTSTRING(PASSWORD));
+	SetDlgItemText(IDC_FH_USER_DESC, CTSTRING(DESCRIPTION));
+
+	// Fill in values
 	SetDlgItemText(IDC_HUBNAME, Text::toT(entry->getName()).c_str());
 	SetDlgItemText(IDC_HUBDESCR, Text::toT(entry->getDescription()).c_str());
 	SetDlgItemText(IDC_HUBADDR, Text::toT(entry->getServer()).c_str());
@@ -111,5 +124,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.9 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.10 2004/10/14 18:12:56 arnetheduck Exp $
  */

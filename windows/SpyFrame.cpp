@@ -182,7 +182,10 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 }
 
 LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	SearchFrame::openWindow(searchString);
+	if(Util::strnicmp(searchString.c_str(), _T("TTH:"), 4) == 0)
+		SearchFrame::openWindow(searchString.substr(4), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+	else
+		SearchFrame::openWindow(searchString);
 	return 0;
 };
 
@@ -208,5 +211,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.24 2004/10/02 22:22:50 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.25 2004/10/14 18:12:57 arnetheduck Exp $
  */

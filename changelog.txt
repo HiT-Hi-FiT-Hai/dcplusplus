@@ -5,7 +5,14 @@
 * Added # of locally filtered results to search frame (thanks garg)
 * Fixed a crash in the upnp code
 * Fixed wide formatting of time (thanks garg)
-
+* Added local filtering of searches with "-" in front of the search term (thanks cologic)
+* Fixed a missing hubframe stats bug (thanks trem)
+* TTH's are now correctly searched for in search spy (thanks trem)
+* Fixed an issue with utf8 user commands (thanks trem)
+* Moved to a less intrusive build procedure where stlport and wtl are local to the
+  DC++ build (see compile.txt)
+* Added /log to show log for current hub / user (thanks garg)
+* More internationalization (thanks garg)
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)

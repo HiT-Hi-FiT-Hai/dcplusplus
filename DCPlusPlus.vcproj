@@ -23,6 +23,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
 				PreprocessorDefinitions="HAS_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -70,7 +71,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				Culture="1033"/>
+				Culture="1033"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
@@ -102,6 +104,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
 				PreprocessorDefinitions="HAS_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -153,7 +156,8 @@
 				Name="VCPreLinkEventTool"/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				Culture="1033"/>
+				Culture="1033"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\wtl&quot;"/>
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool

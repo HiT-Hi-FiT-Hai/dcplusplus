@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.10"
 	Name="client"
+	RootNamespace="client"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -23,6 +24,7 @@
 				Optimization="0"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
 				PreprocessorDefinitions="HAS_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
@@ -88,6 +90,7 @@
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
 				PreprocessorDefinitions="HAS_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"

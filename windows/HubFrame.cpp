@@ -111,17 +111,15 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	bHandled = FALSE;
 	client->connect();
+	
 	FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(Text::fromT(server));
 	if(fhe != NULL){
 		//retrieve window position
 		CRect rc(fhe->getLeft(), fhe->getTop(), fhe->getRight(), fhe->getBottom());
 		
-		//if we don't have any window position stored, return so we don't
-		//set window size to zero 
-		if(rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0)
-			return 1;		
-
-		MoveWindow(rc, TRUE);
+		//check that we have a window position stored
+		if(! (rc.top == 0 && rc.bottom == 0 && rc.left == 0 && rc.right == 0) )
+			MoveWindow(rc, TRUE);
 	}
 
 	TimerManager::getInstance()->addListener(this);
@@ -220,8 +218,10 @@ void HubFrame::onEnter() {
 						ctrlUsers.getItemData(k)->getList();
 					}
 				}
+			} else if(Util::stricmp(cmd.c_str(), _T("log")) == 0) {
+				WinUtil::openFile(Text::toT(Util::validateFileName(SETTING(LOG_DIRECTORY) + client->getAddressPort() + ".log")));
 			} else if(Util::stricmp(cmd.c_str(), _T("help")) == 0) {
-				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>"));
+				addLine(_T("*** ") + WinUtil::commands + _T(", /join <hub-ip>, /clear, /ts, /showjoins, /favshowjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>, /log"));
 			} else if(Util::stricmp(cmd.c_str(), _T("pm")) == 0) {
 				string::size_type j = param.find(_T(' '));
 				if(j != string::npos) {
@@ -1109,5 +1109,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.78 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.79 2004/10/14 18:12:56 arnetheduck Exp $
  */

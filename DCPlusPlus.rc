@@ -381,22 +381,22 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ADLSearch Properties"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LTEXT           "Search string",IDC_STATIC,7,7,42,8
+    LTEXT           "Search String",IDC_ADLSP_SEARCH,7,7,88,8
     EDITTEXT        IDC_SEARCH_STRING,7,17,88,12,ES_AUTOHSCROLL
-    LTEXT           "Source Type",IDC_STATIC,105,7,42,8
+    LTEXT           "Source Type",IDC_ADLSP_TYPE,105,7,78,8
     COMBOBOX        IDC_SOURCE_TYPE,105,17,78,78,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
-    LTEXT           "Min Filesize",IDC_STATIC,7,39,37,8
+    LTEXT           "Min Filesize",IDC_ADLSP_SIZE_MIN,7,39,37,8
     EDITTEXT        IDC_MIN_FILE_SIZE,7,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Max Filesize",IDC_STATIC,54,39,39,8
+    LTEXT           "Max Filesize",IDC_ADLSP_SIZE_MAX,54,39,39,8
     EDITTEXT        IDC_MAX_FILE_SIZE,53,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Size Type",IDC_STATIC,105,39,32,8
+    LTEXT           "Size Type",IDC_ADLSP_UNITS,105,39,78,8
     COMBOBOX        IDC_SIZE_TYPE,105,50,78,68,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP,WS_EX_CLIENTEDGE
-    LTEXT           "Destination Directory",IDC_STATIC,8,72,66,8
+    LTEXT           "Destination Directory",IDC_ADLSP_DESTINATION,8,72,87,8
     EDITTEXT        IDC_DEST_DIR,7,83,88,12,ES_AUTOHSCROLL
     CONTROL         "Enabled",IDC_IS_ACTIVE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,105,72,42,10
+                    WS_TABSTOP,105,72,78,10
     CONTROL         "Download Matches",IDC_AUTOQUEUE,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,105,87,77,10
     DEFPUSHBUTTON   "OK",IDOK,32,104,50,14
@@ -423,20 +423,20 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Favorite Hub Properties"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
-    RTEXT           "Name",IDC_STATIC,12,21,40,8
+    GROUPBOX        "Hub",IDC_FH_HUB,7,7,187,62
+    RTEXT           "Name",IDC_FH_NAME,12,21,40,8
     EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
-    RTEXT           "Address",IDC_STATIC,12,36,40,8
+    RTEXT           "Address",IDC_FH_ADDRESS,12,36,40,8
     EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
-    RTEXT           "Description",IDC_STATIC,12,51,40,8
+    RTEXT           "Description",IDC_FH_HUB_DESC,12,51,40,8
     EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
-    GROUPBOX        "Identification (leave blank for defaults)",IDC_STATIC,7,
-                    74,187,63
-    RTEXT           "Nick",IDC_STATIC,12,89,40,8
+    GROUPBOX        "Identification (leave blank for defaults)",IDC_FH_IDENT,
+                    7,74,187,63
+    RTEXT           "Nick",IDC_FH_NICK,12,89,40,8
     EDITTEXT        IDC_HUBNICK,56,87,131,12
-    RTEXT           "Password",IDC_STATIC,12,104,40,8
+    RTEXT           "Password",IDC_FH_PASSWORD,12,104,40,8
     EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
-    LTEXT           "Description",IDC_STATIC,16,119,36,8
+    LTEXT           "Description",IDC_FH_USER_DESC,16,119,36,8
     EDITTEXT        IDC_HUBUSERDESCR,56,117,131,12,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,90,142,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,142,50,14

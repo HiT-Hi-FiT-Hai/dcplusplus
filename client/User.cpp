@@ -107,7 +107,10 @@ void User::send(const string& aMsg) {
 }
 
 void User::sendUserCmd(const string& aUserCmd) {
-	send(aUserCmd);
+	RLock l(cs);
+	if(client) {
+		client->send(aUserCmd);
+	}
 }
 
 void User::clientMessage(const string& aMsg) {
@@ -210,6 +213,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.35 2004/10/05 16:46:42 arnetheduck Exp $
+ * $Id: User.cpp,v 1.36 2004/10/14 18:12:56 arnetheduck Exp $
  */
 

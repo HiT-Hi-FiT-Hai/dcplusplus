@@ -342,7 +342,7 @@ public:
 		// TODO A better conversion the day we hit 64 bits
 		return toString((u_int32_t)val);
 	}
-	static string toString(int32_t val) {
+	static string toString(int val) {
 		char buf[16];
 		sprintf(buf, "%d", val);
 		return buf;
@@ -524,5 +524,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.105 2004/10/09 12:18:16 arnetheduck Exp $
+ * $Id: Util.h,v 1.106 2004/10/14 18:12:56 arnetheduck Exp $
  */

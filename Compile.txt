@@ -1,26 +1,17 @@
 The most important thing about compiling: If it didn't work, *you* screwed up.
 
-How to compile in 4 easy steps:
+How to compile in 3 easy steps:
 
-1) Make sure you have stlport installed and that it's included _before_ the standard vc directories
-   Use the one supplied on the dc++ sourceforge page (do not use the one from www.stlport.org unless 
-   you know what you're doing, I've modified it a little bit). Mind the version (download the latest
-   one from the source extras).
-   
-   * Note; This step may not be required, i e it might work without STLPort,
-     but I don't recommend this as it's completely untested, and is not being actively maintained.
-     See client\config.h for further details.
+1) Dowload the source, WTL and STLPort from the download site. Unpack the source, then create two
+   more directories under there, "stlport" and "wtl". Unpack the two other archives in their folders.
+   If you're brave, you try compiling without STLPort, see config.h (I don't maintain it though)
 
-2) Make sure you've downloaded the latest package and have all the files in it in your include path.
-   You can find it on the dc++ sourceforge site. Mind the version.  Make sure it's listed after
-   stlport in your directory includes, but before the rest of the ms include dirs.
-   
-3) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
+2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
    You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this
    one file, you can ask someone at the dev hub to supply it for you (or look for it in the DC++
    bugzilla, it's attached to one of the bugs)
 
-4) Open the solution and press your build button. If you find your executable unreasonably large, you
+3) Open the solution and press your build button. If you find your executable unreasonably large, you
    probably compiled in debug mode - switch to release once you're done testing the code.
 
 Note 1;	I now use vc7.1 (2003). I don't care particularily if you use an older MS compiler (6.0, 7.0),
@@ -67,4 +58,5 @@ update it, so check the source code distribution of the latest release as well..
 information about diff and patch by googling for it. I like unified format (diff -uNr). 
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
 the copyright is split out over a million people, each of which could stop further distribution of DC++. If you don't
-like this, start your own distribution, if you're lucky it might become more popular than the original =).
+like this, start your own distribution, if you're lucky it might become more popular than the original =). Please
+state explicitly in the email that you give me copyright over the code if the submission is larger than trivial.
