@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -162,9 +162,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.15 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.16 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.16  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.15  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

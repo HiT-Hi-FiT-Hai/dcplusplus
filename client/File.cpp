@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file File.cpp
- * $Id: File.cpp,v 1.1 2002/01/19 13:09:10 arnetheduck Exp $
+ * $Id: File.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: File.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2002/01/19 13:09:10  arnetheduck
  * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
  *

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,9 +56,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.11 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.12 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.12  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.11  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file BitInputStream.cpp
- * $Id: BitInputStream.cpp,v 1.1 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: BitInputStream.cpp,v 1.2 2002/01/20 22:54:45 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:45  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -421,9 +421,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.32 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.33 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.33  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.32  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

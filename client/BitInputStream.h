@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,9 +57,12 @@ private:
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.5 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.6 2002/01/20 22:54:45 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.h,v $
+ * Revision 1.6  2002/01/20 22:54:45  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.5  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -160,9 +160,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.1 2002/01/13 22:53:26 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2002/01/13 22:53:26  arnetheduck
  * Favorites...
  *

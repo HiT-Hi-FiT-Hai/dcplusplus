@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,11 @@ public:
 		// Then add the files
 		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 			File* file = *i;
-			download(file, aUser, target + file->getName());
+			try {
+				download(file, aUser, target + file->getName());
+			} catch(DownloadException e) {
+				// Catch it here to allow parts of directories to be added...
+			}
 		}
 	}
 
@@ -118,12 +122,16 @@ public:
 		string target = aTarget + aDir->getName() + '\\';
 		// First, recurse over the directories
 		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
-			download(*j, aUser, target);
+				download(*j, aUser, target);
 		}
 		// Then add the files
 		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 			File* file = *i;
-			download(file, aUser, target + file->getName());
+			try {
+				download(file, aUser, target + file->getName());
+			} catch(DownloadException e) {
+				// Catch it here to allow parts of directories to be added...
+			}
 		}
 	}
 	
@@ -156,9 +164,12 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.6 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.7 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.7  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.6  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

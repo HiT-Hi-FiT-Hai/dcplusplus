@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file BitOuputStream.cpp
- * $Id: BitOutputStream.cpp,v 1.1 2001/12/01 17:17:22 arnetheduck Exp $
+ * $Id: BitOutputStream.cpp,v 1.2 2002/01/20 22:54:45 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:45  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2001/12/01 17:17:22  arnetheduck
  * New additions to the reworked connection manager and huffman encoder
  *

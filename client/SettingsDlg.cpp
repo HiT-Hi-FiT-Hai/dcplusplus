@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file SettingsDlg.cpp
- * $Id: SettingsDlg.cpp,v 1.1 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: SettingsDlg.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

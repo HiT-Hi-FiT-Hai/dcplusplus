@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,20 @@ public:
 		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 			if((*i)->hWnd == aWnd) {
 				active = *i;
+				(*i)->dirty = false;
 				Invalidate();
+				break;
+			}
+		}
+	}
+
+	void setDirty(HWND aWnd) {
+		for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
+			if((*i)->hWnd == aWnd) {
+				if(active != (*i)) {
+					(*i)->dirty = true;
+					Invalidate();
+				}
 				break;
 			}
 		}
@@ -143,11 +156,12 @@ private:
 	public:
 		enum { MAX_LENGTH = 20 };
 
-		TabInfo(HWND aWnd) : hWnd(aWnd) { };
+		TabInfo(HWND aWnd) : hWnd(aWnd), dirty(false), len(0) { };
 		HWND hWnd;
 		char name[MAX_LENGTH];
 		int len;
 		SIZE size;
+		bool dirty;
 
 		void update(CDC& dc) {
 			len = ::GetWindowTextLength(hWnd);
@@ -186,7 +200,7 @@ private:
 		HWND hWnd = tab->hWnd;
 
 		CPen black;
-		black.CreatePen(PS_SOLID, aActive ? 1 : 1, RGB(0, 0, 0));
+		black.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(0, 0, 0));
 		HPEN oldpen = dc.SelectPen(black);
 		
 		POINT p[4];
@@ -214,7 +228,7 @@ private:
 		dc.LineTo(p[3]);
 
 		CPen grey;
-		grey.CreatePen(PS_SOLID, aActive ? 1 : 1, RGB(128,128,128));
+		grey.CreatePen(PS_SOLID, tab->dirty ? 1 : 1, RGB(128,128,128));
 		dc.SelectPen(grey);
 		dc.MoveTo(p[1]);
 		dc.LineTo(p[0]);
@@ -226,6 +240,7 @@ private:
 
 		dc.SetBkMode(TRANSPARENT);
 		dc.TextOut(pos + (getTabHeight()+1)/2 + tab->getFill()/2, 0, tab->name, tab->len);
+		tab->dirty;
 
 		return tab->getWidth();
 	};
@@ -252,7 +267,12 @@ public:
 	void setTab(FlatTabCtrl* aTab) { tab = aTab; };
 	FlatTabCtrl* getTab() { return tab; };
 
-	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
+	void setDirty() {
+		dcassert(getTab());
+		getTab()->setDirty(m_hWnd);
+	}
+
+ 	typedef MDITabChildWindowImpl<T, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl2<T, TBase, TWinTraits> baseClass;
 	BEGIN_MSG_MAP(thisClass>)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -299,9 +319,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.3 2002/01/18 17:41:43 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.4 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.4  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.3  2002/01/18 17:41:43  arnetheduck
  * Reworked many right button menus, adding op commands and making more easy to use
  *

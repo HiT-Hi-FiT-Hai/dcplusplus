@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,9 +60,12 @@ private:
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.5 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: BitOutputStream.h,v 1.6 2002/01/20 22:54:45 arnetheduck Exp $
  * @if LOG
  * $Log: BitOutputStream.h,v $
+ * Revision 1.6  2002/01/20 22:54:45  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.5  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

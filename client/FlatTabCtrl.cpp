@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file FlatTabCtrl.cpp
- * $Id: FlatTabCtrl.cpp,v 1.1 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: FlatTabCtrl.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.cpp,v $
+ * Revision 1.2  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.1  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

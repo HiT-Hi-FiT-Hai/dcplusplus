@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,6 +76,7 @@ public:
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
@@ -98,7 +99,10 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
-
+	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		ctrlMessage.SetFocus();
+	}
+		
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		if(hWnd == ctrlClient.m_hWnd) {
@@ -285,12 +289,14 @@ public:
 			ctrlClient.ReplaceSel("");
 			ctrlClient.SetRedraw(TRUE);
 		}
-		ctrlClient.AppendText(aLine.c_str());
 		ctrlClient.AppendText("\r\n");
+		ctrlClient.AppendText(aLine.c_str());
+		setDirty();
 	}
 
 	void addClientLine(const char* aLine) {
 		ctrlStatus.SetText(0, aLine);
+		setDirty();
 	}
 	void addClientLine(const string& aLine) {
 		addClientLine(aLine.c_str());
@@ -464,9 +470,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.39 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.40 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.40  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.39  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

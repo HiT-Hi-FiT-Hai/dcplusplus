@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED) {
 		int i = ctrlTransfers.find(lParam);
 		if(i > 0 && ctrlTransfers.getItemImage(i-1) == IMAGE_UPLOAD ) {
-			lastUpload--;
+			// ...
 		} else {
 			lastUpload = -1;
 		}
@@ -94,7 +94,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		delete str;
 	} else if(wParam == UPLOAD_STARTING) {
 		StringListInfo* i = (StringListInfo*)lParam;
-		lastUpload = ctrlTransfers.insert(i->l, IMAGE_UPLOAD, i->lParam);
+		int pos = ctrlTransfers.insert(i->l, IMAGE_UPLOAD, i->lParam);
+		if(lastUpload == -1)
+			lastUpload = pos;
+		
 		delete i;
 	} else if(wParam == DOWNLOAD_ADDED) {
 		StringListInfo* i = (StringListInfo*)lParam;
@@ -131,11 +134,15 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			DirectoryListing* dl = new DirectoryListing();
 			DWORD size = (DWORD)f.getSize();
 
-			BYTE* buf = new BYTE[size];
-			f.read(buf, size);
 			string tmp;
-			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-			delete buf;
+			if(size > 16) {
+				BYTE* buf = new BYTE[size];
+				f.read(buf, size);
+				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+				delete buf;
+			} else {
+				tmp = "";
+			}
 			dl->load(tmp);
 			
 			DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, i->user);
@@ -304,34 +311,45 @@ HWND MainFrame::createToolbar() {
 	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrl.SetImageList(images);
 	
-	TBBUTTON tb[5];
+	TBBUTTON tb[6];
 	memset(tb, 0, sizeof(tb));
-	tb[0].iBitmap = 0;
-	tb[0].idCommand = ID_FILE_CONNECT;
-	tb[0].fsState = TBSTATE_ENABLED;
-	tb[0].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	int n = 0;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_CONNECT;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	tb[1].iBitmap = 1;
-	tb[1].idCommand = ID_FILE_RECONNECT;
-	tb[1].fsState = TBSTATE_ENABLED;
-	tb[1].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_RECONNECT;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 	
-	tb[2].iBitmap = 2;
-	tb[2].idCommand = IDC_FAVORITES;
-	tb[2].fsState = TBSTATE_ENABLED;
-	tb[2].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FOLLOW;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 
-	tb[3].iBitmap = 3;
-	tb[3].idCommand = ID_FILE_SEARCH;
-	tb[3].fsState = TBSTATE_ENABLED;
-	tb[3].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_FAVORITES;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_SEARCH;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 	
-	tb[4].iBitmap = 4;
-	tb[4].idCommand = ID_FILE_SETTINGS;
-	tb[4].fsState = TBSTATE_ENABLED;
-	tb[4].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = ID_FILE_SETTINGS;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
 	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(5, tb);
+	ctrl.AddButtons(6, tb);
 	
 	ctrl.AutoSize();
 
@@ -354,6 +372,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_hImageList = images;
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
+	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
@@ -805,9 +824,12 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.43 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.44 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.44  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.43  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

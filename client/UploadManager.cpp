@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,14 +36,15 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 			return;
 		}
 		
-		if( (getFreeSlots()<=0) && (Util::getFileSize(file) > (LONGLONG)(16 * 1024)) && (stricmp(aFile.c_str(), "MyList.DcLst") != 0) ) {
+		cs.enter();
+		if( (getFreeSlots()<=0) && (Util::getFileSize(file) > (LONGLONG)(16 * 1024)) && ((stricmp(aFile.c_str(), "MyList.DcLst") != 0) || (uploads.size() > (SETTING(SLOTS) + 2))) ) {
+			cs.leave();
 			aSource->maxedOut();
 			removeConnection(aSource);
 			return;
 		}
 
 		// We only give out one connection / user...
-		cs.enter();
 		for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 			if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
 				cs.leave();
@@ -184,9 +185,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.9 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.10 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.10  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.9  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,12 @@
 
 /**
  * @file Exception.cpp
- * $Id: Exception.cpp,v 1.3 2002/01/06 21:55:20 arnetheduck Exp $
+ * $Id: Exception.cpp,v 1.4 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: Exception.cpp,v $
+ * Revision 1.4  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.3  2002/01/06 21:55:20  arnetheduck
  * Some minor bugs fixed, but there remains one strange thing, the reconnect
  * button doesn't work...

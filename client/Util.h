@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+ * Copyright (C) 2001 Jacek Sieka, j_s@telia.com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,6 +301,8 @@ public:
 		char buf[256];
 		gethostname(buf, 256);
 		hostent* he = gethostbyname(buf);
+		if(he == NULL || he->h_addr_list[0] == 0)
+			return "";
 		sockaddr_in dest;
         int i = 0;
 
@@ -322,6 +324,7 @@ public:
 							
 					tmp = tmp2;
 				}
+				i++;
 			}
 		}
 		return tmp;
@@ -386,9 +389,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.19 2002/01/19 19:07:39 arnetheduck Exp $
+ * $Id: Util.h,v 1.20 2002/01/20 22:54:46 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.20  2002/01/20 22:54:46  arnetheduck
+ * Bugfixes to 0.131 mainly...
+ *
  * Revision 1.19  2002/01/19 19:07:39  arnetheduck
  * Last fixes before 0.13
  *

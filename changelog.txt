@@ -1,3 +1,16 @@
+ -- 0.14 --
+* Fixed a bug when downloading tiny file lists (people with 0b share...)
+* Removed the empty line in the chat window
+* Set default focus in the chat window to the box where messages are entered
+
+
+ -- 0.131 2002-01-20 --
+* Fixed the lock at start bug
+* Fixed the write to full disk bug (hopefully...)
+* Fixed a small transfer queue bug
+* Added an icon for the "follow redirect" thing...will probably change soon...
+* Added a maximum dc list slots (3 more than currently open slots...)
+
  -- 0.13 2002-01-19 --
 * Added directory listing sort
 * Fixed missing '\\' in the default download directory bug
