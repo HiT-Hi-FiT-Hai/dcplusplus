@@ -235,6 +235,21 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	return 0;
 }
 
+LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(!closed) {
+		HubManager::getInstance()->removeListener(this);
+		closed = true;
+		PostMessage(WM_CLOSE);
+		return 0;
+	} else {
+		WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
+			SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
+		m_hMenu = NULL;
+		bHandled = FALSE;
+		return 0;
+	}
+}
+
 void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	RECT rect;
 	GetClientRect(&rect);
@@ -407,6 +422,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.22 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.23 2004/07/12 09:50:03 arnetheduck Exp $
  */
 

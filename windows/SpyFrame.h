@@ -80,7 +80,7 @@ public:
 			return 0;
 		} else {
 			m_hMenu = NULL;
-			MDIDestroy(m_hWnd);
+			bHandled = FALSE;
 			return 0;
 		}
 	}
@@ -132,6 +132,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.15 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.16 2004/07/12 09:50:03 arnetheduck Exp $
  */
 

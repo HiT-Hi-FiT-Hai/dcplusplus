@@ -74,10 +74,11 @@ public:
 	/**
 	 * BufferedSocket factory
 	 * @param sep Line separator
+	 * @param esc A preceding backslash escapes any character, including the separator
 	 * @return An unconnected socket
 	 */
-	static BufferedSocket* getSocket(char sep) throw(SocketException) { 
-		return new BufferedSocket(sep); 
+	static BufferedSocket* getSocket(char sep, bool esc = false) throw(SocketException) { 
+		return new BufferedSocket(sep, esc); 
 	};
 
 	static void putSocket(BufferedSocket* aSock) { 
@@ -140,8 +141,9 @@ public:
 	}
 
 	GETSET(char, separator, Separator);
+	GETSET(bool, usesEscapes, UsesEscapes);
 private:
-	BufferedSocket(char aSeparator = 0x0a) throw(SocketException);
+	BufferedSocket(char aSeparator = 0x0a, bool aUsesEscapes = false) throw(SocketException);
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -161,6 +163,7 @@ private:
 	int64_t dataBytes;
 	
 	string line;
+	bool escaped;
 	u_int8_t* inbuf;
 	size_t inbufSize;
 	enum {BUFFERS = 2};
@@ -206,5 +209,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.58 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.59 2004/07/12 09:50:03 arnetheduck Exp $
  */

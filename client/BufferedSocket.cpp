@@ -31,8 +31,8 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator) throw(SocketException) : 
-separator(aSeparator), port(0), mode(MODE_LINE), 
+BufferedSocket::BufferedSocket(char aSeparator, bool aUsesEscapes) throw(SocketException) : 
+separator(aSeparator), usesEscapes(aUsesEscapes), escaped(false), port(0), mode(MODE_LINE), 
 dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
 
 	inbuf = new u_int8_t[inbufSize];
@@ -295,14 +295,32 @@ void BufferedSocket::threadRead() {
 
 				l = string((char*)inbuf + bufpos, i);
 
-				if( (pos = l.find(separator)) != string::npos) {
+				for(;;) {
+					string::size_type n = 0;
+					n = pos = l.find(separator, n);
+					if(usesEscapes) {
+						if(pos > 0 && l[pos - 1] == '\\') {
+							n++;
+						} else if(pos == 0 && !line.empty() && line[line.length()-1] == '\\') {
+							n++;
+						} else {
+							break;
+						}
+					} else {
+						break;
+					}
+				}
+
+				if(pos != string::npos) {
 					if(!line.empty()) {
 						fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
 						line.clear();
+					} else if(pos == l.length() - 1) {
+						fire(BufferedSocketListener::Line(), l);
 					} else {
 						fire(BufferedSocketListener::Line(), l.substr(0, pos));
 					}
-					i-=(pos + sizeof(separator));
+					i -= (pos + sizeof(separator));
 					bufpos += (pos + sizeof(separator));
 				} else {
 					line += l;
@@ -428,5 +446,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.70 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.71 2004/07/12 09:50:03 arnetheduck Exp $
  */

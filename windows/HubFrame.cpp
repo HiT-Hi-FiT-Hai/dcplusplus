@@ -492,7 +492,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlMessage.MoveWindow(rc);
 }
 
-LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		TimerManager::getInstance()->removeListener(this);
 		client->removeListener(this);
@@ -537,7 +537,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		}
 
 		m_hMenu = NULL;
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 		return 0;
 	}
 }
@@ -577,6 +577,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
 			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
 			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) ||
+ 			(Util::strnicmp(x.c_str() + start, "irc://", 6) == 0) ||
 			(Util::strnicmp(x.c_str() + start, "https://", 8) == 0) )	{
 
 			bHandled = true;
@@ -1141,5 +1142,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.64 2004/07/05 16:02:44 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.65 2004/07/12 09:50:03 arnetheduck Exp $
  */

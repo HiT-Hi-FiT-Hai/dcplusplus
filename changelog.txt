@@ -11,6 +11,10 @@
 * Fixed an issue with the ADC parser (thanks trem)
 * More WTL 7.5 preparations (thanks garg)
 * Added a switch to ease the life of the UPX compressor (exe compressors suck btw) (thanks garg)
+* Added irc:// as web link (thanks ullner)
+* Fixed an issue with the adc parser (thanks sed)
+* TTH trees no longer require a slot
+
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug

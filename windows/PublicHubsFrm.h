@@ -87,7 +87,8 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	bool checkNick();
 	
@@ -106,21 +107,6 @@ public:
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
-	}
-	
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		if(!closed) {
-			HubManager::getInstance()->removeListener(this);
-			closed = true;
-			PostMessage(WM_CLOSE);
-			return 0;
-		} else {
-			WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::PUBLICHUBSFRAME_ORDER,
-				SettingsManager::PUBLICHUBSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-			m_hMenu = NULL;
-			MDIDestroy(m_hWnd);
-			return 0;
-		}
 	}
 	
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -195,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.21 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.22 2004/07/12 09:50:03 arnetheduck Exp $
  */

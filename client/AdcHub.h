@@ -75,7 +75,7 @@ private:
 	virtual void on(Connecting) throw() { fire(ClientListener::Connecting(), this); }
 	virtual void on(Connected) throw();
 	virtual void on(Line, const string& aLine) throw() { 
-		fire(ClientListener::Message(), this, "CMD: " + aLine +"\r\n");
+		fire(ClientListener::Message(), this, "<ADC>" + aLine + "</ADC>");
 		dispatch(aLine); 
 	}
 	virtual void on(Failed, const string& aLine) throw();
@@ -83,5 +83,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.5 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.6 2004/07/12 09:50:03 arnetheduck Exp $
  */

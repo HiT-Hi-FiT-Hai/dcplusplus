@@ -88,7 +88,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	}
 }
 
-AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n') {
+AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n', true) {
 }
 
 void AdcHub::handle(Command::INF, Command& c) throw() {
@@ -311,5 +311,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.12 2004/07/05 16:02:43 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.13 2004/07/12 09:50:03 arnetheduck Exp $
  */

@@ -65,7 +65,6 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 LRESULT TextFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	m_hMenu = NULL;
-	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }
@@ -85,7 +84,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.5 2004/07/05 16:02:44 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.6 2004/07/12 09:50:03 arnetheduck Exp $
  */
 
 

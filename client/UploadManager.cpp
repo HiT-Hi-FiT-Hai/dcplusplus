@@ -121,6 +121,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 		is = new TreeInputStream<TigerHash>(tree);	
 		leaves = true;
 
+		free = true;
+
 	} else {
 		aSource->fileNotAvail();
 		return false;
@@ -155,7 +157,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 	u->setFile(is);
 	u->setSize(size);
 	u->setStartPos(aStartPos);
-	u->setFileName(aFile);
+	u->setFileName(file);
 	u->setLocalFileName(file);
 
 	if(userlist)
@@ -388,5 +390,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.65 2004/06/26 18:16:54 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.66 2004/07/12 09:50:03 arnetheduck Exp $
  */

@@ -209,7 +209,7 @@ void PrivateFrame::onEnter()
 	} 
 }
 
-LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(!closed) {
 		ClientManager::getInstance()->removeListener(this);
 
@@ -221,7 +221,7 @@ LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		frames.erase(user);
 
 		m_hMenu = NULL;
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 		return 0;
 	}
 }
@@ -335,7 +335,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.26 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.27 2004/07/12 09:50:03 arnetheduck Exp $
  */
 
 

@@ -78,7 +78,7 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
-	Client(const string& hubURL, char separator);
+	Client(const string& hubURL, char separator, bool usesEscapes = false);
 	virtual ~Client();
 
 	virtual void connect(const User* user) = 0;
@@ -174,5 +174,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.81 2004/04/30 07:14:48 arnetheduck Exp $
+ * $Id: Client.h,v 1.82 2004/07/12 09:50:03 arnetheduck Exp $
  */
