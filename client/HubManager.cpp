@@ -24,16 +24,46 @@
 #include "HttpConnection.h"
 #include "StringTokenizer.h"
 
-HubManager::HubEntry::List HubManager::publicHubs;
+HubManager* HubManager::instance = NULL;
 
-HubManager::HubManager()
-{
+DWORD WINAPI HubManager::lister(void* p) {
+	ATLASSERT(p);
+	HubManager* hm = (HubManager*)p;
+	HANDLE hEvent[2];
+	hEvent[0] = hm->listerEvent;
 
-}
+	hm->fireMessage("Downloading public server list...");
+	
+	if(hm->readerThread != NULL) {
+		hEvent[1] = hm->readerThread;
+		if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
+			ATLTRACE("Hub Lister Thread ended");
+			hm->listerThread = NULL;
+			return 0;
+		}
+	}
+	
+	EnterCriticalSection(&hm->publicCS);
 
-HubManager::~HubManager()
-{
+	if(hm->publicHubs.size() == 0) {
+		hm->fireMessage("Unable to download public server list. Check your internet connection!");
+	} else {
+		hm->fireMessage("Download complete");
+	}
+	
+	for(HubManager::HubEntry::Iter i = hm->publicHubs.begin(); i != hm->publicHubs.end(); ++i) {
+		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
+			ATLTRACE("Hub Lister Thread ended");
+			hm->listerThread = NULL;
+			LeaveCriticalSection(&hm->publicCS);
+			return 0;
+		}
+		hm->fireHub(i->name, i->server, i->description, i->users);
+	}
 
+	LeaveCriticalSection(&hm->publicCS);
+	hm->listerThread = NULL;
+	return 0;
 }
 
 /**
@@ -41,12 +71,16 @@ HubManager::~HubManager()
  * Locks execution until list has been downloaded.
  * @param aRefresh Refresh list from neomodus server.
  */
-HubManager::HubEntry::List& HubManager::getPublicHubs(boolean aRefresh/* =false */) throw(HubException) {
-	if(!aRefresh && publicHubs.size()>0) {
-		return publicHubs;
-	}
+DWORD WINAPI HubManager::reader(void *p) {
 
-	publicHubs.clear();
+	ATLASSERT(p);
+	HubManager* hm = (HubManager*)p;
+	HANDLE hEvent[2];
+	hEvent[0] = hm->readerEvent;
+	
+	EnterCriticalSection(&hm->publicCS);
+	
+	hm->publicHubs.clear();
 
 	try {
 		StringTokenizer tokens(HttpConnection::DownloadTextFile("http://www.neo-modus.com/PublicHubList.config"));
@@ -59,22 +93,29 @@ HubManager::HubEntry::List& HubManager::getPublicHubs(boolean aRefresh/* =false 
 			string& server = *j++;
 			string& desc = *j++;
 			string& users = *j++;
-			publicHubs.push_back(HubEntry(name, server, desc, users));
+			hm->publicHubs.push_back(HubEntry(name, server, desc, users));
 		}
 	} catch(Exception e) {
-		throw HubException(e, "Cannot get hub list");
+		dcdebug("Can't get Hub List...");
 	}
 
-	return publicHubs;	
+	LeaveCriticalSection(&hm->publicCS);
+	hm->readerThread = NULL;
+
+	return 0;	
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

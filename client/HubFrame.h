@@ -27,10 +27,13 @@
 #include "DCClient.h"
 #include "ProtocolHandler.h"
 #include "ExListViewCtrl.h"
+#include "DownloadManager.h"
+
+#include "AtlCmdBar2.h"
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
-class HubFrame : public CMDIChildWindowImpl<HubFrame>, public ClientListener
+class HubFrame : public CMDIChildWindowImpl2<HubFrame>, public ClientListener
 {
 protected:
 	virtual void onConnecting(const string& aServer) {
@@ -50,7 +53,7 @@ protected:
 	virtual void onHubName(const string& aHubName) {
 		SetWindowText(aHubName.c_str());
 	}
-	virtual void onConnectionFailed(const string& aReason) {
+	virtual void onError(const string& aReason) {
 		addClientLine("Connection failed: " + aReason);
 	}
 
@@ -134,11 +137,24 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
+		CHAIN_MSG_MAP(CMDIChildWindowImpl2<HubFrame>)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+		string user;
+		char buf[1024];
+		ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
+		user = buf;
+		DownloadManager::getInstance()->download("MyList.DcLst", user, "c:\\temp\\" + user + ".DcLst");
+
+		return 0;
+	}
+		
 	LRESULT onColumnClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
@@ -200,9 +216,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.3 2001/11/24 10:37:09 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/24 10:37:09  arnetheduck
  * onQuit is now handled
  * User list sorting

@@ -30,7 +30,10 @@ private:
 	static string email;
 	static string description;
 	static string connection;
-	
+	static string server;
+	static string port;
+	static int connectionType;
+
 	static string getAppPath() {
 		
 		TCHAR buf[MAX_PATH+1];
@@ -55,17 +58,25 @@ public:
 			SPEED_T3,
 			SPEED_LAST
 	};
-
+	enum {
+		CONNECTION_ACTIVE,
+		CONNECTION_PASSIVE
+	};	
 	static const string& getNick() { return nick; }
 	static const string& getEmail() { return email; }
 	static const string& getDescription() { return description; }
 	static const string& getConnection() { return connection; }
-
+	static const string& getServer() { return server; }
+	static const string& getPort() { return port; }
+	static int getConnectionType() { return connectionType; };
+	
 	static void setNick(const string& aNick) { nick = aNick; };
 	static void setEmail(const string& aEmail) { email = aEmail; };
 	static void setDescription(const string& aDescription) { description = aDescription; };
 	static void setConnection(const string& aConnection) { connection = aConnection; };
-
+	static void setServer(const string& aServer) { server = aServer; };
+	static void setPort(const string& aPort) { port = aPort; };
+	static void setConnectionType(int aType) { connectionType = aType; };
 	static void load() { load(getAppPath() + "DCPlusPlus.xml"); };
 	static void save() { save(getAppPath() + "DCPlusPlus.xml"); };
 
@@ -77,9 +88,13 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
+ * $Id: Settings.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/22 20:42:18  arnetheduck
  * Fixed Settings dialog (Speed setting actually works now!)
  *

@@ -21,42 +21,13 @@
 
 #include "PublicHubsDlg.h"
 
-DWORD WINAPI PublicHubsDlg::FillHubList(void* p) {
-	ATLASSERT(p);
-	PublicHubsDlg* dlg = (PublicHubsDlg*)p;
-	HANDLE hEvent = dlg->stopEvent;
-	dlg->SetWindowText("Public Hub List - Downloading public server list...");
-
-	HubManager::HubEntry::List hubs = HubManager::getPublicHubs(dlg->refresh);
-	
-	if(WaitForSingleObject(hEvent, 0)!=WAIT_TIMEOUT) {
-		ATLTRACE("Hublist Thread ended");
-		dlg->readerThread = NULL;
-		return 0;
-	}
-	
-	if(hubs.size() == 0) {
-		dlg->SetWindowText("Public Hub List - Unable to download public server list. Check your internet connection!");
-	} else {
-		dlg->SetWindowText("Public Hub List - Download complete");
-	}
-
-	for(HubManager::HubEntry::Iter i = hubs.begin(); i != hubs.end(); ++i) {
-		if(WaitForSingleObject(hEvent, 0)!=WAIT_TIMEOUT) {
-			ATLTRACE("Hublist Thread ended");
-			dlg->readerThread = NULL;
-			return 0;
-		}
-		StringList l;
-		l.push_back(i->name.c_str());
-		l.push_back(i->description.c_str());
-		l.push_back(i->users.c_str());
-		l.push_back(i->server.c_str());
-		dlg->ctrlHubs.insertItem(l);
-		
-	}
-	dlg->readerThread = NULL;
-	return 0;
+void PublicHubsDlg::onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) {
+	StringList l;
+	l.push_back(aName);
+	l.push_back(aDescription);
+	l.push_back(aUsers);
+	l.push_back(aServer);
+	ctrlHubs.insertItem(l);
 }
 
 LRESULT PublicHubsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -70,7 +41,8 @@ LRESULT PublicHubsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
 	SetDlgItemText(IDC_SERVER, server.c_str());
 
-	startReader();
+	HubManager::getInstance()->addListener(this);
+	HubManager::getInstance()->getPublicHubs();
 	
 	CenterWindow(GetParent());
 	return TRUE;
@@ -82,23 +54,9 @@ LRESULT PublicHubsDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 		GetDlgItemText(IDC_SERVER, buf, 1024);
 		server = buf;
 	}
-	stopID = wID;
-	stopReader();
-	return 0;
-}
-
-DWORD WINAPI PublicHubsDlg::stopper(void* p) {
-	PublicHubsDlg* dlg = (PublicHubsDlg*)p;
-
-	if(WaitForSingleObject(dlg->readerThread, INFINITE) == WAIT_TIMEOUT) {
-		::MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-	}
-	dlg->readerThread = NULL;
-	CloseHandle(dlg->stopEvent);
-	dlg->stopEvent = NULL;
-	
-	dcdebug("end in stopper\n");
-	dlg->EndDialog(dlg->stopID);
+	wId = wID;
+	DWORD tId;
+	CreateThread(NULL, 0, &stopper, this, NULL, &tId);
 	return 0;
 }
 
@@ -114,18 +72,30 @@ LRESULT PublicHubsDlg::OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHan
 }
 
 LRESULT PublicHubsDlg::OnClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	SetWindowText("Waiting for previous refresh to finish...");
-	stopReader();
-	refresh = true;
-	startReader();
+	ctrlHubs.DeleteAllItems();
+	listing = true;
+	HubManager::getInstance()->getPublicHubs(true);
+
 	return 0;
 }
 
+DWORD WINAPI PublicHubsDlg::stopper(void* p) {
+	PublicHubsDlg* phd = (PublicHubsDlg*) p;
+
+	HubManager::getInstance()->removeListener(phd);
+	if(phd->wId != -1)
+		phd->EndDialog(phd->wId);
+	return 0;
+}
 /**
  * @file PublicHubsDlg.cpp
- * $Id: PublicHubsDlg.cpp,v 1.2 2001/11/24 10:31:45 arnetheduck Exp $
+ * $Id: PublicHubsDlg.cpp,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.cpp,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/24 10:31:45  arnetheduck
  * Added hub list sorting and fixed deadlock bugs (hopefully...).
  *

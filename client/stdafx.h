@@ -48,6 +48,7 @@ extern CAppModule _Module;
 #include <string>
 #include <vector>
 #include <map>
+#include <list>
 
 using namespace std;
 
@@ -59,9 +60,13 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.3 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

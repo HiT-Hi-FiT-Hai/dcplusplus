@@ -25,6 +25,17 @@
 #include "PublicHubsDlg.h"
 #include "SettingsDlg.h"
 
+#include "IncomingManager.h"
+#include "DownloadManager.h"
+#include "UploadManager.h"
+
+MainFrame::~MainFrame() {
+	IncomingManager::deleteInstance();
+	DownloadManager::deleteInstance();
+	UploadManager::deleteInstance();
+	HubManager::deleteInstance();
+}
+
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		
 	// Set window name
@@ -57,6 +68,13 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ATLASSERT(pLoop != NULL);
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
+
+	Settings::load();	
+	
+	IncomingManager::newInstance();
+	DownloadManager::newInstance();
+	UploadManager::newInstance();
+	HubManager::newInstance();
 	
 	return 0;
 }
@@ -89,11 +107,17 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.email = Settings::getEmail();
 	dlg.description = Settings::getDescription();
 	dlg.connection = Settings::getConnection();
+	dlg.server = Settings::getServer();
+	dlg.port = Settings::getPort();
+	dlg.connectionType = Settings::getConnectionType();
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 		Settings::setNick(dlg.nick);
 		Settings::setDescription(dlg.description);
 		Settings::setEmail(dlg.email);
 		Settings::setConnection(dlg.connection);
+		Settings::setServer(dlg.server);
+		Settings::setPort(dlg.port);
+		Settings::setConnectionType(dlg.connectionType);
 		Settings::save();
 	}
 	return 0;
@@ -101,9 +125,13 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/22 20:42:18  arnetheduck
  * Fixed Settings dialog (Speed setting actually works now!)
  *

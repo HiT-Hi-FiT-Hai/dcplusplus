@@ -22,6 +22,8 @@
 #include "Socket.h"
 #include "DCClient.h"
 
+DCClient::List DCClient::clientList;
+
 void DCClient::connect(const string& aServer, short aPort) {
 	if(socket.isConnected()) {
 		disconnect();
@@ -70,6 +72,7 @@ void DCClient::onLine(const string& aLine) {
 		fireLock(lock, pk);	
 	} else if(aLine.find("$Hello") != string::npos) {
 		fireHello(aLine.substr(7));
+		users.push_back(aLine.substr(7));
 	} else if(aLine.find("$ForceMove") != string::npos) {
 		fireForceMove(aLine.substr(11));
 	} else if(aLine.find("$HubIsFull") != string::npos) {
@@ -91,7 +94,13 @@ void DCClient::onLine(const string& aLine) {
 		fireMyInfo(nick, description, speed, email, bytes);
 		
 	} else if(aLine.find("$Quit") != string::npos) {
-		fireQuit(aLine.substr(6));
+		string nick = aLine.substr(6);
+		fireQuit(nick);
+		for(StringIter i = users.begin(); i != users.end(); ++i) {
+			if(*i == nick) {
+				users.erase(i);
+			}
+		}
 	} else if(aLine.find("$ValidateDenide") != string::npos) {
 		fireValidateDenied();
 	} else if(aLine.find("$NickList") != string::npos) {
@@ -102,6 +111,7 @@ void DCClient::onLine(const string& aLine) {
 			v.push_back(tmp.substr(0, j));
 			tmp = tmp.substr(j+2);
 		}
+		users.insert(users.end(), v.begin(), v.end());
 		fireNickList(v);
 		
 	} else if(aLine.find("$OpList") != string::npos) {
@@ -112,12 +122,21 @@ void DCClient::onLine(const string& aLine) {
 			v.push_back(tmp.substr(0, j));
 			tmp = tmp.substr(j+2);
 		}
+		users.insert(users.end(), v.begin(), v.end());
 		fireOpList(v);
 	} else if(aLine.find("$To") != string::npos) {
 		string tmp = aLine.substr(aLine.find("From:") + 6);
 		string nick = tmp.substr(0, tmp.find("$") - 1);
 		tmp = tmp.substr(tmp.find("$") + 1);
 		firePrivateMessage(nick, tmp);
+	} else if(aLine.find("$ConnectToMe") != string::npos) {
+		string tmp = aLine.substr(13);
+		tmp = tmp.substr(tmp.find(' ') + 1);
+		string server = tmp.substr(0, tmp.find(':'));
+		fireConnectToMe(server, tmp.substr(tmp.find(':')+1));
+	} else if(aLine.find("$RevConnectToMe") != string::npos) {
+		string tmp = aLine.substr(16);
+		fireRevConnectToMe(tmp.substr(tmp.find(' ')+1));
 	} else if(aLine.find("$") != string::npos) {
 		fireUnknown(aLine);
 	} else {
@@ -125,75 +144,16 @@ void DCClient::onLine(const string& aLine) {
 	}
 }
 
-string DCClient::keySubst(string aKey, int n) {
-	BYTE* temp = new BYTE[aKey.length() + n * 10];
-	
-	int j=0;
-	
-	for(int i = 0; i<aKey.length(); i++) {
-		if(isExtra(aKey[i])) {
-			temp[j++] = '/'; temp[j++] = '%'; temp[j++] = 'D';
-			temp[j++] = 'C'; temp[j++] = 'N';
-			switch(aKey[i]) {
-			case 0: temp[j++] = '0'; temp[j++] = '0'; temp[j++] = '0'; break;
-			case 5: temp[j++] = '0'; temp[j++] = '0'; temp[j++] = '5'; break;
-			case 36: temp[j++] = '0'; temp[j++] = '3'; temp[j++] = '6'; break;
-			case 96: temp[j++] = '0'; temp[j++] = '9'; temp[j++] = '6'; break;
-			case 124: temp[j++] = '1'; temp[j++] = '2'; temp[j++] = '4'; break;
-			case 126: temp[j++] = '1'; temp[j++] = '2'; temp[j++] = '6'; break;
-			}
-			temp[j++] = '%'; temp[j++] = '/';
-		} else {
-			temp[j++] = aKey[i];
-		}
-	}
-	string tmp((char*)temp, j);
-	delete temp;
-	return tmp;
-}
-
-string DCClient::makeKey(const string& lock) {
-	BYTE* temp = new BYTE[lock.length()];
-	int v1, v2, v3, v4, v5, v6;
-	int extra=0;
-	
-	v1 = lock[0];
-	v2 = v1^5;
-	v3 = v2 / 0x10;
-	v4 = v2 * 0x10;
-	v5 = v4 % 0x100;
-	v6 = v3 | v5;
-	
-	temp[0] = (BYTE)v6;
-	
-	for(int i = 1; i<lock.length(); i++) {
-		v1 = lock[i];
-		v2 = v1^lock[i-1];
-		v3 = v2 / 0x10;
-		v4 = v2 * 0x10;
-		v5 = v4 % 0x100;
-		v6 = v3 | v5;
-		temp[i] = (BYTE)v6;
-		if(isExtra(temp[i]))
-			extra++;
-	}
-	
-	temp[0] = (BYTE)(temp[0] ^ temp[lock.length()-1]);
-	
-	if(isExtra(temp[0])) {
-		extra++;
-	}
-
-	string tmp((char*)temp, i);
-	delete temp;
-	return keySubst(tmp, extra);
-}
 
 /**
  * @file DCClient.cpp
- * $Id: DCClient.cpp,v 1.3 2001/11/24 10:34:02 arnetheduck Exp $
+ * $Id: DCClient.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.cpp,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/24 10:34:02  arnetheduck
  * Updated to use BufferedSocket instead of handling threads by itself.
  *

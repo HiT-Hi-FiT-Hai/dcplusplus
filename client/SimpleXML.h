@@ -109,7 +109,11 @@ public:
 	}
 
 	void addChildAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-
+	void addChildAttrib(const string& aName, int aData) throw(SimpleXMLException) {	
+		char buf[32];
+		addChildAttrib(aName, itoa(aData, buf, 10));
+	}
+		
 	const string& getData() {
 		if(current != NULL) {
 			return current->data;
@@ -171,6 +175,11 @@ public:
 		return (*currentChild)->attribs[aName];
 	}
 
+	int getIntChildAttrib(const string& aName) throw(SimpleXMLException) {
+		checkChildSelected();
+		return atoi(getChildAttrib(aName).c_str());
+	}
+
 	void fromXML(const string& aXML);
 	string toXML() { return (!root.empty()) ? root[0]->toXML() : emptyString; };
 	
@@ -183,9 +192,13 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.1 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.2  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.1  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -71,23 +71,29 @@ public:
 	virtual void onMyInfo(const string& aNick, const string& aDescription, const string& aSpeed, 
 		const string& aEmail, const string& aBytesShared) { };
 	virtual void onMessage(const string& aMessage) { };
-	virtual void onLostConnection(const string& aMessage) { };
 	virtual void onUnknown(const string& aCommand) { };
 	virtual void onNickList(StringList& aNicks) { };
-	virtual void onConnectionFailed(const string& aReason) { };
+	virtual void onConnected() { };
+	virtual void onError(const string& aReason) { };
 	virtual void onOpList(StringList& aOps) { };
 	virtual void onPrivateMessage(const string& aFrom, const string& aMessage) { };
 	virtual void onSearch(const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) { };
+	virtual void onConnectToMe(const string& aServer, const string& aPort) { };
+	virtual void onRevConnectToMe(const string& aNick) { };
 };
 
 #endif // !defined(AFX_CLIENTLISTENER_H__607F5375_97B0_47CD_B53B_D230ABF23E7E__INCLUDED_)
 
 /**
  * @file ClientListener.h
- * $Id: ClientListener.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: ClientListener.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: ClientListener.h,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

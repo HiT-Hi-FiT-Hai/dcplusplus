@@ -28,11 +28,15 @@
 class SettingsDlg : public CDialogImpl<SettingsDlg>  
 {
 	CComboBox ctrlConnection;
+	
 public:
 	string nick;
 	string email;
 	string description;
 	string connection;
+	string server;
+	string port;
+	int connectionType;
 	
 	enum { IDD = IDD_SETTINGS };
 	
@@ -40,7 +44,9 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-	END_MSG_MAP()
+		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, OnClickedActive)
+		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, OnClickedActive)
+		END_MSG_MAP()
 		
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -52,6 +58,22 @@ public:
 		SetDlgItemText(IDC_NICK, nick.c_str());
 		SetDlgItemText(IDC_EMAIL, email.c_str());
 		SetDlgItemText(IDC_DESCRIPTION, description.c_str());
+		SetDlgItemText(IDC_SERVER, server.c_str());
+		SetDlgItemText(IDC_PORT, port.c_str());
+		
+		if(connectionType == Settings::CONNECTION_ACTIVE) {
+			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
+		} else if(connectionType == Settings::CONNECTION_PASSIVE) {
+			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_PASSIVE);
+		}
+
+		if(IsDlgButtonChecked(IDC_ACTIVE)) {
+			::EnableWindow(GetDlgItem(IDC_SERVER), TRUE);
+			::EnableWindow(GetDlgItem(IDC_PORT), TRUE);
+		} else {
+			::EnableWindow(GetDlgItem(IDC_SERVER), FALSE);
+			::EnableWindow(GetDlgItem(IDC_PORT), FALSE);
+		}
 		
 		ctrlConnection.SetCurSel(ctrlConnection.FindString(0, connection.c_str()));
 
@@ -71,21 +93,47 @@ public:
 			description = buf;
 			GetDlgItemText(IDC_CONNECTION, buf, SETTINGS_BUF_LEN);
 			connection = buf;
-			
+			GetDlgItemText(IDC_SERVER, buf, SETTINGS_BUF_LEN);
+			server = buf;
+			GetDlgItemText(IDC_PORT, buf, SETTINGS_BUF_LEN);
+			port = buf;
+
+			if(IsDlgButtonChecked(IDC_ACTIVE)) {
+				connectionType = Settings::CONNECTION_ACTIVE;
+			} else if(IsDlgButtonChecked(IDC_PASSIVE)) {
+				connectionType = Settings::CONNECTION_PASSIVE;
+			} else {
+				connectionType = -1;
+			}
 		}
 		EndDialog(wID);
 		return 0;
 	}
 	
+	LRESULT OnClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+	{
+		if(IsDlgButtonChecked(IDC_ACTIVE)) {
+			::EnableWindow(GetDlgItem(IDC_SERVER), TRUE);
+			::EnableWindow(GetDlgItem(IDC_PORT), TRUE);
+		} else {
+			::EnableWindow(GetDlgItem(IDC_SERVER), FALSE);
+			::EnableWindow(GetDlgItem(IDC_PORT), FALSE);
+		}
+		return 0;
+	}
 };
 
 #endif // !defined(AFX_SETTINGSDLG_H__25031C63_A95B_43D9_8A1E_892FF932890B__INCLUDED_)
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.2 2001/11/22 20:42:18 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/22 20:42:18  arnetheduck
  * Fixed Settings dialog (Speed setting actually works now!)
  *

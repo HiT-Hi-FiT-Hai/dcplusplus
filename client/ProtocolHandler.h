@@ -25,38 +25,49 @@
 
 #include "ClientListener.h"
 #include "DCClient.h"
+#include "CryptoManager.h"
+#include "UserConnection.h"
+#include "IncomingManager.h"
 
 /**
  * This is it, this is the class that controls what is sent when.
  * Add it to any DCClient created, or nothing will ever be sent to the
  * hub.
  */
-class ProtocolHandler : public ClientListener  
+class ProtocolHandler : public ClientListener
 {
 public:
-	void onLock(const string& aLock, const string& aPk)  {
-		client->key(client->makeKey(aLock));
+	virtual void onLock(const string& aLock, const string& aPk)  {
+		client->key(CryptoManager::makeKey(aLock));
 		client->validateNick(Settings::getNick());
 	}
-	void onHello(const string& aNick) {
+	virtual void onHello(const string& aNick) {
 		if(aNick.compare(Settings::getNick()) == 0) {
 			client->version("1,0091");
 			client->getNickList();
-			client->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "1000000000000");
+			client->myInfo(Settings::getNick(), Settings::getDescription(), Settings::getConnection(), Settings::getEmail(), "10000");
 		} else {
 			client->getInfo(aNick);
 		}
 	}
-	void onNickList(StringList& aNicks) {
+	virtual void onNickList(StringList& aNicks) {
 		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
 			client->getInfo(*i);
 		}
 	}
 
-	void onOpList(StringList& aNicks) {
+	virtual void onOpList(StringList& aNicks) {
 		for(StringIter i = aNicks.begin(); i != aNicks.end(); ++i) {
 			client->getInfo(*i);
 		}
+	}
+
+	virtual void onConnectToMe(const string& aServer, const string& aPort) {
+		IncomingManager::getInstance()->connect(aServer, atoi(aPort.c_str()));
+	}
+	
+	virtual void onRevConnectoToMe(const string& aNick) {
+		client->connectToMe(aNick);
 	}
 	
 	ProtocolHandler(DCClient::Ptr aClient) : client(aClient) { client->addListener(this); };
@@ -70,9 +81,13 @@ private:
 
 /**
  * @file ProtocolHandler.h
- * $Id: ProtocolHandler.h,v 1.3 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: ProtocolHandler.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: ProtocolHandler.h,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

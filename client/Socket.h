@@ -73,7 +73,6 @@
 #	endif
 #	define errno WSAGetLastError()
 #	define checksocket(x) if((x) == INVALID_SOCKET) { throw SocketException(WSAGetLastError()); }
-#	define checkconnect(x) if((x) == SOCKET_ERROR) { throw SocketException(WSAGetLastError()); }
 #	define checksend(x, len) if((x) != len) { throw SocketException(WSAGetLastError()); }
 #	define checkrecv(x) if((x) == SOCKET_ERROR) { if(WSAGetLastError() == EWOULDBLOCK) return 0; else throw SocketException(WSAGetLastError()); }
 #	define checksockerr(x) if((x) == SOCKET_ERROR) { throw SocketException(WSAGetLastError()); }
@@ -96,6 +95,8 @@ private:
 };
 
 STANDARD_EXCEPTION(TimeOutException);
+
+class ServerSocket;
 
 class Socket
 {
@@ -120,7 +121,7 @@ public:
 		ioctlsocket(sock, FIONREAD, &i);
 		return i;
 	}
-	
+	virtual void accept(const ServerSocket& aSocket);
 	virtual void write(const char* buffer, int len) throw(SocketException);
 	virtual void write(const string& aData) throw(SocketException); 
 
@@ -139,7 +140,7 @@ public:
 			if(readEvent == NULL)
 				throw SocketException(WSAGetLastError());
 			
-			checksockerr(WSAEventSelect(sock, readEvent, FD_READ | FD_CLOSE));
+			checksockerr(WSAEventSelect(sock, readEvent, FD_ACCEPT | FD_READ | FD_CLOSE));
 		}
 		return readEvent;
 	}
@@ -147,21 +148,28 @@ public:
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
 	void writeLine(const string& aData) throw(SocketException);
 	virtual string readLine(int aTimeOut = -1, char separator = 0x0a) throw(SocketException, TimeOutException);
-private:
+protected:
+	Socket(const Socket& aSocket) {
+		// Copies not allowed
+	}
 	HANDLE readEvent;
 	int sock;
 	bool connected;
 	string buffer;	
-	
+
 };
 
 #endif // _SOCKET_H
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.2 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: Socket.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

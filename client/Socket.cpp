@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "Socket.h"
+#include "ServerSocket.h"
 
 #define checkconnected() if(!connected) throw SocketException("Not connected")
 
@@ -45,8 +46,12 @@ string SocketException::errorToString(int aError) {
 		return "Connection timeout.";
 	case EHOSTUNREACH:
 		return "Host unreachable.";
+	case ESHUTDOWN:
+		return "Socket has been shut down.";
+	case ECONNABORTED:
+		return "Connection aborted.";
 	case ECONNRESET:
-		return "Connection reset by server";
+		return "Connection reset by server.";
 		
 	default:
 		char tmp[1024];
@@ -55,28 +60,28 @@ string SocketException::errorToString(int aError) {
 	}
 }
 
-Socket::Socket() : readEvent(NULL) {
-	connected = false;
-	sock = -1;
+Socket::Socket() : readEvent(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 }
 
-Socket::Socket(const string& ip, const string& port) throw(SocketException) : readEvent(NULL)  {
-	connected = false;
-	sock = -1;
+Socket::Socket(const string& ip, const string& port) throw(SocketException) : readEvent(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 	connect(ip, port);	
 }
 
-Socket::Socket(const string& ip, short port) throw(SocketException) : readEvent(NULL) {
-	connected = false;
-	sock = -1;
+Socket::Socket(const string& ip, short port) throw(SocketException) : readEvent(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 	connect(ip, port);	
 }
+
+void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
+	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
+	connected = true;
+}
+
 /**
  * Connects a socket to an address/ip, closing any other connections made with
  * this instance.
@@ -97,7 +102,7 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
 		closesocket(sock);
 	}
 
-	checksocket(sock = socket(AF_INET, SOCK_STREAM, 0));
+	checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	
 	memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_port = htons(port);
@@ -115,7 +120,7 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
         serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
     } 
 	
-    checkconnect(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr))); 
+    checksockerr(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr))); 
 	
 	connected = true;
 
@@ -218,9 +223,13 @@ string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, Ti
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.2 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

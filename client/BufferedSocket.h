@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Socket.h"
+#include "CriticalSection.h"
 
 class BufferedSocketListener {
 public:
@@ -31,26 +32,91 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
+	virtual void onConnected() { };
 	virtual void onLine(const string& aLine) { };
 	virtual void onError(const string& aReason) { };
+	virtual void onData(BYTE* aBuf, int aLen) { };
+	virtual void onModeChange(int newMode) { };
 };
 
 class BufferedSocket : public Socket  
 {
+public:
+	enum {	
+		MODE_LINE,
+		MODE_DATA
+	};
+
+	void setDataMode(LONGLONG aBytes) {
+		mode = MODE_DATA;
+		dataBytes = aBytes;
+	}
+
+	int getMode() { return mode; };
+	
+	void addListener(BufferedSocketListener::Ptr aListener) {
+		listenerCS.enter();
+		listeners.push_back(aListener);
+		listenerCS.leave();
+	}
+
+	void removeListener(BufferedSocketListener::Ptr aListener) {
+		listenerCS.enter();
+		for(BufferedSocketListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
+			if(*i == aListener) {
+				listeners.erase(i);
+				break;
+			}
+		}
+		listenerCS.leave();
+	}
+
+	void removeListeners() {
+		listenerCS.enter();
+		listeners.clear();
+		listenerCS.leave();
+	}
+
+	virtual void connect(const string& aServer, short aPort) {
+		server = aServer;
+		port = aPort;
+		startReader();
+	}
+	
+	virtual void accept(const ServerSocket& aSocket);
+	char getSeparator() { return separator; };
+	void setSeparator(char aSeparator) { separator = aSeparator; };
+
+	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), stopEvent(NULL), mode(MODE_LINE) {
+
+	};
+
+	virtual ~BufferedSocket() {
+		stopReader();
+	}
+private:
+	BufferedSocket(const BufferedSocket& aSocket) {
+		// Copy not allowed
+	}
+	
 	BufferedSocketListener::List listeners;
+	CriticalSection listenerCS;
+	
 	string server;
 	short port;
-	
-	char separator;
+	int mode;
+	LONGLONG dataBytes;
 
+	char separator;
+	
 	HANDLE stopEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
-
+	
 	void startReader() {
 		DWORD threadId;
 		stopReader();
-
+		
 		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
 	}
@@ -60,7 +126,7 @@ class BufferedSocket : public Socket
 			SetEvent(stopEvent);
 			
 			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+				MessageBox(NULL, _T("BufferedSocket: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
 			
 			readerThread = NULL;
@@ -68,50 +134,51 @@ class BufferedSocket : public Socket
 			stopEvent = NULL;
 		}
 	}
-
+	
 	void fireLine(const string& aLine) {
-//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onLine(aLine);
 		}
+		listenerCS.leave();
+	}
+	void fireData(BYTE* aBuf, int aLen) {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onData(aBuf, aLen);
+		}
+		listenerCS.leave();
 	}
 	void fireError(const string& aLine) {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
-		for(BufferedSocketListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onError(aLine);
 		}
+		listenerCS.leave();
 	}
-public:
-	void addListener(BufferedSocketListener::Ptr aListener) {
-		listeners.push_back(aListener);
-	}
-	void removeListener(BufferedSocketListener::Ptr aListener) {
-		for(BufferedSocketListener::Iter i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
+	void fireConnected() {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onConnected();
 		}
+		listenerCS.leave();
 	}
-	void removeListeners() {
-		listeners.clear();
-	}
-
-	virtual void connect(const string& aServer, short aPort) {
-		server = aServer;
-		port = aPort;
-		startReader();
-	}
-	
-	char getSeparator() { return separator; };
-	void setSeparator(char aSeparator) { separator = aSeparator; };
-
-	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), stopEvent(NULL) {
-
-	};
-
-	virtual ~BufferedSocket() {
-		stopReader();
+	void fireModeChange(int aNewMode) {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onModeChange(aNewMode);
+		}
+		listenerCS.leave();
 	}
 };
 
@@ -119,9 +186,13 @@ public:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.1 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.2  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.1  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

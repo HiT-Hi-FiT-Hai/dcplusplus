@@ -23,13 +23,16 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include "AtlCmdBar2.h"
+
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler
 {
 public:
+	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-	CCommandBarCtrl m_CmdBar;
+	CCommandBarCtrl2 m_CmdBar;
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -118,6 +121,8 @@ public:
 		MDIIconArrange();
 		return 0;
 	}
+protected:
+	CSplitterWindow splitter;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -129,9 +134,13 @@ public:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

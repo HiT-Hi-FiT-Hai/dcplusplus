@@ -35,9 +35,20 @@ public:
 		SEARCH_ATMOST
 	};
 	typedef DCClient* Ptr;
+	typedef list<Ptr> List;
+	typedef List::iterator Iter;
 
-	DCClient() : socket('|') { };
+	DCClient() : socket('|') {
+		clientList.push_back(this);
+	};
+
 	virtual ~DCClient() {
+		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
+			if(*i == this) {
+				clientList.erase(i);
+				break;
+			}				
+		}
 	};
 	
 	void addListener(ClientListener::Ptr aListener) {
@@ -100,39 +111,60 @@ public:
 		dcdebug("MyInfo %s...\n", aNick.c_str());
 		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "$" + aEmail + "$" + aBytesShared + "$|");
 	}
+
+	void connectToMe(const string& aNick) {
+		send("$ConnectToMe " + aNick + " " + Settings::getServer() + ":" + Settings::getPort() + "|");
+	}
 	
 	void connect(const string& aServer, short aPort = 411);
-	string makeKey(const string& aLock);
-
+	boolean userConnected(const string& aNick) {
+		for(StringIter i = users.begin(); i != users.end(); ++i) {
+			if(*i == aNick)
+				return true;
+		}
+		return false;
+	}
+	static List& getList() { return clientList; }
 protected:
 	ClientListener::List listeners;
 	string server;
 	short port;
 	BufferedSocket socket;
 
+	StringList users;
+
+	static List clientList;
+
 	virtual void onLine(const string& aLine);
 	
 	virtual void onError(const string& aReason) {
-		fireConnectionFailed(aReason);
+		fireError(aReason);
 	}
 
-	static string keySubst(string aKey, int n);
-	
+	virtual void onConnected() {
+		fireConnected();
+	}
+
 	void send(const string& a) {
 		socket.write(a);
-	}
-	
-	static boolean isExtra(BYTE b) {
-		if(b == 0 || b==5 || b==124 || b==96 || b==126 || b==36)
-			return true;
-		else
-			return false;
 	}
 	
 	void fireConnecting(const string& aServer) {
 		dcdebug("fireConnecting\n");
 		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
 			(*i)->onConnecting(aServer);
+		}
+	}
+	void fireConnected() {
+		dcdebug("fireConnected\n");
+		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+			(*i)->onConnected();
+		}
+	}
+	void fireConnectToMe(const string& aServer, const string& aPort) {
+		dcdebug("fireConnectToMe %s:%s\n", aServer.c_str(), aPort.c_str());
+		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+			(*i)->onConnectToMe(aServer, aPort);
 		}
 	}
 	void fireSearch(const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) {
@@ -195,6 +227,12 @@ protected:
 			(*i)->onQuit(aName);
 		}
 	}
+	void fireRevConnectToMe(const string& aNick) {
+		dcdebug("fireRevConnectToMe %s\n", aNick.c_str());
+		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
+			(*i)->onRevConnectToMe(aNick);
+		}
+	}
 	void fireNickList(StringList& aList) {
 		dcdebug("fireNickList ... \n");
 		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
@@ -219,10 +257,10 @@ protected:
 			(*i)->onMessage(aMessage);
 		}
 	}
-	void fireConnectionFailed(const string& aMessage) {
+	void fireError(const string& aMessage) {
 		dcdebug("fireConnectionFailed %s\n", aMessage.c_str());
 		for(ClientListener::Iter i=listeners.begin(); i != listeners.end(); ++i) {
-			(*i)->onConnectionFailed(aMessage);
+			(*i)->onError(aMessage);
 		}
 	}
 };
@@ -232,9 +270,13 @@ protected:
 
 /**
  * @file DCClient.h
- * $Id: DCClient.h,v 1.3 2001/11/24 10:34:02 arnetheduck Exp $
+ * $Id: DCClient.h,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.h,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/24 10:34:02  arnetheduck
  * Updated to use BufferedSocket instead of handling threads by itself.
  *

@@ -26,6 +26,9 @@ string Settings::nick;
 string Settings::email;
 string Settings::description;
 string Settings::connection;
+string Settings::server;
+string Settings::port;
+int Settings::connectionType;
 
 char* Settings::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", "Satellite", "Cable", "DSL", "Lan(T1)", "Lan(T3)" };
 
@@ -59,6 +62,9 @@ void Settings::load(const string& aFileName) {
 		email = xml.getChildAttrib("EMail");
 		description = xml.getChildAttrib("Description");
 		connection = xml.getChildAttrib("Connection");
+		server = xml.getChildAttrib("Server");
+		port = xml.getChildAttrib("Port");
+		connectionType = xml.getIntChildAttrib("ConnectionType");
 	}
 }
 
@@ -73,6 +79,10 @@ void Settings::save(const string& aFileName) {
 	xml.addChildAttrib("EMail", email);
 	xml.addChildAttrib("Description", description);
 	xml.addChildAttrib("Connection", connection);
+	xml.addChildAttrib("Server", server);
+	xml.addChildAttrib("Port", port);
+	xml.addChildAttrib("ConnectionType", connectionType);
+
 
 	string xmltext = xml.toXML();
 
@@ -87,9 +97,13 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.3 2001/11/22 20:42:18 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.4 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.4  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.3  2001/11/22 20:42:18  arnetheduck
  * Fixed Settings dialog (Speed setting actually works now!)
  *

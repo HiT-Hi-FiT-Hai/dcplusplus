@@ -23,6 +23,12 @@
 
 static const int BUFSIZE = 1024;
 
+void BufferedSocket::accept(const ServerSocket& aSocket) {
+	Socket::accept(aSocket);
+	startReader();
+}
+
+
 DWORD WINAPI BufferedSocket::reader(void* p) {
 	ATLASSERT(p);
 	
@@ -33,7 +39,8 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	h[0] = bs->stopEvent;
 	
 	try {
-		bs->Socket::connect(bs->server, bs->port);
+		if(!bs->isConnected())
+			bs->Socket::connect(bs->server, bs->port);
 		h[1] = bs->getReadEvent();
 	} catch (SocketException e) {
 		bs->fireError(e.getError());
@@ -42,20 +49,54 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 	string line = "";
 	BYTE* buf = new BYTE[BUFSIZE];
+
+	bs->fireConnected();
 	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
 		try {
 			dcdebug("Available bytes: %d\n", bs->getAvailable());
 			int i = bs->read(buf, BUFSIZE);
-			
-			string l((char*)buf, i);
-			line = line + l;
-			while(line.find(bs->separator) != string::npos) {
-				
-				string tmp = line.substr(0, line.find('|'));
-				line = line.substr(line.find('|')+1);
-				
-				bs->fireLine(tmp);
+			string l;
+			switch(bs->mode) {
+			case MODE_LINE:
+				l = string((char*)buf, i);
+				line = line + l;
+				while(line.find(bs->separator) != string::npos) {
+					
+					string tmp = line.substr(0, line.find('|'));
+					line = line.substr(line.find('|')+1);
+					
+					bs->fireLine(tmp);
+				}
+				break;
+			case MODE_DATA:
+				if((bs->dataBytes - i)<0) {
+					bs->fireData(buf, bs->dataBytes);
+					i = i - bs->dataBytes;
+					line = line + string((char*)buf+bs->dataBytes, i);
+					while(line.find(bs->separator) != string::npos) {
+						
+						string tmp = line.substr(0, line.find('|'));
+						line = line.substr(line.find('|')+1);
+						
+						bs->fireLine(tmp);
+					}
+
+					bs->dataBytes = 0;
+					bs->mode = MODE_LINE;
+					bs->fireModeChange(bs->mode);
+				} else {
+					bs->fireData(buf, i);
+					bs->dataBytes-=i;
+					dcassert(bs->dataBytes >= 0);
+					if(bs->dataBytes == 0) {
+						bs->mode = MODE_LINE;
+						bs->fireModeChange(bs->mode);
+					}
+				}
+				break;
+			default:
+				dcassert(0);
 			}
 		} catch(SocketException e) {
 			bs->fireError(e.getError());
@@ -67,9 +108,13 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.1 2001/11/24 10:39:00 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.2 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.2  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.1  2001/11/24 10:39:00  arnetheduck
  * New BufferedSocket creates reader threads and reports inbound data through a listener.
  *

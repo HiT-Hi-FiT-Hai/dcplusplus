@@ -26,42 +26,18 @@
 #include "HubManager.h"
 #include "ExListViewCtrl.h"
 
-class PublicHubsDlg : public CDialogImpl<PublicHubsDlg>  
+class PublicHubsDlg : public CDialogImpl<PublicHubsDlg>, HubManagerListener
 {
 private:
 
-	static DWORD WINAPI FillHubList(void* p);
-	HANDLE readerThread;
-	HANDLE stopEvent;
-	int stopID;
 	ExListViewCtrl ctrlHubs;
-	boolean refresh;
-
-	void startReader() {
-		DWORD threadId;
-		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		readerThread=CreateThread(NULL, 0, &FillHubList, this, 0, &threadId);
-	}
-	
-	void stopReader() {
-		dcdebug("stopreader\n");
-		if(readerThread != NULL) {
-			SetEvent(stopEvent);
-			DWORD threadId;
-			CreateThread(NULL, 0, &stopper, this, 0, &threadId);
-			return;
-		}
-		CloseHandle(stopEvent);
-		stopEvent = NULL;
-		dcdebug("End in stopReader\n");
-		EndDialog(stopID);
-		
-	}
-	static DWORD WINAPI stopper(void* p);
+	boolean listing;
+	int wId;
 	
 public:
-	PublicHubsDlg() : readerThread(NULL), stopEvent(NULL), refresh(false) { };
+	PublicHubsDlg() : listing(false), wId(-1) { };
 	~PublicHubsDlg() {
+		HubManager::getInstance()->removeListener(this);
 	}
 	string server;
 
@@ -75,7 +51,19 @@ public:
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, OnClickedRefresh)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 	END_MSG_MAP()
+	
+	virtual void onMessage(const string& aMessage) {
+		SetWindowText(("Public Hub List - " + aMessage).c_str());
+	}
 
+	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
+	virtual void onFinished() {
+		HubManager::getInstance()->removeListener(this);
+		listing = false;
+	}
+	
+	static DWORD WINAPI stopper(void* p);
+	
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -99,9 +87,13 @@ public:
 
 /**
  * @file PublicHubsDlg.h
- * $Id: PublicHubsDlg.h,v 1.2 2001/11/24 10:31:45 arnetheduck Exp $
+ * $Id: PublicHubsDlg.h,v 1.3 2001/11/25 22:06:25 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.h,v $
+ * Revision 1.3  2001/11/25 22:06:25  arnetheduck
+ * Finally downloading is working! There are now a few quirks and bugs to be fixed
+ * but what the heck....!
+ *
  * Revision 1.2  2001/11/24 10:31:45  arnetheduck
  * Added hub list sorting and fixed deadlock bugs (hopefully...).
  *
