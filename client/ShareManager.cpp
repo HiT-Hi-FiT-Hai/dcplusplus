@@ -336,18 +336,21 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
 					(Util::stricmp(name.c_str(), "Favorites.xml") != 0)) {
 
-					dir->addSearchType(getMask(name));
-					dir->addType(getType(name));
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
-					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 
-					if(root != NULL)
-						tthIndex.insert(make_pair(root, lastFileIter));
+					if(root != NULL) {
+						dir->addSearchType(getMask(name));
+						dir->addType(getType(name));
+						lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 
-					dir->size+=size;
-					
-					bloom.add(Util::toLower(name));
+						if(root != NULL)
+							tthIndex.insert(make_pair(root, lastFileIter));
+
+						dir->size+=size;
+
+						bloom.add(Util::toLower(name));
+					}
 				}
 			}
 		} while(FindNextFile(hFind, &data));
@@ -1055,6 +1058,18 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			Directory::File* f = const_cast<Directory::File*>(&(*i));
 			f->setTTH(root);
 			tthIndex.insert(make_pair(root, i));
+		} else {
+			string name = Util::getFileName(fname);
+			d->addSearchType(getMask(name));
+			d->addType(getType(name));
+			int64_t size = File::getSize(fname);
+			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
+
+			tthIndex.insert(make_pair(root, it));
+
+			d->size+=size;
+
+			bloom.add(Util::toLower(name));
 		}
 	}
 }
@@ -1074,6 +1089,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.92 2004/08/02 15:29:19 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.93 2004/08/08 17:59:08 arnetheduck Exp $
  */
 

@@ -268,7 +268,8 @@
 #define IDC_MAGNET_DISP_HASH            1239
 #define IDC_MAGNET_TEXT                 1240
 #define IDC_SETTINGS_TIME_STAMPS_FORMAT 1241
-#define IDC_TIME_STAMPS_FORMAT			1242
+#define IDC_TIME_STAMPS_FORMAT          1242
+#define IDC_SETTINGS_ONLY_HASHED        1243
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -305,7 +306,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        239
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1241
+#define _APS_NEXT_CONTROL_VALUE         1244
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

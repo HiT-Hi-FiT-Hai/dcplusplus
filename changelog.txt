@@ -57,7 +57,7 @@
   yours wasn't chosen =)
 * Fixed another download to crash (thanks garg)
 * Stringdefs automatically rebuilt (thanks farcry & garg)
-
+* DC++ will only share files that HAVE BEEN HASHED!
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug

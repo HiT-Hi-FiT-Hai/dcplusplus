@@ -241,7 +241,7 @@ BEGIN
                     261,179
     CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,14,17,247,146,WS_EX_ACCEPTFILES
+                    WS_TABSTOP,14,17,247,132,WS_EX_ACCEPTFILES
     LTEXT           "Total size:",IDC_SETTINGS_SHARE_SIZE,14,170,33,8
     LTEXT           "0 B",IDC_TOTAL,50,170,41,8
     CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
@@ -260,6 +260,8 @@ BEGIN
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
                     UDS_NOTHOUSANDS,247,204,14,14
+    LTEXT           "Note; New files are added to the share only when they've been hashed!",
+                    IDC_SETTINGS_ONLY_HASHED,14,154,226,8
 END
 
 IDD_APPEARANCEPAGE DIALOGEX 0, 0, 275, 225
@@ -274,6 +276,8 @@ BEGIN
     LTEXT           "Donate €€€:s! (ok, $$$ is fine too =) (see help menu)",
                     IDC_COLOREXAMPLE,107,17,91,32,SS_NOPREFIX | SS_SUNKEN | 
                     WS_BORDER | NOT WS_GROUP
+    PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
+    PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
     GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,57,261,75
     CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
@@ -281,16 +285,14 @@ BEGIN
     GROUPBOX        "Default away message",IDC_SETTINGS_DEFAULT_AWAY_MSG,7,
                     135,165,32
     EDITTEXT        IDC_DEFAULT_AWAY_MESSAGE,16,145,145,14,ES_AUTOHSCROLL
+    GROUPBOX        "Set timestamps",IDC_SETTINGS_TIME_STAMPS_FORMAT,174,135,
+                    96,32
+    EDITTEXT        IDC_TIME_STAMPS_FORMAT,180,145,80,15,ES_AUTOHSCROLL
     GROUPBOX        "Language file",IDC_SETTINGS_LANGUAGE_FILE,7,169,261,32
     EDITTEXT        IDC_LANGUAGE,16,180,188,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSE,210,180,50,14
     LTEXT           "Note; most of these options require that you restart DC++",
                     IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
-    PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
-    PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
-    GROUPBOX        "Set timestamps",IDC_SETTINGS_TIME_STAMPS_FORMAT,174,135,96,
-                    32
-    EDITTEXT        IDC_TIME_STAMPS_FORMAT,180,145,80,15,ES_AUTOHSCROLL
 END
 
 IDD_ADVANCED2PAGE DIALOGEX 0, 0, 275, 237

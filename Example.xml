@@ -343,6 +343,7 @@
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
+		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
 		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenPublic">Open the public hubs window at startup</String>
@@ -386,12 +387,12 @@
 		<String Name="SettingsTabDirty">Set hub/PM tab bold when contents change</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
-		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory (empty = download directly to target)</String>
+		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
-		<String Name="SettingsUrlHandler">Register with Windows on startup to handle dchub:// URL links</String>
-		<String Name="SettingsUrlMagnet">Register with Windows on startup to handle magnet: URI links</String>
+		<String Name="SettingsUrlHandler">Register with Windows to handle dchub:// URL links</String>
+		<String Name="SettingsUrlMagnet">Register with Windows to handle magnet: URI links</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>
