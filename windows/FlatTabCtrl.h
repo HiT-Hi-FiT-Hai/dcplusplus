@@ -139,7 +139,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_SELECT_WINDOW, IDC_SELECT_WINDOW+tabs.size(), onSelectWindow)
 	END_MSG_MAP()
 
-	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT onLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		int xPos = GET_X_LPARAM(lParam); 
 		int yPos = GET_Y_LPARAM(lParam); 
 		int row = getRows() - ((yPos / getTabHeight()) + 1);
@@ -150,7 +150,8 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
+					if(wParam & MK_SHIFT) ::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
+					else ::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
 				}
 				break;
 			}
@@ -612,5 +613,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.21 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.22 2003/11/27 10:33:15 arnetheduck Exp $
  */

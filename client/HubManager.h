@@ -255,6 +255,7 @@ public:
 
 	bool isDownloading() { return running; };
 
+	void load();
 	void save();
 private:
 	
@@ -316,7 +317,6 @@ private:
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML*) throw();
 
 	void load(SimpleXML* aXml);
-	void load();
 	
 };
 
@@ -324,6 +324,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.47 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.48 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

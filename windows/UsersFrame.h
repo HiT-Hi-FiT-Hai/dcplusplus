@@ -24,13 +24,14 @@
 #endif // _MSC_VER > 1000
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
+#include "WinUtil.h"
 
 #include "../client/ClientManager.h"
 #include "../client/HubManager.h"
 
 class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<UsersFrame, ResourceManager::FAVORITE_USERS>,
-	private HubManagerListener, private ClientManagerListener {
+	private HubManagerListener, private ClientManagerListener, public UserInfoBaseHandler<UsersFrame> {
 public:
 	
 	UsersFrame() : closed(false), startup(true) { };
@@ -44,32 +45,30 @@ public:
 	}
 
 	typedef MDITabChildWindowImpl<UsersFrame> baseClass;
+	typedef UserInfoBaseHandler<UsersFrame> uibBase;
+
 	BEGIN_MSG_MAP(UsersFrame)
+		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
+		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
-		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickHublist)
-		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
+		CHAIN_MSG_MAP(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 		
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onPrivateMessage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onGrantSlot(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_UPDATED) {
-			updateUser(((UserInfo*)lParam)->user);
-			delete (UserInfo*)lParam;
+			updateUser(((UserInfoBase*)lParam)->user);
+			delete (UserInfoBase*)lParam;
 		}
 		return 0;
 	}
@@ -91,19 +90,6 @@ public:
 		}
 		
 		return FALSE; 
-	}
-	
-	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlUsers.getSortColumn()) {
-			if (!ctrlUsers.isAscending())
-				ctrlUsers.setSort(-1, ctrlUsers.getSortType());
-			else
-				ctrlUsers.setSortDirection(false);
-		} else {
-			ctrlUsers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-		}
-		return 0;
 	}
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE) {
@@ -128,7 +114,10 @@ public:
 		CRect rc = rect;
 		ctrlUsers.MoveWindow(rc);
 	}
-	
+private:
+	class UserInfo;
+public:
+	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; }
 private:
 	enum {
 		COLUMN_FIRST,
@@ -142,16 +131,40 @@ private:
 	enum {
 		USER_UPDATED
 	};
-	class UserInfo {
+
+	class UserInfo : public UserInfoBase {
 	public:
-		UserInfo(const User::Ptr& aUser) : user(aUser) { };
-		User::Ptr user;
+		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
+			columns[COLUMN_NICK] = u->getNick();
+			update();
+		};
+
+		const string& getText(int col) const {
+			return columns[col];
+		}
+
+		static int compareItems(UserInfo* a, UserInfo* b, int col) {
+			return Util::stricmp(a->columns[col], b->columns[col]);
+		}
+
+		void remove() { HubManager::getInstance()->removeFavoriteUser(user); }
+
+		void update() {
+			columns[COLUMN_STATUS] = user->isOnline() ? STRING(ONLINE) : STRING(OFFLINE);
+			columns[COLUMN_HUB] = user->getClientName();
+			if(!user->getLastHubAddress().empty()) {
+				columns[COLUMN_HUB] += " (" + user->getLastHubAddress() + ")";
+			}
+			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyString : Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen());
+		}
+
+		string columns[COLUMN_LAST];
 	};
 
 	CStatusBarCtrl ctrlStatus;
 	CMenu usersMenu;
 	
-	ExListViewCtrl ctrlUsers;
+	TypedListViewCtrl<UserInfo, IDC_USERS> ctrlUsers;
 
 	bool closed;
 	
@@ -172,7 +185,7 @@ private:
 		switch(type) {
 		case ClientManagerListener::USER_UPDATED:
 			if(aUser->isFavoriteUser()) {
-				PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfo(aUser));
+				PostMessage(WM_SPEAKER, USER_UPDATED, (LPARAM) new UserInfoBase(aUser));
 			}
 		}
 	}
@@ -186,6 +199,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.11 2003/11/19 19:50:45 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.12 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

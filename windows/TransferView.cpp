@@ -155,7 +155,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
 				char buf[256];
-				COLORREF barBase = ::GetSysColor(COLOR_HIGHLIGHT);
+				COLORREF barBase = ii->type == ItemInfo::TYPE_DOWNLOAD ? RGB(0, 255, 0) : RGB(255, 0, 0);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -50, 50), barBase, HLS_TRANSFORM(barBase, 450, -30) };
@@ -219,7 +219,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				left = rc2.left;
 				rc2.right = rc.right;
 				LONG top = rc2.top + (rc2.Height() - WinUtil::getTextHeight(cd->nmcd.hdc) - 1)/2;
-				SetTextColor(cd->nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+				SetTextColor(cd->nmcd.hdc, RGB(255, 255, 255));
 				::ExtTextOut(cd->nmcd.hdc, left, top, ETO_CLIPPED, rc2, buf, strlen(buf), NULL);
 				//::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
 
@@ -560,5 +560,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.16 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.17 2003/11/27 10:33:15 arnetheduck Exp $
  */

@@ -57,7 +57,7 @@ Name: Name shown in the menus\r\n\
 Command: Command text (may contain parameters)\r\n\
 Hub: Hub ip as typed when connecting (empty = all hubs, \"op\" = hubs where you're op)\r\n\
 To: PM recipient\r\n\
-Only once: When selecting multiple items in search, select this to avoid command being sent multiple times per user\r\n\
+Only once: Send only once per user from search frame\r\n\
 In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m, ...). The following are available:\r\n\
 %[mynick]: your own nick\r\n\
 %[nick]: the users nick (user && search context only)\r\n\
@@ -66,6 +66,7 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 %[email]: user email (user && search context only)\r\n\
 %[share]: user shared bytes (exact) (user && search context only)\r\n\
 %[shareshort]: user shared bytes (formatted) (user && search context only)\r\n\
+%[ip]: user ip (if supported by hub)\r\n\
 %[file]: filename (search context only)\r\n\
 ");
 
@@ -147,5 +148,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.4 2003/11/19 19:50:45 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.5 2003/11/27 10:33:15 arnetheduck Exp $
 */

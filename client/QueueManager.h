@@ -210,7 +210,7 @@ private:
 	static string getTempName(const string& aFileName);
 
 	/** Sanity check for the target filename */
-	string checkTarget(const string& aTarget, int64_t aSize) throw(QueueException, FileException);
+	string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad) throw(QueueException, FileException);
 
@@ -241,6 +241,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.47 2003/11/11 20:31:56 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.48 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

@@ -32,6 +32,17 @@
 
 Client::Counts Client::counts;
 
+Client::Client() : supportFlags(0), userInfo(true), 
+	registered(false), firstHello(true), state(STATE_CONNECT), 
+	socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
+	countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) 
+{
+	me = ClientManager::getInstance()->getUser(SETTING(NICK), this, false);
+	TimerManager::getInstance()->addListener(this);
+	socket->addListener(this);
+
+};
+
 Client::~Client() throw() {
 	TimerManager::getInstance()->removeListener(this);
 	socket->removeListener(this);
@@ -43,6 +54,12 @@ Client::~Client() throw() {
 	BufferedSocket::putSocket(socket);
 	socket = NULL;
 };
+
+void Client::setNick(const string& aNick) {
+	dcassert(state = STATE_CONNECT);
+
+	me = ClientManager::getInstance()->getUser(aNick, this, false);
+}
 
 void Client::updateCounts(bool aRemove) {
 	// We always remove the count and then add the correct one if requested...
@@ -57,7 +74,7 @@ void Client::updateCounts(bool aRemove) {
 	countType = COUNT_UNCOUNTED;
 
 	if(!aRemove) {
-		if(op) {
+		if(getOp()) {
 			Thread::safeInc(&counts.op);
 			countType = COUNT_OP;
 		} else if(registered) {
@@ -80,7 +97,6 @@ void Client::connect(const string& aAddressPort) {
 }
 
 void Client::connect() {
-	op = false;
 	registered = false;
 	reconnect = true;
 	firstHello = true;
@@ -242,8 +258,7 @@ void Client::onLine(const string& aLine) throw() {
 			Lock l(cs);
 			User::NickIter ni = users.find(nick);
 			if(ni == users.end()) {
-				u = ClientManager::getInstance()->getUser(nick, this);
-				users[nick] = u;
+				u = users[nick] = ClientManager::getInstance()->getUser(nick, this);
 			} else {
 				u  = ni->second;
 			}
@@ -281,12 +296,6 @@ void Client::onLine(const string& aLine) throw() {
 		if(j == string::npos)
 			return;
 		u->setBytesShared(param.substr(i, j-i));
-
-// Atomic Jo BEGINS
-		if (u->getNick() == getNick()) {
-			u->setFlag(User::DCPLUSPLUS);
-		}
-// Atomic Jo ENDS		
 
 		fire(ClientListener::MY_INFO, this, u);
 	} else if(cmd == "$Quit") {
@@ -377,6 +386,8 @@ void Client::onLine(const string& aLine) throw() {
 				supportFlags |= SUPPORTS_USERCOMMAND;
 			} else if(*i == "NoGetINFO") {
 				supportFlags |= SUPPORTS_NOGETINFO;
+			} else if(*i == "UserIP2") {
+				supportFlags |= SUPPORTS_USERIP2;
 			}
 		}
 		fire(ClientListener::SUPPORTS, this, sl);
@@ -434,8 +445,13 @@ void Client::onLine(const string& aLine) throw() {
 				Lock l(cs);
 				users[param] = u;
 			}
+
+			if((u != getMe()) && (u->getNick() == getMe()->getNick())) {
+				ClientManager::getInstance()->putUserOffline(me);
+				setMe(u);
+			}
 			
-			if(u->getNick() == getNick()) {
+			if(u == getMe()) {
 				if(state == STATE_HELLO) {
 					state = STATE_CONNECTED;
 					updateCounts(false);
@@ -449,7 +465,6 @@ void Client::onLine(const string& aLine) throw() {
 			} else {
 				fire(ClientListener::HELLO, this, u);
 			}
-			
 		}
 	} else if(cmd == "$ForceMove") {
 		disconnect();
@@ -459,23 +474,37 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$ValidateDenide") {		// Mind the spelling...
 		disconnect();
 		fire(ClientListener::VALIDATE_DENIED, this);
+	} else if(cmd == "$UserIP") {
+		if(!param.empty()) {
+			User::List v;
+			StringTokenizer t(param, "$$");
+			StringList& l = t.getTokens();
+			for(StringIter it = l.begin(); it != l.end(); ++it) {
+				string::size_type j = 0;
+				if((j = it->find(' ')) == string::npos)
+					continue;
+				if((j+1) == it->length())
+					continue;
+				v.push_back(ClientManager::getInstance()->getUser(it->substr(0, j), this));
+				v.back()->setIp(it->substr(j+1));
+			}
+
+			fire(ClientListener::USER_IP, this, v);
+		}
 	} else if(cmd == "$NickList") {
 		if(!param.empty()) {
 			User::List v;
+			StringTokenizer t(param, "$$");
+			StringList& l = t.getTokens();
 
-			string::size_type j, k = 0;
+			for(StringIter it = l.begin(); it != l.end(); ++it) {
+				v.push_back(ClientManager::getInstance()->getUser(*it, this));
+			}
+
 			{
 				Lock l(cs);
-				while( (j=param.find("$$", k)) != string::npos) {
-					if(j == k) {
-						k += 2;
-						continue;
-					}
-					string nick = param.substr(k, j-k);
-					User::Ptr& u = users[nick] = ClientManager::getInstance()->getUser(nick, this);
-
-					v.push_back(u);
-					k = j + 2;
+				for(User::Iter it2 = v.begin(); it2 != v.end(); ++it2) {
+					users[(*it2)->getNick()] = *it2;
 				}
 			}
 			
@@ -484,21 +513,17 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$OpList") {
 		if(!param.empty()) {
 			User::List v;
-			string::size_type j, k;
-			k = 0;
+			StringTokenizer t(param, "$$");
+			StringList& l = t.getTokens();
+			for(StringIter it = l.begin(); it != l.end(); ++it) {
+				v.push_back(ClientManager::getInstance()->getUser(*it, this));
+				v.back()->setFlag(User::OP);
+			}
+
 			{
 				Lock l(cs);
-				while( (j=param.find("$$", k)) != string::npos) {
-					if(j == k) {
-						k += 2;
-						continue;
-					}
-					string nick = param.substr(k, j-k);
-					User::Ptr& u = users[nick] = ClientManager::getInstance()->getUser(nick, this);
-					u->setFlag(User::OP);
-
-					v.push_back(u);
-					k = j + 2;
+				for(User::Iter it2 = v.begin(); it2 != v.end(); ++it2) {
+					users[(*it2)->getNick()] = *it2;
 				}
 			}
 			fire(ClientListener::OP_LIST, this, v);
@@ -704,6 +729,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.63 2003/11/14 15:37:36 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.64 2003/11/27 10:33:14 arnetheduck Exp $
  */
 

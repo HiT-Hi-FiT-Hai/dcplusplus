@@ -118,6 +118,7 @@ public:
 	void putUserOffline(User::Ptr& aUser, bool quitHub = false) {
 		{
 			Lock l(cs);
+			aUser->setIp(Util::emptyString);
 			aUser->unsetFlag(User::PASSIVE);
 			aUser->unsetFlag(User::OP);
 			aUser->unsetFlag(User::DCPLUSPLUS);
@@ -160,6 +161,7 @@ private:
 
 		features.push_back("UserCommand");
 		features.push_back("NoGetINFO");
+		features.push_back("UserIP2");
 	};
 
 	// Dummy...
@@ -189,6 +191,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.39 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.40 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

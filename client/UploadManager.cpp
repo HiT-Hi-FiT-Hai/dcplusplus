@@ -72,7 +72,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		userlist = true;
 	}
 
-	if( File::getSize(file) < (int64_t)(16 * 1024) ) {
+	if( File::getSize(file) < (int64_t)(32 * 1024) ) {
 		smallfile = true;
 	}
 
@@ -246,6 +246,8 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 		params["sizeshort"] = Util::formatBytes(u->getSize());
 		params["chunksize"] = Util::toString(u->getTotal());
 		params["chunksizeshort"] = Util::formatBytes(u->getTotal());
+		params["actualsize"] = Util::toString(u->getActual());
+		params["actualsizeshort"] = Util::formatBytes(u->getActual());
 		params["speed"] = Util::formatBytes(u->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - u->getStart()) / 1000);
 		LOG(UPLOAD_AREA, Util::formatParams(SETTING(LOG_FORMAT_POST_UPLOAD), params));
@@ -371,5 +373,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.45 2003/11/21 17:00:54 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.46 2003/11/27 10:33:15 arnetheduck Exp $
  */

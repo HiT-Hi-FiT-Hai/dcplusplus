@@ -128,6 +128,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
+		COMMAND_ID_HANDLER(IDC_OPEN_DOWNLOADS, onOpenDownloads)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -234,6 +235,10 @@ public:
 		return 0;
 	}
 
+	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		WinUtil::openFile(SETTING(DOWNLOAD_DIRECTORY));
+		return 0;
+	}
 
 	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		MDICascade();
@@ -329,7 +334,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.27 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.28 2003/11/27 10:33:15 arnetheduck Exp $
  */
 
  

@@ -700,7 +700,7 @@ void QueueFrame::moveSelectedDir() {
 void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 	HTREEITEM next = ctrlDirs.GetChildItem(ht);
 	while(next != NULL) {
-		moveDir(next, target);
+		moveDir(next, target + Util::getLastDir(getDir(next)));
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
 	string* s = (string*)ctrlDirs.GetItemData(ht);
@@ -1263,7 +1263,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.37 2003/11/19 19:50:45 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.38 2003/11/27 10:33:15 arnetheduck Exp $
  */
 
 

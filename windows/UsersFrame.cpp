@@ -21,10 +21,8 @@
 #include "Resource.h"
 
 #include "UsersFrame.h"
-#include "PrivateFrame.h"
 
 #include "../client/StringTokenizer.h"
-#include "../client/QueueManager.h"
 
 int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN };
 int UsersFrame::columnSizes[] = { 200, 150, 300, 125 };
@@ -58,10 +56,9 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	usersMenu.CreatePopupMenu();
-	usersMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	usersMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	appendUserItems(usersMenu);
+	usersMenu.AppendMenu(MF_SEPARATOR);
 	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-	usersMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 
 	HubManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -82,110 +79,48 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 }
 
+
 LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlUsers.GetNextItem(-1, LVNI_SELECTED)) != -1) {
-		HubManager::getInstance()->removeFavoriteUser(((UserInfo*)ctrlUsers.GetItemData(i))->user);
-	}
+	ctrlUsers.forEachSelected(&UserInfo::remove);
 	return 0;
 }
 
 LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
 	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
-		User::Ptr &f = *(User::Ptr *)ctrlUsers.GetItemData(l->iItem);
-		f->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
+		ctrlUsers.getItemData(l->iItem)->user->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
 		HubManager::getInstance()->save();
 	}
 	return 0;
 } 
 
 void UsersFrame::addUser(const User::Ptr& aUser) {
-	dcassert(ctrlUsers.find(aUser->getNick()) == -1);
-
-	StringList l;
-	l.push_back(aUser->getNick());
-	l.push_back(aUser->isOnline() ? STRING(ONLINE) : STRING(OFFLINE));
-	if(aUser->getLastHubAddress().empty()) {
-		l.push_back(aUser->getClientName());
-	} else {
-		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubAddress() + ")");
-	}
-	if (!aUser->isOnline())
-		l.push_back(Util::formatTime("%Y-%m-%d %H:%M", aUser->getFavoriteLastSeen()));
-	else
-		l.push_back("");
+	int i = ctrlUsers.insertItem(new UserInfo(aUser), 0);
 	bool b = aUser->getFavoriteGrantSlot();
-	int i =  ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
 	ctrlUsers.SetCheckState(i, b);
 }
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
-	int i = ctrlUsers.find(aUser->getNick());
-	dcassert(i != -1);
-	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
-	ctrlUsers.SetItemText(i, 1, aUser->isOnline() ? CSTRING(ONLINE) : CSTRING(OFFLINE) );
-	ctrlUsers.SetItemText(i, 2, (aUser->getLastHubName() + " (" + aUser->getLastHubAddress() + ")").c_str());
-	if (!aUser->isOnline())
-		ctrlUsers.SetItemText(i, 3, Util::formatTime("%Y-%m-%d %H:%M", aUser->getFavoriteLastSeen()).c_str());
-	else
-		ctrlUsers.SetItemText(i, 3, "");
+	int i = -1;
+	while((i = ctrlUsers.findItem(aUser->getNick(), i)) != -1) {
+		UserInfo *ui = ctrlUsers.getItemData(i);
+		if(ui->user == aUser) {
+			ui->update();
+			ctrlUsers.update(i);
+		}
+	}
 }
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
-	int i = ctrlUsers.find(aUser->getNick());
-	dcassert(i != -1);
-	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
-	UserInfo *ui = (UserInfo*)ctrlUsers.GetItemData(i);
-	ctrlUsers.DeleteItem(i);
-	delete ui;
-}
-
-LRESULT UsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	//char buf[256];
-	
-	bool needToSave = false;
-
-	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-		ui->user->setFavoriteGrantSlot(!ui->user->getFavoriteGrantSlot());
-		updateUser(ui->user);
-		needToSave = true;
-	}
-
-	if (needToSave)
-		HubManager::getInstance()->save();
-
-	return 0;
-}
-
-LRESULT UsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	char buf[256];
-	
-	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-		try {
-			QueueManager::getInstance()->addList(ui->user, QueueItem::FLAG_CLIENT_VIEW);
-		} catch(...) {
-			// ...
+	int i = -1;
+	while((i = ctrlUsers.findItem(aUser->getNick(), i)) != -1) {
+		UserInfo *ui = ctrlUsers.getItemData(i);
+		if(ui->user == aUser) {
+			ctrlUsers.DeleteItem(i);
+			delete ui;
+			return;
 		}
 	}
-	return 0;
-}
-
-LRESULT UsersFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	char buf[256];
-	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-		if(ui->user->isOnline())
-			PrivateFrame::openWindow(ui->user);
-	}
-	return 0;
 }
 
 LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -200,6 +135,10 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		WinUtil::saveHeaderOrder(ctrlUsers, SettingsManager::USERSFRAME_ORDER, 
 			SettingsManager::USERSFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
+		for(int i = 0; i < ctrlUsers.GetItemCount(); ++i) {
+			delete ctrlUsers.getItemData(i);
+		}
+
 		MDIDestroy(m_hWnd);
 		return 0;
 	}
@@ -207,6 +146,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.16 2003/11/19 19:50:45 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.17 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

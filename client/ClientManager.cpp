@@ -66,7 +66,7 @@ void ClientManager::putClient(Client* aClient) {
 }
 
 void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw() {
-	if(aUser->getNick() == aClient->getNick() && aClient->getFirstHello()) {
+	if(aUser == aClient->getMe() && aClient->getFirstHello()) {
 		aClient->version(SETTING(CLIENTVERSION));
 		aClient->getNickList();
 		aClient->myInfo();
@@ -328,12 +328,6 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 			}
 		} break;
 	case ClientListener::OP_LIST:
-		{
-			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				if((*i)->getNick() == client->getNick())
-					client->setOp(true);
-			}
-		}
 		break;
 	default:
 		break;
@@ -361,5 +355,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.46 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.47 2003/11/27 10:33:15 arnetheduck Exp $
  */

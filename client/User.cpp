@@ -151,6 +151,16 @@ void User::setClient(Client* aClient) {
 	}
 };
 
+void User::getParams(StringMap& ucParams) {
+	ucParams["nick"] = getNick();
+	ucParams["tag"] = getTag();
+	ucParams["description"] = getDescription();
+	ucParams["email"] = getEmail();
+	ucParams["share"] = Util::toString(getBytesShared());
+	ucParams["shareshort"] = Util::formatBytes(getBytesShared());
+	ucParams["ip"] = getIp();
+}
+
 // favorite user stuff
 void User::setFavoriteUser(FavoriteUser* aUser)
 {
@@ -201,6 +211,6 @@ u_int32_t User::getFavoriteLastSeen() const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.26 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: User.cpp,v 1.27 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

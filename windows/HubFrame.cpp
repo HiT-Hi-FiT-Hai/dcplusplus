@@ -708,12 +708,7 @@ void HubFrame::runUserCommand(UserCommand& uc) {
 		int sel = -1;
 		while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 			UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
-			ucParams["nick"] = u->user->getNick();
-			ucParams["tag"] = u->user->getTag();
-			ucParams["description"] = u->user->getDescription();
-			ucParams["email"] = u->user->getEmail();
-			ucParams["share"] = Util::toString(u->user->getBytesShared());
-			ucParams["shareshort"] = Util::formatBytes(u->user->getBytesShared());
+			u->user->getParams(ucParams);
 			client->send(Util::formatParams(uc.getCommand(), ucParams));
 		}
 	}
@@ -1119,5 +1114,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.45 2003/11/19 22:52:00 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.46 2003/11/27 10:33:15 arnetheduck Exp $
  */

@@ -180,9 +180,14 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 		}
 		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			if(d.find(i->first + PATH_SEPARATOR) != string::npos) {
+			if(Util::stricmp(d, i->first)) {
+				// Trying to share an already shared directory
 				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
-			} else if(i->first.find(d + PATH_SEPARATOR) != string::npos) {
+			} else if(Util::findSubString(d, i->first + PATH_SEPARATOR) != string::npos) {
+				// Trying to share a subdirectory
+				throw ShareException(STRING(DIRECTORY_ALREADY_SHARED));
+			} else if(Util::findSubString(i->first, d + PATH_SEPARATOR) != string::npos) {
+				// Trying to share a parent directory
 				throw ShareException(STRING(REMOVE_ALL_SUBDIRECTORIES));
 			}
 		}
@@ -467,7 +472,7 @@ static const char* typeCompressed[] = { ".zip", ".ace", ".rar" };
 static const char* typeDocument[] = { ".htm", ".doc", ".txt", ".nfo" };
 static const char* typeExecutable[] = { ".exe" };
 static const char* typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".img", ".pct", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
-static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp" };
+static const char* typeVideo[] = { ".mpg", ".mov", ".asf", ".avi", ".pxp", ".wmv", ".ogm" };
 
 static const string type2Audio[] = { ".au", ".aiff" };
 static const string type2Picture[] = { ".ai", ".ps", ".pict" };
@@ -738,6 +743,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.66 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.67 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

@@ -29,6 +29,7 @@ private:
 	StringList tokens;
 public:
 	StringTokenizer(const string& aString, char aToken = '\n');
+	StringTokenizer(const string& aString, const char* aToken);
 	StringList& getTokens() { return tokens; };
 	~StringTokenizer() { };
 
@@ -38,5 +39,5 @@ public:
 
 /**
  * @file
- * $Id: StringTokenizer.h,v 1.5 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: StringTokenizer.h,v 1.6 2003/11/27 10:33:15 arnetheduck Exp $
  */

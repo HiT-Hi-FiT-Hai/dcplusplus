@@ -84,9 +84,9 @@ public:
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return FindItem(&fi, -1);
 	}
-	int findItem(const string& b) {
+	int findItem(const string& b, int start = -1) {
 		LVFINDINFO fi = { LVFI_STRING, b.c_str() };
-		return FindItem(&fi, -1);
+		return FindItem(&fi, start);
 	}
 
 	void forEach(void (T::*func)()) {
@@ -182,5 +182,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.7 2003/11/24 18:46:30 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.8 2003/11/27 10:33:15 arnetheduck Exp $
 */

@@ -478,6 +478,8 @@ noCRC:
 		params["sizeshort"] = Util::formatBytes(d->getSize());
 		params["chunksize"] = Util::toString(d->getTotal());
 		params["chunksizeshort"] = Util::formatBytes(d->getTotal());
+		params["actualsize"] = Util::toString(d->getActual());
+		params["actualsizeshort"] = Util::formatBytes(d->getActual());
 		params["speed"] = Util::formatBytes(d->getAverageSpeed()) + "/s";
 		params["time"] = Util::formatSeconds((GET_TICK() - d->getStart()) / 1000);
 		params["sfv"] = Util::toString(d->isSet(Download::FLAG_CRC32_OK) ? 1 : 0);
@@ -666,5 +668,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.82 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.83 2003/11/27 10:33:15 arnetheduck Exp $
  */

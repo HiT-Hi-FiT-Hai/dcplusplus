@@ -264,12 +264,8 @@ void PrivateFrame::runUserCommand(UserCommand& uc) {
 
 	ucParams["mynick"] = user->getClientNick();
 
-	ucParams["nick"] = user->getNick();
-	ucParams["tag"] = user->getTag();
-	ucParams["description"] = user->getDescription();
-	ucParams["email"] = user->getEmail();
-	ucParams["share"] = Util::toString(user->getBytesShared());
-	ucParams["shareshort"] = Util::formatBytes(user->getBytesShared());
+	user->getParams(ucParams);
+
 	user->send(Util::formatParams(uc.getCommand(), ucParams));
 	return;
 };
@@ -344,7 +340,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.22 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.23 2003/11/27 10:33:15 arnetheduck Exp $
  */
 
 

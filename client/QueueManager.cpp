@@ -68,8 +68,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 		}
 	}
 
-	const string& tgt = qi->getTempTarget().empty() ? qi->getTarget() : qi->getTempTarget();
-	if((qi->getDownloadedBytes() > 0) || (File::getSize(tgt) > 0))
+	if((qi->getDownloadedBytes() > 0))
 		qi->setFlag(QueueItem::FLAG_EXISTS);
 
 	dcassert(find(aTarget) == NULL);
@@ -391,7 +390,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
 	}
 
-	string target = checkTarget(aTarget, aSize);
+	string target = checkTarget(aTarget, aSize, aFlags);
 
 	// Check if it's a zero-byte file, if so, create and return...
 	if(aSize == 0) {
@@ -426,7 +425,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-string QueueManager::checkTarget(const string& aTarget, int64_t aSize) throw(QueueException, FileException) {
+string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
 #ifdef WIN32
 	if(aTarget.length() > MAX_PATH) {
 		throw QueueException(STRING(TARGET_FILENAME_TOO_LONG));
@@ -445,9 +444,12 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize) throw(Que
 	string target = Util::validateFileName(aTarget);
 
 	// Check that the file doesn't already exist...
-	if( (aSize != -1) && (aSize <= File::getSize(target)) )  {
+	int64_t sz = File::getSize(target);
+	if( (aSize != -1) && (aSize <= sz) )  {
 		throw FileException(STRING(LARGER_TARGET_FILE_EXISTS));
 	}
+	if(sz > 0)
+		flags |= QueueItem::FLAG_EXISTS;
 
 	return target;
 }
@@ -1037,8 +1039,10 @@ void QueueManager::load(SimpleXML* aXml) {
 			int64_t size = aXml->getLongLongChildAttrib(sSize);
 			if(size == 0)
 				continue;
+			int flags = QueueItem::FLAG_RESUME;
+
 			try {
-				target = checkTarget(aXml->getChildAttrib(sTarget), size);
+				target = checkTarget(aXml->getChildAttrib(sTarget), size, flags);
 				if(target.empty())
 					continue;
 			} catch(const Exception&) {
@@ -1052,7 +1056,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				added = GET_TIME();
 			QueueItem* qi = fileQueue.find(target);
 			if(qi == NULL) {
-				qi = fileQueue.add(target, size, searchString, QueueItem::FLAG_RESUME, p, tempTarget, downloaded, added);
+				qi = fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added);
 				fire(QueueManagerListener::ADDED, qi);
 			}
 
@@ -1242,5 +1246,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.60 2003/11/21 17:00:53 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.61 2003/11/27 10:33:15 arnetheduck Exp $
  */

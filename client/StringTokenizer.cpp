@@ -24,7 +24,7 @@
 StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */) {
 	string::size_type i = 0;
 	string::size_type j = 0;
-	while( (i=aString.find_first_of(aToken, j)) != string::npos ) {
+	while( (i=aString.find(aToken, j)) != string::npos ) {
 		tokens.push_back(aString.substr(j, i-j));
 		j = i + 1;
 	}
@@ -32,8 +32,20 @@ StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */
 		tokens.push_back(aString.substr(j, aString.size()-j));
 }
 
+StringTokenizer::StringTokenizer(const string& aString, const char* aToken) {
+	string::size_type i = 0;
+	string::size_type j = 0;
+	size_t l = strlen(aToken);
+	while( (i=aString.find(aToken, j)) != string::npos ) {
+		tokens.push_back(aString.substr(j, i-j));
+		j = i + l;
+	}
+	if(j < aString.size())
+		tokens.push_back(aString.substr(j, aString.size()-j));
+}
+
 /**
  * @file
- * $Id: StringTokenizer.cpp,v 1.8 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: StringTokenizer.cpp,v 1.9 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

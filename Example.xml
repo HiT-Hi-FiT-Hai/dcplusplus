@@ -164,6 +164,7 @@
 		<String Name="MenuFaq">Frequently asked questions</String>
 		<String Name="MenuHelpForum">Help forum</String>
 		<String Name="MenuHomepage">DC++ Homepage</String>
+		<String Name="MenuOpenDownloadsDir">Open downloads directory</String>
 		<String Name="MenuReadme">Readme / Newbie help</String>
 		<String Name="MenuRequestFeature">Request a feature</String>
 		<String Name="MenuReportBug">Report a bug</String>

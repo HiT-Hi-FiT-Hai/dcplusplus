@@ -1,11 +1,18 @@
  -- 0.305 --
 * Fixed disappearing queue items bug
 * Fixed displaying of upload compression in progress bar
-* Added compression ratio column
+* Added compression ratio column and %[actualsize] and %[actualsizeshort] to log formats available
 * Fixed doubled name when downloading directories from search frame
 * Fixed a mem leak for safe transfers
 * Fixed a crash during downloads
 * Fixed speed problems with user list
+* Added "open download directory" to file and tray menu
+* Shift-clicking tab will close window (thanks twink)
+* Added support for $UserIP, %[ip] as user command parameter and server side ip detection (automatically used
+  if the ip field in settings is blank)
+* Transfer bar colors updated (they'll be made user-configurable one fine day)
+* Fixed possibility to share same folder twice (thanks theparaniodone)
+
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)

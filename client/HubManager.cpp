@@ -334,11 +334,10 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) throw() {
 	if(type == SettingsManagerListener::LOAD) {
 		load(xml); 
-		load();
 	}
 }
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.40 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.41 2003/11/27 10:33:15 arnetheduck Exp $
  */

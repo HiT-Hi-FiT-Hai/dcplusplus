@@ -281,7 +281,8 @@
 #define IDC_BUTTON2                     1209
 #define IDC_REFRESH_FILE_LIST           1210
 #define IDC_ONCE_PER_NICK               1211
-#define IDC_SETTINGS_ONCE               1211
+#define IDC_SETTINGS_ONCE               1212
+#define IDC_OPEN_DOWNLOADS				1213
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -316,7 +317,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1212
+#define _APS_NEXT_CONTROL_VALUE         1214
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

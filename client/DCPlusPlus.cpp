@@ -41,8 +41,6 @@ void startup(void (*f)(void*, const string&), void* p) {
 	ResourceManager::newInstance();
 	SettingsManager::newInstance();
 
-	if(f != NULL)
-		(*f)(p, STRING(SHARED_FILES));
 	LogManager::newInstance();
 	TimerManager::newInstance();
 	ShareManager::newInstance();
@@ -57,8 +55,13 @@ void startup(void (*f)(void*, const string&), void* p) {
 	FinishedManager::newInstance();
 	ADLSearchManager::newInstance();
 
-	SettingsManager::getInstance()->load();	
+	SettingsManager::getInstance()->load();
 
+	if(!SETTING(LANGUAGE_FILE).empty()) {
+		ResourceManager::getInstance()->loadLanguage(SETTING(LANGUAGE_FILE));
+	}
+
+	HubManager::getInstance()->load();
 	int i;
 	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
 		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
@@ -102,6 +105,8 @@ void startup(void (*f)(void*, const string&), void* p) {
 		}
 	}
 
+	if(f != NULL)
+		(*f)(p, STRING(SHARED_FILES));
 	ShareManager::getInstance()->refresh(false, false, true);
 	if(f != NULL)
 		(*f)(p, STRING(DOWNLOAD_QUEUE));
@@ -134,6 +139,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.26 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.27 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

@@ -57,6 +57,7 @@ public:
 		MY_INFO,
 		NICK_LIST,
 		OP_LIST,
+		USER_IP,
 		PRIVATE_MESSAGE,
 		REV_CONNECT_TO_ME,
 		SEARCH,
@@ -71,7 +72,7 @@ public:
 	virtual void onAction(Types, Client*, const string&) throw() { };
 	virtual void onAction(Types, Client*, const string&, const string&) throw() { };
 	virtual void onAction(Types, Client*, const User::Ptr&) throw() { };
-	virtual void onAction(Types, Client*, const User::List&) throw() { };
+	virtual void onAction(Types, Client*, const User::List&) throw() { };		// USER_IP
 	virtual void onAction(Types, Client*, const User::Ptr&, const string&) throw() { };
 	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) throw() { };
 	virtual void onAction(Types, Client*, int, int, const string&, const string&) throw() { }; // USER_COMMAND
@@ -88,7 +89,8 @@ public:
 
 	enum SupportFlags {
 		SUPPORTS_USERCOMMAND = 0x01,
-		SUPPORTS_NOGETINFO = 0x02, 
+		SUPPORTS_NOGETINFO = 0x02,
+		SUPPORTS_USERIP2 = 0x04,
 	};
 
 	User::NickMap& lockUserList() throw() { cs.enter(); return users; };
@@ -208,6 +210,9 @@ public:
 		if(!SETTING(SERVER).empty()) {
 			return Socket::resolve(SETTING(SERVER));
 		}
+		if(!me->getIp().empty())
+			return me->getIp();
+
 		if(socket == NULL)
 			return Util::getLocalIp();
 		string tmp = socket->getLocalIp();
@@ -219,11 +224,15 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
-	GETSETREF(string, nick, Nick);
+	const string& getNick() { return me->getNick(); };
+	void setNick(const string& aNick);
+
+	bool getOp() { return me->isSet(User::OP); };
+
+	GETSETREF(User::Ptr, me, Me);
 	GETSETREF(string, defpassword, Password);
 	GETSET(int, supportFlags, SupportFlags);
 	GETSET(bool, userInfo, UserInfo);
-	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
 	GETSET(bool, firstHello, FirstHello);
 private:
@@ -278,15 +287,7 @@ private:
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), supportFlags(0), userInfo(true), op(false), 
-		registered(false), firstHello(true), state(STATE_CONNECT), 
-		socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
-		countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
-		TimerManager::getInstance()->addListener(this);
-		socket->addListener(this);
-	
-	};
-	
+	Client();	
 	virtual ~Client() throw();
 	void connect();
 
@@ -306,6 +307,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.73 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: Client.h,v 1.74 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

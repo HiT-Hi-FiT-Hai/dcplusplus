@@ -804,6 +804,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		mnuTrayMenu.CreatePopupMenu();
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_SHOW, CSTRING(MENU_SHOW));
 		mnuTrayMenu.AppendMenu(MF_STRING, IDC_TRAY_QUIT, CSTRING(MENU_EXIT));
+		mnuTrayMenu.AppendMenu(MF_STRING, IDC_OPEN_DOWNLOADS, CSTRING(MENU_OPEN_DOWNLOADS_DIR));
 		GetCursorPos(&pt);
 		SetForegroundWindow(m_hWnd); 
 		mnuTrayMenu.TrackPopupMenu(TPM_BOTTOMALIGN|TPM_LEFTBUTTON|TPM_RIGHTBUTTON,pt.x,pt.y,m_hWnd);
@@ -912,6 +913,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.37 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.38 2003/11/27 10:33:15 arnetheduck Exp $
  */
 

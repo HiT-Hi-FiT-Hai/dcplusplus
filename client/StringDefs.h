@@ -168,6 +168,7 @@ enum Strings { // @DontAdd
 	MENU_FAQ, // "Frequently asked questions"
 	MENU_HELP_FORUM, // "Help forum"
 	MENU_HOMEPAGE, // "DC++ Homepage"
+	MENU_OPEN_DOWNLOADS_DIR, // "Open downloads directory"
 	MENU_README, // "Readme / Newbie help"
 	MENU_REQUEST_FEATURE, // "Request a feature"
 	MENU_REPORT_BUG, // "Report a bug"

@@ -44,19 +44,19 @@ void HttpConnection::downloadFile(const string& aUrl) {
 	ok = false;
 	size = -1;
 	// set download type
-	if(Util::stricmp(aUrl.substr(aUrl.size() - 4), ".bz2") == 0) {
+	if(Util::stricmp(currentUrl.substr(currentUrl.size() - 4), ".bz2") == 0) {
 		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);
 	} else {
 		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL, this);
 	}
 
 	if(SETTING(HTTP_PROXY).empty()) {
-		Util::decodeUrl(aUrl, server, port, file);
+		Util::decodeUrl(currentUrl, server, port, file);
 		if(file.empty())
 			file = "/";
 	} else {
 		Util::decodeUrl(SETTING(HTTP_PROXY), server, port, file);
-		file = aUrl;
+		file = currentUrl;
 	}
 
 	if(port == 0)
@@ -182,6 +182,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.21 2003/11/19 19:50:44 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.22 2003/11/27 10:33:15 arnetheduck Exp $
  */
 
