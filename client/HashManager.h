@@ -31,6 +31,7 @@
 #include "TimerManager.h"
 #include "Util.h"
 #include "FastAlloc.h"
+#include "Text.h"
 
 class HashManagerListener {
 public:
@@ -182,53 +183,22 @@ private:
 
 		void rebuild();
 
-		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
-			string fname = Text::toLower(Util::getFileName(aFileName));
-			string fpath = Text::toLower(Util::getFilePath(aFileName));
-			DirIter i = indexTTH.find(fpath);
-			if(i != indexTTH.end()) {
-				FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
-				if(j != i->second.end()) {
-					FileInfo* fi = *j;
-					if(fi->getSize() != aSize || fi->getTimeStamp() != aTimeStamp) {
-						delete fi;
-						i->second.erase(j);
-						if(i->second.empty()) {
-							indexTTH.erase(i);
-						}
-						dirty = true;
-						return false;
-					}
-				return true;
-			} 
-			return false;
-		}
+		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
-		TTHValue* getTTH(const string& aFileName) {
-			string fname = Text::toLower(Util::getFileName(aFileName));
-			string fpath = Text::toLower(Util::getFilePath(aFileName));
-			
-			DirIter i = indexTTH.find(fpath);
-			if(i != indexTTH.end()) {
-				FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
-				if(j != i->second.end()) {
-					(*j)->setUsed(true);
-					return &((*j)->getRoot());
-				}
-			}
-			return NULL;
-		}
-
+		TTHValue* getTTH(const string& aFileName);
 		bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
 		public:
-			typedef vector<FileInfo*> List;
-			typedef List:iterator Iter;
-			
+			struct StringComp {
+				const string& str;
+				StringComp(const string& aStr) : str(aStr) { }
+				bool operator()(FileInfo* a) { return a->getFileName() == str; }	
+			};
+
 			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), Text::toLower(Util::getFileName(aFileName)) { }
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(Text::toLower(Util::getFileName(aFileName))) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
@@ -243,8 +213,10 @@ private:
 			GETSET(string, fileName, FileName);
 		};
 
-		
-		typedef HASH_MAP<string, FileInfo::List> DirMap;
+		typedef vector<FileInfo*> FileInfoList;
+		typedef FileInfoList::iterator FileInfoIter;
+
+		typedef HASH_MAP<string, FileInfoList> DirMap;
 		typedef DirMap::iterator DirIter;
 		
 		friend class HashLoader;
@@ -279,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.20 2004/10/24 10:01:34 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.21 2004/10/24 10:37:11 arnetheduck Exp $
  */

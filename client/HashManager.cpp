@@ -79,10 +79,10 @@ void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& t
 			
 	DirIter i = indexTTH.find(fpath);
 	if(i == indexTTH.end()) {
-		i = indexTTH.insert(make_pair(fpath, FileInfo::List));
+		i = indexTTH.insert(make_pair(fpath, FileInfoList())).first;
 	}
 	
-	FileInfo::Iter j = find(i->second.begin(), i->second.end(), fname);
+	FileInfoIter j = find_if(i->second.begin(), i->second.end(), FileInfo::StringComp(fname));
 	if(j == i->second.end()) {
 		try {
 			int64_t pos = addLeaves(tth.getLeaves());
@@ -94,8 +94,8 @@ void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& t
 			// Oops, lost it...
 		}
 	} else {
+		FileInfo* fi = *j;
 		try {
-			FileInfo* fi = *j;
 			fi->setRoot(tth.getRoot());
 			fi->setBlockSize(tth.getBlockSize());
 			fi->setSize(tth.getFileSize());
@@ -131,14 +131,23 @@ int64_t HashManager::HashStore::addLeaves(const TigerTree::MerkleList& leaves) {
 }
 
 bool HashManager::HashStore::getTree(const string& aFileName, const TTHValue* root, TigerTree& tth) {
-	TTHIter i = indexTTH.find(aFileName);
-	if(i == indexTTH.end())
+	string fname = Text::toLower(Util::getFileName(aFileName));
+	string fpath = Text::toLower(Util::getFilePath(aFileName));
+
+	DirIter i = indexTTH.find(fpath);
+	if(i == indexTTH.end()) {
 		return false;
+	}
+
+	FileInfoIter j = find_if(i->second.begin(), i->second.end(), FileInfo::StringComp(fname));
+	if(j == i->second.end()) {
+		return false;
+	}
 
 	// Check if it's the same root that we want...if not, remove the entry
 	// Probably we're redownloading to the same filename
 
-	FileInfo* fi = i->second;
+	FileInfo* fi = *j;
 
 	if(root != NULL && fi->getRoot() != *root) {
 		dirty = true;
@@ -162,6 +171,44 @@ bool HashManager::HashStore::getTree(const string& aFileName, const TTHValue* ro
 	return true;
 }
 
+bool HashManager::HashStore::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+	string fname = Text::toLower(Util::getFileName(aFileName));
+	string fpath = Text::toLower(Util::getFilePath(aFileName));
+	DirIter i = indexTTH.find(fpath);
+	if(i != indexTTH.end()) {
+		FileInfoIter j = find_if(i->second.begin(), i->second.end(), FileInfo::StringComp(fname));
+		if(j != i->second.end()) {
+			FileInfo* fi = *j;
+			if(fi->getSize() != aSize || fi->getTimeStamp() != aTimeStamp) {
+				delete fi;
+				i->second.erase(j);
+				if(i->second.empty()) {
+					indexTTH.erase(i);
+				}
+				dirty = true;
+				return false;
+			}
+			return true;
+		}
+	} 
+	return false;
+}
+
+TTHValue* HashManager::HashStore::getTTH(const string& aFileName) {
+	string fname = Text::toLower(Util::getFileName(aFileName));
+	string fpath = Text::toLower(Util::getFilePath(aFileName));
+
+	DirIter i = indexTTH.find(fpath);
+	if(i != indexTTH.end()) {
+		FileInfoIter j = find_if(i->second.begin(), i->second.end(), FileInfo::StringComp(fname));
+		if(j != i->second.end()) {
+			(*j)->setUsed(true);
+			return &((*j)->getRoot());
+		}
+	}
+	return NULL;
+}
+
 void HashManager::HashStore::rebuild() {
 	int64_t maxPos = sizeof(maxPos);
 	try {
@@ -173,19 +220,21 @@ void HashManager::HashStore::rebuild() {
 		f.write(&maxPos, sizeof(maxPos));
 		f.close();
 		size_t dataLen = 0;
-		for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
-			FileInfo* fi = i->second;
-			dataLen = TTHValue::SIZE * TigerTree::calcBlocks(fi->getSize(), fi->getBlockSize());
-			if(fi->getUsed() && fi->getIndex() + dataLen < len) {
-				TigerTree tt(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf + fi->getIndex());
-				if(tt.getRoot() == fi->getRoot()) {
-					maxPos = addLeaves(tt.getLeaves());
-					fi->setIndex(maxPos);
+		for(DirIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
+			for(FileInfoIter j = i->second.begin(); j != i->second.end(); ++j) {
+				FileInfo* fi = *j;
+				dataLen = TTHValue::SIZE * TigerTree::calcBlocks(fi->getSize(), fi->getBlockSize());
+				if(fi->getUsed() && fi->getIndex() + dataLen < len) {
+					TigerTree tt(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf + fi->getIndex());
+					if(tt.getRoot() == fi->getRoot()) {
+						maxPos = addLeaves(tt.getLeaves());
+						fi->setIndex(maxPos);
+					} else {
+						fi->setIndex(0);
+					}
 				} else {
 					fi->setIndex(0);
 				}
-			} else {
-				fi->setIndex(0);
 			}
 		}
 		maxPos += dataLen;
@@ -213,24 +262,28 @@ void HashManager::HashStore::save() {
 
 			f.write(SimpleXML::utf8Header);
 			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">\r\n"));
-			for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
-				if(i->second->getIndex() == 0)
-					continue;
+			for(DirIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
+				const string& dir = i->first;
+				for(FileInfoIter j = i->second.begin(); j != i->second.end(); ++j) {
+					FileInfo* fi = *j;
+					if(fi->getIndex() == 0)
+						continue;
 
-				f.write(LITERAL("\t<File Name=\""));
-				f.write(CHECKESCAPE(i->first));
-				f.write(LITERAL("\" Size=\""));
-				f.write(Util::toString(i->second->getSize()));
-				f.write(LITERAL("\" TimeStamp=\""));
-				f.write(Util::toString(i->second->getTimeStamp()));
-				f.write(LITERAL("\"><Hash Type=\"TTH\" Index=\""));
-				f.write(Util::toString(i->second->getIndex()));
-				f.write(LITERAL("\" LeafSize=\""));
-				f.write(Util::toString((u_int32_t)i->second->getBlockSize()));
-				f.write(LITERAL("\" Root=\""));
-				b32tmp.clear();
-				f.write(i->second->getRoot().toBase32(b32tmp));
-				f.write(LITERAL("\"/></File>\r\n"));
+					f.write(LITERAL("\t<File Name=\""));
+					f.write(CHECKESCAPE(dir + fi->getFileName()));
+					f.write(LITERAL("\" Size=\""));
+					f.write(Util::toString(fi->getSize()));
+					f.write(LITERAL("\" TimeStamp=\""));
+					f.write(Util::toString(fi->getTimeStamp()));
+					f.write(LITERAL("\"><Hash Type=\"TTH\" Index=\""));
+					f.write(Util::toString(fi->getIndex()));
+					f.write(LITERAL("\" LeafSize=\""));
+					f.write(Util::toString((u_int32_t)fi->getBlockSize()));
+					f.write(LITERAL("\" Root=\""));
+					b32tmp.clear();
+					f.write(fi->getRoot().toBase32(b32tmp));
+					f.write(LITERAL("\"/></File>\r\n"));
+				}
 			}
 			f.write(LITERAL("</HashStore>"));
 			f.flush();
@@ -290,8 +343,9 @@ void HashLoader::startTag(const string& name, StringPairList& attribs, bool) {
 		int64_t index = Util::toInt64(getAttrib(attribs, sIndex, 2));
 		const string& root = getAttrib(attribs, sRoot, 3);
 		if(!file.empty() && (type == sTTH) && (blockSize >= 1024) && (index >= 8) && !root.empty()) {
+			string fpath = Text::toLower(Util::getFilePath(name));
 			/** @todo Verify root against data file */
-			store.indexTTH.insert(make_pair(file, new HashManager::HashStore::FileInfo(TTHValue(root), size, index, blockSize, timeStamp, false)));
+			store.indexTTH[fpath].push_back(new HashManager::HashStore::FileInfo(name, TTHValue(root), size, index, blockSize, timeStamp, false));
 		}
 	}
 }
@@ -561,5 +615,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.30 2004/10/24 10:01:34 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.31 2004/10/24 10:37:11 arnetheduck Exp $
  */
