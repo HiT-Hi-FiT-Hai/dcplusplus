@@ -638,11 +638,11 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.23 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.24 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
- * Revision 1.23  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.24  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.22  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates

@@ -67,11 +67,11 @@ void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.9 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.10 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
- * Revision 1.9  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.10  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.8  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates

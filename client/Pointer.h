@@ -162,11 +162,11 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.3 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.4 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: Pointer.h,v $
- * Revision 1.3  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.4  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.2  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been

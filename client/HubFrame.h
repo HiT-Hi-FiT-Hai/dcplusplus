@@ -560,11 +560,11 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.26 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.27 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
- * Revision 1.26  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.27  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.25  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates

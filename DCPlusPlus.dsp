@@ -469,6 +469,10 @@ SOURCE=.\res\mdichild.bmp
 
 SOURCE=.\res\toolbar.bmp
 # End Source File
+# Begin Source File
+
+SOURCE=.\res\users.bmp
+# End Source File
 # End Group
 # End Target
 # End Project

@@ -97,11 +97,11 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.7 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.8 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
- * Revision 1.7  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.8  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.6  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates

@@ -160,11 +160,11 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.8 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.9 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
- * Revision 1.8  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.9  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.7  2002/01/02 16:12:32  arnetheduck
  * Added code for multiple download sources

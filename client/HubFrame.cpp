@@ -116,11 +116,11 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.14 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.15 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
- * Revision 1.14  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.15  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.13  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates

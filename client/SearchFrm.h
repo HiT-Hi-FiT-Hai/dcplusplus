@@ -418,11 +418,11 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.10 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.11 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
- * Revision 1.10  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.11  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.9  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates

@@ -353,11 +353,11 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.21 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.22 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
- * Revision 1.21  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.22  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.20  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates

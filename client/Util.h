@@ -224,11 +224,11 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.9 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: Util.h,v 1.10 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
- * Revision 1.9  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.10  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.8  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources

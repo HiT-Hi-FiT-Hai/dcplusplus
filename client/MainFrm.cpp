@@ -502,11 +502,11 @@ void MainFrame::onHttpComplete(HttpConnection* aConn)  {
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.31 2002/01/05 18:32:42 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.32 2002/01/05 19:06:09 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
- * Revision 1.31  2002/01/05 18:32:42  arnetheduck
- * Added two new icons, fixed some bugs, and updated some other things
+ * Revision 1.32  2002/01/05 19:06:09  arnetheduck
+ * Added user list images, fixed bugs and made things more effective
  *
  * Revision 1.30  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
