@@ -31,10 +31,9 @@
 ADLSearchFrame* ADLSearchFrame::frame = NULL;
 
 int ADLSearchFrame::columnIndexes[] = { 
-	COLUMN_SEARCH_STRING,
+	COLUMN_ACTIVE_SEARCH_STRING,
 	COLUMN_SOURCE_TYPE,
 	COLUMN_DEST_DIR,
-	COLUMN_IS_ACTIVE,
 	COLUMN_MIN_FILE_SIZE,
 	COLUMN_MAX_FILE_SIZE
 };
@@ -42,15 +41,13 @@ int ADLSearchFrame::columnSizes[] = {
 	120, 
 	90, 
 	90, 
-	50, 
 	90, 
 	90 
 };
 static ResourceManager::Strings columnNames[] = { 
-	ResourceManager::SEARCH_STRING, 
+	ResourceManager::ACTIVE_SEARCH_STRING, 
 	ResourceManager::SOURCE_TYPE, 
 	ResourceManager::DESTINATION, 
-	ResourceManager::ACTIVE, 
 	ResourceManager::SIZE_MIN, 
 	ResourceManager::SIZE_MAX, 
 };
@@ -74,9 +71,17 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Create list control
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_ADLLIST);
+	listContainer.SubclassWindow(ctrlList.m_hWnd);
 
-	// Must have full row select, otherwise inline edit will not work
-	ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+	// Ev. set full row select
+	if(BOOLSETTING(FULL_ROW_SELECT)) 
+	{
+		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
+	} 
+	else 
+	{
+		ctrlList.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | LVS_EX_HEADERDRAGDROP);
+	}
 
 	// Set background color
 	ctrlList.SetBkColor(WinUtil::bgColor);
@@ -96,12 +101,12 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	// Create buttons
 	ctrlAdd.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_ADD);
-	ctrlAdd.SetWindowText(CSTRING(ADD));
+	ctrlAdd.SetWindowText(CSTRING(NEW));
 	ctrlAdd.SetFont(WinUtil::font);
 
 	ctrlEdit.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_EDIT);
-	ctrlEdit.SetWindowText(CSTRING(EDIT));
+	ctrlEdit.SetWindowText(CSTRING(PROPERTIES));
 	ctrlEdit.SetFont(WinUtil::font);
 
 	ctrlRemove.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
@@ -123,6 +128,12 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		BS_PUSHBUTTON , 0, IDC_HELP_FAQ);
 	ctrlHelp.SetWindowText(CSTRING(WHATS_THIS));
 	ctrlHelp.SetFont(WinUtil::font);
+
+	// Create context menu
+	contextMenu.CreatePopupMenu();
+	contextMenu.AppendMenu(MF_STRING, IDC_ADD,    CSTRING(NEW));
+	contextMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	contextMenu.AppendMenu(MF_STRING, IDC_EDIT,   CSTRING(PROPERTIES));
 
 	// Load all searches
 	LoadAll();
@@ -216,6 +227,45 @@ void ADLSearchFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 }
 
+// Keyboard shortcuts
+LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	switch(wParam) 
+	{
+	case VK_INSERT:
+		onAdd(0, 0, 0, bHandled);
+		break;
+	case VK_DELETE:
+		onRemove(0, 0, 0, bHandled);
+		break;
+	case VK_RETURN:
+		onEdit(0, 0, 0, bHandled);
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+	
+LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) 
+{
+	// Get the bounding rectangle of the client area. 
+	RECT rc;
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+	ctrlList.GetClientRect(&rc);
+	ctrlList.ScreenToClient(&pt); 
+	
+	// Hit-test
+	if(PtInRect(&rc, pt)) 
+	{ 
+		ctrlList.ClientToScreen(&pt);
+		contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		return TRUE; 
+	}
+	
+	return FALSE; 
+}
+
 // Add new search
 LRESULT ADLSearchFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
 {
@@ -306,23 +356,20 @@ LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	char message[] = 
 		"ADLSearch is a tool for fast searching of directory listings downloaded from users. \n"
-		"Create a new ADLSearch entering 'mp3' as search string for example. When you \n"
-		"download a directory listing from a user, all mp3 files will be placed in a special folder \n"
+		"Create a new ADLSearch entering 'avi' as search string for example. When you \n"
+		"download a directory listing from a user, all avi-files will be placed in a special folder \n"
 		"called <<<ADLSearch>>> for easy finding. It is almost the same as using the standard \n"
 		"'Find' multiple times in a directory listing. \n"
 		"\n"
 		"Special options: \n"
+		"- 'Active' check box selects if the search is used or not. \n"
 		"- 'Source Type' can be the following options; 'Filename' matches search against filename, \n"
 		"   'Directory' matches against current subdirectory and places the whole structure in the \n"
 		"   special folder, 'Full Path' matches against whole directory + filename. \n"
 		"- 'Destination Directory' selects the special output folder for a search. Multiple folders \n"
-		"   can exist simultaneously. \n"
-		"- 'Active' selects if the search is used or not. \n"
+		"   with different names can exist simultaneously. \n"
 		"- 'Min/Max Size' sets file size limits. This is not used for 'Directory' type searches. \n"
-		"\n"
-		"Note also that the order of the searches is important. The top item search is matched first, \n"
-		"then the second, etc. If a search is matched, the ones below will not be tried. You can alter \n"
-		"the order with 'Move Up' and 'Move Down', which will move the current selection. \n"
+		"- 'Move Up'/'Move Down' can be used to organize the list of searches. \n"
 		"\n"
 		"There is a new option in the context menu (right-click) for directory listings. It is called \n"
 		"'Go to directory' and can be used to jump to the original location of the file or directory. \n"
@@ -446,10 +493,32 @@ LRESULT ADLSearchFrame::onMoveDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
-// Double-click on list control
-LRESULT ADLSearchFrame::OnDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) 
+// Clicked 'Active' check box
+LRESULT ADLSearchFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) 
 {
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
+
+	if((item->uChanged & LVIF_STATE) == 0)
+		return 0;
+	if((item->uOldState & INDEXTOSTATEIMAGEMASK(0xf)) == 0)
+		return 0;
+	if((item->uNewState & INDEXTOSTATEIMAGEMASK(0xf)) == 0)
+		return 0;
+
+	if(item->iItem >= 0)
+	{
+		// Set new active status check box
+		ADLSearchManager::SearchCollection& collection = ADLSearchManager::getInstance()->collection;
+		ADLSearch& search = collection[item->iItem];
+		search.isActive = (ctrlList.GetCheckState(item->iItem) != 0);
+	}
+	return 0;
+}
+
+// Double-click on list control
+LRESULT ADLSearchFrame::onDoubleClickList(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) 
+{
+	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 
 	// Hit-test
 	LVHITTESTINFO info;
@@ -503,7 +572,6 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	line.push_back(search.searchString);
 	line.push_back(search.SourceTypeToString(search.sourceType));
 	line.push_back(search.destDir);
-	line.push_back(search.isActive ? CSTRING(YES) : CSTRING(NO));
 
 	fs = "";
 	if(search.minFileSize >= 0)
@@ -525,9 +593,12 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 	// Insert in list control
 	ctrlList.insert(index, line);
+
+	// Update 'Active' check box
+	ctrlList.SetCheckState(index, search.isActive);
 }
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.2 2003/04/15 10:13:59 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.3 2003/05/07 09:52:09 arnetheduck Exp $
  */

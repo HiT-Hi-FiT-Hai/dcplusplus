@@ -723,7 +723,7 @@ LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
 			QueueManager::getInstance()->addList(s->getUser());
-		} catch(Exception) {
+		} catch(const Exception&) {
 		}
 	}
 	return 0;
@@ -742,7 +742,7 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
 			QueueManager::getInstance()->add(s->getPath(), q->getSize(), s->getUser(), q->getTarget());
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
@@ -953,7 +953,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.19 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.20 2003/05/07 09:52:09 arnetheduck Exp $
  */
 
 

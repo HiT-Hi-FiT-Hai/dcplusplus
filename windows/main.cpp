@@ -37,7 +37,6 @@ char buf[DEBUG_BUFSIZE];
 FARPROC WINAPI FailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
 	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. Please do not report this as a bug, as DC++ was unable to collect the information needed for a useful bug report (Your Operating System doesn't support the functionality needed, probably because it's too old).", "Unhandled Exception", MB_OK | MB_ICONERROR);
 	exit(-1);
-	return 0;
 }
 
 #endif
@@ -78,9 +77,9 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	
 	MessageBox(NULL, "DC++ just encountered an unhandled exception and will terminate. If you plan on reporting this bug to the bug report forum, make sure you have downloaded the debug information (DCPlusPlus.pdb) for your version of DC++. A file named \"exceptioninfo.txt\" has been generated in the same directory as DC++. Please include this file in the report or it'll be removed / ignored. If the file contains a lot of lines that end with '?', it means that the debug information is not correctly installed or your Windows doesn't support the functionality needed, and therefore, again, your report will be ignored/removed.", "Unhandled Exception", MB_OK | MB_ICONERROR);
 	exit(-1);
-#endif
-
+#else
 	return EXCEPTION_CONTINUE_SEARCH;
+#endif
 }
 
 static void sendCmdLine(HWND hOther, LPTSTR lpstrCmdLine)
@@ -319,5 +318,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.11 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: main.cpp,v 1.12 2003/05/07 09:52:09 arnetheduck Exp $
  */

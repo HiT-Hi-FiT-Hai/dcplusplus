@@ -432,7 +432,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 			pChild->CreateEx(m_hWndClient);
 			pChild->setWindowTitle();
 			delete i;
-		} catch(FileException e) {
+		} catch(const FileException&) {
 			// ...
 		}
 	} else if(wParam == STATS) {
@@ -695,7 +695,7 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 		if(!user.empty()) {
 			try {
 				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user));
-			} catch(Exception) {
+			} catch(const Exception&) {
 				// ...
 			}
 		}
@@ -868,7 +868,7 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 				}
 			}
 		}
-	} catch (Exception e) {
+	} catch (const Exception&) {
 		// ...
 	}
 }
@@ -993,9 +993,9 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		try {
 			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
-		} catch(QueueException e) {
+		} catch(const QueueException& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
-		} catch(FileException e) {
+		} catch(const FileException& e) {
 			dcdebug("MainFonGetList caught %s\n", e.getError().c_str());
 		}
 	}
@@ -1114,9 +1114,10 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 
 	switch(wID) {
 	case IDC_HELP_README: site = Util::getAppPath() + "README.txt"; break;
+	case IDC_HELP_CHANGELOG: site = Util::getAppPath() + "changelog.txt"; break;
 	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
 	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
-	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1"; break;
+	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1&lang=en"; break;
 	case IDC_HELP_HELP_FORUM: site = "http://dcplusplus.sf.net/forum"; break;
 	case IDC_HELP_DISCUSS: site = "http://dcplusplus.sf.net/forum"; break;
 	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
@@ -1135,7 +1136,7 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
  	if(WinUtil::browseFile(file, m_hWnd, false) == IDOK) {
 		try {
 			QueueManager::getInstance()->importNMQueue(file);
- 		} catch(FileException e) {
+ 		} catch(const FileException&) {
 			ctrlStatus.SetText(0, CSTRING(ERROR_OPENING_FILE));
  		}
  	} 
@@ -1418,6 +1419,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.21 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.22 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

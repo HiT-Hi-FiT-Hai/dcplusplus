@@ -33,6 +33,8 @@
 #include "WinUtil.h"
 #include "../client/ADLSearch.h"
 
+#define ADLLIST_MESSAGE_MAP 6
+
 ///////////////////////////////////////////////////////////////////////////////
 //
 //	Class that represent an ADL search manager interface
@@ -49,7 +51,7 @@ public:
 	static ADLSearchFrame* frame;
 
 	// Constructor/destructor
-	ADLSearchFrame() { }
+	ADLSearchFrame() : listContainer("list", this, ADLLIST_MESSAGE_MAP) {}
 	virtual ~ADLSearchFrame() { }
 
 	// Frame window declaration
@@ -62,14 +64,18 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
 		COMMAND_HANDLER(IDC_EDIT, BN_CLICKED, onEdit)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_HELP_FAQ, BN_CLICKED, onHelp)
 		COMMAND_HANDLER(IDC_MOVE_UP, BN_CLICKED, onMoveUp)
 		COMMAND_HANDLER(IDC_MOVE_DOWN, BN_CLICKED, onMoveDown)
-		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, OnDoubleClickList)
+		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, onDoubleClickList)
+		NOTIFY_HANDLER(IDC_ADLLIST, LVN_ITEMCHANGED, onItemChanged)
 		CHAIN_MSG_MAP(baseClass)
+	ALT_MSG_MAP(ADLLIST_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 	END_MSG_MAP()
 
 	// Message handlers
@@ -81,8 +87,11 @@ public:
 	LRESULT onHelp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT OnDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-
+	LRESULT onDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	
 	// Update colors
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
 	{
@@ -129,15 +138,16 @@ private:
 	CButton ctrlMoveUp;
 	CButton ctrlMoveDown;
 	CButton ctrlHelp;
+	CMenu contextMenu;
+	CContainedWindow listContainer;
 
 	// Column order
 	enum 
 	{
 		COLUMN_FIRST = 0,
-		COLUMN_SEARCH_STRING = COLUMN_FIRST,
+		COLUMN_ACTIVE_SEARCH_STRING = COLUMN_FIRST,
 		COLUMN_SOURCE_TYPE,
 		COLUMN_DEST_DIR,
-		COLUMN_IS_ACTIVE,
 		COLUMN_MIN_FILE_SIZE,
 		COLUMN_MAX_FILE_SIZE,
 		COLUMN_LAST
@@ -152,5 +162,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.2 2003/04/15 10:13:59 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.3 2003/05/07 09:52:09 arnetheduck Exp $
  */

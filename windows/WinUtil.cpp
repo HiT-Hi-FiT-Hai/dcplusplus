@@ -182,6 +182,7 @@ void WinUtil::buildMenu() {
 	help.CreatePopupMenu();
 	
 	help.AppendMenu(MF_STRING, IDC_HELP_README, CSTRING(MENU_HELP_README));
+	help.AppendMenu(MF_STRING, IDC_HELP_CHANGELOG, CSTRING(MENU_HELP_CHANGELOG));
 	help.AppendMenu(MF_STRING, ID_APP_ABOUT, CSTRING(MENU_HELP_ABOUT));
 	help.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	help.AppendMenu(MF_STRING, IDC_HELP_HOMEPAGE, CSTRING(MENU_HELP_HOMEPAGE));
@@ -245,7 +246,7 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 			ShareManager::getInstance()->setDirty();
 			ShareManager::getInstance()->refresh(true);
 			status = STRING(FILE_LIST_REFRESHED);
-		} catch(ShareException e) {
+		} catch(const ShareException& e) {
 			status = e.getError();
 		}
 	} else if(Util::stricmp(cmd.c_str(), "slots")==0) {
@@ -289,5 +290,5 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.12 2003/04/15 10:14:06 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.13 2003/05/07 09:52:09 arnetheduck Exp $
  */

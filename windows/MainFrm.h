@@ -135,6 +135,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_CHANGELOG, onLink)
 		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
@@ -479,7 +480,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.15 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.16 2003/05/07 09:52:09 arnetheduck Exp $
  */
 
  

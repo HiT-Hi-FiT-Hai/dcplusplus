@@ -111,6 +111,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	if(HubManager::getInstance()->isDownloading()) 
 		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
 
+	hubs = HubManager::getInstance()->getPublicHubs();
 	if(hubs.empty())
 		HubManager::getInstance()->refresh();
 
@@ -397,6 +398,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.11 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.12 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

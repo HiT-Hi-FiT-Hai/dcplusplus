@@ -1,4 +1,21 @@
- -- 0.242 --
+ -- 0.243 --
+* Fixed public hub list to point to a working one
+* Fixed %[hub] in upload log
+* Updates to ADLSearch: (by Henrik Engström)
+  * Keyboard shortcuts.
+  * Context menu (back again).
+  * Removed 'Active' column and made it a check box.
+  * Unified button texts to the rest of DC++.
+  * Fixed bug with multiple destination directories, some search results only ended up in the first of multiples.
+* Some code cleanup
+* Memory savings for users with large shares
+* Fix for buggy HTTP servers sending Content-Length with wrong case (thanks sandos)
+* Added link to change log in help menu (thanks todd)
+* Fixed link to faq (thanks todd)
+* Fixed public hub list mouse clicks and list reviewing (thanks todd)
+
+
+ -- 0.242 2003-04-19 --
 * Updated compile.txt with some notes on submitting patches
 * Perhaps fixed the multicpu/hyperthreading issue (could someone try and report to the bug tracker?)
 * Various optimizations of the socket code to regain some of the upload performance that some seem to have problems
@@ -12,7 +29,7 @@
   extra source. Depending on your queue size and the number of files in the listing this might take some time to do...
 * UI updates to ADLSearch (by Henrik Engström)
 
- -- 0.241 --
+ -- 0.241 2003-04-01 --
 * Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
 * Favorite users and hubs are now saved on edit instead of on exit.
 * Added support for "302 file moved"  for hublist downloads (thanks sedulus/sandos)

@@ -36,7 +36,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	string tmp;
 	try {
 		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ, File::OPEN).read();
-	} catch(FileException) {
+	} catch(const FileException&) {
 		// ...
 	}
 	
@@ -65,7 +65,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
 			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(buf, ctrlPad.GetWindowTextLength());
-		} catch(FileException) {
+		} catch(const FileException&) {
 			// Oops...
 		}
 	}
@@ -92,7 +92,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.7 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.8 2003/05/07 09:52:09 arnetheduck Exp $
  */
 
 

@@ -98,11 +98,14 @@ private:
 		typedef Map::iterator MapIter;
 		typedef HASH_MULTIMAP<int64_t, string> DupeMap;
 		typedef DupeMap::iterator DupeIter;
-		typedef HASH_MAP<string, int64_t> FileMap;
+		typedef pair<string, int64_t> FilePair;
+		typedef vector<FilePair> FileMap;
 		typedef FileMap::iterator FileIter;
 
 		int64_t size;
 		Map directories;
+		// We assume few files / directory, so we can use a vector instead of a
+		// hash for the files.
 		FileMap files;
 
 		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : 
@@ -215,6 +218,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.34 2003/04/15 10:13:55 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.35 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

@@ -109,22 +109,19 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 	if(mi == directories.end())
 		return false;
 	Directory* d = mi->second;
-	string aDir;
 
 	string::size_type i;
 	string::size_type j = 0;
 	while( (i = aFile.find('\\', j)) != string::npos) {
-		aDir = aFile.substr(j, i-j);
 		j = i + 1;
-		mi = d->directories.find(aDir);
+		mi = d->directories.find(aFile.substr(j, i-j));
 		if(mi == d->directories.end())
 			return false;
 		d = mi->second;
 
 		j = i + 1;
 	}
-	aDir = aFile.substr(j);
-	if(d->files.find(aDir) == d->files.end())
+	if(find_if(d->files.begin(), d->files.end(), CompareFirst<string, int64_t>(aFile.substr(j))) == d->files.end())
 		return false;
 
 	return true;
@@ -251,7 +248,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 						dir->addSearchType(getMask(name));
 						dir->addType(getType(name));
-						dir->files[name] = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
+						dir->files.push_back(make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
 						dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					}
 				}
@@ -389,7 +386,7 @@ void ShareManager::Directory::toString(string& tmp, DupeMap& dupes, int ident /*
 		if(k != p.second) {
 			size-=j->second;
 			if(BOOLSETTING(REMOVE_DUPES)) {
-				files.erase(j++);
+				j = files.erase(j);
 			} else {
 				tmp.append(ident+1, '\t');
 				tmp.append(j->first);
@@ -690,6 +687,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.48 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.49 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

@@ -67,6 +67,7 @@ public:
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
+		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -187,5 +188,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.8 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.9 2003/05/07 09:52:09 arnetheduck Exp $
  */

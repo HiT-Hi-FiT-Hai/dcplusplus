@@ -33,7 +33,6 @@ void DirectoryListing::load(const string& in)
 
 	// Prepare ADLSearch manager
 	ADLSearchManager* pADLSearch = ADLSearchManager::getInstance();
-	Directory *dAdlsSub = NULL, *dAdlsSubRoot = NULL;
 	pADLSearch->PrepareDestinationDirectories(root);
 
 	Directory* cur = root;
@@ -59,39 +58,16 @@ void DirectoryListing::load(const string& in)
 			{
 				fullPath.erase(fullPath.begin() + l, fullPath.end());
 			}
-			if(dAdlsSub != NULL)
-			{
-				dAdlsSub = dAdlsSub->getParent();
-				if(dAdlsSub == dAdlsSubRoot)
-				{
-					dAdlsSub = NULL;
-				}
-			}
+			pADLSearch->StepUpDirectory();
 		}
 		string::size_type k = tok.find('|', j);
 		if(k != string::npos) 
 		{
 			// this must be a file...
 			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
-			File*& currentFile = cur->files.back();
 
 			// ADLSearch
-			Directory *dAdls = pADLSearch->MatchesFile(currentFile->getName(), fullPath, currentFile->getSize());
-			if(dAdls != NULL)
-			{
-				// Add file to destination directory
-				File *copyFile = new File(*currentFile);
-				copyFile->setAdls(true);
-				dAdls->files.push_back(copyFile);
-
-			}
-			if(dAdlsSub != NULL)
-			{
-				// Add file to substructure being stored
-				File *copyFile = new File(*currentFile);
-				copyFile->setAdls(true);
-				dAdlsSub->files.push_back(copyFile);
-			}
+			pADLSearch->MatchesFile(cur->files.back(), fullPath);
 		} 
 		else 
 		{
@@ -103,22 +79,7 @@ void DirectoryListing::load(const string& in)
 			fullPath += (string)"\\" + d->getName();
 
 			// ADLSearch
-			if(dAdlsSub == NULL)
-			{
-				Directory *dAdls = pADLSearch->MatchesDirectory(d->getName());
-				if(dAdls != NULL)
-				{
-					// Start to store a new substructure
-					dAdlsSubRoot = dAdls;
-					dAdlsSub     = new AdlDirectory(fullPath, dAdlsSubRoot, d->getName());
-					dAdlsSubRoot->directories.push_back(dAdlsSub);
-				}
-			} else {
-				// Add directory to substructure being stored
-				Directory* d2 = new AdlDirectory(fullPath, dAdlsSub, d->getName());
-				dAdlsSub->directories.push_back(d2);
-				dAdlsSub = d2;
-			}
+			pADLSearch->MatchesDirectory(d, fullPath);
 		}
 	}
 
@@ -208,5 +169,5 @@ void DirectoryListing::download(File* aFile, const User::Ptr& aUser, const strin
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.13 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.14 2003/05/07 09:52:09 arnetheduck Exp $
  */

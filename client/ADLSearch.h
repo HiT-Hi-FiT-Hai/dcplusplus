@@ -348,49 +348,100 @@ public:
 	void Load();
 	void Save();
 
-	// Search for file match (returns pointer to destination directory if match, otherwise NULL)
-	DirectoryListing::Directory* MatchesFile(const string& f, const string& d, int64_t size)
+	// Search for file match
+	void MatchesFile(DirectoryListing::File *currentFile, string& fullPath)
 	{
-		// Prepare arguments
-		if(f.size() < 1)
+		// Add to any substructure being stored
+		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id)
 		{
-			return NULL;
-		}
-		string fLc = Util::toLower(f);
-		string dLc = Util::toLower(d);
-		dLc += "\\";
-		dLc += fLc;
-
-		// Activate all searches until match
-		for(SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i)
-		{
-			if(i->MatchesFile(fLc, dLc, size))
+			if(id->subdir != NULL)
 			{
-				return destDirVector[i->ddIndex].dir;
+				DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
+				copyFile->setAdls(true);
+				id->subdir->files.push_back(copyFile);
+			}
+			id->fileAdded = false;	// Prepare for next stage
+		}
+
+		// Prepare to match searches
+		if(currentFile->getName().size() < 1)
+		{
+			return;
+		}
+		string fileName = Util::toLower(currentFile->getName());
+		string filePath = Util::toLower(fullPath);
+		filePath += "\\";
+		filePath += fileName;
+
+		// Match searches
+		for(SearchCollection::iterator is = collection.begin(); is != collection.end(); ++is)
+		{
+			if(destDirVector[is->ddIndex].fileAdded)
+			{
+				continue;
+			}
+			if(is->MatchesFile(fileName, filePath, currentFile->getSize()))
+			{
+				DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
+				copyFile->setAdls(true);
+				destDirVector[is->ddIndex].dir->files.push_back(copyFile);
+				destDirVector[is->ddIndex].fileAdded = true;
 			}
 		}
-		return NULL;
 	}
 
-	// Search for directory match (returns pointer to destination directory if match, otherwise NULL)
-	DirectoryListing::Directory* MatchesDirectory(const string& d)
+	// Search for directory match
+	void MatchesDirectory(DirectoryListing::Directory* currentDir, string& fullPath)
 	{
-		// Prepare arguments
-		if(d.size() < 1)
+		// Add to any substructure being stored
+		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id)
 		{
-			return NULL;
-		}
-		string dLc = Util::toLower(d);
-
-		// Activate all searches until match
-		for(SearchCollection::iterator i = collection.begin(); i != collection.end(); ++i)
-		{
-			if(i->MatchesDirectory(dLc))
+			if(id->subdir != NULL)
 			{
-				return destDirVector[i->ddIndex].dir;
+				DirectoryListing::Directory* newDir = 
+					new DirectoryListing::AdlDirectory(fullPath, id->subdir, currentDir->getName());
+				id->subdir->directories.push_back(newDir);
+				id->subdir = newDir;
 			}
 		}
-		return NULL;
+
+		// Prepare to match searches
+		if(currentDir->getName().size() < 1)
+		{
+			return;
+		}
+		string dirName = Util::toLower(currentDir->getName());
+
+		// Match searches
+		for(SearchCollection::iterator is = collection.begin(); is != collection.end(); ++is)
+		{
+			if(destDirVector[is->ddIndex].subdir != NULL)
+			{
+				continue;
+			}
+			if(is->MatchesDirectory(dirName))
+			{
+				destDirVector[is->ddIndex].subdir = 
+					new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
+				destDirVector[is->ddIndex].dir->directories.push_back(destDirVector[is->ddIndex].subdir);
+			}
+		}
+	}
+
+	// Step up directory
+	void StepUpDirectory()
+	{
+		for(vector<DestDir>::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id)
+		{
+			if(id->subdir != NULL)
+			{
+				id->subdir = id->subdir->getParent();
+				if(id->subdir == id->dir)
+				{
+					id->subdir = NULL;
+				}
+			}
+		}
 	}
 
 	// Prepare destination directory indexing
@@ -461,6 +512,9 @@ private:
 	{
 		string name;
 		DirectoryListing::Directory* dir;
+		DirectoryListing::Directory* subdir;
+		bool fileAdded;
+		DestDir() : name(""), dir(NULL), subdir(NULL) {}
 	};
 	vector<DestDir> destDirVector;
 };
@@ -470,5 +524,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.3 2003/04/15 10:13:50 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.4 2003/05/07 09:52:09 arnetheduck Exp $
  */

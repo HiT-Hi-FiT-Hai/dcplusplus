@@ -67,20 +67,21 @@ void startup(void (*f)(void*, const string&), void* p) {
 		SettingsManager::getInstance()->set(SettingsManager::CONNECTION, SettingsManager::connectionSpeeds[0]);
 	}
 
-	if(Util::toDouble(SETTING(CONFIG_VERSION)) <= 0.22) {
+	double v = Util::toDouble(SETTING(CONFIG_VERSION));
+	if(v <= 0.22) {
 		// Disable automatic public hublist opening
 		SettingsManager::getInstance()->set(SettingsManager::OPEN_PUBLIC, false);
+	}
 
+	if(v <= 0.242) {
 		// Update server list to use bz2 lists instead...
 		StringTokenizer st(SETTING(HUBLIST_SERVERS), ';');
 		string tmp;
 		for(StringIter j = st.getTokens().begin(); j != st.getTokens().end(); ++j) {
-			if(*j == "http://dcpp.lichlord.org/PublicHubList.config") {
-				tmp += string("http://dcpp.lichlord.org/PublicHubList.config.bz2") + ";";
-			} else if(*j == "http://dcpp.lichlord.org/FullList.config") {
-				tmp += string("http://dcpp.lichlord.org/FullList.config.bz2") + ";";
+			if(*j == "http://dcplusplus.sourceforge.net/PublicHubList.config.bz2") {
+				tmp += string("http://www.mds.mdh.se/~dtv01jbd/PublicHubList.config.bz2") + ";";
 			} else if(*j == "http://dcplusplus.sourceforge.net/PublicHubList.config") {
-				tmp += string("http://dcplusplus.sourceforge.net/PublicHubList.config.bz2") + ";";
+				tmp += string("http://www.mds.mdh.se/~dtv01jbd/PublicHubList.config.bz2") + ";";
 			} else {
 				tmp += *j + ';';
 			}
@@ -125,6 +126,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.21 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.22 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

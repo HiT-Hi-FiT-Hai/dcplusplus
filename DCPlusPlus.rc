@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "windows\resource.h"
 
@@ -27,12 +27,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE MOVEABLE PURE 
+1 TEXTINCLUDE 
 BEGIN
     "windows\\resource.h\0"
 END
 
-2 TEXTINCLUDE MOVEABLE PURE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
     "\0"
@@ -46,11 +46,11 @@ END
 // Bitmap
 //
 
-IDB_FOLDERS             BITMAP  MOVEABLE PURE   "res\\folders.bmp"
-IDB_ARROWS              BITMAP  MOVEABLE PURE   "res\\arrows.bmp"
-IDB_USERS               BITMAP  MOVEABLE PURE   "res\\users.bmp"
-IDB_TOOLBAR             BITMAP  MOVEABLE PURE   "res\\toolbar.bmp"
-IDB_TOOLBAR20           BITMAP  MOVEABLE PURE   "res\\toolbar20.bmp"
+IDB_FOLDERS             BITMAP                  "res\\folders.bmp"
+IDB_ARROWS              BITMAP                  "res\\arrows.bmp"
+IDB_USERS               BITMAP                  "res\\users.bmp"
+IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
+IDB_TOOLBAR20           BITMAP                  "res\\toolbar20.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -59,27 +59,27 @@ IDB_TOOLBAR20           BITMAP  MOVEABLE PURE   "res\\toolbar20.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\DCPlusPlus.ico"
-IDR_PUBLICHUBS          ICON    DISCARDABLE     "res\\PublicHubs.ico"
-IDR_SEARCH              ICON    DISCARDABLE     "res\\search.ico"
-IDR_FAVORITES           ICON    DISCARDABLE     "res\\Favorites.ico"
-IDR_PRIVATE             ICON    DISCARDABLE     "res\\User.ico"
-IDR_DIRECTORY           ICON    DISCARDABLE     "res\\Directory.ico"
-IDR_HUB                 ICON    DISCARDABLE     "res\\Hub.ico"
-IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
-IDR_QUEUE               ICON    DISCARDABLE     "res\\queue.ico"
-IDR_FINISHED_DL         ICON    DISCARDABLE     "res\\FinishedDL.ico"
-IDR_ADLSEARCH           ICON    DISCARDABLE     "res\\ADLSearch.ico"
-IDR_FINISHED_UL         ICON    DISCARDABLE     "res\\FinishedUL.ico"
-IDR_USERS               ICON    DISCARDABLE     "res\\FavoriteUser.ico"
+IDR_MAINFRAME           ICON                    "res\\DCPlusPlus.ico"
+IDR_PUBLICHUBS          ICON                    "res\\PublicHubs.ico"
+IDR_SEARCH              ICON                    "res\\search.ico"
+IDR_FAVORITES           ICON                    "res\\Favorites.ico"
+IDR_PRIVATE             ICON                    "res\\User.ico"
+IDR_DIRECTORY           ICON                    "res\\Directory.ico"
+IDR_HUB                 ICON                    "res\\Hub.ico"
+IDR_NOTEPAD             ICON                    "res\\notepad.ico"
+IDR_QUEUE               ICON                    "res\\queue.ico"
+IDR_FINISHED_DL         ICON                    "res\\FinishedDL.ico"
+IDR_ADLSEARCH           ICON                    "res\\ADLSearch.ico"
+IDR_FINISHED_UL         ICON                    "res\\FinishedUL.ico"
+IDR_USERS               ICON                    "res\\FavoriteUser.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 205, 271
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG  0, 0, 205, 271
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -99,7 +99,7 @@ BEGIN
 END
 
 IDD_LINE DIALOGEX 0, 0, 239, 46
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Title"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -109,8 +109,8 @@ BEGIN
     GROUPBOX        "Description",IDC_DESCRIPTION,7,7,168,32
 END
 
-IDD_GENERALPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_GENERALPAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -150,7 +150,7 @@ BEGIN
 END
 
 IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -179,8 +179,8 @@ BEGIN
     LTEXT           "Max tab rows",IDC_STATIC,144,39,43,8
 END
 
-IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 226
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_DOWNLOADPAGE DIALOG  0, 0, 275, 226
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -214,8 +214,8 @@ BEGIN
     LTEXT           "Public Hubs list URL",IDC_STATIC,14,155,247,8
 END
 
-IDD_UPLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_UPLOADPAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sharing"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -244,7 +244,7 @@ BEGIN
 END
 
 IDD_APPEARANCEPAGE DIALOGEX 0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Appearance"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -267,8 +267,8 @@ BEGIN
     GROUPBOX        "Default away message",IDC_STATIC,7,135,261,32
 END
 
-IDD_ADVANCED2PAGE DIALOG DISCARDABLE  0, 0, 275, 225
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_ADVANCED2PAGE DIALOG  0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Logs and Sound"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -298,8 +298,8 @@ BEGIN
 END
 
 IDD_USER_COMMAND DIALOGEX 0, 0, 419, 122
-STYLE DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | 
+    WS_CAPTION | WS_SYSMENU
 CAPTION "Create / Modify User Command"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -319,9 +319,9 @@ BEGIN
 END
 
 IDD_ADLS_PROPERTIES DIALOGEX 0, 0, 173, 125
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "ADLSearch Properties"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     EDITTEXT        IDC_SEARCH_STRING,7,17,88,12,ES_AUTOHSCROLL
     COMBOBOX        IDC_SOURCE_TYPE,105,17,61,78,CBS_DROPDOWNLIST | 
@@ -350,7 +350,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO MOVEABLE PURE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -468,15 +468,14 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,2,4,1
- PRODUCTVERSION 0,2,4,1
+ FILEVERSION 0,2,4,2
+ PRODUCTVERSION 0,2,4,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -491,14 +490,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://dcplusplus.sourceforge.net\0"
-            VALUE "FileDescription", "DC++\0"
-            VALUE "FileVersion", "0, 2, 4, 1\0"
-            VALUE "InternalName", "DC++\0"
-            VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka\0"
-            VALUE "OriginalFilename", "DCPlusPlus.exe\0"
-            VALUE "ProductName", "DC++\0"
-            VALUE "ProductVersion", "0, 2, 4, 1\0"
+            VALUE "Comments", "http://dcplusplus.sourceforge.net"
+            VALUE "FileDescription", "DC++"
+            VALUE "FileVersion", "0, 2, 4, 2"
+            VALUE "InternalName", "DC++"
+            VALUE "LegalCopyright", "Copyright 2001-2003 Jacek Sieka"
+            VALUE "OriginalFilename", "DCPlusPlus.exe"
+            VALUE "ProductName", "DC++"
+            VALUE "ProductVersion", "0, 2, 4, 2"
         END
     END
     BLOCK "VarFileInfo"
@@ -507,15 +506,13 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS MOVEABLE PURE 
+IDR_MAINFRAME ACCELERATORS 
 BEGIN
     "D",            IDC_QUEUE,              VIRTKEY, CONTROL, NOINVERT
     "F",            IDC_FAVORITES,          VIRTKEY, CONTROL, NOINVERT
@@ -531,10 +528,10 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// 24
+// RT_MANIFEST
 //
 
-1                       24      MOVEABLE PURE   "res\\DCPlusPlus.Manifest"
+1                       RT_MANIFEST             "res\\DCPlusPlus.Manifest"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -554,7 +551,7 @@ LANGUAGE LANG_SWEDISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-3 TEXTINCLUDE MOVEABLE PURE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -568,8 +565,8 @@ END
 // Dialog
 //
 
-IDD_FAVORITEHUB DIALOG DISCARDABLE  0, 0, 201, 163
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+IDD_FAVORITEHUB DIALOG  0, 0, 201, 163
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Favorite Hub Properties"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -599,7 +596,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO MOVEABLE PURE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_FAVORITEHUB, DIALOG
     BEGIN

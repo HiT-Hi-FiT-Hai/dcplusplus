@@ -58,7 +58,7 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 		} else {
 			tmp = Util::emptyString;
 		}
-	} catch(Exception e) {
+	} catch(const Exception& e) {
 		error = e.getError();
 		return;
 	}
@@ -257,7 +257,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 		if(ii->type == ItemInfo::FILE) {
 			try {
 				dl->download(ii->file, user, SETTING(DOWNLOAD_DIRECTORY) + ii->file->getName());
-			} catch(Exception e) {
+			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		} else {
@@ -280,7 +280,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		try {
 			dl->download(dir, user, SETTING(DOWNLOAD_DIRECTORY));
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
@@ -297,7 +297,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 			
 			try {
 				dl->download(dir, user, target);
-			} catch(Exception e) {
+			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		}
@@ -318,7 +318,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 			} else {
 				dl->download(ii->dir, user, target);
 			} 
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
@@ -347,7 +347,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 					dl->download(ii->dir, user, target);
 				}
 			} 
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	} else {
@@ -548,7 +548,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 			try {
 				dl->download(ii->file, user, targets[newId]);
-			} catch(Exception e) {
+			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			} 
 		} else {
@@ -573,7 +573,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		try {
 			dcassert(newId < (int)WinUtil::lastDirs.size());
 			dl->download(dir, user, WinUtil::lastDirs[newId]);
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
@@ -851,5 +851,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.16 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.17 2003/05/07 09:52:09 arnetheduck Exp $
  */

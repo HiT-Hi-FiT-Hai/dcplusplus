@@ -187,7 +187,7 @@ private:
 	
 	string line;
 	u_int8_t* inbuf;
-	int inbufSize;
+	size_t inbufSize;
 	enum {BUFFERS = 2};
 	u_int8_t* outbuf[BUFFERS];
 	int outbufSize[BUFFERS];
@@ -236,5 +236,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.46 2003/04/15 10:13:51 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.47 2003/05/07 09:52:09 arnetheduck Exp $
  */

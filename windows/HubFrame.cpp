@@ -223,7 +223,7 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			try {
 				QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(i))->user);
-			} catch(Exception e) {
+			} catch(const Exception& e) {
 				addClientLine(e.getError());
 			}
 		}
@@ -296,7 +296,7 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	if(client->isConnected() && item->iItem != -1) {
 		try {
 			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item->iItem))->user);
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			addClientLine(e.getError());
 		}
 	}
@@ -628,7 +628,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				} else if (wParam & MK_SHIFT) {
 					try {
 						QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
-					} catch(Exception e) {
+					} catch(const Exception& e) {
 						addClientLine(e.getError());
 					}
 				} else {
@@ -914,7 +914,7 @@ LRESULT HubFrame::onEnterUsers(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHand
 	if(client->isConnected() && (item != -1)) {
 		try {
 			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item))->user);
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			addClientLine(e.getError());
 		}
 	}
@@ -1029,5 +1029,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.22 2003/04/15 10:14:02 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.23 2003/05/07 09:52:09 arnetheduck Exp $
  */

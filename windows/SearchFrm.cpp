@@ -213,7 +213,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 				WinUtil::addLastDir(Util::getFilePath(target));
 				try {
 					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
-				} catch(Exception e) {
+				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
 			}
@@ -456,7 +456,7 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + Util::getLastDir(sr->getFile()));
 			}
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(1, e.getError().c_str());
 		}
 	}
@@ -475,7 +475,7 @@ void SearchFrame::downloadSelected(const string& aDir) {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), aDir);
 			}
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(1, e.getError().c_str());
 		}
 	}
@@ -492,7 +492,7 @@ void SearchFrame::downloadWholeSelected(const string& aDir) {
 			} else {
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), aDir);
 			}
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(1, e.getError().c_str());
 		}
 	}
@@ -913,7 +913,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 				dcassert(newId < (int)WinUtil::lastDirs.size());
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), WinUtil::lastDirs[newId]);
 			}
-		} catch(Exception e) {
+		} catch(const Exception& e) {
 			ctrlStatus.SetText(1, e.getError().c_str());
 		}
 	} else if(ctrlResults.GetSelectedCount() > 1) {
@@ -930,7 +930,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 				try {				
 					dcassert((newId < (int)targets.size()) && (newId >= 0));
 					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId]);
-				} catch(Exception e) {
+				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
 			}
@@ -947,5 +947,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.15 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.16 2003/05/07 09:52:09 arnetheduck Exp $
  */

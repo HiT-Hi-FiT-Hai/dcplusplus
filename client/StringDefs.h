@@ -5,6 +5,7 @@
 
 enum Strings { // @DontAdd
 	ACTIVE, // "Active"
+	ACTIVE_SEARCH_STRING, // "Active / Search String"
 	ADD, // "Add"
 	ADD_TO_FAVORITES, // "Add To Favorites"
 	ADDRESS_ALREADY_IN_USE, // "Address already in use"
@@ -148,6 +149,7 @@ enum Strings { // @DontAdd
 	MENU_FILE_SETTINGS, // "Settings..."
 	MENU_HELP, // "&Help"
 	MENU_HELP_ABOUT, // "About DC++..."
+	MENU_HELP_CHANGELOG, // "Change Log"
 	MENU_HELP_DISCUSS, // "DC++ discussion forum"
 	MENU_HELP_DONATE, // "Donate €€€/$$$ (paypal)"
 	MENU_HELP_DOWNLOADS, // "Downloads and translations"

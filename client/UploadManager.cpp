@@ -233,6 +233,8 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 		StringMap params;
 		params["source"] = u->getFileName();
 		params["user"] = aSource->getUser()->getNick();
+		params["hub"] = aSource->getUser()->getLastHubName();
+		params["hubip"] = aSource->getUser()->getLastHubIp();
 		params["size"] = Util::toString(u->getSize());
 		params["sizeshort"] = Util::formatBytes(u->getSize());
 		params["chunksize"] = Util::toString(u->getTotal());
@@ -362,5 +364,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.37 2003/04/15 10:13:57 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.38 2003/05/07 09:52:09 arnetheduck Exp $
  */

@@ -45,7 +45,6 @@ void HttpConnection::downloadFile(const string& aUrl) {
 
 	if(SETTING(HTTP_PROXY).empty()) {
 		Util::decodeUrl(aUrl, server, port, file);
-		dcdebug("Server is %s\n", server);
 		if(file.empty())
 			file = "/";
 	} else {
@@ -121,9 +120,9 @@ void HttpConnection::onLine(const string& aLine) {
 		downloadFile(location302); 		
 	} else if(aLine == "\x0d") {
 		socket->setDataMode(size);
-	} else if(aLine.find("Content-Length") != string::npos) {
+	} else if(Util::findSubString(aLine, "Content-Length") != string::npos) {
 		size = Util::toInt(aLine.substr(16, aLine.length() - 17));
-	} else if(aLine.find("Content-Encoding") != string::npos) {
+	} else if(Util::findSubString(aLine, "Content-Encoding") != string::npos) {
 		if(aLine.substr(18, aLine.length() - 19) == "x-bzip2")
 			fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);            
 	}
@@ -175,6 +174,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.16 2003/04/15 10:13:53 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.17 2003/05/07 09:52:09 arnetheduck Exp $
  */
 

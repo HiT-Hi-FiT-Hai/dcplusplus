@@ -241,6 +241,11 @@ public:
 		return tmp;
 	}
 	static char toLower(char c) { return lower[(u_int8_t)c]; };
+	static void toLower2(string& aString) {
+		for(string::size_type i = 0; i < aString.length(); ++i) {
+			aString[i] = toLower(aString[i]);
+		}
+	}
 	static int64_t toInt64(const string& aString) {
 #ifdef WIN32
 		return _atoi64(aString.c_str());
@@ -400,5 +405,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.54 2003/04/17 16:59:31 arnetheduck Exp $
+ * $Id: Util.h,v 1.55 2003/05/07 09:52:09 arnetheduck Exp $
  */

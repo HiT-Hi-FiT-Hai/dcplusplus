@@ -2,6 +2,7 @@
 <Language Name="Example Language">
 	<Strings>
 		<String Name="Active">Active</String>
+		<String Name="ActiveSearchString">Active / Search String</String>
 		<String Name="Add">Add</String>
 		<String Name="AddToFavorites">Add To Favorites</String>
 		<String Name="AddressAlreadyInUse">Address already in use</String>
@@ -145,6 +146,7 @@
 		<String Name="MenuFileSettings">Settings...</String>
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuHelpAbout">About DC++...</String>
+		<String Name="MenuHelpChangelog">Change Log</String>
 		<String Name="MenuHelpDiscuss">DC++ discussion forum</String>
 		<String Name="MenuHelpDonate">Donate €€€/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads and translations</String>

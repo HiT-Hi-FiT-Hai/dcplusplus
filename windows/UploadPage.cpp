@@ -102,7 +102,7 @@ LRESULT UploadPage::onClickedAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 			int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), target);
 			ctrlDirectories.SetItemText(i, 1, Util::formatBytes(ShareManager::getInstance()->getShareSize(target)).c_str());
 			ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
-		} catch(ShareException e) {
+		} catch(const ShareException& e) {
 			MessageBox(e.getError().c_str());
 		}
 	}
@@ -129,6 +129,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.6 2003/04/15 10:14:04 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.7 2003/05/07 09:52:09 arnetheduck Exp $
  */
 
