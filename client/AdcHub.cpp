@@ -27,9 +27,9 @@
 #include "ConnectionManager.h"
 #include "version.h"
 
-const string AdcHub::CLIENT_PROTOCOL("ADC/0.8");
+const string AdcHub::CLIENT_PROTOCOL("ADC/0.9");
 
-AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n', true), state(STATE_PROTOCOL) {
+AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n'), state(STATE_PROTOCOL) {
 }
 
 void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
@@ -235,7 +235,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	AdcCommand c(AdcCommand::CMD_SCH, AdcCommand::TYPE_BROADCAST);
 
 	if(aFileType == SearchManager::TYPE_TTH) {
-		c.addParam("TR", AdcCommand::escape(aString));
+		c.addParam("TR", aString);
 	} else {
 		if(aSizeMode == SearchManager::SIZE_ATLEAST) {
 			c.addParam(">=", Util::toString(aSize));
@@ -244,7 +244,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 		}
 		StringTokenizer<string> st(aString, ' ');
 		for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-			c.addParam("++", AdcCommand::escape(*i));
+			c.addParam("++", *i);
 		}
 	}
 	send(c);
@@ -353,5 +353,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.38 2005/02/01 16:41:35 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.39 2005/02/19 21:58:30 arnetheduck Exp $
  */

@@ -21,6 +21,9 @@
 
 #include "CID.h"
 #include "SettingsManager.h"
+#include "Exception.h"
+
+STANDARD_EXCEPTION(ParseException);
 
 class AdcCommand {
 public:
@@ -91,7 +94,7 @@ public:
 	explicit AdcCommand(u_int32_t aCmd, char aType = TYPE_CLIENT) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), type(aType) { }
 	explicit AdcCommand(u_int32_t aCmd, const CID& aTarget) : cmdInt(aCmd), from(SETTING(CLIENT_ID)), to(aTarget), type(TYPE_DIRECT) { }
 
-	explicit AdcCommand(const string& aLine, bool nmdc = false) : cmdInt(0), type(TYPE_CLIENT) {
+	explicit AdcCommand(const string& aLine, bool nmdc = false) throw(ParseException) : cmdInt(0), type(TYPE_CLIENT) {
 		parse(aLine, nmdc);
 	}
 
@@ -103,7 +106,7 @@ public:
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
-	string toString(bool nmdc = false) const;
+	string toString(bool nmdc = false, bool old = false) const;
 
 	AdcCommand& addParam(const string& name, const string& value) {
 		parameters.push_back(name);
@@ -124,11 +127,19 @@ public:
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
 
-	static string escape(const string& str) {
+	static string escape(const string& str, bool old) {
 		string tmp = str;
 		string::size_type i = 0;
 		while( (i = tmp.find_first_of(" \n\\", i)) != string::npos) {
-			tmp.insert(i, 1, '\\');
+			if(old) {
+				tmp.insert(i, "\\");
+			} else {
+				switch(tmp[i]) {
+				case ' ': tmp.replace(i, 1, "\\s"); break;
+				case '\n': tmp.replace(i, 1, "\\n"); break;
+				case '\\': tmp.replace(i, 1, "\\\\"); break;
+				}
+			}
 			i+=2;
 		}
 		return tmp;
@@ -152,31 +163,36 @@ template<class T>
 class CommandHandler {
 public:
 	void dispatch(const string& aLine, bool nmdc = false) {
-		AdcCommand c(aLine, nmdc);
+		try {
+			AdcCommand c(aLine, nmdc);
 
 #define CMD(n) case AdcCommand::CMD_##n: ((T*)this)->handle(AdcCommand::n(), c); break;
-		switch(c.getCommand()) {
-			CMD(SUP);
-			CMD(STA);
-			CMD(INF);
-			CMD(MSG);
-			CMD(SCH);
-			CMD(RES);
-			CMD(CTM);
-			CMD(RCM);
-			CMD(GPA);
-			CMD(PAS);
-			CMD(QUI);
-			CMD(DSC);
-			CMD(GET);
-			CMD(GFI);
-			CMD(SND);
-			CMD(NTD);
-		default: 
-			dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
-			break;
+			switch(c.getCommand()) {
+				CMD(SUP);
+				CMD(STA);
+				CMD(INF);
+				CMD(MSG);
+				CMD(SCH);
+				CMD(RES);
+				CMD(CTM);
+				CMD(RCM);
+				CMD(GPA);
+				CMD(PAS);
+				CMD(QUI);
+				CMD(DSC);
+				CMD(GET);
+				CMD(GFI);
+				CMD(SND);
+				CMD(NTD);
+			default: 
+				dcdebug("Unknown ADC command: %.50s\n", aLine.c_str());
+				break;
 #undef CMD
 
+			}
+		} catch(const ParseException&) {
+			dcdebug("Invalid ADC command: %.50s\n", aLine.c_str());
+			return;
 		}
 	}
 };
@@ -184,5 +200,5 @@ public:
 #endif // ADC_COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.16 2005/01/05 19:30:28 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.17 2005/02/19 21:58:29 arnetheduck Exp $
 */

@@ -258,7 +258,7 @@ public:
 	void ntd() { send(AdcCommand(AdcCommand::CMD_NTD)); }
 	void sta(AdcCommand::Severity sev, AdcCommand::Error err, const string& desc) { send(AdcCommand(AdcCommand::CMD_STA).addParam(Util::toString(100 * sev + err)).addParam(desc)); }
 
-	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC))); }
+	void send(const AdcCommand& c) { send(c.toString(isSet(FLAG_NMDC), isSet(FLAG_SUPPORTS_ADCGET))); }
 
 	void supports(const StringList& feat) { 
 		string x;
@@ -397,6 +397,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.90 2005/01/12 01:16:55 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.91 2005/02/19 21:58:30 arnetheduck Exp $
  */
 

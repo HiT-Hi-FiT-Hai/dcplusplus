@@ -21,7 +21,7 @@
 
 #include "AdcCommand.h"
 
-void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) {
+void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(ParseException) {
 	string::size_type i = 5;
 
 	if(nmdc) {
@@ -49,7 +49,21 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) {
 
 	while(i < len) {
 		switch(buf[i]) {
-		case '\\': i++; cur += buf[i]; break;
+		case '\\':
+			++i;
+			if(i == len)
+				throw ParseException("Escape at eol");
+			if(buf[i] == 's')
+				cur += ' ';
+			else if(buf[i] == 'n')
+				cur += '\n';
+			else if(buf[i] == '\\')
+				cur += '\\';
+			else if(buf[i] == ' ' && nmdc)	// $ADCGET escaping, leftover from old specs
+				cur += ' ';
+			else
+				throw ParseException("Unknown escape");
+			break;
 		case ' ': 
 			// New parameter...
 			{
@@ -68,7 +82,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) {
 		default:
 			cur += buf[i];
 		}
-		i++;
+		++i;
 	}
 	if(!cur.empty()) {
 		if(!fromSet) {
@@ -83,7 +97,7 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) {
 	}
 }
 
-string AdcCommand::toString(bool nmdc /* = false */) const {
+string AdcCommand::toString(bool nmdc /* = false */, bool old /* = false */) const {
 	string tmp;
 	if(nmdc) {
 		tmp += "$ADC";
@@ -105,7 +119,7 @@ string AdcCommand::toString(bool nmdc /* = false */) const {
 
 	for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
 		tmp += ' ';
-		tmp += escape(*i);
+		tmp += escape(*i, old);
 	}
 	if(nmdc) {
 		tmp += '|';
@@ -139,5 +153,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.9 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.10 2005/02/19 21:58:30 arnetheduck Exp $
  */

@@ -58,7 +58,7 @@ public:
 	void handle(AdcCommand::CTM, AdcCommand& c) throw();
 	void handle(AdcCommand::RCM, AdcCommand& c) throw();
 
-	virtual string escape(string const& str) const { return AdcCommand::escape(str); };
+	virtual string escape(string const& str) const { return AdcCommand::escape(str, false); };
 
 private:
 	friend class ClientManager;
@@ -94,5 +94,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.23 2005/01/18 15:53:31 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.24 2005/02/19 21:58:30 arnetheduck Exp $
  */

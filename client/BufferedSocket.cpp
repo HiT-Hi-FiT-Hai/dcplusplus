@@ -32,8 +32,8 @@
 // Polling is used for tasks...should be fixed...
 #define POLL_TIMEOUT 250
 
-BufferedSocket::BufferedSocket(char aSeparator, bool aUsesEscapes) throw(SocketException) : 
-separator(aSeparator), usesEscapes(aUsesEscapes), port(0), mode(MODE_LINE), 
+BufferedSocket::BufferedSocket(char aSeparator) throw(SocketException) : 
+separator(aSeparator), port(0), mode(MODE_LINE), 
 dataBytes(0), escaped(false), inbufSize(64*1024), curBuf(0), file(NULL) {
 
 	inbuf = new u_int8_t[inbufSize];
@@ -295,10 +295,8 @@ void BufferedSocket::threadRead() {
 			if(separator == 0) {
 				if(inbuf[0] == '$') {
 					separator = '|';
-					usesEscapes = false;
 				} else {
 					separator = '\n';
-					usesEscapes = true;
 				}
 			}
 			if(mode == MODE_LINE) {
@@ -306,27 +304,7 @@ void BufferedSocket::threadRead() {
 
 				l = string((char*)inbuf + bufpos, i);
 
-				bool foundSeparator = false;
-				if(usesEscapes) {
-					// We need to read every byte to make sure it isn't preceded by the escape character
-					for(string::iterator k = l.begin(); k != l.end(); ++k) {
-						if(*k == '\\') {
-							escaped = !escaped;
-						} else if(*k == separator && !escaped) {
-							pos = k - l.begin();
-							foundSeparator = true;
-							break;
-						} else {
-							escaped = false;
-						}
-					}
-				} else {
-					// Not using escapes, search is much easier
-					if((pos = l.find(separator)) != string::npos)
-						foundSeparator = true;
-				}
-
-				if(foundSeparator) {
+				if((pos = l.find(separator)) != string::npos) {
 					if(!line.empty()) {
 						fire(BufferedSocketListener::Line(), line + l.substr(0, pos));
 						line.clear();
@@ -459,5 +437,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.80 2005/02/04 17:17:25 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.81 2005/02/19 21:58:30 arnetheduck Exp $
  */
