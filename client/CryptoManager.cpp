@@ -132,11 +132,11 @@ string CryptoManager::makeKey(const string& aLock) {
 	return tmp;
 }
 
-void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException) {
+void CryptoManager::decodeHuffman(const u_int8_t* is, string& os, const size_t len) throw(CryptoException) {
 //	BitInputStream bis;
 	int pos = 0;
 
-	if(is[pos] != 'H' || is[pos+1] != 'E' || !((is[pos+2] == '3') || (is[pos+2] == '0'))) {
+	if(len < 11 || is[pos] != 'H' || is[pos+1] != 'E' || !((is[pos+2] == '3') || (is[pos+2] == '0'))) {
 		throw CryptoException(STRING(DECOMPRESSION_ERROR));
 	}
 	pos+=5;
@@ -148,11 +148,13 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) throw(CryptoEx
 
 	dcdebug("Size: %d\n", size);
 	
-	short treeSize;
-	treeSize = *(short*)&is[pos];
+	unsigned short treeSize;
+	treeSize = *(unsigned short*)&is[pos];
 
 	pos+=2;
 
+	if(len < (size_t)(11 + treeSize * 2)) 
+		throw CryptoException(STRING(DECOMPRESSION_ERROR));
 	Leaf** leaves = new Leaf*[treeSize];
 
 	int i;
@@ -162,23 +164,27 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) throw(CryptoEx
 		leaves[i] = new Leaf(chr, bits);
 	}
 
-	BitInputStream bis(is, pos);
+	BitInputStream bis(is, pos, len);
 
 	DecNode* root = new DecNode();
 
 	for(i=0; i<treeSize; i++) {
 		DecNode* node = root;
 		for(int j=0; j<leaves[i]->len; j++) {
-			if(bis.get()) {
-				if(node->right == NULL)
-					node->right = new DecNode();
+			try {
+				if(bis.get()) {
+					if(node->right == NULL)
+						node->right = new DecNode();
 
-				node = node->right;
-			} else {
-				if(node->left == NULL)
-					node->left = new DecNode();
+					node = node->right;
+				} else {
+					if(node->left == NULL)
+						node->left = new DecNode();
 
-				node = node->left;
+					node = node->left;
+				}
+			} catch(const BitStreamException&) {
+				throw CryptoException(STRING(DECOMPRESSION_ERROR));
 			}
 		}
 		node->chr = leaves[i]->chr;
@@ -193,10 +199,14 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) throw(CryptoEx
 	for(i=0; i<size; i++) {
 		DecNode* node = root;
 		while(node->chr == -1) {
-			if(bis.get()) {
-				node = node->right;
-			} else {
-				node = node->left;
+			try {
+				if(bis.get()) {
+					node = node->right;
+				} else {
+					node = node->left;
+				}
+			} catch(const BitStreamException&) {
+				throw CryptoException(STRING(DECOMPRESSION_ERROR));
 			}
 
 			if(node == NULL) {
@@ -395,5 +405,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.47 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.48 2004/09/26 18:54:08 arnetheduck Exp $
  */

@@ -40,7 +40,7 @@ void DirectoryListing::loadFile(const string& name, bool doAdl) {
 		size_t len = (size_t)::File::getSize(name);
 		AutoArray<u_int8_t> buf(len);
 		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
-		CryptoManager::getInstance()->decodeHuffman(buf, txt);
+		CryptoManager::getInstance()->decodeHuffman(buf, txt, len);
 		load(txt, doAdl);
 	} else if(Util::stricmp(ext, ".bz2") == 0) {
 		::File ff(name, ::File::READ, ::File::OPEN);
@@ -330,5 +330,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.37 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.38 2004/09/26 18:54:08 arnetheduck Exp $
  */

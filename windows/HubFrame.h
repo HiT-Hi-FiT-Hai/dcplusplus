@@ -248,7 +248,6 @@ private:
 			client->setDescription(Text::fromT(aDescription));
 		client->setPassword(Text::fromT(aPassword));
 		client->addListener(this);
-		TimerManager::getInstance()->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
 	}
 
@@ -392,6 +391,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.52 2004/09/13 14:58:32 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.53 2004/09/26 18:54:09 arnetheduck Exp $
  */
 

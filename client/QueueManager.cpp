@@ -128,7 +128,7 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 		// No user lists
 		if(q->isSet(QueueItem::FLAG_USER_LIST))
 			continue;
-        // No paused downloads
+		// No paused downloads
 		if(q->getPriority() == QueueItem::PAUSED)
 			continue;
 		// No files that already have more than 5 online sources
@@ -300,7 +300,7 @@ QueueManager::~QueueManager() {
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
 	
-		hFind = FindFirstFile(Text::toT(path + "\\*.bz2").c_str(), &data);
+		hFind = FindFirstFile(Text::toT(path + "\\*.xml.bz2").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
 				File::deleteFile(path + Text::fromT(data.cFileName));			
@@ -322,7 +322,7 @@ QueueManager::~QueueManager() {
 		DIR* dir = opendir(path.c_str());
 		if (dir) {
 			while (struct dirent* ent = readdir(dir)) {
-				if (fnmatch("*.bz2", ent->d_name, 0) == 0 ||
+				if (fnmatch("*.xml.bz2", ent->d_name, 0) == 0 ||
 					fnmatch("*.DcLst", ent->d_name, 0) == 0) {
 					File::deleteFile(path + ent->d_name);	
 				}
@@ -733,17 +733,17 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 		QueueItem* q = fileQueue.find(aDownload->getTarget());
 
 		if(q != NULL) {
+			if(aDownload->isSet(Download::FLAG_USER_LIST)) {
+				if(aDownload->getSource() == "files.xml.bz2") {
+					q->setFlag(QueueItem::FLAG_XML_BZLIST);
+				} else {
+					q->unsetFlag(QueueItem::FLAG_XML_BZLIST);
+				}
+			}
 
 			if(finished) {
 				dcassert(q->getStatus() == QueueItem::STATUS_RUNNING);
 				userQueue.remove(q);
-				if(aDownload->isSet(Download::FLAG_USER_LIST)) {
-					if(aDownload->getSource() == "files.xml.bz2") {
-						q->setFlag(QueueItem::FLAG_XML_BZLIST);
-					} else if(aDownload->getSource() == "MyList.bz2") {
-						q->setFlag(QueueItem::FLAG_BZLIST);
-					}
-				}
 				fire(QueueManagerListener::Finished(), q);
 				fire(QueueManagerListener::Removed(), q);
 				// Now, let's see if this was a directory download filelist...
@@ -1006,10 +1006,6 @@ void QueueManager::saveQueue() throw() {
 					f.write(STRINGLEN("\" TTH=\""));
 					f.write(d->getTTH()->toBase32(b32tmp));
 				}
-				if(!d->getSearchString().empty()) {
-					f.write(STRINGLEN("\" SearchString=\""));
-					f.write(CHECKESCAPE(d->getSearchString()));
-				}
 				if(d->getDownloadedBytes() != 0) {
 					f.write(STRINGLEN("\" Downloaded=\""));
 					f.write(Util::toString(d->getDownloadedBytes()));
@@ -1091,7 +1087,6 @@ static const string sSource = "Source";
 static const string sNick = "Nick";
 static const string sPath = "Path";
 static const string sDirectory = "Directory";
-static const string sSearchString = "SearchString";
 static const string sAdded = "Added";
 static const string sUtf8 = "Utf8";
 static const string sTTH = "TTH";
@@ -1251,5 +1246,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.104 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.105 2004/09/26 18:54:08 arnetheduck Exp $
  */

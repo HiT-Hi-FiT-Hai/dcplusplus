@@ -52,6 +52,8 @@ public:
 		progress.Attach(GetDlgItem(IDC_HASH_PROGRESS));
 		progress.SetRange(0, 10000);
 		updateStats();
+
+		HashManager::getInstance()->setPriority(Thread::NORMAL);
 		
 		SetTimer(1, 1000);
 		return TRUE;
@@ -62,6 +64,7 @@ public:
 		return 0;
 	}
 	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		HashManager::getInstance()->setPriority(Thread::IDLE);
 		progress.Detach();
 		KillTimer(1);
 		return 0;
@@ -140,6 +143,6 @@ private:
 
 /**
  * @file
- * $Id: HashProgressDlg.h,v 1.4 2004/09/11 13:35:06 arnetheduck Exp $
+ * $Id: HashProgressDlg.h,v 1.5 2004/09/26 18:54:08 arnetheduck Exp $
  */
 

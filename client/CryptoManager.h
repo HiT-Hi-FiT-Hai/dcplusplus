@@ -77,7 +77,7 @@ public:
 	const string& getPk() { return pk; };
 	bool isExtended(const string& aLock) { return strncmp(aLock.c_str(), "EXTENDEDPROTOCOL", 16) == 0; };
 
-	void decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException);
+	void decodeHuffman(const u_int8_t* /*is*/, string& /*os*/, const size_t /*len*/) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
 private:
@@ -127,5 +127,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.38 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.39 2004/09/26 18:54:08 arnetheduck Exp $
  */

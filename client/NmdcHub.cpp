@@ -127,7 +127,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 				reconnect = false;
 			}
 		}
-		Speaker<NmdcHubListener>::fire(NmdcHubListener::Message(), this, Util::validateMessage(aLine, true));
+		Speaker<NmdcHubListener>::fire(NmdcHubListener::Message(), this, Util::validateMessage(fromNmdc(aLine), true));
 		return;
 	}
 
@@ -751,6 +751,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.12 2004/09/13 23:02:43 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.13 2004/09/26 18:54:08 arnetheduck Exp $
  */
 

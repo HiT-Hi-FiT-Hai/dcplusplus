@@ -29,6 +29,10 @@ Magnet.exe is licensed under the Apache License.
 Full license text: http://www.apache.org/licenses/LICENSE-2.0
 Project Home Page: http://sourceforge.net/projects/magnethandler
 
+GeoIP database Copyright (c) 2003 MaxMind LLC.  All Rights Reserved.
+This product includes GeoIP data created by MaxMind, available from
+http://maxmind.com/
+
 --------------------------------------------------
 
 This Readme will give you a quick startup guide and explain some features

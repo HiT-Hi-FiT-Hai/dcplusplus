@@ -124,6 +124,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		MoveWindow(rc, TRUE);
 	}
 
+	TimerManager::getInstance()->addListener(this);
+
 	return 1;
 }
 
@@ -1107,5 +1109,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.76 2004/09/26 07:55:33 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.77 2004/09/26 18:54:08 arnetheduck Exp $
  */

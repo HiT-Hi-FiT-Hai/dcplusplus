@@ -43,8 +43,13 @@ international filenames in it - they will not be correctly converted.
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
 * Fixed dupe usercommands on reconnect (thanks sed)
-* Links now clickable in PM's as well (thanks torgny nyblom)
-
+* Links now clickable in PM's and notepad as well (thanks torgny nyblom)
+* Files are no longer hashed if the shared directory is removed while hashing
+* Added hash progress dialog, hashing is run at a higher priority when dialog is shown
+* Fixed a crash issue with invalid DcLst:s (thanks garg)
+* Better strategy for removing old filelists on exit (thanks garg)
+* Added Geo-IP license
+	
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done

@@ -302,6 +302,7 @@ enum Strings { // @DontAdd
 	SEARCH_SPY, // "Search Spy"
 	SEARCH_STRING, // "Search String"
 	SEARCHING_FOR, // "Searching for "
+	SEEK_BEYOND_END, // "Request to seek beyond the end of data"
 	SEND_PRIVATE_MESSAGE, // "Send private message"
 	SEPARATOR, // "Separator"
 	SERVER, // "Server"

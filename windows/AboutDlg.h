@@ -30,6 +30,7 @@ static const TCHAR thanks[] = _T("Big thanks to all donators and people who have
 _T("and code! Thanks go out to sourceforge for hosting the project. This application uses libzip2, ")
 _T("thanks to Julian R Steward and team for providing it. This application uses STLPort ")
 _T("(www.stlport.org), a most excellent STL package. zlib is also used in this application. ")
+_T("This product includes GeoIP data created by MaxMind, available from http://maxmind.com/. ")
 _T("The following people have contributed code to ")
 _T("DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n")
 _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
@@ -127,6 +128,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.37 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.38 2004/09/26 18:54:08 arnetheduck Exp $
  */
 

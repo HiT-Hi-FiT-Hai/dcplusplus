@@ -298,6 +298,7 @@
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
 		<String Name="SearchingFor">Searching for </String>
+		<String Name="SeekBeyondEnd">Request to seek beyond the end of data</String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
 		<String Name="Server">Server</String>

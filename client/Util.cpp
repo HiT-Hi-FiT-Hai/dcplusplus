@@ -63,6 +63,8 @@ void Util::initialize() {
 	sgenrand((unsigned long)time(NULL));
 
 	try {
+		// This product includes GeoIP data created by MaxMind, available from http://maxmind.com/
+		// Updates at http://www.maxmind.com/app/geoip_country
 		string file = Util::getAppPath() + "GeoIpCountryWhois.csv";
 		string data = File(file, File::READ, File::OPEN).read();
 
@@ -71,7 +73,7 @@ void Util::initialize() {
 		string::size_type j = 0;
 		string::size_type k = 0;
 		CountryIter last = countries.end();
-		
+
 		for(;;) {
 			i = data.find(',', k);
 			if(i == string::npos)
@@ -451,6 +453,8 @@ int Util::stricmp(const char* a, const char* b) {
 		wchar_t ca = 0, cb = 0;
 		int na = Text::utf8ToWc(a, ca);
 		int nb = Text::utf8ToWc(b, cb);
+		ca = Text::toLower(ca);
+		cb = Text::toLower(cb);
 		if(ca != cb) {
 			return (int)cb - (int)ca;
 		}
@@ -460,7 +464,8 @@ int Util::stricmp(const char* a, const char* b) {
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
 	Text::utf8ToWc(b, cb);
-	return (int)cb - (int)ca;
+
+	return (int)Text::toLower(cb) - (int)Text::toLower(ca);
 }
 
 int Util::strnicmp(const char* a, const char* b, size_t n) {
@@ -469,6 +474,8 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 		wchar_t ca = 0, cb = 0;
 		int na = Text::utf8ToWc(a, ca);
 		int nb = Text::utf8ToWc(b, cb);
+		ca = Text::toLower(ca);
+		cb = Text::toLower(cb);
 		if(ca != cb) {
 			return (int)cb - (int)ca;
 		}
@@ -478,7 +485,7 @@ int Util::strnicmp(const char* a, const char* b, size_t n) {
 	wchar_t ca = 0, cb = 0;
 	Text::utf8ToWc(a, ca);
 	Text::utf8ToWc(b, cb);
-	return (int)cb - (int)ca;
+	return (a >= end) ? 0 : ((int)Text::toLower(cb) - (int)Text::toLower(ca));
 }
 
 string Util::encodeURI(const string& aString, bool reverse) {
@@ -795,6 +802,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.67 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.68 2004/09/26 18:54:08 arnetheduck Exp $
  */
 

@@ -73,8 +73,6 @@ public:
 		FLAG_DIRECTORY_DOWNLOAD = 0x04,
 		/** The file is downloaded to be viewed in the gui */
 		FLAG_CLIENT_VIEW = 0x08,
-		/** The file list downloaded was actually BZ compressed (MyList.bz2, only available in FINISHED message) */
-		FLAG_BZLIST = 0x10,
 		/** Flag to indicate that file should be viewed as a text file */
 		FLAG_TEXT = 0x20,
 		/** This file exists on the hard disk and should be prioritised */
@@ -200,8 +198,6 @@ public:
 		dcassert(isSet(QueueItem::FLAG_USER_LIST));
 		if(isSet(QueueItem::FLAG_XML_BZLIST)) {
 			return getTarget() + ".xml.bz2";
-		} else if(isSet(QueueItem::FLAG_BZLIST)) {
-			return getTarget() + ".bz2";
 		} else {
 			return getTarget() + ".DcLst";
 		}
@@ -280,5 +276,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.15 2004/09/24 20:48:27 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.16 2004/09/26 18:54:08 arnetheduck Exp $
 */

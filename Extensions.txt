@@ -60,30 +60,6 @@ some random data (not beginning with a number...=).
 
 --------------------------------------------------------------------
 
-Feature: BZList
-
-Purpose: The file listing of a user is by default compressed with huffman 
-encoding which is really inefficient. This feature adds the ability to get 
-a file list compressed with bzip2 instead, which generally compresses 2-3 
-times better (My 300kb list compressed to 210 kb with huffman and 82 kb 
-with bzip2). This is a good thing because a) file lists can be transferred 
-faster (specially on slower connections), b) bzip2 compression is very 
-standard, c) It's a really easy feature to add (that's why I added it, to 
-test this protocol extension scheme).
-
-Usage: Normally, when getting a users file list, you use the command 
-"$Get MyList.DcLst", where "MyList.DcList" is a unique filename that 
-always denotes the users file listing. When a client supports BZList, it 
-guarantees that the file "MyList.bz2" will always be available, and when 
-decompressed, be exactly the same file as "MyList.DcLst".
-
-Should be sent: Instead of "MyList.DcList" when getting a file list.
-
-Note; libbzip2-1.0.2 (or a compatible library...) should be used for 
-compression/decompression
-
---------------------------------------------------------------------
-
 Feature: GetZBlock
 
 Usage: Instead of $Get and $Send, use 
