@@ -34,6 +34,7 @@
 * Added command history scrolling using ctrl-up/down/home/end (thanks cologic)
 * Fixed match queue crashes
 * Fixed sending of unknown '/'-commands to the hub (thanks sedulus)
+* Added support for once-per-nick usercommands (and made kick/redirect work like once)
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

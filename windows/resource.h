@@ -280,6 +280,23 @@
 #define IDC_BUTTON1                     1208
 #define IDC_BUTTON2                     1209
 #define IDC_REFRESH_FILE_LIST           1210
+#define IDC_ONCE_PER_NICK               1211
+#define IDC_SETTINGS_ONCE               1211
+#define IDC_BROWSELIST                  3000
+#define IDC_REMOVE_SOURCE               3500
+#define IDC_PM                          4000
+#define IDC_READD                       4500
+#define IDC_DOWNLOAD_TARGET             5000
+#define IDC_DOWNLOAD_TARGET_DIR         5500
+#define IDC_SELECT_WINDOW               6000
+#define IDC_USER_COMMAND                6500
+#define IDC_PRIORITY_PAUSED             7000
+#define IDC_PRIORITY_LOWEST             7001
+#define IDC_PRIORITY_LOW                7002
+#define IDC_PRIORITY_NORMAL             7003
+#define IDC_PRIORITY_HIGH               7004
+#define IDC_PRIORITY_HIGHEST            7005
+#define IDC_DOWNLOAD_WHOLE_TARGET       7500
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -292,24 +309,6 @@
 #define IDC_DELETE_WORD                 32787
 #define ID_WINDOW_MINIMIZE_ALL          57654
 
-#define IDC_BROWSELIST 3000
-#define IDC_REMOVE_SOURCE 3500
-#define IDC_PM 4000
-#define IDC_READD 4500
-#define IDC_DOWNLOAD_TARGET 5000
-#define IDC_DOWNLOAD_TARGET_DIR 5500
-#define IDC_SELECT_WINDOW 6000
-#define IDC_USER_COMMAND 6500
-#define IDC_PRIORITY_PAUSED 7000
-#define IDC_PRIORITY_LOWEST 7001
-#define IDC_PRIORITY_LOW 7002
-#define IDC_PRIORITY_NORMAL 7003
-#define IDC_PRIORITY_HIGH 7004
-#define IDC_PRIORITY_HIGHEST 7005
-#define IDC_DOWNLOAD_WHOLE_TARGET 7500
-
-
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
@@ -317,7 +316,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1211
+#define _APS_NEXT_CONTROL_VALUE         1212
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -38,6 +38,7 @@ class CommandDlg : public CDialogImpl<CommandDlg>
 	CButton ctrlHubMenu;
 	CButton ctrlUserMenu;
 	CButton ctrlSearchMenu;
+	CButton ctrlOnce;
 	CEdit ctrlResult;
 
 public:
@@ -93,8 +94,9 @@ public:
 			GET_TEXT(IDC_NAME, name);
 			GET_TEXT(IDC_HUB, hub);
 
-			if(type != 0)
-				type = 1;
+			if(type != 0) {
+				type = (ctrlOnce.GetCheck() == BST_CHECKED) ? 2 : 1;
+			}
 		}
 		EndDialog(wID);
 		return 0;
@@ -156,5 +158,5 @@ private:
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.5 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.6 2003/11/13 15:32:16 arnetheduck Exp $
  */

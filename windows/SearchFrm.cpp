@@ -377,8 +377,8 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 		size = -1;
 	}
 	if(oneHub && hub.empty()) {
-		hub = si->sr->getHubIpPort();
-	} else if(hub != si->sr->getHubIpPort()) {
+		hub = si->sr->getUser()->getClientAddressPort();
+	} else if(hub != si->sr->getUser()->getClientAddressPort()) {
 		oneHub = false;
 		hub.clear();
 	}
@@ -603,10 +603,16 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 void SearchFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
 		return;
+	set<User::Ptr> nicks;
 
 	int sel = -1;
 	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = ctrlResults.getItemData(sel)->sr;
+		if(uc.getType() == UserCommand::TYPE_RAW_ONCE) {
+			if(nicks.find(sr->getUser()) != nicks.end())
+				continue;
+			nicks.insert(sr->getUser());
+		}
 		ucParams["nick"] = sr->getUser()->getNick();
 		ucParams["tag"] = sr->getUser()->getTag();
 		ucParams["description"] = sr->getUser()->getDescription();
@@ -861,5 +867,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.36 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.37 2003/11/13 15:32:16 arnetheduck Exp $
  */

@@ -391,7 +391,7 @@ void Client::onLine(const string& aLine) throw() {
 		if(type == UserCommand::TYPE_SEPARATOR) {
 			int ctx = Util::toInt(param.substr(i));
 			fire(ClientListener::USER_COMMAND, this, type, ctx, Util::emptyString, Util::emptyString);
-		} else if(type == UserCommand::TYPE_RAW) {
+		} else if(type == UserCommand::TYPE_RAW || type == UserCommand::TYPE_RAW_ONCE) {
 			j = param.find(' ', i);
 			if(j == string::npos)
 				return;
@@ -704,6 +704,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.61 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.62 2003/11/13 15:32:16 arnetheduck Exp $
  */
 

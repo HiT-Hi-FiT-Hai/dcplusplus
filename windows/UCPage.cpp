@@ -42,10 +42,6 @@ PropPage::TextItem UCPage::texts[] = {
 };
 
 PropPage::Item UCPage::items[] = {
-	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
-	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
-	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
-	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -180,6 +176,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.4 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.5 2003/11/13 15:32:17 arnetheduck Exp $
  */
 

@@ -32,8 +32,10 @@ public:
 
 	enum {
 		TYPE_SEPARATOR,
-		TYPE_RAW
+		TYPE_RAW,
+		TYPE_RAW_ONCE
 	};
+
 	enum {
 		CONTEXT_HUB = 0x01,
 		CONTEXT_CHAT = 0x02,
@@ -45,7 +47,7 @@ public:
 		FLAG_NOSAVE = 0x01
 	};
 
-	UserCommand() : id(0), type(0) { };
+	UserCommand() : id(0), type(0), ctx(0) { };
 	UserCommand(int aId, int aType, int aCtx, int aFlags, const string& aName, const string& aCommand, const string& aHub) throw() 
 		: Flags(aFlags), id(aId), type(aType), ctx(aCtx), name(aName), command(aCommand), hub(aHub) { };
 	

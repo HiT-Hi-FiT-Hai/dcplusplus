@@ -35,6 +35,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	ATTACH(IDC_SETTINGS_RAW, ctrlRaw);
 	ATTACH(IDC_SETTINGS_CHAT, ctrlChat);
 	ATTACH(IDC_SETTINGS_PM, ctrlPM);
+	ATTACH(IDC_SETTINGS_ONCE, ctrlOnce);
 	ATTACH(IDC_SETTINGS_HUB_MENU, ctrlHubMenu);
 	ATTACH(IDC_SETTINGS_USER_MENU, ctrlUserMenu);
 	ATTACH(IDC_SETTINGS_SEARCH_MENU, ctrlSearchMenu);
@@ -56,6 +57,7 @@ Name: Name shown in the menus\r\n\
 Command: Command text (may contain parameters)\r\n\
 Hub: Hub ip as typed when connecting (empty = all hubs, \"op\" = hubs where you're op)\r\n\
 To: PM recipient\r\n\
+Only once: When selecting multiple items in search, select this to avoid command being sent multiple times per user\r\n\
 In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m, ...). The following are available:\r\n\
 %[mynick]: your own nick\r\n\
 %[nick]: the users nick (user && search context only)\r\n\
@@ -92,6 +94,10 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 			string cmd = command;
 			ctrlRaw.SetCheck(BST_CHECKED);
 			ctrlCommand.SetWindowText(cmd.c_str());
+		}
+		if(type == UserCommand::TYPE_RAW_ONCE) {
+			ctrlOnce.SetCheck(BST_CHECKED);
+			type = 1;
 		}
 	}
 
@@ -141,5 +147,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.2 2003/10/22 01:21:02 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.3 2003/11/13 15:32:16 arnetheduck Exp $
 */
