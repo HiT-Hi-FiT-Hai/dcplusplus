@@ -1,0 +1,7 @@
+How to compile in 4 easy steps:
+
+1) Make sure you've downloaded the WTL Package and have all the files in it in your include path
+2) Make sure you have stlport installed and that it's the _first_ directory in your include path
+3) Make sure you have a fairly recent platform sdk (I'm currently using the November 2001 release
+   The sdk is freely available from ms: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
+4) Open the project workspace and press your build button
