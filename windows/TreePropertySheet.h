@@ -40,8 +40,8 @@ public:
 	BEGIN_MSG_MAP(TreePropertySheet)
 		MESSAGE_HANDLER(WM_COMMAND, baseClass::OnCommand)
 		MESSAGE_HANDLER(WM_USER_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
 		NOTIFY_HANDLER(IDC_PAGE, TVN_SELCHANGED, onSelChanged)
-		NOTIFY_HANDLER(IDC_PAGE, TVN_SELCHANGEDW, onSelChanged)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(TAB_MESSAGE_MAP)
 		MESSAGE_HANDLER(TCM_SETCURSEL, onSetCurSel)
@@ -51,7 +51,15 @@ public:
 	LRESULT onSetCurSel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	LRESULT onSelChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
-	
+
+	LRESULT onNotifyFormat(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+#ifdef _UNICODE
+		return NFR_UNICODE;
+#else
+		return NFR_ANSI;
+#endif		
+	}
+
 	static int CALLBACK PropSheetProc(HWND hwndDlg, UINT uMsg, LPARAM lParam);
 private:
 
@@ -85,5 +93,5 @@ private:
 
 /**
 * @file
-* $Id: TreePropertySheet.h,v 1.5 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: TreePropertySheet.h,v 1.6 2004/10/22 17:03:33 arnetheduck Exp $
 */

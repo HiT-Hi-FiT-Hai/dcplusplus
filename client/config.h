@@ -18,7 +18,8 @@
 
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
-#define WINVER		0x0500
+#define WINVER		0x0501
+#define _WIN32_WINNT 0x0501
 #define _WIN32_IE	0x0500
 #define _RICHEDIT_VER	0x0200
 
@@ -125,5 +126,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.25 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: config.h,v 1.26 2004/10/22 17:03:33 arnetheduck Exp $
  */

@@ -649,6 +649,7 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SETTEXT, onSetText)
 		MESSAGE_HANDLER(WM_REALLY_CLOSE, onReallyClose)
+		MESSAGE_HANDLER(WM_NOTIFYFORMAT, onNotifyFormat)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 	
@@ -706,6 +707,14 @@ public:
 		}
 
 		return hWnd;
+	}
+
+	LRESULT onNotifyFormat(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+#ifdef _UNICODE
+		return NFR_UNICODE;
+#else
+		return NFR_ANSI;
+#endif		
 	}
 
 	// All MDI windows must have this in wtl it seems to handle ctrl-tab and so on...
@@ -815,5 +824,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.35 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.36 2004/10/22 17:03:33 arnetheduck Exp $
  */

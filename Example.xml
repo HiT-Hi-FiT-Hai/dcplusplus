@@ -383,6 +383,7 @@
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>
 		<String Name="SettingsOpenPublic">Open the public hubs window at startup</String>
 		<String Name="SettingsOpenQueue">Open the download queue window at startup</String>
+		<String Name="SettingsOpenUserCmdHelp">Always open help file with this dialog</String>
 		<String Name="SettingsOptions">Options</String>
 		<String Name="SettingsPassive">Passive</String>
 		<String Name="SettingsPersonalInformation">Personal Information</String>

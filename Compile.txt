@@ -2,9 +2,10 @@ The most important thing about compiling: If it didn't work, *you* screwed up.
 
 How to compile in 3 easy steps:
 
-1) Dowload the source, WTL and STLPort from the download site. Unpack the source, then create two
-   more directories under there, "stlport" and "wtl". Unpack the two other archives in their folders.
-   If you're brave, you try compiling without STLPort, see config.h (I don't maintain it though)
+1) Dowload the source and STLPort from the download site. Download WTL from http://sf.net/projects/wtl.
+   Unpack the source, then create two  more directories under there, "stlport" and "wtl". Unpack the 
+   two other archives in their folders. If you're brave, you can try compiling without STLPort, see 
+   config.h (I don't maintain it though)
 
 2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
    You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this

@@ -38,7 +38,7 @@ _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pe
 _T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
-_T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie. ")
+_T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston. ")
 _T("Keep it coming!");
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
@@ -128,6 +128,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.38 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.39 2004/10/22 17:03:33 arnetheduck Exp $
  */
 

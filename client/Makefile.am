@@ -1,6 +1,12 @@
-lib_LIBRARIES = libdcpp.a
+lib_LTLIBRARIES = libdcppclient.la
 
-libdcpp_a_SOURCES= \
+LIBDCPP_CURRENT=0
+LIBDCPP_REVISION=0
+LIBDCPP_AGE=0
+
+libdcppclient_la_LDFLAGS = -export-dynamic -version-info $(LIBDCPP_CURRENT):$(LIBDCPP_REVISION):$(LIBDCPP_AGE)
+
+libdcppclient_la_SOURCES= \
 AdcCommand.h \
 AdcHub.cpp \
 AdcHub.h \

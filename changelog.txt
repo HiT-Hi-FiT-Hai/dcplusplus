@@ -26,6 +26,10 @@
 * Clicking on active tab will deactivate it (thanks garg)
 * Fixed an issue with loading invalid virtual names when upgrading (thanks garg)
 * Fixed another issue with user commands (thanks garg)
+* Updated to WTL 7.5.4291
+* Hopefully fixed a few issues with w9x and Unicode
+* Fixed common control initialization
+* Unix makefile now generates a shared lib (thanks jeremy huddleston)
 
 
 -- 0.4034 2004-10-03 --

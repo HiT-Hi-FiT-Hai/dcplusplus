@@ -1,9 +1,9 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([dcpp], 0.40325)
+AC_INIT([DCPlusPlus], 0.4035)
 AC_CONFIG_SRCDIR(client/ADLSearch.cpp)
 AC_GNU_SOURCE
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE(foreign)
 			      
 dnl Checks for programs.
 AC_PROG_CC
