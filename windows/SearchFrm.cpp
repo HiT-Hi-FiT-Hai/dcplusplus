@@ -696,7 +696,7 @@ LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 	if(l->iSubItem == ctrlResults.getSortColumn()) {
-		if (!ctrlResults.getSortDirection())
+		if (!ctrlResults.isAscending())
 			ctrlResults.setSort(-1, ctrlResults.getSortType());
 		else
 			ctrlResults.setSortDirection(false);
@@ -1082,5 +1082,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.34 2003/11/11 13:16:11 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.35 2003/11/11 20:31:57 arnetheduck Exp $
  */

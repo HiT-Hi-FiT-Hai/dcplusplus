@@ -144,7 +144,7 @@ public:
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		
 		if(l->iSubItem == ctrlList.getSortColumn()) {
-			if (!ctrlList.getSortDirection())
+			if (!ctrlList.isAscending())
 				ctrlList.setSort(-1, ctrlList.getSortType());
 			else
 				ctrlList.setSortDirection(false);
@@ -261,5 +261,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.21 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.22 2003/11/11 20:31:57 arnetheduck Exp $
  */

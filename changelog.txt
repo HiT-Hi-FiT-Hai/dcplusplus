@@ -29,6 +29,8 @@
 * Changed transfer view sort order (active downloads, active uploads then connection attempts...one
   fine day perhaps it'll be configurable...)
 * Added date added column to queue
+* Temporary downloads folder no longer shared
+* Fixed a bug where the socks5 proxy was used for http proxy connections (thanks dan fulger)
 
 
  -- 0.301 2003-10-28 --

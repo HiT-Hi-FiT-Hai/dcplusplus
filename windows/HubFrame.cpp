@@ -365,7 +365,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 		return true;
 	} else {
 		ctrlUsers.getItemData(i)->update();
-		ctrlUsers.Update(i);
+		ctrlUsers.update(i);
 		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
 		
 		return false;
@@ -763,7 +763,10 @@ void HubFrame::runUserCommand(UserCommand& uc) {
 };
 
 void HubFrame::onTab() {
-	if(BOOLSETTING(TAB_COMPLETION) && (GetFocus() == ctrlMessage.m_hWnd)) {
+	if(	BOOLSETTING(TAB_COMPLETION) && 
+		(GetFocus() == ctrlMessage.m_hWnd) && 
+		!(GetAsyncKeyState(VK_SHIFT) & 0x8000) ) 
+	{
 		int n = ctrlMessage.GetWindowTextLength();
 		AutoArray<char> buf(n+1);
 		ctrlMessage.GetWindowText(buf, n+1);
@@ -1081,5 +1084,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.40 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.41 2003/11/11 20:31:57 arnetheduck Exp $
  */

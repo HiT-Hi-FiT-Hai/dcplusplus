@@ -94,7 +94,7 @@ public:
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlUsers.getSortColumn()) {
-			if (!ctrlUsers.getSortDirection())
+			if (!ctrlUsers.isAscending())
 				ctrlUsers.setSort(-1, ctrlUsers.getSortType());
 			else
 				ctrlUsers.setSortDirection(false);
@@ -183,6 +183,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.9 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.10 2003/11/11 20:31:57 arnetheduck Exp $
  */
 

@@ -106,7 +106,7 @@ public:
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlList.getSortColumn()) {
-			if (!ctrlList.getSortDirection())
+			if (!ctrlList.isAscending())
 				ctrlList.setSort(-1, ctrlList.getSortType());
 			else
 				ctrlList.setSortDirection(false);
@@ -214,5 +214,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedFrame.h,v 1.12 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.13 2003/11/11 20:31:57 arnetheduck Exp $
  */

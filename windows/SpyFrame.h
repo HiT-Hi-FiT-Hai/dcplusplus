@@ -87,7 +87,7 @@ public:
 	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlSearches.getSortColumn()) {
-			if (!ctrlSearches.getSortDirection())
+			if (!ctrlSearches.isAscending())
 				ctrlSearches.setSort(-1, ctrlSearches.getSortType());
 			else
 				ctrlSearches.setSortDirection(false);
@@ -131,6 +131,6 @@ private:
 
 /**
  * @file
- * $Id: SpyFrame.h,v 1.12 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.13 2003/11/11 20:31:57 arnetheduck Exp $
  */
 

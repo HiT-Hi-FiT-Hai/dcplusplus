@@ -24,15 +24,15 @@
 #endif // _MSC_VER > 1000
 
 #include "../client/Util.h"
+#include "ListViewArrows.h"
 
-class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CControlWinTraits>
+class ExListViewCtrl : public CWindowImpl<ExListViewCtrl, CListViewCtrl, CControlWinTraits>,
+	public ListViewArrows<ExListViewCtrl>
 {
 	int sortColumn;
 	int sortType;
 	bool ascending;
 	int (*fun)(LPARAM, LPARAM);
-	HBITMAP upArrow;
-	HBITMAP downArrow;
 
 public:
 	enum {	
@@ -43,10 +43,10 @@ public:
 		SORT_FLOAT
 	};
 
+	typedef ListViewArrows<ExListViewCtrl> arrowBase;
+
 	BEGIN_MSG_MAP(ExListViewCtrl)
-		MESSAGE_HANDLER(WM_CREATE, onCreate)
-		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
-		MESSAGE_HANDLER(WM_SETTINGCHANGE, onSettingChange)
+		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP()
 
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
@@ -67,7 +67,7 @@ public:
 		}
 	}
 
-	bool getSortDirection() { return ascending; };
+	bool isAscending() { return ascending; };
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
@@ -149,43 +149,15 @@ public:
 		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
 	}
 
-	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1), upArrow(0), downArrow(0) { };
+	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) { };
 
-	virtual ~ExListViewCtrl()
-	{
-		if (upArrow)
-			::DeleteObject(upArrow);
-		if (downArrow)
-			::DeleteObject(downArrow);
-	};
-
-protected:
-	void rebuildArrows();
-	void updateArrow();
-
-	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		rebuildArrows();
-		_Module.AddSettingChangeNotify(m_hWnd);
-		bHandled = FALSE;
-		return 0;
-	}
-
-	LRESULT onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		_Module.RemoveSettingChangeNotify(m_hWnd);
-		bHandled = FALSE;
-		return 0;
-	}
-
-	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
-		rebuildArrows();
-		return 1;
-	}
+	virtual ~ExListViewCtrl() { };
 };
 
 #endif // !defined(AFX_EXLISTVIEWCTRL_H__45847002_68C2_4C8A_9C2D_C4D8F65DA841__INCLUDED_)
 
 /**
  * @file
- * $Id: ExListViewCtrl.h,v 1.10 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.11 2003/11/11 20:31:57 arnetheduck Exp $
  */
 

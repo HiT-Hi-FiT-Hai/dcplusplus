@@ -242,12 +242,13 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
-					//dir->addType(SearchManager::TYPE_DIRECTORY);
-					dir->directories[name] = buildTree(aName + '\\' + name, dir);
-					dir->addSearchType(dir->directories[name]->getSearchTypes()); 
+					string newName = aName + PATH_SEPARATOR + name;
+					if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
+						dir->directories[name] = buildTree(newName, dir);
+						dir->addSearchType(dir->directories[name]->getSearchTypes()); 
+					}
 				}
 			} else {
-
 				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
 
 					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
@@ -729,6 +730,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.60 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.61 2003/11/11 20:31:56 arnetheduck Exp $
  */
 

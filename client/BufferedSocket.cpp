@@ -166,7 +166,7 @@ void BufferedSocket::threadConnect() {
 		setBlocking(false);
 		Socket::create();
 
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+		if( !getNoproxy() && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			if(!BOOLSETTING(SOCKS_RESOLVE)) {
 				s = resolve(s);
 			}
@@ -192,7 +192,7 @@ void BufferedSocket::threadConnect() {
 		}
 
 		// Hm, let's see if we're socksified...
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+		if( !getNoproxy() && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
 				// No username and pw, easier...=)
 				char connStr[3];
@@ -289,7 +289,7 @@ void BufferedSocket::threadConnect() {
 
 		fire(BufferedSocketListener::CONNECTED);
 	} catch(const SocketException& e) {
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+		if(!getNoproxy() && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 			fail("Socks5: " + e.getError());
 		} else {
 			fail(e.getError());
@@ -451,5 +451,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.57 2003/11/11 20:31:56 arnetheduck Exp $
  */

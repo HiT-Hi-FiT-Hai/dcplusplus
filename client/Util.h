@@ -308,12 +308,12 @@ public:
 		sprintf(buf, "%d", val);
 		return buf;
 	}
-	static string toString(long& val) {
+	static string toString(long val) {
 		char buf[16];
 		sprintf(buf, "%ld", val);
 		return buf;
 	}
-	static string toString(double& val) {
+	static string toString(double val) {
 		char buf[16];
 		sprintf(buf, "%.2f", val);
 		return buf;
@@ -484,5 +484,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.68 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: Util.h,v 1.69 2003/11/11 20:31:57 arnetheduck Exp $
  */

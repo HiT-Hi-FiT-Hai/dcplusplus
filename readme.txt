@@ -1,4 +1,4 @@
-DC++ 0.24 Readme
+DC++ Readme
 
 --------------------------------------------------
 DC++
@@ -29,7 +29,7 @@ There you can also find a FAQ (Frequenty Asked Questions) and a forum
 (http://dcplusplus.sf.net/forum).
 
 Contents
---------
+----------
  1 Installation
  2 Upgrade
  3 Uninstall
@@ -38,12 +38,13 @@ Contents
  6 Not-so-obvious options
  7 Other things you might want to know about
  8 Shortcuts
- 9 Further information
-10 Have fun
+ 9 Automatic search for alternative download locations
+10 Further information
+11 Have fun
 
 
  1 Installation
----------------
+-----------------
 
   Just run the installer and fire it up, then enter the settings to set it up according to your
   preferences (most important is nick, download location and shared folders).
@@ -51,7 +52,7 @@ Contents
   version without installer available at http://sourceforge.net/projects/dcplusplus
 
  2 Upgrade
-----------
+------------
   If u used NMDC: You can import your queue file now !
   If u used older DC++ version:
    Just install in the folder your old version was in.
@@ -64,12 +65,12 @@ Contents
   or edit your queue.xml file and add a directory to all targets without...).
 
  3 Uninstall
-------------
+--------------
   There is an uninstaller as well ...
   If you didn't use the installer: Just delete the folder, there are no .dll's or registry settings :)
 
  4 Available commands (type in main chat or pm)
-----------------------------------------
+-------------------------------------------------
   /grant            grants a slot to the user of the pm window you type in
   /close            close current window
   /help             short help message
@@ -88,14 +89,14 @@ Contents
   /fav /favorite    Adds hub to favourites (also works in pm's from that user)
 
  5 What do those Icons mean ??
------------------------------
+--------------------------------
  green       = normal Icon
  blue        = DC++ user (identified on 1st direct connection to this user)
  with bricks = User is in passive mode
  with key    = User is an Operator
 
  6 Not-so-obvious options
-------------------------
+---------------------------
   Settings:
    General:
     Active:              The usual connection mode, you can specify your IP
@@ -171,7 +172,7 @@ Contents
                          the .sfv file must be in the same target directory as the download goes.
 
  7 Other things you might want to know about
---------------------------------------------
+----------------------------------------------
   * you can doubleclick on a user name in chat to select him in the user list
   * you can doubleclick on stuff starting with www. http:// of ftp:// to open :)
   * DC++ supports uploading filelists and files <16 kB to other DC++ users
@@ -209,11 +210,64 @@ Contents
 
 
  8 Shortcuts
------------
+--------------
   ALT-s   send chat message
 
 
- 9 Further information
+ 9 Automatic search for alternative download locations
+--------------------------------------------------------
+An automatic search (the advanced option "Automatically search for 
+alternative download locations") will use the search string defined in the 
+download queue and it can be changed by the user. Previously (before 
+v0.301) the search used the target filename. A good search string is the 
+key to find many sources. If the search string is empty there will be no 
+search. The search string is also used when manually searching for alternates.
+
+You can change the search string for many files at once, which is good for 
+rar sets. However, a client will return at most 10 results on a search, 5 
+if you are passive, and trying to alter the search string for more than 
+those numbers will give you a warning.
+
+The option in advanced settings below auto-search "Automatically add search 
+string for alternative download locations" will automatically set the 
+target file name as search string when adding files to the download queue.
+
+Since v0.301 the auto search will also search for items in the download 
+queue which have online users. Previously only items with offline users 
+were searched and lead people to believe auto search was not working at 
+all. This feature comes at a cost though. The delay between searches for 
+items with online users is 5 minutes whereas searches for items with no 
+online users is done every other minute. No search will be made for an item 
+which has a source from whom you are already downloading a different file 
+from. A file will be searched for no more than once per hour, so if you 
+only have one item in the download queue it will take one hour between 
+searches.
+
+What does "Automatically search for alternative download locations" do when 
+no search strings are set? It will automatically match any search results 
+coming from manual searches against files in the download queue. So 
+basically it saves you the trouble of right-clicking every file you want to 
+add as an alternate source.
+
+Example search string for rar sets:
+Files abc-cd1.r01 to abc-cd1.r09 can have the same search string set to 
+"abc-cd1.r0" (passive users will only get 5 files returned so one search 
+string per file, like "abc-cd1.r01"). But don't set it to "abc .r0" or 
+something similar, this will give you rar files for CD2 as well. If you 
+don't have sfv checking enabled (the advanced option "Enable automatic SFV 
+checking") you can end up with the right files in the wrong place. This 
+search for rar sets is so good that it's even better (at least less time 
+consuming) than doing it yourself with manual searches and getting 
+filelists and use match queue. It gives you 10 files at once, even if there 
+are online users.
+
+That pretty much covers it.
+
+Thanks Lundis for the first draft of this feature description and 
+suggesting and testing of the enhanced auto search in the first place.
+
+
+10 Further information
 ------------------------
   * Homepage                  @ http://dcplusplus.sourceforge.net
   * Forum                     @ http://dcplusplus.sourceforge.net/forum
@@ -223,6 +277,6 @@ Contents
   * Get newest version        @ http://dcplusplus.sourceforge.net/index.php?page=download
   * Typos and errors in readme go to Fireball@enLightning.de
 
-10 Have fun
-----------
+11 Have fun
+-------------
   Go out, share some files, be a happy DC++ user and have fun.

@@ -193,7 +193,7 @@ LRESULT TransferView::onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 {
 	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 	if(l->iSubItem == ctrlTransfers.getSortColumn()) {
-		if (!ctrlTransfers.getSortDirection())
+		if (!ctrlTransfers.isAscending())
 			ctrlTransfers.setSort(-1, ctrlTransfers.getSortType());
 		else
 			ctrlTransfers.setSortDirection(false);
@@ -709,5 +709,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.11 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.12 2003/11/11 20:31:57 arnetheduck Exp $
  */

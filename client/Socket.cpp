@@ -279,7 +279,7 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
 
-	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5 && !noproxy) {
 
 		if(udpServer.empty() || udpPort == 0) {
 			throw SocketException(STRING(SOCKS_SETUP_ERROR));
@@ -520,6 +520,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.50 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.51 2003/11/11 20:31:57 arnetheduck Exp $
  */
 

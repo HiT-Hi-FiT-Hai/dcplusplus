@@ -29,9 +29,9 @@
 #include "Exception.h"
 #include "User.h"
 #include "File.h"
-#include "DirectoryListing.h"
 #include "QueueItem.h"
 #include "Singleton.h"
+#include "DirectoryListing.h"
 
 #include "QueueManagerListener.h"
 #include "SearchManagerListener.h"
@@ -40,7 +40,6 @@
 STANDARD_EXCEPTION(QueueException);
 
 class UserConnection;
-class DirectoryListing;
 
 class DirectoryItem {
 public:
@@ -242,6 +241,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.46 2003/11/11 13:16:09 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.47 2003/11/11 20:31:56 arnetheduck Exp $
  */
 

@@ -23,17 +23,23 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "ListViewArrows.h"
+
 template<class T, int ctrlId>
-class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits> {
+class TypedListViewCtrl : public CWindowImpl<TypedListViewCtrl, CListViewCtrl, CControlWinTraits>,
+	ListViewArrows<TypedListViewCtrl<T, ctrlId> >
+{
 public:
 	TypedListViewCtrl() : sortColumn(-1), sortAscending(true) { };
 
 	typedef TypedListViewCtrl<T, ctrlId> thisClass;
 	typedef CListViewCtrl baseClass;
+	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
 		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_GETDISPINFO, onGetDispInfo)
 		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_COLUMNCLICK, onColumnClick)
+		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
 	LRESULT onGetDispInfo(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
@@ -55,6 +61,7 @@ public:
 		} else {
 			sortColumn = -1;
 		}
+		updateArrow();
 		resort();
 		return 0;
 	}
@@ -84,7 +91,12 @@ public:
 		}
 		return -1;
 	}
-	void updateItem(T* item) { int i = findItem(item); if(i != -1) Update(i); };
+	void update(int i) {
+		int k = GetHeader().GetItemCount();
+		for(int j = 0; j < k; ++j)
+			SetItemText(i, j, LPSTR_TEXTCALLBACK);
+	}
+	void updateItem(T* item) { int i = findItem(item); if(i != -1) update(i); };
 	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); };
 
 	int getSortPos(T* a) {
@@ -123,9 +135,13 @@ public:
 
 		return mid;
 	}
+
+	bool isAscending() { return sortAscending; };
+
 	GETSET(int, sortColumn, SortColumn);
-	GETSET(bool, sortAscending, SortAscending);
 private:
+
+	bool sortAscending;
 
 	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		thisClass* t = (thisClass*)lParamSort;
@@ -138,5 +154,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.1 2003/11/06 18:54:39 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.2 2003/11/11 20:31:57 arnetheduck Exp $
 */

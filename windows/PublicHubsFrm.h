@@ -119,7 +119,7 @@ public:
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlHubs.getSortColumn()) {
-			if (!ctrlHubs.getSortDirection())
+			if (!ctrlHubs.isAscending())
 				ctrlHubs.setSort(-1, ctrlHubs.getSortType());
 			else
 				ctrlHubs.setSortDirection(false);
@@ -192,5 +192,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.14 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.15 2003/11/11 20:31:57 arnetheduck Exp $
  */
