@@ -254,11 +254,13 @@ private:
 		return lst.end();
 	}
 	static Source::ConstIter getSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) { 
-		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i)
+		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i) {
 			const Source* s = *i;
 			if( (s->getUser() == aUser) ||
 				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
 				return i;
+		}
+
 		return lst.end();
 	}
 	static bool isSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) {
@@ -277,5 +279,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.10 2004/08/02 14:20:16 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.11 2004/08/02 15:41:06 arnetheduck Exp $
 */

@@ -191,7 +191,7 @@
 		<String Name="MenuAbout">About DC++...</String>
 		<String Name="MenuChangelog">Change Log</String>
 		<String Name="MenuDiscuss">DC++ discussion forum</String>
-		<String Name="MenuDonate">Donate €€€/$$$ (paypal)</String>
+		<String Name="MenuDonate">Donate ï¿½ï¿½ï¿½/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads</String>
 		<String Name="MenuHelpTranslations">Translations</String>
 		<String Name="MenuFaq">Frequently asked questions</String>
@@ -318,7 +318,7 @@
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
 		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
-		<String Name="SettingsExampleText">Donate $$$:s! (well, €€€ preferably =) (see help menu)</String>
+		<String Name="SettingsExampleText">Donate $$$:s! (well, ï¿½ï¿½ï¿½ preferably =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
