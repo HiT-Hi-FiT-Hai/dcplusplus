@@ -75,7 +75,8 @@ void Settings::load(const string& aFileName) {
 	
 	xml.resetCurrentChild();
 	ShareManager::getInstance()->load(&xml);
-	
+	xml.resetCurrentChild();
+	DownloadManager::getInstance()->load(&xml);
 }
 
 void Settings::save(const string& aFileName) {
@@ -96,6 +97,7 @@ void Settings::save(const string& aFileName) {
 	xml.addChildAttrib("Slots", slots);
 
 	ShareManager::getInstance()->save(&xml);
+	DownloadManager::getInstance()->save(&xml);
 
 	string xmltext = xml.toXML();
 
@@ -110,9 +112,12 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.7 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.8 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.8  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.7  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

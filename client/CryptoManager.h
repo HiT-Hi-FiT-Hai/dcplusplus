@@ -114,7 +114,7 @@ private:
 		}
 	};
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.04ABCABCABC") { };
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS0.09ABCABCABC") { };
 
 	string lock;
 	string pk;
@@ -136,9 +136,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.6 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.7 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.7  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.6  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -97,7 +97,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	if(!ClientManager::getInstance()->isConnected(tmp)) {
 		HubFrame* frm = new HubFrame(buf);
 		frm->setTab(getTab());
-		frm->CreateEx(GetParent());
+		frm->CreateEx(m_hWndMDIClient);
 	}
 
 	return 0;
@@ -124,27 +124,27 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndC
 }
 
 LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-	char buf[1024];
+	char buf[256];
 	
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlHubs.GetItemText(i, 3, buf, 1024);
+		ctrlHubs.GetItemText(i, 3, buf, 256);
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
 			frm->setTab(getTab());
-			frm->CreateEx(GetParent());
+			frm->CreateEx(m_hWndMDIClient);
 		}
 	}
 
 	if(ctrlHub.GetWindowTextLength() > 0) {
-		ctrlHub.GetWindowText(buf, 1024);
+		ctrlHub.GetWindowText(buf, 256);
 		ctrlHub.SetWindowText("");
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
 			frm->setTab(getTab());
-			frm->CreateEx(GetParent());
+			frm->CreateEx(m_hWndMDIClient);
 		}
 		
 	}
@@ -162,7 +162,7 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 		if(!ClientManager::getInstance()->isConnected(s)) {
 			HubFrame* frm = new HubFrame(s);
 			frm->setTab(getTab());
-			frm->CreateEx(GetParent());
+			frm->CreateEx(m_hWndMDIClient);
 		}
 		ctrlHub.SetWindowText("");
 	} else {
@@ -173,9 +173,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.5 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.6  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.5  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

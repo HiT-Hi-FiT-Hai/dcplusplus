@@ -24,6 +24,7 @@
 #include "Client.h"
 #include "User.h"
 #include "ClientManager.h"
+#include "SimpleXML.h"
 
 DownloadManager* DownloadManager::instance = NULL;
 
@@ -32,8 +33,6 @@ DownloadManager* DownloadManager::instance = NULL;
  */
 void DownloadManager::onTimerMinute(DWORD aTick) {
 	cs.enter();
-
-	Download::List offline;
 
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 		Download*d = *i;
@@ -64,7 +63,7 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 			if(!found) {
 				// Damn, we've lost him...
 				d->setUser(User::nuser);
-				offline.push_back(d);
+				fireFailed(d, "User is offline");
 			}
 			continue;
 		}
@@ -76,10 +75,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		}
 	}
 	cs.leave();
-
-	for(Download::Iter j = offline.begin(); j != offline.end(); ++j) {
-		fireFailed(*j, "User is offline");
-	}
 
 }
 
@@ -121,7 +116,6 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 		}
 	}
 	cs.leave();
-	
 }
 
 void DownloadManager::connectFailed(const User::Ptr& aUser) {
@@ -130,19 +124,9 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
 	if(i != waiting.end()) {
 		Download* d = getNextDownload(aUser);
 		if(d) {
-			if(!aUser->isOnline()) {
-				waiting.erase(i);
-				d->setUser(User::nuser);
-				cs.leave();
-				fireFailed(d, "Connection timeout, user disconnected");
-
-			} else {
-				cs.leave();
-				fireFailed(d, "Connection timeout, user not responding");
-			}
-		} else {
-			cs.leave();
+			fireFailed(d, "Connection timeout");
 		}
+		cs.leave();
 	} else {
 		cs.leave();
 	}
@@ -165,17 +149,15 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 
 	cs.enter();
 	
+	// First, search the queue for the same download...
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		// First, search the queue for the same download...
 		Download* dd = *i;
 		if(dd->getTarget() == aTarget) {
 			// Same download it seems, check it it's running...
-			for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
-				if(j->second == dd) {
-					// Yes, it's running, ignore it...
-					cs.leave();
-					return;
-				}
+			if(dd->isSet(Download::RUNNING)) {
+				// Ignore it for now
+				cs.leave();
+				return;
 			}
 			d = dd;
 		}
@@ -199,19 +181,17 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& a
 			d->setFileName(aFile);
 			d->setLast(aUser->getNick(), "");
 		}
-		if(d->getFileName().find(".DcLst") != string::npos)
+		if(d->getFileName() == "MyList.DcLst")
 			d->setFlag(Download::USER_LIST); 
 		d->setUser(aUser);
 		d->setTarget(aTarget);
 		d->setSize(aSize);
-		d->setResume(aResume);
+		if(aResume)
+			d->setFlag(Download::RESUME);
 
 		queue.push_back(d);
-		cs.leave();
 
 		fireAdded(d);
-
-		cs.enter();
 	} 
 
 	if(waiting.find(aUser) == waiting.end()) {
@@ -266,7 +246,8 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 
 	d->setTarget(aTarget);
 	d->setSize(aSize);
-	d->setResume(aResume);
+	if(aResume)
+		d->setFlag(Download::RESUME);
 
 	queue.push_back(d);
 	cs.leave();
@@ -349,7 +330,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d) {
 		running[aConn] = d;
 		
-		if(d->getResume()) {
+		if(d->isSet(Download::RESUME)) {
 			LONGLONG x = Util::getFileSize(d->getTarget());
 			d->setPos( (x == -1) ? 0 : x);
 		} else {
@@ -392,7 +373,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 
 	HANDLE file;
 	Util::ensureDirectory(d->getTarget());
-	if(d->getResume())
+	if(d->isSet(Download::RESUME))
 		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	else
 		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -427,7 +408,9 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		
 	} else {
 		cs.leave();
+		d->setStart(TimerManager::getTick());
 		fireStarting(d);
+
 		aSource->setDataMode(d->getSize() - d->getPos());
 		aSource->startSend();
 	}
@@ -505,12 +488,64 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 	removeConnection(aSource);
 }
 
+void DownloadManager::save(SimpleXML* aXml) {
+	cs.enter();
+	aXml->addTag("Downloads");
+	aXml->stepIn();
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		Download::Ptr d = *i;
+		if(!d->isSet(Download::USER_LIST)) {
+			aXml->addTag("Download");
+			aXml->addChildAttrib("Target", d->getTarget());
+			aXml->addChildAttrib("Resume", d->isSet(Download::RESUME));
+			aXml->addChildAttrib("Size", d->getSize());
+
+			aXml->stepIn();
+			aXml->addTag("Source");
+			aXml->addChildAttrib("LastNick", d->getLastNick());
+			aXml->addChildAttrib("LastPath", d->getLastPath());
+			aXml->addChildAttrib("FileName", d->getFileName());
+			aXml->stepOut();
+
+		}
+	}
+	aXml->stepOut();
+	cs.leave();
+}
+
+void DownloadManager::load(SimpleXML* aXml) {
+	cs.enter();
+	aXml->resetCurrentChild();
+	if(aXml->findChild("Downloads")) {
+		aXml->stepIn();
+
+		while(aXml->findChild("Download")) {
+			const string& target = aXml->getChildAttrib("Target");
+			bool resume = aXml->getBoolChildAttrib("Resume");
+			LONGLONG size = aXml->getLongLongChildAttrib("Size");
+			if(aXml->findChild("Source")) {
+				aXml->stepIn();
+				const string& nick = aXml->getChildAttrib("LastNick");
+				const string& path = aXml->getChildAttrib("LastPath");
+				const string& file = aXml->getChildAttrib("FileName");
+
+				download(path + file, size, nick, target, resume);
+				aXml->stepOut();
+			}
+		}
+		aXml->stepOut();
+	}
+	cs.leave();
+}
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.17 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.18 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.18  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.17  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

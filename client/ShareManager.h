@@ -72,6 +72,9 @@ public:
 	}
 	
 	const string& getListFile() {
+		if(listFile.empty())
+			listFile = Settings::getAppPath() + "\\MyList.DcLst";
+
 		return listFile;
 	}
 	static ShareManager* getInstance() {
@@ -140,7 +143,7 @@ private:
 	static DWORD WINAPI refresher(void* p);
 
 	ShareManager() : listLen(0), dirty(false), refreshThread(NULL) { 
-		listFile = Settings::getAppPath() + "\\MyList.DcLst";
+		
 	};
 	
 	virtual ~ShareManager() {
@@ -165,9 +168,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.4 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.5  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.4  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

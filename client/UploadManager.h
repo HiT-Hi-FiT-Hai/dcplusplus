@@ -182,6 +182,7 @@ public:
 
 		u = i->second;
 		try {
+			u->setStart(TimerManager::getTick());
 			aSource->transmitFile(u->getFile());
 			fireStarting(u);
 		} catch(Exception e) {
@@ -320,9 +321,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.18 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.19 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.19  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.18  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

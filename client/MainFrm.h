@@ -139,7 +139,7 @@ public:
 	END_UPDATE_UI_MAP()
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SendMessage(m_hWndClient, WM_MDIACTIVATE, wParam, 0);
+		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
 		return 0;
 	}
 	
@@ -175,6 +175,7 @@ public:
 			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
 				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
 				PostMessage(WM_CLOSE);
+				return 0;
 			}
 			CloseHandle(stopperThread);
 			stopperThread = NULL;
@@ -301,9 +302,12 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.18 2001/12/27 18:14:36 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.19 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.19  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.18  2001/12/27 18:14:36  arnetheduck
  * Version 0.08, here we go...
  *

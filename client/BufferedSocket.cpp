@@ -127,7 +127,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 		return 0x02;
 	}
 
-	string line = "";
+	string line;
 	BYTE* buf = new BYTE[BUFSIZE];
 	
 	while(true) {
@@ -208,7 +208,6 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				// Ouch...
 				bs->disconnect();
 				bs->fireError(e.getError());
-				bs->readerThread = NULL;
 				delete buf;
 				return 0x04;
 			}
@@ -217,6 +216,8 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			// Duuhhh???
 			dcdebug("BufferedSocket::reader Wait failed (%x)\n", GetLastError());
 			delete buf;
+			bs->disconnect();
+			bs->fireError("Disconnected");
 			return 0x05;
 		default:
 			dcassert(0);
@@ -228,9 +229,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.19 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.20 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.20  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.19  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

@@ -28,7 +28,7 @@
 #include "Util.h"
 #include "TimerManager.h"
 
-class User;
+class SimpleXML;
 
 class Download : public Transfer {
 public:
@@ -40,15 +40,13 @@ public:
 	typedef map<User::Ptr, Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
 	
-	Download() : resume(false) { }
+	Download() : flags(0) { }
 	
 	enum {
 		USER_LIST = 0x01,
-		RUNNING = 0x02
+		RUNNING = 0x02,
+		RESUME = 0x04
 	};
-
-	bool getResume() { return resume; };
-	void setResume(bool aResume) { resume = aResume; };
 
 	string getTarget() { 
 		if(target.length() == 0) {
@@ -69,7 +67,6 @@ public:
 	void unsetFlag(int aFlag) { flags &= ~aFlag; };
 private:
 	int flags;
-	bool resume;
 	string target;
 	
 	string lastNick;
@@ -141,6 +138,9 @@ public:
 	
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
 	void removeConnections(); 
+
+	void load(SimpleXML* aXml);
+	void save(SimpleXML* aXml);
 private:
 
 	CriticalSection cs;
@@ -246,9 +246,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.16 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.17 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.17  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.16  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

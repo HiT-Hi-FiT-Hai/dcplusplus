@@ -47,11 +47,94 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
+		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
+
+	
+	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		downloadSelected(Settings::getDownloadDirectory());
+		return 0;
+	}
+	
+	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		char buf[512];
+		if(ctrlResults.GetSelectedCount() == 1) {
+			int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+			ctrlResults.GetItemText(i, 1, buf, 512);
+			string file = buf;
+			string target = Settings::getDownloadDirectory() + buf;
+			if(Util::browseSaveFile(target)) {
+				ctrlResults.GetItemText(i, 0, buf, 512);
+				string user = buf;
+				ctrlResults.GetItemText(i, 2, buf, 512);
+				string size = buf;
+				ctrlResults.GetItemText(i, 3, buf, 512);
+				string path = buf;
+				
+				DownloadManager::getInstance()->download(path + file, size, user, target);
+			}
+		} else {
+			string target = Settings::getDownloadDirectory();
+			if(Util::browseDirectory(target, m_hWnd)) {
+				downloadSelected(target);
+			}
+		}
+		return 0;
+	}
+	
+	void downloadSelected(const string& aDir) {
+		int i=-1;
+		char buf[512];
+		
+		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			ctrlResults.GetItemText(i, 0, buf, 512);
+			string user = buf;
+			ctrlResults.GetItemText(i, 1, buf, 512);
+			string file = buf;
+			ctrlResults.GetItemText(i, 2, buf, 512);
+			string size = buf;
+			ctrlResults.GetItemText(i, 3, buf, 512);
+			string path = buf;
+			
+			DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
+		}
+	}
+
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		int i=-1;
+		char buf[256];
+		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			ctrlResults.GetItemText(i, 0, buf, 256);
+			DownloadManager::getInstance()->downloadList(buf);
+		}
+		return 0;
+	}
+	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		RECT rc;                    // client area of window 
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+		
+		// Get the bounding rectangle of the client area. 
+		ctrlResults.GetClientRect(&rc);
+		ctrlResults.ScreenToClient(&pt); 
+		
+		if (PtInRect(&rc, pt)) 
+		{ 
+			ctrlResults.ClientToScreen(&pt);
+			resultsMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			
+			return TRUE; 
+		}
+		
+		return FALSE; 
+	}
 
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
@@ -158,7 +241,8 @@ private:
 	CEdit ctrlSearch;
 	CContainedWindow ctrlSearchContainer;
 	ExListViewCtrl ctrlResults;
-
+	CMenu resultsMenu;
+	
 	StringList search;
 
 	virtual void onSearchResult(SearchResult* aResult) {
@@ -170,10 +254,19 @@ private:
 		}
 
 		int i = ctrlResults.insert(ctrlResults.GetItemCount(), aResult->getNick());
-		ctrlResults.SetItemText(i, 1, aResult->getFile().c_str());
+		string file, path;
+		
+		if(aResult->getFile().rfind('\\') == string::npos) {
+			file = aResult->getFile();
+		} else {
+			file = aResult->getFile().substr(aResult->getFile().rfind('\\')+1);
+			path = aResult->getFile().substr(0, aResult->getFile().rfind('\\')+1);
+		}
+		ctrlResults.SetItemText(i, 1, file.c_str());
 		ctrlResults.SetItemText(i, 2, Util::shortenBytes(aResult->getSize()).c_str());
-		ctrlResults.SetItemText(i, 3, aResult->getSlotString().c_str());
-		ctrlResults.SetItemText(i, 4, aResult->getHubName().c_str());
+		ctrlResults.SetItemText(i, 3, path.c_str());
+		ctrlResults.SetItemText(i, 4, aResult->getSlotString().c_str());
+		ctrlResults.SetItemText(i, 5, aResult->getHubName().c_str());
 	}
 };
 
@@ -186,9 +279,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.5 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.6  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.5  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

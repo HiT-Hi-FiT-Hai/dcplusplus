@@ -151,15 +151,23 @@ public:
 		return buf;
 	}
 	
+	static string formatSeconds(int aSec) {
+		char buf[64];
+		sprintf(buf, "%01d:%02d:%02d", aSec / (60*60), (aSec / 60) % 60, aSec % 60);
+		return buf;
+	}
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.5 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: Util.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.6  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.5  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

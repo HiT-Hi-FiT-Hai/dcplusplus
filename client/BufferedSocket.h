@@ -103,7 +103,7 @@ public:
 	 * Send the file f over this socket. Note; reading is suspended until the whole file has
 	 * been sent.
 	 */
-	void transmitFile(HANDLE f) throw(SocketException){
+	void transmitFile(HANDLE f) throw() {
 		file = f;
 		SetEvent(writerEvent);
 	}
@@ -139,10 +139,9 @@ private:
 
 	void stopReader() {
 		if(readerThread != NULL) {
-			dcassert(readerEvent != NULL);
 			SetEvent(readerEvent);
 			
-			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
+			if(WaitForSingleObject(readerThread, 2000) == WAIT_TIMEOUT) {
 				dcassert(0);
 			}
 			// Make sure the event is reset in case the thread had already stopped...
@@ -222,9 +221,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.16 2001/12/21 23:52:30 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.17 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.17  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.16  2001/12/21 23:52:30  arnetheduck
  * Last commit for five days
  *

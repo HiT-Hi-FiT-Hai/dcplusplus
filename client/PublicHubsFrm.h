@@ -181,6 +181,8 @@ private:
 	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
 	virtual void onHubFinished() {
 		HubManager::getInstance()->removeListener(this);
+		ctrlHubs.SetRedraw(TRUE);
+		ctrlHubs.Invalidate();
 		listing = false;
 		if(close)
 			PostMessage(WM_CLOSE);
@@ -188,6 +190,7 @@ private:
 
 	virtual void onHubStarting() {
 		ctrlHubs.DeleteAllItems();
+		ctrlHubs.SetRedraw(FALSE);
 		hubs = users = 0;
 		updateStatus();
 	}
@@ -205,9 +208,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.4 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.5  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.4  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

@@ -116,7 +116,14 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 
 void MainFrame::onUploadTick(Upload* aUpload) {
 	char buf[256];
-	sprintf(buf, "Uploaded %s (%.01f%%)", Util::shortenBytes(aUpload->getPos()).c_str(), (double)aUpload->getPos()*100.0/(double)aUpload->getSize());
+	LONGLONG avg = aUpload->getTotal() * 1000 / (TimerManager::getTick() - aUpload->getStart());
+	int seconds = 0;
+	if(avg > 0) {
+		seconds = (aUpload->getSize() - aUpload->getPos()) / avg;
+	}
+
+	sprintf(buf, "Uploaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aUpload->getPos()).c_str(), 
+		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::shortenBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 	cs.enter();
 	uploadTick[(LPARAM)aUpload] = buf;
 	cs.leave();
@@ -169,8 +176,10 @@ void MainFrame::onDownloadComplete(Download* p) {
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
 	}
-
+	
+	cs.enter();
 	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
+	cs.leave();
 //	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Download finished");
 	
 }
@@ -191,7 +200,14 @@ void MainFrame::onDownloadStarting(Download* aDownload) {
 
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[256];
-	sprintf(buf, "Downloaded %s (%.01f%%)", Util::shortenBytes(aDownload->getPos()).c_str(), (double)aDownload->getPos()*100.0/(double)aDownload->getSize());
+	LONGLONG avg = aDownload->getTotal() * 1000 / (TimerManager::getTick()-aDownload->getStart());
+	int seconds = 0;
+	if(avg > 0) {
+		seconds = (aDownload->getSize() - aDownload->getPos()) / avg;
+	}
+	
+	sprintf(buf, "Downloaded %s (%.01f%%), %s/s, %s left", Util::shortenBytes(aDownload->getPos()).c_str(), 
+		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::shortenBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
 	cs.enter();
 	downloadTick[(LPARAM)aDownload] = buf;
 	cs.leave();
@@ -259,10 +275,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddIdleHandler(this);
 
 	ShareManager::newInstance();
-	Settings::load();	
-	
 	TimerManager::newInstance();
-	TimerManager::getInstance()->addListener(this);
 	CryptoManager::newInstance();
 	SearchManager::newInstance();
 	ClientManager::newInstance();
@@ -270,10 +283,15 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	DownloadManager::newInstance();
 	UploadManager::newInstance();
 	HubManager::newInstance();
+
+	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 
+	Settings::load();	
+
 	ShareManager::getInstance()->refresh();
+	HubManager::getInstance()->refresh();
 
 	if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
 		try {
@@ -309,7 +327,7 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		pChild->setTab(&ctrlTab);
 		pChild->CreateEx(m_hWndClient);
 	} else {
-		PublicHubsFrame::frame->SetFocus();
+		MDIActivate(PublicHubsFrame::frame->m_hWnd);
 	}
 
 /*	HANDLE h = CreateFile("c:\\temp\\test.dcl", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
@@ -379,9 +397,12 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.24 2001/12/27 18:14:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.25 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.25  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.24  2001/12/27 18:14:36  arnetheduck
  * Version 0.08, here we go...
  *

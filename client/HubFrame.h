@@ -35,7 +35,7 @@
 
 #include "AtlCmdBar2.h"
 
-#define EDIT_MESSAGE_MAP 5		// This could be any number, really...
+#define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
@@ -183,7 +183,7 @@ protected:
 	}
 	virtual void onClientPrivateMessage(Client* aClient, User::Ptr& aUser, const string& aMessage) {
 		cs.enter();
-		PrivateFrame* frm = PrivateFrame::getFrame(aUser, GetParent());
+		PrivateFrame* frm = PrivateFrame::getFrame(aUser, m_hWndMDIClient);
 		clientPrivateMessage[frm] = aMessage;
 		cs.leave();
 		PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)frm);
@@ -294,7 +294,8 @@ public:
 				User::Ptr& u = client->getUser(user);
 				if(u) {
 					PrivateFrame* frm = PrivateFrame::getFrame(u);
-					frm->CreateEx(GetParent());
+					frm->setTab(getTab());
+					frm->CreateEx(m_hWndMDIClient);
 				}
 			}
 		}
@@ -383,6 +384,12 @@ public:
 			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
 				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
 				PostMessage(WM_CLOSE);
+				return 0;
+			}
+			int i = 0;
+			while(i < ctrlUsers.GetItemCount()) {
+				delete (UserInfo*)ctrlUsers.GetItemData(i);
+				i++;
 			}
 			CloseHandle(stopperThread);
 			stopperThread = FALSE;
@@ -437,7 +444,8 @@ public:
 
 	}
 	
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+		bHandled = FALSE;
 		ctrlMessage.SetFocus();
 		return 0;
 	}
@@ -547,9 +555,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.22 2001/12/27 18:14:36 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.23 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.23  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.22  2001/12/27 18:14:36  arnetheduck
  * Version 0.08, here we go...
  *

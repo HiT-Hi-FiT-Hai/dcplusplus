@@ -1,3 +1,9 @@
+ -- 0.09 --
+* Right-button menu in search window
+* Download queue saving
+* Fixed a nasty download queue bug
+* Added some transfer statistics
+
  -- 0.08 2001-12-27 --
 * Private messages
 * Right-button menues

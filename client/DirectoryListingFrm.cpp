@@ -120,7 +120,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 	HTREEITEM t = ctrlTree.GetSelectedItem();
 	if(t != NULL) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
-		string target;
+		string target = Settings::getDownloadDirectory();
 		if(Util::browseDirectory(target, m_hWnd))
 			dl->download(dir, user, target);
 	}
@@ -177,8 +177,8 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 			}
 		} 
 	} else {
-		string target;
-		if(Util::browseDirectory(target)) {
+		string target = Settings::getDownloadDirectory();
+		if(Util::browseDirectory(target, m_hWnd)) {
 			downloadList(target);
 		}
 		
@@ -243,9 +243,12 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.9 2001/12/19 23:07:59 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.10 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.10  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.9  2001/12/19 23:07:59  arnetheduck
  * Added directory downloading from the directory tree (although it hasn't been
  * tested at all) and password support.

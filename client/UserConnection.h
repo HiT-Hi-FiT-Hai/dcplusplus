@@ -78,8 +78,13 @@ public:
 			SetFilePointer(file, (DWORD)pos, &high, FILE_BEGIN);
 		}
 	};
-	void addPos(LONGLONG aPos) { pos += aPos; };
+	void addPos(LONGLONG aPos) { pos += aPos; last+=aPos; total+=aPos; };
 	
+	DWORD getTotal() { return total; };
+
+	DWORD getStart() { return start; };
+	void setStart(DWORD aStart) { start = aStart; };
+
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
@@ -89,9 +94,13 @@ public:
 	}
 	User::Ptr& getUser() { return user; };
 
-	Transfer() : pos(-1), size(-1), file(NULL) { };
+	Transfer() : total(0), start(0), last(0), user(User::nuser), pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) CloseHandle(file); };
 private:
+	DWORD start;
+	DWORD last;
+	DWORD total;
+	
 	User::Ptr user;
 	string fileName;
 	HANDLE file;
@@ -381,9 +390,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.17 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.18 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.18  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.17  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *

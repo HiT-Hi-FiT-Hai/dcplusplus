@@ -40,11 +40,30 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.InsertColumn(0, _T("User"), LVCFMT_LEFT, 100, 0);
 	ctrlResults.InsertColumn(1, _T("File"), LVCFMT_LEFT, 200, 1);
 	ctrlResults.InsertColumn(2, _T("Size"), LVCFMT_RIGHT, 100, 2);
-	ctrlResults.InsertColumn(3, _T("Slots"), LVCFMT_LEFT, 75, 3);
-	ctrlResults.InsertColumn(4, _T("Hub"), LVCFMT_LEFT, 100, 4);
+	ctrlResults.InsertColumn(3, _T("Path"), LVCFMT_LEFT, 100, 3);
+	ctrlResults.InsertColumn(4, _T("Slots"), LVCFMT_LEFT, 75, 4);
+	ctrlResults.InsertColumn(5, _T("Hub"), LVCFMT_LEFT, 100, 5);
 
 	SetWindowText("Search");
 
+	resultsMenu.CreatePopupMenu();
+	
+	CMenuItemInfo mi;
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Get File List";
+	mi.wID = IDC_GETLIST;
+	resultsMenu.InsertMenuItem(0, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download file(s)";
+	mi.wID = IDC_DOWNLOAD;
+	resultsMenu.InsertMenuItem(1, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_STRING;
+	mi.dwTypeData = "Download file(s) to...";
+	mi.wID = IDC_DOWNLOADTO;
+	resultsMenu.InsertMenuItem(2, TRUE, &mi);
+	
 	bHandled = FALSE;
 	
 	return 1;
@@ -52,9 +71,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.4 2001/12/27 12:05:00 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.5 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.5  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.4  2001/12/27 12:05:00  arnetheduck
  * Added flat tabs, fixed sorting and a StringTokenizer bug
  *

@@ -106,17 +106,31 @@ public:
 	}
 
 	void addAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
-	void addAttrib(const string& aName, int aData) {
-		char buf[32];
-		addAttrib(aName, itoa(aData, buf, 10));
+	void addAttrib(const string& aName, int aData) throw(SimpleXMLException) {
+		char buf[16];
+		addAttrib(aName, string(itoa(aData, buf, 10)));
 	}
-
+	void addAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
+		char buf[32];
+		addAttrib(aName, string(_i64toa(aData, buf, 10)));
+	}
+	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
+		addAttrib(aName, string(aData ? "1" : "0"));
+	}
+	
 	void addChildAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
 	void addChildAttrib(const string& aName, int aData) throw(SimpleXMLException) {	
-		char buf[32];
-		addChildAttrib(aName, itoa(aData, buf, 10));
+		char buf[16];
+		addChildAttrib(aName, string(itoa(aData, buf, 10)));
 	}
-		
+	void addChildAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
+		char buf[32];
+		addChildAttrib(aName, string(_i64toa(aData, buf, 10)));
+	}
+	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
+		addChildAttrib(aName, string(aData ? "1" : "0"));
+	}
+	
 	const string& getData() {
 		if(current != NULL) {
 			return current->data;
@@ -175,12 +189,12 @@ public:
 		}
 	}
 
-	string getChildData() throw(SimpleXMLException) {
+	const string& getChildData() throw(SimpleXMLException) {
 		checkChildSelected();
 		return (*currentChild)->data;
 	}
 
-	string getChildAttrib(const string& aName) throw(SimpleXMLException) {
+	const string& getChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
 		return (*currentChild)->attribs[aName];
 	}
@@ -189,7 +203,17 @@ public:
 		checkChildSelected();
 		return atoi(getChildAttrib(aName).c_str());
 	}
+	LONGLONG getLongLongChildAttrib(const string& aName) throw(SimpleXMLException) {
+		checkChildSelected();
+		return _atoi64(getChildAttrib(aName).c_str());
+	}
+	bool getBoolChildAttrib(const string& aName) throw(SimpleXMLException) {
+		checkChildSelected();
+		const string& tmp = getChildAttrib(aName);
 
+		return (tmp.size() > 0) && tmp[0] == '1';
+	}
+	
 	void fromXML(const string& aXML);
 	string toXML() { return (!root.empty()) ? root[0]->toXML() : emptyString; };
 	
@@ -202,9 +226,12 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.5 2001/12/13 19:21:57 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.6 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.6  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.5  2001/12/13 19:21:57  arnetheduck
  * A lot of work done almost everywhere, mainly towards a friendlier UI
  * and less bugs...time to release 0.06...

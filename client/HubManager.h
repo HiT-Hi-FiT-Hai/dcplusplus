@@ -73,6 +73,23 @@ public:
 		SetEvent(listerEvent);
 	}
 
+	void refresh() {
+		publicCS.enter();
+		publicHubs.clear();
+		publicCS.leave();
+		
+		if(conn) {
+			conn->removeListener(this);
+			delete conn;
+		}
+		ResetEvent(downloadEvent);
+		
+		conn = new HttpConnection();
+		conn->addListener(this);
+		conn->DownloadFile("http://www.neo-modus.com/PublicHubList.config");
+		
+	}
+	
 private:
 	
 	class HubEntry {
@@ -95,8 +112,6 @@ private:
 		
 	HubManager() : listerThread(NULL), listerEvent(NULL), conn(NULL) {
 		downloadEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-		refresh();
 	}
 
 	~HubManager() {
@@ -122,22 +137,6 @@ private:
 	virtual void onHttpError(HttpConnection* aConn, const string& aError);
 	virtual void onHttpComplete(HttpConnection* aConn);	
 
-	void refresh() {
-		publicCS.enter();
-		publicHubs.clear();
-		publicCS.leave();
-
-		if(conn) {
-			conn->removeListener(this);
-			delete conn;
-		}
-		ResetEvent(downloadEvent);
-		
-		conn = new HttpConnection();
-		conn->addListener(this);
-		conn->DownloadFile("http://www.neo-modus.com/PublicHubList.config");
-		
-	}
 	void startLister() {
 		stopLister();
 		DWORD threadId;
@@ -205,9 +204,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.9 2001/12/15 17:01:06 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.10 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.10  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.9  2001/12/15 17:01:06  arnetheduck
  * Passive mode searching as well as some searching code added
  *

@@ -233,7 +233,7 @@ private:
 			// Try to send something for the fun of it...
 			if(isConnected()) {
 				try {
-					socket.write("", 0);
+					socket.write("|", 0);
 				} catch(Exception e) {
 					dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
 					fireError(e.getError());
@@ -471,9 +471,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.15 2001/12/27 18:14:36 arnetheduck Exp $
+ * $Id: Client.h,v 1.16 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.16  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.15  2001/12/27 18:14:36  arnetheduck
  * Version 0.08, here we go...
  *

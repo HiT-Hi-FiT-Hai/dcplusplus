@@ -34,20 +34,23 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 	if(x.find("$SR") != string::npos) {
 		SearchResult* sr=new SearchResult();
 		
-		x = x.substr(4);
-		sr->setNick(x.substr(0, x.find(' ')));
-		x = x.substr(x.find(' ') + 1);
-		sr->setFile(x.substr(0, x.find((char)5)));
-		x = x.substr(x.find((char)5) + 1);
-		sr->setSize(x.substr(0, x.find(' ')));
-		x = x.substr(x.find(' ') + 1);
-		sr->setFreeSlots(x.substr(0, x.find('/')));
-		x = x.substr(x.find('/') + 1);
-		sr->setSlots(x.substr(0, x.find((char)5)));
-		x = x.substr(x.find((char)5)+1);
-		sr->setHubName(x.substr(0, x.rfind(" (")));
-		x = x.substr(x.rfind(" (")+2);
-		sr->setHubAddress(x.substr(0, x.find(')')));
+		// Find out if this is a file or directory...skip the directories for now...
+		if(x.find('/') > x.find((char)5)) {
+			x = x.substr(4);
+			sr->setNick(x.substr(0, x.find(' ')));
+			x = x.substr(x.find(' ') + 1);
+			sr->setFile(x.substr(0, x.find((char)5)));
+			x = x.substr(x.find((char)5) + 1);
+			sr->setSize(x.substr(0, x.find(' ')));
+			x = x.substr(x.find(' ') + 1);
+			sr->setFreeSlots(x.substr(0, x.find('/')));
+			x = x.substr(x.find('/') + 1);
+			sr->setSlots(x.substr(0, x.find((char)5)));
+			x = x.substr(x.find((char)5)+1);
+			sr->setHubName(x.substr(0, x.rfind(" (")));
+			x = x.substr(x.rfind(" (")+2);
+			sr->setHubAddress(x.substr(0, x.find(')')));
+		}
 
 		fireResult(sr);
 		delete sr;
@@ -57,9 +60,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.6 2001/12/21 20:21:17 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.7 2001/12/29 13:47:14 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.7  2001/12/29 13:47:14  arnetheduck
+ * Fixing bugs and UI work
+ *
  * Revision 1.6  2001/12/21 20:21:17  arnetheduck
  * Private messaging added, and a lot of other updates as well...
  *
