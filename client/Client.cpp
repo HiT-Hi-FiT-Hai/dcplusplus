@@ -68,10 +68,18 @@ void Client::connect() {
 	socket->connect(server, port);
 }
 
-void Client::refreshUserList() {
+void Client::refreshUserList(bool unknownOnly /* = false */) {
 	Lock l(cs);
-	clearUsers();
-	getNickList();
+	if(unknownOnly) {
+		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+			if(i->second->getConnection().empty()) {
+				getInfo(i->second);
+			}
+		}
+	} else {
+		clearUsers();
+		getNickList();
+	}
 }
 
 void Client::clearUsers() {
@@ -576,6 +584,6 @@ void Client::onAction(BufferedSocketListener::Types type) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.47 2002/05/26 20:28:10 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.48 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

@@ -68,6 +68,7 @@ enum Strings { // @DontAdd
 	FILE, // "File"
 	FILES, // "Files"
 	FILE_LIST_REFRESHED, // "File list refreshed"
+	FILE_NOT_AVAILABLE, // "File not available"
 	FILE_TYPE, // "File type"
 	FILE_WITH_DIFFERENT_SIZE, // "A file with a different size already exists in the queue"
 	FILENAME, // "Filename"

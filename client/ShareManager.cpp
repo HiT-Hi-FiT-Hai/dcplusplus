@@ -172,7 +172,7 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 	}
 
 	for(StringMapIter j = dirs.begin(); j != dirs.end(); ++j) {
-		if(stricmp(j->second.c_str(), aDirectory.c_str()) == 0) {
+		if(Util::stricmp(j->second.c_str(), aDirectory.c_str()) == 0) {
 			dirs.erase(j);
 			break;
 		}
@@ -202,7 +202,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
 
 					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
-					if(stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
+					if(Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
 						dir->files[name] = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 						dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					}
@@ -502,6 +502,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.41 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.42 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

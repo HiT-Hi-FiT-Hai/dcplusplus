@@ -53,7 +53,11 @@ void UserConnection::onLine(const string& aLine) throw () {
 			fire(UserConnectionListener::DIRECTION, this, param.substr(0, x), param.substr(x+1));
 		}
 	} else if(cmd == "$Error") {
-		fire(UserConnectionListener::FAILED, this, param);
+		if(Util::stricmp(param.c_str(), "File Not Available") == 0) {
+			fire(UserConnectionListener::FILE_NOT_AVAILABLE, this);
+		} else {
+			fire(UserConnectionListener::FAILED, this, param);
+		}
 	} else if(cmd == "$FileLength") {
 		if(!param.empty())
 		fire(UserConnectionListener::FILE_LENGTH, this, param);
@@ -150,5 +154,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.22 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.23 2002/05/30 19:09:33 arnetheduck Exp $
  */

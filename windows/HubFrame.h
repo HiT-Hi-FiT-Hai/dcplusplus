@@ -164,7 +164,7 @@ public:
 		} else if(!c->user->isSet(User::OP) && d->user->isSet(User::OP)) {
 			return 1;
 		}
-		return stricmp(c->user->getNick().c_str(), d->user->getNick().c_str());		
+		return Util::stricmp(c->user->getNick().c_str(), d->user->getNick().c_str());		
 	}
 	
 	LRESULT onColumnClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -312,7 +312,8 @@ private:
 		if(m_hWnd)
 			PostMessage(WM_SPEAKER, STATS);
 	}
-	
+	int updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		switch(type) {
@@ -416,6 +417,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.12 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.13 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

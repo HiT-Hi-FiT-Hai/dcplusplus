@@ -47,7 +47,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		return;
 	}
 	
-	if( (stricmp(aFile.c_str(), "MyList.bz2") == 0) ) {
+	if( (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) ) {
 		userlist = true;
 	}
 
@@ -272,5 +272,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.31 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.32 2002/05/30 19:09:33 arnetheduck Exp $
  */

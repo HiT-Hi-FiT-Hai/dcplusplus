@@ -39,7 +39,6 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, Res
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-
 	dcassert(frame == NULL);
 	frame = this;
 	
@@ -139,7 +138,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 
-	QueueManager::getInstance()->getQueue();
+	addQueueList(QueueManager::getInstance()->lockQueue());
+	QueueManager::getInstance()->unlockQueue();
+	QueueManager::getInstance()->addListener(this);
 	
 	bHandled = FALSE;
 	return 1;
@@ -219,27 +220,43 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
-void QueueFrame::onQueueList(const QueueItem::StringMap& li) {
-	vector<StringListInfo*>* i = new vector<StringListInfo*>;
-	i->reserve(li.size());
+void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
+	ctrlQueue.SetRedraw(FALSE);
+	ctrlDirectories.SetRedraw(FALSE);
+	for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
+		QueueItem* aQI = j->second;
+		QueueItem* qi = new QueueItem(*aQI);
+		dcassert(queue.find(aQI) == queue.end());
+		queue[aQI] = qi;
+		if(!aQI->isSet(QueueItem::USER_LIST)) {
+			queueSize+=aQI->getSize();
+		}
+		queueItems++;
+		dirty = true;
 
-	{
-		Lock l(cs);
-		
-		for(QueueItem::StringMap::const_iterator j = li.begin(); j != li.end(); ++j) {
-			QueueItem* aQI = j->second;
-			QueueItem* qi = new QueueItem(*aQI);
-			dcassert(queue.find(aQI) == queue.end());
-			queue[aQI] = qi;
-			if(!aQI->isSet(QueueItem::USER_LIST)) {
-				queueSize+=aQI->getSize();
+		StringListInfo sli(qi);
+		StringList l;
+
+		string dir = getDirectory(sli.qi->getTarget());
+
+		bool updateDir = (directories.find(dir) == directories.end());
+		directories.insert(make_pair(dir, sli.qi));
+
+		if(!updateDir && curDir == dir) {
+			for(int j = 0; j < COLUMN_LAST; j++) {
+				l.push_back(sli.columns[j]);
 			}
-			queueItems++;
-			dirty = true;
-			i->push_back(new StringListInfo(qi));
+			dcassert(ctrlQueue.find((LPARAM)sli.qi) == -1);
+			ctrlQueue.insert(ctrlQueue.GetItemCount(), l, WinUtil::getIconIndex(sli.qi->getTarget()), (LPARAM)sli.qi);
+		} else if(directories.count(dir) == 1) {
+			l.push_back(dir);
+			ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
 		}
 	}
-	PostMessage(WM_SPEAKER, ADD_ITEMS, (LPARAM)i);
+	ctrlQueue.SetRedraw(TRUE);
+	ctrlQueue.resort();
+	ctrlDirectories.SetRedraw(TRUE);
+	ctrlDirectories.Invalidate();
 }
 
 void QueueFrame::onQueueRemoved(QueueItem* aQI) {
@@ -307,38 +324,6 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
 		}
 		delete li;
-		updateStatus();
-	} else if(wParam == ADD_ITEMS) {
-		vector<StringListInfo*>* vli = (vector<StringListInfo*>*)lParam;
-		ctrlQueue.SetRedraw(FALSE);
-		ctrlDirectories.SetRedraw(FALSE);
-		for(vector<StringListInfo*>::iterator i = vli->begin(); i != vli->end(); ++i) {
-			StringListInfo* li = *i;
-			StringList l;
-			
-			string dir = getDirectory(li->qi->getTarget());
-			
-			bool updateDir = (directories.find(dir) == directories.end());
-			directories.insert(make_pair(dir, li->qi));
-			
-			if(!updateDir && curDir == dir) {
-				for(int j = 0; j < COLUMN_LAST; j++) {
-					l.push_back(li->columns[j]);
-				}
-				dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
-				ctrlQueue.insert(ctrlQueue.GetItemCount(), l, WinUtil::getIconIndex(li->qi->getTarget()), (LPARAM)li->qi);
-			} else if(directories.count(dir) == 1) {
-				l.push_back(dir);
-				ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
-			}
-			delete li;
-		}
-		delete vli;
-		ctrlQueue.SetRedraw(TRUE);
-		ctrlQueue.resort();
-		ctrlDirectories.SetRedraw(TRUE);
-		ctrlDirectories.Invalidate();
-
 		updateStatus();
 	} else if(wParam == REMOVE_ITEM) {
 		QueueItem* qi = (QueueItem*)lParam;
@@ -674,7 +659,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.10 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.11 2002/05/30 19:09:33 arnetheduck Exp $
  */
 
 

@@ -361,12 +361,12 @@ int DirectoryListingFrame::sortFile(LPARAM a, LPARAM b) {
 		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		return stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
+		return Util::stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
 	} else {
 		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
 		}
-		return stricmp(c->file->getName().c_str(), d->file->getName().c_str());
+		return Util::stricmp(c->file->getName().c_str(), d->file->getName().c_str());
 	}
 }
 
@@ -378,7 +378,7 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 		if(d->type == ItemInfo::FILE) {
 			return -1;
 		}
-		return stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
+		return Util::stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
 	} else {
 		if(d->type == ItemInfo::DIRECTORY) {
 			return 1;
@@ -389,7 +389,7 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 		k = d->file->getName().rfind('.');
 		string suffix2 = (k != string::npos) ? d->file->getName().substr(k + 1) : Util::emptyString;
 		
-		return stricmp(suffix1.c_str(), suffix2.c_str());
+		return Util::stricmp(suffix1.c_str(), suffix2.c_str());
 	}
 }
 
@@ -614,5 +614,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.9 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.10 2002/05/30 19:09:33 arnetheduck Exp $
  */

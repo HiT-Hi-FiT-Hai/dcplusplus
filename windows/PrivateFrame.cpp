@@ -140,7 +140,7 @@ void PrivateFrame::onEnter()
 				s = s.substr(1);
 			}
 
-			if(stricmp(s.c_str(), "refresh")==0) {
+			if(Util::stricmp(s.c_str(), "refresh")==0) {
 				try {
 					ShareManager::getInstance()->setDirty();
 					ShareManager::getInstance()->refresh(true);
@@ -148,7 +148,7 @@ void PrivateFrame::onEnter()
 				} catch(ShareException e) {
 					addClientLine(e.getError());
 				}
-			} else if(stricmp(s.c_str(), "slots")==0) {
+			} else if(Util::stricmp(s.c_str(), "slots")==0) {
 				int j = Util::toInt(param);
 				if(j > 0) {
 					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
@@ -157,7 +157,7 @@ void PrivateFrame::onEnter()
 				} else {
 					addClientLine(STRING(INVALID_NUMBER_OF_SLOTS));
 				}
-			} else if(stricmp(s.c_str(), "search") == 0) {
+			} else if(Util::stricmp(s.c_str(), "search") == 0) {
 				if(!param.empty()) {
 					SearchFrame* pChild = new SearchFrame();
 					pChild->setTab(getTab());
@@ -166,9 +166,9 @@ void PrivateFrame::onEnter()
 				} else {
 					addClientLine(STRING(SPECIFY_SEARCH_STRING));
 				}
-			} else if(stricmp(s.c_str(), "clear") == 0) {
+			} else if(Util::stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
-			} else if(stricmp(s.c_str(), "away") == 0) {
+			} else if(Util::stricmp(s.c_str(), "away") == 0) {
 				if(Util::getAway()) {
 					Util::setAway(false);
 					addClientLine(STRING(AWAY_MODE_OFF));
@@ -177,15 +177,15 @@ void PrivateFrame::onEnter()
 					Util::setAwayMessage(param);
 					addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
 				}
-			} else if(stricmp(s.c_str(), "back") == 0) {
+			} else if(Util::stricmp(s.c_str(), "back") == 0) {
 				Util::setAway(false);
 				addClientLine(STRING(AWAY_MODE_OFF));
-			} else if(stricmp(s.c_str(), "grant") == 0) {
+			} else if(Util::stricmp(s.c_str(), "grant") == 0) {
 				UploadManager::getInstance()->reserveSlot(getUser());
 				addClientLine(STRING(SLOT_GRANTED));
-			} else if(stricmp(s.c_str(), "close") == 0) {
+			} else if(Util::stricmp(s.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
-			} else if(stricmp(s.c_str(), "help") == 0) {
+			} else if(Util::stricmp(s.c_str(), "help") == 0) {
 				addLine("/refresh, /slots #, /search <string>, /clear, /away <msg>, /back, /grant, /close, /help");
 			}
 		} else {
@@ -254,7 +254,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.8 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.9 2002/05/30 19:09:33 arnetheduck Exp $
  */
 
 

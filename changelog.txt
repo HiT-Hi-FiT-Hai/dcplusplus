@@ -1,4 +1,22 @@
- -- 0.176 --
+ -- 0.177 --
+* Improved performance on "File not available" (connection / slot is now kept)
+* Changed the queue back to the old behaviour, that files are downloaded in the order they're added (to aviod
+  having all the smallest files of multiple unfinished directories)
+* Fixed some queue random crash bugs
+* Fixed the wrong transfer icon bug (I think...)
+* Improved overall queue performance (again...=)
+* Fixed a small bug that caused some unnecessary traffic to the hub (nmdc works this way, every time a user logs
+  on, his info is requested from the hub, but this request is unnecessary as the info is sent out automatically 
+  to all users, in nmhub v1.0.25 at least...)
+* Fixed the long shutdown time when a _very_ slow transfer was in progress
+* Added some other minor bandwidth saving features (only the users that need to be updated are updated when
+  reviewing the user list after having seen it)
+* More potential connection timeout fixed (go, farcry, go!)
+* Fixed some minor client-client protocol issues
+* Fixed some more faulty "user offline" errors
+
+
+ -- 0.176 2002-05-26 --
 * Various optimizations of search handling and list sorting for better perfomance
 * Fixed a small bug in the search frame
 * Made "Full row select" default

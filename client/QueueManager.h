@@ -40,12 +40,31 @@ class UserConnection;
 
 class QueueItem : public Flags {
 public:
+	struct noCaseStringHash {
+		size_t operator()(const string& s) const {
+			size_t x = 0;
+			const char* y = s.data();
+			string::size_type j = s.size();
+			for(string::size_type i = 0; i < j; ++i) {
+				x = x*31 + (unsigned)Util::toLower(y[i]);
+			}
+			return x;
+		}
+	};
+	struct noCaseStringEq {
+		bool operator()(const string& a, const string& b) const {
+			return Util::stricmp(a.c_str(), b.c_str()) == 0;
+		}
+	};
 	typedef QueueItem* Ptr;
-	typedef HASH_MAP<string, Ptr> StringMap;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	typedef HASH_MAP<string, Ptr, noCaseStringHash, noCaseStringEq> StringMap;
 	typedef StringMap::iterator StringIter;
-	typedef HASH_MULTIMAP<User::Ptr, Ptr> UserMap;
+	typedef HASH_MAP<User::Ptr, Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
-	typedef pair<UserIter, UserIter> UserPair;
+	typedef HASH_MAP<User::Ptr, vector<List> > UserListMap;
+	typedef UserListMap::iterator UserListIter;
 
 	enum Status {
 		WAITING,
@@ -59,7 +78,8 @@ public:
 		LOW,
 		NORMAL,
 		HIGH,
-		HIGHEST
+		HIGHEST,
+		LAST
 	};
 	enum {
 		RESUME = 0x01,
@@ -80,14 +100,8 @@ public:
 		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
-		void setUser(const User::Ptr& aUser) {
-			user = aUser;
-		}
-		
-		string getFileName() {
-			string::size_type i = path.rfind('\\');
-			return (i != string::npos) ? path.substr(i + 1) : path;
-		}
+		void setUser(const User::Ptr& aUser) { user = aUser; };
+		string getFileName() { return Util::getFileName(path); };
 
 		GETSETREF(string, path, Path);
 	private:
@@ -111,85 +125,52 @@ public:
 		}
 	};
 	
-	const string& getSourcePath(const User::Ptr& aUser) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser)
-				return (*i)->getPath();
-		}
-
-		dcassert(0);
-		return Util::emptyString;
+	const string& getSourcePath(const User::Ptr& aUser) { 
+		dcassert(isSource(aUser)); 
+		return (*getSource(aUser))->getPath();
 	}
 
 	Source::List& getSources() { return sources; };
-
-	string getTargetFileName() {
-		string::size_type i = getTarget().rfind('\\');
-		return (i != string::npos) ? getTarget().substr(i + 1) : getTarget();
-	}
+	string getTargetFileName() { return Util::getFileName(getTarget()); };
 	
 	GETSETREF(string, target, Target);
 	GETSET(int64_t, size, Size);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
+	GETSET(Source*, current, Current);
 private:
 	friend class QueueManager;
 	Source::List sources;
 	
-	Source* current;
-	
 	Source* addSource(const User::Ptr& aUser, const string& aPath) {
-		Source* s = getSource(aUser);
-		if(s == NULL) {
-			Source* s = new Source(aUser, aPath);
-			sources.push_back(s);
-		}
+		dcassert(!isSource(aUser));
+		Source* s = new Source(aUser, aPath);
+		sources.push_back(s);
 		return s;
 	}
+
 	void removeSource(const User::Ptr& aUser) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser) {
-				// Bingo!
-				delete *i;
-				sources.erase(i);
-				
-				return;
-			}
-		}
+		dcassert(isSource(aUser));
+		Source::Iter i = getSource(aUser);
+		delete *i;
+		sources.erase(i);
 	}
 	
 	void setCurrent(const User::Ptr& aUser) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser) {
-				// Bingo!
-				current = *i;
-			}
-		}
+		dcassert(isSource(aUser));
+		current = *getSource(aUser);
 	}
 	
-	void setCurrent(Source* aSource) {
-		current = aSource;
-	}
+	bool isSource(const User::Ptr& aUser) { return (getSource(aUser) != sources.end()); };
 
-	Source* getCurrent() { return current; };
-
-	Source* getSource(const User::Ptr& aUser) {
+	Source::Iter getSource(const User::Ptr& aUser) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser) {
-				return *i;
+				return i;
 			}
 		}
-		return NULL;
+		return sources.end();
 	}
-	bool isSource(const User::Ptr& aUser) {
-		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
-			if((*i)->getUser() == aUser) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 };
 
 class QueueManagerListener {
@@ -203,12 +184,10 @@ public:
 		REMOVED,
 		SOURCES_UPDATED,
 		STATUS_UPDATED,
-		QUEUE_ITEM,
-		QUEUE
+		QUEUE_ITEM
 	};
 
 	virtual void onAction(Types, QueueItem*) { };
-	virtual void onAction(Types, const QueueItem::StringMap&) { };
 };
 class ConnectionQueueItem;
 
@@ -219,7 +198,6 @@ public:
 	
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException) {
-
 		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p);
 	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
@@ -247,28 +225,25 @@ public:
 		return sl;
 	}
 
+	QueueItem::StringMap& lockQueue() { cs.enter(); return queue; };
+	void unlockQueue() { cs.leave(); };
+
 	Download* getDownload(User::Ptr& aUser);
+	void putDownload(Download* aDownload, bool finished = false);
+
 	bool hasDownload(const User::Ptr& aUser) {
 		Lock l(cs);
-		QueueItem::UserPair up = userQueue.equal_range(aUser);
-		
-		for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
-			dcassert(i->second->isSource(aUser));
-			if( (i->second->getStatus() != QueueItem::RUNNING) &&
-				(i->second->getPriority() != QueueItem::PAUSED) ) {
+		QueueItem::UserListIter i = userQueue.find(aUser);
+		if(i == userQueue.end())
+			return false;
+
+		for(int j = QueueItem::LOWEST; j < QueueItem::LAST; ++j) {
+			if(!i->second[j].empty())
 				return true;
-			}
 		}
 		return false;
 	}
 	
-	void putDownload(Download* aDownload, bool finished = false);
-
-	void getQueue() {
-		Lock l(cs);
-		fire(QueueManagerListener::QUEUE, queue);
-	}
-
 	void importNMQueue(const string& aFile) throw(FileException);
 	void loadQueue();
 	
@@ -291,7 +266,8 @@ private:
 	CriticalSection cs;
 	
 	QueueItem::StringMap queue;
-	QueueItem::UserMap userQueue;
+	QueueItem::UserListMap userQueue;
+	QueueItem::UserMap running;
 
 	typedef deque<pair<string, u_int32_t> > SearchList;
 	typedef SearchList::iterator SearchIter;
@@ -300,8 +276,8 @@ private:
 	static const string USER_LIST_NAME;
 	
 	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
-	void remove(QueueItem* q);
 
+	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
 	void saveQueue();
 
@@ -325,6 +301,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.24 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.25 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

@@ -53,7 +53,8 @@ public:
 		MODE_CHANGE,
 		MY_NICK,
 		TRANSMIT_DONE,
-		SUPPORTS
+		SUPPORTS,
+		FILE_NOT_AVAILABLE
 	};
 
 	virtual void onAction(Types, UserConnection*) { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
@@ -168,6 +169,7 @@ public:
 		STATE_CONNECT,
 		STATE_NICK,
 		STATE_LOCK,
+		STATE_DIRECTION,
 		STATE_KEY,
 		// UploadManager
 		STATE_GET,
@@ -177,10 +179,12 @@ public:
 		STATE_FILELENGTH
 	};
 
+	int getNumber() { return (((u_int32_t)this)>>2) & 0xffff; };
+
 	void myNick(const string& aNick) { send("$MyNick " + aNick + '|'); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
-	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + '|'); }
+	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
@@ -281,5 +285,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.45 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.46 2002/05/30 19:09:33 arnetheduck Exp $
  */

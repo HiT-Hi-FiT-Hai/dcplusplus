@@ -65,6 +65,7 @@
 		<String Name="File">File</String>
 		<String Name="Files">Files</String>
 		<String Name="FileListRefreshed">File list refreshed</String>
+		<String Name="FileNotAvailable">File not available</String>
 		<String Name="FileType">File type</String>
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
 		<String Name="Filename">Filename</String>

@@ -101,7 +101,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 				comp = compare(b, string(buf)); break;
 			case SORT_STRING_NOCASE:
 				GetItemText(loc, sortColumn, buf, 128);
-				comp =  stricmp(b.c_str(), buf);
+				comp =  Util::stricmp(b.c_str(), buf);
 				break;
 			case SORT_INT:
 				GetItemText(loc, sortColumn, buf, 128);
@@ -142,7 +142,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		case SORT_STRING:
 			comp = compare(b, string(buf)); break;
 		case SORT_STRING_NOCASE:
-			comp =  stricmp(b.c_str(), buf);
+			comp =  Util::stricmp(b.c_str(), buf);
 			break;
 		case SORT_INT:
 			comp = compare(c, atoi(buf)); break;
@@ -198,6 +198,6 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.3 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.4 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

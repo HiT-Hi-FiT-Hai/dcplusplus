@@ -34,7 +34,6 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManage
 public:
 	enum {
 		ADD_ITEM,
-		ADD_ITEMS,
 		REMOVE_ITEM,
 		SET_TEXT
 	};
@@ -56,7 +55,6 @@ public:
 	static QueueFrame* frame;
 
 	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), dirty(false), usingDirMenu(false) { 
-		QueueManager::getInstance()->addListener(this);
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
 		searchFilter.push_back("divx");
@@ -233,6 +231,8 @@ private:
 
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
+
+	void addQueueList(const QueueItem::StringMap& l);
 	
 	void updateStatus() {
 		if(dirty) {
@@ -270,14 +270,6 @@ private:
 		}
 	};
 
-	virtual void onAction(QueueManagerListener::Types type, const QueueItem::StringMap& l) { 
-		switch(type) {
-		case QueueManagerListener::QUEUE: onQueueList(l); break;
-		default: dcassert(0); break;
-		}
-	};
-
-	void onQueueList(const QueueItem::StringMap& l);
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
@@ -288,6 +280,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.8 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.9 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

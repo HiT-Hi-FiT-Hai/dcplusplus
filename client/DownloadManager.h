@@ -163,6 +163,7 @@ private:
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len);
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode);
 	
+	void onFileNotAvailabe(UserConnection* aSource);
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onData(UserConnection* aSource, const u_int8_t* aData, int aLen);
 	void onFileLength(UserConnection* aSource, const string& aFileLength);
@@ -179,5 +180,5 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.43 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.44 2002/05/30 19:09:33 arnetheduck Exp $
  */

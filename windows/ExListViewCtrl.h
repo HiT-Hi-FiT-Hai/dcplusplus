@@ -110,7 +110,7 @@ public:
 		case SORT_STRING_NOCASE:
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			return p->ascending ? stricmp(buf,buf2) : -stricmp(buf, buf2);
+			return p->ascending ? Util::stricmp(buf,buf2) : -stricmp(buf, buf2);
 		case SORT_INT:
 			p->GetItemText(lParam1, p->sortColumn, buf, 128);
 			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
@@ -155,6 +155,6 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.3 2002/05/23 21:48:24 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.4 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

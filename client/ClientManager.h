@@ -97,9 +97,10 @@ public:
 	
 	bool isOnline(const string& aNick) {
 		Lock l(cs);
-		UserIter i = users.find(aNick);
-		if(i != users.end()) {
-			return i->second->isOnline();
+		UserPair i = users.equal_range(aNick);
+		for(UserIter j = i.first; j != i.second; ++j) {
+			if(j->second->isOnline())
+				return true;
 		}
 		return false;
 	}
@@ -159,6 +160,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.27 2002/05/26 20:28:10 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.28 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

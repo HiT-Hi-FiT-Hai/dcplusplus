@@ -81,7 +81,7 @@ public:
 	
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
-		
+		aSock->Socket::disconnect();
 		Lock l(aSock->cs);
 		aSock->addTask(SHUTDOWN); 
 	};
@@ -225,5 +225,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.39 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.40 2002/05/30 19:09:33 arnetheduck Exp $
  */

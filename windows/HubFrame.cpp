@@ -221,7 +221,7 @@ void HubFrame::onEnter() {
 				s = s.substr(1);
 			}
 
-			if(stricmp(s.c_str(), "refresh")==0) {
+			if(Util::stricmp(s.c_str(), "refresh")==0) {
 				try {
 					ShareManager::getInstance()->setDirty();
 					ShareManager::getInstance()->refresh(true);
@@ -229,7 +229,7 @@ void HubFrame::onEnter() {
 				} catch(ShareException e) {
 					addClientLine(e.getError());
 				}
-			} else if(stricmp(s.c_str(), "slots")==0) {
+			} else if(Util::stricmp(s.c_str(), "slots")==0) {
 				int j = Util::toInt(param);
 				if(j > 0) {
 					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
@@ -238,13 +238,13 @@ void HubFrame::onEnter() {
 				} else {
 					addClientLine(STRING(INVALID_NUMBER_OF_SLOTS));
 				}
-			} else if(stricmp(s.c_str(), "join")==0) {
+			} else if(Util::stricmp(s.c_str(), "join")==0) {
 				if(!param.empty()) {
 					client->connect(param);
 				} else {
 					addClientLine(STRING(SPECIFY_SERVER));
 				}
-			} else if(stricmp(s.c_str(), "search") == 0) {
+			} else if(Util::stricmp(s.c_str(), "search") == 0) {
 				if(!param.empty()) {
 					SearchFrame* pChild = new SearchFrame();
 					pChild->setTab(getTab());
@@ -253,11 +253,11 @@ void HubFrame::onEnter() {
 				} else {
 					addClientLine(STRING(SPECIFY_SEARCH_STRING));
 				}
-			} else if(stricmp(s.c_str(), "dc++") == 0) {
+			} else if(Util::stricmp(s.c_str(), "dc++") == 0) {
 				client->sendMessage(msgs[GET_TICK() % MSGS]);
-			} else if(stricmp(s.c_str(), "clear") == 0) {
+			} else if(Util::stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
-			} else if(stricmp(s.c_str(), "away") == 0) {
+			} else if(Util::stricmp(s.c_str(), "away") == 0) {
 				if(Util::getAway() && param.empty()) {
 					Util::setAway(false);
 					addClientLine(STRING(AWAY_MODE_OFF));
@@ -266,32 +266,32 @@ void HubFrame::onEnter() {
 					Util::setAwayMessage(param);
 					addClientLine(STRING(AWAY_MODE_ON) + Util::getAwayMessage());
 				}
-			} else if(stricmp(s.c_str(), "back") == 0) {
+			} else if(Util::stricmp(s.c_str(), "back") == 0) {
 				Util::setAway(false);
 				addClientLine(STRING(AWAY_MODE_OFF));
-			} else if(stricmp(s.c_str(), "ts") == 0) {
+			} else if(Util::stricmp(s.c_str(), "ts") == 0) {
 				timeStamps = !timeStamps;
 				if(timeStamps) {
 					addClientLine(STRING(TIMESTAMPS_ENABLED));
 				} else {
 					addClientLine(STRING(TIMESTAMPS_DISABLED));
 				}
-			} else if( (stricmp(s.c_str(), "password") == 0) && waitingForPW ) {
+			} else if( (Util::stricmp(s.c_str(), "password") == 0) && waitingForPW ) {
 				client->setPassword(param);
 				client->password(param);
 				waitingForPW = false;
-			} else if( stricmp(s.c_str(), "showjoins") == 0 ) {
+			} else if( Util::stricmp(s.c_str(), "showjoins") == 0 ) {
 				showJoins = !showJoins;
 				if(showJoins) {
 					addClientLine(STRING(JOIN_SHOWING_ON));
 				} else {
 					addClientLine(STRING(JOIN_SHOWING_OFF));
 				}
-			} else if(stricmp(s.c_str(), "close") == 0) {
+			} else if(Util::stricmp(s.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
-			} else if(stricmp(s.c_str(), "userlist") == 0) {
+			} else if(Util::stricmp(s.c_str(), "userlist") == 0) {
 				ctrlShowUsers.SetCheck(client->getUserInfo() ? BST_UNCHECKED : BST_CHECKED);
-			} else if(stricmp(s.c_str(), "help") == 0) {
+			} else if(Util::stricmp(s.c_str(), "help") == 0) {
 				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help, /userlist");
 			}
 		} else {
@@ -403,76 +403,56 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	
 	return 0; 
 };
+int HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInfo* ui /* = NULL */) {
+	int i = ctrlUsers.find(u->getNick());
+	bool newUser = false;
+	if(i == -1) {
+		newUser = true;
+		if(ui == NULL)
+			ui = new UserInfo(u);
 
-LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == UPDATE_USER) {
-		UserInfo* ui = (UserInfo*)lParam;
-		User::Ptr& u = ui->user;
-		int i;
-
-		if( (i = ctrlUsers.find(u->getNick())) != -1 ) {
-
-			ctrlUsers.SetRedraw(FALSE);
-			ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-			ctrlUsers.SetItemText(i, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
-			ctrlUsers.SetItemText(i, COLUMN_DESCRIPTION, u->getDescription().c_str());
-			ctrlUsers.SetItemText(i, COLUMN_CONNECTION, u->getConnection().c_str());
-			ctrlUsers.SetItemText(i, COLUMN_EMAIL, u->getEmail().c_str());
-			ctrlUsers.SetRedraw(TRUE);
-
-			RECT rc;
-			ctrlUsers.GetItemRect(i, &rc, LVIR_BOUNDS);
-			ctrlUsers.InvalidateRect(&rc);
-
-			delete ui;
-			needSort = true;
-		} else {
+		if(sorted) {
 			StringList l;
 			l.push_back(u->getNick());
 			l.push_back(Util::formatBytes(u->getBytesSharedString()));
 			l.push_back(u->getDescription());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
-			ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
-
-			if(showJoins) {
-				addLine("*** " + STRING(JOINS) + u->getNick());
-			}
+			return ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
+		} else {
+			i = ctrlUsers.insert(ctrlUsers.GetItemCount(), u->getNick(), getImage(u), (LPARAM)ui);
 		}
+	} else {
+		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
+	}
+
+	ctrlUsers.SetItemText(i, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
+	ctrlUsers.SetItemText(i, COLUMN_DESCRIPTION, u->getDescription().c_str());
+	ctrlUsers.SetItemText(i, COLUMN_CONNECTION, u->getConnection().c_str());
+	ctrlUsers.SetItemText(i, COLUMN_EMAIL, u->getEmail().c_str());
+	if(sorted && ctrlUsers.getSortColumn() != COLUMN_NICK) {
+		needSort = true;
+	}
+	if(!newUser && ui == NULL)
+		delete ui;
+	return i;
+}
+
+LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == UPDATE_USER) {
+		UserInfo* ui = (UserInfo*)lParam;
+		User::Ptr& u = ui->user;
+		updateUser(u, true, ui);
 	} else if(wParam == UPDATE_USERS) {
 		User::List* ul = (User::List*)lParam;
 
 		ctrlUsers.SetRedraw(FALSE);
-
-		User::Iter i;
-		
-		for(i = ul->begin(); i != ul->end();) {
-			User::Ptr& u = *i;
-			int j = ctrlUsers.find(u->getNick());
-			if(j != -1) {
-				ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-				ctrlUsers.SetItemText(j, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
-				ctrlUsers.SetItemText(j, COLUMN_DESCRIPTION, u->getDescription().c_str());
-				ctrlUsers.SetItemText(j, COLUMN_CONNECTION, u->getConnection().c_str());
-				ctrlUsers.SetItemText(j, COLUMN_EMAIL, u->getEmail().c_str());
-
-				i = ul->erase(i);
-			} else {
-				++i;
-			}
+		for(User::Iter i = ul->begin(); i != ul->end(); ++i) {
+			updateUser(*i);
 		}
-
-		for(i = ul->begin(); i != ul->end(); ++i) {
-			User::Ptr& u = *i;
-            int j = ctrlUsers.insert(ctrlUsers.GetItemCount(), u->getNick(), getImage(u), (LPARAM)new UserInfo(u));
-			ctrlUsers.SetItemText(j, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
-			ctrlUsers.SetItemText(j, COLUMN_DESCRIPTION, u->getDescription().c_str());
-			ctrlUsers.SetItemText(j, COLUMN_CONNECTION, u->getConnection().c_str());
-			ctrlUsers.SetItemText(j, COLUMN_EMAIL, u->getEmail().c_str());
-		}
-
 		ctrlUsers.SetRedraw(TRUE);
 		ctrlUsers.resort();
+
 		delete ul;
 	} else if(wParam == REMOVE_USER) {
 		UserInfo* ui = (UserInfo*)lParam;
@@ -715,8 +695,17 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	bHandled = FALSE;
 	if((wParam == BST_CHECKED) && !client->getUserInfo()) {
+		User::NickMap& lst = client->lockUserList();
+		ctrlUsers.SetRedraw(FALSE);
+		for(User::NickIter i = lst.begin(); i != lst.end(); ++i) {
+			updateUser(i->second);
+		}
+		client->unlockUserList();
+		ctrlUsers.SetRedraw(TRUE);
+		ctrlUsers.resort();
+
 		client->setUserInfo(true);
-		client->refreshUserList();
+		client->refreshUserList(true);		
 	} else {
 		client->setUserInfo(false);
 		clearUserList();
@@ -750,5 +739,5 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.11 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.12 2002/05/30 19:09:33 arnetheduck Exp $
  */

@@ -329,11 +329,31 @@ void DownloadManager::abortDownload(const string& aTarget) {
 	}
 }
 
+void DownloadManager::onFileNotAvailabe(UserConnection* aSource) {
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
+
+	dcdebug("File Not Available: %s\n", d->getTarget().c_str());
+
+	if(d->getFile()) {
+		delete d->getFile();
+		d->setFile(NULL);
+	}
+
+	fire(DownloadManagerListener::FAILED, d, STRING(FILE_NOT_AVAILABLE));
+
+	aSource->setDownload(NULL);
+
+	QueueManager::getInstance()->removeSource(d->getTarget(), aSource->getUser(), false);
+	removeDownload(d, false);
+	checkDownloads(aSource);
+}
+
 // UserConnectionListener
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
 	switch(type) {
-	case UserConnectionListener::MAXED_OUT:
-		onMaxedOut(conn); break;
+	case UserConnectionListener::MAXED_OUT: onMaxedOut(conn); break;
+	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailabe(conn); break;
 	}
 }
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
@@ -368,5 +388,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.62 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.63 2002/05/30 19:09:33 arnetheduck Exp $
  */

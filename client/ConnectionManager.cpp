@@ -35,28 +35,22 @@ ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
  * DownloadConnection::addConnection will be called as soon as the connection is ready
  * for downloading.
  * @param aUser The user to connect to.
-*/
+ */
 void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 	dcassert((bool)aUser);
 	ConnectionQueueItem* cqi = NULL;
 	{
 		Lock l(cs);
 
-		ConnectionQueueItem::Iter j;
-		for(j = pendingAdd.begin(); j != pendingAdd.end(); ++j) {
-			if((*j)->getUser() == aUser) {
-				return;
-			}
-		}
-
-		for(j = downPool.begin(); j != downPool.end(); ++j) {
-			if((*j)->getUser() == aUser) {
-				dcassert((*j)->getConnection());
-				
-				pendingAdd.push_back(*j);
-				downPool.erase(j);
-				return;
-			}
+        ConnectionQueueItem::Iter j;
+		if(find(pendingAdd.begin(), pendingAdd.end(), aUser) != pendingAdd.end())
+			return;
+		
+		if( (j = find(downPool.begin(), downPool.end(), aUser)) != downPool.end()) {
+			dcassert((*j)->getConnection());
+			pendingAdd.push_back(*j);
+			downPool.erase(j);
+			return;
 		}
 		
 		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
@@ -255,10 +249,10 @@ void ConnectionManager::onIncomingConnection() throw() {
 	UserConnection* uc = getConnection();
 	
 	try { 
-		uc->accept(socket);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setState(UserConnection::STATE_NICK);
 		uc->setLastActivity(GET_TICK());
+		uc->accept(socket);
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -296,30 +290,20 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 	dcassert(aNick.size() > 0);
 	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
 	dcassert(!aSource->getUser());
-	
-	ConnectionQueueItem* cqi = NULL;
+
+	// First, we try looking in the pending downloads...hopefully it's one of them...
 	{
 		Lock l(cs);
-		
 		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
-			cqi = i->first;
-			if(cqi->getUser()->getNick() == aNick) {
-				aSource->setUser(cqi->getUser());
-				cqi->setConnection(aSource);
-				aSource->setCQI(cqi);
-				pendingDown.erase(i);
-				connections[aSource] = cqi;
-				break;
+			if(i->first->getUser()->getNick() == aNick) {
+				aSource->setUser(i->first->getUser());
+				// Indicate that we're interested in this file...
+				aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
 			}
 		}
 	}
 
-	if( !aSource->isSet(UserConnection::FLAG_UPLOAD) && aSource->user) {
-		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
-		fire(ConnectionManagerListener::CONNECTED, cqi);
-	} else {
-
-		// We didn't order it so it must be an uploading connection...
+	if(!aSource->getUser()) {
 		// Make sure we know who it is, i e that he/she is connected...
 		if(!ClientManager::getInstance()->isOnline(aNick)) {
 			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
@@ -328,26 +312,9 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 		}
 
 		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
-
-		// Only one connection / user
-		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
-			if(k->first->getUser() == aSource->getUser() && k->first->isSet(UserConnection::FLAG_UPLOAD)) {
-				putConnection(aSource);
-				return;
-			}
-		}
-		
+		// We don't need this connection for downloading...make it an upload connection instead...
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
-		cqi = new ConnectionQueueItem(aSource->getUser());
-		cqi->setConnection(aSource);
-		aSource->setCQI(cqi);
-		{
-			Lock l(cs);
-			connections[aSource] = cqi;
-		}
-		fire(ConnectionManagerListener::ADDED, cqi);
-		fire(ConnectionManagerListener::CONNECTED, cqi);
-	} 
+	}
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
 		aSource->myNick(aSource->getUser()->getClientNick()); 
@@ -371,9 +338,81 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 		}
 		aSource->supports(features);
 	}
-	aSource->setState(UserConnection::STATE_KEY);
-	aSource->direction(aSource->getDirectionString(), "666");
+
+	aSource->setState(UserConnection::STATE_DIRECTION);
+	aSource->direction(aSource->getDirectionString(), aSource->getNumber());
 	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
+}
+
+void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& num) throw() {
+	if(aSource->getState() != UserConnection::STATE_DIRECTION) {
+		dcdebug("CM::onDirection %p received direction twice, ignoring\n", aSource);
+		return;
+	}
+
+	dcassert(aSource->isSet(UserConnection::FLAG_DOWNLOAD) ^ aSource->isSet(UserConnection::FLAG_UPLOAD));
+	if(dir == "Upload") {
+		// Fine, the other fellow want's to send us data...make sure we really want that...
+		if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
+			// Huh? Strange...disconnect...
+			putConnection(aSource);
+			return;
+		}
+	} else {
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			int number = Util::toInt(num);
+			// Damn, both want to download...the one with the highest number wins...
+			if(aSource->getNumber() < number) {
+				// Damn! We lost!
+				aSource->unsetFlag(UserConnection::FLAG_DOWNLOAD);
+				aSource->setFlag(UserConnection::FLAG_UPLOAD);
+			}
+		}
+	}
+
+	dcassert(aSource->isSet(UserConnection::FLAG_DOWNLOAD) ^ aSource->isSet(UserConnection::FLAG_UPLOAD));
+
+	{
+		Lock l(cs);
+		// Only one connection / user...
+		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
+			if( (k->first->getUser() == aSource->getUser()) && 
+				(aSource->isSet(UserConnection::FLAG_UPLOAD) == k->first->isSet(UserConnection::FLAG_UPLOAD)) ) {
+				
+				putConnection(aSource);
+				return;
+			}
+		}
+
+		// Now, let's see if we still want this connection...
+		// First, we try looking in the pending downloads...hopefully it's one of them...
+		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
+			for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
+				ConnectionQueueItem *cqi = i->first;
+				if(cqi->getUser() == aSource->getUser()) {
+					cqi->setConnection(aSource);
+					aSource->setCQI(cqi);
+					pendingDown.erase(i);
+					connections[aSource] = cqi;
+					aSource->setState(UserConnection::STATE_KEY);
+					fire(ConnectionManagerListener::CONNECTED, cqi);
+					return;
+				}
+			}
+		} else {
+			aSource->setFlag(UserConnection::FLAG_UPLOAD);
+			ConnectionQueueItem *cqi = new ConnectionQueueItem(aSource->getUser());
+			cqi->setConnection(aSource);
+			aSource->setCQI(cqi);
+			connections[aSource] = cqi;
+			aSource->setState(UserConnection::STATE_KEY);
+			fire(ConnectionManagerListener::ADDED, cqi);
+			fire(ConnectionManagerListener::CONNECTED, cqi);
+			return;
+		}
+	}
+	// Don't want it anymore???
+	putConnection(aSource);
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) throw() {
@@ -383,57 +422,15 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	}
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
-	{
-		Lock l(cs);
-		ConnectionQueueItem::QueueIter i = connections.find(aSource);
-		if(i == connections.end()) {
-			dcdebug("Connection not found in connections QueueMap\n");
-			putConnection(aSource);
-			return;
-		}
-	}
-	
+	dcassert(aSource->getUser());
+
 	if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-		if(aSource->isSet(UserConnection::FLAG_UPLOAD)) {
-			// Oops, not good...
-			dcdebug("ConnectionManager::onKey, bad download connection\n");
-			
-			putDownloadConnection(aSource);
-			return;
-		}
-		if(!aSource->getUser()) {
-			// We still don't know who this is!!!
-			putDownloadConnection(aSource);
-			return;
-		} else {
-			dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
-			DownloadManager::getInstance()->addConnection(aSource);
-		}
+		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
+		DownloadManager::getInstance()->addConnection(aSource);
 	} else {
 		dcassert(aSource->isSet(UserConnection::FLAG_UPLOAD));
-
-		if(aSource->isSet(UserConnection::FLAG_DOWNLOAD)) {
-			// Oops, not good...
-			dcdebug("ConnectionManager::onKey, bad upload connection\n");
-			putDownloadConnection(aSource);
-			return;
-		}
-		
 		dcdebug("ConnectionManager::onKey, leaving to uploadmanager\n");
-		if(!aSource->getUser()) {
-			// We still don't know who this is!!!
-			putDownloadConnection(aSource);
-		} else {
-			UploadManager::getInstance()->addConnection(aSource);
-		}
-	}
-}
-
-void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, const string& /*num*/) throw() {
-	if(dir == "Upload") {
-		aSource->setFlag(UserConnection::FLAG_DOWNLOAD);
-	} else {
-		aSource->setFlag(UserConnection::FLAG_UPLOAD);
+		UploadManager::getInstance()->addConnection(aSource);
 	}
 }
 
@@ -542,5 +539,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManger.cpp
- * $Id: ConnectionManager.cpp,v 1.47 2002/05/26 20:28:10 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.48 2002/05/30 19:09:33 arnetheduck Exp $
  */

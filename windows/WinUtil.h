@@ -22,6 +22,9 @@
 class WinUtil {
 public:
 	static CImageList fileImages;
+	typedef HASH_MAP<string, int> ImageMap;
+	typedef ImageMap::iterator ImageIter;
+	static ImageMap fileIndexes;
 	static HBRUSH bgBrush;
 	static COLORREF textColor;
 	static COLORREF bgColor;
@@ -51,12 +54,21 @@ public:
 	static int getIconIndex(const string& aFileName) {
 		if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 			SHFILEINFO fi;
+			string x = Util::getFileName(aFileName);
+			string::size_type i = x.rfind('.');
+			if(i != string::npos) {
+				x = x.substr(i);
+				ImageIter j = fileIndexes.find(x);
+				if(j != fileIndexes.end())
+					return j->second;
+			}
 			CImageList il = (HIMAGELIST)::SHGetFileInfo(aFileName.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 			while(il.GetImageCount() > fileImages.GetImageCount()) {
 				HICON hi = il.GetIcon(fileImages.GetImageCount());
 				fileImages.AddIcon(hi);
 				DestroyIcon(hi);
 			}
+			fileIndexes[x] = fi.iIcon;
 			return fi.iIcon;
 		} else {
 			return 2;
@@ -84,5 +96,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.6 2002/05/30 19:09:33 arnetheduck Exp $
  */

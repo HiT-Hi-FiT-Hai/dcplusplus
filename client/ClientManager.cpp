@@ -65,7 +65,7 @@ void ClientManager::onClientHello(Client* aClient, const User::Ptr& aUser) throw
 		aClient->getNickList();
 		aClient->myInfo(aClient->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
 	} else {
-		aClient->getInfo(aUser);
+		//aClient->getInfo(aUser);
 	}
 }
 
@@ -159,13 +159,19 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 		return u;
 	}
 
+	UserIter i;
 	if(aHint.empty()) {
-		// No hint, return the first user with this nick...
+		// No hint, first, try finding an online user...
+		for(i = p.first; i != p.second; ++i) {
+			if(i->second->isOnline()) {
+				return i->second;
+			}
+		}
+		// Blah...return the first one...doesn't matter now...
 		return p.first->second;
 	}
 
 	// Since we have a hint, make sure we use it...
-	UserIter i;
 	for(i = p.first; i != p.second; ++i) {
 		if(i->second->getLastHubIp() == aHint) {
 			return i->second;
@@ -179,9 +185,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 		}
 	}
 
-	User::Ptr& u = users.insert(make_pair(aNick, new User(aNick)))->second;
-	u->setLastHubIp(aHint);
-	return u;
+	return users.insert(make_pair(aNick, new User(aNick)))->second;
 }
 
 User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
@@ -314,6 +318,6 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.27 2002/05/26 20:28:10 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.28 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

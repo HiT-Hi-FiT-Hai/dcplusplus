@@ -52,11 +52,14 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	User::Ptr& getUser() { return user; };
 	
+
 	GETSET(Status, status, Status);
 	GETSET(UserConnection*, connection, Connection);
 private:
 	User::Ptr user;
 };
+// Comparing with a user...
+inline bool operator==(ConnectionQueueItem::Ptr ptr, const User::Ptr& aUser) { return ptr->getUser() == aUser; };
 
 class ConnectionManagerListener {
 public:
@@ -210,5 +213,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.39 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.40 2002/05/30 19:09:33 arnetheduck Exp $
  */

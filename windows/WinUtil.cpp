@@ -24,6 +24,7 @@
 #include "../client/Util.h"
 #include "../client/StringTokenizer.h"
 
+WinUtil::ImageMap WinUtil::fileIndexes;
 HBRUSH WinUtil::bgBrush = NULL;
 COLORREF WinUtil::textColor = 0;
 COLORREF WinUtil::bgColor = 0;
@@ -179,5 +180,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.6 2002/05/30 19:09:33 arnetheduck Exp $
  */

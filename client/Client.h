@@ -81,10 +81,13 @@ public:
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
 
+	User::NickMap& lockUserList() throw() { cs.enter(); return users; };
+	void unlockUserList() throw() { cs.leave(); };
+
 	bool isConnected() { if(!socket) return false; else return socket->isConnected(); };
 	void disconnect() throw();
 
-	void refreshUserList();
+	void refreshUserList(bool unknownOnly = false);
 
 #define checkstate() if(state != STATE_CONNECTED) return
 
@@ -110,7 +113,7 @@ public:
 		string tmp2 = "+L9";
 		string tmp3 = "+G9";
 		string tmp4 = "+R9";
-		
+			
 		string::size_type i;
 
 		for(i = 0; i < tmp1.size(); i++) {
@@ -265,6 +268,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.56 2002/05/26 20:28:10 arnetheduck Exp $
+ * $Id: Client.h,v 1.57 2002/05/30 19:09:33 arnetheduck Exp $
  */
 

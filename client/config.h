@@ -79,13 +79,7 @@ typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
 #endif
 
-// Just a test to see if things compile in gcc...
-#ifndef WIN32
-#define stricmp strcasecmp
-#define strnicmp strncasecmp
-#endif
-
 /**
  * @file config.h
- * $Id: config.h,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: config.h,v 1.9 2002/05/30 19:09:33 arnetheduck Exp $
  */

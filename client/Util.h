@@ -28,6 +28,7 @@
 class Flags {
 	public:
 		Flags() : flags(0) { };
+		Flags(const Flags& rhs) : flags(rhs.flags) { };
 		bool isSet(int aFlag) const { return (flags & aFlag) > 0; };
 		void setFlag(int aFlag) { flags |= aFlag; };
 		void unsetFlag(int aFlag) { flags &= ~aFlag; };
@@ -163,7 +164,16 @@ public:
 		return emptyString;
 #endif // WIN32
 	}
-	
+
+	static string getFilePath(const string& path) {
+		string::size_type i = path.rfind('\\');
+		return (i != string::npos) ? path.substr(0, i) : path;
+	}
+	static string getFileName(const string& path) {
+		string::size_type i = path.rfind('\\');
+		return (i != string::npos) ? path.substr(i + 1) : path;
+	}
+
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
 
 	static string formatBytes(const string& aString) {
@@ -224,7 +234,7 @@ public:
 		}
 		return tmp;
 	}
-
+	static char toLower(char c) { return lower[c]; };
 	static int64_t toInt64(const string& aString) {
 #ifdef WIN32
 		return _atoi64(aString.c_str());
@@ -282,24 +292,28 @@ public:
 		if(alen >= blen) {
 			const char* a = aString.c_str();
 			const char* b = aSubString.c_str();
-			char bl = lower[b[0]];
-			char bu = upper[b[0]];
 			for(string::size_type pos = 0; pos < alen - blen + 1; pos++) {
-				// First, a special case for the first letter to make sure we
-				// dont do a lot of unneccesary table lookups
-				if( (a[pos] == bl) || (a[pos] == bu) ) {
-					// First letter matches, keep looking...
-					string::size_type i;
-					for(i = 1; i < blen; i++) {
-						if( (a[pos+i] != lower[b[i]]) && (a[pos+i] != upper[b[i]]) )
-							break;
-					}
-					if(i == blen)
-						return pos;
-				}
+				if(strnicmp(a+pos, b, blen) == 0)
+					return pos;
 			}
 		}
 		return (string::size_type)string::npos;
+	}
+
+	/* Table-driven versions of strnicmp and stricmp */
+	static int stricmp(const char* a, const char* b) {
+		// return ::stricmp(a, b);
+		while(*a && (lower[*a] == lower[*b])) {
+			a++; b++;
+		}
+		return (lower[*a] < lower[*b]) ? -1 : ((lower[*a] == lower[*b]) ? 0 : 1);
+	}
+	static int strnicmp(const char* a, const char* b, int n) {
+		// return ::strnicmp(a, b, n);
+		while(n && *a && (lower[*a] == lower[*b])) {
+			n--; a++; b++;
+		}
+		return (n == 0) ? 0 : ((lower[*a] < lower[*b]) ? -1 : ((lower[*a] == lower[*b]) ? 0 : 1));
 	}
 
 	static string validateNick(string tmp) {	
@@ -337,6 +351,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.43 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: Util.h,v 1.44 2002/05/30 19:09:33 arnetheduck Exp $
  */
 
