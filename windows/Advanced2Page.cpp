@@ -78,18 +78,22 @@ void Advanced2Page::updateEdits() {
 	bool btnState = (IsDlgButtonChecked(IDC_LOG_MAIN_CHAT) != 0);
 	::EnableWindow(GetDlgItem(IDC_MAIN_CHAT), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT1), btnState);
+	::EnableWindow(GetDlgItem(IDC_MAIN_CHAT_FILE), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME1), btnState);
 	btnState = (IsDlgButtonChecked(IDC_LOG_PRIVATE_CHAT) != 0);
 	::EnableWindow(GetDlgItem(IDC_PRIVATE_CHAT), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT2), btnState);
+	::EnableWindow(GetDlgItem(IDC_PRIVATE_CHAT_FILE), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME2), btnState);
 	btnState = (IsDlgButtonChecked(IDC_LOG_DOWNLOADS) != 0);
 	::EnableWindow(GetDlgItem(IDC_POST_DOWNLOAD), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT3), btnState);
+	::EnableWindow(GetDlgItem(IDC_DOWNLOAD_FILE), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME4), btnState);
 	btnState = (IsDlgButtonChecked(IDC_LOG_UPLOADS) != 0);
 	::EnableWindow(GetDlgItem(IDC_POST_UPLOAD), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FORMAT4), btnState);
+	::EnableWindow(GetDlgItem(IDC_UPLOAD_FILE), btnState);
 	::EnableWindow(GetDlgItem(IDC_SETTINGS_FILE_NAME3), btnState);
 }
 
@@ -162,6 +166,6 @@ LRESULT Advanced2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.17 2004/12/05 15:51:03 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.18 2004/12/17 15:12:10 arnetheduck Exp $
  */
 

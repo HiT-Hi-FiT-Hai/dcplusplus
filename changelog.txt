@@ -5,6 +5,11 @@
 * Fixed an issue with negative search terms (thanks naga)
 * Added option to filter TTH results in search spy (thanks joakim tosteberg)
 * Updated log functionality to allow users to customize log filenames (thanks naga)
+* Fixes to log edit function (thanks naga)
+* Added possibility to filter all searches without tth (thanks naga)
+* More preferences splitting (thanks ullner)
+* Small socket fix (thanks tremor)
+* Search tab goes bold if set to (thanks naga)
 
 
 

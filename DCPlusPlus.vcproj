@@ -262,13 +262,16 @@
 				RelativePath=".\windows\Advanced2Page.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\Advanced3Page.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\AdvancedPage.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\AppearancePage.cpp">
+				RelativePath=".\windows\Appearance2Page.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\Appearance2Page.cpp">
+				RelativePath=".\windows\AppearancePage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\CommandDlg.cpp">
@@ -395,13 +398,16 @@
 				RelativePath=".\windows\Advanced2Page.h">
 			</File>
 			<File
+				RelativePath=".\windows\Advanced3Page.h">
+			</File>
+			<File
 				RelativePath=".\windows\AdvancedPage.h">
 			</File>
 			<File
-				RelativePath=".\windows\AppearancePage.h">
+				RelativePath=".\windows\Appearance2Page.h">
 			</File>
 			<File
-				RelativePath=".\windows\Appearance2Page.h">
+				RelativePath=".\windows\AppearancePage.h">
 			</File>
 			<File
 				RelativePath="windows\CommandDlg.h">

@@ -58,7 +58,7 @@ const string SettingsManager::settingTags[] =
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
-	"OpenNewWindow", "UDPPort",
+	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -181,6 +181,7 @@ SettingsManager::SettingsManager()
 	setDefault(CONFIRM_HUB_REMOVAL, false);
 	setDefault(SETTINGS_USE_CTRL_FOR_LINE_HISTORY, true);
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
+	setDefault(SEARCH_ONLY_TTH, false);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -332,6 +333,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.100 2004/12/05 15:51:05 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.101 2004/12/17 15:11:52 arnetheduck Exp $
  */
 

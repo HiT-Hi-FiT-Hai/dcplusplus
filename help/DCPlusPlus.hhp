@@ -24,6 +24,7 @@ settings_logs.html
 settings_sharing.html
 settings_usercommands.html
 settings_colors_and_sounds.html
+settings_expert.html
 chat_commands.html
 non-routable.html
 plusplus_tag.html
@@ -54,6 +55,7 @@ IDD_GENERALPAGE=settings_general.html
 IDD_KEYBOARD=faq_keyboard_commands.html
 IDD_STARTPAGE=index.html
 IDD_UCPAGE=settings_usercommands.html
+IDD_ADVANCED3PAGE=settings_expert.html
 IDD_UPLOADPAGE=settings_sharing.html
 IDR_ADLSEARCH=adlsearch.html
 

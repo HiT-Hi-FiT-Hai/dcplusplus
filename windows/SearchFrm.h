@@ -74,6 +74,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
+		COMMAND_ID_HANDLER(IDC_ONLYTTH, onTTH)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_SEARCH_BY_TTH, onSearchByTTH)
 		COMMAND_ID_HANDLER(IDC_BITZI_LOOKUP, onBitziLookup)
@@ -105,8 +106,9 @@ public:
 		doSearchContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
+		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0)
+		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0), onlyTTH(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -167,6 +169,11 @@ public:
 
 	LRESULT onFreeSlots(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onlyFree = (ctrlSlots.GetCheck() == 1);
+		return 0;
+	}
+
+	LRESULT onTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onlyTTH = (ctrlTTH.GetCheck() == 1);
 		return 0;
 	}
 
@@ -396,9 +403,10 @@ private:
 	CContainedWindow doSearchContainer;
 	CContainedWindow resultsContainer;
 	CContainedWindow hubsContainer;
+	CContainedWindow tthContainer;
 	
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel;
-	CButton ctrlSlots, ctrlShowUI;
+	CButton ctrlSlots, ctrlShowUI, ctrlTTH;
 	bool showUI;
 
 	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
@@ -417,6 +425,7 @@ private:
 
 	bool onlyFree;
 	bool isHash;
+	bool onlyTTH;
 
 	CriticalSection cs;
 
@@ -465,6 +474,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.46 2004/11/30 15:46:19 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.47 2004/12/17 15:12:10 arnetheduck Exp $
  */
 

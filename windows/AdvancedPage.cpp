@@ -27,25 +27,7 @@
 #include "../client/HubManager.h"
 #include "WinUtil.h"
 
-PropPage::TextItem AdvancedPage::texts[] = {
-	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
-	{ IDC_SETTINGS_ROLLBACK, ResourceManager::SETTINGS_ROLLBACK },
-	{ IDC_SETTINGS_B, ResourceManager::B },
-	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
-	{ IDC_SETTINGS_KB, ResourceManager::KB },
-	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
-	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
-	{ IDC_SETTINGS_MBS, ResourceManager::MBPS },
-	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
-};
-
-PropPage::Item AdvancedPage::items[] = {
-	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
-	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
-	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
-	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
-	{ 0, 0, PropPage::T_END }
-};
+PropPage::Item AdvancedPage::items[] = { { 0, 0, PropPage::T_END } };
 
 AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::AUTO_AWAY, ResourceManager::SETTINGS_AUTO_AWAY },
@@ -85,12 +67,12 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::DONT_DL_ALREADY_SHARED, ResourceManager::SETTINGS_DONT_DL_ALREADY_SHARED },
 	{ SettingsManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY, ResourceManager::SETTINGS_USE_CTRL_FOR_LINE_HISTORY },
 	{ SettingsManager::SETTINGS_OPEN_NEW_WINDOW, ResourceManager::SETTINGS_OPEN_NEW_WINDOW },
+	{ SettingsManager::SEARCH_ONLY_TTH, ResourceManager::SETTINGS_ONLY_TTH },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
 LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	PropPage::translate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
 
 	// Do specialized reading here
@@ -107,12 +89,12 @@ LRESULT AdvancedPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 }
 
 LRESULT AdvancedPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCED2PAGE);
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_ADVANCEDPAGE);
 	return 0;
 }
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.43 2004/11/22 00:13:33 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.44 2004/12/17 15:12:10 arnetheduck Exp $
  */
 

@@ -414,8 +414,6 @@ bool Util::isPrivateIp(string const& ip) {
 	return false;
 }
 
-
-
 typedef const u_int8_t* ccp;
 static wchar_t utf8ToLC(ccp& str) {
 	wchar_t c = 0;
@@ -891,6 +889,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.77 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.78 2004/12/17 15:11:52 arnetheduck Exp $
  */
 

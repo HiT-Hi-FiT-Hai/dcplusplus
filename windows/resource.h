@@ -48,6 +48,7 @@
 #define IDD_FAVORITE_DIRSPAGE           240
 #define IDD_HUB_LIST                    241
 #define IDD_APPEARANCE2PAGE             242
+#define IDD_ADVANCED3PAGE               243
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -325,6 +326,7 @@
 #define IDC_SETTINGS_FILE_NAME2         1274
 #define IDC_SETTINGS_FILE_NAME3         1275
 #define IDC_SETTINGS_FILE_NAME4         1276
+#define IDC_ONLYTTH                     1277
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -363,7 +365,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1277
+#define _APS_NEXT_CONTROL_VALUE         1278
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

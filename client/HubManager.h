@@ -225,7 +225,7 @@ private:
 	}
 
 	virtual ~HubManager() {
-		SettingsManager::getInstance()->addListener(this);
+		SettingsManager::getInstance()->removeListener(this);
 		if(c) {
 			c->removeListener(this);
 			delete c;
@@ -269,6 +269,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.62 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.63 2004/12/17 15:11:52 arnetheduck Exp $
  */
 

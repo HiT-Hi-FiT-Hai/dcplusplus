@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef ADVANCEDPAGE_H
-#define ADVANCEDPAGE_H
+#ifndef ADVANCED3PAGE_H
+#define ADVANCED3PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,18 +27,18 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
-class AdvancedPage : public CPropertyPage<IDD_ADVANCEDPAGE>, public PropPage
+class Advanced3Page : public CPropertyPage<IDD_ADVANCED3PAGE>, public PropPage
 {
 public:
-	AdvancedPage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CTSTRING(SETTINGS_ADVANCED));
+	Advanced3Page(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CTSTRING(SETTINGS_ADVANCED3));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~AdvancedPage() { 
+	virtual ~Advanced3Page() { 
 	};
 
-	BEGIN_MSG_MAP(AdvancedPage)
+	BEGIN_MSG_MAP(Advanced3Page)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
@@ -55,13 +55,7 @@ public:
 protected:
 
 	static Item items[];
-	static ListItem listItems[];
+	static TextItem texts[];
 };
 
-#endif //ADVANCEDPAGE_H
-
-/**
- * @file
- * $Id: AdvancedPage.h,v 1.11 2004/12/17 15:12:10 arnetheduck Exp $
- */
-
+#endif //ADVANCED3PAGE_H

@@ -106,6 +106,10 @@
 			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Experts only">
+				<param name="Local" value="settings_expert.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
 				<param name="Name" value="User Commands">
 				<param name="Local" value="settings_usercommands.html">
 				</OBJECT>

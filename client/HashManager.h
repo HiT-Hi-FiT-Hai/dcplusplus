@@ -202,12 +202,9 @@ private:
 			};
 
 			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, int64_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(Text::toLower(Util::getFileName(aFileName))) { }
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(aFileName) { }
 
-			TTHValue& getRoot() { return root; }
-			void setRoot(const TTHValue& aRoot) { root = aRoot; }
-		private:
-			TTHValue root;
+			GETSET(TTHValue, root, Root);
 			GETSET(int64_t, size, Size)
 			GETSET(int64_t, index, Index);
 			GETSET(int64_t, blockSize, BlockSize);
@@ -254,5 +251,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.23 2004/12/04 00:33:38 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.24 2004/12/17 15:11:52 arnetheduck Exp $
  */
