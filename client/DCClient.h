@@ -24,9 +24,9 @@
 #endif // _MSC_VER > 1000
 
 #include "ClientListener.h"
-#include "Socket.h"
+#include "BufferedSocket.h"
 
-class DCClient  
+class DCClient : public BufferedSocketListener
 {
 public:
 	enum {
@@ -36,9 +36,8 @@ public:
 	};
 	typedef DCClient* Ptr;
 
-	DCClient() : readerThread(NULL), stopEvent(NULL) { };
+	DCClient() : socket('|') { };
 	virtual ~DCClient() {
-		stopReader();
 	};
 	
 	void addListener(ClientListener::Ptr aListener) {
@@ -58,8 +57,8 @@ public:
 		listeners.clear();
 	}
 
-	void disconnect() {		
-		stopReader();
+	void disconnect() {	
+		socket.removeListener(this);
 		socket.disconnect();
 	}
 
@@ -109,40 +108,16 @@ protected:
 	ClientListener::List listeners;
 	string server;
 	short port;
-	Socket socket;
-	
-	HANDLE stopEvent;
-	CRITICAL_SECTION stopCS;
-	HANDLE readerThread;
+	BufferedSocket socket;
 
-	void gotLine(const string& aLine);
+	virtual void onLine(const string& aLine);
+	
+	virtual void onError(const string& aReason) {
+		fireConnectionFailed(aReason);
+	}
+
 	static string keySubst(string aKey, int n);
-	static DWORD WINAPI reader(void* p);
 	
-	void startReader() {
-		DWORD threadId;
-		InitializeCriticalSection(&stopCS);
-		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
-		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
-	}
-
-	void stopReader() {
-		if(readerThread != NULL) {
-			EnterCriticalSection(&stopCS);
-			SetEvent(stopEvent);
-			LeaveCriticalSection(&stopCS);
-			
-			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			
-			readerThread = NULL;
-			CloseHandle(stopEvent);
-			stopEvent = NULL;
-			DeleteCriticalSection(&stopCS);
-		}
-	}
-
 	void send(const string& a) {
 		socket.write(a);
 	}
@@ -257,9 +232,12 @@ protected:
 
 /**
  * @file DCClient.h
- * $Id: DCClient.h,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: DCClient.h,v 1.3 2001/11/24 10:34:02 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.h,v $
+ * Revision 1.3  2001/11/24 10:34:02  arnetheduck
+ * Updated to use BufferedSocket instead of handling threads by itself.
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.

@@ -29,12 +29,9 @@ void DCClient::connect(const string& aServer, short aPort) {
 	fireConnecting(aServer);
 	server = aServer;
 	port = aPort;
-	// Start the reader thread
-	ATLASSERT(readerThread == NULL);
-	startReader();
+	socket.addListener(this);
+	socket.connect(aServer, aPort);
 }
-
-static const int BUFSIZE = 1024;
 
 /**
  * Reader thread. Read data from socket and calls getLine whenever there's data to be read.
@@ -42,56 +39,7 @@ static const int BUFSIZE = 1024;
  * @param p Pointer to the DCClientent that started the thread
  */
 
-DWORD WINAPI DCClient::reader(void* p) {
-	ATLASSERT(p);
-	
-	DCClient* client = (DCClient*) p;
-	
-	HANDLE h[2];
-	
-	EnterCriticalSection(&client->stopCS);
-
-	h[0] = client->stopEvent;
-	
-	try {
-		client->socket.connect(client->server, client->port);
-		h[1] = client->socket.getReadEvent();
-	} catch (SocketException e) {
-		client->fireConnectionFailed(e.getError());
-		LeaveCriticalSection(&client->stopCS);
-		return 0;
-	}
-	LeaveCriticalSection(&client->stopCS);
-	
-	string line = "";
-	BYTE* buf = new BYTE[BUFSIZE];
-		
-	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		EnterCriticalSection(&client->stopCS);
-		try {
-			dcdebug("Available bytes: %d\n", client->socket.getAvailable());
-			int i = client->socket.read(buf, BUFSIZE);
-
-			string l((char*)buf, i);
-			line = line + l;
-			while(line.find('|') != string::npos) {
-				
-				string tmp = line.substr(0, line.find('|'));
-				line = line.substr(line.find('|')+1);
-				
-				client->gotLine(tmp);
-			}
-		} catch(SocketException e) {
-			client->fireConnectionFailed(e.getError());
-			LeaveCriticalSection(&client->stopCS);
-			return 0;
-		}
-		LeaveCriticalSection(&client->stopCS);
-	}
-	return 0;
-}
-
-void DCClient::gotLine(const string& aLine) {
+void DCClient::onLine(const string& aLine) {
 	if(aLine.length() == 0) {
 //		dcassert(0); // should never happen
 	} else if(aLine.find("$Search") != string::npos) {
@@ -243,9 +191,12 @@ string DCClient::makeKey(const string& lock) {
 
 /**
  * @file DCClient.cpp
- * $Id: DCClient.cpp,v 1.2 2001/11/22 19:47:42 arnetheduck Exp $
+ * $Id: DCClient.cpp,v 1.3 2001/11/24 10:34:02 arnetheduck Exp $
  * @if LOG
  * $Log: DCClient.cpp,v $
+ * Revision 1.3  2001/11/24 10:34:02  arnetheduck
+ * Updated to use BufferedSocket instead of handling threads by itself.
+ *
  * Revision 1.2  2001/11/22 19:47:42  arnetheduck
  * A simple XML parser. Doesn't have all the features, but works good enough for
  * the configuration file.
