@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "QueueFrame.h"
 #include "SearchFrm.h"
@@ -141,10 +142,7 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 	if(aQI->getSize() == -1) {
 		i->columns[COLUMN_SIZE] = STRING(UNKNOWN);
 	} else {
-		LONGLONG x = File::getSize(aQI->getTarget());
-		if(x == -1)
-			x = 0;
-		i->columns[COLUMN_SIZE] = Util::formatBytesFraction(x, aQI->getSize()); 
+		i->columns[COLUMN_SIZE] = Util::formatBytes(aQI->getSize()); 
 	}
 	switch(aQI->getPriority()) {
 	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
@@ -368,7 +366,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		}
 			
 		StringList tok = StringTokenizer(tmp, ' ').getTokens();
-		tmp = "";
+		tmp = Util::emptyString;
 		
 		for(StringIter si = tok.begin(); si != tok.end(); ++si) {
 			bool found = false;
@@ -539,95 +537,7 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: QueueFrame.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.15  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.14  2002/03/25 22:23:25  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.13  2002/03/15 11:59:35  arnetheduck
- * Final changes (I hope...) for 0.155
- *
- * Revision 1.12  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.11  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.10  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.9  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.8  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.7  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.6  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.5  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.4  2002/02/04 01:10:30  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.3  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.2  2002/02/02 17:21:27  arnetheduck
- * Fixed search bugs and some other things...
- *
- * Revision 1.1  2002/02/01 02:00:40  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.2  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.1  2002/01/23 08:45:37  arnetheduck
- * New files for the notepad
- *
- * Revision 1.9  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.8  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.7  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.6  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.5  2002/01/14 22:19:43  arnetheduck
- * Commiting minor bugfixes
- *
- * Revision 1.4  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.3  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.2  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.1  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * @endif
+ * $Id: QueueFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 
 

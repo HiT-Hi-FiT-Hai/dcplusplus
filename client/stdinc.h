@@ -20,8 +20,6 @@
 #if !defined(AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
 #define AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_
 
-#pragma warning (disable: 4786) // identifier was truncated to '255' characters in the debug information
-
 #include "config.h"
 
 #ifdef WIN32
@@ -61,5 +59,5 @@ using namespace _STL;
 
 /**
  * @file stdinc.h
- * $Id: stdinc.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

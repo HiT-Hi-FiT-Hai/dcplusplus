@@ -23,7 +23,7 @@
 #include "SimpleXML.h"
 #include "File.h"
 
-ResourceManager* ResourceManager::instance;
+ResourceManager* Singleton<ResourceManager>::instance;
 
 void ResourceManager::loadLanguage(const string& aFile) {
 	try {
@@ -57,19 +57,6 @@ void ResourceManager::loadLanguage(const string& aFile) {
 }
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.cpp,v 1.3 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: ResourceManager.cpp,v $
- * Revision 1.3  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.2  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.1  2002/03/10 22:41:43  arnetheduck
- * First go at the new resource managment...
- *
- * @endif
+ * $Id: ResourceManager.cpp,v 1.4 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

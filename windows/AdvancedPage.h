@@ -45,18 +45,6 @@ protected:
 
 /**
  * @file AdvancedPage.h
- * $Id: AdvancedPage.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: AdvancedPage.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.3  2002/03/15 15:12:35  arnetheduck
- * 0.16
- *
- * Revision 1.2  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * @endif
+ * $Id: AdvancedPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -1,6 +1,6 @@
 //Microsoft Developer Studio generated resource script.
 //
-#include "client\resource.h"
+#include "windows\resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////

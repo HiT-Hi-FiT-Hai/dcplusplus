@@ -23,14 +23,5 @@
 
 /**
  * @file Semaphore.cpp
- * $Id: Semaphore.cpp,v 1.2 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: Semaphore.cpp,v $
- * Revision 1.2  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.1  2002/02/25 19:30:55  arnetheduck
- * Semaphore class
- *
- * @endif
+ * $Id: Semaphore.cpp,v 1.3 2002/04/13 12:57:23 arnetheduck Exp $
  */

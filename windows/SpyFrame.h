@@ -149,3 +149,9 @@ private:
 };
 
 #endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
+
+/**
+ * @file SpyFrame.h
+ * $Id: SpyFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */
+

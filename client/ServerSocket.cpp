@@ -27,6 +27,7 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	if(sock != INVALID_SOCKET) {
 		s.signal();
 		join();
+		closesocket(sock);
 	}
 
 	sockaddr_in tcpaddr;
@@ -36,13 +37,14 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 	tcpaddr.sin_port = htons(aPort);
 	tcpaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	
-	checksockerr(bind(sock, (SOCKADDR *)&tcpaddr, sizeof(tcpaddr)));
+	checksockerr(bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)));
 	checksockerr(listen(sock, MAX_CONNECTIONS));
 	
 	start();
 }
 
 int ServerSocket::run() {
+#ifdef WIN32
 	HANDLE wait[2];
 	wait[0] = s;
 	wait[1] = getReadEvent();
@@ -58,42 +60,12 @@ int ServerSocket::run() {
 			fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
+#endif
 	return 0;
 }
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.8 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: ServerSocket.cpp,v $
- * Revision 1.8  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.7  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.6  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.5  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.4  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.3  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.2  2001/12/02 11:16:47  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.1  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * @endif
+ * $Id: ServerSocket.cpp,v 1.9 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

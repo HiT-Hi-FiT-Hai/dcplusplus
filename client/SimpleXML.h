@@ -35,11 +35,11 @@ STANDARD_EXCEPTION(SimpleXMLException);
 class SimpleXML  
 {
 public:
-	SimpleXML() : found(false) { root = current = new Tag("BOGUSROOT", "", NULL); };
+	SimpleXML() : found(false) { root = current = new Tag("BOGUSROOT", Util::emptyString, NULL); };
 	~SimpleXML() { delete root; }
 	
-	void addTag(const string& aName, const string& aData = "");
-	void addTag(const string& aName, int aData) {
+	void addTag(const string& aName, const string& aData = Util::emptyString) throw(SimpleXMLException);
+	void addTag(const string& aName, int aData) throw(SimpleXMLException) {
 		addTag(aName, Util::toString(aData));
 	}
 
@@ -47,7 +47,7 @@ public:
 	void addAttrib(const string& aName, int aData) throw(SimpleXMLException) {
 		addAttrib(aName, Util::toString(aData));
 	}
-	void addAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
+	void addAttrib(const string& aName, int64_t aData) throw(SimpleXMLException) {	
 		addAttrib(aName, Util::toString(aData));
 	}
 	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
@@ -58,7 +58,7 @@ public:
 	void addChildAttrib(const string& aName, int aData) throw(SimpleXMLException) {	
 		addChildAttrib(aName, Util::toString(aData));
 	}
-	void addChildAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
+	void addChildAttrib(const string& aName, int64_t aData) throw(SimpleXMLException) {	
 		addChildAttrib(aName, Util::toString(aData));
 	}
 	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
@@ -125,7 +125,7 @@ public:
 		checkChildSelected();
 		return Util::toInt(getChildAttrib(aName));
 	}
-	LONGLONG getLongLongChildAttrib(const string& aName) throw(SimpleXMLException) {
+	int64_t getLongLongChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
 		return Util::toInt64(getChildAttrib(aName));
 	}
@@ -157,19 +157,19 @@ private:
 		 */
 		StringMap attribs;
 		
-		/** Tag data, may be empty. */
-		string data;
-		
 		/** Tag name */
 		string name;
-		
+
+		/** Tag data, may be empty. */
+		string data;
+				
 		/** Parent tag, for easy traversal */
 		Ptr parent;
 
 		Tag(const string& aName, const string& aData, Ptr aParent) : name(aName), data(aData), parent(aParent) { };
 		
 		string toXML();
-		void fromXML(const string& aXML);
+		void fromXML(const string& aXML) throw(SimpleXMLException);
 		string getAttribString();
 		/** Delete all children! */
 		~Tag() {
@@ -203,54 +203,6 @@ private:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.13 2002/03/10 22:41:08 arnetheduck Exp $
- * @if LOG
- * $Log: SimpleXML.h,v $
- * Revision 1.13  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.12  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.11  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.10  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.9  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.8  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.7  2001/12/30 17:41:16  arnetheduck
- * Fixed some XML parsing bugs
- *
- * Revision 1.6  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.5  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.4  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.3  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.2  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * Revision 1.1  2001/11/22 19:47:42  arnetheduck
- * A simple XML parser. Doesn't have all the features, but works good enough for
- * the configuration file.
- *
- * @endif
+ * $Id: SimpleXML.h,v 1.14 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "SpyFrame.h"
 #include "WinUtil.h"
@@ -61,3 +62,8 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 	ctrlSearches.MoveWindow(&rect);
 }
+
+/**
+ * @file SpyFrame.cpp
+ * $Id: SpyFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */

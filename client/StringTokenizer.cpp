@@ -36,24 +36,6 @@ StringTokenizer::StringTokenizer(const string& aString, char aToken /* = '\n' */
 
 /**
  * @file StringTokenizer.cpp
- * $Id: StringTokenizer.cpp,v 1.5 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: StringTokenizer.cpp,v $
- * Revision 1.5  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.4  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.3  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.2  2001/12/21 23:52:30  arnetheduck
- * Last commit for five days
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: StringTokenizer.cpp,v 1.6 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

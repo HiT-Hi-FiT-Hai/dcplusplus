@@ -48,18 +48,5 @@ private:
 
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.h,v 1.3 2002/03/13 20:35:26 arnetheduck Exp $
- * @if LOG
- * $Log: ResourceManager.h,v $
- * Revision 1.3  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.2  2002/03/11 22:58:54  arnetheduck
- * A step towards internationalization
- *
- * Revision 1.1  2002/03/10 22:41:43  arnetheduck
- * First go at the new resource managment...
- *
- * @endif
+ * $Id: ResourceManager.h,v 1.4 2002/04/13 12:57:23 arnetheduck Exp $
  */

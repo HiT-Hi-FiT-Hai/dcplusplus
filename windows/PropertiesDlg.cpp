@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "PropertiesDlg.h"
 
@@ -70,3 +71,9 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	bHandled = FALSE;
 	return TRUE;
 }
+
+/**
+ * @file PropertiesDlg.cpp
+ * $Id: PropertiesDlg.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */
+

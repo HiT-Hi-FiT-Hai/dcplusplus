@@ -78,17 +78,6 @@ string SocketException::errorToString(int aError) {
 	}
 }
 
-Socket::Socket() throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
-}
-
-Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
-	connect(ip, port);	
-}
-
-Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(INVALID_SOCKET) {
-	connect(ip, port);	
-}
-
 /**
  * Binds an UDP socket to a certain port.
  */
@@ -123,10 +112,6 @@ void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
  * @param port Server port.
  * @throw SocketException If any connection error occurs.
  */
-void Socket::connect(const string& ip, const string& port) throw(SocketException) {
-	connect(ip, (short)Util::toInt(port));
-}
-
 void Socket::connect(const string& aip, short port) throw(SocketException) {
 	sockaddr_in  serv_addr;
 	hostent* host;
@@ -148,7 +133,7 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
         if (host == NULL) {
             throw SocketException("Unknown address");
         }
-        serv_addr.sin_addr.s_addr = *((DWORD*)host->h_addr);
+        serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
 		
     }
 
@@ -251,109 +236,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.30 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: Socket.cpp,v $
- * Revision 1.30  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.29  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.28  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.27  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.26  2002/03/15 11:59:35  arnetheduck
- * Final changes (I hope...) for 0.155
- *
- * Revision 1.25  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.24  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.23  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.22  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.21  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.20  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.19  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.18  2002/02/06 12:29:06  arnetheduck
- * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
- *
- * Revision 1.17  2002/02/02 17:21:27  arnetheduck
- * Fixed search bugs and some other things...
- *
- * Revision 1.16  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.15  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.14  2002/01/06 21:55:20  arnetheduck
- * Some minor bugs fixed, but there remains one strange thing, the reconnect
- * button doesn't work...
- *
- * Revision 1.13  2002/01/06 00:14:54  arnetheduck
- * Incoming searches almost done, just need some testing...
- *
- * Revision 1.12  2001/12/10 10:48:40  arnetheduck
- * Ahh, finally found one bug that's been annoying me for days...=) the connections
- * in the pool were not reset correctly before being put back for later use...
- *
- * Revision 1.11  2001/12/08 20:59:26  arnetheduck
- * Fixing bugs...
- *
- * Revision 1.10  2001/12/08 14:25:49  arnetheduck
- * More bugs removed...did my first search as well...
- *
- * Revision 1.9  2001/12/07 20:03:25  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.8  2001/12/05 19:40:13  arnetheduck
- * More bugfixes.
- *
- * Revision 1.7  2001/12/05 14:27:35  arnetheduck
- * Premature disconnection bugs removed.
- *
- * Revision 1.6  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.5  2001/12/02 11:16:47  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.4  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.3  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * Revision 1.2  2001/11/24 10:39:00  arnetheduck
- * New BufferedSocket creates reader threads and reports inbound data through a listener.
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: Socket.cpp,v 1.31 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -57,34 +57,5 @@ private:
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.7 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: BitInputStream.h,v $
- * Revision 1.7  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.6  2002/01/20 22:54:45  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.4  2001/12/07 20:02:58  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.3  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.2  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.1  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * @endif
+ * $Id: BitInputStream.h,v 1.8 2002/04/13 12:57:22 arnetheduck Exp $
  */

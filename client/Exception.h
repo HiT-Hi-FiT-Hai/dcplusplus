@@ -52,29 +52,6 @@ public:\
 
 /**
  * @file Exception.h
- * $Id: Exception.h,v 1.6 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: Exception.h,v $
- * Revision 1.6  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.5  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.4  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * Revision 1.3  2002/01/06 21:55:20  arnetheduck
- * Some minor bugs fixed, but there remains one strange thing, the reconnect
- * button doesn't work...
- *
- * Revision 1.2  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: Exception.h,v 1.7 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

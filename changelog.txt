@@ -23,6 +23,9 @@
 * Fixed some minor bugs in the incoming connection handling
 * Fixed some transfer window reporting issues (a few more details on connection progress now...)
 * Improved the search flood protection a bit
+* Removed the public hublist multi-select feature (high abuse factor...)
+* Added a file type column to the directory listing
+* Fixed some errors in the up/download log
 
  -- 0.163 2002-04-04 --
 * More internationalization

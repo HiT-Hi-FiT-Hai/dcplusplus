@@ -23,18 +23,6 @@
 
 /**
  * @file Pointer.cpp
- * $Id: Pointer.cpp,v 1.3 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: Pointer.cpp,v $
- * Revision 1.3  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * @endif
+ * $Id: Pointer.cpp,v 1.4 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

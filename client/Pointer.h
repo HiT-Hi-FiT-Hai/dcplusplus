@@ -26,31 +26,27 @@
 class PointerBase
 {
 public:
-	void inc() {
+	void inc() throw() {
 		dcassert(ref>=0);
-#ifdef WIN32
-		InterlockedIncrement(&ref);
-#endif
+		Thread::safeInc(&ref);
 	}
 
-	void dec() {
+	void dec() throw() {
 		dcassert(ref>0);
 		
-#ifdef WIN32
-		if ( (InterlockedDecrement(&ref)) == 0 ) {
+		if ( (Thread::safeDec(&ref)) == 0 ) {
 			//dcdebug("Smart Object at 0x%08x deleted\n", this);
 			delete this;
 		}
-#endif
 	}
-	bool unique() {
+	bool unique() throw() {
 		return (ref == 1);
 	}
 	
 protected:
-	PointerBase() : ref(0) { };
+	PointerBase() throw() : ref(0) { };
 	
-	virtual ~PointerBase() {
+	virtual ~PointerBase() throw() {
 		dcassert(!ref);
 	}
 
@@ -65,19 +61,19 @@ template <class T>
 class Pointer
 {
 public:
-	Pointer ( PointerBase *aBase = 0) : base(aBase) {	
+	Pointer ( PointerBase *aBase = 0) throw() : base(aBase) {	
 		if ( base ) {
 			base->inc();
 		}
 	}
 	
-	Pointer( const Pointer &rhs ) : base(rhs.base) {	   
+	Pointer( const Pointer &rhs ) throw() : base(rhs.base) {	   
 		if ( base ) {
 			base->inc();
 		}
 	}
 	
-	Pointer &operator =( const Pointer &rhs ) {
+	Pointer &operator =( const Pointer &rhs ) throw() {
 		if ( rhs.base ) {
 			rhs.base->inc();
 		}
@@ -90,7 +86,7 @@ public:
 		return *this;
 	}
 
-	Pointer &operator =( T* rhs ) {
+	Pointer &operator =( T* rhs ) throw() {
 		if (rhs) {
 			rhs->inc();
 			if ( base ) {
@@ -103,7 +99,7 @@ public:
 		return *this;
 	}
 	
-	~Pointer() { 
+	~Pointer() throw() { 
 		if ( base ) {
 			base->dec();
 		}
@@ -115,9 +111,6 @@ public:
 	const T&	operator* ()  const   { return	   *asT();	}
 	
 	operator		  bool()  const   { return base != NULL; }
-	
-	operator T*() { return (T*)base; };
-	operator const T*() const { return (T*)base; };
 	
 	bool operator==(T* rhs) const { return (T*)base == rhs; };
 	bool operator==(const Pointer& rhs) const { return base == rhs.base; };
@@ -165,33 +158,6 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.8 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: Pointer.h,v $
- * Revision 1.8  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.7  2002/02/28 00:10:47  arnetheduck
- * Some fixes to the new user model
- *
- * Revision 1.6  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.4  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.2  2001/12/19 23:07:59  arnetheduck
- * Added directory downloading from the directory tree (although it hasn't been
- * tested at all) and password support.
- *
- * Revision 1.1  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * @endif
+ * $Id: Pointer.h,v 1.9 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "UsersFrame.h"
 #include "PrivateFrame.h"
@@ -199,50 +200,7 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 }
 
 /**
- * @file FavoriteHubsFrm.cpp
- * $Id: UsersFrame.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: UsersFrame.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.2  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.1  2002/03/26 09:17:59  arnetheduck
- * New UsersFrame
- *
- * Revision 1.10  2002/03/23 01:58:42  arnetheduck
- * Work done on favorites...
- *
- * Revision 1.9  2002/03/13 23:06:07  arnetheduck
- * New info sent in the description part of myinfo...
- *
- * Revision 1.8  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.7  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.6  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * Revision 1.5  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.4  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.3  2002/01/26 12:38:50  arnetheduck
- * Added some user options
- *
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2002/01/13 22:53:26  arnetheduck
- * Favorites...
- *
- * @endif
+ * @file UsersFrame.cpp
+ * $Id: UsersFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

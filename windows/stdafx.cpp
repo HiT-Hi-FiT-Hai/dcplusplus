@@ -17,23 +17,12 @@
  */
 
 #include "stdafx.h"
+#include "Resource.h"
 
 #include <atlimpl.cpp>
 
 /**
  * @file stdafx.cpp
- * $Id: stdafx.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: stdafx.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: stdafx.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

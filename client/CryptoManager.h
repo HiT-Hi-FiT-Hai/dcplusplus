@@ -120,56 +120,5 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.14 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: CryptoManager.h,v $
- * Revision 1.14  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.13  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.12  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.11  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.10  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.9  2002/01/11 14:52:56  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.8  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.7  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.6  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.5  2001/12/07 20:03:06  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.4  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.3  2001/12/01 17:15:03  arnetheduck
- * Added a crappy version of huffman encoding, and some other minor changes...
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.1  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * @endif
+ * $Id: CryptoManager.h,v 1.15 2002/04/13 12:57:22 arnetheduck Exp $
  */

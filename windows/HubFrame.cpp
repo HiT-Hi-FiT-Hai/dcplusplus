@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "HubFrame.h"
 #include "LineDlg.h"
@@ -656,6 +657,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -26,7 +26,7 @@
 #include "UploadManager.h"
 #include "ClientManager.h"
 
-ShareManager* ShareManager::instance = NULL;
+ShareManager* Singleton<ShareManager>::instance = NULL;
 
 enum {
 	MAX_RESULTS = 5
@@ -51,11 +51,11 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		
 		// Make sure they're not trying something funny with the path and the get command...
 		if(aFile.find("..\\") != string::npos) {
-			throw ShareException("Get Lost");
+			throw ShareException("File Not Available");
 		}
 		
 		if(Util::findSubString(aFile, "DCPlusPlus.xml") != string::npos) {
-			throw ShareException("Don't think so");
+			throw ShareException("File Not Available");
 		}
 		
 		if(!checkFile(j->second, aFile.substr(i + 1))) {
@@ -69,7 +69,6 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 }
 
 bool ShareManager::checkFile(const string& dir, const string& aFile) {
-	string::size_type i = 0;
 
 	Directory::MapIter mi = directories.find(dir);
 	if(mi == directories.end())
@@ -77,7 +76,8 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 	Directory* d = mi->second;
 	string aDir;
 
-	int j = 0;
+	string::size_type i;
+	string::size_type j = 0;
 	while( (i = aFile.find('\\', j)) != string::npos) {
 		aDir = aFile.substr(j, i-j);
 		j = i + 1;
@@ -186,7 +186,7 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 
 ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory* aParent) {
 	Directory* dir = new Directory(aName.substr(aName.rfind('\\') + 1), aParent);
-
+#ifdef WIN32
 	WIN32_FIND_DATA data;
 	HANDLE hFind;
 	
@@ -205,8 +205,8 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 
 					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
 					if(stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
-						dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
-						dir->size+=(LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+						dir->files[name] = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
+						dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 					}
 				}
 			}
@@ -214,6 +214,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	}
 	
 	FindClose(hFind);
+#endif
 	return dir;
 }
 
@@ -232,57 +233,48 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */) t
 	update = aUpdate;
 	refreshDirs = dirs;
 	if(dirty) {
-		if(refreshThread) {
-			WaitForSingleObject(refreshThread, INFINITE);
-			CloseHandle(refreshThread);
-		}
-		
-		DWORD id;
-		refreshThread = CreateThread(NULL, 0, refresher, this, NULL, &id);
-		
-		// We don't want the compression to take up useful CPU time...
-		if(refreshThread)
-			SetThreadPriority(refreshThread, THREAD_PRIORITY_LOWEST);
+		join();
+		start();
+		setThreadPriority(Thread::LOW);
 	}
 }
 
-DWORD WINAPI ShareManager::refresher(void* p) {
-	ShareManager* sm = (ShareManager*)p;
+int ShareManager::run() {
 
 	string tmp, tmp2;
 	{
-		WLock l(sm->cs);
+		WLock l(cs);
 		
-		if(sm->refreshDirs) {
-			StringList dirs = sm->getDirectories();
+		if(refreshDirs) {
+			StringList dirs = getDirectories();
 			for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
-				sm->removeDirectory(*k);
+				removeDirectory(*k);
 			}
 			for(StringIter l = dirs.begin(); l != dirs.end(); ++l) {
-				sm->addDirectory(*l);
+				addDirectory(*l);
 			}
-			sm->refreshDirs = false;
+			refreshDirs = false;
 		}
 
 		Directory::DupeMap dupes;
-		for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			tmp += i->second->toString(dupes);
 		}
 		
 		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 		try {
-			File f(sm->getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
+			File f(getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
 		} catch(FileException e) {
 			// ...
 			return 1;
 		}
 		
-		sm->listLen = tmp2.length();
-		sm->dirty = false;
+		listLen = tmp2.length();
+		dirty = false;
 	}
 
-	if(sm->update) {
+	if(update) {
 		ClientManager::getInstance()->infoUpdated();
 	}
 	return 0;
@@ -296,7 +288,7 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 		tmp += i->second->toString(dupes, ident + 1);
 	}
 	
-	HASH_MAP<string, LONGLONG>::iterator j = files.begin();
+	Directory::FileIter j = files.begin();
 	while(j != files.end()) {
 		bool dupe = false;
 		pair<DupeIter, DupeIter> p = dupes.equal_range(j->second);
@@ -397,7 +389,7 @@ bool checkType(const string& aString, int aType) {
  * has been matched in the directory name. This new stringlist should also be used in all descendants,
  * but not the parents...
  */
-void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
+void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient) {
 	StringList* cur = &aStrings;
 	StringList newStr;
 
@@ -466,7 +458,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 	}
 }
 
-SearchResult::List ShareManager::search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
+SearchResult::List ShareManager::search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient) {
 	
 	RLock l(cs);
 	StringTokenizer t(aString, '$');
@@ -482,113 +474,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.32 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: ShareManager.cpp,v $
- * Revision 1.32  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.31  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.30  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.29  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.28  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.27  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.26  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.25  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.24  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.23  2002/02/02 17:21:27  arnetheduck
- * Fixed search bugs and some other things...
- *
- * Revision 1.22  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.21  2002/01/26 16:34:01  arnetheduck
- * Colors dialog added, as well as some other options
- *
- * Revision 1.20  2002/01/26 14:59:23  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.19  2002/01/26 12:06:40  arnetheduck
- * Småsaker
- *
- * Revision 1.18  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.17  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.16  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.15  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.14  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * Revision 1.13  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.12  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.11  2002/01/09 19:01:35  arnetheduck
- * Made some small changed to the key generation and search frame...
- *
- * Revision 1.10  2002/01/06 11:13:07  arnetheduck
- * Last fixes before 0.10
- *
- * Revision 1.9  2002/01/06 00:14:54  arnetheduck
- * Incoming searches almost done, just need some testing...
- *
- * Revision 1.8  2002/01/02 16:12:33  arnetheduck
- * Added code for multiple download sources
- *
- * Revision 1.7  2001/12/30 17:41:16  arnetheduck
- * Fixed some XML parsing bugs
- *
- * Revision 1.6  2001/12/30 15:03:45  arnetheduck
- * Added framework to handle incoming searches
- *
- * Revision 1.5  2001/12/21 23:52:30  arnetheduck
- * Last commit for five days
- *
- * Revision 1.4  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.3  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.2  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.1  2001/12/02 23:51:22  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * @endif
+ * $Id: ShareManager.cpp,v 1.33 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

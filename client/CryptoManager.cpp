@@ -24,7 +24,7 @@
 
 #include "CryptoManager.h"
 
-CryptoManager* CryptoManager::instance;
+CryptoManager* Singleton<CryptoManager>::instance;
 
 string CryptoManager::keySubst(string aKey, int n) {
 	u_int8_t* temp = new u_int8_t[aKey.length() + n * 10];
@@ -62,7 +62,9 @@ string CryptoManager::makeKey(const string& lock) {
 	v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
 	temp[0] = v1;
 	
-	for(string::size_type i = 1; i<lock.length(); i++) {
+	string::size_type i;
+
+	for(i = 1; i<lock.length(); i++) {
 		v1 = (u_int8_t)(lock[i]^lock[i-1]);
 		v1 = (u_int8_t)((v1 >> 4) | (v1 << 4));
 		temp[i] = v1;
@@ -103,8 +105,9 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
 	pos+=2;
 
 	Leaf** leaves = new Leaf*[treeSize];
-	
-	for(int i=0; i<treeSize; i++) {
+
+	int i;
+	for(i=0; i<treeSize; i++) {
 		int chr =  is[pos++];
 		int bits = is[pos++];
 		leaves[i] = new Leaf(chr, bits);
@@ -240,17 +243,18 @@ void CryptoManager::buildLookup(vector<u_int8_t>* table, Node* aRoot) {
 	recurseLookup(table, aRoot->right, right);
 }
 
-/**
- * Encodes a set of data with DC's version of huffman encoding..
- * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
- */
 
-template<> struct std::greater<Node*> { 
-	bool operator() (const Node*& a, const Node*& b) const { 
+class greaterNode { 
+public:
+	bool operator() (Node*& a, Node*& b) const { 
 		return *a < *b; 
 	}; 
 };
 
+/**
+ * Encodes a set of data with DC's version of huffman encoding..
+ * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
+ */
 void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 	if(is.length() == 0) {
@@ -270,13 +274,14 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 	
 	list<Node*> nodes;
 
-	for(int i=0; i<256; i++) {
+	int i;
+	for(i=0; i<256; i++) {
 		if(count[i] > 0) {
 			nodes.push_back(new Node(i, count[i]));
 		}
 	}
 
-	nodes.sort(greater<Node*>());
+	nodes.sort(greaterNode());
 	dcdebug("\n");
 #ifdef _DEBUG
 	for(list<Node*>::iterator it = nodes.begin(); it != nodes.end(); ++it) dcdebug("%.02x:%d, ", (*it)->chr, (*it)->weight);
@@ -333,79 +338,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.21 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: CryptoManager.cpp,v $
- * Revision 1.21  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.20  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.19  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.18  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.17  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.16  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.15  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.14  2002/01/10 12:33:14  arnetheduck
- * Various fixes
- *
- * Revision 1.13  2002/01/09 19:01:35  arnetheduck
- * Made some small changed to the key generation and search frame...
- *
- * Revision 1.12  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * Revision 1.11  2001/12/19 23:07:59  arnetheduck
- * Added directory downloading from the directory tree (although it hasn't been
- * tested at all) and password support.
- *
- * Revision 1.10  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.9  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.8  2001/12/08 20:59:26  arnetheduck
- * Fixing bugs...
- *
- * Revision 1.7  2001/12/07 20:03:05  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.6  2001/12/05 14:27:35  arnetheduck
- * Premature disconnection bugs removed.
- *
- * Revision 1.5  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.4  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.3  2001/12/01 17:15:03  arnetheduck
- * Added a crappy version of huffman encoding, and some other minor changes...
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.1  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * @endif
+ * $Id: CryptoManager.cpp,v 1.22 2002/04/13 12:57:22 arnetheduck Exp $
  */

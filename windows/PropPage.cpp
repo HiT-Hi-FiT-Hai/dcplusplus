@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "PropPage.h"
 
@@ -88,24 +89,6 @@ void PropPage::write(HWND page, Item const* items)
 
 /**
  * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: PropPage.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.6  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.5  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.4  2002/02/06 12:29:06  arnetheduck
- * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
- *
- * Revision 1.3  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * @endif
+ * $Id: PropPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

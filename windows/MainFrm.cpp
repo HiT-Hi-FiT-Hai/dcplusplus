@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "MainFrm.h"
 #include "AboutDlg.h"
@@ -188,7 +189,7 @@ void MainFrame::onConnectionFailed(ConnectionQueueItem* aCqi, const string& aRea
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 void MainFrame::onUploadStarting(Upload* aUpload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
+	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getUserConnection()->getCQI());
 	i->columns[COLUMN_FILE] = aUpload->getFileName();
 	i->columns[COLUMN_STATUS] = STRING(UPLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aUpload->getSize());
@@ -207,7 +208,7 @@ void MainFrame::onUploadTick(const Upload::List ul) {
 		sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
 			(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getAverageSpeed()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
 
-		StringListInfo* i = new StringListInfo((LPARAM)u->getCQI());
+		StringListInfo* i = new StringListInfo((LPARAM)u->getUserConnection()->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
 
 		delete[] buf;
@@ -218,7 +219,7 @@ void MainFrame::onUploadTick(const Upload::List ul) {
 }
 
 void MainFrame::onUploadComplete(Upload* aUpload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
+	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getUserConnection()->getCQI());
 	i->columns[COLUMN_STATUS] = STRING(UPLOAD_FINISHED_IDLE);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
 }
@@ -226,26 +227,26 @@ void MainFrame::onUploadComplete(Upload* aUpload) {
 void MainFrame::onDownloadComplete(Download* p) {
 	if(p->isSet(Download::USER_LIST)) {
 		// We have a new DC listing, show it...
-		DirectoryListInfo* i = new DirectoryListInfo((LPARAM)p->getCQI());
+		DirectoryListInfo* i = new DirectoryListInfo((LPARAM)p->getUserConnection()->getCQI());
 		i->file = p->getTarget();
-		i->user = p->getCQI()->getUser();
+		i->user = p->getUserConnection()->getUser();
 		
 		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 	} else {
-		StringListInfo* i = new StringListInfo((LPARAM)p->getCQI());
+		StringListInfo* i = new StringListInfo((LPARAM)p->getUserConnection()->getCQI());
 		i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_FINISHED_IDLE);
 		PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
 	}
 }
 
 void MainFrame::onDownloadFailed(Download* aDownload, const string& aReason) {
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getCQI());
+	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getUserConnection()->getCQI());
 	i->columns[COLUMN_STATUS] = aReason;
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onDownloadStarting(Download* aDownload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getCQI());
+	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getUserConnection()->getCQI());
 	i->columns[COLUMN_FILE] = aDownload->getTargetFileName();
 	i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aDownload->getSize());
@@ -263,7 +264,7 @@ void MainFrame::onDownloadTick(const Download::List dl) {
 		sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
 			(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getAverageSpeed()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
 		
-		StringListInfo* i = new StringListInfo((LPARAM)d->getCQI());
+		StringListInfo* i = new StringListInfo((LPARAM)d->getUserConnection()->getCQI());
 		i->columns[COLUMN_STATUS] = buf;
 		delete[] buf;
 
@@ -849,253 +850,6 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: MainFrm.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.73  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.72  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.71  2002/03/25 22:23:25  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.70  2002/03/15 11:59:35  arnetheduck
- * Final changes (I hope...) for 0.155
- *
- * Revision 1.69  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.68  2002/03/11 22:58:54  arnetheduck
- * A step towards internationalization
- *
- * Revision 1.67  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.66  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.65  2002/03/05 11:19:35  arnetheduck
- * Fixed a window closing bug
- *
- * Revision 1.64  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.63  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.62  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.61  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.60  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * Revision 1.59  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.58  2002/02/07 22:12:22  arnetheduck
- * Last fixes before 0.152
- *
- * Revision 1.57  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.56  2002/02/04 01:10:30  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.55  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.54  2002/02/02 17:21:27  arnetheduck
- * Fixed search bugs and some other things...
- *
- * Revision 1.53  2002/02/01 02:00:31  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.52  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.51  2002/01/26 14:59:22  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.50  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * Revision 1.49  2002/01/26 12:38:50  arnetheduck
- * Added some user options
- *
- * Revision 1.48  2002/01/26 12:06:39  arnetheduck
- * Småsaker
- *
- * Revision 1.47  2002/01/25 00:15:41  arnetheduck
- * New Settings dialogs
- *
- * Revision 1.46  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.45  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.44  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.43  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.42  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * Revision 1.41  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.40  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.39  2002/01/16 20:56:27  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.38  2002/01/14 22:19:43  arnetheduck
- * Commiting minor bugfixes
- *
- * Revision 1.37  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.36  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.35  2002/01/10 12:33:14  arnetheduck
- * Various fixes
- *
- * Revision 1.34  2002/01/08 00:24:10  arnetheduck
- * Last bugs fixed before 0.11
- *
- * Revision 1.33  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.32  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.30  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.29  2002/01/02 16:55:56  arnetheduck
- * Time for 0.09
- *
- * Revision 1.28  2002/01/02 16:12:32  arnetheduck
- * Added code for multiple download sources
- *
- * Revision 1.27  2001/12/30 17:41:16  arnetheduck
- * Fixed some XML parsing bugs
- *
- * Revision 1.26  2001/12/30 15:03:45  arnetheduck
- * Added framework to handle incoming searches
- *
- * Revision 1.25  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.24  2001/12/27 18:14:36  arnetheduck
- * Version 0.08, here we go...
- *
- * Revision 1.23  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.22  2001/12/21 23:52:30  arnetheduck
- * Last commit for five days
- *
- * Revision 1.21  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * Revision 1.20  2001/12/19 23:07:59  arnetheduck
- * Added directory downloading from the directory tree (although it hasn't been
- * tested at all) and password support.
- *
- * Revision 1.19  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.18  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.17  2001/12/12 00:06:04  arnetheduck
- * Updated the public hub listings, fixed some minor transfer bugs, reworked the
- * sockets to use only one thread (instead of an extra thread for sending files),
- * and fixed a major bug in the client command decoding (still have to fix this
- * one for the userconnections...)
- *
- * Revision 1.16  2001/12/11 01:10:29  arnetheduck
- * More bugfixes...I really have to change the bufferedsocket so that it only
- * uses one thread...or maybe even multiple sockets/thread...
- *
- * Revision 1.15  2001/12/08 20:59:26  arnetheduck
- * Fixing bugs...
- *
- * Revision 1.14  2001/12/08 14:25:49  arnetheduck
- * More bugs removed...did my first search as well...
- *
- * Revision 1.13  2001/12/07 20:03:13  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.12  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.11  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.10  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.9  2001/12/02 14:05:36  arnetheduck
- * More sorting work, the hub list is now fully usable...
- *
- * Revision 1.8  2001/12/02 11:16:46  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.7  2001/12/01 17:15:03  arnetheduck
- * Added a crappy version of huffman encoding, and some other minor changes...
- *
- * Revision 1.6  2001/11/29 19:10:55  arnetheduck
- * Refactored down/uploading and some other things completely.
- * Also added download indicators and download resuming, along
- * with some other stuff.
- *
- * Revision 1.5  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.4  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * Revision 1.3  2001/11/22 20:42:18  arnetheduck
- * Fixed Settings dialog (Speed setting actually works now!)
- *
- * Revision 1.2  2001/11/22 19:47:42  arnetheduck
- * A simple XML parser. Doesn't have all the features, but works good enough for
- * the configuration file.
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: MainFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

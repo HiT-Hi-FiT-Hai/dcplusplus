@@ -50,15 +50,6 @@ protected:
 
 /**
  * @file PropPage.h
- * $Id: PropPage.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: PropPage.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.2  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * @endif
+ * $Id: PropPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

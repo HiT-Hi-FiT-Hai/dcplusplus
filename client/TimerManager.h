@@ -84,45 +84,6 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.11 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: TimerManager.h,v $
- * Revision 1.11  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.10  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.9  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.8  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * Revision 1.7  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.6  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.4  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.3  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.2  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.1  2001/12/02 11:18:10  arnetheduck
- * Added transfer totals and speed...
- *
- * @endif
+ * $Id: TimerManager.h,v 1.12 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

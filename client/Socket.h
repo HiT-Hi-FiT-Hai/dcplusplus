@@ -86,6 +86,7 @@ typedef int socklen_t;
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <netdb.h>
 
 typedef int SOCKET;
 #define SOCKET_ERROR -1
@@ -96,6 +97,7 @@ typedef int SOCKET;
 #	define checkconnect(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
 #	define checksend(x, len) if((x) != len) { throw SocketException(errno); }
 #	define checkrecv(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
+#	define checksockerr(x) if((x) == SOCKET_ERROR) { throw SocketException(errno); }
 #endif
 
 
@@ -118,17 +120,38 @@ class ServerSocket;
 class Socket
 {
 public:
-	Socket();
-	Socket(const string& ip, const string& port) throw(SocketException);
-	Socket(const string& ip, short port) throw(SocketException);
+#ifdef WIN32
+	Socket::Socket() throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) { }
+	
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) {
+		connect(ip, port);	
+	}
+	
+	Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), sock(INVALID_SOCKET), connected(false) {
+		connect(ip, port);	
+	}
+#else
+	Socket::Socket() throw(SocketException) : sock(INVALID_SOCKET), connected(false) { }
+	
+	Socket::Socket(const string& ip, const string& port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
+		connect(ip, port);	
+	}
+	
+	Socket::Socket(const string& ip, short port) throw(SocketException) : sock(INVALID_SOCKET), connected(false) {
+		connect(ip, port);	
+	}
+#endif
+	
 	virtual ~Socket() {
 		Socket::disconnect();
 		
 	};
-	virtual void bind(short aPort);
+	virtual void bind(short aPort) throw(SocketException);
 	
 	virtual void connect(const string& ip, short port) throw(SocketException);
-	virtual void connect(const string& ip, const string& port) throw(SocketException);
+	void Socket::connect(const string& ip, const string& port) throw(SocketException) {
+		connect(ip, (short)Util::toInt(port));
+	}
 	
 	virtual void disconnect() {
 		connected = false;
@@ -169,7 +192,7 @@ public:
 		ioctlsocket(sock, FIONREAD, &i);
 		return i;
 	}
-	virtual void accept(const ServerSocket& aSocket);
+	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
 	virtual void write(const char* buffer, int len) throw(SocketException);
 	virtual void write(const string& aData) throw(SocketException) {
 		write(aData.data(), aData.length());
@@ -210,7 +233,7 @@ public:
 		if(getsockname(sock, (sockaddr*)&sock_addr, &len) == 0) {
 			return inet_ntoa(sock_addr.sin_addr);
 		}
-		return "";
+		return Util::emptyString;
 	}
 	static void resetStats() { stats.up = stats.down = 0; };
 	static u_int32_t getDown() { return stats.down; };
@@ -245,6 +268,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.26 2002/04/09 18:43:28 arnetheduck Exp $
+ * $Id: Socket.h,v 1.27 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

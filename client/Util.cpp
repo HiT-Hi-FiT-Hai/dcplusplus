@@ -23,6 +23,13 @@
 #include "StringTokenizer.h"
 #include "ResourceManager.h"
 
+#ifndef WIN32
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+
 string Util::emptyString;
 
 bool Util::away = false;
@@ -40,8 +47,8 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
 	
-	aServer = "";
-	aFile = "";
+	aServer = emptyString;
+	aFile = emptyString;
 
 	if( (j=url.find("://", i)) != string::npos) {
 		// Protocol found
@@ -80,7 +87,7 @@ string Util::getLocalIp() {
 	gethostname(buf, 256);
 	hostent* he = gethostbyname(buf);
 	if(he == NULL || he->h_addr_list[0] == 0)
-		return "";
+		return Util::emptyString;
 	sockaddr_in dest;
 	int i = 0;
 	
@@ -110,46 +117,6 @@ string Util::getLocalIp() {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.12 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: Util.cpp,v $
- * Revision 1.12  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.11  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.10  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.9  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.8  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.7  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.6  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.5  2002/01/26 16:34:01  arnetheduck
- * Colors dialog added, as well as some other options
- *
- * Revision 1.4  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.3  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.2  2001/12/07 20:03:28  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.1  2001/12/02 11:18:10  arnetheduck
- * Added transfer totals and speed...
- *
- * @endif
+ * $Id: Util.cpp,v 1.13 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

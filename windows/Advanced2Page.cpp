@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "Advanced2Page.h"
 #include "../client/SettingsManager.h"
@@ -75,6 +76,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file Advanced2Page.cpp
- * $Id: Advanced2Page.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

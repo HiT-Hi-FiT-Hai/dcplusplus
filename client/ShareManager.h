@@ -33,7 +33,7 @@ STANDARD_EXCEPTION(ShareException);
 class SimpleXML;
 class Client;
 
-class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener
+class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread
 {
 public:
 	StringList getDirectories();
@@ -46,17 +46,17 @@ public:
 	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
 		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient);
 	}
-	SearchResult::List search(const string& aString, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient);
+	SearchResult::List search(const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient);
 
-	LONGLONG getShareSize() {
+	int64_t getShareSize() {
 		RLock l(cs);
-		LONGLONG tmp = 0;
+		int64_t tmp = 0;
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			tmp += i->second->getSize();
 		}
 		return tmp;
 	}
-	LONGLONG getShareSize(const string& aDir) {
+	int64_t getShareSize(const string& aDir) {
 		RLock l(cs);
 		dcassert(aDir.size()>0);
 		Directory::MapIter i;
@@ -74,7 +74,7 @@ public:
 	string getShareSizeString() { return Util::toString(getShareSize()); };
 	string getShareSizeString(const string& aDir) { return Util::toString(getShareSize(aDir)); };
 	
-	LONGLONG getListLen() { return listLen; };
+	int64_t getListLen() { return listLen; };
 	string getListLenString() { return Util::toString(getListLen()); };
 	
 	const string& getListFile() {
@@ -89,12 +89,16 @@ private:
 		typedef Directory* Ptr;
 		typedef HASH_MAP<string, Ptr> Map;
 		typedef Map::iterator MapIter;
-		typedef HASH_MULTIMAP<LONGLONG, string> DupeMap;
+		typedef HASH_MULTIMAP<int64_t, string> DupeMap;
 		typedef DupeMap::iterator DupeIter;
-		typedef HASH_MAP<string, LONGLONG> FileMap;
+		typedef HASH_MAP<string, int64_t> FileMap;
 		typedef FileMap::iterator FileIter;
 
-		Directory(const string& aName = "", Directory* aParent = NULL) : name(aName), parent(aParent), size(0) { 
+		int64_t size;
+		Map directories;
+		FileMap files;
+		
+		Directory(const string& aName = Util::emptyString, Directory* aParent = NULL) : size(0), name(aName), parent(aParent) { 
 		};
 
 		~Directory() {
@@ -117,20 +121,15 @@ private:
 		Directory* getParent() { return parent; };
 		void setParent(Directory* aParent) { parent = aParent; };
 
-		LONGLONG getSize() {
-			LONGLONG tmp = size;
+		int64_t getSize() {
+			int64_t tmp = size;
 			for(MapIter i = directories.begin(); i != directories.end(); ++i) {
 				tmp+=i->second->getSize();
 			}
 			return tmp;
 		}
 
-		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient);
-		
-		Map directories;
-		FileMap files;
-
-		LONGLONG size;
+		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient);
 		
 		string toString(DupeMap& dupes, int ident = 0);
 	private:
@@ -139,24 +138,21 @@ private:
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : update(false), refreshDirs(false), listLen(0), dirty(false), refreshThread(NULL) { 
+	ShareManager() : listLen(0), dirty(false), refreshDirs(false), update(false) { 
 		SettingsManager::getInstance()->addListener(this);
 	};
 	
 	virtual ~ShareManager() {
 		SettingsManager::getInstance()->removeListener(this);
 		
-		if(refreshThread) {
-			WaitForSingleObject(refreshThread, INFINITE);
-			CloseHandle(refreshThread);
-		}
-		
+		join();
+
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			delete i->second;
 		}
 	}
 	
-	LONGLONG listLen;
+	int64_t listLen;
 	bool dirty;
 	bool refreshDirs;
 	bool update;
@@ -164,15 +160,14 @@ private:
 	string listFile;
 
 	RWLock cs;
-	HANDLE refreshThread;
 
 	Directory::Map directories;
 	StringMap dirs;
 	
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
-	
-	static DWORD WINAPI refresher(void* p);
+
+	virtual int run();
 
 	// SettingsManagerListener
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
@@ -191,84 +186,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.23 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: ShareManager.h,v $
- * Revision 1.23  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.22  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.21  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.20  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.19  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.18  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.17  2002/02/01 02:00:45  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.16  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.15  2002/01/26 14:59:24  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.14  2002/01/26 12:06:40  arnetheduck
- * Småsaker
- *
- * Revision 1.13  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.12  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.11  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.10  2002/01/06 11:13:07  arnetheduck
- * Last fixes before 0.10
- *
- * Revision 1.9  2002/01/06 00:14:54  arnetheduck
- * Incoming searches almost done, just need some testing...
- *
- * Revision 1.8  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.7  2001/12/30 17:41:16  arnetheduck
- * Fixed some XML parsing bugs
- *
- * Revision 1.6  2001/12/30 15:03:45  arnetheduck
- * Added framework to handle incoming searches
- *
- * Revision 1.5  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.4  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.3  2001/12/10 10:48:40  arnetheduck
- * Ahh, finally found one bug that's been annoying me for days...=) the connections
- * in the pool were not reset correctly before being put back for later use...
- *
- * Revision 1.2  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.1  2001/12/02 23:51:22  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * @endif
+ * $Id: ShareManager.h,v 1.24 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -28,6 +28,7 @@ enum Strings { // @DontAdd
 	CONNECTING_TO, // "Connecting to "
 	CONNECTION, // "Connection"
 	CONNECTION_TIMEOUT, // "Connection timeout"
+	COULD_NOT_OPEN_TARGET_FILE, // "Could not open target file: "
 	COUNT, // "Count"
 	DESCRIPTION, // "Description"
 	DISCONNECTED, // "Disconnected"

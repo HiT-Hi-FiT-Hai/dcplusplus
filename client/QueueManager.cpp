@@ -28,11 +28,11 @@
 #include "StringTokenizer.h"
 #include "File.h"
 
-QueueManager* QueueManager::instance = NULL;
+QueueManager* Singleton<QueueManager>::instance = NULL;
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
 
-void QueueManager::onTimerMinute(DWORD /*aTick*/) {
+void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	if(BOOLSETTING(AUTO_SEARCH)) {
 		{
 			Lock l(cs);
@@ -114,7 +114,7 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 	
 }
 
-void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
+void QueueManager::add(const string& aFile, int64_t aSize, const User::Ptr& aUser, const string& aTarget, 
 					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw(QueueException, FileException) {
 
 	// Check that the file doesn't already exist...
@@ -152,7 +152,7 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
-QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, LONGLONG aSize, bool aResume, bool& newItem) {
+QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException){
 	QueueItem* q = findByTarget(aTarget);
 	
 	if(q == NULL) {
@@ -178,7 +178,7 @@ QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget
 	return q;
 }
 
-Download* QueueManager::getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi) {
+Download* QueueManager::getDownload(User::Ptr& aUser) {
 
 	QueueItem* q = NULL;
 
@@ -210,7 +210,7 @@ Download* QueueManager::getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi) 
 
 		fire(QueueManagerListener::STATUS_UPDATED, q);
 		
-		Download* d = new Download(cqi, q->isSet(QueueItem::RESUME), q->isSet(QueueItem::USER_LIST));
+		Download* d = new Download(q->isSet(QueueItem::RESUME), q->isSet(QueueItem::USER_LIST));
 		d->setSource(q->getCurrent()->getPath());
 		d->setTarget(q->getTarget());
 		d->setSize(q->getSize());
@@ -229,19 +229,20 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				queue.erase(find(queue.begin(), queue.end(), q));
 				
 				fire(QueueManagerListener::REMOVED, q);
-				
 				delete q;
-				delete aDownload;
 				dirty = true;
 				
 			} else {
 				q->setStatus(QueueItem::WAITING);
 				q->setCurrent(NULL);
 				fire(QueueManagerListener::STATUS_UPDATED, q);
-				delete aDownload;
 			}
-			
 		}
+		if(aDownload->getFile()) {
+		}
+ 		aDownload->setUserConnection(NULL);
+		delete aDownload;
+		
 	}
 }
 
@@ -340,7 +341,7 @@ void QueueManager::load(SimpleXML* aXml) {
 		while(aXml->findChild("Download")) {
 			const string& target = aXml->getChildAttrib("Target");
 			bool resume = aXml->getBoolChildAttrib("Resume");
-			LONGLONG size = aXml->getLongLongChildAttrib("Size");
+			int64_t size = aXml->getLongLongChildAttrib("Size");
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib("Priority");
 			aXml->stepIn();
 			while(aXml->findChild("Source")) {
@@ -391,16 +392,16 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 	File f(aFile, File::READ, File::OPEN);
 	
-	DWORD size = (DWORD)f.getSize();
+	u_int32_t size = (u_int32_t)f.getSize();
 	
 	string tmp;
 	if(size > 16) {
-		BYTE* buf = new BYTE[size];
+		u_int8_t* buf = new u_int8_t[size];
 		f.read(buf, size);
 		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
 		delete[] buf;
 	} else {
-		tmp = "";
+		tmp = Util::emptyString;
 	}
 	
 	StringTokenizer line(tmp);
@@ -410,11 +411,11 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 		string& tok = *i;
 		string::size_type k = tok.find('|');
 
-		if( (k == -1) || ((k+1) >= tok.size()) )
+		if( (k == string::npos) || ((k+1) >= tok.size()) )
 			continue;
 
-		if(tok.substr(k + 1).compare("Active") == TRUE || tok.substr(k + 1).compare("Paused") == TRUE) {
-			i++; // ignore first line
+		if(tok.substr(k + 1).compare("Active") == 0 || tok.substr(k + 1).compare("Paused") == 0) {
+			continue; // ignore first line
 		}
 		
 		StringTokenizer t(*i, '\t');
@@ -445,44 +446,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.17 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: QueueManager.cpp,v $
- * Revision 1.17  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.16  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.15  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.14  2002/03/25 22:23:25  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.13  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.12  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.11  2002/03/05 11:19:35  arnetheduck
- * Fixed a window closing bug
- *
- * Revision 1.10  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.9  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.8  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.7  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * @endif
+ * $Id: QueueManager.cpp,v 1.18 2002/04/13 12:57:23 arnetheduck Exp $
  */
 
 

@@ -65,7 +65,7 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		Source(const User::Ptr& aUser, const string& aPath) : user(aUser), path(aPath) { };
+		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
 		Source(const Source& aSource) : path(aSource.path), user(aSource.user) { }
 
 		User::Ptr& getUser() { return user; };
@@ -74,24 +74,20 @@ public:
 		}
 		
 		string getFileName() {
-			int i = path.rfind('\\');
-			if(i != string::npos) {
-				return path.substr(i + 1);
-			} else {
-				return path;
-			}
+			string::size_type i = path.rfind('\\');
+			return (i != string::npos) ? path.substr(i + 1) : path;
 		}
+
 		GETSETREF(string, path, Path);
-		
 	private:
 		User::Ptr user;
 	};
 
-	QueueItem(const string& aTarget, LONGLONG aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
+	QueueItem(const string& aTarget, int64_t aSize, Priority aPriority, bool aResume) : target(aTarget), size(aSize),
 		status(WAITING), priority(aPriority), current(NULL) { if(aResume) setFlag(RESUME); };
 	
-	QueueItem(const QueueItem& aQi) : target(aQi.target), status(aQi.status), priority(aQi.priority),
-		size(aQi.size), current(aQi.current) {
+	QueueItem(const QueueItem& aQi) : target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
+		current(aQi.current) {
 		
 		for(Source::List::const_iterator i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
 			sources.push_back(new Source(*(*i)));
@@ -117,19 +113,14 @@ public:
 	Source::List& getSources() { return sources; };
 
 	string getTargetFileName() {
-		int i = getTarget().rfind('\\');
-		if(i != string::npos) {
-			return getTarget().substr(i + 1);
-		} else {
-			return getTarget();
-		}
+		string::size_type i = getTarget().rfind('\\');
+		return (i != string::npos) ? getTarget().substr(i + 1) : getTarget();
 	}
 	
-	
 	GETSETREF(string, target, Target);
+	GETSET(int64_t, size, Size);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
-	GETSET(LONGLONG, size, Size);
 private:
 	friend class QueueManager;
 	Source::List sources;
@@ -218,7 +209,7 @@ public:
 
 		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p);
 	}
-	void add(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, 
+	void add(const string& aFile, int64_t aSize, const User::Ptr& aUser, const string& aTarget, 
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
@@ -232,7 +223,7 @@ public:
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
-	StringList getTargetsBySize(LONGLONG aSize) {
+	StringList getTargetsBySize(int64_t aSize) {
 		Lock l(cs);
 		StringList sl;
 		
@@ -244,7 +235,7 @@ public:
 		return sl;
 	}
 
-	Download* getDownload(User::Ptr& aUser, ConnectionQueueItem* cqi);
+	Download* getDownload(User::Ptr& aUser);
 	bool hasDownload(const User::Ptr& aUser) {
 		Lock l(cs);
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
@@ -295,7 +286,7 @@ private:
 	CriticalSection cs;
 	QueueItem::List queue;
 	StringList userLists;
-	typedef hash_map<string, DWORD> SearchMap;
+	typedef hash_map<string, u_int32_t> SearchMap;
 	SearchMap search;
 
 	static const string USER_LIST_NAME;
@@ -307,17 +298,17 @@ private:
 		}
 		return NULL;
 	}
-	QueueItem* getQueueItem(const string& aFile, const string& aTarget, LONGLONG aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
+	QueueItem* getQueueItem(const string& aFile, const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException);
 	
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		switch(type) {
 		case TimerManagerListener::MINUTE:
 			onTimerMinute(aTick); break;
 		}
 	}
-	void onTimerMinute(DWORD aTick);
+	void onTimerMinute(u_int32_t aTick);
 	
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types, SearchResult*);
@@ -338,33 +329,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.15 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: QueueManager.h,v $
- * Revision 1.15  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.14  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.13  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.12  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.11  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.10  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.9  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.8  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * @endif
+ * $Id: QueueManager.h,v 1.16 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

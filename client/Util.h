@@ -175,6 +175,11 @@ public:
 		string tmp = (LPCTSTR)lpMsgBuf;
 		// Free the buffer.
 		LocalFree( lpMsgBuf );
+		string::size_type i;
+
+		while( (i = tmp.find_last_of("\r\n")) != string::npos) {
+			tmp.erase(i, 1);
+		}
 		return tmp;
 #else // WIN32
 		return emptyString;
@@ -357,6 +362,6 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.38 2002/04/09 18:43:28 arnetheduck Exp $
+ * $Id: Util.h,v 1.39 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

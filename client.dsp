@@ -306,10 +306,6 @@ SOURCE=.\client\QueueManager.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\resource.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\client\ResourceManager.h
 # End Source File
 # Begin Source File

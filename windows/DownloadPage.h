@@ -44,3 +44,8 @@ protected:
 };
 
 #endif //DOWNLOADPAGE_H
+
+/**
+ * @file DownloadPage.h
+ * $Id: DownloadPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */

@@ -42,3 +42,8 @@ protected:
 };
 
 #endif // !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
+
+/**
+ * @file PropertiesDlg.h
+ * $Id: PropertiesDlg.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */

@@ -26,7 +26,7 @@
 #include "SimpleXML.h"
 #include "ClientManager.h"
 
-HubManager* HubManager::instance = NULL;
+HubManager* Singleton<HubManager>::instance = NULL;
 
 void HubManager::onHttpFinished() throw() {
 	string::size_type i, j;
@@ -49,7 +49,7 @@ void HubManager::onHttpFinished() throw() {
 			publicHubs.push_back(HubEntry(name, server, desc, users));
 		}
 	}
-	downloadBuf = "";
+	downloadBuf = Util::emptyString;
 }
 
 void HubManager::save(SimpleXML* aXml) {
@@ -133,79 +133,6 @@ void HubManager::refresh() {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.21 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: HubManager.cpp,v $
- * Revision 1.21  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.20  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.19  2002/03/25 22:23:25  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.18  2002/03/23 01:58:42  arnetheduck
- * Work done on favorites...
- *
- * Revision 1.17  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.16  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * Revision 1.15  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.14  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.13  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.12  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.11  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.10  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.8  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.7  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.6  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.5  2001/12/11 01:10:29  arnetheduck
- * More bugfixes...I really have to change the bufferedsocket so that it only
- * uses one thread...or maybe even multiple sockets/thread...
- *
- * Revision 1.4  2001/12/07 20:03:07  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.3  2001/12/02 11:16:46  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.2  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: HubManager.cpp,v 1.22 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

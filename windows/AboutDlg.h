@@ -49,25 +49,6 @@ public:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: AboutDlg.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.4  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.3  2002/01/20 22:54:45  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.2  2002/01/16 20:56:26  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: AboutDlg.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

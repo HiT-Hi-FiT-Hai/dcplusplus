@@ -30,7 +30,7 @@
 
 #include "ResourceManager.h"
 
-ConnectionManager* ConnectionManager::instance = NULL;
+ConnectionManager* Singleton<ConnectionManager>::instance = NULL;
 
 /**
  * Request a connection for downloading.
@@ -107,7 +107,7 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 
 				dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
 				userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
-				delete aSource;
+				pendingDelete.push_back(aSource);
 				return;
 			}
 			
@@ -138,7 +138,7 @@ void ConnectionManager::putConnection(UserConnection* aConn) {
 	}
 }
 
-void ConnectionManager::onTimerSecond(DWORD aTick) {
+void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 	ConnectionQueueItem::List add;
 	ConnectionQueueItem::List remove;
 	ConnectionQueueItem::List failPassive;
@@ -180,7 +180,7 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 			if( ((i->second + 60*1000) < aTick) ) {
 
 				if(startDown) {
-					if( attempts <= 3 ) {
+					if( attempts <= 1 ) {
 						// Nothing's happened for 60 seconds, try again...
 						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 							pendingDown.erase(i++);
@@ -229,7 +229,7 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 	
 }
 
-void ConnectionManager::onTimerMinute(DWORD aTick) {
+void ConnectionManager::onTimerMinute(u_int32_t aTick) {
 	Lock l(cs);
 	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
 		if(((*j)->getLastActivity() + 180*1000) < aTick) {
@@ -293,6 +293,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 			if(cqi->getUser()->getNick() == aNick) {
 				aSource->setUser(cqi->getUser());
 				cqi->setConnection(aSource);
+				aSource->setCQI(cqi);
 				pendingDown.erase(i);
 				connections[aSource] = cqi;
 				break;
@@ -314,9 +315,19 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 		}
 
 		aSource->setUser(ClientManager::getInstance()->getUser(aNick));
+
+		// Only one connection / user
+		for(ConnectionQueueItem::QueueIter k = connections.begin(); k != connections.end(); ++k) {
+			if(k->first->getUser() == aSource->getUser() && k->first->isSet(UserConnection::FLAG_UPLOAD)) {
+				putConnection(aSource);
+				return;
+			}
+		}
+		
 		aSource->setFlag(UserConnection::FLAG_UPLOAD);
 		cqi = new ConnectionQueueItem(aSource->getUser());
 		cqi->setConnection(aSource);
+		aSource->setCQI(cqi);
 		{
 			Lock l(cs);
 			connections[aSource] = cqi;
@@ -358,7 +369,6 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 	}
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
-	ConnectionQueueItem cqi = NULL;
 	{
 		Lock l(cs);
 		ConnectionQueueItem::QueueIter i = connections.find(aSource);
@@ -466,5 +476,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.39 2002/04/09 18:43:27 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.40 2002/04/13 12:57:22 arnetheduck Exp $
  */

@@ -75,38 +75,6 @@ void HttpConnection::onLine(const string& aLine) {
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.9 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: HttpConnection.cpp,v $
- * Revision 1.9  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.8  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.7  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.6  2002/02/25 15:39:28  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.5  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.4  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.3  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.2  2001/12/07 20:03:06  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: HttpConnection.cpp,v 1.10 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

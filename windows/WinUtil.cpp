@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "WinUtil.h"
 #include "../client/Util.h"
@@ -171,5 +172,5 @@ void WinUtil::buildMenu() {
 
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

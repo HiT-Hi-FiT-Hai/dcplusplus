@@ -84,23 +84,5 @@ public:
 
 /**
  * @file LineDlg.h
- * $Id: LineDlg.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: LineDlg.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.3  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.2  2001/12/27 18:14:36  arnetheduck
- * Version 0.08, here we go...
- *
- * Revision 1.1  2001/12/27 16:07:40  arnetheduck
- * Replaced PasswordDlg with LineDlg
- *
- * Revision 1.1  2001/12/19 23:08:39  arnetheduck
- * Line dialog window
- *
- * @endif
+ * $Id: LineDlg.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

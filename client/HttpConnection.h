@@ -41,14 +41,14 @@ public:
 
 	virtual void onAction(Types, HttpConnection*) { };	
 	virtual void onAction(Types, HttpConnection*, const string&) { };
-	virtual void onAction(Types, HttpConnection*, const BYTE*, int) { };
+	virtual void onAction(Types, HttpConnection*, const u_int8_t*, int) { };
 };
 
 class HttpConnection : BufferedSocketListener, public Speaker<HttpConnectionListener>
 {
 public:
 	void downloadFile(const string& aUrl);
-	HttpConnection() : ok(false), port(false), size(-1), socket(NULL) { };
+	HttpConnection() : ok(false), port(80), size(-1), socket(NULL) { };
 	virtual ~HttpConnection() { 
 		if(socket) {
 			socket->removeListener(this); 
@@ -62,10 +62,10 @@ private:
 
 	string file;
 	string server;
+	bool ok;
 	short port;
 	int64_t size;
 	
-	bool ok;
 	BufferedSocket* socket;
 
 	// BufferedSocketListener
@@ -91,7 +91,7 @@ private:
 			dcassert(0);
 		}
 	}
-	virtual void onAction(BufferedSocketListener::Types type, const BYTE* aBuf, int aLen) {
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
 		switch(type) {
 		case BufferedSocketListener::DATA:
 			fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
@@ -109,34 +109,6 @@ private:
 
 /**
  * @file HttpConnection.h
- * $Id: HttpConnection.h,v 1.8 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: HttpConnection.h,v $
- * Revision 1.8  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.7  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.6  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.4  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.3  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.2  2001/12/07 20:03:07  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: HttpConnection.h,v 1.9 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

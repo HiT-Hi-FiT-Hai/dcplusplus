@@ -116,40 +116,5 @@ private:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.10 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: CriticalSection.h,v $
- * Revision 1.10  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.9  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.8  2002/03/07 19:07:51  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.7  2002/03/04 23:52:30  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.6  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.4  2002/01/16 20:56:26  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.3  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * @endif
+ * $Id: CriticalSection.h,v 1.11 2002/04/13 12:57:22 arnetheduck Exp $
  */

@@ -38,15 +38,12 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	Upload(ConnectionQueueItem* aQI) : Transfer(aQI) { };
-
-	void setUser(User::Ptr& aUser) { user = aUser;};
-	User::Ptr& getUser() { return user; };
+	Upload() { };
+	virtual ~Upload() { };
+	
+	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
 	GETSETREF(string, fileName, FileName);
-private:
-	User::Ptr user;	
-
 };
 
 class UploadManagerListener {
@@ -85,42 +82,48 @@ public:
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		conn->setState(UserConnection::STATE_GET);
-		{
-			Lock l(cs);
-			connections.push_back(conn);
-		}
 	}
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
 private:
-	UserConnection::List connections;
 	Upload::List uploads;
 	CriticalSection cs;
-	map<User::Ptr, DWORD> reservedSlots;
+
+	map<User::Ptr, u_int32_t> reservedSlots;
 
 	friend class Singleton<UploadManager>;
 	UploadManager() : running(0), extra(0) { 
 		TimerManager::getInstance()->addListener(this);
 	};
-	~UploadManager() {
-		TimerManager::getInstance()->removeListener(this);
-		removeConnections();
-		{
-			Lock l(cs);
-			for(Upload::Iter j = uploads.begin(); j != uploads.end(); ++j) {
-				delete *j;
-			}
-			uploads.clear();
-		}
 
+	virtual ~UploadManager() {
+		TimerManager::getInstance()->removeListener(this);
+		while(true) {
+			{
+				Lock l(cs);
+				if(uploads.empty())
+					break;
+			}
+			Thread::sleep(100);
+		}
 	}
 
 	void removeConnection(UserConnection::Ptr aConn);
-	void removeConnections();
-	
+	void removeUpload(Upload* aUpload) {
+		Lock l(cs);
+		dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
+		uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
+
+		if(aUpload->getFile()) {
+			delete aUpload->getFile();
+			aUpload->setFile(NULL);
+		}
+		aUpload->setUserConnection(NULL);
+		delete aUpload;
+	}
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		switch(type) {
 		case TimerManagerListener::SECOND: 
 			{
@@ -131,7 +134,8 @@ private:
 					ticks.push_back(*i);
 				}
 
-				fire(UploadManagerListener::TICK, ticks);
+				if(ticks.size() > 0)
+					fire(UploadManagerListener::TICK, ticks);
 			}
 			break;
 		case TimerManagerListener::MINUTE: onTimerMinute(aTick);	break;
@@ -139,7 +143,7 @@ private:
 		}
 	}
 
-	void onTimerMinute(DWORD aTick);
+	void onTimerMinute(u_int32_t aTick);
 
 	// UserConnectionListener
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
@@ -152,7 +156,7 @@ private:
 			conn->listLen(ShareManager::getInstance()->getListLenString()); break;
 		}
 	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, DWORD bytes) {
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) {
 		switch(type) {
 		case UserConnectionListener::BYTES_SENT:
 			onBytesSent(conn, bytes); break;
@@ -164,17 +168,17 @@ private:
 			onFailed(conn, line); break;
 		}
 	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, LONGLONG resume) {
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) {
 		switch(type) {
 		case UserConnectionListener::GET:
 			onGet(conn, line, resume); break;
 		}
 	}
 	
-	void onBytesSent(UserConnection* aSource, DWORD aBytes);
+	void onBytesSent(UserConnection* aSource, u_int32_t aBytes);
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onTransmitDone(UserConnection* aSource);
-	void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume);
+	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
 	void onSend(UserConnection* aSource);
 	
 };
@@ -183,148 +187,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.42 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: UploadManager.h,v $
- * Revision 1.42  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.41  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.40  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.39  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.38  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.37  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.36  2002/02/02 17:21:27  arnetheduck
- * Fixed search bugs and some other things...
- *
- * Revision 1.35  2002/02/01 02:00:46  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.34  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.33  2002/01/23 08:45:37  arnetheduck
- * New files for the notepad
- *
- * Revision 1.32  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.31  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.30  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.29  2002/01/16 20:56:27  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.28  2002/01/14 22:19:43  arnetheduck
- * Commiting minor bugfixes
- *
- * Revision 1.27  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.26  2002/01/11 16:13:33  arnetheduck
- * Fixed some locks and bugs, added type field to the search frame
- *
- * Revision 1.25  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.24  2002/01/06 00:14:54  arnetheduck
- * Incoming searches almost done, just need some testing...
- *
- * Revision 1.23  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.21  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.20  2002/01/02 16:12:33  arnetheduck
- * Added code for multiple download sources
- *
- * Revision 1.19  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.18  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.17  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * Revision 1.16  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.15  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.14  2001/12/11 01:10:29  arnetheduck
- * More bugfixes...I really have to change the bufferedsocket so that it only
- * uses one thread...or maybe even multiple sockets/thread...
- *
- * Revision 1.13  2001/12/10 10:48:40  arnetheduck
- * Ahh, finally found one bug that's been annoying me for days...=) the connections
- * in the pool were not reset correctly before being put back for later use...
- *
- * Revision 1.12  2001/12/08 20:59:26  arnetheduck
- * Fixing bugs...
- *
- * Revision 1.11  2001/12/08 14:25:49  arnetheduck
- * More bugs removed...did my first search as well...
- *
- * Revision 1.10  2001/12/07 20:03:26  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.9  2001/12/05 19:40:13  arnetheduck
- * More bugfixes.
- *
- * Revision 1.8  2001/12/05 14:27:35  arnetheduck
- * Premature disconnection bugs removed.
- *
- * Revision 1.7  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.6  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.5  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.4  2001/12/01 17:15:03  arnetheduck
- * Added a crappy version of huffman encoding, and some other minor changes...
- *
- * Revision 1.3  2001/11/29 19:10:55  arnetheduck
- * Refactored down/uploading and some other things completely.
- * Also added download indicators and download resuming, along
- * with some other stuff.
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.1  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * @endif
+ * $Id: UploadManager.h,v 1.43 2002/04/13 12:57:23 arnetheduck Exp $
  */

@@ -53,14 +53,5 @@ protected:
 
 /**
  * @file FavHubProperties.h
- * $Id: FavHubProperties.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: FavHubProperties.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.1  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * @endif
+ * $Id: FavHubProperties.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

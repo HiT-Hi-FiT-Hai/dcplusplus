@@ -36,10 +36,10 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		File(Directory* aDir = NULL, const string& aName = "", LONGLONG aSize = -1) throw() : parent(aDir), name(aName), size(aSize) { };
+		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : name(aName), size(aSize), parent(aDir) { };
 
 		GETSETREF(string, name, Name);
-		GETSET(LONGLONG, size, Size);
+		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 	};
 
@@ -52,7 +52,7 @@ public:
 		List directories;
 		File::List files;
 		
-		Directory(Directory* aParent = NULL, const string& aName = "") : parent(aParent), name(aName) { };
+		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString) : name(aName), parent(aParent) { };
 		
 		~Directory() {
 			for(Iter i = directories.begin(); i!=directories.end(); ++i) {
@@ -63,15 +63,15 @@ public:
 			}
 		}
 
-		LONGLONG getSize() {
-			LONGLONG x = 0;
+		int64_t getSize() {
+			int64_t x = 0;
 			for(File::Iter i = files.begin(); i != files.end(); ++i) {
 				x+=(*i)->getSize();
 			}
 			return x;
 		}
-		LONGLONG getTotalSize() {
-			LONGLONG x = getSize();
+		int64_t getTotalSize() {
+			int64_t x = getSize();
 			for(Iter i = directories.begin(); i != directories.end(); ++i) {
 				x += (*i)->getTotalSize();
 			}
@@ -94,7 +94,7 @@ public:
 		GETSET(Directory*, parent, Parent);		
 	};
 
-	LONGLONG getTotalSize() {
+	int64_t getTotalSize() {
 		return root->getTotalSize();
 	}
 	int getTotalFileCount() {
@@ -146,47 +146,5 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
- * @if LOG
- * $Log: DirectoryListing.h,v $
- * Revision 1.10  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.9  2002/02/04 01:10:29  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.8  2002/02/01 02:00:26  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.7  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.6  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.5  2002/01/16 20:56:26  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.4  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.3  2001/12/12 00:06:04  arnetheduck
- * Updated the public hub listings, fixed some minor transfer bugs, reworked the
- * sockets to use only one thread (instead of an extra thread for sending files),
- * and fixed a major bug in the client command decoding (still have to fix this
- * one for the userconnections...)
- *
- * Revision 1.2  2001/11/29 19:10:54  arnetheduck
- * Refactored down/uploading and some other things completely.
- * Also added download indicators and download resuming, along
- * with some other stuff.
- *
- * Revision 1.1  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * @endif
+ * $Id: DirectoryListing.h,v 1.11 2002/04/13 12:57:22 arnetheduck Exp $
  */

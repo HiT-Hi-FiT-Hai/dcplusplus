@@ -23,7 +23,7 @@
 #include "ShareManager.h"
 #include "SearchManager.h"
 
-ClientManager* ClientManager::instance = NULL;
+ClientManager* Singleton<ClientManager>::instance = NULL;
 
 Client* ClientManager::getClient() {
 	Client* c = new Client();
@@ -84,7 +84,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	}
 	
 	if(search) {
-		int pos = aSeeker.find("Hub:");
+		string::size_type pos = aSeeker.find("Hub:");
 		// We don't wan't to answer passive searches if we're in passive mode...
 		if(pos != string::npos && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
 			return;
@@ -100,8 +100,8 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				char* buf = new char[1024];
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+						Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
 					str += buf;
 					delete sr;
 				}
@@ -122,8 +122,8 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					s.connect(ip, port);
 					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 						SearchResult* sr = *i;
-						sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-							sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
 						s.write(buf, strlen(buf));
 					}
 				} catch(SocketException /* e */) {
@@ -228,64 +228,6 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 }
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.17 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: ClientManager.cpp,v $
- * Revision 1.17  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.16  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.15  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.14  2002/03/13 23:06:07  arnetheduck
- * New info sent in the description part of myinfo...
- *
- * Revision 1.13  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.12  2002/03/04 23:52:30  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.11  2002/02/28 00:10:47  arnetheduck
- * Some fixes to the new user model
- *
- * Revision 1.10  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.9  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.8  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.7  2002/01/25 00:11:26  arnetheduck
- * New settings dialog and various fixes
- *
- * Revision 1.6  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.4  2002/01/13 22:50:47  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.3  2002/01/11 14:52:56  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.2  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.1  2001/12/21 18:46:18  arnetheduck
- * Replaces ProtocolHandler with enhanced functionality
- *
- * @endif
+ * $Id: ClientManager.cpp,v 1.18 2002/04/13 12:57:22 arnetheduck Exp $
  */
 

@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "ExListViewCtrl.h"
 
@@ -207,33 +208,6 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: ExListViewCtrl.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.7  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.6  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.5  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.4  2002/01/26 12:06:39  arnetheduck
- * Småsaker
- *
- * Revision 1.3  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.2  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.1  2001/11/24 10:39:00  arnetheduck
- * New BufferedSocket creates reader threads and reports inbound data through a listener.
- *
- * @endif
+ * $Id: ExListViewCtrl.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

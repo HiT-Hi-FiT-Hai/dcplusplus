@@ -60,32 +60,5 @@ private:
 
 /**
  * @file BitOuputStream.h
- * $Id: BitOutputStream.h,v 1.7 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: BitOutputStream.h,v $
- * Revision 1.7  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.6  2002/01/20 22:54:45  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.5  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.4  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.3  2001/12/07 20:02:59  arnetheduck
- * More work done towards application stability
- *
- * Revision 1.2  2001/12/03 20:52:19  arnetheduck
- * Blah! Finally, the listings are working...one line of code missing (of course),
- * but more than 2 hours of search...hate that kind of bugs...=(...some other
- * things spiffed up as well...
- *
- * Revision 1.1  2001/12/01 17:17:22  arnetheduck
- * New additions to the reworked connection manager and huffman encoder
- *
- * @endif
+ * $Id: BitOutputStream.h,v 1.8 2002/04/13 12:57:22 arnetheduck Exp $
  */

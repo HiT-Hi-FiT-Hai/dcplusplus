@@ -146,14 +146,7 @@ public:
 	}
 	
 	template<class T> static int compare(const T& a, const T& b) {
-		if(a < b)
-			return -1;
-		else if(a == b)
-			return 0;
-		else
-			return 1;
-
-		dcassert(0);
+		return (a < b) ? -1 : ( (a == b) ? 0 : 1);
 	}
 
 	ExListViewCtrl() : sortType(SORT_STRING), ascending(true), sortColumn(-1) { };
@@ -165,79 +158,6 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: ExListViewCtrl.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.19  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.18  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.17  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.16  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.15  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.14  2002/01/16 20:56:26  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.13  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.12  2002/01/06 21:55:20  arnetheduck
- * Some minor bugs fixed, but there remains one strange thing, the reconnect
- * button doesn't work...
- *
- * Revision 1.11  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.10  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * Revision 1.9  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.8  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.7  2001/12/04 21:50:34  arnetheduck
- * Work done towards application stability...still a lot to do though...
- * a bit more and it's time for a new release.
- *
- * Revision 1.6  2001/12/02 14:05:36  arnetheduck
- * More sorting work, the hub list is now fully usable...
- *
- * Revision 1.5  2001/12/02 11:16:46  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.4  2001/12/01 17:15:03  arnetheduck
- * Added a crappy version of huffman encoding, and some other minor changes...
- *
- * Revision 1.3  2001/11/29 19:10:55  arnetheduck
- * Refactored down/uploading and some other things completely.
- * Also added download indicators and download resuming, along
- * with some other stuff.
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.1  2001/11/24 10:39:00  arnetheduck
- * New BufferedSocket creates reader threads and reports inbound data through a listener.
- *
- * @endif
+ * $Id: ExListViewCtrl.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

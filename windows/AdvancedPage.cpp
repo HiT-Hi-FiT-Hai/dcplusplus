@@ -18,6 +18,8 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
+
 #include "AdvancedPage.h"
 #include "../client/SettingsManager.h"
 
@@ -62,50 +64,6 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: AdvancedPage.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.15  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.14  2002/03/15 15:12:35  arnetheduck
- * 0.16
- *
- * Revision 1.13  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.12  2002/03/11 22:58:54  arnetheduck
- * A step towards internationalization
- *
- * Revision 1.11  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.10  2002/02/28 00:10:47  arnetheduck
- * Some fixes to the new user model
- *
- * Revision 1.9  2002/02/25 15:39:28  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.8  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.7  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.6  2002/02/01 02:00:24  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.5  2002/01/26 14:59:22  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.4  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * @endif
+ * $Id: AdvancedPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "SearchFrm.h"
 #include "LineDlg.h"
@@ -340,7 +341,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	if(i != string::npos) {
 		l->push_back(file.substr(i + 1));
 	} else {
-		l->push_back("");
+		l->push_back(Util::emptyString);
 	}
 	l->push_back(Util::formatBytes(aResult->getSize()));
 	l->push_back(path);
@@ -348,7 +349,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	if(aResult->getUser()) {
 		l->push_back(aResult->getUser()->getConnection());
 	} else {
-		l->push_back("");
+		l->push_back(Util::emptyString);
 	}
 	l->push_back(aResult->getHubName());
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
@@ -760,116 +761,6 @@ LRESULT SearchFrame::onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: SearchFrm.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.34  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.33  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.32  2002/03/13 20:35:26  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.31  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.30  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.29  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.28  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.27  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.26  2002/02/07 22:12:22  arnetheduck
- * Last fixes before 0.152
- *
- * Revision 1.25  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.24  2002/02/04 01:10:30  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.23  2002/02/01 02:00:41  arnetheduck
- * A lot of work done on the new queue manager, hopefully this should reduce
- * the number of crashes...
- *
- * Revision 1.22  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.21  2002/01/26 14:59:23  arnetheduck
- * Fixed disconnect crash
- *
- * Revision 1.20  2002/01/26 12:38:50  arnetheduck
- * Added some user options
- *
- * Revision 1.19  2002/01/26 12:06:40  arnetheduck
- * Småsaker
- *
- * Revision 1.18  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.17  2002/01/19 13:09:10  arnetheduck
- * Added a file class to hide ugly file code...and fixed a small resume bug (I think...)
- *
- * Revision 1.16  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.15  2002/01/16 20:56:27  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.14  2002/01/15 21:57:53  arnetheduck
- * Hopefully fixed the two annoying bugs...
- *
- * Revision 1.13  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.12  2002/01/11 16:13:33  arnetheduck
- * Fixed some locks and bugs, added type field to the search frame
- *
- * Revision 1.11  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.10  2002/01/09 19:01:35  arnetheduck
- * Made some small changed to the key generation and search frame...
- *
- * Revision 1.9  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.8  2002/01/05 19:06:09  arnetheduck
- * Added user list images, fixed bugs and made things more effective
- *
- * Revision 1.6  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.5  2001/12/29 13:47:14  arnetheduck
- * Fixing bugs and UI work
- *
- * Revision 1.4  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.3  2001/12/15 17:01:06  arnetheduck
- * Passive mode searching as well as some searching code added
- *
- * Revision 1.2  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.1  2001/12/10 10:50:10  arnetheduck
- * Oops, forgot the search frame...
- *
- * @endif
+ * $Id: SearchFrm.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

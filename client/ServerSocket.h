@@ -100,56 +100,6 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.13 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: ServerSocket.h,v $
- * Revision 1.13  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.12  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.11  2002/03/05 11:19:35  arnetheduck
- * Fixed a window closing bug
- *
- * Revision 1.10  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.9  2002/02/26 23:25:22  arnetheduck
- * Minor updates and fixes
- *
- * Revision 1.8  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.7  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.6  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.5  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.4  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.3  2001/12/02 11:16:47  arnetheduck
- * Optimised hub listing, removed a few bugs and leaks, and added a few small
- * things...downloads are now working, time to start writing the sharing
- * code...
- *
- * Revision 1.2  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * Revision 1.1  2001/11/25 22:06:25  arnetheduck
- * Finally downloading is working! There are now a few quirks and bugs to be fixed
- * but what the heck....!
- *
- * @endif
+ * $Id: ServerSocket.h,v 1.14 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

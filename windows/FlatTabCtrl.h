@@ -369,42 +369,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: FlatTabCtrl.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.10  2002/04/07 16:08:14  arnetheduck
- * Fixes and additions
- *
- * Revision 1.9  2002/03/25 22:23:24  arnetheduck
- * Lots of minor updates
- *
- * Revision 1.8  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.7  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.6  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.5  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.4  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.3  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.2  2002/01/05 10:13:39  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.1  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * @endif
+ * $Id: FlatTabCtrl.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

@@ -38,14 +38,5 @@ public:
 
 /**
  * @file StringTokenizer.h
- * $Id: StringTokenizer.h,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
- * @if LOG
- * $Log: StringTokenizer.h,v $
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
- * Inital release
- *
- * @endif
+ * $Id: StringTokenizer.h,v 1.3 2002/04/13 12:57:23 arnetheduck Exp $
  */

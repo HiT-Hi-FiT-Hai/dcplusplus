@@ -202,68 +202,6 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: PrivateFrame.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.18  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.17  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.16  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.15  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.14  2002/02/25 15:39:29  arnetheduck
- * Release 0.154, lot of things fixed...
- *
- * Revision 1.13  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.12  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.11  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.10  2002/02/04 01:10:30  arnetheduck
- * Release 0.151...a lot of things fixed
- *
- * Revision 1.9  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.8  2002/01/22 00:10:37  arnetheduck
- * Version 0.132, removed extra slots feature for nm dc users...and some bug
- * fixes...
- *
- * Revision 1.7  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.6  2002/01/14 22:19:43  arnetheduck
- * Commiting minor bugfixes
- *
- * Revision 1.5  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.4  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.3  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.2  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.1  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * @endif
+ * $Id: PrivateFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -47,8 +47,8 @@ public:
 	typedef HASH_MAP<string,Ptr> NickMap;
 	typedef NickMap::iterator NickIter;
 
-	User(const string& aNick) : nick(aNick), client(NULL), sharingLong(0) { };
-	~User() { };
+	User(const string& aNick) throw() : nick(aNick), client(NULL), sharingLong(0) { };
+	virtual ~User() throw() { };
 
 	void setClient(Client* aClient);
 	void connect();
@@ -90,61 +90,6 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.16 2002/04/09 18:43:28 arnetheduck Exp $
- * @if LOG
- * $Log: User.h,v $
- * Revision 1.16  2002/04/09 18:43:28  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.15  2002/03/15 11:59:35  arnetheduck
- * Final changes (I hope...) for 0.155
- *
- * Revision 1.14  2002/03/07 19:07:52  arnetheduck
- * Minor fixes + started code review
- *
- * Revision 1.13  2002/03/04 23:52:31  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.12  2002/02/27 12:02:09  arnetheduck
- * Completely new user handling, wonder how it turns out...
- *
- * Revision 1.11  2002/02/18 23:48:32  arnetheduck
- * New prerelease, bugs fixed and features added...
- *
- * Revision 1.10  2002/02/07 17:25:28  arnetheduck
- * many bugs fixed, time for 0.152 I think
- *
- * Revision 1.9  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.8  2002/01/18 17:41:43  arnetheduck
- * Reworked many right button menus, adding op commands and making more easy to use
- *
- * Revision 1.7  2002/01/17 23:35:59  arnetheduck
- * Reworked threading once more, now it actually seems stable. Also made
- * sure that noone tries to access client objects that have been deleted
- * as well as some other minor updates
- *
- * Revision 1.6  2002/01/10 12:33:14  arnetheduck
- * Various fixes
- *
- * Revision 1.5  2002/01/07 20:17:59  arnetheduck
- * Finally fixed the reconnect bug that's been annoying me for a whole day...
- * Hopefully the app works better in w95 now too...
- *
- * Revision 1.4  2001/12/18 12:32:18  arnetheduck
- * Stability fixes
- *
- * Revision 1.3  2001/12/16 19:47:48  arnetheduck
- * Reworked downloading and user handling some, and changed some small UI things
- *
- * Revision 1.2  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.1  2001/12/01 17:17:22  arnetheduck
- * New additions to the reworked connection manager and huffman encoder
- *
- * @endif
+ * $Id: User.h,v 1.17 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -159,46 +159,6 @@ private:
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: NotepadFrame.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.4  2002/03/19 00:41:37  arnetheduck
- * 0.162, hub counting and cpu bug
- *
- * Revision 1.3  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.2  2002/01/26 21:09:51  arnetheduck
- * Release 0.14
- *
- * Revision 1.1  2002/01/23 08:45:37  arnetheduck
- * New files for the notepad
- *
- * Revision 1.7  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.6  2002/01/14 22:19:43  arnetheduck
- * Commiting minor bugfixes
- *
- * Revision 1.5  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.4  2002/01/11 14:52:57  arnetheduck
- * Huge changes in the listener code, replaced most of it with templates,
- * also moved the getinstance stuff for the managers to a template
- *
- * Revision 1.3  2002/01/05 10:13:40  arnetheduck
- * Automatic version detection and some other updates
- *
- * Revision 1.2  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.1  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * @endif
+ * $Id: NotepadFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -182,35 +182,7 @@ private:
 #endif // !defined(AFX_USERSFRAME_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
- * @file FavoriteHubsFrm.h
- * $Id: UsersFrame.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: UsersFrame.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.1  2002/03/26 09:17:59  arnetheduck
- * New UsersFrame
- *
- * Revision 1.6  2002/03/23 01:58:42  arnetheduck
- * Work done on favorites...
- *
- * Revision 1.5  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.4  2002/02/10 12:25:24  arnetheduck
- * New properties for favorites, and some minor performance tuning...
- *
- * Revision 1.3  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.2  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2002/01/13 22:53:26  arnetheduck
- * Favorites...
- *
- * @endif
+ * @file UsersFrame.h
+ * $Id: UsersFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

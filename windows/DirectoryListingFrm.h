@@ -37,6 +37,7 @@ public:
 	
 	enum {
 		COLUMN_FILENAME,
+		COLUMN_TYPE,
 		COLUMN_SIZE
 	};
 	
@@ -57,7 +58,7 @@ public:
 			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
 			delete[] buf;
 		} else {
-			tmp = "";
+			tmp = Util::emptyString;
 		}
 		dl->load(tmp);
 	};
@@ -106,6 +107,7 @@ public:
 	void downloadList(const string& aTarget);
 	static int sortFile(LPARAM a, LPARAM b);
 	static int sortSize(LPARAM a, LPARAM b);
+	static int sortType(LPARAM a, LPARAM b);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
@@ -131,6 +133,8 @@ public:
 				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortFile);
 			} else if(l->iSubItem == COLUMN_SIZE) {
 				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+			} else if(l->iSubItem == COLUMN_TYPE) {
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortType);
 			}
 		}
 		return 0;
@@ -157,85 +161,9 @@ private:
 	DirectoryListing* dl;
 };
 
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
 #endif // !defined(AFX_CHILDFRM_H__A7078724_FD85_4F39_8463_5A08A5F45E33__INCLUDED_)
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: DirectoryListingFrm.h,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.18  2002/04/03 23:20:35  arnetheduck
- * ...
- *
- * Revision 1.17  2002/03/13 20:35:25  arnetheduck
- * Release canditate...internationalization done as far as 0.155 is concerned...
- * Also started using mirrors of the public hub lists
- *
- * Revision 1.16  2002/03/04 23:52:30  arnetheduck
- * Updates and bugfixes, new user handling almost finished...
- *
- * Revision 1.15  2002/02/12 00:35:37  arnetheduck
- * 0.153
- *
- * Revision 1.14  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.13  2002/01/20 22:54:46  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.12  2002/01/19 19:07:39  arnetheduck
- * Last fixes before 0.13
- *
- * Revision 1.11  2002/01/16 20:56:26  arnetheduck
- * Bug fixes, file listing sort and some other small changes
- *
- * Revision 1.10  2002/01/13 22:50:48  arnetheduck
- * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
- *
- * Revision 1.9  2002/01/10 12:33:14  arnetheduck
- * Various fixes
- *
- * Revision 1.8  2001/12/27 12:05:00  arnetheduck
- * Added flat tabs, fixed sorting and a StringTokenizer bug
- *
- * Revision 1.7  2001/12/21 20:21:17  arnetheduck
- * Private messaging added, and a lot of other updates as well...
- *
- * Revision 1.6  2001/12/19 23:07:59  arnetheduck
- * Added directory downloading from the directory tree (although it hasn't been
- * tested at all) and password support.
- *
- * Revision 1.5  2001/12/13 19:21:57  arnetheduck
- * A lot of work done almost everywhere, mainly towards a friendlier UI
- * and less bugs...time to release 0.06...
- *
- * Revision 1.4  2001/12/12 00:06:04  arnetheduck
- * Updated the public hub listings, fixed some minor transfer bugs, reworked the
- * sockets to use only one thread (instead of an extra thread for sending files),
- * and fixed a major bug in the client command decoding (still have to fix this
- * one for the userconnections...)
- *
- * Revision 1.3  2001/12/02 23:47:35  arnetheduck
- * Added the framework for uploading and file sharing...although there's something strange about
- * the file lists...my client takes them, but not the original...
- *
- * Revision 1.2  2001/11/29 19:10:54  arnetheduck
- * Refactored down/uploading and some other things completely.
- * Also added download indicators and download resuming, along
- * with some other stuff.
- *
- * Revision 1.1  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * @endif
+ * $Id: DirectoryListingFrm.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */

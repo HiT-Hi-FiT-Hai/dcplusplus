@@ -18,6 +18,8 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
+
 #include "GeneralPage.h"
 #include "../client/SettingsManager.h"
 
@@ -123,27 +125,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
- * @if LOG
- * $Log: GeneralPage.cpp,v $
- * Revision 1.1  2002/04/09 18:46:32  arnetheduck
- * New files of the major reorganization
- *
- * Revision 1.6  2002/03/15 15:12:35  arnetheduck
- * 0.16
- *
- * Revision 1.5  2002/03/10 22:41:08  arnetheduck
- * Working on internationalization...
- *
- * Revision 1.4  2002/02/09 18:13:51  arnetheduck
- * Fixed level 4 warnings and started using new stl
- *
- * Revision 1.3  2002/02/03 01:06:56  arnetheduck
- * More bugfixes and some minor changes
- *
- * Revision 1.2  2002/01/26 12:52:51  arnetheduck
- * More minor fixes
- *
- * @endif
+ * $Id: GeneralPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

@@ -23,19 +23,5 @@
 
 /**
  * @file BitInputStream.cpp
- * $Id: BitInputStream.cpp,v 1.3 2002/04/09 18:43:27 arnetheduck Exp $
- * @if LOG
- * $Log: BitInputStream.cpp,v $
- * Revision 1.3  2002/04/09 18:43:27  arnetheduck
- * Major code reorganization, to ease maintenance and future port...
- *
- * Revision 1.2  2002/01/20 22:54:45  arnetheduck
- * Bugfixes to 0.131 mainly...
- *
- * Revision 1.1  2001/11/26 23:40:36  arnetheduck
- * Downloads!! Now downloads are possible, although the implementation is
- * likely to change in the future...more UI work (splitters...) and some bug
- * fixes. Only user file listings are downloadable, but at least it's something...
- *
- * @endif
+ * $Id: BitInputStream.cpp,v 1.4 2002/04/13 12:57:22 arnetheduck Exp $
  */

@@ -30,6 +30,12 @@ class Thread
 {
 public:
 #ifdef WIN32
+	enum Priority {
+		LOW = THREAD_PRIORITY_LOWEST,
+		NORMAL = THREAD_PRIORITY_NORMAL,
+		HIGH = THREAD_PRIORITY_HIGHEST
+	};
+
 	Thread() : threadHandle(NULL), threadId(0){ };
 	virtual ~Thread() { 
 		if(threadHandle)
@@ -51,6 +57,8 @@ public:
 		CloseHandle(threadHandle);
 		threadHandle = NULL;
 	}
+
+	void setThreadPriority(Priority p) { ::SetThreadPriority(threadHandle, p); };
 	
 	static void sleep(u_int32_t millis) { ::Sleep(millis); };
 	static void yield() { ::Sleep(0); };
@@ -58,11 +66,17 @@ public:
 	static long safeDec(long* v) { return InterlockedDecrement(v); };
 #else
 
+	enum Priority {
+		LOW,
+		NORMAL,
+		HIGH
+	};
 	Thread() { };
 	virtual ~Thread() { };
 	void start() { };
 	void join() { };
-
+	void setThreadPriority(Priority p) { };
+	
 	static void sleep(u_int32_t millis) { };
 	static void yield() { };
 	static long safeInc(long* v) { return ++(*v); };
@@ -89,6 +103,6 @@ private:
 
 /**
  * @file Thread.h
- * $Id: Thread.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: Thread.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
  */
 

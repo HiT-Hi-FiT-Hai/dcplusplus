@@ -18,6 +18,7 @@
 
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
+#include "Resource.h"
 
 #include "MainFrm.h"
 
@@ -77,3 +78,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	return nRet;
 }
+
+/**
+ * @file main.cpp
+ * $Id: main.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ */
