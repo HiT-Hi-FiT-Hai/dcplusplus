@@ -271,12 +271,14 @@ public:
 int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, int64_t startPos) {
 	// Always discard data until the last block
 	startPos = startPos - (startPos % tt.getBlockSize());
+	if(startPos < tt.getBlockSize())
+		return 0;
+
 	DummyOutputStream dummy;
 
 	vector<u_int8_t> buf((size_t)min((int64_t)1024*1024, tt.getBlockSize()));
 
-	while(startPos >= tt.getBlockSize()) {
-
+	do {
 		int64_t blockPos = startPos - tt.getBlockSize();
 		MerkleCheckOutputStream<TigerTree, false> check(tt, &dummy, blockPos);
 
@@ -290,12 +292,12 @@ int64_t DownloadManager::getResumePos(const string& file, const TigerTree& tt, i
 				check.write(&buf[0], n);
 				bytesLeft -= n;
 			}
+			break;
 		} catch(const Exception&) {
 			dcdebug("Removed bad block at " I64_FMT "\n", blockPos);
-			startPos -= tt.getBlockSize();
 		}
-		break;
-	}
+		startPos = blockPos;
+	} while(startPos > 0);
 	return startPos;
 }
 
@@ -874,5 +876,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.141 2005/01/14 13:46:04 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.142 2005/01/14 19:55:42 arnetheduck Exp $
  */

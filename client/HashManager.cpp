@@ -110,6 +110,7 @@ bool HashManager::HashStore::addTree(const TigerTree& tth) {
 	} catch(const Exception& ) {
 		return false;
 	}
+	dirty = true;
 	return true;
 }
 
@@ -350,7 +351,7 @@ static const string sHash = "Hash";
 static const string sType = "Type";
 static const string sTTH = "TTH";
 static const string sIndex = "Index";
-static const string sLeafSize = "LeafSize";
+static const string sLeafSize = "LeafSize";		// Residue from v1 as well
 static const string sBlockSize = "BlockSize";
 static const string sTimeStamp = "TimeStamp";
 static const string sRoot = "Root";
@@ -672,5 +673,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.43 2005/01/13 18:10:56 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.44 2005/01/14 19:55:41 arnetheduck Exp $
  */
