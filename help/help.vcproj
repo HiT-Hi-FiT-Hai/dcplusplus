@@ -40,7 +40,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling Help File"
-						CommandLine="compile.cmd"
+						CommandLine="compile.cmd
+"
 						AdditionalDependencies="*.html;index.hhk;toc.hhc;..\windows\resource.h"
 						Outputs="$(SolutionDir)app\DCPlusPlus.chm"/>
 				</FileConfiguration>
@@ -57,13 +58,13 @@
 			Filter="cpp"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\adlsearch.html">
+			</File>
+			<File
 				RelativePath=".\changelog.html">
 			</File>
 			<File
 				RelativePath=".\chat_commands.html">
-			</File>
-			<File
-				RelativePath=".\netiquette.html">
 			</File>
 			<File
 				RelativePath=".\credits.html">
@@ -78,10 +79,19 @@
 				RelativePath=".\favorite_users.html">
 			</File>
 			<File
+				RelativePath=".\fdl.html">
+			</File>
+			<File
 				RelativePath=".\index.html">
 			</File>
 			<File
+				RelativePath=".\keyboard_commands.html">
+			</File>
+			<File
 				RelativePath=".\menu_help.html">
+			</File>
+			<File
+				RelativePath=".\netiquette.html">
 			</File>
 			<File
 				RelativePath=".\non-routable.html">
@@ -99,6 +109,9 @@
 				RelativePath=".\settings_downloads.html">
 			</File>
 			<File
+				RelativePath=".\settings_favoritedirs.html">
+			</File>
+			<File
 				RelativePath=".\settings_general.html">
 			</File>
 			<File
@@ -109,9 +122,6 @@
 			</File>
 			<File
 				RelativePath=".\settings_usercommands.html">
-			</File>
-			<File
-				RelativePath=".\template.html">
 			</File>
 		</Filter>
 	</Files>

@@ -38,6 +38,7 @@ Note 4;	To build the HTML Help file, you will need to download and install the H
 Note 5; You need to have python installed if you change StringDefs.h, as a small python script is automatically
 	run to generate StringDefs.cpp and Example.xml. To turn it off or change python path, go to 
 	client->Header Files->StringDefs.h->Properties->Custom build step and change the appropriate values.
+	The help file's changelog.html is also updated via a python script (courtesy of fusbar).
 
 By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
 to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...

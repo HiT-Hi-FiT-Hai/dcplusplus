@@ -436,18 +436,16 @@
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Building StringDefs.cpp and Example.xml from StringDefs.h"
-						CommandLine="python makedefs.py
-"
+						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed for this to work)"
+						CommandLine="makedefs.py"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed in c:\python23 for this to work)"
-						CommandLine="c:\python23\python.exe makedefs.py
-"
+						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed for this to work)"
+						CommandLine="makedefs.py"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 			</File>

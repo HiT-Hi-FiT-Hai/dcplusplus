@@ -18,7 +18,7 @@
 
 /*
  * Automatic Directory Listing Search
- * Henrik Engström, henrikengstrom@home.se
+ * Henrik Engström, henrikengstrom at home se
  */
 
 #if !defined(__ADL_SEARCH_FRAME_H__)
@@ -62,10 +62,11 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_HELP, onHelpKey)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_EDIT, onEdit)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onHelp)
+		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onHelpButton)
 		COMMAND_ID_HANDLER(IDC_MOVE_UP, onMoveUp)
 		COMMAND_ID_HANDLER(IDC_MOVE_DOWN, onMoveDown)
 		NOTIFY_HANDLER(IDC_ADLLIST, NM_DBLCLK, onDoubleClickList)
@@ -81,7 +82,8 @@ public:
 	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onHelp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onDoubleClickList(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -152,5 +154,5 @@ private:
 
 /**
  * @file
- * $Id: ADLSearchFrame.h,v 1.8 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: ADLSearchFrame.h,v 1.9 2004/11/03 19:26:12 arnetheduck Exp $
  */

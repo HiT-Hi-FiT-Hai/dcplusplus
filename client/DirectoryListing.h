@@ -67,14 +67,19 @@ public:
 			delete tthRoot;
 		}
 
+		void setAdls(bool _adls) {
+			adls = _adls;
+		}
+
 		bool getAdls() {
-			return getParent()->getAdls();
+			return adls || getParent()->getAdls();
 		}
 
 		GETSET(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
 		GETSET(TTHValue*, tthRoot, TTH);
+		bool adls;
 	};
 
 	class Directory : public FastAlloc<Directory> {
@@ -174,5 +179,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.33 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.34 2004/11/03 19:26:11 arnetheduck Exp $
  */

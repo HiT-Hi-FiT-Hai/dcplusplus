@@ -317,7 +317,14 @@ LRESULT ADLSearchFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 // Help
-LRESULT ADLSearchFrame::onHelp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+
+LRESULT ADLSearchFrame::onHelpButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
+	return 0;
+}
+
+LRESULT ADLSearchFrame::onHelpKey(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDR_ADLSEARCH);
 	return 0;
 }
@@ -543,5 +550,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.18 2004/10/26 13:53:59 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.19 2004/11/03 19:26:12 arnetheduck Exp $
  */

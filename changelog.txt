@@ -1,5 +1,5 @@
 ﻿-- 0.666 2004-11-03 --
-* Fixed copy nick to clipboard (thanks trem) [bug 173]
+* [bug 173] Fixed copy nick to clipboard (thanks trem)
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)
 * Added # of locally filtered results to search frame (thanks garg)
@@ -44,6 +44,8 @@
 * Fixed a crash with offline users and user commands (thanks naga) [bug 266]
 * Fixed a case insensitivity issue (thanks farcry)
 * Added favorite download directories (thanks naga)
+* Fixed MyINFO spam when hashing
+
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
@@ -72,7 +74,7 @@ international filenames in it - they will not be correctly converted.
 * Files that can't be moved to the target drive from the temp folder
   are now renamed to their real name
 * Text with unix and mac line end encodings should now be correctly displayed
-* TTH Values are used for right click download menus when available [bug 35]
+* [bug 35] TTH Values are used for right click download menus when available
 * Upgraded to WTL 7.5.4196
 * Updated license to allow others to release legal binaries compiled against WTL
 * Moved the core structures to UTF-8 to allow correct internationalisation (major change)
@@ -85,7 +87,7 @@ international filenames in it - they will not be correctly converted.
 * Removed autosearch string, it's not used any more
 * Fixed a tth hash speed bug (hashing should be much faster now)
 * File listings are now generated on the fly when someone needs them
-* Added UPnP support (thanks mark gillespie) [bug 127]
+* [bug 127] Added UPnP support (thanks mark gillespie)
 * Ctrl-L now opens file lists (thanks garg)
 * Various ADC patches (thanks sedulus)
 * Slightly changed temporary download name
@@ -101,7 +103,8 @@ international filenames in it - they will not be correctly converted.
 * Files scheduled for viewing are always set to highest prio
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
-* Fixed dupe usercommands on reconnect (thanks sed) [bug 162]
+* [bug 162] Fixed dupe usercommands on reconnect (thanks sed)
+* Links now clickable in PM's and notepad as well (thanks torgny nyblom)
 * Links now clickable in PM's and notepad as well (thanks naga)
 * Files are no longer hashed if the shared directory is removed while hashing
 * Added hash progress dialog, hashing is run at a higher priority when dialog is shown
@@ -109,7 +112,7 @@ international filenames in it - they will not be correctly converted.
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
-* Fixed a memory leak with rollback buffers under certain conditions [bug 169]
+* [bug 169] Fixed a memory leak with rollback buffers under certain conditions
 * ADC INF updates only send the necessary info (thanks sed)
 
  -- 0.4032 2004-08-08 --

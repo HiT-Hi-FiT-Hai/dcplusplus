@@ -203,6 +203,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 		}
 		if(is->MatchesFile(currentFile->getName(), filePath, currentFile->getSize())) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
+			copyFile->setAdls(true);
 			destDirVector[is->ddIndex].dir->files.push_back(copyFile);
 			destDirVector[is->ddIndex].fileAdded = true;
 
@@ -295,6 +296,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.18 2004/10/29 15:53:37 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.19 2004/11/03 19:26:10 arnetheduck Exp $
 */
 

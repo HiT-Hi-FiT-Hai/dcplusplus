@@ -34,6 +34,15 @@
 			</OBJECT>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Frequently Asked Questions">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Which keyboard commands can I use?">
+			<param name="Local" value="keyboard_commands.html">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Settings">
 		</OBJECT>
 	<UL>
