@@ -91,6 +91,17 @@ public:
 		}
 		return -1;
 	}
+	void forEach(void (T::*func)()) {
+		int n = GetItemCount();
+		for(int i = 0; i < n; ++i)
+			(getItemData(i)->*func)();
+	}
+	void forEachSelected(void (T::*func)()) {
+		int i = -1;
+		while( (i = GetNextItem(i, LVNI_SELECTED)) != -1)
+			(getItemData(i)->*func)();
+	}
+
 	void update(int i) {
 		int k = GetHeader().GetItemCount();
 		for(int j = 0; j < k; ++j)
@@ -154,5 +165,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.2 2003/11/11 20:31:57 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.3 2003/11/12 01:17:12 arnetheduck Exp $
 */

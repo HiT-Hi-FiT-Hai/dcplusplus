@@ -69,7 +69,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		CHAIN_MSG_MAP(ucBase)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -191,6 +191,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.15 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.16 2003/11/12 01:17:12 arnetheduck Exp $
  */
 

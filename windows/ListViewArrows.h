@@ -137,8 +137,9 @@ public:
 		return 0;
 	}
 
-	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { 
+	LRESULT onSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) { 
 		rebuildArrows();
+		bHandled = FALSE;
 		return 1;
 	}
 private:
@@ -150,6 +151,6 @@ private:
 
 /**
 * @file
-* $Id: ListViewArrows.h,v 1.1 2003/11/11 20:31:57 arnetheduck Exp $
+* $Id: ListViewArrows.h,v 1.2 2003/11/12 01:17:12 arnetheduck Exp $
 */
 

@@ -35,7 +35,7 @@ string SearchResult::toSR() {
 	tmp.append(1, ' ');
 	if(type == TYPE_FILE) {
 		tmp.append(file);
-		tmp.append(1, '\0x05');
+		tmp.append(1, '\x05');
 		tmp.append(Util::toString(size));
 	} else {
 		tmp.append(file, 0, file.length() - 1);
@@ -44,7 +44,7 @@ string SearchResult::toSR() {
 	tmp.append(Util::toString(slots));
 	tmp.append(1, '/');
 	tmp.append(Util::toString(freeSlots));
-	tmp.append(1, '\0x05');
+	tmp.append(1, '\x05');
 	tmp.append(hubName);
 	tmp.append(" (", 2);
 	tmp.append(hubIpPort);
@@ -206,6 +206,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.28 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.29 2003/11/12 01:17:11 arnetheduck Exp $
  */
 

@@ -75,8 +75,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
+		CHAIN_COMMANDS(ucBase)
 		CHAIN_MSG_MAP(baseClass)
-		CHAIN_MSG_MAP(ucBase)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -394,6 +394,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.25 2003/11/11 13:16:11 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.26 2003/11/12 01:17:12 arnetheduck Exp $
  */
 

@@ -28,7 +28,6 @@
 #include "../client/QueueManager.h"
 #include "../client/ShareManager.h"
 #include "../client/Util.h"
-#include "../client/UploadManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/HubManager.h"
 #include "../client/LogManager.h"
@@ -152,6 +151,14 @@ void HubFrame::onEnter() {
 		string s(message, ctrlMessage.GetWindowTextLength());
 		delete[] message;
 
+		// save command in history, reset current buffer pointer to the newest command
+		curCommandPosition = prevCommands.size();		//this places it one position beyond a legal subscript
+		if (!curCommandPosition || curCommandPosition > 0 && prevCommands[curCommandPosition - 1] != s) {
+			++curCommandPosition;
+			prevCommands.push_back(s);
+		}
+		currentCommand = "";
+
 		// Special command
 		if(s[0] == '/') {
 			string param;
@@ -246,44 +253,6 @@ void HubFrame::addAsFavorite() {
 	addClientLine(STRING(FAVORITE_HUB_ADDED));
 }
 
-LRESULT HubFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			try {
-				QueueManager::getInstance()->addList((ctrlUsers.getItemData(i))->user, QueueItem::FLAG_MATCH_QUEUE);
-			} catch(const Exception& e) {
-				addClientLine(e.getError());
-			}
-		}
-	}
-	return 0;
-}
-
-LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			try {
-				QueueManager::getInstance()->addList((ctrlUsers.getItemData(i))->user, QueueItem::FLAG_CLIENT_VIEW);
-			} catch(const Exception& e) {
-				addClientLine(e.getError());
-			}
-		}
-	}
-	return 0;
-}
-
-LRESULT HubFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			HubManager::getInstance()->addFavoriteUser((ctrlUsers.getItemData(i))->user);
-		}
-	}
-	return 0;
-}
-
 LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	if(client->isConnected()) {
@@ -323,36 +292,14 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
-LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i=-1;
-	if(client->isConnected()) {
-		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			PrivateFrame::openWindow((ctrlUsers.getItemData(i))->user);
-		}
-	}
-	return 0;
-}
-
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-
 	if(client->isConnected() && item->iItem != -1) {
-		try {
-			QueueManager::getInstance()->addList((ctrlUsers.getItemData(item->iItem))->user, QueueItem::FLAG_CLIENT_VIEW);
-		} catch(const Exception& e) {
-			addClientLine(e.getError());
-		}
+		ctrlUsers.getItemData(item->iItem)->getList();
 	}
 	return 0;
 }
 
-LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	int i = -1;
-	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		UploadManager::getInstance()->reserveSlot((ctrlUsers.getItemData(i))->user);
-	}
-	return 0; 
-};
 
 bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 	int i = ctrlUsers.findItem(u->getNick());
@@ -515,7 +462,6 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	rc.left +=2;
 	rc.right -=2;
 	ctrlMessage.MoveWindow(rc);
-	
 }
 
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -855,20 +801,95 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 	if(!complete.empty() && wParam != VK_TAB && uMsg == WM_KEYDOWN)
 		complete.clear();
 
+	if (uMsg != WM_KEYDOWN) {
+	switch(wParam) {
+			case VK_RETURN:
+				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
+					bHandled = FALSE;
+				}
+				break;
+		case VK_TAB:
+				bHandled = TRUE;
+  				break;
+  			default:
+  				bHandled = FALSE;
+				break;
+			}
+		return 0;
+			}
+
 	switch(wParam) {
 		case VK_TAB:
-			if(uMsg == WM_KEYDOWN) {
 				onTab();
-			}
 			break;
 		case VK_RETURN:
 			if( (GetKeyState(VK_CONTROL) & 0x8000) || 
 				(GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				} else {
-					if(uMsg == WM_KEYDOWN) {
 						onEnter();
 					}
+			break;
+		case VK_UP:
+			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				//scroll up in chat command history
+				//currently beyond the last command?
+				if (curCommandPosition > 0) {
+					//check whether current command needs to be saved
+					if (curCommandPosition == prevCommands.size()) {
+						auto_ptr<char> messageContents(new char[ctrlMessage.GetWindowTextLength()+2]);
+						ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
+						currentCommand = string(messageContents.get());
+					}
+
+					//replace current chat buffer with current command
+					ctrlMessage.SetWindowText(prevCommands[--curCommandPosition].c_str());
+				}
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_DOWN:
+			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				//scroll down in chat command history
+
+				//currently beyond the last command?
+				if (curCommandPosition + 1 < prevCommands.size()) {
+					//replace current chat buffer with current command
+					ctrlMessage.SetWindowText(prevCommands[++curCommandPosition].c_str());
+				} else if (curCommandPosition + 1 == prevCommands.size()) {
+					//revert to last saved, unfinished command
+
+					ctrlMessage.SetWindowText(currentCommand.c_str());
+					++curCommandPosition;
+				}
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_HOME:
+			if (!prevCommands.empty() && (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				curCommandPosition = 0;
+				
+				auto_ptr<char> messageContents(new char[ctrlMessage.GetWindowTextLength()+2]);
+				ctrlMessage.GetWindowText(messageContents.get(), ctrlMessage.GetWindowTextLength()+1);
+				currentCommand = string(messageContents.get());
+
+				ctrlMessage.SetWindowText(prevCommands[curCommandPosition].c_str());
+			} else {
+				bHandled = FALSE;
+			}
+
+			break;
+		case VK_END:
+			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
+				curCommandPosition = prevCommands.size();
+
+				ctrlMessage.SetWindowText(currentCommand.c_str());
+			} else {
+				bHandled = FALSE;
 				}
 				break;
 		default:
@@ -1084,5 +1105,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.41 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.42 2003/11/12 01:17:12 arnetheduck Exp $
  */

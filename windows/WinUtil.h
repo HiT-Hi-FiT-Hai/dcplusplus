@@ -25,6 +25,7 @@
 
 #include "../client/Util.h"
 #include "../client/SettingsManager.h"
+#include "../client/User.h"
 
 // Some utilities for handling HLS colors, taken from Jean-Michel LE FOL's codeproject
 // article on WTL OfficeXP Menus
@@ -39,6 +40,51 @@ COLORREF HLS2RGB (HLSCOLOR hls);
 
 COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S);
 
+class UserInfoBase {
+public:
+	UserInfoBase(const User::Ptr& u) : user(u) { };
+	
+	void getList();
+	void matchQueue();
+	void pm();
+	void grant();
+	void addFav();
+
+	User::Ptr user;
+};
+
+template<class T>
+class UserInfoBaseHandler {
+public:
+	BEGIN_MSG_MAP(UserInfoBaseHandler)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
+		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
+		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
+		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
+	END_MSG_MAP()
+
+	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::matchQueue);
+		return 0;
+	}
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::getList);
+		return 0;
+	}
+	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::addFav);
+		return 0;
+	}
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::pm);
+		return 0;
+	}
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+		((T*)this)->getUserList().forEachSelected(&UserInfoBase::grant);
+		return 0;
+	}
+};
 
 class FlatTabCtrl;
 class UserCommand;
@@ -185,5 +231,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.19 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.20 2003/11/12 01:17:12 arnetheduck Exp $
  */

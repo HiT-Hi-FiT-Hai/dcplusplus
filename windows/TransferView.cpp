@@ -21,12 +21,10 @@
 #include "Resource.h"
 
 #include "../client/QueueManager.h"
-#include "../client/HubManager.h"
 #include "../client/ConnectionManager.h"
 
 #include "WinUtil.h"
 #include "TransferView.h"
-#include "PrivateFrame.h"
 
 int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH };
 int TransferView::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200 };
@@ -65,7 +63,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlTransfers.SetTextColor(WinUtil::textColor);
 
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
-	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
+	ctrlTransfers.setSortColumn(COLUMN_STATUS);
 
 	transferMenu.CreatePopupMenu();
 	transferMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
@@ -124,145 +122,17 @@ LRESULT TransferView::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	return FALSE; 
 }
 
-LRESULT TransferView::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		try {
-			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::FLAG_CLIENT_VIEW);
-		} catch(const Exception& e) {
-			dcdebug("TransferView::onGetList caught %s\n", e.getError().c_str());
-		}
-	}
-	return 0;
-}
-
-LRESULT TransferView::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		try {
-			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::FLAG_MATCH_QUEUE);
-		} catch(const Exception& e) {
-			dcdebug("TransferView::onGetList caught %s\n", e.getError().c_str());
-		}
-	}
-	return 0;
-}
-
-LRESULT TransferView::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		PrivateFrame::openWindow(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
-	}
-	return 0;
-}
-
-LRESULT TransferView::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		UploadManager::getInstance()->reserveSlot(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
-	}
-	return 0;
-}
-
-LRESULT TransferView::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		HubManager::getInstance()->addFavoriteUser(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
-	}
-	return 0;
-}
-
 LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CSTRING(CONNECTING_FORCED));
-		((ItemInfo*)ctrlTransfers.GetItemData(i))->user->connect();
+		ctrlTransfers.getItemData(i)->user->connect();
 	}
 	return 0;
 }
 
-LRESULT TransferView::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		QueueManager::getInstance()->removeSources(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::Source::FLAG_REMOVED);
-	}
-	return 0;
-}
-
-LRESULT TransferView::onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-	if(l->iSubItem == ctrlTransfers.getSortColumn()) {
-		if (!ctrlTransfers.isAscending())
-			ctrlTransfers.setSort(-1, ctrlTransfers.getSortType());
-		else
-			ctrlTransfers.setSortDirection(false);
-	} else {
-		switch(l->iSubItem) {
-		case COLUMN_TIMELEFT:
-			ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortTimeLeft); 
-			break;
-		case COLUMN_SPEED:
-			ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSpeed); 
-			break;
-		case COLUMN_SIZE:
-			ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSize); 
-			break;
-		case COLUMN_STATUS:
-			ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortStatus); 
-			break;
-		default:
-			ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortItem); 
-			break;
-		}
-	}
-	return 0;
-}
-
-int TransferView::sortSize(LPARAM a, LPARAM b) {
-	int i = sortItem(a, b);
-	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
-		ItemInfo* c = (ItemInfo*)a;
-		ItemInfo* d = (ItemInfo*)b;
-		return compare(c->size, d->size);			
-	}
-	return i;
-}
-int TransferView::sortStatus(LPARAM a, LPARAM b) {
-	int i = sortItem(a, b);
-	return (i == ExListViewCtrl::SORT_STRING_NOCASE) ? 0 : i;
-}
-int TransferView::sortSpeed(LPARAM a, LPARAM b) {
-	int i = sortItem(a, b);
-	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
-		ItemInfo* c = (ItemInfo*)a;
-		ItemInfo* d = (ItemInfo*)b;
-		return compare(c->speed, d->speed);			
-	}
-	return i;
-}
-int TransferView::sortTimeLeft(LPARAM a, LPARAM b) {
-	int i = sortItem(a, b);
-	if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
-		ItemInfo* c = (ItemInfo*)a;
-		ItemInfo* d = (ItemInfo*)b;
-		return compare(c->timeLeft, d->timeLeft);			
-	}
-	return i;
-}
-
-int TransferView::sortItem(LPARAM a, LPARAM b) {
-	ItemInfo* c = (ItemInfo*)a;
-	ItemInfo* d = (ItemInfo*)b;
-	if(c->status == d->status) {
-		if((c->type == d->type)) {
-			return ExListViewCtrl::SORT_STRING_NOCASE;
-		} else {
-			return (c->status == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
-		}
-	} else {
-		return (c->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
-	}
+void TransferView::ItemInfo::removeAll() {
+	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
 }
 
 LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
@@ -372,59 +242,27 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 }
 
 LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
-	if(wParam == ADD_DOWNLOAD_ITEM) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		StringList l;
-		for(int j = 0; j < COLUMN_LAST; j++) {
-			l.push_back(i->columns[j]);
-		}
-		dcassert(ctrlTransfers.find(i->lParam) == -1);
-		ctrlTransfers.insert(l, IMAGE_DOWNLOAD, i->lParam);
-		delete i;
-	} else if(wParam == ADD_UPLOAD_ITEM) {
-		StringListInfo* i = (StringListInfo*)lParam;
-		StringList l;
-		for(int j = 0; j < COLUMN_LAST; j++) {
-			l.push_back(i->columns[j]);
-		}
-		dcassert(ctrlTransfers.find(i->lParam) == -1);
-		ctrlTransfers.insert(l, IMAGE_UPLOAD, i->lParam);
-		delete i;
+	if(wParam == ADD_ITEM) {
+		ItemInfo* i = (ItemInfo*)lParam;
+		ctrlTransfers.insertItem(i, (i->type == ItemInfo::TYPE_DOWNLOAD) ? IMAGE_DOWNLOAD : IMAGE_UPLOAD);
 	} else if(wParam == REMOVE_ITEM) {
-		dcassert(ctrlTransfers.find(lParam) != -1);
-		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
-		delete (ItemInfo*)lParam;
-	} else if(wParam == SET_TEXT) {
-		StringListInfo* l = (StringListInfo*)lParam;
-		int n = ctrlTransfers.find(l->lParam);
-		if(n != -1) {
-			ctrlTransfers.SetRedraw(FALSE);
-			for(int i = 0; i < COLUMN_LAST; i++) {
-				if(!l->columns[i].empty()) {
-					ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
-				}
-			}
-			if(ctrlTransfers.getSortColumn() != COLUMN_USER)
-				ctrlTransfers.resort();
-			ctrlTransfers.SetRedraw(TRUE);
-		}
-
-
-		delete l;
-	} else if(wParam == SET_TEXTS) {
-		vector<StringListInfo*>* v = (vector<StringListInfo*>*)lParam;
+		ItemInfo* i = (ItemInfo*)lParam;
+		dcassert(ctrlTransfers.findItem(i) != -1);
+		ctrlTransfers.deleteItem(i);
+		delete i;
+	} else if(wParam == UPDATE_ITEM) {
+		ItemInfo* i = (ItemInfo*)lParam;
+		i->update();
+		ctrlTransfers.updateItem(i);
+		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
+			ctrlTransfers.resort();
+	} else if(wParam == UPDATE_ITEMS) {
+		vector<ItemInfo*>* v = (vector<ItemInfo*>*)lParam;
 		ctrlTransfers.SetRedraw(FALSE);
-		for(vector<StringListInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
-			StringListInfo* l = *j;
-			int n = ctrlTransfers.find(l->lParam);
-			if(n != -1) {
-				for(int i = 0; i < COLUMN_LAST; i++) {
-					if(!l->columns[i].empty()) {
-						ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
-					}
-				}
-			}
-			delete l;
+		for(vector<ItemInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
+			ItemInfo* i = *j;
+			i->update();
+			ctrlTransfers.updateItem(i);
 		}
 
 		if(ctrlTransfers.getSortColumn() != COLUMN_USER && ctrlTransfers.getSortColumn() != COLUMN_STATUS)
@@ -437,87 +275,109 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	return 0;
 }
 
+void TransferView::ItemInfo::update() {
+	u_int32_t colMask = updateMask;
+	updateMask = 0;
+
+	if(colMask & MASK_USER) {
+		columns[COLUMN_USER] = user->getFullNick();
+	}
+	if(colMask & MASK_STATUS) {
+		columns[COLUMN_STATUS] = statusString;
+	}
+	if(colMask & MASK_TIMELEFT) {
+		columns[COLUMN_TIMELEFT] = Util::formatSeconds(timeLeft);
+	}
+	if(colMask & MASK_SPEED) {
+		columns[COLUMN_SPEED] = Util::formatBytes(speed) + "/s";
+	}
+	if(colMask & MASK_FILE) {
+		columns[COLUMN_FILE] = file;
+	}
+	if(colMask & MASK_SIZE) {
+		columns[COLUMN_SIZE] = Util::formatBytes(size);
+	}
+	if(colMask & MASK_PATH) {
+		columns[COLUMN_PATH] = path;
+	}
+}
+
 void TransferView::onConnectionAdded(ConnectionQueueItem* aCqi) {
 	ItemInfo::Types t = aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD) ? ItemInfo::TYPE_UPLOAD : ItemInfo::TYPE_DOWNLOAD;
-	ItemInfo* ii = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
+	ItemInfo* i = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
 
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) == transferItems.end());
-		transferItems.insert(make_pair(aCqi, ii));
+		transferItems.insert(make_pair(aCqi, i));
+		i->statusString = STRING(CONNECTING);
+		i->updateMask |= ItemInfo::MASK_STATUS;
 	}
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_USER] = aCqi->getUser()->getFullNick();
-	i->columns[COLUMN_STATUS] = STRING(CONNECTING);
 
-	if(aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD)) {
-		PostMessage(WM_SPEAKER, ADD_UPLOAD_ITEM, (LPARAM)i);
-	} else {
-		PostMessage(WM_SPEAKER, ADD_DOWNLOAD_ITEM, (LPARAM)i);
-	}
+	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
 void TransferView::onConnectionStatus(ConnectionQueueItem* aCqi) {
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
+		i = transferItems[aCqi];		
+		i->statusString = aCqi->getState() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
+		i->updateMask |= ItemInfo::MASK_STATUS;
 	}
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_STATUS] = aCqi->getState() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onConnectionRemoved(ConnectionQueueItem* aCqi) {
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
-		ItemInfo::MapIter i = transferItems.find(aCqi);
-		dcassert(i != transferItems.end());
-		ii = i->second;
-		transferItems.erase(i);
+		ItemInfo::MapIter ii = transferItems.find(aCqi);
+		dcassert(ii != transferItems.end());
+		i = ii->second;
+		transferItems.erase(ii);
 	}
-	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)ii);
+	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason) {
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
+		i = transferItems[aCqi];		
+		i->statusString = aReason;
+		i->updateMask |= ItemInfo::MASK_STATUS;
 	}
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_STATUS] = aReason;
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onDownloadStarting(Download* aDownload) {
 	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
+		i = transferItems[aCqi];		
+		i->status = ItemInfo::STATUS_RUNNING;
+		i->pos = 0;
+		i->start = aDownload->getPos();
+		i->actual = i->start;
+		i->size = aDownload->getSize();
+		i->file = Util::getFileName(aDownload->getTarget());
+		i->path = Util::getFilePath(aDownload->getTarget());
+		i->statusString = STRING(DOWNLOAD_STARTING);
+		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
+			ItemInfo::MASK_SIZE;
 	}
-	ii->status = ItemInfo::STATUS_RUNNING;
-	ii->pos = 0;
-	ii->start = aDownload->getPos();
-	ii->actual = ii->start;
-	ii->size = aDownload->getSize();
 
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_FILE] = Util::getFileName(aDownload->getTarget());
-	i->columns[COLUMN_PATH] = Util::getFilePath(aDownload->getTarget());
-	i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_STARTING);
-	i->columns[COLUMN_SIZE] = Util::formatBytes(aDownload->getSize());
-
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onDownloadTick(const Download::List& dl) {
-	vector<StringListInfo*>* v = new vector<StringListInfo*>();
+	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(dl.size());
 
 	char* buf = new char[STRING(DOWNLOADED_BYTES).size() + 64];
@@ -531,73 +391,70 @@ void TransferView::onDownloadTick(const Download::List& dl) {
 				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatSeconds((GET_TICK() - d->getStart())/1000).c_str());
 
 			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
-			ItemInfo* ii = transferItems[aCqi];
-			ii->actual = ii->start + d->getActual();
-			ii->pos = ii->start + d->getTotal();
-			ii->timeLeft = d->getSecondsLeft();
-			ii->speed = d->getRunningAverage();
+			ItemInfo* i = transferItems[aCqi];
+			i->actual = i->start + d->getActual();
+			i->pos = i->start + d->getTotal();
+			i->timeLeft = d->getSecondsLeft();
+			i->speed = d->getRunningAverage();
 
-			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-				i->columns[COLUMN_STATUS] = "* " + string(buf);
+				i->statusString = "* " + string(buf);
 			} else {
-				i->columns[COLUMN_STATUS] = buf;
+				i->statusString = buf;
 			}
-			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(d->getSecondsLeft());
-			i->columns[COLUMN_SPEED] = Util::formatBytes(d->getRunningAverage()) + "/s";
+			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED;
 
 			v->push_back(i);
 		}
 	}
 	delete[] buf;
 
-	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
+	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
 }
 
 void TransferView::onDownloadFailed(Download* aDownload, const string& aReason) {
 	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
-	}
-	ii->status = ItemInfo::STATUS_WAITING;
-	ii->pos = 0;
+		i = transferItems[aCqi];		
+		i->status = ItemInfo::STATUS_WAITING;
+		i->pos = 0;
 
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_STATUS] = aReason;
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+		i->statusString = aReason;
+		i->updateMask |= ItemInfo::MASK_STATUS;
+	}
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onUploadStarting(Upload* aUpload) {
 	ConnectionQueueItem* aCqi = aUpload->getUserConnection()->getCQI();
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
+		i = transferItems[aCqi];		
+		i->pos = 0;
+		i->start = aUpload->getPos();
+		i->actual = i->start;
+		i->size = aUpload->getSize();
+		i->status = ItemInfo::STATUS_RUNNING;
+		i->speed = 0;
+		i->timeLeft = 0;
+
+		i->file = Util::getFileName(aUpload->getFileName());
+		i->path = Util::getFilePath(aUpload->getFileName());
+		i->statusString = STRING(UPLOAD_STARTING);
+		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
+			ItemInfo::MASK_SIZE;
 	}
-	ii->pos = 0;
-	ii->start = aUpload->getPos();
-	ii->actual = ii->start;
-	ii->size = aUpload->getSize();
-	ii->status = ItemInfo::STATUS_RUNNING;
-	ii->speed = 0;
-	ii->timeLeft = 0;
 
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-
-	i->columns[COLUMN_FILE] = Util::getFileName(aUpload->getFileName());
-	i->columns[COLUMN_PATH] = Util::getFilePath(aUpload->getFileName());
-	i->columns[COLUMN_STATUS] = STRING(UPLOAD_STARTING);
-	i->columns[COLUMN_SIZE] = Util::formatBytes(aUpload->getSize());
-
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
 }
 
 void TransferView::onUploadTick(const Upload::List& ul) {
-	vector<StringListInfo*>* v = new vector<StringListInfo*>();
+	vector<ItemInfo*>* v = new vector<ItemInfo*>();
 	v->reserve(ul.size());
 
 	char* buf = new char[STRING(UPLOADED_BYTES).size() + 64];
@@ -608,55 +465,50 @@ void TransferView::onUploadTick(const Upload::List& ul) {
 			Upload* u = *j;
 
 			ConnectionQueueItem* aCqi = u->getUserConnection()->getCQI();
-			ItemInfo* ii = transferItems[aCqi];	
-			ii->actual = ii->start + u->getActual();
-			ii->pos = ii->start + u->getTotal();
-			ii->timeLeft = u->getSecondsLeft();
-			ii->speed = u->getRunningAverage();
+			ItemInfo* i = transferItems[aCqi];	
+			i->actual = i->start + u->getActual();
+			i->pos = i->start + u->getTotal();
+			i->timeLeft = u->getSecondsLeft();
+			i->speed = u->getRunningAverage();
 
 			sprintf(buf, CSTRING(UPLOADED_BYTES), Util::formatBytes(u->getPos()).c_str(), 
 				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatSeconds((GET_TICK() - u->getStart())/1000).c_str());
 
-			StringListInfo* i = new StringListInfo((LPARAM)ii);
 			if(u->isSet(Upload::FLAG_ZUPLOAD)) {
-				i->columns[COLUMN_STATUS] = "* " + string(buf);
+				i->statusString = "* " + string(buf);
 			} else {
-				i->columns[COLUMN_STATUS] = buf;
+				i->statusString = buf;
 			}
-			i->columns[COLUMN_TIMELEFT] = Util::formatSeconds(u->getSecondsLeft());
-			i->columns[COLUMN_SPEED] = Util::formatBytes(u->getRunningAverage()) + "/s";
 
+			i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_TIMELEFT | ItemInfo::MASK_SPEED;
 			v->push_back(i);
 		}
 	}
 
 	delete[] buf;
 
-	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
+	PostMessage(WM_SPEAKER, UPDATE_ITEMS, (LPARAM)v);
 }
 
 void TransferView::onTransferComplete(Transfer* aTransfer, bool isUpload) {
 	ConnectionQueueItem* aCqi = aTransfer->getUserConnection()->getCQI();
-	ItemInfo* ii;
+	ItemInfo* i;
 	{
 		Lock l(cs);
 		dcassert(transferItems.find(aCqi) != transferItems.end());
-		ii = transferItems[aCqi];		
-	}
-	ii->status = ItemInfo::STATUS_WAITING;
-	ii->pos = 0;
+		i = transferItems[aCqi];		
 
-	StringListInfo* i = new StringListInfo((LPARAM)ii);
-	i->columns[COLUMN_STATUS] = isUpload ? STRING(UPLOAD_FINISHED_IDLE) : STRING(DOWNLOAD_FINISHED_IDLE);
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
+		i->status = ItemInfo::STATUS_WAITING;
+		i->pos = 0;
+
+		i->statusString = isUpload ? STRING(UPLOAD_FINISHED_IDLE) : STRING(DOWNLOAD_FINISHED_IDLE);
+		i->updateMask |= ItemInfo::MASK_STATUS;
+	}
+	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);	
 }
 
-void TransferView::removeSelected() {
-	int i = -1;
-	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ItemInfo* ii = (ItemInfo*)ctrlTransfers.GetItemData(i);
-		ConnectionManager::getInstance()->removeConnection(ii->user, ii->type == ItemInfo::TYPE_DOWNLOAD);
-	}
+void TransferView::ItemInfo::disconnect() {
+	ConnectionManager::getInstance()->removeConnection(user, (type == TYPE_DOWNLOAD));
 }
 
 void TransferView::onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) throw() { 
@@ -709,5 +561,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.12 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.13 2003/11/12 01:17:12 arnetheduck Exp $
  */

@@ -28,77 +28,70 @@
 #include "../client/CriticalSection.h"
 #include "../client/ConnectionManagerListener.h"
 
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
+#include "WinUtil.h"
 
 class TransferView : public CWindowImpl<TransferView>, private DownloadManagerListener, 
-	private UploadManagerListener, private ConnectionManagerListener
+	private UploadManagerListener, private ConnectionManagerListener, 
+	public UserInfoBaseHandler<TransferView>
 {
 public:
 	TransferView() { };
 	~TransferView(void);
 
+	typedef UserInfoBaseHandler<TransferView> uibBase;
+
 	BEGIN_MSG_MAP(TransferView)
+		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
+		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
-		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
-		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
-		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
-		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
+		CHAIN_COMMANDS(uibBase)
+		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
-	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
-	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
 
 	void prepareClose();
-	void removeSelected();
 
 	LRESULT onKeyDownTransfers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
-			removeSelected();
+			ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
 		}
 		return 0;
 	}
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		removeSelected();
+		ctrlTransfers.forEachSelected(&ItemInfo::disconnect);
 		return 0;
 	}
 
-
-	static int sortSize(LPARAM a, LPARAM b);
-	static int sortStatus(LPARAM a, LPARAM b);
-	static int sortSpeed(LPARAM a, LPARAM b);
-	static int sortTimeLeft(LPARAM a, LPARAM b);
-	static int sortItem(LPARAM a, LPARAM b);
+	LRESULT TransferView::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		ctrlTransfers.forEachSelected(&ItemInfo::removeAll);
+		return 0;
+	}
 
 private:
+	class ItemInfo;
+public:
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS>& getUserList() { return ctrlTransfers; };
+private:
 	enum {
-		ADD_UPLOAD_ITEM,
-		ADD_DOWNLOAD_ITEM,
+		ADD_ITEM,
 		REMOVE_ITEM,
-		SET_TEXT,
-		SET_TEXTS,
+		UPDATE_ITEM,
+		UPDATE_ITEMS,
 	};
 
 	enum {
@@ -118,7 +111,7 @@ private:
 		IMAGE_UPLOAD
 	};
 
-	class ItemInfo {
+	class ItemInfo : public UserInfoBase {
 	public:
 		typedef HASH_MAP<ConnectionQueueItem*, ItemInfo*, PointerHash<ConnectionQueueItem> > Map;
 		typedef Map::iterator MapIter;
@@ -133,8 +126,10 @@ private:
 		};
 
 		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
-			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : user(u), type(t), status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0) { };
-		User::Ptr user;
+			int64_t p = 0, int64_t sz = 0, int st = 0, int a = 0) : UserInfoBase(u), type(t), 
+			status(s), pos(p), size(sz), start(st), actual(a), speed(0), timeLeft(0),
+			updateMask((u_int32_t)-1) { update(); };
+
 		Types type;
 		Status status;
 		int64_t pos;
@@ -143,22 +138,56 @@ private:
 		int64_t actual;
 		int64_t speed;
 		int64_t timeLeft;
-	};
+		string statusString;
+		string file;
+		string path;
 
-	class StringListInfo;
-	friend class StringListInfo;
-
-	class StringListInfo {
-	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
-		LPARAM lParam;
+		enum {
+			MASK_USER = 1 << COLUMN_USER,
+			MASK_STATUS = 1 << COLUMN_STATUS,
+			MASK_TIMELEFT = 1 << COLUMN_TIMELEFT,
+			MASK_SPEED = 1 << COLUMN_SPEED,
+			MASK_FILE = 1 << COLUMN_FILE,
+			MASK_SIZE = 1 << COLUMN_SIZE,
+			MASK_PATH = 1 << COLUMN_PATH,
+		};
 		string columns[COLUMN_LAST];
+		u_int32_t updateMask;
+		void update();
+
+		void disconnect();
+		void removeAll();
+
+		const string& getText(int col) const {
+			return columns[col];
+		}
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
+			if(a->status == b->status) {
+				if(a->type != b->type) {
+					return (a->status == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
+				}
+			} else {
+				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
+			}
+
+			switch(col) {
+			case COLUMN_USER: return Util::stricmp(a->user->getNick(), b->user->getNick());
+			case COLUMN_STATUS: return 0;
+			case COLUMN_TIMELEFT: return compare(a->timeLeft, b->timeLeft);
+			case COLUMN_SPEED: return compare(a->speed, b->speed);
+			case COLUMN_FILE: return Util::stricmp(a->columns[COLUMN_FILE], b->columns[COLUMN_FILE]);
+			case COLUMN_SIZE: return compare(a->size, b->size);
+			case COLUMN_PATH: return Util::stricmp(a->columns[COLUMN_PATH], b->columns[COLUMN_PATH]);
+			}
+			return 0;
+		}
 	};
 
 	CriticalSection cs;
 	ItemInfo::Map transferItems;
 
-	ExListViewCtrl ctrlTransfers;
+	TypedListViewCtrl<ItemInfo, IDC_TRANSFERS> ctrlTransfers;
 	static int columnIndexes[];
 	static int columnSizes[];
 
@@ -200,5 +229,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.4 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.5 2003/11/12 01:17:12 arnetheduck Exp $
  */

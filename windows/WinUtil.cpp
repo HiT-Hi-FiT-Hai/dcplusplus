@@ -21,6 +21,7 @@
 #include "Resource.h"
 
 #include "WinUtil.h"
+#include "PrivateFrame.h"
 #include "SearchFrm.h"
 #include "LineDlg.h"
 
@@ -31,6 +32,8 @@
 #include "../client/TimerManager.h"
 #include "../client/HubManager.h"
 #include "../client/ResourceManager.h"
+#include "../client/QueueManager.h"
+#include "../client/UploadManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -124,6 +127,28 @@ COLORREF HLS_TRANSFORM (COLORREF rgb, int percent_L, int percent_S) {
 		s = BYTE((s * (100+percent_S)) / 100);
 	}
 	return HLS2RGB (HLS(h, l, s));
+}
+
+void UserInfoBase::matchQueue() {
+	try {
+		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
+	} catch(const Exception&) {
+	}
+}
+void UserInfoBase::getList() {
+	try {
+		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+	} catch(const Exception&) {
+	}
+}
+void UserInfoBase::addFav() {
+	HubManager::getInstance()->addFavoriteUser(user);
+}
+void UserInfoBase::pm() {
+	PrivateFrame::openWindow(user);
+}
+void UserInfoBase::grant() {
+	UploadManager::getInstance()->reserveSlot(user);
 }
 
 void WinUtil::init(HWND hWnd) {
@@ -549,5 +574,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.31 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.32 2003/11/12 01:17:12 arnetheduck Exp $
  */

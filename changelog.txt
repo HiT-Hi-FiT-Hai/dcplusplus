@@ -3,7 +3,7 @@
 * Added port to hub log files
 * Some fixes so that \client will compile better under linux (thanks christer palm, he's working on
   a linux version using dc++ as base...)
-* Speedups code cleanup to GUI list handling
+* Speedups, code cleanup to GUI list handling
 * New STLPort again (4.6) (a lot of the match queue crashes are probably STLPort's fault, 
   so I'm changing again, to see if the latest is better, + that I changed two lines in it)
 * Fixed some bugs in the &-translation
@@ -11,7 +11,7 @@
 * Updated the antifrag feature to recover from crashes (thanks distiller)
 * Fixed so that tab completion works with multiple [xxx] tags (thanks sed)
 * More code cleanup, keep a backup of your queue handy while upgrading, queue code extensively
-  rewritten to easy later changes
+  rewritten to ease future changes
 * Updates to the autosearch feature
 * Added (well, enabled) GetZBlock, a feature that makes all transfers safer by checking CRC's
   during the transfer and if possible, compresses. This is an experimental feature, and it might
@@ -31,7 +31,7 @@
 * Added date added column to queue
 * Temporary downloads folder no longer shared
 * Fixed a bug where the socks5 proxy was used for http proxy connections (thanks dan fulger)
-
+* Added command history scrolling using ctrl-up/down/home/end (thanks cologic)
 
  -- 0.301 2003-10-28 --
 * Fixed usercommands in hub frame (kick for example)

@@ -37,7 +37,8 @@
 #define EDIT_MESSAGE_MAP 10		// This could be any number, really...
 
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, 
-	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>
+	public CSplitterImpl<HubFrame>, private TimerManagerListener, public UCHandler<HubFrame>,
+	public UserInfoBaseHandler<HubFrame>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUB, 0, COLOR_3DFACE);
@@ -45,8 +46,13 @@ public:
 	typedef CSplitterImpl<HubFrame> splitBase;
 	typedef MDITabChildWindowImpl<HubFrame> baseClass;
 	typedef UCHandler<HubFrame> ucBase;
+	typedef UserInfoBaseHandler<HubFrame> uibBase;
 
 	BEGIN_MSG_MAP(HubFrame)
+		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
+		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
+		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
+		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -56,24 +62,16 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
-		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
-		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
-		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
+		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
-		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
-		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
-		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
-		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
+		CHAIN_COMMANDS(ucBase)
+		CHAIN_COMMANDS(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
-		CHAIN_MSG_MAP(ucBase)
 		REFLECT_NOTIFICATIONS()
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -92,12 +90,7 @@ public:
 	}
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -176,6 +169,10 @@ public:
 	}
 
 private:
+	class UserInfo;
+public:
+	TypedListViewCtrl<UserInfo, IDC_USERS>& getUserList() { return ctrlUsers; };
+private:
 
 	enum { IDC_USER_COMMAND = 3500 };
 
@@ -199,10 +196,9 @@ private:
 		COLUMN_LAST
 	};
 	
-	class UserInfo {
+	class UserInfo : public UserInfoBase {
 	public:
-		UserInfo(const User::Ptr& u) : user(u) { update(); };
-		User::Ptr user;
+		UserInfo(const User::Ptr& u) : UserInfoBase(u) { update(); };
 
 		const string& getText(int col) const {
 			switch(col) {
@@ -282,6 +278,10 @@ private:
 	string lastServer;
 	
 	bool waitingForPW;
+
+	StringList prevCommands;
+	string currentCommand;
+	StringList::size_type curCommandPosition;		//can't use an iterator because StringList is a vector, and vector iterators become invalid after resizing
 
 	Client* client;
 	string server;
@@ -379,6 +379,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.31 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.32 2003/11/12 01:17:12 arnetheduck Exp $
  */
 
