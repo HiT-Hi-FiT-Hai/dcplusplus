@@ -48,7 +48,8 @@ void startup() {
 
 	SettingsManager::getInstance()->load();	
 
-	for(int i = 0; i < SettingsManager::SPEED_LAST; i++) {
+	int i;
+	for(i = 0; i < SettingsManager::SPEED_LAST; i++) {
 		if(SETTING(CONNECTION) == SettingsManager::connectionSpeeds[i])
 			break;
 	}
@@ -82,6 +83,6 @@ void shutdown() {
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.10 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.11 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

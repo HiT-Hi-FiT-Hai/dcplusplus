@@ -222,6 +222,15 @@ public:
 		}
 		return event;
 	}
+
+	void setBlocking(bool block) throw(SocketException) {
+		if(block) {
+			checksockerr(WSAEventSelect(sock, event, 0));
+			ioctlsocket(sock, FIONBIO, (u_long*)0);
+		} else {
+			ioctlsocket(sock, FIONBIO, (u_long*)1);
+		}
+	}
 #endif
 
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
@@ -268,6 +277,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.27 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Socket.h,v 1.28 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

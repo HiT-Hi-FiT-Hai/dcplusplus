@@ -76,6 +76,7 @@
 		<String Name="HubListDownloaded">Hub list downloaded...</String>
 		<String Name="HubName">Name</String>
 		<String Name="HubPassword">Hub password</String>
+		<String Name="HubUsers">Users</String>
 		<String Name="IgnoredMessage">Ignored message: </String>
 		<String Name="ImportQueue">Import queue from NMDC</String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
@@ -126,7 +127,8 @@
 		<String Name="NotSocket">Not a socket</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
-		<String Name="NoUsersToDownload">No users to download from</String>
+		<String Name="NoUsers">No users</String>
+		<String Name="NoUsersToDownloadFrom">No users to download from</String>
 		<String Name="Normal">Normal</String>
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>

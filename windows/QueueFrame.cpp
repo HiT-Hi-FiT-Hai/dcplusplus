@@ -132,10 +132,63 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	QueueManager::getInstance()->getQueue();
 	
-	updateStatus();
-
 	bHandled = FALSE;
 	return 1;
+}
+
+QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
+
+	columns[COLUMN_TARGET] = qi->getTargetFileName();
+	string tmp;
+	
+	int online = 0;
+	for(QueueItem::Source::Iter j = qi->getSources().begin(); j != qi->getSources().end(); ++j) {
+		if(tmp.size() > 0)
+			tmp += ", ";
+		
+		QueueItem::Source::Ptr sr = *j;
+		if(sr->getUser()->isOnline())
+			online++;
+		
+		tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
+	}
+	columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
+	
+	if(qi->getStatus() == QueueItem::WAITING) {
+		
+		char buf[64];
+		if(online > 0) {
+			
+			if(qi->getSources().size() == 1) {
+				columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
+			} else {
+				sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, qi->getSources().size());
+				columns[COLUMN_STATUS] = buf;
+			}
+		} else {
+			if(qi->getSources().size() == 0) {
+				columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD_FROM);
+			} else if(qi->getSources().size() == 1) {
+				columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
+			} else if(qi->getSources().size() == 2) {
+				columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
+			} else {
+				sprintf(buf, CSTRING(ALL_USERS_OFFLINE), aQI->getSources().size());
+				columns[COLUMN_STATUS] = buf;
+			}
+		}
+	} else if(aQI->getStatus() == QueueItem::RUNNING) {
+		columns[COLUMN_STATUS] = STRING(RUNNING);
+	} 
+	
+	switch(qi->getPriority()) {
+	case QueueItem::PAUSED: columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
+	case QueueItem::LOW: columns[COLUMN_PRIORITY] = STRING(LOW); break;
+	case QueueItem::NORMAL: columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
+	case QueueItem::HIGH: columns[COLUMN_PRIORITY] = STRING(HIGH); break;
+	default: dcassert(0); break;
+	}
+	columns[COLUMN_PATH] = qi->getTarget();
 }
 
 void QueueFrame::onQueueAdded(QueueItem* aQI) {
@@ -148,150 +201,129 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 			queueSize+=aQI->getSize();
 		}
 		queueItems++;
+		dirty = true;
 	}
-	StringListInfo* i = new StringListInfo((LPARAM)aQI);
-
-	i->columns[COLUMN_TARGET] = aQI->getTargetFileName();
-	i->columns[COLUMN_STATUS] = STRING(WAITING);
-	if(aQI->getSize() == -1) {
-		i->columns[COLUMN_SIZE] = STRING(UNKNOWN);
-	} else {
-		i->columns[COLUMN_SIZE] = Util::formatBytes(aQI->getSize()); 
-	}
-	switch(aQI->getPriority()) {
-	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
-	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = STRING(LOW); break;
-	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
-	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
-	default: dcassert(0); break;
-	}
-	i->columns[COLUMN_PATH] = aQI->getTarget();
+	StringListInfo* i = new StringListInfo(qi);
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
-void QueueFrame::onQueueRemoved(QueueItem* aQI) {
+void QueueFrame::onQueueList(const QueueItem::List& li) {
+	vector<StringListInfo*>* i = new vector<StringListInfo*>;
+	i->reserve(li.size());
+
 	{
 		Lock l(cs);
+		
+		for(QueueItem::List::const_iterator j = li.begin(); j != li.end(); ++j) {
+			QueueItem* aQI = *j;
+			QueueItem* qi = new QueueItem(*aQI);
+			dcassert(queue.find(aQI) == queue.end());
+			queue[aQI] = qi;
+			if(!aQI->isSet(QueueItem::USER_LIST)) {
+				queueSize+=aQI->getSize();
+			}
+			queueItems++;
+			dirty = true;
+			i->push_back(new StringListInfo(qi));
+		}
+	}
+	PostMessage(WM_SPEAKER, ADD_ITEMS, (LPARAM)i);
+}
+
+void QueueFrame::onQueueRemoved(QueueItem* aQI) {
+	QueueItem* qi = NULL;
+	{
+		Lock l(cs);
+		QueueIter i = queue.find(aQI);
+		dcassert(i != queue.end());
+		qi = i->second;
+		queue.erase(i);
+
 		if(!aQI->isSet(QueueItem::USER_LIST)) {
 			queueSize-=aQI->getSize();
 			dcassert(queueSize >= 0);
 		}
 		queueItems--;
 		dcassert(queueItems >= 0);
+		dirty = true;
 	}
 
-	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM) aQI);
+	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM) qi);
 }
 
 void QueueFrame::onQueueUpdated(QueueItem* aQI) {
-
+	QueueItem* qi = NULL;
+	StringListInfo* li = NULL;
 	{
 		Lock l(cs);
 		dcassert(queue.find(aQI) != queue.end());
-		QueueItem* q = queue[aQI];
-		for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+		qi = queue[aQI];
+		for(QueueItem::Source::Iter i = qi->getSources().begin(); i != qi->getSources().end(); ++i) {
 			delete *i;
 		}
-		q->getSources().clear();
+		qi->getSources().clear();
 		for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-			q->getSources().push_back(new QueueItem::Source(*(*j)));
+			qi->getSources().push_back(new QueueItem::Source(*(*j)));
 		}
-		q->setPriority(aQI->getPriority());
-		q->setStatus(aQI->getStatus());
-	}
-	StringListInfo* i = new StringListInfo((LPARAM)aQI);
-
-	string tmp;
-	
-	int online = 0;
-	for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-		if(tmp.size() > 0)
-			tmp += ", ";
-		
-		QueueItem::Source::Ptr sr = *j;
-		if(sr->getUser()->isOnline())
-			online++;
-			
-		tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
-	}
-	if(tmp.empty()) {
-		tmp = "No users";
-	}
-	i->columns[COLUMN_USERS] = tmp;
-	
-	if(aQI->getStatus() == QueueItem::WAITING) {
-		
-		char buf[64];
-		if(online > 0) {
-			
-			if(aQI->getSources().size() == 1) {
-				i->columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
-			} else {
-				sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, aQI->getSources().size());
-				i->columns[COLUMN_STATUS] = buf;
-			}
-		} else {
-			if(aQI->getSources().size() == 0) {
-				i->columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD);
-			} else if(aQI->getSources().size() == 1) {
-				i->columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
-			} else if(aQI->getSources().size() == 2) {
-				i->columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
-			} else {
-				sprintf(buf, CSTRING(ALL_USERS_OFFLINE), aQI->getSources().size());
-				i->columns[COLUMN_STATUS] = buf;
-			}
-		}
-	} else if(aQI->getStatus() == QueueItem::RUNNING) {
-		i->columns[COLUMN_STATUS] = STRING(RUNNING);
-	} 
-	
-	switch(aQI->getPriority()) {
-	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
-	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = STRING(LOW); break;
-	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
-	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
-	default: dcassert(0); break;
+		qi->setPriority(aQI->getPriority());
+		qi->setStatus(aQI->getStatus());
+		li = new StringListInfo(qi);
 	}
 	
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)li);
 }
 
 LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		
 	if(wParam == ADD_ITEM) {
-		StringListInfo* i = (StringListInfo*)lParam;
+		StringListInfo* li = (StringListInfo*)lParam;
 		StringList l;
-		QueueItem* qi = NULL;
-		{
-			Lock l(cs);
-			dcassert(queue.find((QueueItem*)i->lParam) != queue.end());
-			qi = queue[(QueueItem*)i->lParam];
-		}
-		string dir = getDirectory(qi->getTarget());
-		bool updateDir = directories.find(dir) == directories.end();
-		directories.insert(make_pair(dir, qi));
+		
+		string dir = getDirectory(li->qi->getTarget());
+
+		bool updateDir = (directories.find(dir) == directories.end());
+		directories.insert(make_pair(dir, li->qi));
 
 		if(!updateDir && curDir == dir) {
 			for(int j = 0; j < COLUMN_LAST; j++) {
-				l.push_back(i->columns[j]);
+				l.push_back(li->columns[j]);
 			}
-			dcassert(ctrlQueue.find(i->lParam) == -1);
-			ctrlQueue.insert(l, WinUtil::IMAGE_FILE, (LPARAM)qi);
+			dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
+			ctrlQueue.insert(l, WinUtil::IMAGE_FILE, (LPARAM)li->qi);
 		} else if(directories.count(dir) == 1) {
 			l.push_back(dir);
 			ctrlDirectories.insert(l, WinUtil::IMAGE_DIRECTORY);
 		}
-		delete i;
+		delete li;
+		updateStatus();
+	} else if(wParam == ADD_ITEMS) {
+		vector<StringListInfo*>* vli = (vector<StringListInfo*>*)lParam;
+
+		for(vector<StringListInfo*>::iterator i = vli->begin(); i != vli->end(); ++i) {
+			StringListInfo* li = *i;
+			StringList l;
+			
+			string dir = getDirectory(li->qi->getTarget());
+			
+			bool updateDir = (directories.find(dir) == directories.end());
+			directories.insert(make_pair(dir, li->qi));
+			
+			if(!updateDir && curDir == dir) {
+				for(int j = 0; j < COLUMN_LAST; j++) {
+					l.push_back(li->columns[j]);
+				}
+				dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
+				ctrlQueue.insert(l, WinUtil::IMAGE_FILE, (LPARAM)li->qi);
+			} else if(directories.count(dir) == 1) {
+				l.push_back(dir);
+				ctrlDirectories.insert(l, WinUtil::IMAGE_DIRECTORY);
+			}
+			delete li;
+		}
+		delete vli;
 		updateStatus();
 	} else if(wParam == REMOVE_ITEM) {
-		QueueItem* qi;
-		{
-			Lock l(cs);
-			dcassert(queue.find((QueueItem*)lParam) != queue.end());
-			qi = queue[(QueueItem*)lParam];
-		}
-		
+		QueueItem* qi = (QueueItem*)lParam;
 		string dir = getDirectory(qi->getTarget());
 
 		if(dir == curDir) {
@@ -311,20 +343,18 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 		if(directories.count(dir) == 0) {
 			ctrlDirectories.deleteItem(dir);
 			if(curDir == dir)
-				curDir == Util::emptyString;
+				curDir = Util::emptyString;
 		}
+
+		delete qi;
+		updateStatus();
+
 	} else if(wParam == SET_TEXT) {
 		StringListInfo* li = (StringListInfo*)lParam;
-		QueueItem* qi;
-		{
-			Lock l(cs);
-			dcassert(queue.find((QueueItem*)li->lParam) != queue.end());
-			qi = queue[(QueueItem*)li->lParam];
-		}
-		
-		string dir = getDirectory(qi->getTarget());
+				
+		string dir = getDirectory(li->qi->getTarget());
 		if(dir == curDir) {
-			int n = ctrlQueue.find((LPARAM)qi);
+			int n = ctrlQueue.find((LPARAM)li->qi);
 			dcassert(n != -1);
 			ctrlQueue.SetRedraw(FALSE);
 			for(int i = 0; i < COLUMN_LAST; i++) {
@@ -381,7 +411,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				browseMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				mi.wID = IDC_REMOVE_SOURCE + menuItems;
 				removeMenu.InsertMenuItem(menuItems, TRUE, &mi);
-				if((*i)->getUser()) {
+				if((*i)->getUser()->isOnline()) {
 					mi.wID = IDC_PM + menuItems;
 					pmMenu.InsertMenuItem(menuItems, TRUE, &mi);
 				}
@@ -561,12 +591,15 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 }
 
 LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-	if(l->uChanged == LVIF_STATE && (l->uNewState & LVIS_SELECTED)) {
+	NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
+	if(lv->uChanged == LVIF_STATE && (lv->uNewState & LVIS_SELECTED)) {
+		Lock l(cs);
+
 		ctrlQueue.DeleteAllItems();
 		char* buf = new char[MAX_PATH];
-		ctrlDirectories.GetItemText(l->iItem, 0, buf, MAX_PATH);
+		ctrlDirectories.GetItemText(lv->iItem, 0, buf, MAX_PATH);
 		curDir = buf;
+		delete buf;
 
 		pair<DirectoryIter, DirectoryIter> i = directories.equal_range(curDir);
 
@@ -574,64 +607,11 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 			QueueItem* qi = j->second;
 
 			StringList sl;
-			
-			sl.push_back(qi->getTargetFileName());
-
-			string tmp;
-			int online = 0;
-			for(QueueItem::Source::Iter j = qi->getSources().begin(); j != qi->getSources().end(); ++j) {
-				if(!tmp.empty())
-					tmp += ", ";
-				
-				QueueItem::Source::Ptr sr = *j;
-				if(sr->getUser()->isOnline())
-					online++;
-				
-				tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
-			}
-			if(tmp.empty()) {
-				tmp = "No users";
+			StringListInfo li(qi);
+			for(int k = 0; k < COLUMN_LAST; k++) {
+				sl.push_back(li.columns[k]);
 			}
 			
-			if(qi->getStatus() == QueueItem::WAITING) {
-				char buf[64];
-				if(online > 0) {
-					if(qi->getSources().size() == 1) {
-						sl.push_back(STRING(WAITING_USER_ONLINE));
-					} else {
-						sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, qi->getSources().size());
-						sl.push_back(buf);
-					}
-				} else {
-					if(qi->getSources().size() == 0) {
-						sl.push_back(STRING(NO_USERS_TO_DOWNLOAD));
-					} else if(qi->getSources().size() == 1) {
-						sl.push_back(STRING(USER_OFFLINE));
-					} else if(qi->getSources().size() == 2) {
-						sl.push_back(STRING(BOTH_USERS_OFFLINE));
-					} else {
-						sprintf(buf, CSTRING(ALL_USERS_OFFLINE), qi->getSources().size());
-						sl.push_back(buf);
-					}
-				}
-			} else if(qi->getStatus() == QueueItem::RUNNING) {
-				sl.push_back(STRING(RUNNING));
-			} 
-			
-			if(qi->getSize() == -1) {
-				sl.push_back(STRING(UNKNOWN));
-			} else {
-				sl.push_back(Util::formatBytes(qi->getSize())); 
-			}
-			switch(qi->getPriority()) {
-			case QueueItem::PAUSED: sl.push_back(STRING(PAUSED)); break;
-			case QueueItem::LOW: sl.push_back(STRING(LOW)); break;
-			case QueueItem::NORMAL: sl.push_back(STRING(NORMAL)); break;
-			case QueueItem::HIGH: sl.push_back(STRING(HIGH)); break;
-			default: dcassert(0); break;
-			}
-			sl.push_back(tmp);
-			sl.push_back(qi->getTarget());
 			ctrlQueue.insert(sl, WinUtil::IMAGE_FILE, (LPARAM)qi);
 		}
 	}
@@ -640,7 +620,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.4 2002/04/19 00:12:04 arnetheduck Exp $
  */
 
 

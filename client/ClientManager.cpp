@@ -117,8 +117,9 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					Socket s;
 					s.create(Socket::TYPE_UDP);
 					string ip, file;
-					short port = (short)SETTING(PORT);
+					short port = 0;
 					Util::decodeUrl(aSeeker, ip, port, file);
+					if(port == 0) port = 412;
 					s.connect(ip, port);
 					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 						SearchResult* sr = *i;
@@ -228,6 +229,6 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 }
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.18 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.19 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

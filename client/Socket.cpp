@@ -181,7 +181,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
 	int pos = 0;
-	int sendSize = min(aLen, 4096);
+	int sendSize = min(aLen, 8192);
 
 	bool blockAgain = false;
 
@@ -191,11 +191,11 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 			if(errno == EWOULDBLOCK) {
 				if(blockAgain) {
 					// Uhm, two blocks in a row...try making the send window smaller...
-					if(sendSize > 32) {
+					if(sendSize >= 256) {
 						sendSize /= 2;
 						dcdebug("Reducing send window size to %d\n", sendSize);
 					} else {
-						throw SocketException(STRING(OUT_OF_BUFFER_SPACE));
+						Thread::sleep(10);
 					}
 					blockAgain = false;
 				} else {
@@ -236,6 +236,6 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.32 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.33 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

@@ -192,10 +192,12 @@ public:
 		REMOVED,
 		SOURCES_UPDATED,
 		STATUS_UPDATED,
-		QUEUE_ITEM
+		QUEUE_ITEM,
+		QUEUE
 	};
 
 	virtual void onAction(Types, QueueItem*) { };
+	virtual void onAction(Types, const QueueItem::List&) { };
 };
 class ConnectionQueueItem;
 
@@ -252,9 +254,7 @@ public:
 
 	void getQueue() {
 		Lock l(cs);
-		for(QueueItem::Iter i = queue.begin(); i!= queue.end(); ++i) {
-			fire(QueueManagerListener::QUEUE_ITEM, *i);
-		}
+		fire(QueueManagerListener::QUEUE, queue);
 	}
 
 	void importNMQueue(const string& aFile) throw(FileException);
@@ -329,6 +329,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.16 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.17 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

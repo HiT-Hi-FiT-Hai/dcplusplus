@@ -456,7 +456,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		
 	} else if(wParam==STATS) {
 		if(client) {
-			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(USERS)).c_str());
+			ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
 			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
 		}
 
@@ -656,6 +656,6 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.4 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

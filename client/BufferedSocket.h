@@ -80,7 +80,7 @@ public:
 	static BufferedSocket* getSocket(char sep = '\n') throw(SocketException) { 
 		return new BufferedSocket(sep); 
 	};
-	static BufferedSocket* accept(const ServerSocket& aSocket, char sep = '\n', BufferedSocketListener* l = NULL);
+	static BufferedSocket* accept(const ServerSocket& aSocket, char sep = '\n', BufferedSocketListener* l = NULL) throw(SocketException);
 	
 	static void putSocket(BufferedSocket* aSock) { 
 		aSock->removeListeners(); 
@@ -237,5 +237,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.35 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.36 2002/04/19 00:12:04 arnetheduck Exp $
  */

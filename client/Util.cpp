@@ -83,7 +83,7 @@ string Util::getLocalIp() {
 	string tmp;
 	
 	char buf[256];
-	gethostname(buf, 256);
+	gethostname(buf, 255);
 	hostent* he = gethostbyname(buf);
 	if(he == NULL || he->h_addr_list[0] == 0)
 		return Util::emptyString;
@@ -116,6 +116,6 @@ string Util::getLocalIp() {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.14 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.15 2002/04/19 00:12:04 arnetheduck Exp $
  */
 

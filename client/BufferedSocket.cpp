@@ -22,7 +22,7 @@
 #include "BufferedSocket.h"
 #include "File.h"
 
-BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* = '\n' */, BufferedSocketListener* l /* = NULL */) throw(SocketException){
+BufferedSocket* BufferedSocket::accept(const ServerSocket& aSocket, char sep /* = '\n' */, BufferedSocketListener* l /* = NULL */) throw(SocketException) {
 	BufferedSocket* b = getSocket(sep);
 	if(l != NULL) {
 		b->addListener(l);
@@ -50,8 +50,9 @@ void BufferedSocket::threadSendFile() {
 		return;
 	}
 
-	while(WaitForSingleObject(taskSem, 0) == WAIT_TIMEOUT) {
-		try {
+	try{
+		setBlocking(true);
+		while(!taskSem.wait(0)) {
 
 			if( (len = file->read(inbuf, inbufSize)) == 0) {
 				fire(BufferedSocketListener::TRANSMIT_DONE);
@@ -59,13 +60,13 @@ void BufferedSocket::threadSendFile() {
 			}
 			Socket::write((char*)inbuf, len);
 			fire(BufferedSocketListener::BYTES_SENT, len);
-		} catch(Exception e) {
-			dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
-			fire(BufferedSocketListener::FAILED, e.getError());
-			return;
 		}
+	} catch(Exception e) {
+		dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
+		fire(BufferedSocketListener::FAILED, e.getError());
+		return;
 	}
-
+		
 	// Signal the task again since we don't handle it here...
 	taskSem.signal();
 #ifdef _DEBUG
@@ -98,6 +99,7 @@ bool BufferedSocket::threadBind() {
 }
 
 bool BufferedSocket::threadConnect() {
+#ifdef WIN32
 	HANDLE h[2];
 	string s;
 	short p;
@@ -159,6 +161,7 @@ bool BufferedSocket::threadConnect() {
 
 	// ?
 	return false;
+#endif
 }	
 
 void BufferedSocket::threadRead() {
@@ -281,7 +284,7 @@ void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 }
 
 void BufferedSocket::threadRun() {
-	
+#ifdef WIN32	
 	HANDLE h[2];
 	
 	h[0] = taskSem;
@@ -335,9 +338,10 @@ void BufferedSocket::threadRun() {
 
 		}
 	}
+#endif
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.35 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.36 2002/04/19 00:12:04 arnetheduck Exp $
  */

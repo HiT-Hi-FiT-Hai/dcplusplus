@@ -34,6 +34,7 @@ class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManage
 public:
 	enum {
 		ADD_ITEM,
+		ADD_ITEMS,
 		REMOVE_ITEM,
 		SET_TEXT
 	};
@@ -46,14 +47,13 @@ public:
 		IDC_PRIORITY_LOW = 4001,
 		IDC_PRIORITY_NORMAL = 4002,
 		IDC_PRIORITY_HIGH = 4003,
-		
 	};
 
 	DECLARE_FRAME_WND_CLASS_EX("QueueFrame", IDR_QUEUE, 0, COLOR_3DFACE);
 
 	static QueueFrame* frame;
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0) { 
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), dirty(false) { 
 		QueueManager::getInstance()->addListener(this);
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
@@ -171,11 +171,11 @@ private:
 
 	class StringListInfo;
 	friend class StringListInfo;
-
+	
 	class StringListInfo {
 	public:
-		StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
-		LPARAM lParam;
+		StringListInfo(QueueItem* aQi);
+		QueueItem* qi;
 		string columns[COLUMN_LAST];
 	};
 	
@@ -185,6 +185,8 @@ private:
 	CMenu pmMenu;
 	CMenu priorityMenu;
 	
+	bool dirty;
+
 	int menuItems;
 	StringList searchFilter;
 
@@ -210,8 +212,11 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	
 	void updateStatus() {
-		ctrlStatus.SetText(1, ("Items: " + Util::toString(queueItems)).c_str());
-		ctrlStatus.SetText(2, ("Size: " + Util::formatBytes(queueSize)).c_str());
+		if(dirty) {
+			ctrlStatus.SetText(1, ("Items: " + Util::toString(queueItems)).c_str());
+			ctrlStatus.SetText(2, ("Size: " + Util::formatBytes(queueSize)).c_str());
+			dirty = false;
+		}
 	}
 
 	string getDirectory(const string& aTarget) {
@@ -223,7 +228,7 @@ private:
 			return aTarget.substr(0, i+1);
 		}
 		if( ((j - i) > 6) || (k = aTarget.rfind('\\', j-1)) == string::npos) {
-			return aTarget.substr(j+1, j-i);
+			return aTarget.substr(j+1, i-j);
 		}
 		if(k > 3)
 			return aTarget.substr(k+1, i-k);
@@ -241,7 +246,15 @@ private:
 		default: dcassert(0); break;
 		}
 	};
-	
+
+	virtual void onAction(QueueManagerListener::Types type, const QueueItem::List& l) { 
+		switch(type) {
+		case QueueManagerListener::QUEUE: onQueueList(l); break;
+		default: dcassert(0); break;
+		}
+	};
+
+	void onQueueList(const QueueItem::List& l);
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
@@ -252,6 +265,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.5 2002/04/19 00:12:04 arnetheduck Exp $
  */
 
