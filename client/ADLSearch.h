@@ -47,8 +47,8 @@ class ADLSearch
 public:
 
 	// Constructor
-	ADLSearch() : searchString("<Enter string>"), isActive(true), sourceType(OnlyFile), 
-		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0), isAutoQueue(false) {}
+	ADLSearch() : searchString("<Enter string>"), isActive(true), isAutoQueue(false), sourceType(OnlyFile), 
+		minFileSize(-1), maxFileSize(-1), typeFileSize(SizeBytes), destDir("ADLSearch"), ddIndex(0) {}
 
 	// Prepare search
 	void Prepare(StringMap& params) {
@@ -294,5 +294,5 @@ public:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.12 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.13 2004/03/02 09:30:19 arnetheduck Exp $
  */

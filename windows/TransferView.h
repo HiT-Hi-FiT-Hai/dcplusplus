@@ -54,6 +54,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
+		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		CHAIN_COMMANDS(uibBase)
 	END_MSG_MAP()
 
@@ -63,6 +64,7 @@ public:
 	LRESULT onSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void prepareClose();
 
@@ -244,5 +246,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.9 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.10 2004/03/02 09:30:20 arnetheduck Exp $
  */

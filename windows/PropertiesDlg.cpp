@@ -30,7 +30,7 @@
 #include "Advanced2Page.h"
 #include "UCPage.h"
 
-PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet("Settings")
+PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet(CSTRING(SETTINGS))
 {
 	pages[0] = new GeneralPage(s);
 	pages[1] = new DownloadPage(s);
@@ -77,6 +77,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.7 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.8 2004/03/02 09:30:20 arnetheduck Exp $
  */
 

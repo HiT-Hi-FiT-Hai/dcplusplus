@@ -19,6 +19,10 @@
 #ifndef _BZ_UTILS
 #define _BZ_UTILS
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #ifdef _WIN32
 #include "../bzip2/bzlib.h"
 #else
@@ -59,4 +63,4 @@ private:
 	bz_stream zs;
 };
 
-#endif _BZ_UTILS
+#endif // _BZ_UTILS

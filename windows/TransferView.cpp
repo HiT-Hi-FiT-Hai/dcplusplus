@@ -70,6 +70,7 @@ LRESULT TransferView::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	transferMenu.CreatePopupMenu();
 	appendUserItems(transferMenu);
 	transferMenu.AppendMenu(MF_STRING, IDC_FORCE, CSTRING(FORCE_ATTEMPT));
+	transferMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	transferMenu.AppendMenu(MF_SEPARATOR, 0, (LPTSTR)NULL);
 	transferMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(CLOSE_CONNECTION));
 
@@ -130,6 +131,16 @@ LRESULT TransferView::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 void TransferView::ItemInfo::removeAll() {
 	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
+}
+
+LRESULT TransferView::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	string nick;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		nick = ctrlTransfers.getItemData(i)->user->getNick();
+		WinUtil::setClipboard(nick);
+	}
+	return 0;
 }
 
 LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
@@ -567,5 +578,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.22 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.23 2004/03/02 09:30:20 arnetheduck Exp $
  */

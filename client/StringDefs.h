@@ -363,6 +363,7 @@ enum Strings { // @DontAdd
 	SETTINGS_USE_SYSTEM_ICONS, // "Use system icons when browsing files (slows browsing down a bit)"
 	SETTINGS_USER_COMMANDS, // "Advanced\\User Commands"
 	SETTINGS_WRITE_BUFFER, // "Write buffer size"
+	SETTINGS, // "Settings"
 	SFV_INCONSISTENCY, // "CRC32 inconsistency (SFV-Check)"
 	SHARED, // "Shared"
 	SHARED_FILES, // "Shared Files"

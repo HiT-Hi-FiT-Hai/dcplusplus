@@ -168,9 +168,9 @@ void HashManager::HashStore::save() {
 				f.write(Util::toString(i->second->getIndex()));
 				f.write(LITERAL("\" LeafSize=\""));
 				f.write(Util::toString((u_int32_t)i->second->getBlockSize()));
-				f.write(LITERAL("\">"));
+				f.write(LITERAL("\" Root=\""));
 				f.write(i->second->getRoot().toBase32());
-				f.write(LITERAL("</Hash></File>\r\n"));
+				f.write(LITERAL("\"/></File>\r\n"));
 			}
 			f.write(LITERAL("</HashStore>"));
 			f.flush();
@@ -196,10 +196,7 @@ private:
 
 	string file;
 	int64_t size;
-	size_t blockSize;
 	u_int32_t timeStamp;
-	string type;
-	int64_t index;
 };
 
 void HashManager::HashStore::load() {
@@ -220,28 +217,27 @@ static const string sTTH = "TTH";
 static const string sIndex = "Index";
 static const string sBlockSize = "LeafSize";
 static const string sTimeStamp = "TimeStamp";
+static const string sRoot = "Root";
 
 void HashLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	if(name == sFile) {
-		file = getAttrib(attribs, sName);
-		size = Util::toInt64(getAttrib(attribs, sSize));
-		timeStamp = (u_int32_t)Util::toInt(getAttrib(attribs, sTimeStamp));
+		file = getAttrib(attribs, sName, 0);
+		size = Util::toInt64(getAttrib(attribs, sSize, 1));
+		timeStamp = (u_int32_t)Util::toInt(getAttrib(attribs, sTimeStamp, 2));
 	} else if(name == sHash) {
-		type = getAttrib(attribs, sType);
-		blockSize = (size_t)Util::toInt(getAttrib(attribs, sBlockSize));
-		index = Util::toInt64(getAttrib(attribs, sIndex));
-		if(index < 8)
-			return;
+		const string& type = getAttrib(attribs, sType, 0);
+		size_t blockSize = (size_t)Util::toInt(getAttrib(attribs, sBlockSize, 1));
+		int64_t index = Util::toInt64(getAttrib(attribs, sIndex, 2));
+		const string& root = getAttrib(attribs, sRoot, 3);
+		if(!file.empty() && (type == sTTH) && (blockSize >= 1024) && (index >= 8) && !root.empty()) {
+			/** @todo Verify root against data file */
+			store.indexTTH.insert(make_pair(file, new HashManager::HashStore::FileInfo(TTHValue(root), size, index, blockSize, timeStamp, false)));
+		}
 	}
 }
+
 void HashLoader::endTag(const string& name, const string& data) {
-	if(name == sHash && !file.empty()) {
-		// Check if it exists...
-		if((type == sTTH) && (blockSize >= 1024) && (index >= 8)) {
-			/** @todo Verify root against data file */
-			store.indexTTH.insert(make_pair(file, new HashManager::HashStore::FileInfo(TTHValue(data), size, index, blockSize, timeStamp, false)));
-		}
-	} else if(name == sFile) {
+	if(name == sFile) {
 		file.clear();
 	}
 }
@@ -371,5 +367,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.8 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.9 2004/03/02 09:30:19 arnetheduck Exp $
  */

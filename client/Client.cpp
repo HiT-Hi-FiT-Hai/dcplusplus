@@ -261,7 +261,7 @@ void Client::onLine(const string& aLine) throw() {
 		string tmpDesc = Util::validateMessage(param.substr(i, j-i), true);
 		// Look for a tag...
 		if(tmpDesc.size() > 0 && tmpDesc[tmpDesc.size()-1] == '>') {
-			string::size_type x = tmpDesc.rfind('<');
+			x = tmpDesc.rfind('<');
 			if(x != string::npos) {
 				// Hm, we have something...
 				u->setTag(tmpDesc.substr(x));
@@ -719,6 +719,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.68 2004/01/07 14:14:51 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.69 2004/03/02 09:30:19 arnetheduck Exp $
  */
 

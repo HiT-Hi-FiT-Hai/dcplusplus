@@ -21,7 +21,9 @@
 
 #include "CriticalSection.h"
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 struct FastAllocBase {
 	static FastCriticalSection cs;
@@ -82,7 +84,7 @@ private:
 		size_t items = ((128*1024 + sizeof(T) - 1)/sizeof(T));
 		freeList = new u_int8_t[sizeof(T)*items];
 		u_int8_t* tmp = (u_int8_t*)freeList;
-		for(int i = 0; i < items - 1; i++) {
+		for(size_t i = 0; i < items - 1; i++) {
 			*(void**)tmp = tmp + sizeof(T);
 			tmp += sizeof(T);
 		}
@@ -94,5 +96,5 @@ template<class T> void* FastAlloc<T>::freeList = NULL;
 #endif // _FAST_ALLOC
 /**
  * @file
- * $Id: FastAlloc.h,v 1.3 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: FastAlloc.h,v 1.4 2004/03/02 09:30:19 arnetheduck Exp $
  */

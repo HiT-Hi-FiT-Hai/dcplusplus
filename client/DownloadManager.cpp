@@ -196,7 +196,7 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 
 	int64_t fileLength = Util::toInt64(aFileLength);
 	if(prepareFile(aSource, fileLength)) {
-		aSource->setDataMode(aSource->getDownload()->getSize() - aSource->getDownload()->getPos());
+		aSource->setDataMode();
 		aSource->startSend();
 	}
 }
@@ -329,6 +329,7 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 		d->addActual(aLen);
 		if(d->getPos() == d->getSize()) {
 			handleEndData(aSource);
+			aSource->setLineMode();
 		}
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
@@ -531,7 +532,7 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
 			} 
-		} catch(const FileException&) {
+		} catch(const Exception&) {
 			finished = false;
 		}
 
@@ -608,7 +609,7 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 		break;
 	}
 }
-void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) {
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) throw() {
 	if(type == UserConnectionListener::SENDING)
 		onSending(conn, bytes);
 }
@@ -642,5 +643,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.92 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.93 2004/03/02 09:30:19 arnetheduck Exp $
  */

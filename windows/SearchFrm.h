@@ -222,6 +222,7 @@ private:
 			sr->decRef(); 
 		};
 
+		void getList();
 		void view();
 		struct Download {
 			Download(const string& aTarget) : tgt(aTarget) { };
@@ -483,6 +484,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.32 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.33 2004/03/02 09:30:20 arnetheduck Exp $
  */
 

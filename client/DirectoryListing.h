@@ -151,14 +151,15 @@ private:
 	Directory* root;	
 		
 	Directory* find(const string& aName, Directory* current);
-		
+	
 };
 
 inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
+inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
 
 #endif // !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.23 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.24 2004/03/02 09:30:19 arnetheduck Exp $
  */

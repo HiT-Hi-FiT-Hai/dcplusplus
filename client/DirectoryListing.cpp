@@ -114,22 +114,18 @@ void DirectoryListing::load(const string& in) {
 		} else {
 			// A directory
 			string name = tok.substr(j, tok.length()-j-1);
-			Directory* d = NULL;
+			fullPath += '\\';
+			fullPath += name;
 
 			Directory::Iter di = ::find(cur->directories.begin(), cur->directories.end(), name);
 			if(di != cur->directories.end()) {
-				d = *di;
+				cur = *di;
 			} else {
-				d = new Directory(cur, name);
+				cur = new Directory(cur, name);
+				cur->directories.push_back(cur);
+				pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
 			}
-			cur->directories.push_back(d);
-			cur = d;
-
 			indent++;
-			fullPath += "\\" + d->getName();
-
-			// ADLSearch
-			pADLSearch->MatchesDirectory(destDirs, d, fullPath);
 		}
 	}
 
@@ -148,6 +144,8 @@ public:
 
 		lastFileIter = cur->files.begin();
 	};
+
+	virtual ~ListLoader() { }
 
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
@@ -176,21 +174,21 @@ static const string sName = "Name";
 static const string sSize = "Size";
 static const string sTTH = "TTH";
 
-void ListLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
+void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
 	if(inListing) {
 		if(name == sFile) {
-			const string& n = getAttrib(attribs, sName);
+			const string& n = getAttrib(attribs, sName, 0);
 			if(n.empty())
 				return;
-			const string& s = getAttrib(attribs, sSize);
+			const string& s = getAttrib(attribs, sSize, 1);
 			if(s.empty())
 				return;
-			const string& h = getAttrib(attribs, sTTH);
+			const string& h = getAttrib(attribs, sTTH, 2);
 			DirectoryListing::File* f = h.empty() ? new DirectoryListing::File(cur, n, Util::toInt64(s)) : new DirectoryListing::File(cur, n, Util::toInt64(s), h);
 			cur->files.push_back(f);
 			ADLSearchManager::getInstance()->MatchesFile(destDirs, f, fullPath);
 		} else if(name == sDirectory) {
-			const string& n = getAttrib(attribs, sName);
+			const string& n = getAttrib(attribs, sName, 0);
 			if(n.empty())
 				return;
 			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
@@ -207,7 +205,7 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 	}
 }
 
-void ListLoader::endTag(const string& name, const string& data) {
+void ListLoader::endTag(const string& name, const string&) {
 	if(inListing) {
 		if(name == sDirectory) {
 			cur = cur->getParent();
@@ -291,33 +289,32 @@ DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directo
 	return NULL;
 }
 
-int64_t DirectoryListing::Directory::getTotalSize(bool adls) {
+int64_t DirectoryListing::Directory::getTotalSize(bool adl) {
 	int64_t x = getSize();
 	for(Iter i = directories.begin(); i != directories.end(); ++i) {
-		if(!(adls && (*i)->getAdls()))
+		if(!(adl && (*i)->getAdls()))
 			x += (*i)->getTotalSize(adls);
 	}
 	return x;
 }
 
-int DirectoryListing::Directory::getTotalFileCount(bool adls) {
+int DirectoryListing::Directory::getTotalFileCount(bool adl) {
 	int x = getFileCount();
 	for(Iter i = directories.begin(); i != directories.end(); ++i) {
-		if(!(adls && (*i)->getAdls()))
+		if(!(adl && (*i)->getAdls()))
 			x += (*i)->getTotalFileCount(adls);
 	}
 	return x;
 }
 
 void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
-	string tmp;	
-	int flags = getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0;
-	flags |= (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
-	QueueManager::getInstance()->add(getPath(aFile) + escaper(aFile->getName(), tmp, getUtf8()), aFile->getSize(), user, aTarget, 
+	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
+		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
+	QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
 		aFile->getTTH(), Util::emptyString, flags);
 }
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.25 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.26 2004/03/02 09:30:19 arnetheduck Exp $
  */

@@ -19,7 +19,9 @@
 #ifndef _MERKLE_TREE
 #define _MERKLE_TREE
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "TigerHash.h"
 #include "Encoder.h"
@@ -202,5 +204,5 @@ typedef TigerTree::MerkleValue TTHValue;
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.6 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.7 2004/03/02 09:30:19 arnetheduck Exp $
  */

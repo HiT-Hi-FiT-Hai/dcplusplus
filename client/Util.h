@@ -207,7 +207,7 @@ public:
 		}
 		return tmp;
 #else // _WIN32
-		return emptyString;
+		return strerror(aError);
 #endif // _WIN32
 	}
 
@@ -533,5 +533,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.80 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: Util.h,v 1.81 2004/03/02 09:30:20 arnetheduck Exp $
  */

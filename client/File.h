@@ -31,6 +31,7 @@
 #ifndef _WIN32
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <errno.h>
 #endif
 
 STANDARD_EXCEPTION(FileException);
@@ -52,7 +53,7 @@ public:
 	/**
 	 * @return The actual number of bytes written. len bytes will always be
 	 *         consumed, but fewer or more bytes may actually be written,
-	 *         for example if the stream is being compressed or buffered.
+	 *         for example if the stream is being compressed.
 	 */
 	virtual size_t write(const void* buf, size_t len) throw(Exception) = 0;
 	/**
@@ -83,18 +84,18 @@ class IOStream : public InputStream, public OutputStream {
 class File : public IOStream {
 public:
 	enum {
-		READ = 0x01,
-		WRITE = 0x02,
-		RW = READ | WRITE
-	};
-	
-	enum {
 		OPEN = 0x01,
 		CREATE = 0x02,
 		TRUNCATE = 0x04
 	};
 
 #ifdef _WIN32
+	enum {
+		READ = GENERIC_READ,
+		WRITE = GENERIC_WRITE,
+		RW = READ | WRITE
+	};
+
 	File(const string& aFileName, int access, int mode) throw(FileException) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 
@@ -112,13 +113,8 @@ public:
 				dcassert(0);
 			}
 		}
-		int a = 0;
-		if(access & READ)
-			a |= GENERIC_READ;
-		if(access & WRITE)
-			a |= GENERIC_WRITE;
 
-		h = ::CreateFile(aFileName.c_str(), a, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		h = ::CreateFile(aFileName.c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 		
 		if(h == INVALID_HANDLE_VALUE) {
 			throw FileException(Util::translateError(GetLastError()));
@@ -249,7 +245,12 @@ public:
 	
 #else // _WIN32
 	
-	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
+	enum {
+		READ = 0x01,
+		WRITE = 0x02,
+		RW = READ | WRITE,
+	};
+	File(const string& aFileName, int access, int mode) throw(FileException) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 		
 		int m = 0;
@@ -296,18 +297,12 @@ public:
 	virtual void setEndPos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_END); };
 	virtual void movePos(int64_t pos) throw(FileException) { lseek(h, (off_t)pos, SEEK_CUR); };
 
-	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
-		ssize_t x = ::read(h, buf, (size_t)len);
+	virtual size_t read(void* buf, size_t& len) throw(FileException) {
+		ssize_t x = ::read(h, buf, len);
 		if(x == -1)
 			throw("Read error");
-		
-		if(calcCRC) {
-			for(ssize_t i = 0; i < x; ++i) {
-				crc32.update(((u_int8_t*)buf)[i]);
-			}
-		}
-
-		return (u_int32_t)x;
+		len = x;
+		return (size_t)x;
 	}
 	
 	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
@@ -316,22 +311,23 @@ public:
 			throw FileException("Write error");
 		if(x < (ssize_t)len)
 			throw FileException("Disk full(?)");
-
-		if(calcCRC) {
-			for(ssize_t i = 0; i < x; ++i) {
-				crc32.update(((u_int8_t*)buf)[i]);
-			}
-		}
 		return x;
 	}
 
-	/**
-	 * @todo fix for unix...
-	 */
 	virtual void setEOF() throw(FileException) {
+		if(ftruncate(h, (off_t)getPos()) == -1)
+			throw FileException(Util::translateError(errno));
+	}
+	virtual void setSize(int64_t newSize) throw(FileException) {
+		if(ftruncate(h, (off_t)newSize) == -1)
+			throw FileException(Util::translateError(errno));
 	}
 
-	virtual void flushBuffers();
+	virtual size_t flush() throw(Exception) {
+		if(fsync(h) == -1)
+			throw FileException(Util::translateError(errno));
+		return 0;
+	}
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
@@ -457,6 +453,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.29 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: File.h,v 1.30 2004/03/02 09:30:19 arnetheduck Exp $
  */
 

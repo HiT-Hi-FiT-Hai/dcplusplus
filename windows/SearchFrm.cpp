@@ -375,6 +375,14 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	}
 }
 
+void SearchFrame::SearchInfo::getList() {
+	try {
+		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, getPath());
+	} catch(const Exception&) {
+		// Ignore for now...
+	}
+}
+
 void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 	if(si->sr->getType() == SearchResult::TYPE_FILE) {
 		if(ext.empty()) {
@@ -860,11 +868,7 @@ void SearchFrame::onHubRemoved(HubInfo* info) {
 }
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while((i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		SearchInfo* ii = ctrlResults.getItemData(i);
-		QueueManager::getInstance()->addList(ii->user, QueueItem::FLAG_CLIENT_VIEW, ii->getPath());
-	}
+	ctrlResults.forEachSelected(&SearchInfo::getList);
 	return 0;
 }
 
@@ -887,5 +891,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.45 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.46 2004/03/02 09:30:20 arnetheduck Exp $
  */

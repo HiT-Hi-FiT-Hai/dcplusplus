@@ -19,7 +19,9 @@
 #ifndef _HASH_MANAGER
 #define _HASH_MANAGER
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "Singleton.h"
 #include "MerkleTree.h"
@@ -184,7 +186,7 @@ private:
 
 	void hashDone(const string& aFileName, TigerTree& tth);
 
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 		if(type == TimerManagerListener::MINUTE) {
 			Lock l(cs);
 			store.save();
@@ -196,5 +198,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.7 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.8 2004/03/02 09:30:19 arnetheduck Exp $
  */

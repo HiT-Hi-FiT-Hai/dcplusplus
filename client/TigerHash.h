@@ -19,7 +19,9 @@
 #ifndef _TIGER_HASH
 #define _TIGER_HASH
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 class TigerHash {
 public:
@@ -59,5 +61,5 @@ private:
 
 /**
  * @file
- * $Id: TigerHash.h,v 1.2 2004/01/25 15:29:07 arnetheduck Exp $
+ * $Id: TigerHash.h,v 1.3 2004/03/02 09:30:20 arnetheduck Exp $
  */

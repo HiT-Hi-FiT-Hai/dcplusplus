@@ -19,7 +19,10 @@
 #ifndef _HASH_VALUE
 #define _HASH_VALUE
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
+
 #include "FastAlloc.h"
 
 template<class Hasher>
@@ -43,5 +46,5 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 
 /**
 * @file
-* $Id: HashValue.h,v 1.2 2004/02/23 17:42:17 arnetheduck Exp $
+* $Id: HashValue.h,v 1.3 2004/03/02 09:30:19 arnetheduck Exp $
 */

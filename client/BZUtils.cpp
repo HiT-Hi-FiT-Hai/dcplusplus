@@ -32,7 +32,7 @@ BZFilter::BZFilter() {
 }
 
 BZFilter::~BZFilter() {
-	dcdebug("BZFilter end, %ld/%ld = %.04f", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
+	dcdebug("BZFilter end, %ld/%ld = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
 	BZ2_bzCompressEnd(&zs);
 }
 
@@ -73,7 +73,7 @@ UnBZFilter::UnBZFilter() {
 }
 
 UnBZFilter::~UnBZFilter() {
-	dcdebug("UnBZFilter end, %ld/%ld = %.04f", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
+	dcdebug("UnBZFilter end, %ld/%ld = %.04f\n", zs.total_out_lo32, zs.total_in_lo32, (float)zs.total_out_lo32 / max((float)zs.total_in_lo32, (float)1)); 
 	BZ2_bzDecompressEnd(&zs);
 }
 
@@ -102,5 +102,5 @@ bool UnBZFilter::operator()(const void* in, size_t& insize, void* out, size_t& o
 
 /**
  * @file
- * $Id: BZUtils.cpp,v 1.1 2004/02/16 13:52:04 arnetheduck Exp $
+ * $Id: BZUtils.cpp,v 1.2 2004/03/02 09:30:19 arnetheduck Exp $
  */

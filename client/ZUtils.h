@@ -19,6 +19,10 @@
 #ifndef _Z_UTILS
 #define _Z_UTILS
 
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #ifdef _WIN32
 #include "../zlib/zlib.h"
 #else
@@ -68,9 +72,9 @@ private:
 	u_int32_t crc;
 };
 
-#endif _Z_UTILS
+#endif // _Z_UTILS
 
 /**
  * @file
- * $Id: ZUtils.h,v 1.2 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: ZUtils.h,v 1.3 2004/03/02 09:30:20 arnetheduck Exp $
  */

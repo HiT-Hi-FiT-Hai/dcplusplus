@@ -32,7 +32,7 @@ ZFilter::ZFilter() {
 }
 
 ZFilter::~ZFilter() {
-	dcdebug("ZFilter end, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
+	dcdebug("ZFilter end, %ld/%ld = %.04f\n", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
 	deflateEnd(&zs);
 }
 
@@ -73,7 +73,7 @@ UnZFilter::UnZFilter() {
 }
 
 UnZFilter::~UnZFilter() {
-	dcdebug("UnZFilter end, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
+	dcdebug("UnZFilter end, %ld/%ld = %.04f\n", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
 	inflateEnd(&zs);
 }
 
@@ -102,5 +102,5 @@ bool UnZFilter::operator()(const void* in, size_t& insize, void* out, size_t& ou
 
 /**
  * @file
- * $Id: ZUtils.cpp,v 1.1 2004/02/16 13:52:04 arnetheduck Exp $
+ * $Id: ZUtils.cpp,v 1.2 2004/03/02 09:30:20 arnetheduck Exp $
  */

@@ -19,7 +19,9 @@
 #ifndef _BLOOM_FILTER
 #define _BLOOM_FILTER
 
+#if _MSC_VER > 1000
 #pragma once
+#endif // _MSC_VER > 1000
 
 #include "ZUtils.h"
 
@@ -78,14 +80,14 @@ private:
 			}
 		} 
 	}
-	size_t getPos(const string& s, int i, int l) { return ((HashFunc()(&s[i], l)) % table.size()); }
+	size_t getPos(const string& s, int i, int l) { HashFunc h; return (h(&s[i], l) % table.size()); }
 	
 	vector<bool> table;
 };
 
-#endif _BLOOM_FILTER
+#endif // _BLOOM_FILTER
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.4 2004/02/23 17:42:16 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.5 2004/03/02 09:30:19 arnetheduck Exp $
  */
