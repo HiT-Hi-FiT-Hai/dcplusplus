@@ -220,6 +220,8 @@ public:
 	/** When socks settings are updated, this has to be called... */
 	static void socksUpdated();
 
+	string getRemoteIp() const;
+
 	GETSETREF(string, ip, Ip);
 
 	GETSET(bool, noproxy, Noproxy);
@@ -248,6 +250,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.49 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Socket.h,v 1.50 2004/03/08 10:13:52 arnetheduck Exp $
  */
 

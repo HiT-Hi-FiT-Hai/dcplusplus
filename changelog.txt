@@ -18,7 +18,7 @@
   but download should work)
 * Upgraded to zlib 1.2.1 (thanks garg)
 * Extra column for hub in transfer list (thanks torgny nyblom)
-* Copy nick to favorites in transfer list (thanks torgny nyblom)
+* Copy nick to clipboard in transfer list (thanks torgny nyblom)
 * Files starting with a '.' are no longer shared if hidden files are not shared (...unix...)
 * Fixed a minor memory leak when an invalid search result is returned (exploitable minor security issue)
 * Slight speedup of file list loading
@@ -26,6 +26,7 @@
 * Rollback no longer depends on buffer size
 * /rebuilddb rebuilds the hash database and potentially reduces the size of the raw hash data file (also checks
   its integrity)
+* Ip column in transfer list (thanks cologic)
 
 
  -- 0.306 2004-01-09 --

@@ -48,6 +48,18 @@ SocketException::SocketException(int aError) {
 
 Socket::Stats Socket::stats = { 0, 0 };
 
+string Socket::getRemoteIp() const {
+	sockaddr_in sock_addr_rem = { 0 };
+	if(type == TYPE_TCP) {
+		sockaddr_in sock_addr;
+		socklen_t len = sizeof(sock_addr);
+		if(getpeername(sock, (sockaddr*)&sock_addr_rem, &len) == SOCKET_ERROR)
+			return Util::emptyString;
+	}
+
+	return string(inet_ntoa(sock_addr_rem.sin_addr));	// + ":" + string(Util::toString((sock_addr_rem.sin_port >> 8) | (sock_addr_rem.sin_port << 8 & 0xffff)));
+}
+
 string SocketException::errorToString(int aError) {
 	switch(aError) {
 	case EWOULDBLOCK:
@@ -516,6 +528,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.53 2004/01/04 17:32:47 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.54 2004/03/08 10:13:52 arnetheduck Exp $
  */
 

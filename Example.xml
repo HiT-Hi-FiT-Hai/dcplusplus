@@ -124,6 +124,7 @@
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
 		<String Name="Ip">Ip: </String>
+		<String Name="IpBare">Ip</String>
 		<String Name="Items">Items</String>
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>

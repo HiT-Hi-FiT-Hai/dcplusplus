@@ -128,6 +128,7 @@ enum Strings { // @DontAdd
 	INVALID_NUMBER_OF_SLOTS, // "Invalid number of slots"
 	INVALID_TARGET_FILE, // "Invalid target file (missing directory, check default download directory setting)"
 	IP, // "Ip: "
+	IP_BARE, // "Ip"
 	ITEMS, // "Items"
 	JOINS, // "Joins: "
 	JOIN_SHOWING_OFF, // "Join/part showing off"

@@ -27,12 +27,12 @@
 #include "WinUtil.h"
 #include "TransferView.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 75 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_IP, COLUMN_RATIO };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 50, 75 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
-ResourceManager::RATIO};
+ResourceManager::IP_BARE, ResourceManager::RATIO};
 
 TransferView::~TransferView() {
 	arrows.Destroy();
@@ -311,6 +311,9 @@ void TransferView::ItemInfo::update() {
 	if(colMask & MASK_PATH) {
 		columns[COLUMN_PATH] = path;
 	}
+	if(colMask & MASK_IP) {
+		columns[COLUMN_IP] = IP;
+	}
 	if(colMask & MASK_RATIO) {
 		columns[COLUMN_RATIO] = Util::toString(getRatio());
 	}
@@ -382,8 +385,9 @@ void TransferView::onDownloadStarting(Download* aDownload) {
 		i->file = Util::getFileName(aDownload->getTarget());
 		i->path = Util::getFilePath(aDownload->getTarget());
 		i->statusString = STRING(DOWNLOAD_STARTING);
+		i->IP = aDownload->getUserConnection()->getRemoteIp();
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
-			ItemInfo::MASK_SIZE;
+			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
@@ -463,8 +467,9 @@ void TransferView::onUploadStarting(Upload* aUpload) {
 		i->file = Util::getFileName(aUpload->getFileName());
 		i->path = Util::getFilePath(aUpload->getFileName());
 		i->statusString = STRING(UPLOAD_STARTING);
+		i->IP = aUpload->getUserConnection()->getRemoteIp();
 		i->updateMask |= ItemInfo::MASK_STATUS | ItemInfo::MASK_FILE | ItemInfo::MASK_PATH |
-			ItemInfo::MASK_SIZE;
+			ItemInfo::MASK_SIZE | ItemInfo::MASK_IP;
 	}
 
 	PostMessage(WM_SPEAKER, UPDATE_ITEM, (LPARAM)i);
@@ -578,5 +583,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.23 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.24 2004/03/08 10:13:53 arnetheduck Exp $
  */

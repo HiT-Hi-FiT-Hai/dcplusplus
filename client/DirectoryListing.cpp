@@ -121,10 +121,11 @@ void DirectoryListing::load(const string& in) {
 			if(di != cur->directories.end()) {
 				cur = *di;
 			} else {
-				cur = new Directory(cur, name);
-				cur->directories.push_back(cur);
-				pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
+				Directory* d = new Directory(cur, name);
+				cur->directories.push_back(d);
+				cur = d;
 			}
+			pADLSearch->MatchesDirectory(destDirs, cur, fullPath);
 			indent++;
 		}
 	}
@@ -316,5 +317,5 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.26 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.27 2004/03/08 10:13:52 arnetheduck Exp $
  */

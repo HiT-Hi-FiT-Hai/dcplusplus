@@ -218,7 +218,7 @@ public:
 	virtual size_t write(const void* b, size_t len) throw(FileException) {
 		u_int8_t* wb = (u_int8_t*)b;
 		if(buf != NULL) {
-			size_t n = len < bufSize ? bufSize - len : bufSize;
+			size_t n = len < (bufSize - pos) ? len : bufSize - pos;
 
 			if(memcmp(buf + pos, wb, n) != 0) {
 				throw FileException(STRING(ROLLBACK_INCONSISTENCY));
@@ -643,5 +643,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.93 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.94 2004/03/08 10:13:52 arnetheduck Exp $
  */

@@ -112,6 +112,7 @@ private:
 		COLUMN_FILE,
 		COLUMN_SIZE,
 		COLUMN_PATH,
+		COLUMN_IP,
 		COLUMN_RATIO,
 		COLUMN_LAST
 	};
@@ -151,6 +152,7 @@ private:
 		string statusString;
 		string file;
 		string path;
+		string IP;
 
 		enum {
 			MASK_USER = 1 << COLUMN_USER,
@@ -161,6 +163,7 @@ private:
 			MASK_FILE = 1 << COLUMN_FILE,
 			MASK_SIZE = 1 << COLUMN_SIZE,
 			MASK_PATH = 1 << COLUMN_PATH,
+			MASK_IP = 1 << COLUMN_IP,
 			MASK_RATIO = 1 << COLUMN_RATIO,
 		};
 		string columns[COLUMN_LAST];
@@ -195,6 +198,7 @@ private:
 			case COLUMN_FILE: return Util::stricmp(a->columns[COLUMN_FILE], b->columns[COLUMN_FILE]);
 			case COLUMN_SIZE: return compare(a->size, b->size);
 			case COLUMN_PATH: return Util::stricmp(a->columns[COLUMN_PATH], b->columns[COLUMN_PATH]);
+			case COLUMN_IP: return Util::stricmp(a->columns[COLUMN_IP], b->columns[COLUMN_IP]);
 			case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
 			}
 			return 0;
@@ -246,5 +250,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.10 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.11 2004/03/08 10:13:53 arnetheduck Exp $
  */
