@@ -14,6 +14,9 @@
 * Magnet registration fix (thanks ullner)
 * Finished partial file lists for ADC
 * Fixed some ADC crashes
+* Basic ADC searches now work
+* Basic ADC pms now work
+* Basic ADC transfers now work
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)

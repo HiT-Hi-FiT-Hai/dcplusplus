@@ -79,6 +79,7 @@ private:
 	AdcHub& operator=(const AdcHub&);
 	virtual ~AdcHub() throw();
 	User::NickMap nickMap;
+	User::CIDMap cidMap;
 	User::Ptr hub;
 	StringMap lastInfoMap;
 	CriticalSection cs;
@@ -100,5 +101,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.26 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.27 2005/03/12 17:42:52 arnetheduck Exp $
  */

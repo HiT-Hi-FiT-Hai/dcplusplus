@@ -32,8 +32,8 @@ void AdcCommand::parse(const string& aLine, bool nmdc /* = false */) throw(Parse
 		memcpy(cmd, &aLine[4], 3);
 		i += 3;
 	} else {
-		// "yxxx ..."
-		if(aLine.length() < 4)
+		// "yxxx cidcidcidcid..."
+		if(aLine.length() < 5 + (8 * 8 + 7) / 5)
 			throw ParseException("Too short");
 		type = aLine[0];
 		memcpy(cmd, &aLine[1], 3);
@@ -153,5 +153,5 @@ bool AdcCommand::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.11 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.12 2005/03/12 17:42:53 arnetheduck Exp $
  */

@@ -38,10 +38,11 @@ AdcHub::~AdcHub() {
 }
 
 void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
-	if(c.getFrom().isZero() || c.getParameters().empty())
+	if(c.getParameters().empty())
 		return;
 
 	User::Ptr u = ClientManager::getInstance()->getUser(c.getFrom(), this, true);
+	cidMap[u->getCID()] = u;
 
 	int op = 0;
 	int reg = 0;
@@ -126,6 +127,8 @@ void AdcHub::handle(AdcCommand::INF, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
+	if(state != STATE_PROTOCOL) /** @todo SUP changes */
+		return;
 	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
 		disconnect();
 		return;
@@ -135,21 +138,22 @@ void AdcHub::handle(AdcCommand::SUP, AdcCommand& c) throw() {
 }
 
 void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
-	if(c.getFrom().isZero() || c.getParameters().empty())
+	if(c.getParameters().empty())
 		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
-	if(!p)
+
+	User::Ptr p = cidMap[c.getFrom()];
+	if(!p || p == getMe())
 		return;
-	if(c.getParameters().size() == 2 && c.getParameters()[1] == "PM") { // add PM<group-cid> as well
-		const string& msg = c.getParameters()[0];
-		if(c.getFrom() == getMe()->getCID()) {
-			p = ClientManager::getInstance()->getUser(c.getTo(), false);
-			if(!p)
-				return;
-		}
-		fire(ClientListener::PrivateMessage(), this, p, msg);
+	string pmFrom;
+	if(c.getParam("PM", 1, pmFrom)) { // add PM<group-cid> as well
+		User::Ptr pm = cidMap[CID(pmFrom)];
+		if(!pm)
+			return;
+
+		string msg = '<' + p->getNick() + "> " + c.getParam(0);
+		fire(ClientListener::PrivateMessage(), this, pm, msg);
 	} else {
-		string msg = '<' + p->getNick() + "> " + c.getParameters()[0];
+		string msg = '<' + p->getNick() + "> " + c.getParam(0);
 		fire(ClientListener::Message(), this, msg);
 	}		
 }
@@ -157,14 +161,14 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 void AdcHub::handle(AdcCommand::GPA, AdcCommand& c) throw() {
 	if(c.getParameters().empty())
 		return;
-	salt = c.getParameters()[0];
+	salt = c.getParam(0);
 	state = STATE_VERIFY;
 
 	fire(ClientListener::GetPassword(), this);
 }
 
 void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
-	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParam(0)), false);
+	User::Ptr p = cidMap[CID(c.getParam(0))];
 	if(!p)
 		return;
 	if(!p->getNick().empty()) {
@@ -173,10 +177,11 @@ void AdcHub::handle(AdcCommand::QUI, AdcCommand& c) throw() {
 	}
 	ClientManager::getInstance()->putUserOffline(p);
 	fire(ClientListener::UserRemoved(), this, p);
+	cidMap.erase(CID(c.getParam(0)));
 }
 
 void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
+	User::Ptr p = cidMap[c.getFrom()];
 	if(!p || p == getMe())
 		return;
 	if(c.getParameters().size() < 3)
@@ -200,7 +205,7 @@ void AdcHub::handle(AdcCommand::CTM, AdcCommand& c) throw() {
 void AdcHub::handle(AdcCommand::RCM, AdcCommand& c) throw() {
 	if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
 		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
+	User::Ptr p = cidMap[c.getFrom()];
 	if(!p || p == getMe())
 		return;
 	if(c.getParameters().empty() || c.getParameters()[0] != CLIENT_PROTOCOL)
@@ -269,14 +274,12 @@ void AdcHub::disconnect() {
 void AdcHub::hubMessage(const string& aMessage) {
 	if(state != STATE_NORMAL)
 		return;
-	string strtmp;
 	send(AdcCommand(AdcCommand::CMD_MSG, AdcCommand::TYPE_BROADCAST).addParam(aMessage)); 
 }
 
 void AdcHub::privateMessage(const User* user, const string& aMessage) { 
 	if(state != STATE_NORMAL)
 		return;
-	string strtmp;
 	send(AdcCommand(AdcCommand::CMD_MSG, user->getCID()).addParam(aMessage).addParam("PM", SETTING(CLIENT_ID))); 
 }
 
@@ -395,6 +398,7 @@ void AdcHub::clearUsers() {
 		ClientManager::getInstance()->putUserOffline(i->second);		
 	}
 	nickMap.clear();
+	cidMap.clear();
 }
 
 void AdcHub::on(Connected) throw() { 
@@ -421,5 +425,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.41 2005/03/12 16:45:35 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.42 2005/03/12 17:42:52 arnetheduck Exp $
  */
