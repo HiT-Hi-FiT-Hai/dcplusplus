@@ -27,6 +27,7 @@
 #include "../client/QueueManager.h"
 #include "../client/StringTokenizer.h"
 #include "../client/HubManager.h"
+#include "../client/ClientManager.h"
 
 StringList SearchFrame::lastSearches;
 
@@ -85,6 +86,11 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 	ctrlResults.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
+	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_NOCOLUMNHEADER, WS_EX_CLIENTEDGE, IDC_HUB);
+	hubsContainer.SubclassWindow(ctrlHubs.m_hWnd);	
+	ctrlHubs.SetExtendedListViewStyle(LVS_EX_CHECKBOXES | (BOOLSETTING(FULL_ROW_SELECT) ? LVS_EX_FULLROWSELECT : 0));
+
 	searchLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	searchLabel.SetFont(WinUtil::systemFont, FALSE);
 	searchLabel.SetWindowText(CSTRING(SEARCH_FOR));
@@ -100,6 +106,10 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	optionLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	optionLabel.SetFont(WinUtil::systemFont, FALSE);
 	optionLabel.SetWindowText(CSTRING(SEARCH_OPTIONS));
+
+	hubsLabel.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	hubsLabel.SetFont(WinUtil::systemFont, FALSE);
+	hubsLabel.SetWindowText(CSTRING(HUBS));
 
 	ctrlSlots.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, NULL, IDC_FREESLOTS);
 	ctrlSlots.SetButtonStyle(BS_AUTOCHECKBOX, FALSE);
@@ -164,6 +174,13 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.SetTextColor(WinUtil::textColor);
 	ctrlResults.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
 	
+	ctrlHubs.InsertColumn(0, "Dummy", LVCFMT_LEFT, LVSCW_AUTOSIZE, 0);
+	ctrlHubs.SetBkColor(WinUtil::bgColor);
+	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
+	ctrlHubs.SetTextColor(WinUtil::textColor);
+	ctrlHubs.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
+	initHubs();
+
 	targetDirMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	resultsMenu.CreatePopupMenu();
@@ -213,7 +230,11 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			if(WinUtil::browseFile(target, m_hWnd)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				try {
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
+					// maybe sr->getFileName() is a more accurate search string since there was a source!
+					string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
+						Util::getFileName(target) : Util::emptyString);
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target, 
+						searchString);
 				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
@@ -247,9 +268,24 @@ LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 void SearchFrame::onEnter() {
+	Client::List clients;
 	char* message;
 	
-	if(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 3*1000 < TimerManager::getInstance()->getTick()) {
+	if(!(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 3*1000 < TimerManager::getInstance()->getTick()))
+		return;
+
+	{
+		Lock lock(csHub);
+
+		for(int iItem = 0; (iItem = ctrlHubs.GetNextItem(iItem, LVNI_ALL)) != -1; ) {
+			if (ctrlHubs.GetCheckState(iItem))
+				clients.push_back((Client*)ctrlHubs.GetItemData(iItem));
+		}
+	}
+
+	if(!clients.size())
+		return;
+
 		message = new char[ctrlSearch.GetWindowTextLength()+1];
 		ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
 		string s(message, ctrlSearch.GetWindowTextLength());
@@ -281,7 +317,7 @@ void SearchFrame::onEnter() {
 		if(llsize == 0)
 			mode = SearchManager::SIZE_DONTCARE;
 
-		SearchManager::getInstance()->search(s, llsize, 
+	SearchManager::getInstance()->search(clients, s, llsize, 
 			(SearchManager::TypeModes)ctrlFiletype.GetCurSel(), mode);
 
 		if(BOOLSETTING(CLEAR_SEARCH)){
@@ -311,7 +347,6 @@ void SearchFrame::onEnter() {
 
 		SetWindowText((STRING(SEARCH) + " - " + s).c_str());
 	}
-}
 
 void SearchFrame::onSearchResult(SearchResult* aResult) {
 	// Check that this is really a relevant search result...
@@ -408,7 +443,10 @@ LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(item->iItem);
 		try {
 			if(sr->getType() == SearchResult::TYPE_FILE) {
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
+				string fileName = sr->getFileName();
+				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? fileName : Util::emptyString);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
+					SETTING(DOWNLOAD_DIRECTORY) + fileName, searchString);
 			} else {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + Util::getLastDir(sr->getFile()));
@@ -427,8 +465,10 @@ void SearchFrame::downloadSelected(const string& aDir, bool view /* = false */) 
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		try { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName(), 
-					(view ? (QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT) : QueueItem::FLAG_RESUME));
+				string fileName = sr->getFileName();
+				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? fileName : Util::emptyString);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), aDir + fileName,
+					searchString, (view ? (QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT) : QueueItem::FLAG_RESUME));
 			} else if(!view) {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				QueueManager::getInstance()->addDirectory(sr->getFile(), sr->getUser(), aDir);
@@ -469,6 +509,9 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
 	if(!closed) {
 		SearchManager::getInstance()->removeListener(this);
+ 		ClientManager* clientMgr = ClientManager::getInstance();
+ 		clientMgr->removeListener(this);
+ 		clientMgr->removeClientListener(this);
 
 		closed = true;
 		PostMessage(WM_CLOSE);
@@ -567,11 +610,26 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 
 		optionLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
 
+		// "Hubs"
+		rc.left = lMargin;
+		rc.right = width - rMargin;
+		rc.top += spacing;
+		rc.bottom = rc.top + comboH;
+		if (rc.bottom + labelH + 21 > rect.bottom) {
+			rc.bottom = rect.bottom - labelH - 21;
+			if (rc.bottom < rc.top + (labelH*3)/2)
+				rc.bottom = rc.top + (labelH*3)/2;
+		}
+
+		ctrlHubs.MoveWindow(rc);
+
+		hubsLabel.MoveWindow(rc.left + lMargin, rc.top - labelH, width - rMargin, labelH-1);
+
 		// "Search"
 		rc.right = width - rMargin;
 		rc.left = rc.right - 100;
-		rc.top += spacing/2;
-		rc.bottom += spacing/2;
+		rc.top = rc.bottom + labelH;
+		rc.bottom = rc.top + 21;
 		ctrlDoSearch.MoveWindow(rc);
 	}
 	else
@@ -630,7 +688,7 @@ LRESULT SearchFrame::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	HDC hDC = (HDC)wParam;
 
 	if(hWnd == searchLabel.m_hWnd || hWnd == sizeLabel.m_hWnd || hWnd == optionLabel.m_hWnd || hWnd == typeLabel.m_hWnd
-		|| hWnd == ctrlSlots.m_hWnd) {
+		|| hWnd == hubsLabel.m_hWnd || hWnd == ctrlSlots.m_hWnd) {
 		::SetBkColor(hDC, ::GetSysColor(COLOR_3DFACE));
 		::SetTextColor(hDC, ::GetSysColor(COLOR_BTNTEXT));
 		return (LRESULT)::GetSysColorBrush(COLOR_3DFACE);
@@ -706,6 +764,33 @@ void SearchFrame::onTab(bool shift) {
 }
 
 LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+ 	switch(wParam)
+ 	{
+ 	case HUB_ADDED:
+ 		{
+ 			onHubAdded((HubInfo*)(lParam));
+ 			delete (HubInfo*)(lParam);
+ 			return 0;
+ 		}
+ 
+ 	case HUB_CHANGED:
+ 		{
+ 			onHubChanged((HubInfo*)(lParam));
+ 			delete (HubInfo*)(lParam);
+ 			return 0;
+ 		}
+ 
+ 	case HUB_REMOVED:
+ 		{
+ 			onHubRemoved((HubInfo*)(lParam));
+ 			delete (HubInfo*)(lParam);
+ 			return 0;
+ 		}
+ 
+ 	default:
+ 		break;
+ 	}
+
 	SearchResult* sr = (SearchResult*)lParam;
 
 	// Check previous search results for dupes
@@ -882,7 +967,10 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		try {
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				dcassert(newId < (int)targets.size());
-				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId]);
+				string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
+					Util::getFileName(targets[newId]) : Util::emptyString);
+				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId],
+					searchString);
 			} else {
 				dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
 				dcassert(newId < (int)WinUtil::lastDirs.size());
@@ -904,7 +992,10 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 				dcassert(sr->getType() == SearchResult::TYPE_FILE);
 				try {				
 					dcassert((newId < (int)targets.size()) && (newId >= 0));
-					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId]);
+					string searchString = (BOOLSETTING(AUTO_SEARCH_AUTO_STRING) ? 
+						Util::getFileName(targets[newId]) : Util::emptyString);
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[newId],
+						searchString);
 				} catch(const Exception& e) {
 					ctrlStatus.SetText(1, e.getError().c_str());
 				}
@@ -920,7 +1011,86 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 	return 0;
 }
 
+void SearchFrame::initHubs() {
+	ctrlHubs.insert(0, CSTRING(ONLY_WHERE_OP));
+	ctrlHubs.SetCheckState(0, false);
+
+	Lock lock(csHub);
+
+	ClientManager* clientMgr = ClientManager::getInstance();
+	clientMgr->lock();
+	clientMgr->addListener(this);
+
+	Client::List& clients = clientMgr->getClients();
+
+	Client::List::iterator it;
+	Client::List::iterator endIt = clients.end();
+	for(it = clients.begin(); it != endIt; ++it) {
+		Client* client = *it;
+		client->addListener(this);
+		if (!client->isConnected())
+			continue;
+
+		int nItem = ctrlHubs.insert(int(unsigned(~0) >> 1), client->getName(), 0, LPARAM(client));
+		ctrlHubs.SetCheckState(nItem, true);
+	}
+
+	clientMgr->unlock();
+
+	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
+}
+
+void SearchFrame::onHubAdded(HubInfo* info) {
+	Lock lock(csHub);
+
+	int nItem = ctrlHubs.insert(int(unsigned(~0) >> 1), info->name.c_str(), 0, LPARAM(info->client));
+	ctrlHubs.SetCheckState(nItem, (ctrlHubs.GetCheckState(0) ? info->op : true));
+	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
+}
+
+void SearchFrame::onHubChanged(HubInfo* info) {
+	Lock lock(csHub);
+
+	int nItem = ctrlHubs.find(LPARAM(info->client), 0);
+	if (nItem < 0)
+		return;
+
+	ctrlHubs.SetItemText(nItem, 0, info->name.c_str());
+	if (ctrlHubs.GetCheckState(0))
+		ctrlHubs.SetCheckState(nItem, info->op);
+
+	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
+}
+
+void SearchFrame::onHubRemoved(HubInfo* info) {
+	Lock lock(csHub);
+
+	int nItem = ctrlHubs.find(LPARAM(info->client), 0);
+	if (nItem < 0)
+		return;
+
+	ctrlHubs.DeleteItem(nItem);
+	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
+}
+
+LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* bHandled */) {
+	NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
+	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
+		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
+			Lock lock(csHub);
+			for(int iItem = 0; (iItem = ctrlHubs.GetNextItem(iItem, LVNI_ALL)) != -1; ) {
+				Client* client = (Client*)ctrlHubs.GetItemData(iItem);
+				if (client && !client->getOp())
+					ctrlHubs.SetCheckState(iItem, false);
+			}
+		}
+	}
+
+	return 0;
+}
+
+
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.30 2003/10/22 09:26:30 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.31 2003/10/28 15:27:54 arnetheduck Exp $
  */

@@ -129,7 +129,7 @@ public:
 		status(STATUS_WAITING), priority(aPriority), current(NULL) { };
 	
 	QueueItem(const QueueItem& aQi) : Flags(aQi), target(aQi.target), size(aQi.size), status(aQi.status), priority(aQi.priority),
-		current(aQi.current) {
+		current(aQi.current), searchString(aQi.searchString) {
 		Source::List::const_iterator i;
 		for(i = aQi.sources.begin(); i != aQi.sources.end(); ++i) {
 			sources.push_back(new Source(*(*i)));
@@ -178,6 +178,7 @@ public:
 	
 	GETSETREF(string, tempTarget, TempTarget);
 	GETSETREF(string, target, Target);
+	GETSETREF(string, searchString, SearchString);
 	GETSET(int64_t, size, Size);
 	GETSET(Status, status, Status);
 	GETSET(Priority, priority, Priority);
@@ -253,14 +254,16 @@ public:
 	
 	/** Add a file to the queue. */
 	void add(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aTarget, 
-		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
-		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException) {
+		const string& aSearchString = Util::emptyString, int aFlags = QueueItem::FLAG_RESUME, 
+		QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString, 
+		bool addBad = true) throw(QueueException, FileException) {
 		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, 
-			aTarget, aFlags, p, aTempTarget, addBad);
+			aTarget, aSearchString, aFlags, p, aTempTarget, addBad);
 	}
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
-		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
-		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
+		const string& aSearchString = Util::emptyString, int aFlags = QueueItem::FLAG_RESUME, 
+		QueueItem::Priority p = QueueItem::DEFAULT, const string& aTempTarget = Util::emptyString, 
+		bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
 	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
@@ -269,7 +272,7 @@ public:
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
 		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
-		add(USER_LIST_NAME, -1, aUser, file, 
+		add(USER_LIST_NAME, -1, aUser, file, Util::emptyString,
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
 	}
@@ -288,6 +291,8 @@ public:
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
+	void setSearchString(const string& aTarget, const string& searchString) throw();
+
 	StringList getTargetsBySize(int64_t aSize, const string& suffix) throw() {
 		Lock l(cs);
 		StringList sl;
@@ -328,6 +333,7 @@ private:
 		void add(QueueItem* qi, const User::Ptr& aUser);
 		QueueItem* getNext(const User::Ptr& aUser, QueueItem::Priority minPrio = QueueItem::LOWEST);
 		QueueItem* getRunning(const User::Ptr& aUser);
+		bool isRunning(const User::Ptr& aUser) const;
 		void setRunning(QueueItem* qi, const User::Ptr& aUser);
 		void setWaiting(QueueItem* qi);
 		QueueItem::UserListMap& getList(int p) { return userQueue[p]; };
@@ -365,8 +371,11 @@ private:
 	/** The queue needs to be saved */
 	bool dirty;
 
-	/** Searched last minute (ugly */
-	bool searched;
+	/** Minutes until next auto search */
+	int minutesUntilSearch;
+	
+	// Last search time
+	u_int32_t lastSearch;
 	
 	static const string USER_LIST_NAME;
 	static string getTempName(const string& aFileName);
@@ -384,6 +393,8 @@ private:
 
 	QueueItem* findByTarget(const string& aTarget);
 
+	bool isDownloadingFromSources(QueueItem* qi, int& onlineUserCount) const;
+
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	void onTimerMinute(u_int32_t aTick);
@@ -399,6 +410,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.41 2003/10/24 23:35:41 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.42 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

@@ -37,11 +37,13 @@ Client* ClientManager::getClient() {
 	}
 
 	c->addListener(this);
+	fire(ClientManagerListener::CLIENT_ADDED, c);
 	return c;
 }
 
 void ClientManager::putClient(Client* aClient) {
 	aClient->disconnect();
+	fire(ClientManagerListener::CLIENT_REMOVED, aClient);
 	aClient->removeListeners();
 
 	{
@@ -230,10 +232,9 @@ User::Ptr ClientManager::getUser(const string& aNick, Client* aClient, bool putO
 		}
 	}
 
-	string tmpAddress = (aClient->getPort() == 411) ? aClient->getIp() : aClient->getIp() + ':' + Util::toString(aClient->getPort());
 	// Check for an offline user that was on that hub that we can put online again
 	for(i = p.first; i != p.second; ++i) {
-		if( (!i->second->isOnline()) && (i->second->getLastHubAddress() == tmpAddress) ) {
+		if( (!i->second->isOnline()) && (i->second->getLastHubAddress() == aClient->getIpWithPort()) ) {
 			if(putOnline) {
 				i->second->setClient(aClient);
 				fire(ClientManagerListener::USER_UPDATED, i->second);
@@ -293,12 +294,12 @@ void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 // ClientListener
 void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line) {
 	if(type == ClientListener::FAILED) {
-		HubManager::getInstance()->removeUserCommand(client->getServer());
+		HubManager::getInstance()->removeUserCommand(client->getServerWithPort());
 	}
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(type == ClientListener::USER_COMMAND) {
-		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getServer());
+		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getServerWithPort());
 	}
 }
 
@@ -329,7 +330,7 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) throw() {
 	switch(type) {
 	case ClientListener::NICK_LIST:
-		{
+		if(!(client->getSupportFlags() & Client::SUPPORTS_NOGETINFO)) {
 			string tmp;
 			// Let's assume 10 characters per nick...
 			tmp.reserve(aList.size() * (11 + 10 + client->getNick().length())); 
@@ -378,5 +379,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.40 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.41 2003/10/28 15:27:53 arnetheduck Exp $
  */

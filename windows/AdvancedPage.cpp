@@ -60,6 +60,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 	{ SettingsManager::OPEN_FAVORITE_HUBS, ResourceManager::SETTINGS_OPEN_FAVORITE_HUBS },
 	{ SettingsManager::OPEN_FINISHED_DOWNLOADS, ResourceManager::SETTINGS_OPEN_FINISHED_DOWNLOADS },
 	{ SettingsManager::AUTO_SEARCH, ResourceManager::SETTINGS_AUTO_SEARCH },
+	{ SettingsManager::AUTO_SEARCH_AUTO_STRING, ResourceManager::SETTINGS_AUTO_SEARCH_AUTO_STRING }, 
 	{ SettingsManager::POPUP_PMS, ResourceManager::SETTINGS_POPUP_PMS },
 	{ SettingsManager::IGNORE_OFFLINE, ResourceManager::SETTINGS_IGNORE_OFFLINE },
 	{ SettingsManager::POPUP_OFFLINE, ResourceManager::SETTINGS_POPUP_OFFLINE },
@@ -94,6 +95,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.18 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.19 2003/10/28 15:27:54 arnetheduck Exp $
  */
 

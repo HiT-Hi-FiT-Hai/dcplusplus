@@ -103,9 +103,9 @@ public:
 		return (*currentChild)->data;
 	}
 
-	const string& getChildAttrib(const string& aName) throw(SimpleXMLException) {
+	const string& getChildAttrib(const string& aName, const string& aDefault = Util::emptyString) throw(SimpleXMLException) {
 		checkChildSelected();
-		return (*currentChild)->getAttrib(aName);
+		return (*currentChild)->getAttrib(aName, aDefault);
 	}
 
 	int getIntChildAttrib(const string& aName) throw(SimpleXMLException) {
@@ -172,9 +172,9 @@ private:
 				attribs.reserve(numAttribs);
 		};
 		
-		const string& getAttrib(const string& aName) {
+		const string& getAttrib(const string& aName, const string& aDefault = Util::emptyString) {
 			AttribIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
-			return (i == attribs.end()) ? Util::emptyString : i->second; 
+			return (i == attribs.end()) ? aDefault : i->second; 
 		}
 		string toXML(int indent);
 		void toXML(int indent, File* f);
@@ -210,6 +210,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.21 2003/04/15 10:13:55 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.22 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

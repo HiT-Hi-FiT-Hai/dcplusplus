@@ -72,7 +72,7 @@ public:
 	const string& getClientNick() const;
 	void update();
 	const string& getClientName() const;
-	const string& getClientServer() const;
+	string getClientServer() const;
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
 	void clientPM(const string& aTo, const string& aMsg);
@@ -115,6 +115,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.30 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: User.h,v 1.31 2003/10/28 15:27:54 arnetheduck Exp $
  */
 

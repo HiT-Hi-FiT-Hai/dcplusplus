@@ -41,7 +41,7 @@ const string SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
 	"BackgroundColor", "TextColor", "UseOemMonoFont", "ShareHidden", "FilterMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
+	"OpenPublic", "OpenQueue", "AutoSearch", "AutoAutoSearchString", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
@@ -88,6 +88,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_PUBLIC, false);
 	setDefault(OPEN_QUEUE, false);
 	setDefault(AUTO_SEARCH, false);
+	setDefault(AUTO_SEARCH_AUTO_STRING, false);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, false);
 	setDefault(IGNORE_OFFLINE, false);
@@ -282,6 +283,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.54 2003/10/21 17:10:40 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.55 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

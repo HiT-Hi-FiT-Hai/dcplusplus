@@ -108,6 +108,10 @@ QueueItem* QueueManager::UserQueue::getRunning(const User::Ptr& aUser) {
 	return (i == running.end()) ? NULL : i->second;
 }
 
+bool QueueManager::UserQueue::isRunning(const User::Ptr& aUser) const {
+	return (running.find(aUser) != running.end());
+}
+
 void QueueManager::UserQueue::remove(QueueItem* qi) {
 	if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
 		dcassert(qi->getCurrent() != NULL);
@@ -141,7 +145,7 @@ void QueueManager::UserQueue::remove(QueueItem* qi, const User::Ptr& aUser) {
 	}
 }
 
-QueueManager::QueueManager() : dirty(false), searched(false), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
+QueueManager::QueueManager() : dirty(false), minutesUntilSearch(0), lastSearch(0), lastSave(0), queueFile(Util::getAppPath() + "Queue.xml") { 
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -187,21 +191,30 @@ QueueManager::~QueueManager() {
 	}
 };
 
-void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
+void QueueManager::onTimerMinute(u_int32_t aTick) {
 	if(BOOLSETTING(AUTO_SEARCH)) {
-		if(searched) {
-			searched = false;
+		if(--minutesUntilSearch > 0)
 			return;
-		}
+
+		minutesUntilSearch = 0;
 
 		// We keep max 30 recent searches...this way we get an hour between
 		// each duplicate search.
-		while(recent.size() > 30) {
+		if(recent.size() > 30 || lastSearch + 3600*1000 < aTick) {
+			if (recent.size() > 30) {
+				while(recent.size() > 30)
 			recent.erase(recent.begin());
+		}
+			else {
+				recent.clear();
+				lastSearch = aTick;
+			}
 		}
 
 		string fn;
+		string searchString;
 		int64_t sz = 0;
+		int onlineUserCount;
 
 		{
 			Lock l(cs);
@@ -218,43 +231,50 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 					if( (q->isSet(QueueItem::FLAG_USER_LIST)) || 
 						(q->getStatus() == QueueItem::STATUS_RUNNING) ||
 						(q->getPriority() == QueueItem::PAUSED) ||
-						(q->hasOnlineUsers()) ||
-						(find(recent.begin(), recent.end(), q->getTargetFileName()) != recent.end())
+						(q->getSearchString().size() < 1) ||
+						(find(recent.begin(), recent.end(), q->getSearchString()) != recent.end()) ||
+						(isDownloadingFromSources(q, onlineUserCount))
 					  ) {
 						continue;
 					}
-					searched = true;
+
+						minutesUntilSearch = (onlineUserCount ? 5 : 2);
 					fn = q->getTargetFileName();
+						searchString = q->getSearchString();
 					sz = q->getSize() - 1;
-					recent.push_back(q->getTargetFileName());
+						recent.push_back(searchString);
 					break;
 				}
 
-				if(!searched) {
+				if(!minutesUntilSearch) {
 					for(j = queue.begin(); j != i; ++j) {
 						QueueItem* q = j->second;
 
 						if( (q->isSet(QueueItem::FLAG_USER_LIST)) || 
 							(q->getStatus() == QueueItem::STATUS_RUNNING) ||
 							(q->getPriority() == QueueItem::PAUSED) ||
-							(q->hasOnlineUsers()) ||
-							(find(recent.begin(), recent.end(), q->getTargetFileName()) != recent.end())
+							(q->getSearchString().size() < 1) ||
+							(find(recent.begin(), recent.end(), q->getSearchString()) != recent.end()) ||
+							(isDownloadingFromSources(q, onlineUserCount))
 							) {
 								continue;
 						}
 
+							minutesUntilSearch = (onlineUserCount ? 5 : 2);
 						fn = q->getTargetFileName();
+							searchString = q->getSearchString();
 						sz = q->getSize() - 1;
-						recent.push_back(q->getTargetFileName());
-						searched = true;
+							recent.push_back(searchString);
 						break;
 					}
 				}
 			}
 		}
 
-		if(!fn.empty())
-			SearchManager::getInstance()->search(SearchManager::clean(fn), sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
+		if(!fn.empty()) {
+			lastSearch = GET_TICK();
+			SearchManager::getInstance()->search(SearchManager::clean(searchString), sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
+		}
 	}
 }
 
@@ -279,6 +299,7 @@ string QueueManager::getTempName(const string& aFileName) {
 }
 
 void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
+					   const string& aSearchString /* = Util::emptyString */,
 					   int aFlags /* = QueueItem::FLAG_RESUME */, QueueItem::Priority p /* = QueueItem::DEFAULT */,
 					   const string& aTempTarget /* = Util::emptyString */, bool addBad /* = true */) throw(QueueException, FileException) {
 	
@@ -358,6 +379,8 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		s = q->addSource(aUser, aFile);
 		
 		if(newItem) {
+			q->setSearchString(aSearchString);
+
 			if(p != QueueItem::DEFAULT) {
 				q->setPriority(p);
 			}
@@ -848,6 +871,19 @@ void QueueManager::setPriority(const string& aTarget, QueueItem::Priority p) thr
 	}
 }
 
+void QueueManager::setSearchString(const string& aTarget, const string& searchString) throw()
+{
+	Lock l(cs);
+
+	QueueItem* q = findByTarget(aTarget);
+	if( (q != NULL) && (q->getSearchString() != searchString) ) {
+		q->setSearchString(searchString);
+		setDirty();
+		fire(QueueManagerListener::SEARCH_STRING_UPDATED, q);
+	}
+}
+
+
 QueueItem* QueueManager::findByTarget(const string& aTarget) {
 	// The hash is (hopefully...) case-insensitive...
 	QueueItem::StringIter i = queue.find(aTarget);
@@ -882,6 +918,8 @@ void QueueManager::saveQueue() throw() {
 				f.write(Util::toString((int)d->getPriority()));
 				f.write(STRINGLEN("\" TempTarget=\""));
 				f.write(CHECKESCAPE(d->getTempTarget()));
+				f.write(STRINGLEN("\" SearchString=\""));
+				f.write(CHECKESCAPE(d->getSearchString()));
 				f.write(STRINGLEN("\">\r\n"));
 
 				for(QueueItem::Source::List::const_iterator j = d->sources.begin(); j != d->sources.end(); ++j) {
@@ -949,6 +987,7 @@ void QueueManager::load(SimpleXML* aXml) {
 		const string sNick = "Nick";
 		const string sPath = "Path";
 		const string sDirectory = "Directory";
+		const string sSearchString = "SearchString";
 		
 		aXml->stepIn();
 		
@@ -958,6 +997,9 @@ void QueueManager::load(SimpleXML* aXml) {
 			int flags = aXml->getBoolChildAttrib(sResume) ? QueueItem::FLAG_RESUME : 0;
 			int64_t size = aXml->getLongLongChildAttrib(sSize);
 			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
+			// the defaultSearchString is just like if AUTO_SEARCH_AUTO_STRING was set which was the old behaviour
+			string defaultSearchString = Util::getFileName(target);
+			const string& searchString = aXml->getChildAttrib(sSearchString, defaultSearchString);
 			aXml->stepIn();
 			if(aXml->findChild(sSource)) {
 				do {
@@ -965,7 +1007,7 @@ void QueueManager::load(SimpleXML* aXml) {
 					const string& path = aXml->getChildAttrib(sPath);
 
 					try {
-						add(path, size, ClientManager::getInstance()->getUser(nick), target, flags, p, tempTarget);
+						add(path, size, ClientManager::getInstance()->getUser(nick), target, searchString, flags, p, tempTarget);
 					} catch(const Exception&) {
 						// ...
 					}
@@ -981,6 +1023,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				if(newItem) {
 					qi->setPriority(p);
 					qi->setTempTarget(tempTarget);
+					qi->setSearchString(defaultSearchString);
 					
 					if(lastInsert == queue.end()) {
 						lastInsert = queue.insert(make_pair(qi->getTarget(), qi)).first;
@@ -1068,26 +1111,43 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr) throw() {
 
 	if(type == SearchManagerListener::SEARCH_RESULT && BOOLSETTING(AUTO_SEARCH)) {
-		StringList l = getTargetsBySize(sr->getSize(), Util::getFileExt(sr->getFile()));
-		
-		StringTokenizer t(SearchManager::clean(sr->getFileName()), ' ');
+		string fileName = Util::toLower(sr->getFileName());
+		StringTokenizer t(SearchManager::clean(fileName), ' ');
 		StringList& tok = t.getTokens();
 
+		StringList l = getTargetsBySize(sr->getSize(), Util::getFileExt(sr->getFile()));
+		
 		for(StringIter i = l.begin(); i != l.end(); ++i) {
 			bool found = true;
 
+			string target = Util::toLower(Util::getFileName(*i));
+			if (target.size() >= fileName.size())
+			{
 			for(StringIter j = tok.begin(); j != tok.end(); ++j) {
-				if(Util::findSubString(*i, *j) == string::npos) {
+					if(Util::findSubStringCaseSensitive(target, *j) == string::npos) {
+						found = false;
+						break;
+					}
+				}
+			}
+			else
+			{
+				StringTokenizer t2(SearchManager::clean(target), ' ');
+				StringList& tok2 = t2.getTokens();
+
+				for(StringIter k = tok2.begin(); k != tok2.end(); ++k) {
+					if(Util::findSubStringCaseSensitive(fileName, *k) == string::npos) {
 					found = false;
 					break;
 				}
+			}
 			}
 
 			if(found) {
 				// Wow! found a new source that seems to match...add it...
 				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 				try {
-					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, QueueItem::FLAG_RESUME, 
+					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, Util::emptyString, QueueItem::FLAG_RESUME, 
 						QueueItem::DEFAULT, Util::emptyString, false);
 				} catch(const Exception&) {
 					// ...
@@ -1133,7 +1193,26 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 	}
 }
 
+bool QueueManager::isDownloadingFromSources(QueueItem* qi, int& onlineUserCount) const {
+	onlineUserCount = 0;
+
+	QueueItem::Source::List& sources = qi->getSources();
+	QueueItem::Source::Iter sourceIt;
+	QueueItem::Source::Iter sourceEndIt = sources.end();
+	for(sourceIt = sources.begin(); sourceIt != sourceEndIt; ++sourceIt) {
+		const User::Ptr& user = (*sourceIt)->getUser();
+		if(!user->isOnline())
+			continue;
+
+		++onlineUserCount;
+		if(userQueue.isRunning(user))
+			break;
+	}
+
+	return (sourceIt != sourceEndIt);
+}
+
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.48 2003/10/24 23:35:41 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.49 2003/10/28 15:27:53 arnetheduck Exp $
  */

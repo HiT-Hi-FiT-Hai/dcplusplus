@@ -27,6 +27,7 @@
 #include "User.h"
 #include "Thread.h"
 #include "SettingsManager.h"
+#include "Client.h"
 
 #include "SearchManagerListener.h"
 
@@ -94,6 +95,10 @@ public:
 		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
 	
+	void search(Client::List& who, const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
+	void search(Client::List& who, const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
+		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
+	}
 	static string clean(const string& aSearchString) {
 		static const char* badChars = "$|.[]()-_+";
 		string::size_type i = aSearchString.find_first_of(badChars);
@@ -142,5 +147,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.24 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.25 2003/10/28 15:27:53 arnetheduck Exp $
  */

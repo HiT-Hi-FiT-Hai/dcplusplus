@@ -25,6 +25,7 @@
 #include "SearchManager.h"
 #include "ShareManager.h"
 #include "UserCommand.h"
+#include "StringTokenizer.h"
 
 Client::Counts Client::counts;
 
@@ -364,7 +365,17 @@ void Client::onLine(const string& aLine) throw() {
 		name = param;
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Supports") {
-		fire(ClientListener::SUPPORTS, this, param);
+		StringTokenizer st(param, ' ');
+		int s = 0;
+		StringList& sl = st.getTokens();
+		for(StringIter i = sl.begin(); i != sl.end(); ++i) {
+			if(*i == "UserCommand") {
+				s |= SUPPORTS_USERCOMMAND;
+			} else if(*i == "NoGetINFO") {
+				s |= SUPPORTS_NOGETINFO;
+			}
+		}
+		fire(ClientListener::SUPPORTS, this, sl);
 	} else if(cmd == "$UserCommand") {
 		string::size_type i = string::npos;
 		string::size_type j = param.find(' ');
@@ -689,6 +700,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.58 2003/10/22 09:26:30 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.59 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

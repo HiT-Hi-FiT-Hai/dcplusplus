@@ -388,20 +388,42 @@ void WinUtil::openLink(const string& url) {
 	CRegKey key;
 	char buf[MAX_PATH];
 	ULONG len = MAX_PATH;
-	if(key.Open(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", KEY_READ) != ERROR_SUCCESS) {
-		::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	} else {
-		key.QueryStringValue(NULL, buf, &len);
-		string cmd = buf;
-		string::size_type i = cmd.find('"');
-		if(i != string::npos) {
-			string::size_type j = cmd.find('"', i+1);
-			if(j != string::npos) {
-				cmd = cmd.substr(i+1, j-i-1);
+	if(key.Open(HKEY_CLASSES_ROOT, "http\\shell\\open\\command", KEY_READ) == ERROR_SUCCESS) {
+		if(key.QueryStringValue(NULL, buf, &len) == ERROR_SUCCESS) {
+			string cmd(buf, len);
+			
+			if(!cmd.empty()) {
+				string::size_type start,end;
+				if(cmd[0] == '"') {
+					start = 1;
+					end = cmd.find('"');
+				} else {
+					start = 0;
+					end = cmd.find(' ');
+				}
+				if(end == string::npos)
+					end = cmd.length();
+
+				string param;
+				if(end < cmd.length()) {
+					param = cmd.substr(end + 1);
+				}
+				cmd = cmd.substr(start, end-start);
+				string::size_type i = param.find("%1");
+				if(i != string::npos) {
+					param.replace(i, 2, url);
+				} else {
+					param += " " + url;
+				}
+
+				if((int)::ShellExecute(NULL, NULL, cmd.c_str(), param.c_str(), NULL, SW_SHOWNORMAL) > 32) {
+					return;
+				}
 			}
 		}
-		::ShellExecute(NULL, "open", cmd.c_str(), url.c_str(), NULL, SW_SHOWNORMAL);
 	}
+
+	::ShellExecute(NULL, NULL, url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
 void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
@@ -451,5 +473,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.26 2003/10/27 17:43:45 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.27 2003/10/28 15:27:54 arnetheduck Exp $
  */

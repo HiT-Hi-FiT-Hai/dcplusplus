@@ -38,6 +38,7 @@ public:
 		MOVED,
 		SOURCES_UPDATED,
 		STATUS_UPDATED,
+		SEARCH_STRING_UPDATED,
 		QUEUE_ITEM
 	};
 
@@ -48,5 +49,5 @@ public:
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.3 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.4 2003/10/28 15:27:53 arnetheduck Exp $
  */

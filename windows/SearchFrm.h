@@ -27,8 +27,10 @@
 #include "ExListViewCtrl.h"
 #include "WinUtil.h"
 
+#include "../client/Client.h"
 #include "../client/SearchManager.h"
 #include "../client/CriticalSection.h"
+#include "../client/ClientManagerListener.h"
 
 #include "UCHandler.h"
 
@@ -36,7 +38,7 @@
 #define SHOWUI_MESSAGE_MAP 7
 
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
-	private SearchManagerListener, public UCHandler<SearchFrame>
+	private SearchManagerListener, private ClientListener, private ClientManagerListener, public UCHandler<SearchFrame>
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
@@ -58,6 +60,7 @@ public:
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_HUB, LVN_ITEMCHANGED, onItemChangedHub)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
@@ -93,6 +96,7 @@ public:
 		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
+		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
 		showUI(true), onlyFree(false), closed(false)
 	{	
@@ -229,6 +233,21 @@ private:
 		IDC_USER_COMMAND = 6000
 	};
 
+	struct HubInfo {
+		Client* client;
+		string name;
+		bool op;
+	};
+
+	// WM_SPEAKER
+	enum Speakers {
+		HUB_ADDED,
+		HUB_CHANGED,
+		HUB_REMOVED,
+
+		SPEAKER_MESSAGE_COUNT
+	};
+
 	string initialString;
 	int64_t initialSize;
 	SearchManager::SizeModes initialMode;
@@ -253,12 +272,14 @@ private:
 	CContainedWindow showUIContainer;
 	CContainedWindow doSearchContainer;
 	CContainedWindow resultsContainer;
+	CContainedWindow hubsContainer;
 	
-	CStatic searchLabel, sizeLabel, optionLabel, typeLabel;
+	CStatic searchLabel, sizeLabel, optionLabel, typeLabel, hubsLabel;
 	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
-	ExListViewCtrl ctrlResults;
+	ExListViewCtrl ctrlResults, ctrlHubs;
+
 	CMenu resultsMenu;
 	CMenu targetMenu;
 	CMenu targetDirMenu;
@@ -281,6 +302,7 @@ private:
 	static int columnSizes[];
 
 	CriticalSection cs;
+	CriticalSection csHub;
 
 	void downloadSelected(const string& aDir, bool view = false); 
 	void downloadWholeSelected(const string& aDir);
@@ -298,6 +320,69 @@ private:
 	}
 	
 	void onSearchResult(SearchResult* aResult);
+
+	// ClientListener
+	virtual void onAction(ClientListener::Types type, Client* client) throw() {
+		switch(type) {
+		case ClientListener::CONNECTED:
+			speak(HUB_ADDED, client); break;
+		case ClientListener::HUB_NAME:
+			speak(HUB_CHANGED, client); break;
+		default:
+			break;
+		}
+	}
+
+	virtual void onAction(ClientListener::Types type, Client* client, const string& /*line*/) throw() {
+		switch(type) {
+			case ClientListener::FAILED:
+				speak(HUB_REMOVED, client); break;
+			default:
+				break;
+		}
+	}
+
+	virtual void onAction(ClientListener::Types type, Client* client, const User::List& /* aList */) throw() {
+		switch(type) {
+		case ClientListener::OP_LIST:
+			speak(HUB_CHANGED, client); break;
+		default:
+			break;
+		}
+	}
+
+	//virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) throw() {}
+	//virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user, const string&  line) throw() {}
+
+	// ClientManagerListener
+	virtual void onAction(ClientManagerListener::Types type, Client* client) throw() {
+		switch(type) {
+			case ClientManagerListener::CLIENT_ADDED:
+				client->addListener(this); break;
+			case ClientManagerListener::CLIENT_REMOVED:
+				speak(HUB_REMOVED, client); break;
+			default:
+				break;
+		}
+	}
+
+	//virtual void onAction(ClientManagerListener::Types, const User::Ptr&) throw(;
+	//virtual void onAction(ClientManagerListener::Types, const string&) throw();
+
+	void initHubs();
+	void onHubAdded(HubInfo* info);
+	void onHubChanged(HubInfo* info);
+	void onHubRemoved(HubInfo* info);
+
+	LRESULT onItemChangedHub(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
+	void speak(Speakers s, Client* aClient) {
+		HubInfo* hubInfo = new HubInfo;
+		hubInfo->client = aClient;
+		hubInfo->name = aClient->getName();
+		hubInfo->op = aClient->getOp();
+		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
+	};
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -309,6 +394,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.23 2003/10/21 17:10:41 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.24 2003/10/28 15:27:54 arnetheduck Exp $
  */
 

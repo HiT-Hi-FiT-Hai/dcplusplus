@@ -1,3 +1,16 @@
+ -- 0.301 2003-10-28 --
+* Fixed usercommands in hub frame (kick for example)
+* Other fixes to usercommands (thanks sedulus)
+* Fixed reading of DCTC file lists I think (haven't tested) (DCTC of course has to be different 
+  from all other clients and create file lists with multiple directories with the _same_ name 
+  for no reason)
+* Fixed "open folder" in finished frames
+* Added new search for alternates algorithm with possibility to set search string yourself
+  (thanks saurod)
+* Added selection of which hubs to search in (thanks saurod)
+* Fixed link opening in some browsers
+* Added NoGetINFO extension support
+
  -- 0.300 2003-10-27 --
 * ---- IMPORTANT ---- 
   Security update, upgrade unless you want to risk losing files anywhere
@@ -43,6 +56,11 @@
 * Links are opened in a new browser window
 * New STLPort again (4.5-1020)
 * Increased some buffer sizes to increase high-speed transfer performance
+* Added tooltip to hub window status bar that shows last 5 status lines
+* /-commands that don't exist are now sent to the hub
+* Added /pm
+* Added /g to search google
+* Added /imdb to search imdb
 
 
 -- 0.263 2003-09-30 --

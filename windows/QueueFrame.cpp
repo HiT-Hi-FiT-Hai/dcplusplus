@@ -23,6 +23,7 @@
 #include "QueueFrame.h"
 #include "SearchFrm.h"
 #include "PrivateFrame.h"
+#include "LineDlg.h"
 
 #include "../client/SimpleXML.h"
 #include "../client/StringTokenizer.h"
@@ -31,12 +32,12 @@
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS };
+COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200, 200, 200 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, 
-ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS };
+ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -98,6 +99,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	readdMenu.CreatePopupMenu();
 
 	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CSTRING(SEARCH_FOR_ALTERNATES));
+	singleMenu.AppendMenu(MF_STRING, IDC_SEARCH_STRING, CSTRING(ENTER_SEARCH_STRING));
 	singleMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
 	singleMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)browseMenu, CSTRING(GET_FILE_LIST));
@@ -108,6 +110,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	singleMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	multiMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
+	multiMenu.AppendMenu(MF_STRING, IDC_SEARCH_STRING, CSTRING(ENTER_SEARCH_STRING));
 	multiMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	multiMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	multiMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
@@ -120,6 +123,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGHEST, CSTRING(HIGHEST));
 
 	dirMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
+	dirMenu.AppendMenu(MF_STRING, IDC_SEARCH_STRING, CSTRING(ENTER_SEARCH_STRING));
 	dirMenu.AppendMenu(MF_STRING, IDC_MOVE, CSTRING(MOVE));
 	dirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
@@ -221,6 +225,7 @@ QueueFrame::StringListInfo::StringListInfo(QueueItem* qi) {
 	default: dcassert(0); break;
 	}
 	columns[COLUMN_PATH] = qi->getTarget();
+	columns[COLUMN_SEARCHSTRING] = (qi->getSearchString().size() < 1 ? " " : qi->getSearchString());
 }
 
 void QueueFrame::onQueueAdded(QueueItem* aQI) {
@@ -549,6 +554,19 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 	speak(SET_TEXT, qi);
 }
 
+void QueueFrame::onQueueSearchStringUpdated(QueueItem* aQI) {
+	QueueItem* qi = NULL;
+	{
+		Lock l(cs);
+		QueueIter i = queue.find(aQI);
+		dcassert(i != queue.end());
+		qi = i->second;
+		qi->setSearchString(aQI->getSearchString());
+	}
+
+	speak(SET_TEXT, qi);
+}
+
 LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 	Lock l(cs);
 	spoken = false;
@@ -618,15 +636,20 @@ void QueueFrame::moveSelected() {
 		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 		string name = qi->getTarget();
 		string ext = Util::getFileExt(name);
-		string ext2 = "*." + ext;
+		string ext2;
+		if (!ext.empty())
+		{
+			ext = ext.substr(1); // remove leading dot so default extension works when browsing for file
+			ext2 = "*." + ext;
 		ext2 += (char)0;
 		ext2 += "*." + ext;
+		}
 		ext2 += "*.*";
 		ext2 += (char)0;
 		ext2 += "*.*";
 		ext2 += (char)0;
 
-		if(WinUtil::browseFile(name, m_hWnd, true, Util::getFilePath(name), ext2.c_str(), ext.c_str())) {
+		if(WinUtil::browseFile(name, m_hWnd, true, Util::getFilePath(name), ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
 			QueueManager::getInstance()->move(qi->getTarget(), name);
 		}
 	} else if(n > 1) {
@@ -672,6 +695,110 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 		QueueItem* qi = i->second;
 		QueueManager::getInstance()->move(qi->getTarget(), name + qi->getTargetFileName());
 	}			
+}
+
+void QueueFrame::setSearchStringForSelected() {
+	LineDlg dlg;
+	dlg.title = STRING(SEARCH_STRING);
+	dlg.description = STRING(ENTER_SEARCH_STRING);
+
+	int n = ctrlQueue.GetSelectedCount();
+	if(n == 1) {
+		// Single item, fill in the current search string
+		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
+		dlg.line = qi->getSearchString();
+		if(dlg.DoModal() == IDOK)
+			QueueManager::getInstance()->setSearchString(qi->getTarget(), dlg.line);
+	} else if(n > 1) {
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			if(n > 10) {
+				if(MessageBox(CSTRING(SEARCH_STRING_INEFFICIENT), CSTRING(SEARCH_STRING), MB_YESNO|MB_ICONWARNING) != IDYES)
+					return;
+			}
+		}
+		else {
+			if(n > 5) {
+				if(MessageBox(CSTRING(SEARCH_STRING_INEFFICIENT), CSTRING(SEARCH_STRING), MB_YESNO|MB_ICONWARNING) != IDYES)
+					return;
+			}
+		}
+
+		// Multiple items. TODO: Could check if all search strings are the same and fill in the search string
+		if(dlg.DoModal() == IDOK) {
+			int i = -1;
+			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
+				QueueManager::getInstance()->setSearchString(qi->getTarget(), dlg.line);
+			}						
+		}
+	}
+}
+
+void QueueFrame::setSearchStringForSelectedDir() {
+	HTREEITEM ht = ctrlDirs.GetSelectedItem();
+	if(ht == NULL)
+		return;
+
+	unsigned int maxItemCount;
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE)
+		maxItemCount = 10;
+	else
+		maxItemCount = 5;
+
+	if (isItemCountAtLeast(ht, maxItemCount + 1)) {
+		if(MessageBox(CSTRING(SEARCH_STRING_INEFFICIENT), CSTRING(SEARCH_STRING), MB_YESNO|MB_ICONWARNING) != IDYES)
+			return;
+	}
+
+	LineDlg dlg;
+	dlg.title = STRING(SEARCH_STRING);
+	dlg.description = STRING(ENTER_SEARCH_STRING);
+	if(dlg.DoModal() == IDOK)
+		setSearchStringForDir(ht, dlg.line);
+}
+
+void QueueFrame::setSearchStringForDir(HTREEITEM ht, const string& searchString) {
+	string* s = (string*)ctrlDirs.GetItemData(ht);
+	DirectoryPair p = directories.equal_range(*s);
+
+	for(DirectoryIter i = p.first; i != p.second; ++i) {
+		QueueItem* qi = i->second;
+		QueueManager::getInstance()->setSearchString(qi->getTarget(), searchString);
+	}			
+
+	HTREEITEM next = ctrlDirs.GetChildItem(ht);
+	while(next != NULL) {
+		setSearchStringForDir(next, searchString);
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+}
+
+bool QueueFrame::isItemCountAtLeast(HTREEITEM ht, unsigned int minItemCount) {
+	if (ht == NULL)
+		return false;
+
+	return isItemCountAtLeastRecursive(ht, minItemCount);
+}
+
+bool QueueFrame::isItemCountAtLeastRecursive(HTREEITEM ht, unsigned int& minItemCount) {
+	string* s = (string*)ctrlDirs.GetItemData(ht);
+	DirectoryPair p = directories.equal_range(*s);
+
+	for(DirectoryIter i = p.first; i != p.second && minItemCount; ++i, --minItemCount)
+		;
+
+	if (!minItemCount)
+		return true;
+
+	HTREEITEM next = ctrlDirs.GetChildItem(ht);
+	while(next != NULL) {
+		if (isItemCountAtLeastRecursive(next, minItemCount))
+			return true;
+
+		next = ctrlDirs.GetNextSiblingItem(next);
+	}
+
+	return false;
 }
 
 LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -775,7 +902,10 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItem* qi = (QueueItem*)ctrlQueue.GetItemData(i);
 		
-		StringList tok = StringTokenizer(SearchManager::clean(qi->getTargetFileName()), ' ').getTokens();
+		string searchString = SearchManager::clean(qi->getSearchString());
+		if (searchString.size() < 1)
+			searchString = SearchManager::clean(qi->getTargetFileName());
+		StringList tok = StringTokenizer(searchString, ' ').getTokens();
 		
 		for(StringIter si = tok.begin(); si != tok.end(); ++si) {
 			bool found = false;
@@ -831,7 +961,7 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->add(s->getPath(), q->getSize(), s->getUser(), q->getTarget());
+			QueueManager::getInstance()->add(s->getPath(), q->getSize(), s->getUser(), q->getTarget(), q->getSearchString());
 		} catch(const Exception& e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		}
@@ -1123,13 +1253,14 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 	case QueueManagerListener::MOVED: onQueueMoved(aQI); break;
 	case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
 	case QueueManagerListener::STATUS_UPDATED: onQueueUpdated(aQI); break;
+	case QueueManagerListener::SEARCH_STRING_UPDATED: onQueueSearchStringUpdated(aQI); break;
 	default: break;
 	}
 };
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.31 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.32 2003/10/28 15:27:54 arnetheduck Exp $
  */
 
 

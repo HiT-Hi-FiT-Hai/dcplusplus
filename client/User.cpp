@@ -67,10 +67,10 @@ const string& User::getClientName() const {
 	}
 }
 
-const string& User::getClientServer() const {
+string User::getClientServer() const {
 	RLock l(cs);
 	if(client) {
-		return client->getServer();
+		return client->getServerWithPort();
 	} else {
 		return Util::emptyString;
 	}
@@ -132,10 +132,7 @@ void User::setClient(Client* aClient) {
 	if(client == NULL)
 		unsetFlag(ONLINE);
 	else {
-		if(aClient->getPort() == 411)
-			setLastHubAddress(aClient->getIp());
-		else
-			setLastHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
+		setLastHubAddress(aClient->getIpWithPort());
 		setLastHubName(aClient->getName());
 		setFlag(ONLINE);
 		unsetFlag(QUIT_HUB);
@@ -144,6 +141,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.21 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: User.cpp,v 1.22 2003/10/28 15:27:54 arnetheduck Exp $
  */
 

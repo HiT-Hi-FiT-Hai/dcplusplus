@@ -75,6 +75,23 @@ public:
 		}
 	}
 
+	void search(Client::List& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
+		Lock l(cs);
+
+		Client::Iter beginOrigIt = clients.begin();
+		Client::Iter endOrigIt = clients.end();
+		Client::Iter endIt = who.end();
+		for(Client::Iter it = who.begin(); it != endIt; ++it) {
+			Client* client = *it;
+			if(find(beginOrigIt, endOrigIt, client) == endOrigIt)
+				continue;
+
+			if(client->isConnected()) {
+				client->search(aSizeMode, aSize, aFileType, aString);
+			}
+		}
+	}
+
 	void infoUpdated();
 
 	User::Ptr getUser(const string& aNick, const string& aHint = Util::emptyString);
@@ -94,7 +111,7 @@ public:
 	 * A user went offline. Must be called whenever a user quits a hub.
 	 * @param quitHub The user went offline because (s)he disconnected from the hub.
 	 */
-	void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub = false) {
+	void putUserOffline(User::Ptr& aUser, bool quitHub = false) {
 		{
 			Lock l(cs);
 			aUser->unsetFlag(User::PASSIVE);
@@ -107,6 +124,20 @@ public:
 		fire(ClientManagerListener::USER_UPDATED, aUser);
 	}
 	
+	void lock() throw() { cs.enter(); }
+	void unlock() throw() { cs.leave(); }
+
+	Client::List& getClients() { return clients; }
+
+ 	void removeClientListener(ClientListener* listener) {
+ 		Lock l(cs);
+ 		Client::Iter endIt = clients.end();
+ 		for(Client::Iter it = clients.begin(); it != endIt; ++it) {
+ 			Client* client = *it;
+ 			client->removeListener(listener);
+ 		}
+ 	}
+
 private:
 	typedef HASH_MULTIMAP<string, User::Ptr> UserMap;
 	typedef UserMap::iterator UserIter;
@@ -124,6 +155,7 @@ private:
 		TimerManager::getInstance()->addListener(this); 
 
 		features.push_back("UserCommand");
+		features.push_back("NoGetINFO");
 	};
 
 	// Dummy...
@@ -153,6 +185,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.36 2003/10/22 01:21:02 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.37 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

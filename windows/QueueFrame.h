@@ -83,6 +83,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_MOVE, onMove)
+		COMMAND_ID_HANDLER(IDC_SEARCH_STRING, onSearchString)
 		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGHEST, onPriority)
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
@@ -133,6 +134,10 @@ public:
 		return 0;
 	}
 
+	LRESULT onSearchString(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		usingDirMenu ? setSearchStringForSelectedDir() : setSearchStringForSelected();
+		return 0;
+	}
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
 		if(kd->wVKey == VK_DELETE) {
@@ -213,6 +218,7 @@ private:
 		COLUMN_USERS,
 		COLUMN_PATH,
 		COLUMN_ERRORS,
+		COLUMN_SEARCHSTRING,
 		COLUMN_LAST
 	};
 
@@ -347,18 +353,24 @@ private:
 	
 	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((string*)ctrlDirs.GetItemData(ht)); };
 
+	void setSearchStringForSelected();
+	void setSearchStringForSelectedDir();
+	void setSearchStringForDir(HTREEITEM ht, const string& searchString);
+	bool isItemCountAtLeast(HTREEITEM ht, unsigned int minItemCount);
+	bool isItemCountAtLeastRecursive(HTREEITEM ht, unsigned int& minItemCount);
+
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) throw();
 
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueMoved(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
-	
+	void onQueueSearchStringUpdated(QueueItem* aQI);
 };
 
 #endif // !defined(AFX_QUEUEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.23 2003/10/24 00:37:32 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.24 2003/10/28 15:27:54 arnetheduck Exp $
  */

@@ -514,6 +514,7 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		sr.right = sr.left + 16;
 		ctrlShowUsers.MoveWindow(sr);
 		ctrlLastLines.SetMaxTipWidth(w[0]);
+		ctrlLastLines.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 	int h = WinUtil::fontHeight + 4;
 
@@ -689,7 +690,7 @@ void HubFrame::addLine(const string& aLine) {
 LRESULT HubFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
 	tabMenuShown = true;
-	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getServer(), client->getOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_HUB, client->getServerWithPort(), client->getOp());
 	tabMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -748,7 +749,8 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 	}
 
 	if(doMenu) {
-		prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, client->getServer(), client->getOp());
+		tabMenuShown = false;
+		prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, client->getServerWithPort(), client->getOp());
 		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		cleanMenu(userMenu);
 		return TRUE;
@@ -1000,15 +1002,14 @@ void HubFrame::onAction(TimerManagerListener::Types type, DWORD /*aTick*/) throw
 void HubFrame::onAction(ClientListener::Types type, Client* client) throw() {
 	switch(type) {
 		case ClientListener::CONNECTING:
-			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServer() + "...");
-			speak(SET_WINDOW_TITLE, client->getServer());
+			speak(ADD_STATUS_LINE, STRING(CONNECTING_TO) + client->getServerWithPort() + "...");
+			speak(SET_WINDOW_TITLE, client->getServerWithPort());
 			break;
 		case ClientListener::CONNECTED: speak(CONNECTED); break;
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
 		case ClientListener::HUB_NAME:
-			speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() +
-					(client->getPort()==411?Util::emptyString:':'+Util::toString(client->getPort())) + ")");
+			speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServerWithPort() + ")");
 			break;
 		case ClientListener::VALIDATE_DENIED:
 			client->removeListener(this);
@@ -1080,5 +1081,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.37 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.38 2003/10/28 15:27:54 arnetheduck Exp $
  */

@@ -607,10 +607,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 		sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 		sr->setSlots(SETTING(SLOTS));
 		sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-		if(aClient->getPort() == 411)
-			sr->setHubAddress(aClient->getIp());
-		else
-			sr->setHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
+		sr->setHubAddress(aClient->getIpWithPort());
 		sr->setHubName(aClient->getName());
 		aResults.push_back(sr);
 		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -641,10 +638,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
 				sr->setSlots(SETTING(SLOTS));
 				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-				if(aClient->getPort() == 411)
-					sr->setHubAddress(aClient->getIp());
-				else
-					sr->setHubAddress(aClient->getIp() + ':' + Util::toString(aClient->getPort()));
+				sr->setHubAddress(aClient->getIpWithPort());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
@@ -705,6 +699,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.56 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.57 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

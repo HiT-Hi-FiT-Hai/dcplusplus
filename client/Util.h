@@ -362,9 +362,7 @@ public:
 
 		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
 
-		tx += start;
-
-		while(tx < end) {
+		for (tx += start; tx < end; ++tx) {
 			if(p == Util::toLower(tx[0])) {
 				int i = 1;
 
@@ -374,8 +372,37 @@ public:
 				if(px[i] == 0)
 					return tx - (u_int8_t*)aString.c_str();
 			}
+		}
+		return (string::size_type)string::npos;
+	}
 
-			tx++;
+	static string::size_type findSubStringCaseSensitive(const string& aString, const string& aSubString, string::size_type start = 0) {
+		if(aString.length() < start)
+			return (string::size_type)string::npos;
+
+		if(aString.length() < aSubString.length())
+			return (string::size_type)string::npos;
+
+		if(aSubString.empty())
+			return 0;
+
+		u_int8_t* tx = (u_int8_t*)aString.c_str();
+		u_int8_t* px = (u_int8_t*)aSubString.c_str();
+
+		u_int8_t p = px[0];
+
+		u_int8_t* end = tx + aString.length() - aSubString.length() + 1;
+
+		for (tx += start; tx < end; ++tx) {
+			if(p == tx[0]) {
+				int i = 1;
+
+				for(; px[i] && px[i] == tx[i]; ++i)
+					;	// Empty
+
+				if(px[i] == 0)
+					return tx - (u_int8_t*)aString.c_str();
+			}
 		}
 		return (string::size_type)string::npos;
 	}
@@ -478,5 +505,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.65 2003/10/24 23:35:42 arnetheduck Exp $
+ * $Id: Util.h,v 1.66 2003/10/28 15:27:54 arnetheduck Exp $
  */

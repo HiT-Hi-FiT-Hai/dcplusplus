@@ -31,16 +31,19 @@ public:
 	
 	enum Types {
 		USER_UPDATED,
-		INCOMING_SEARCH
+		INCOMING_SEARCH,
+		CLIENT_ADDED,
+		CLIENT_REMOVED,
 	};
 
 	virtual void onAction(Types, const User::Ptr&) throw() { };
 	virtual void onAction(Types, const string&) throw() { };
+	virtual void onAction(Types, Client*) throw() { };
 };
 
 #endif
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.3 2003/04/15 10:13:52 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.4 2003/10/28 15:27:53 arnetheduck Exp $
  */

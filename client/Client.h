@@ -74,6 +74,7 @@ public:
 	virtual void onAction(Types, Client*, const User::Ptr&, const string&) throw() { };
 	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) throw() { };
 	virtual void onAction(Types, Client*, int, int, const string&, const string&) throw() { }; // USER_COMMAND
+	virtual void onAction(Types, Client*, const StringList&) throw() { };		// SUPPORTS
 };
 
 class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener, private Flags
@@ -83,6 +84,11 @@ public:
 	typedef Client* Ptr;
 	typedef list<Ptr> List;
 	typedef List::iterator Iter;
+
+	enum SupportFlags {
+		SUPPORTS_USERCOMMAND = 0x01,
+		SUPPORTS_NOGETINFO = 0x02, 
+	};
 
 	User::NickMap& lockUserList() throw() { cs.enter(); return users; };
 	void unlockUserList() throw() { cs.leave(); };
@@ -172,6 +178,7 @@ public:
 
 	const string& getName() { return name; };
 	const string& getServer() { return server; };
+	string getServerWithPort() const { return port == 411 ? server : server + ':' + Util::toString(port); };
 
 	int getUserCount() throw() {
 		Lock l(cs);
@@ -193,7 +200,8 @@ public:
 	}
 
 	const string& getIp() {	return socket->getIp().empty() ? server : socket->getIp(); };
-	const short getPort() { return port; }
+	const short getPort() { return port; };
+	string getIpWithPort() { return port == 411 ? getIp() : getIp() + ':' + Util::toString(port); };
 	
 	string getLocalIp() { 
 		if(!SETTING(SERVER).empty()) {
@@ -212,6 +220,7 @@ public:
 
 	GETSETREF(string, nick, Nick);
 	GETSETREF(string, defpassword, Password);
+	GETSET(int, supportFlags, SupportFlags);
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
@@ -267,7 +276,8 @@ private:
 
 	void updateCounts(bool aRemove);
 
-	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), firstHello(true), state(STATE_CONNECT), 
+	Client() : nick(SETTING(NICK)), userInfo(true), supportFlags(0), op(false), 
+		registered(false), firstHello(true), state(STATE_CONNECT), 
 		socket(BufferedSocket::getSocket('|')), lastActivity(GET_TICK()), 
 		countType(COUNT_UNCOUNTED), reconnect(true), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
@@ -294,6 +304,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.69 2003/10/20 21:04:54 arnetheduck Exp $
+ * $Id: Client.h,v 1.70 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

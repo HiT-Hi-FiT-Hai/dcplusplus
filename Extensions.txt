@@ -129,3 +129,12 @@ Should be sent: After $Lock, before $Key
 Feature: UserCommand
 
 See dcplusplus.sf.net/wiki
+
+--------------------------------------------------------------------
+
+Feature: NoGetINFO
+
+Usage: This indicates that hub doesn't need $GetINFO's to send out $MyINFO's
+at connect. This is a sort of light-weight QuickList that's very easy to
+implement and does half of QuickList's job.
+

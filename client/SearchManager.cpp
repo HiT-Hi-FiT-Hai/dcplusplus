@@ -28,6 +28,10 @@ void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMo
 	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
 }
 
+void SearchManager::search(Client::List& who, const string& aName, int64_t aSize /* = 0 */, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
+	ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
+}
+
 string SearchResult::getFileName() { 
 	if(getType() == TYPE_FILE) 
 		return Util::getFileName(getFile()); 
@@ -174,6 +178,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.25 2003/04/15 10:13:54 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.26 2003/10/28 15:27:53 arnetheduck Exp $
  */
 

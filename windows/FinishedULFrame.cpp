@@ -118,7 +118,7 @@ LRESULT FinishedULFrame::onOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	int i;
 	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
 		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
-		WinUtil::openFile(entry->getTarget());
+		::ShellExecute(NULL, "explore", Util::getFilePath(entry->getTarget()).c_str(), NULL, NULL, NULL);
 	}
 	return 0;
 }
@@ -207,5 +207,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.9 2003/10/27 17:10:53 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.10 2003/10/28 15:27:54 arnetheduck Exp $
  */
