@@ -149,7 +149,7 @@ void HashManager::HashStore::save() {
 			string b32tmp;
 
 			f.write(SimpleXML::w1252Header);
-			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">"));
+			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">\r\n"));
 			for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
 				if(i->second->getIndex() == 0)
 					continue;
@@ -364,5 +364,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.10 2004/03/09 12:20:19 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.11 2004/03/11 21:12:08 arnetheduck Exp $
  */

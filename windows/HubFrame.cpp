@@ -288,7 +288,7 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 		return true;
 	} else {
 		ctrlUsers.getItemData(i)->update();
-		ctrlUsers.update(i);
+		ctrlUsers.updateItem(i);
 		ctrlUsers.SetItem(i, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
 		
 		return false;
@@ -1087,5 +1087,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.50 2004/03/09 21:40:50 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.51 2004/03/11 21:12:08 arnetheduck Exp $
  */

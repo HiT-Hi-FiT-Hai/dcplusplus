@@ -114,12 +114,12 @@ public:
 		return pred;
 	}
 	
-	void update(int i) {
+	void updateItem(int i) {
 		int k = GetHeader().GetItemCount();
 		for(int j = 0; j < k; ++j)
 			SetItemText(i, j, LPSTR_TEXTCALLBACK);
 	}
-	void updateItem(T* item) { int i = findItem(item); if(i != -1) update(i); };
+	void updateItem(T* item) { int i = findItem(item); if(i != -1) updateItem(i); };
 	void deleteItem(T* item) { int i = findItem(item); if(i != -1) DeleteItem(i); };
 
 	int getSortPos(T* a) {
@@ -182,5 +182,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.9 2004/02/23 17:42:17 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.10 2004/03/11 21:12:08 arnetheduck Exp $
 */

@@ -54,7 +54,7 @@ void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMo
 	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
 }
 
-void SearchManager::search(Client::List& who, const string& aName, int64_t aSize /* = 0 */, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
+void SearchManager::search(StringList& who, const string& aName, int64_t aSize /* = 0 */, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
 	ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
 }
 
@@ -222,6 +222,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.34 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.35 2004/03/11 21:12:08 arnetheduck Exp $
  */
 

@@ -79,19 +79,17 @@ public:
 		}
 	}
 
-	void search(Client::List& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
+	void search(StringList& who, int aSizeMode, int64_t aSize, int aFileType, const string& aString) {
 		Lock l(cs);
 
-		Client::Iter beginOrigIt = clients.begin();
-		Client::Iter endOrigIt = clients.end();
-		Client::Iter endIt = who.end();
-		for(Client::Iter it = who.begin(); it != endIt; ++it) {
-			Client* client = *it;
-			if(find(beginOrigIt, endOrigIt, client) == endOrigIt)
-				continue;
+		for(StringIter it = who.begin(); it != who.end(); ++it) {
+			string& client = *it;
+			for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
+				Client* c = *j;
+				if(c->isConnected() && c->getIpPort() == client) {
+					c->search(aSizeMode, aSize, aFileType, aString);
 
-			if(client->isConnected()) {
-				client->search(aSizeMode, aSize, aFileType, aString);
+				}
 			}
 		}
 	}
@@ -189,6 +187,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.42 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.43 2004/03/11 21:12:08 arnetheduck Exp $
  */
 

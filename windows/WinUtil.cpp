@@ -434,7 +434,7 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 			dlg.description = name;
 			dlg.line = sm["line:" + name];
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = dlg.line;
+				sm["line:" + name] = Util::validateMessage(dlg.line, false);
 				done[name] = dlg.line;
 			} else {
 				return false;
@@ -626,5 +626,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.38 2004/03/10 11:35:59 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.39 2004/03/11 21:12:08 arnetheduck Exp $
  */

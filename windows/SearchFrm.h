@@ -24,7 +24,6 @@
 #endif // _MSC_VER >= 1000
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
 #include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
@@ -54,6 +53,7 @@ public:
 	BEGIN_MSG_MAP(SearchFrame)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_GETDISPINFO, ctrlResults.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, ctrlResults.onColumnClick)
+		NOTIFY_HANDLER(IDC_HUB, LVN_GETDISPINFO, ctrlHubs.onGetDispInfo)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_HUB, LVN_ITEMCHANGED, onItemChangedHub)
@@ -323,8 +323,17 @@ private:
 		GETSETREF(string, tth, TTH);
 	};
 
-	struct HubInfo {
-		Client* client;
+	struct HubInfo : public FastAlloc<HubInfo> {
+		HubInfo(const string& aIpPort, const string& aName, bool aOp) : ipPort(aIpPort),
+			name(aName), op(aOp) { };
+
+		const string& getText(int col) const {
+			return name;
+		}
+		static int compareItems(HubInfo* a, HubInfo* b, int col) {
+			return Util::stricmp(a->name, b->name);
+		}
+		string ipPort;
 		string name;
 		bool op;
 	};
@@ -368,7 +377,7 @@ private:
 	bool showUI;
 
 	TypedListViewCtrl<SearchInfo, IDC_RESULTS> ctrlResults;
-	ExListViewCtrl ctrlHubs;
+	TypedListViewCtrl<HubInfo, IDC_HUB> ctrlHubs;
 
 	CMenu resultsMenu;
 	CMenu targetMenu;
@@ -382,6 +391,9 @@ private:
 	StringMap ucParams;
 
 	bool onlyFree;
+	bool isHash;
+
+	CriticalSection cs;
 
 	static StringList lastSearches;
 
@@ -390,9 +402,6 @@ private:
 
 	static int columnIndexes[];
 	static int columnSizes[];
-
-	CriticalSection cs;
-	CriticalSection csHub;
 
 	void downloadSelected(const string& aDir, bool view = false); 
 	void downloadWholeSelected(const string& aDir);
@@ -467,10 +476,7 @@ private:
 	LRESULT onItemChangedHub(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	void speak(Speakers s, Client* aClient) {
-		HubInfo* hubInfo = new HubInfo;
-		hubInfo->client = aClient;
-		hubInfo->name = aClient->getName();
-		hubInfo->op = aClient->getOp();
+		HubInfo* hubInfo = new HubInfo(aClient->getIpPort(), aClient->getName(), aClient->getOp());
 		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
 	};
 };
@@ -484,6 +490,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.33 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.34 2004/03/11 21:12:08 arnetheduck Exp $
  */
 

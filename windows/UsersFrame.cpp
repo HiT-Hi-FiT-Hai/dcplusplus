@@ -98,7 +98,7 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		if(dlg.DoModal(m_hWnd)) {
 			ui->user->setUserDescription(dlg.line);
 			ui->update();
-			ctrlUsers.update(i);
+			ctrlUsers.updateItem(i);
 			HubManager::getInstance()->save();
 		}
 	}
@@ -126,7 +126,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ui->update();
-			ctrlUsers.update(i);
+			ctrlUsers.updateItem(i);
 		}
 	}
 }
@@ -166,6 +166,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.18 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.19 2004/03/11 21:12:08 arnetheduck Exp $
  */
 

@@ -128,8 +128,8 @@ public:
 		search(aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
 	
-	void search(Client::List& who, const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
-	void search(Client::List& who, const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
+	void search(StringList& who, const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
+	void search(StringList& who, const string& aName, const string& aSize, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST) {
 		search(who, aName, Util::toInt64(aSize), aTypeMode, aSizeMode);
 	}
 	static string clean(const string& aSearchString);
@@ -167,5 +167,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.33 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.34 2004/03/11 21:12:08 arnetheduck Exp $
  */

@@ -178,6 +178,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextColor(WinUtil::textColor);
 	ctrlHubs.SetFont(WinUtil::systemFont, FALSE);	// use Util::font instead to obey Appearace settings
+	
 	initHubs();
 
 	targetDirMenu.CreatePopupMenu();
@@ -216,34 +217,29 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 }
 
 void SearchFrame::onEnter() {
-	Client::List clients;
-	char* message;
+	StringList clients;
 	
 	if(!(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 3*1000 < TimerManager::getInstance()->getTick()))
 		return;
 
-	{
-		Lock lock(csHub);
-
-		for(int iItem = 0; (iItem = ctrlHubs.GetNextItem(iItem, LVNI_ALL)) != -1; ) {
-			if (ctrlHubs.GetCheckState(iItem))
-				clients.push_back((Client*)ctrlHubs.GetItemData(iItem));
+	int n = ctrlHubs.GetItemCount();
+	for(int i = 0; i < n; i++) {
+		if(ctrlHubs.GetCheckState(i)) {
+			clients.push_back(ctrlHubs.getItemData(i)->ipPort);
 		}
 	}
 
 	if(!clients.size())
 		return;
 
-	message = new char[ctrlSearch.GetWindowTextLength()+1];
-	ctrlSearch.GetWindowText(message, ctrlSearch.GetWindowTextLength()+1);
-	string s(message, ctrlSearch.GetWindowTextLength());
-	delete[] message;
-	
-	message = new char[ctrlSize.GetWindowTextLength()+1];
-	ctrlSize.GetWindowText(message, ctrlSize.GetWindowTextLength()+1);
-	string size(message, ctrlSize.GetWindowTextLength());
-	delete[] message;
-	
+	string s(ctrlSearch.GetWindowTextLength() + 1, '\0');
+	ctrlSearch.GetWindowText(&s[0], s.size());
+	s.resize(s.size()-1);
+
+	string size(ctrlSize.GetWindowTextLength() + 1, '\0');
+	ctrlSize.GetWindowText(&size[0], size.size());
+	size.resize(size.size()-1);
+
 	double lsize = Util::toDouble(size);
 	switch(ctrlSizeMode.GetCurSel()) {
 	case 1:
@@ -266,11 +262,6 @@ void SearchFrame::onEnter() {
 		mode = SearchManager::SIZE_DONTCARE;
 
 	int ftype = ctrlFiletype.GetCurSel();
-	if(ftype == SearchManager::TYPE_HASH)
-		s = "TTH:" + s;
-
-	SearchManager::getInstance()->search(clients, s, llsize, 
-		(SearchManager::TypeModes)ftype, mode);
 
 	if(BOOLSETTING(CLEAR_SEARCH)){
 		ctrlSearch.SetWindowText("");
@@ -295,9 +286,17 @@ void SearchFrame::onEnter() {
 	{
 		Lock l(cs);
 		search = StringTokenizer(s, ' ').getTokens();
+		isHash = (ftype == SearchManager::TYPE_HASH);
 	}
 
 	SetWindowText((STRING(SEARCH) + " - " + s).c_str());
+
+	if(ftype == SearchManager::TYPE_HASH)
+		s = "TTH:" + s;
+
+	SearchManager::getInstance()->search(clients, s, llsize, 
+		(SearchManager::TypeModes)ftype, mode);
+
 }
 
 void SearchFrame::onSearchResult(SearchResult* aResult) {
@@ -309,8 +308,10 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 			return;
 		}
 
-		if(ctrlFiletype.GetCurSel() == SearchManager::TYPE_HASH) {
-			if(Util::stricmp(aResult->getHubName(), search[0]) != 0)
+		if(isHash) {
+			if(aResult->getTTH() == NULL)
+				return;
+			if(Util::stricmp(aResult->getTTH()->toBase32(), search[0]) != 0)
 				return;
 		} else {
 			for(StringIter j = search.begin(); j != search.end(); ++j) {
@@ -485,6 +486,10 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			delete ctrlResults.getItemData(i);
 		}
 		ctrlResults.DeleteAllItems();
+		for(int i = 0; i < ctrlResults.GetItemCount(); i++) {
+			delete ctrlHubs.getItemData(i);
+		}
+		ctrlHubs.DeleteAllItems();
 
 		WinUtil::saveHeaderOrder(ctrlResults, SettingsManager::SEARCHFRAME_ORDER,
 			SettingsManager::SEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
@@ -728,15 +733,12 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		break;
  	case HUB_ADDED: 
 		onHubAdded((HubInfo*)(lParam));
-		delete (HubInfo*)(lParam);
 		break;
   	case HUB_CHANGED:
 		onHubChanged((HubInfo*)(lParam));
-		delete (HubInfo*)(lParam);
 		break;
   	case HUB_REMOVED:
  		onHubRemoved((HubInfo*)(lParam));
- 		delete (HubInfo*)(lParam);
 		break;
  	}
 
@@ -806,10 +808,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 
 
 void SearchFrame::initHubs() {
-	ctrlHubs.insert(0, CSTRING(ONLY_WHERE_OP));
+	ctrlHubs.insertItem(new HubInfo(Util::emptyString, STRING(ONLY_WHERE_OP), false), 0);
 	ctrlHubs.SetCheckState(0, false);
-
-	Lock lock(csHub);
 
 	ClientManager* clientMgr = ClientManager::getInstance();
 	clientMgr->lock();
@@ -825,31 +825,34 @@ void SearchFrame::initHubs() {
 		if (!client->isConnected())
 			continue;
 
-		int nItem = ctrlHubs.insert(int(unsigned(~0) >> 1), client->getName(), 0, LPARAM(client));
-		ctrlHubs.SetCheckState(nItem, true);
+		onHubAdded(new HubInfo(client->getIpPort(), client->getName(), client->getOp()));
 	}
 
 	clientMgr->unlock();
-
 	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
+
 }
 
 void SearchFrame::onHubAdded(HubInfo* info) {
-	Lock lock(csHub);
-
-	int nItem = ctrlHubs.insert(int(unsigned(~0) >> 1), info->name.c_str(), 0, LPARAM(info->client));
+	int nItem = ctrlHubs.insertItem(info, 0);
 	ctrlHubs.SetCheckState(nItem, (ctrlHubs.GetCheckState(0) ? info->op : true));
 	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
 }
 
 void SearchFrame::onHubChanged(HubInfo* info) {
-	Lock lock(csHub);
-
-	int nItem = ctrlHubs.find(LPARAM(info->client), 0);
-	if (nItem < 0)
+	int nItem = 0;
+	int n = ctrlHubs.GetItemCount();
+	for(; nItem < n; nItem++) {
+		if(ctrlHubs.getItemData(nItem)->ipPort == info->ipPort)
+			break;
+	}
+	if (nItem == n)
 		return;
 
-	ctrlHubs.SetItemText(nItem, 0, info->name.c_str());
+	delete ctrlHubs.getItemData(nItem);
+	ctrlHubs.SetItemData(nItem, (DWORD_PTR)info);
+	ctrlHubs.updateItem(nItem);
+
 	if (ctrlHubs.GetCheckState(0))
 		ctrlHubs.SetCheckState(nItem, info->op);
 
@@ -857,12 +860,16 @@ void SearchFrame::onHubChanged(HubInfo* info) {
 }
 
 void SearchFrame::onHubRemoved(HubInfo* info) {
-	Lock lock(csHub);
-
-	int nItem = ctrlHubs.find(LPARAM(info->client), 0);
-	if (nItem < 0)
+	int nItem = 0;
+	int n = ctrlHubs.GetItemCount();
+	for(; nItem < n; nItem++) {
+		if(ctrlHubs.getItemData(nItem)->ipPort == info->ipPort)
+			break;
+	}
+	if (nItem == n)
 		return;
 
+	delete ctrlHubs.getItemData(nItem);
 	ctrlHubs.DeleteItem(nItem);
 	ctrlHubs.SetColumnWidth(0, LVSCW_AUTOSIZE);
 }
@@ -876,10 +883,9 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 	NMLISTVIEW* lv = (NMLISTVIEW*)pnmh;
 	if(lv->iItem == 0 && (lv->uNewState ^ lv->uOldState) & LVIS_STATEIMAGEMASK) {
 		if (((lv->uNewState & LVIS_STATEIMAGEMASK) >> 12) - 1) {
-			Lock lock(csHub);
 			for(int iItem = 0; (iItem = ctrlHubs.GetNextItem(iItem, LVNI_ALL)) != -1; ) {
-				Client* client = (Client*)ctrlHubs.GetItemData(iItem);
-				if (client && !client->getOp())
+				HubInfo* client = ctrlHubs.getItemData(iItem);
+				if (!client->op)
 					ctrlHubs.SetCheckState(iItem, false);
 			}
 		}
@@ -891,5 +897,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.46 2004/03/02 09:30:20 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.47 2004/03/11 21:12:08 arnetheduck Exp $
  */

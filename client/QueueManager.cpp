@@ -1105,6 +1105,8 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			const string& tthRoot = getAttrib(attribs, sTTH, 6);
 			const string& searchString = getAttrib(attribs, sSearchString, 6);
 			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded, 6));
+			if (downloaded > size || downloaded < 0)
+				downloaded = 0;
 
 			if(added == 0)
 				added = GET_TIME();
@@ -1315,5 +1317,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.77 2004/03/09 12:20:19 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.78 2004/03/11 21:12:08 arnetheduck Exp $
  */
