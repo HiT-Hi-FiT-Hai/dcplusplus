@@ -48,6 +48,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_TOTAL, onRemove)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
@@ -61,6 +62,7 @@ public:
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -157,6 +159,12 @@ public:
 	
 private:
 	enum {
+		SPEAK_ADD_LINE,
+		SPEAK_REMOVE,
+		SPEAK_REMOVE_ALL
+	};
+
+	enum {
 		COLUMN_FIRST,
 		COLUMN_DONE = COLUMN_FIRST,
 		COLUMN_PATH,
@@ -187,14 +195,14 @@ private:
 	void updateList(const FinishedItem::List& fl) {
 		ctrlList.SetRedraw(FALSE);
 		for(FinishedItem::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
-			addEntry(*i, false);
+			addEntry(*i);
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
 		updateStatus();
 	}
 
-	void addEntry(FinishedItem* entry, bool dirty = true);
+	void addEntry(FinishedItem* entry);
 	
 	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw();;
 };
@@ -203,5 +211,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.7 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */

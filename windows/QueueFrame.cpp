@@ -830,7 +830,7 @@ LRESULT QueueFrame::onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 		browseMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->addList(s->getUser());
+			QueueManager::getInstance()->addList(s->getUser(), QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception&) {
 		}
 	}
@@ -1147,7 +1147,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.29 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.30 2003/10/20 21:04:56 arnetheduck Exp $
  */
 
 

@@ -416,7 +416,7 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 		}
 		if(!user.empty()) {
 			try {
-				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user));
+				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user), QueueItem::FLAG_CLIENT_VIEW);
 			} catch(const Exception&) {
 				// ...
 			}
@@ -897,6 +897,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.32 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.33 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

@@ -30,7 +30,7 @@
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="FALSE"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="FALSE"
@@ -273,7 +273,7 @@
 				RelativePath="windows\FinishedFrame.cpp">
 			</File>
 			<File
-				RelativePath="windows\FinishedULFrame.cpp">
+				RelativePath=".\windows\FinishedULFrame.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\GeneralPage.cpp">
@@ -397,7 +397,7 @@
 				RelativePath="windows\FinishedFrame.h">
 			</File>
 			<File
-				RelativePath="windows\FinishedULFrame.h">
+				RelativePath=".\windows\FinishedULFrame.h">
 			</File>
 			<File
 				RelativePath=".\windows\FlatTabCtrl.h">

@@ -31,6 +31,22 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem DownloadPage::texts[] = {
+	{ IDC_SETTINGS_DIRECTORIES, ResourceManager::SETTINGS_DIRECTORIES }, 
+	{ IDC_SETTINGS_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_DOWNLOAD_DIRECTORY },
+	{ IDC_BROWSEDIR, ResourceManager::BROWSE_ACCEL },
+	{ IDC_SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, ResourceManager::SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY }, 
+	{ IDC_BROWSETEMPDIR, ResourceManager::BROWSE }, 
+	{ IDC_SETTINGS_DOWNLOAD_LIMITS, ResourceManager::SETTINGS_DOWNLOAD_LIMITS },
+	{ IDC_SETTINGS_DOWNLOADS_MAX, ResourceManager::SETTINGS_DOWNLOADS_MAX },
+	{ IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE, ResourceManager::SETTINGS_DOWNLOADS_SPEED_PAUSE },
+	{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, ResourceManager::SETTINGS_SPEEDS_NOT_ACCURATE },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST, ResourceManager::SETTINGS_PUBLIC_HUB_LIST },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_URL },
+	{ IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item DownloadPage::items[] = {
 	{ IDC_TEMP_DOWNLOAD_DIRECTORY, SettingsManager::TEMP_DOWNLOAD_DIRECTORY, PropPage::T_STR },
 	{ IDC_DOWNLOADDIR,	SettingsManager::DOWNLOAD_DIRECTORY, PropPage::T_STR }, 
@@ -43,6 +59,7 @@ PropPage::Item DownloadPage::items[] = {
 
 LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items);
 	
 	CUpDownCtrl spin;
@@ -101,5 +118,5 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 /**
  * @file
- * $Id: DownloadPage.cpp,v 1.7 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */

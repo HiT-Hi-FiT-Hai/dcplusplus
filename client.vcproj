@@ -29,7 +29,7 @@
 				ExceptionHandling="TRUE"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="FALSE"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
@@ -374,6 +374,9 @@
 			</File>
 			<File
 				RelativePath=".\client\User.h">
+			</File>
+			<File
+				RelativePath=".\client\UserCommand.h">
 			</File>
 			<File
 				RelativePath=".\client\UserConnection.h">

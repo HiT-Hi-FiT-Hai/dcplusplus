@@ -17,11 +17,20 @@
 * Small fixes (thanks gargoyle)
 * Toolbar updates (thanks gargoyle)
 * Speeded up match queue a lot
+* Added a network statistics view
+* Added tab-specific context menus
+* Added support for hub $Supports
+* Added hub-sent usercommands
+* Usercommands changed to raw in save file
+* &amp; is used to escape the & in chat (currently only escapes when really necessary, i e | or $ escape is used)
+* Added "Match Queue" to various right-click menus
+* Internationalised settings (thanks gargoyle)
+* Fixed finished frame lockups
 
 
  -- 0.263 2003-09-30 --
 * Fixed a mouse click crash (thanks sed)
-* Fixed so that donating is done in euro's from the help menu (why don't you try it out =)
+* Fixed so that donating is done in euro's from the help menu (why don't you try it out? =)
 * Port can now be seen in the hub frame title (thanks sed)
 * Fixed a major bug with filename case sensitivity (causing strange queue behaviour)
 * Fixed another queue crash bug

@@ -26,6 +26,7 @@
 #include "SimpleXML.h"
 #include "ClientManager.h"
 #include "CryptoManager.h"
+#include "UserCommand.h"
 
 HubManager* Singleton<HubManager>::instance = NULL;
 
@@ -102,14 +103,20 @@ void HubManager::save() {
 			xml.addChildAttrib("LastHubName", (*j)->getLastHubName());
 		}
 		xml.stepOut();
-		xml.addTag("Commands");
+		xml.addTag("UserCommands");
 		xml.stepIn();
 		for(UserCommand::Iter k = userCommands.begin(); k != userCommands.end(); ++k) {
-			xml.addTag("Command");
-			xml.addChildAttrib("Name", k->getName());
-			xml.addChildAttrib("Command", k->getCommand());
-			xml.addChildAttrib("Hub", k->getHub());
-			xml.addChildAttrib("Nick", k->getNick());
+			if(!k->isSet(UserCommand::FLAG_NOSAVE)) {
+				int ctx = (k->isSet(UserCommand::CONTEXT_CHAT) ? UserCommand::CONTEXT_CHAT : 0)
+					| (k->isSet(UserCommand::CONTEXT_HUB) ? UserCommand::CONTEXT_HUB : 0)
+					| (k->isSet(UserCommand::CONTEXT_SEARCH) ? UserCommand::CONTEXT_SEARCH : 0);
+				xml.addTag("UserCommand");
+				xml.addChildAttrib("Type", k->getType());
+				xml.addChildAttrib("Context", ctx);
+				xml.addChildAttrib("Name", k->getName());
+				xml.addChildAttrib("Command", k->getCommand());
+				xml.addChildAttrib("Hub", k->getHub());
+			}
 		}
 		xml.stepOut();
 
@@ -164,6 +171,25 @@ void HubManager::load(SimpleXML* aXml) {
 		}
 		aXml->stepOut();
 	}
+	aXml->resetCurrentChild();
+	if(aXml->findChild("Commands")) {
+		aXml->stepIn();
+		while(aXml->findChild("Command")) {
+			const string& name = aXml->getChildAttrib("Name");
+			const string& command = aXml->getChildAttrib("Command");
+			const string& hub = aXml->getChildAttrib("Hub");
+			const string& nick = aXml->getChildAttrib("Nick");
+			if(nick.empty()) {
+				// Old mainchat style command
+				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH, 
+					name, "<%[mynick]> " + command + "|", hub);
+			} else {
+				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH,
+					name, "$To: %[nick] From: %[mynick] $" + command + "|", hub);
+			}
+		}
+		aXml->stepOut();
+	}
 	// End old names
 
 	aXml->resetCurrentChild();
@@ -196,15 +222,15 @@ void HubManager::load(SimpleXML* aXml) {
 		aXml->stepOut();
 	}
 	aXml->resetCurrentChild();
-	if(aXml->findChild("Commands")) {
+	if(aXml->findChild("UserCommands")) {
 		aXml->stepIn();
-		while(aXml->findChild("Command")) {
-			userCommands.push_back(UserCommand(aXml->getChildAttrib("Name"),
-				aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"),
-				aXml->getChildAttrib("Nick")));
+		while(aXml->findChild("UserCommand")) {
+			addUserCommand(aXml->getIntChildAttrib("Type"), aXml->getIntChildAttrib("Context"),
+				aXml->getChildAttrib("Name"), aXml->getChildAttrib("Command"), aXml->getChildAttrib("Hub"));
 		}
 		aXml->stepOut();
 	}
+
 	dontSave = false;
 }
 
@@ -278,5 +304,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.31 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.32 2003/10/20 21:04:55 arnetheduck Exp $
  */

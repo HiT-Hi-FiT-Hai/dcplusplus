@@ -82,8 +82,8 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
-		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
-		MESSAGE_HANDLER(FTN_ROWS_CHANGED, onRowsChanged)
+		MESSAGE_HANDLER(FTM_SELECTED, onSelected)
+		MESSAGE_HANDLER(FTM_ROWS_CHANGED, onRowsChanged)
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
@@ -315,7 +315,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.24 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.25 2003/10/20 21:04:56 arnetheduck Exp $
  */
 
  

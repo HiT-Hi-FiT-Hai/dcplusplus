@@ -115,12 +115,15 @@ private:
 	Client::List clients;
 	CriticalSection cs;
 	
+	StringList features;
 	UserMap users;
 	Socket s;
 
 	friend class Singleton<ClientManager>;
 	ClientManager() { 
 		TimerManager::getInstance()->addListener(this); 
+
+		features.push_back("UserCommand");
 	};
 
 	// Dummy...
@@ -133,10 +136,12 @@ private:
 	virtual void onAction(ClientListener::Types type, Client* client, const User::Ptr& user) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const User::List& aList) throw();
 	virtual void onAction(ClientListener::Types type, Client* client, const string& aSeeker, int aSearchType, const string& aSize, int aFileType, const string& aString) throw();
-	
+	virtual void onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw();
+
 	void onClientHello(Client* aClient, const User::Ptr& aUser) throw();
 	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) throw();
+	void onClientLock(Client* aClient, const string& aLock) throw();
 
 	// TimerManagerListener
 	void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
@@ -147,6 +152,6 @@ private:
 
 /**
  * @file
- * $Id: ClientManager.h,v 1.34 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.35 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

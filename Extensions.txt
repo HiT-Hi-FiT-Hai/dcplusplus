@@ -123,3 +123,9 @@ part for details. The hub must not send "EXTENDEDPROTOCOL" unless it
 supports at least one feature.
 
 Should be sent: After $Lock, before $Key
+
+--------------------------------------------------------------------
+
+Feature: UserCommand
+
+See dcplusplus.sf.net/wiki

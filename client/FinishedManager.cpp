@@ -53,7 +53,7 @@ void FinishedManager::onAction(DownloadManagerListener::Types type, Download* d)
 				downloads.push_back(item);
 			}
 			
-			fire(FinishedManagerListener::ADDED, item);
+			fire(FinishedManagerListener::ADDED_DL, item);
 		}
 		break;
 		
@@ -95,5 +95,5 @@ void FinishedManager::onAction(UploadManagerListener::Types type, Upload* u) thr
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.10 2003/10/07 15:46:26 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.11 2003/10/20 21:04:55 arnetheduck Exp $
  */

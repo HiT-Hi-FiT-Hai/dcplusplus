@@ -38,7 +38,8 @@ public:
 		int64_t aSize, int64_t aChunkSize, int64_t aMSeconds, string const& aTime,
 		bool aCrc32 = false) : 
 		target(aTarget), user(aUser), hub(aHub), size(aSize), chunkSize(aChunkSize),
-		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) {
+		milliSeconds(aMSeconds), time(aTime), crc32Checked(aCrc32) 
+	{
 	}
 
 	int64_t getAvgSpeed() { return milliSeconds > 0 ? (chunkSize * ((int64_t)1000) / milliSeconds) : 0; };
@@ -63,12 +64,12 @@ public:
 	typedef List::iterator Iter;
 
 	enum Types {
-		ADDED,
+		ADDED_DL,
 		ADDED_UL,
-		REMOVED,
+		REMOVED_DL,
 		REMOVED_UL,
-		MAJOR_CHANGES,
-		MAJOR_CHANGES_UL
+		REMOVED_ALL_DL,
+		REMOVED_ALL_UL
 	};
 
 	virtual void onAction(Types, FinishedItem*) throw() = 0;
@@ -94,7 +95,7 @@ public:
 				return;
 		}
 		if (!upload)
-		fire(FinishedManagerListener::REMOVED, item);
+			fire(FinishedManagerListener::REMOVED_DL, item);
 		else
 			fire(FinishedManagerListener::REMOVED_UL, item);
 		delete item;		
@@ -109,9 +110,9 @@ public:
 			listptr->clear();
 		}
 		if (!upload)
-		fire(FinishedManagerListener::MAJOR_CHANGES, (FinishedItem *)0);
+			fire(FinishedManagerListener::REMOVED_ALL_DL, (FinishedItem *)0);
 		else
-			fire(FinishedManagerListener::MAJOR_CHANGES_UL, (FinishedItem *)0);
+			fire(FinishedManagerListener::REMOVED_ALL_UL, (FinishedItem *)0);
 	}
 
 private:
@@ -134,5 +135,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.7 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */

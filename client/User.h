@@ -79,6 +79,7 @@ public:
 	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 	bool isClientOp() const;
+	void send(const string& msg);
 
 	string getFullNick() const { 
 		string tmp(getNick());
@@ -114,6 +115,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.29 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: User.h,v 1.30 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

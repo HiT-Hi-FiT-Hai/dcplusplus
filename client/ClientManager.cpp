@@ -24,6 +24,7 @@
 #include "SearchManager.h"
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
+#include "HubManager.h"
 
 ClientManager* Singleton<ClientManager>::instance = NULL;
 
@@ -281,12 +282,25 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 	}
 }
 
+void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
+	if(CryptoManager::getInstance()->isExtended(aLock)) {
+		client->supports(features);
+	}
+	client->key(CryptoManager::getInstance()->makeKey(aLock));
+	client->validateNick(client->getNick());
+}
+
 // ClientListener
+void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
+	if(type == ClientListener::USER_COMMAND) {
+		HubManager::getInstance()->addUserCommand(aType, ctx, name, command, client->getServer());
+	}
+}
+
 void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) throw() {
 	switch(type) {
 	case ClientListener::C_LOCK:
-		client->key(CryptoManager::getInstance()->makeKey(line1));
-		client->validateNick(client->getNick());
+		onClientLock(client, line1);
 		break;
 	case ClientListener::CONNECT_TO_ME:
 		ConnectionManager::getInstance()->connect(line1, (short)Util::toInt(line2), client->getNick()); break;
@@ -312,15 +326,15 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 	case ClientListener::NICK_LIST:
 		{
 			string tmp;
-			// Let's assume 16 bytes / getinfo...
-			tmp.reserve(aList.size() * 16); 
+			// Let's assume 10 characters per nick...
+			tmp.reserve(aList.size() * (11 + 10 + client->getNick().length())); 
 			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-				//tmp += "$GetINFO " + (*i)->getNick() + '|';
-				client->getInfo(*i);
+				tmp += "$GetINFO ";
+				tmp += (*i)->getNick();
+				tmp += ' ';
+				tmp += client->getNick(); 
+				tmp += '|';
 			}
-			//if(!tmp.empty()) {
-			//	client->send(tmp);
-			//}
 		} break;
 	case ClientListener::OP_LIST:
 		{
@@ -356,5 +370,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.37 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.38 2003/10/20 21:04:55 arnetheduck Exp $
  */

@@ -27,6 +27,7 @@
 #include "HttpConnection.h"
 #include "User.h"
 #include "SettingsManager.h"
+#include "UserCommand.h"
 
 class HubEntry {
 public:
@@ -70,22 +71,6 @@ public:
 	GETSET(bool, connect, Connect);
 private:
 	string nick;
-};
-
-class UserCommand {
-public:
-	typedef vector<UserCommand> List;
-	typedef List::iterator Iter;
-
-	UserCommand() { };
-	UserCommand(const string& aName, const string& aCommand, const string& aHub,
-		const string& aNick) throw() : name(aName), command(aCommand), hub(aHub), 
-		nick(aNick) { };
-
-	GETSETREF(string, name, Name);
-	GETSETREF(string, command, Command);
-	GETSETREF(string, hub, Hub);
-	GETSETREF(string, nick, Nick);
 };
 
 class HubManagerListener {
@@ -187,6 +172,18 @@ public:
 		return publicHubs;
 	}
 
+	void addUserCommand(int type, int ctx, const string& name, const string& command, const string& hub) {
+		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+			if(name == i->getName()) {
+				return;
+			}
+		}
+		// No dupes, add it...
+		userCommands.push_back(UserCommand(type, ctx, name, command, hub));
+		if(!(ctx & UserCommand::FLAG_NOSAVE)) 
+			save();
+	}
+
 	UserCommand::List& getUserCommands() {
 		return userCommands;
 	}
@@ -263,6 +260,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.40 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.41 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

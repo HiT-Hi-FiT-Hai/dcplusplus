@@ -125,7 +125,7 @@ LRESULT UsersFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 		UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
 		try {
-			QueueManager::getInstance()->addList(ui->user);
+			QueueManager::getInstance()->addList(ui->user, QueueItem::FLAG_CLIENT_VIEW);
 		} catch(...) {
 			// ...
 		}
@@ -164,6 +164,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.13 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.14 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

@@ -32,6 +32,21 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem AdvancedPage::texts[] = {
+	{ IDC_SETTINGS_ADVANCED, ResourceManager::SETTINGS_ADVANCED_SETTINGS },
+	{ IDC_SETTINGS_ROLLBACK, ResourceManager::SETTINGS_ROLLBACK },
+	{ IDC_SETTINGS_B, ResourceManager::B },
+	{ IDC_SETTINGS_CLIENT_VER, ResourceManager::SETTINGS_CLIENT_VER },
+	{ IDC_SETTINGS_WRITE_BUFFER, ResourceManager::SETTINGS_WRITE_BUFFER },
+	{ IDC_SETTINGS_KB, ResourceManager::KB },
+	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
+	{ IDC_SETTINGS_USER_MENU, ResourceManager::SETTINGS_USER_MENU },
+	{ IDC_ADD_MENU, ResourceManager::ADD_ACCEL },
+	{ IDC_CHANGE_MENU, ResourceManager::SETTINGS_CHANGE },
+	{ IDC_REMOVE_MENU, ResourceManager::REMOVE_ACCEL },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item AdvancedPage::items[] = {
 	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
 	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
@@ -70,6 +85,7 @@ AdvancedPage::ListItem AdvancedPage::listItems[] = {
 
 LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
 
 	CRect rc;
@@ -84,17 +100,6 @@ LRESULT AdvancedPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 	if(BOOLSETTING(FULL_ROW_SELECT))
 		ctrlCommands.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-
-	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-	StringList cols;
-	for(UserCommand::Iter j = ul.begin(); j != ul.end(); ++j) {
-		cols.push_back(j->getName());
-		cols.push_back(j->getCommand());
-		cols.push_back(j->getHub());
-		cols.push_back(j->getNick());
-		ctrlCommands.insert(cols);
-		cols.clear();
-	}
 
 	// Do specialized reading here
 	return TRUE;
@@ -139,33 +144,12 @@ LRESULT AdvancedPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 	return 0;
 }
 
-void AdvancedPage::write()
-{
+void AdvancedPage::write() {
 	PropPage::write((HWND)*this, items, listItems, GetDlgItem(IDC_ADVANCED_BOOLEANS));
-
-	int items = ctrlCommands.GetItemCount();
-#define BUFLEN 256
-	char buf[BUFLEN];
-	string name, command, hub, pm;
-	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-	ul.clear();
-	for(int i = 0; i < items; ++i) {
-		ctrlCommands.GetItemText(i, 0, buf, BUFLEN);
-		name = buf;
-		ctrlCommands.GetItemText(i, 1, buf, BUFLEN);
-		command = buf;
-		ctrlCommands.GetItemText(i, 2, buf, BUFLEN);
-		hub = buf;
-		ctrlCommands.GetItemText(i, 3, buf, BUFLEN);
-		pm = buf;
-		ul.push_back(UserCommand(name, command, hub, pm));
-	}
-	HubManager::getInstance()->save();
-
 }
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.16 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.17 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

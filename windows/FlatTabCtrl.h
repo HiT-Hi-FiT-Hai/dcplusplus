@@ -27,13 +27,18 @@
 
 #include "WinUtil.h"
 
-#define FT_BASE (WM_APP + 700)
-/** This will be sent when the user presses a tab. WPARAM = HWND */
-#define FTN_SELECTED (FT_BASE + 0)
-/** The number of rows changed */
-#define FTN_ROWS_CHANGED (FT_BASE + 2)
-/** Set currently active tab to the HWND pointed by WPARAM */
-#define FTM_SETACTIVE (FT_BASE + 1)
+enum {
+	FT_FIRST = WM_APP + 700,
+	/** This will be sent when the user presses a tab. WPARAM = HWND */
+	FTM_SELECTED,
+	/** The number of rows changed */
+	FTM_ROWS_CHANGED,
+	/** Set currently active tab to the HWND pointed by WPARAM */
+	FTM_SETACTIVE,
+	/** Display context menu and return TRUE, or return FALSE for the default one */
+	FTM_CONTEXTMENU,
+
+};
 
 #define IDC_SELECT_WINDOW 6000
 
@@ -146,7 +151,7 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					::SendMessage(hWnd, FTN_SELECTED, (WPARAM)t->hWnd, 0);
+					::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
 				}
 				break;
 			}
@@ -164,13 +169,15 @@ public:
 		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
 			TabInfo* t = *i;
 			if((row == t->row) && (xPos >= t->xpos) && (xPos < (t->xpos + t->getWidth())) ) {
-				// Bingo, this was clicked
-				closing = t->hWnd;
-				ClientToScreen(&pt);
-				CMenu mnu;
-				mnu.CreatePopupMenu();
-				mnu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
-				mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				// Bingo, this was clicked, check if the owner wants to handle it...
+				if(!::SendMessage(t->hWnd, FTM_CONTEXTMENU, 0, lParam)) {
+					closing = t->hWnd;
+					ClientToScreen(&pt);
+					CMenu mnu;
+					mnu.CreatePopupMenu();
+					mnu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
+					mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN, pt.x, pt.y, m_hWnd);
+				}
 				break;
 			}
 		}
@@ -222,7 +229,7 @@ public:
 		}
 
 		if(notify) {
-			::SendMessage(GetParent(), FTN_ROWS_CHANGED, 0, 0);
+			::SendMessage(GetParent(), FTM_ROWS_CHANGED, 0, 0);
 		}
 		if(needInval && inval)
 			Invalidate();
@@ -332,7 +339,7 @@ public:
 		mnu.GetMenuItemInfo(wID, FALSE, &mi);
 		HWND hWnd = GetParent();
 		if(hWnd) {
-			SendMessage(hWnd, FTN_SELECTED, (WPARAM)mi.dwItemData, 0);
+			SendMessage(hWnd, FTM_SELECTED, (WPARAM)mi.dwItemData, 0);
 		}
 		return 0;		
 	}
@@ -606,5 +613,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.18 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.19 2003/10/20 21:04:55 arnetheduck Exp $
  */

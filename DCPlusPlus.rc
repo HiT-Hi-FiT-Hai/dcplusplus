@@ -118,53 +118,63 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "General"
 FONT 8, "MS Sans Serif"
 BEGIN
+    GROUPBOX        "Personal information",IDC_SETTINGS_PERSONAL_INFORMATION,
+                    7,7,261,80
+    RTEXT           "Nick (Required)",IDC_SETTINGS_NICK,14,20,56,8
     EDITTEXT        IDC_NICK,74,17,184,14,ES_AUTOHSCROLL
+    RTEXT           "E-Mail",IDC_SETTINGS_EMAIL,14,37,56,8
     EDITTEXT        IDC_EMAIL,74,34,184,14,ES_AUTOHSCROLL
+    RTEXT           "Description",IDC_SETTINGS_DESCRIPTION,14,54,56,8
     EDITTEXT        IDC_DESCRIPTION,74,51,184,14,ES_AUTOHSCROLL
+    RTEXT           "Connection",IDC_SETTINGS_CONNECTION_TYPE,14,70,56,8
     COMBOBOX        IDC_CONNECTION,74,68,58,65,CBS_DROPDOWNLIST | 
                     CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Connection Settings (see the readme / newbie help if unsure)",
+                    IDC_SETTINGS_CONNECTION_SETTINGS,7,94,261,124
     CONTROL         "Active",IDC_ACTIVE,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,14,108,48,10
+    LTEXT           "IP",IDC_SETTINGS_IP,64,109,10,8
     EDITTEXT        IDC_SERVER,74,106,68,14,ES_AUTOHSCROLL
+    LTEXT           "Port (empty=random)",IDC_SETTINGS_PORT,147,109,66,8
     EDITTEXT        IDC_PORT,215,106,29,14,ES_AUTOHSCROLL
     CONTROL         "Passive (behind a firewall)",IDC_PASSIVE,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,14,122,244,10
     CONTROL         "SOCKS5",IDC_SOCKS5,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,14,135,244,10
+    LTEXT           "Socks IP",IDC_SETTINGS_SOCKS5_IP,14,147,85,8
     EDITTEXT        IDC_SOCKS_SERVER,14,157,85,14,ES_AUTOHSCROLL
+    LTEXT           "Port",IDC_SETTINGS_SOCKS5_PORT,106,147,29,8
     EDITTEXT        IDC_SOCKS_PORT,106,157,29,14,ES_AUTOHSCROLL
+    LTEXT           "Username",IDC_SETTINGS_SOCKS5_USERNAME,14,174,84,8
     EDITTEXT        IDC_SOCKS_USER,14,185,85,14,ES_AUTOHSCROLL
+    LTEXT           "Password",IDC_SETTINGS_SOCKS5_PASSWORD,106,173,71,8
     EDITTEXT        IDC_SOCKS_PASSWORD,106,185,71,14,ES_AUTOHSCROLL
     CONTROL         "Use SOCKS5 server to resolve hostnames",
                     IDC_SOCKS_RESOLVE,"Button",BS_AUTOCHECKBOX | WS_GROUP | 
                     WS_TABSTOP,14,202,244,10
-    GROUPBOX        "Personal information",IDC_STATIC,7,7,261,80
-    RTEXT           "Nick (Required)",IDC_STATIC,14,20,56,8
-    RTEXT           "E-Mail",IDC_STATIC,14,37,56,8
-    RTEXT           "Description",IDC_STATIC,14,54,56,8
-    RTEXT           "Connection",IDC_STATIC,14,70,56,8
-    GROUPBOX        "Connection Settings (see the readme / newbie help if unsure)",
-                    IDC_STATIC,7,94,261,124
-    LTEXT           "IP",IDC_STATIC,64,109,10,8
-    LTEXT           "Port (empty=random)",IDC_STATIC,147,109,66,8
-    LTEXT           "Socks IP",IDC_STATIC,14,147,85,8
-    LTEXT           "Port",IDC_STATIC,106,147,29,8
-    LTEXT           "Username",IDC_STATIC,14,174,84,8
-    LTEXT           "Password",IDC_STATIC,106,173,71,8
 END
 
-IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225
+IDD_ADVANCEDPAGE DIALOG 0, 0, 275, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_ROLLBACK,62,17,50,14,ES_AUTOHSCROLL | ES_NUMBER
-    EDITTEXT        IDC_BUFFERSIZE,190,17,50,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_CLVERSION,62,36,50,14
+    RTEXT           "Rollback",IDC_SETTINGS_ROLLBACK,14,20,50,8
+    EDITTEXT        IDC_ROLLBACK,70,17,50,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "B",IDC_SETTINGS_B,121,20,8,8
+    RTEXT           "Client version",IDC_SETTINGS_CLIENT_VER,14,39,50,8
+    EDITTEXT        IDC_CLVERSION,70,36,50,14
+    RTEXT           "Write buffer size",IDC_SETTINGS_WRITE_BUFFER,130,20,65,
+                    8
+    EDITTEXT        IDC_BUFFERSIZE,198,17,50,14,ES_AUTOHSCROLL
+    LTEXT           "kB",IDC_SETTINGS_KB,249,20,10,8
+    RTEXT           "Max tab rows",IDC_SETTINGS_MAX_TAB_ROWS,128,39,67,8
+    EDITTEXT        IDC_MAX_TAB_ROWS,198,36,40,14,ES_AUTOHSCROLL
     CONTROL         "",IDC_ADVANCED_BOOLEANS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOCOLUMNHEADER | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,14,55,247,84
+    GROUPBOX        "Advanced settings",IDC_SETTINGS_ADVANCED,7,7,261,139
     CONTROL         "",IDC_MENU_ITEMS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SORTASCENDING | 
                     LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
@@ -172,15 +182,7 @@ BEGIN
     PUSHBUTTON      "&Add",IDC_ADD_MENU,211,161,50,14
     PUSHBUTTON      "Chang&e",IDC_CHANGE_MENU,211,179,50,14
     PUSHBUTTON      "&Remove",IDC_REMOVE_MENU,211,197,50,14
-    RTEXT           "Rollback",IDC_STATIC,14,20,44,8
-    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,139
-    RTEXT           "Client version",IDC_STATIC,14,39,44,8
-    RTEXT           "Write buffer size",IDC_STATIC,122,20,65,8
-    LTEXT           "B",IDC_STATIC,113,20,8,8
-    LTEXT           "kB",IDC_STATIC,241,20,10,8
-    GROUPBOX        "User Menu Items",IDC_STATIC,7,149,261,69
-    EDITTEXT        IDC_MAX_TAB_ROWS,190,36,40,14,ES_AUTOHSCROLL
-    LTEXT           "Max tab rows",IDC_STATIC,144,39,43,8
+    GROUPBOX        "User Menu Items",IDC_SETTINGS_USER_MENU,7,149,261,69
 END
 
 IDD_DOWNLOADPAGE DIALOG  0, 0, 275, 226
@@ -188,34 +190,38 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Downloads"
 FONT 8, "MS Sans Serif"
 BEGIN
+    GROUPBOX        "Directories",IDC_SETTINGS_DIRECTORIES,7,7,261,72
+    LTEXT           "Default download directory",
+                    IDC_SETTINGS_DOWNLOAD_DIRECTORY,14,19,247,8
     EDITTEXT        IDC_DOWNLOADDIR,14,28,197,14,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,217,28,44,14
+    LTEXT           "Unfinished downloads directory (empty = download directly to target)",
+                    IDC_SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY,14,46,247,8
     EDITTEXT        IDC_TEMP_DOWNLOAD_DIRECTORY,14,56,197,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BROWSETEMPDIR,217,56,44,14
+    GROUPBOX        "Limits",IDC_SETTINGS_DOWNLOAD_LIMITS,7,82,261,58
     EDITTEXT        IDC_DOWNLOADS,14,93,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
                     UDS_NOTHOUSANDS,35,91,11,14
+    LTEXT           "Maximum simultaneous downloads (0 = infinite)",
+                    IDC_SETTINGS_DOWNLOADS_MAX,46,96,215,8
     EDITTEXT        IDC_MAXSPEED,14,109,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
                     UDS_NOTHOUSANDS,37,113,9,14
-    EDITTEXT        IDC_PROXY,14,192,247,14,ES_AUTOHSCROLL
-    GROUPBOX        "Directories",IDC_STATIC,7,7,261,72
-    GROUPBOX        "Limits",IDC_STATIC,7,82,261,58
-    LTEXT           "Maximum simultaneous downloads (0 = infinite)",
-                    IDC_STATIC,46,96,215,8
     LTEXT           "No new downloads if speed exceeds (kB/s, 0 = disable)",
-                    IDC_STATIC,46,112,218,8
-    LTEXT           "HTTP Proxy (for hublist only)",IDC_STATIC,14,183,247,8
+                    IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE,46,112,218,8
     LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",
-                    IDC_STATIC,14,127,247,8
-    GROUPBOX        "Public Hubs list",IDC_STATIC,7,142,261,72
+                    IDC_SETTINGS_SPEEDS_NOT_ACCURATE,14,127,247,8
+    GROUPBOX        "Public Hubs list",IDC_SETTINGS_PUBLIC_HUB_LIST,7,142,
+                    261,72
+    LTEXT           "Public Hubs list URL",IDC_SETTINGS_PUBLIC_HUB_LIST_URL,
+                    14,155,247,8
     EDITTEXT        IDC_PUBLIC_HUBS,14,165,247,14,ES_AUTOHSCROLL
-    LTEXT           "Default download directory",IDC_STATIC,14,19,247,8
-    LTEXT           "Unfinished downloads directory (empty = download directly to target)",
-                    IDC_STATIC,14,46,247,8
-    LTEXT           "Public Hubs list URL",IDC_STATIC,14,155,247,8
+    LTEXT           "HTTP Proxy (for hublist only)",
+                    IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY,14,183,247,8
+    EDITTEXT        IDC_PROXY,14,192,247,14,ES_AUTOHSCROLL
 END
 
 IDD_UPLOADPAGE DIALOG  0, 0, 275, 225
@@ -223,52 +229,54 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sharing"
 FONT 8, "MS Sans Serif"
 BEGIN
+    GROUPBOX        "Shared directories",IDC_SETTINGS_SHARED_DIRECTORIES,7,7,
+                    261,179
     CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,14,17,247,146
+    LTEXT           "Total size:",IDC_SETTINGS_SHARE_SIZE,14,170,33,8
+    LTEXT           "0 B",IDC_TOTAL,50,170,41,8
     CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,93,169,72,10
-    PUSHBUTTON      "&Add  folder",IDC_ADD,215,166,46,14
     PUSHBUTTON      "&Remove",IDC_REMOVE,167,166,44,14,WS_DISABLED
+    PUSHBUTTON      "&Add  folder",IDC_ADD,215,166,46,14
+    RTEXT           "Automatically open an extra slot if speed is below (0 = disable)",
+                    IDC_SETTINGS_UPLOADS_MIN_SPEED,7,192,211,8
     EDITTEXT        IDC_MIN_UPLOAD_SPEED,222,189,28,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
                     UDS_ARROWKEYS | UDS_NOTHOUSANDS,250,188,11,14
+    LTEXT           "kB/s",IDC_SETTINGS_KBPS,252,192,16,8
+    RTEXT           "Upload slots",IDC_SETTINGS_UPLOADS_SLOTS,7,207,211,8
     EDITTEXT        IDC_SLOTS,222,204,28,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
                     UDS_NOTHOUSANDS,250,204,11,14
-    GROUPBOX        "Shared directories",IDC_STATIC,7,7,261,179
-    LTEXT           "Total size:",IDC_STATIC,14,170,33,8
-    LTEXT           "0 B",IDC_TOTAL,50,170,41,8
-    RTEXT           "Upload slots",IDC_STATIC,7,207,211,8
-    RTEXT           "Automatically open an extra slot if speed is below (0 = disable)",
-                    IDC_STATIC,7,192,211,8
-    LTEXT           "kB/s",IDC_STATIC,252,192,16,8
 END
 
-IDD_APPEARANCEPAGE DIALOGEX 0, 0, 275, 225
+IDD_APPEARANCEPAGE DIALOG 0, 0, 275, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Appearance"
-FONT 8, "MS Sans Serif", 0, 0, 0x1
+FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "Select window color",IDC_SELWINCOLOR,16,17,68,14
-    PUSHBUTTON      "Select text style",IDC_SELTEXT,16,35,68,14
+    GROUPBOX        "Colors",IDC_SETTINGS_COLORS,7,7,261,50
+    PUSHBUTTON      "Select &window color",IDC_SELWINCOLOR,16,17,82,14
+    PUSHBUTTON      "Select &text style",IDC_SELTEXT,16,35,82,14
+    LTEXT           "Donate $$$:s! (well, €€€ preferably =) (see help menu)",
+                    IDC_COLOREXAMPLE,107,17,153,32,SS_NOPREFIX | SS_SUNKEN | 
+                    WS_BORDER | NOT WS_GROUP
+    GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,57,261,75
     CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,16,68,244,57
+    GROUPBOX        "Default away message",IDC_SETTINGS_DEFAULT_AWAY_MSG,7,
+                    135,261,32
     EDITTEXT        IDC_DEFAULT_AWAY_MESSAGE,16,145,244,14,ES_AUTOHSCROLL
+    GROUPBOX        "Language file",IDC_SETTINGS_LANGUAGE_FILE,7,169,261,32
     EDITTEXT        IDC_LANGUAGE,16,180,188,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BROWSE,210,180,50,14
-    GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
-    LTEXT           "Donate $$$:s! (well, €€€ preferably =) (see help menu)",
-                    IDC_COLOREXAMPLE,92,17,168,32,SS_NOPREFIX | SS_SUNKEN | 
-                    WS_BORDER | NOT WS_GROUP
-    GROUPBOX        "Options",IDC_STATIC,7,57,261,75
-    GROUPBOX        "Language file",IDC_STATIC,7,169,261,32
+    PUSHBUTTON      "&Browse...",IDC_BROWSE,210,180,50,14
     LTEXT           "Note; most of these options require that you restart DC++",
-                    IDC_STATIC,7,210,253,8
-    GROUPBOX        "Default away message",IDC_STATIC,7,135,261,32
+                    IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
 END
 
 IDD_ADVANCED2PAGE DIALOG  0, 0, 275, 225
@@ -276,29 +284,29 @@ STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Logs and Sound"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_LOG_DIRECTORY,15,27,194,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Browse...",IDC_BROWSE_LOG,211,27,50,14
+    GROUPBOX        "Logging",IDC_SETTINGS_LOGGING,7,7,261,160
+    LTEXT           "Log directory",IDC_SETTINGS_LOG_DIR,15,17,194,8
+    EDITTEXT        IDC_LOG_DIRECTORY,15,29,194,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_BROWSE_LOG,211,29,50,14
     CONTROL         "Log main chat",IDC_LOG_MAIN_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,43,246,10
-    EDITTEXT        IDC_MAIN_CHAT,15,52,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,45,246,10
+    EDITTEXT        IDC_MAIN_CHAT,15,57,246,14,ES_AUTOHSCROLL
     CONTROL         "Log private chat",IDC_LOG_PRIVATE_CHAT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,69,246,10
-    EDITTEXT        IDC_PRIVATE_CHAT,15,78,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,74,246,10
+    EDITTEXT        IDC_PRIVATE_CHAT,15,86,246,14,ES_AUTOHSCROLL
     CONTROL         "Log downloads",IDC_LOG_DOWNLOADS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,95,246,10
-    EDITTEXT        IDC_POST_DOWNLOAD,15,104,246,14,ES_AUTOHSCROLL
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,103,246,10
+    EDITTEXT        IDC_POST_DOWNLOAD,15,115,246,14,ES_AUTOHSCROLL
     CONTROL         "Log uploads",IDC_LOG_UPLOADS,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,121,246,10
-    EDITTEXT        IDC_POST_UPLOAD,15,130,246,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,15,132,246,10
+    EDITTEXT        IDC_POST_UPLOAD,15,144,246,14,ES_AUTOHSCROLL
+    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,7,173,261,45
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,189,246,10
+                    WS_TABSTOP,15,186,246,10
     CONTROL         "Make an annoying sound when a private message window is opened",
                     IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,15,199,246,10
-    GROUPBOX        "Logging",IDC_STATIC,7,7,261,168
-    LTEXT           "Log directory",IDC_STATIC,15,17,194,8
-    GROUPBOX        "Sounds",IDC_STATIC,7,178,261,40
 END
 
 IDD_USER_COMMAND DIALOGEX 0, 0, 411, 122

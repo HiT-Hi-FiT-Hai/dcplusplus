@@ -30,6 +30,26 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem GeneralPage::texts[] = {
+	{ IDC_SETTINGS_PERSONAL_INFORMATION, ResourceManager::SETTINGS_PERSONAL_INFORMATION },
+	{ IDC_SETTINGS_NICK, ResourceManager::NICK },
+	{ IDC_SETTINGS_EMAIL, ResourceManager::EMAIL },
+	{ IDC_SETTINGS_DESCRIPTION, ResourceManager::DESCRIPTION },
+	{ IDC_SETTINGS_CONNECTION_TYPE, ResourceManager::SETTINGS_CONNECTION_TYPE },
+	{ IDC_SETTINGS_CONNECTION_SETTINGS, ResourceManager::SETTINGS_CONNECTION_SETTINGS },
+	{ IDC_ACTIVE, ResourceManager::ACTIVE },
+	{ IDC_PASSIVE, ResourceManager::SETTINGS_PASSIVE },
+	{ IDC_SOCKS5, ResourceManager::SETTINGS_SOCKS5 }, 
+	{ IDC_SETTINGS_IP, ResourceManager::SETTINGS_IP },
+	{ IDC_SETTINGS_PORT, ResourceManager::SETTINGS_PORT },
+	{ IDC_SETTINGS_SOCKS5_IP, ResourceManager::SETTINGS_SOCKS5_IP },
+	{ IDC_SETTINGS_SOCKS5_PORT, ResourceManager::SETTINGS_SOCKS5_PORT },
+	{ IDC_SETTINGS_SOCKS5_USERNAME, ResourceManager::SETTINGS_SOCKS5_USERNAME },
+	{ IDC_SETTINGS_SOCKS5_PASSWORD, ResourceManager::PASSWORD },
+	{ IDC_SOCKS_RESOLVE, ResourceManager::SETTINGS_SOCKS5_RESOLVE },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item GeneralPage::items[] = {
 	{ IDC_NICK,			SettingsManager::NICK,			PropPage::T_STR }, 
 	{ IDC_EMAIL,		SettingsManager::EMAIL,			PropPage::T_STR }, 
@@ -83,6 +103,7 @@ void GeneralPage::write()
 
 LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	ctrlConnection.Attach(GetDlgItem(IDC_CONNECTION));
 	
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
@@ -178,6 +199,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file
- * $Id: GeneralPage.cpp,v 1.6 2003/04/15 10:14:01 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.7 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

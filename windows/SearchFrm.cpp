@@ -450,7 +450,20 @@ LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		try {
-			QueueManager::getInstance()->addList(sr->getUser());
+			QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW);
+		} catch(...) {
+			// ...
+		}
+	}
+	return 0;
+}
+
+LRESULT SearchFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		try {
+			QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 		} catch(...) {
 			// ...
 		}
@@ -672,11 +685,7 @@ LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		ucParams["nick"] = sr->getUser()->getNick();
 		ucParams["mynick"] = sr->getUser()->getClientNick();
 		ucParams["file"] = sr->getFile();
-		if(uc.getNick().empty()) {
-			sr->getUser()->clientMessage(Util::formatParams(uc.getCommand(), ucParams));
-		} else {
-			sr->getUser()->clientPM(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
-		}
+		sr->getUser()->send(Util::formatParams(uc.getCommand(), ucParams));
 	}
 	return 0;
 };
@@ -1050,5 +1059,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.26 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.27 2003/10/20 21:04:56 arnetheduck Exp $
  */

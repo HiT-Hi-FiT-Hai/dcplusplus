@@ -446,7 +446,7 @@ void QueueManager::addDirectory(const string& aDir, const User::Ptr& aUser, cons
 
 	if(needList) {
 		try {
-			addList(aUser, true);
+			addList(aUser, QueueItem::FLAG_DIRECTORY_DOWNLOAD);
 		} catch(const Exception&) {
 			// Ignore, we don't really care...
 		}
@@ -601,6 +601,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 	string file;
 	User::Ptr up;
 	bool isBZ = false;
+	int flag = 0;
 
 	{
 		Lock l(cs);
@@ -619,15 +620,19 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				fire(QueueManagerListener::FINISHED, q);
 				fire(QueueManagerListener::REMOVED, q);
 				// Now, let's see if this was a directory download filelist...
-				if(q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) {
+				if( (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) && directories.find(q->getCurrent()->getUser()) != directories.end()) ||
+					(q->isSet(QueueItem::FLAG_MATCH_QUEUE)) ) {
 					try {
 						string fname = q->isSet(QueueItem::FLAG_BZLIST) ? aDownload->getTarget().substr(0, aDownload->getTarget().length() - 5) + "bz2" : aDownload->getTarget();
 						file = File(fname, File::READ, File::OPEN).read();
 						up = q->getCurrent()->getUser();
+						flag = (q->isSet(QueueItem::FLAG_DIRECTORY_DOWNLOAD) ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : 0)
+							| (q->isSet(QueueItem::FLAG_MATCH_QUEUE) ? QueueItem::FLAG_MATCH_QUEUE : 0);
 					} catch(const FileException&) {
 						// ...
 					}
-				}
+
+				} 
 				delete q;
 				setDirty();
 			} else {
@@ -670,26 +675,32 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 				CryptoManager::getInstance()->decodeHuffman((u_int8_t*)file.c_str(), userList);
 			}
 		} catch(const CryptoException&) {
-			addList(up, true);
+			addList(up, flag);
 			return;
 		}
 
-		DirectoryItem::List dl;
-		{
-			Lock l(cs);
-			DirectoryItem::DirectoryPair dp = directories.equal_range(up);
-			for(DirectoryItem::DirectoryIter i = dp.first; i != dp.second; ++i) {
-				dl.push_back(i->second);
-			}
-			directories.erase(up);
-		}
 		DirectoryListing dirList(up);
 		dirList.load(userList);
 
-		for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
-			DirectoryItem* di = *i;
-			dirList.download(di->getName(), di->getTarget());
-			delete di;
+		if(flag & QueueItem::FLAG_DIRECTORY_DOWNLOAD) {
+			DirectoryItem::List dl;
+			{
+				Lock l(cs);
+				DirectoryItem::DirectoryPair dp = directories.equal_range(up);
+				for(DirectoryItem::DirectoryIter i = dp.first; i != dp.second; ++i) {
+					dl.push_back(i->second);
+				}
+				directories.erase(up);
+			}
+
+			for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
+				DirectoryItem* di = *i;
+				dirList.download(di->getName(), di->getTarget());
+				delete di;
+			}
+		}
+		if(flag & QueueItem::FLAG_MATCH_QUEUE) {
+			matchListing(&dirList);
 		}
 	}
 }
@@ -1121,5 +1132,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.45 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.46 2003/10/20 21:04:55 arnetheduck Exp $
  */

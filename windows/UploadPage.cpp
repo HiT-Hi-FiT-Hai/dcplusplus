@@ -33,6 +33,18 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem UploadPage::texts[] = {
+	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
+	{ IDC_SETTINGS_SHARE_SIZE, ResourceManager::SETTINGS_SHARE_SIZE }, 
+	{ IDC_SHAREHIDDEN, ResourceManager::SETTINGS_SHARE_HIDDEN },
+	{ IDC_REMOVE, ResourceManager::REMOVE_ACCEL },
+	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
+	{ IDC_SETTINGS_UPLOADS_MIN_SPEED, ResourceManager::SETTINGS_UPLOADS_MIN_SPEED },
+	{ IDC_SETTINGS_KBPS, ResourceManager::KBPS }, 
+	{ IDC_SETTINGS_UPLOADS_SLOTS, ResourceManager::SETTINGS_UPLOADS_SLOTS },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item UploadPage::items[] = {
 	{ IDC_SLOTS, SettingsManager::SLOTS, PropPage::T_INT }, 
 	{ IDC_SHAREHIDDEN, SettingsManager::SHARE_HIDDEN, PropPage::T_BOOL },
@@ -42,6 +54,7 @@ PropPage::Item UploadPage::items[] = {
 
 LRESULT UploadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	ctrlDirectories.Attach(GetDlgItem(IDC_DIRECTORIES));
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
@@ -129,6 +142,6 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.10 2003/10/07 15:46:27 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.11 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

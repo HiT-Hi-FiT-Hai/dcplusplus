@@ -54,6 +54,7 @@ public:
 	
 private:
 	static Item items[];
+	static TextItem texts[];
 	CComboBox ctrlConnection;
 	CEdit nick;
 
@@ -64,6 +65,6 @@ private:
 
 /**
  * @file
- * $Id: GeneralPage.h,v 1.8 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: GeneralPage.h,v 1.9 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

@@ -93,7 +93,9 @@ public:
 		/** Flag to indicate that file should be viewed as a text file */
 		FLAG_TEXT = 0x20,
 		/** This file exists on the hard disk and should be prioritised */
-		FLAG_EXISTS = 0x40
+		FLAG_EXISTS = 0x40,
+		/** Match the queue against this list */
+		FLAG_MATCH_QUEUE = 0x80
 	};
 
 	class Source : public Flags {
@@ -261,14 +263,14 @@ public:
 		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, bool isDirectory = false) throw(QueueException, FileException) {
+	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
 		string x = aUser->getNick();
 		string::size_type i = 0;
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
 		string file = Util::getAppPath() + "FileLists\\" + Util::filterFileName(x) + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, 
-			QueueItem::FLAG_USER_LIST | (isDirectory ? QueueItem::FLAG_DIRECTORY_DOWNLOAD : QueueItem::FLAG_CLIENT_VIEW),  QueueItem::DEFAULT, 
+			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
 	}
 
@@ -397,6 +399,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.39 2003/10/07 14:58:19 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.40 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

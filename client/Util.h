@@ -406,7 +406,7 @@ public:
 		return tmp;
 	}
 
-	static string validateMessage(string tmp, bool reverse);
+	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
 
 	static string getOsVersion();
 
@@ -478,5 +478,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.61 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: Util.h,v 1.62 2003/10/20 21:04:55 arnetheduck Exp $
  */

@@ -49,6 +49,7 @@ public:
 		HELLO,
 		HUB_NAME,
 		HUB_FULL,
+		SUPPORTS,
 		C_LOCK,
 		LOGGED_IN,
 		MESSAGE,
@@ -60,6 +61,7 @@ public:
 		SEARCH,
 		QUIT,
 		UNKNOWN,
+		USER_COMMAND,
 		VALIDATE_DENIED,
 		SEARCH_FLOOD
 	};
@@ -71,6 +73,7 @@ public:
 	virtual void onAction(Types, Client*, const User::List&) throw() { };
 	virtual void onAction(Types, Client*, const User::Ptr&, const string&) throw() { };
 	virtual void onAction(Types, Client*, const string&, int, const string&, int, const string&) throw() { };
+	virtual void onAction(Types, Client*, int, int, const string&, const string&) throw() { }; // USER_COMMAND
 };
 
 class Client : public Speaker<ClientListener>, private BufferedSocketListener, private TimerManagerListener, private Flags
@@ -124,6 +127,13 @@ public:
 		checkstate(); 
 		send("$To: " + aNick + " From: " + getNick() + " $" + Util::validateMessage(aMessage, false) + "|");
 	}
+	void supports(const StringList& feat) { 
+		string x;
+		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+			x+= *i + ' ';
+		}
+		send("$Supports " + x + '|');
+	}
 	void revConnectToMe(const User::Ptr& aUser) {
 		checkstate(); 
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
@@ -134,7 +144,17 @@ public:
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
 		send("$RevConnectToMe " + getNick() + " " + aUser->getNick()  + "|");
 	}
-	
+
+	void send(const string& a) throw() {
+		lastActivity = GET_TICK();
+		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
+		socket->write(a);
+	}
+	void send(const char* aBuf, int aLen) throw() {
+		lastActivity = GET_TICK();
+		socket->write(aBuf, aLen);
+	}
+
 	void kick(const User::Ptr& aUser, const string& aMsg);
 	void kick(User* aUser, const string& aMsg);
 	
@@ -268,21 +288,12 @@ private:
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
 	virtual void onAction(BufferedSocketListener::Types type) throw();
 
-	void send(const string& a) throw() {
-		lastActivity = GET_TICK();
-		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
-		socket->write(a);
-	}
-	void send(const char* aBuf, int aLen) throw() {
-		lastActivity = GET_TICK();
-		socket->write(aBuf, aLen);
-	}
 };
 
 #endif // !defined(AFX_Client_H__089CBD05_4833_4E30_9A57_BB636231D78E__INCLUDED_)
 
 /**
  * @file
- * $Id: Client.h,v 1.68 2003/09/22 13:17:22 arnetheduck Exp $
+ * $Id: Client.h,v 1.69 2003/10/20 21:04:54 arnetheduck Exp $
  */
 

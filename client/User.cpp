@@ -98,6 +98,13 @@ void User::kick(const string& aMsg) {
 	}
 }
 
+void User::send(const string& aMsg) {
+	RLock l(cs);
+	if(client) {
+		client->send(aMsg);
+	}
+}
+
 void User::redirect(const string& aTarget, const string& aReason) {
 	RLock l(cs);
 	if(client) {
@@ -137,6 +144,6 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file
- * $Id: User.cpp,v 1.20 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: User.cpp,v 1.21 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

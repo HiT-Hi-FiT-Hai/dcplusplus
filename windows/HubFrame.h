@@ -51,6 +51,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(FTM_CONTEXTMENU, onTabContextMenu)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
@@ -62,6 +63,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
 		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
+		COMMAND_ID_HANDLER(IDC_ADD_AS_FAVORITE, onAddAsFavorite)
+		COMMAND_ID_HANDLER(IDC_CLOSE_WINDOW, onCloseWindow)
+		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands, onUserCommand)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
@@ -90,6 +94,7 @@ public:
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -97,6 +102,7 @@ public:
 	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -123,6 +129,16 @@ public:
 		return 0;
 	}
 	
+	LRESULT onAddAsFavorite(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		addAsFavorite();
+		return 0;
+	}
+
+	LRESULT onCloseWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		PostMessage(WM_CLOSE);
+		return 0;
+	}
+
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -278,6 +294,7 @@ private:
 
 	CMenu userMenu;
 	CMenu opMenu;
+	CMenu tabMenu;
 
 	CButton ctrlShowUsers;
 	CEdit ctrlClient;
@@ -295,6 +312,7 @@ private:
 	static int columnSizes[COLUMN_LAST];
 	
 	bool updateUser(const User::Ptr& u, bool sorted = false, UserInfo* ui = NULL);
+	void addAsFavorite();
 
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
@@ -346,6 +364,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.25 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.26 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

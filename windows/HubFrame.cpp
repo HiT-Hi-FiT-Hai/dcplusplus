@@ -99,6 +99,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	userMenu.CreatePopupMenu();
 	userMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	userMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
 	userMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
@@ -108,6 +109,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	opMenu.CreatePopupMenu();
 	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	opMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
 	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	opMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	opMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
@@ -118,6 +120,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
 	opMenu.AppendMenu(MF_STRING, IDC_REDIRECT, CSTRING(REDIRECT));
 	
+	tabMenu = CreatePopupMenu();
+	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CSTRING(ADD_TO_FAVORITES));
+	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
+	tabMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	tabMenu.AppendMenu(MF_STRING, ID_FILE_CLOSE, CSTRING(CLOSE));
+
 	showJoins = BOOLSETTING(SHOW_JOINS);
 
 	m_hMenu = WinUtil::mainMenu;
@@ -194,15 +202,7 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(s.c_str(), "connection") == 0) {
 				addClientLine((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT))));
 			} else if((Util::stricmp(s.c_str(), "favorite") == 0) || (Util::stricmp(s.c_str(), "fav") == 0)) {
-				FavoriteHubEntry aEntry;
-				char buf[256];
-				this->GetWindowText(buf, 255);
-				aEntry.setServer(server);
-				aEntry.setName(buf);
-				aEntry.setDescription(buf);
-				aEntry.setConnect(TRUE);
-				HubManager::getInstance()->addFavorite(aEntry);
-				addLine(STRING(FAVORITE_HUB_ADDED));
+				addAsFavorite();
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
 				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite");
 			}
@@ -215,12 +215,39 @@ void HubFrame::onEnter() {
 	}
 }
 
+void HubFrame::addAsFavorite() {
+	FavoriteHubEntry aEntry;
+	char buf[256];
+	this->GetWindowText(buf, 255);
+	aEntry.setServer(server);
+	aEntry.setName(buf);
+	aEntry.setDescription(buf);
+	aEntry.setConnect(TRUE);
+	aEntry.setNick(client->getNick());
+	HubManager::getInstance()->addFavorite(aEntry);
+	addClientLine(STRING(FAVORITE_HUB_ADDED));
+}
+
+LRESULT HubFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	if(client->isConnected()) {
+		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			try {
+				QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(i))->user, QueueItem::FLAG_MATCH_QUEUE);
+			} catch(const Exception& e) {
+				addClientLine(e.getError());
+			}
+		}
+	}
+	return 0;
+}
+
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
 	if(client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			try {
-				QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(i))->user);
+				QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(i))->user, QueueItem::FLAG_CLIENT_VIEW);
 			} catch(const Exception& e) {
 				addClientLine(e.getError());
 			}
@@ -293,7 +320,7 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 	if(client->isConnected() && item->iItem != -1) {
 		try {
-			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item->iItem))->user);
+			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item->iItem))->user, QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception& e) {
 			addClientLine(e.getError());
 		}
@@ -633,7 +660,7 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 					PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
 				} else if (wParam & MK_SHIFT) {
 					try {
-						QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
+						QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(pos))->user, QueueItem::FLAG_CLIENT_VIEW);
 					} catch(const Exception& e) {
 						addClientLine(e.getError());
 					}
@@ -684,6 +711,12 @@ void HubFrame::addLine(const string& aLine) {
 		ctrlClient.SetRedraw(TRUE);
 	}
 	setDirty();
+}
+
+LRESULT HubFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	return TRUE;
 }
 
 LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
@@ -809,11 +842,7 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 	while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
 		UserInfo* u = (UserInfo*) ctrlUsers.GetItemData(sel);
 		ucParams["nick"] = u->user->getNick();
-		if(uc.getNick().empty()) {
-			client->sendMessage(Util::formatParams(uc.getCommand(), ucParams));
-		} else {
-			client->privateMessage(Util::formatParams(uc.getNick(), ucParams), Util::formatParams(uc.getCommand(), ucParams));
-		}
+		client->send(Util::formatParams(uc.getCommand(), ucParams));
 	}
 	return 0;
 };
@@ -981,7 +1010,7 @@ LRESULT HubFrame::onEnterUsers(int /*idCtrl*/, LPNMHDR /* pnmh */, BOOL& /*bHand
 	int item = ctrlUsers.GetNextItem(-1, LVNI_FOCUSED);
 	if(client->isConnected() && (item != -1)) {
 		try {
-			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item))->user);
+			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item))->user, QueueItem::FLAG_CLIENT_VIEW);
 		} catch(const Exception& e) {
 			addClientLine(e.getError());
 		}
@@ -1100,5 +1129,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.32 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.33 2003/10/20 21:04:56 arnetheduck Exp $
  */

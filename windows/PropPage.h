@@ -48,18 +48,23 @@ public:
 		int setting;
 		ResourceManager::Strings desc;
 	};
+	struct TextItem {
+		WORD itemID;
+		ResourceManager::Strings translatedString;
+	};
 
 protected:
 
 	SettingsManager *settings;
 	void read(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
 	void write(HWND page, Item const* items, ListItem* listItems = NULL, HWND list = NULL);
+	void tanslate(HWND page, TextItem* textItems);
 };
 
 #endif // PROPPAGE_H
 
 /**
  * @file
- * $Id: PropPage.h,v 1.5 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: PropPage.h,v 1.6 2003/10/20 21:04:56 arnetheduck Exp $
  */
 

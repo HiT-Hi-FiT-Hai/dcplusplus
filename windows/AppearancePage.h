@@ -58,6 +58,7 @@ protected:
 	void DecodeFont(string setting, LOGFONT &dest);
 
 	static Item items[];
+	static TextItem texts[];
 	static ListItem listItems[];
 
 	CStatic ctrlExample;
@@ -71,5 +72,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.7 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */

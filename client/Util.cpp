@@ -134,7 +134,7 @@ void Util::initialize() {
 	sgenrand(time(NULL));
 }
 
-string Util::validateMessage(string tmp, bool reverse) {
+string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
 	string::size_type i = 0;
 
 	if(reverse) {
@@ -147,18 +147,36 @@ string Util::validateMessage(string tmp, bool reverse) {
 			tmp.replace(i, 6, "|");
 			i++;
 		}
-		// Check all '<' and '|' after newlines...
-		i = 0;
-		while( (i = tmp.find('\n', i)) != string::npos) {
-			if(i + 1 < tmp.length()) {
-				if(tmp[i+1] == '[' || tmp[i+1] == '<') {
-					tmp.insert(i+1, "- ");
-					i += 2;
-				}
-			}
+		while( (i = tmp.find("&amp;", i)) != string::npos) {
+			tmp.replace(i, 6, "|");
 			i++;
 		}
+		if(checkNewLines) {
+			// Check all '<' and '|' after newlines...
+			i = 0;
+			while( (i = tmp.find('\n', i)) != string::npos) {
+				if(i + 1 < tmp.length()) {
+					if(tmp[i+1] == '[' || tmp[i+1] == '<') {
+						tmp.insert(i+1, "- ");
+						i += 2;
+					}
+				}
+				i++;
+			}
+		}
 	} else {
+		while( (i = tmp.find("&amp;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
+		while( (i = tmp.find("&#36;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
+		while( (i = tmp.find("&#124;", i)) != string::npos) {
+			tmp.replace(i, 1, "&amp;");
+			i += 4;
+		}
 		while( (i = tmp.find('$', i)) != string::npos) {
 			tmp.replace(i, 1, "&#36;");
 			i += 4;
@@ -166,7 +184,7 @@ string Util::validateMessage(string tmp, bool reverse) {
 		i = 0;
 		while( (i = tmp.find('|', i)) != string::npos) {
 			tmp.replace(i, 1, "&#124;");
-			i += 4;
+			i += 5;
 		}
 	}
 	return tmp;
@@ -484,6 +502,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.27 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.28 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

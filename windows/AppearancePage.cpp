@@ -32,6 +32,19 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem AppearancePage::texts[] = {
+	{ IDC_SETTINGS_COLORS, ResourceManager::SETTINGS_COLORS },
+	{ IDC_SELWINCOLOR, ResourceManager::SETTINGS_SELECT_WINDOW_COLOR },
+	{ IDC_SELTEXT, ResourceManager::SETTINGS_SELECT_TEXT_FACE },
+	{ IDC_COLOREXAMPLE, ResourceManager::SETTINGS_EXAMPLE_TEXT },
+	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
+	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, ResourceManager::SETTINGS_DEFAULT_AWAY_MSG },
+	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
+	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
+	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item AppearancePage::items[] = {
 	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
 	{ IDC_FILTERKICK, SettingsManager::FILTER_MESSAGES, PropPage::T_BOOL }, 
@@ -67,6 +80,7 @@ AppearancePage::~AppearancePage()
 
 LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
 	PropPage::read((HWND)*this, items, listItems, GetDlgItem(IDC_APPEARANCE_BOOLEANS));
@@ -151,5 +165,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.7 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */

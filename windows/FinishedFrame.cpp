@@ -146,28 +146,39 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	}
 }
 
+LRESULT FinishedFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == SPEAK_ADD_LINE) {
+		FinishedItem* entry = (FinishedItem*)lParam;
+		addEntry(entry);
+		if(BOOLSETTING(FINISHED_DIRTY))
+			setDirty();
+		updateStatus();
+	} else if(wParam == SPEAK_REMOVE) {
+		updateStatus();
+	} else if(wParam == SPEAK_REMOVE_ALL) {
+		ctrlList.DeleteAllItems();
+		updateStatus();
+	}
+	return 0;
+}
+
 void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry) throw() {
 	switch(type) {
-		case FinishedManagerListener::ADDED: addEntry(entry); updateStatus();
-			break;
-
-		case FinishedManagerListener::MAJOR_CHANGES: 
-			updateList(FinishedManager::getInstance()->lockList());
+		case FinishedManagerListener::ADDED_DL: PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (WPARAM)entry); break;
+		case FinishedManagerListener::REMOVED_ALL_DL: 
+			PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
 			totalBytes = 0;
 			totalTime = 0;
-			ctrlList.DeleteAllItems();
-			FinishedManager::getInstance()->unlockList();
-			updateStatus();
 			break;
-		case FinishedManagerListener::REMOVED:
+		case FinishedManagerListener::REMOVED_DL:
 			totalBytes -= entry->getChunkSize();
 			totalTime -= entry->getMilliSeconds();
-			updateStatus();
+			PostMessage(WM_SPEAKER, SPEAK_REMOVE);
 			break;
 	}
 };
 
-void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
+void FinishedFrame::addEntry(FinishedItem* entry) {
 	StringList l;
 	l.push_back(entry->getTime());
 	l.push_back(entry->getTarget());
@@ -175,17 +186,15 @@ void FinishedFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
 	l.push_back(Util::formatBytes(entry->getSize()));
 	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
 	l.push_back(entry->getCrc32Checked() ? STRING(YES) : STRING(NO));
-	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
-	ctrlList.EnsureVisible(loc, FALSE);
-
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
-	if(dirty && BOOLSETTING(FINISHED_DIRTY))
-		setDirty();
+
+	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
+	ctrlList.EnsureVisible(loc, FALSE);
 }
 
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.10 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.11 2003/10/20 21:04:55 arnetheduck Exp $
  */

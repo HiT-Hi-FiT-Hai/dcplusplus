@@ -123,7 +123,19 @@ LRESULT TransferView::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		try {
-			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
+			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::FLAG_CLIENT_VIEW);
+		} catch(const Exception& e) {
+			dcdebug("TransferView::onGetList caught %s\n", e.getError().c_str());
+		}
+	}
+	return 0;
+}
+
+LRESULT TransferView::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		try {
+			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::FLAG_MATCH_QUEUE);
 		} catch(const Exception& e) {
 			dcdebug("TransferView::onGetList caught %s\n", e.getError().c_str());
 		}

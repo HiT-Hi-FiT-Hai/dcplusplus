@@ -146,45 +146,54 @@ LRESULT FinishedULFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	}
 }
 
+LRESULT FinishedULFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+	if(wParam == SPEAK_ADD_LINE) {
+		FinishedItem* entry = (FinishedItem*)lParam;
+		addEntry(entry);
+		if(BOOLSETTING(FINISHED_DIRTY))
+			setDirty();
+		updateStatus();
+	} else if(wParam == SPEAK_REMOVE) {
+		updateStatus();
+	} else if(wParam == SPEAK_REMOVE_ALL) {
+		ctrlList.DeleteAllItems();
+		updateStatus();
+	}
+	return 0;
+}
+
 void FinishedULFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry)  throw() {
 	switch(type) {
-		case FinishedManagerListener::ADDED_UL: addEntry(entry); updateStatus();
-			break;
-
-		case FinishedManagerListener::MAJOR_CHANGES_UL: 
-			updateList(FinishedManager::getInstance()->lockList(true));
+		case FinishedManagerListener::ADDED_UL: PostMessage(WM_SPEAKER, SPEAK_ADD_LINE, (LPARAM)entry); break;
+		case FinishedManagerListener::REMOVED_ALL_UL: 
+			PostMessage(WM_SPEAKER, SPEAK_REMOVE_ALL);
 			totalBytes = 0;
 			totalTime = 0;
-			ctrlList.DeleteAllItems();
-			FinishedManager::getInstance()->unlockList();
-			updateStatus();
 			break;
 		case FinishedManagerListener::REMOVED_UL:
 			totalBytes -= entry->getChunkSize();
 			totalTime -= entry->getMilliSeconds();
-			updateStatus();
+			PostMessage(WM_SPEAKER, SPEAK_REMOVE);
 			break;
 	}
 };
 
-void FinishedULFrame::addEntry(FinishedItem* entry, bool dirty /* = true */) {
+void FinishedULFrame::addEntry(FinishedItem* entry) {
 	StringList l;
 	l.push_back(entry->getTime());
 	l.push_back(entry->getTarget());
 	l.push_back(entry->getUser() + " (" + entry->getHub() + ")");
 	l.push_back(Util::formatBytes(entry->getSize()));
 	l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
-	ctrlList.EnsureVisible(loc, FALSE);
-
 	totalBytes += entry->getChunkSize();
 	totalTime += entry->getMilliSeconds();
-	if(dirty && BOOLSETTING(FINISHED_DIRTY))
-		setDirty();
+
+	int loc = ctrlList.insert(l, 0, (LPARAM)entry);
+	ctrlList.EnsureVisible(loc, FALSE);
 }
 
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.6 2003/10/08 21:55:10 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.7 2003/10/20 21:04:55 arnetheduck Exp $
  */

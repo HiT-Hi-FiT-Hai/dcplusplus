@@ -57,12 +57,13 @@ public:
 
 protected:
 	static Item items[];
+	static TextItem texts[];
 };
 
 #endif //ADVANCED2PAGE_H
 
 /**
  * @file
- * $Id: Advanced2Page.h,v 1.7 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: Advanced2Page.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
  */
 

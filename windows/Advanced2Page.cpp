@@ -30,6 +30,20 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+PropPage::TextItem Advanced2Page::texts[] = {
+	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
+	{ IDC_SETTINGS_LOG_DIR, ResourceManager::SETTINGS_LOG_DIR},
+	{ IDC_BROWSE_LOG, ResourceManager::BROWSE_ACCEL },
+	{ IDC_LOG_MAIN_CHAT, ResourceManager::SETTINGS_LOG_MAIN_CHAT },
+	{ IDC_LOG_PRIVATE_CHAT, ResourceManager::SETTINGS_LOG_PRIVATE_CHAT },
+	{ IDC_LOG_DOWNLOADS, ResourceManager::SETTINGS_LOG_DOWNLOADS }, 
+	{ IDC_LOG_UPLOADS, ResourceManager::SETTINGS_LOG_UPLOADS },
+	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
+	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
+	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
+	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
+};
+
 PropPage::Item Advanced2Page::items[] = {
 	{ IDC_LOG_MAIN_CHAT, SettingsManager::LOG_MAIN_CHAT, PropPage::T_BOOL },
 	{ IDC_LOG_PRIVATE_CHAT, SettingsManager::LOG_PRIVATE_CHAT, PropPage::T_BOOL },
@@ -47,6 +61,7 @@ PropPage::Item Advanced2Page::items[] = {
 
 LRESULT Advanced2Page::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	PropPage::tanslate((HWND)(*this), texts);
 	PropPage::read((HWND)*this, items);
 
 	updateEdits();
@@ -94,6 +109,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.6 2003/04/15 10:14:00 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.7 2003/10/20 21:04:55 arnetheduck Exp $
  */
 
