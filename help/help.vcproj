@@ -63,6 +63,9 @@
 				RelativePath=".\chat_commands.html">
 			</File>
 			<File
+				RelativePath=".\netiquette.html">
+			</File>
+			<File
 				RelativePath=".\credits.html">
 			</File>
 			<File

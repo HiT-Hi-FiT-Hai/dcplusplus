@@ -433,6 +433,7 @@
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						Description="Building StringDefs.cpp and Example.xml from StringDefs.h"
 						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml
 "
 						Outputs=".\client\StringDefs.cpp"/>
@@ -441,6 +442,7 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
+						Description="Building StringDefs.cpp and Example.xml from StringDefs.h"
 						CommandLine=".\vc7\$(ConfigurationName)\MakeDefs\MakeDefs.exe .\client\StringDefs.h .\client\StringDefs.cpp .\Example.xml
 "
 						Outputs=".\client\StringDefs.cpp"/>

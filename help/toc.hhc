@@ -52,6 +52,10 @@
 		</UL>
 	</UL>
 	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Etiquette">
+		<param name="Local" value="netiquette.html">
+		</OBJECT>
+	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Help File Credits">
 		<param name="Local" value="credits.html">
 		</OBJECT>

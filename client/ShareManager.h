@@ -237,6 +237,7 @@ private:
 	StringPairIter findVirtual(const string& name);
 	/** Find real name from virtual name */
 	StringPairIter lookupVirtual(const string& name);
+	string validateVirtual(const string& /*aVirt*/);
 
 	bool checkFile(const string& aDir, const string& aFile);
 	Directory* buildTree(const string& aName, Directory* aParent);
@@ -276,6 +277,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.60 2004/10/17 19:25:23 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.61 2004/10/21 10:27:16 arnetheduck Exp $
  */
 

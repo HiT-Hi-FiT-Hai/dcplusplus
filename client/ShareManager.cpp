@@ -214,6 +214,16 @@ bool ShareManager::checkFile(const string& dir, const string& aFile) {
 	return true;
 }
 
+string ShareManager::validateVirtual(const string& aVirt) {
+	string tmp = aVirt;
+	string::size_type idx;
+
+	while( (idx = tmp.find_first_of("$|")) != string::npos) {
+		tmp[idx] = '_';
+	}
+	return tmp;
+}
+
 void ShareManager::load(SimpleXML* aXml) {
 	WLock l(cs);
 
@@ -233,9 +243,16 @@ void ShareManager::load(SimpleXML* aXml) {
 			} else {
 				newVirt = Util::getLastDir(d);
 			}
-			Directory* dp = new Directory(newVirt);
-			directories[d] = dp;
-			virtualMap.push_back(make_pair(newVirt, d));
+
+			// get rid of bad characters in virtual names
+			newVirt = validateVirtual(newVirt);
+
+			// add only unique directories
+			if(lookupVirtual(newVirt) == virtualMap.end()) {
+				Directory* dp = new Directory(newVirt);
+				directories[d] = dp;
+				virtualMap.push_back(make_pair(newVirt, d));
+			}
 		}
 		aXml->stepOut();
 	}
@@ -294,7 +311,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 		addTree(d, dp);
 
 		directories[d] = dp;
-		virtualMap.push_back(make_pair(aName, d));
+		virtualMap.push_back(make_pair(validateVirtual(aName), d));
 		setDirty();
 	}
 }
@@ -1179,6 +1196,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.108 2004/10/17 19:25:23 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.109 2004/10/21 10:27:16 arnetheduck Exp $
  */
 

@@ -43,6 +43,7 @@ public:
 	CMD(SCH, 'S','C','H');
 	CMD(RES, 'R','E','S');
 	CMD(CTM, 'C','T','M');
+	CMD(RCM, 'R','C','M');
 	CMD(GPA, 'G','P','A');
 	CMD(PAS, 'P','A','S');
 	CMD(QUI, 'Q','U','I');
@@ -172,6 +173,7 @@ public:
 			CMD(SCH);
 			CMD(RES);
 			CMD(CTM);
+			CMD(RCM);
 			CMD(GPA);
 			CMD(PAS);
 			CMD(QUI);
@@ -188,5 +190,5 @@ public:
 #endif // _COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.8 2004/09/06 12:32:41 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.9 2004/10/21 10:27:15 arnetheduck Exp $
 */

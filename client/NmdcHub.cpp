@@ -52,6 +52,7 @@ NmdcHub::~NmdcHub() throw() {
 
 void NmdcHub::connect() {
 	setRegistered(false);
+	setReconnDelay(120 + Util::rand(0, 60));
 	reconnect = true;
 	supportFlags = 0;
 	lastMyInfo.clear();
@@ -664,7 +665,7 @@ void NmdcHub::search(int aSizeType, int64_t aSize, int aFileType, const string& 
 
 // TimerManagerListener
 void NmdcHub::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
-	if(socket && (lastActivity + (120+Util::rand(0, 60)) * 1000) < aTick) {
+	if(socket && (lastActivity + getReconnDelay() * 1000) < aTick) {
 		// Nothing's happened for ~120 seconds, check if we're connected, if not, try to connect...
 		lastActivity = aTick;
 		// Try to send something for the fun of it...
@@ -703,6 +704,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.15 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.16 2004/10/21 10:27:16 arnetheduck Exp $
  */
 
