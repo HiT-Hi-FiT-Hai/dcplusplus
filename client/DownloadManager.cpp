@@ -327,7 +327,7 @@ public:
 		f->read(buf, n);
 		f->movePos(-((int64_t)bytes));
 	}
-	virtual ~RollbackOutputStream() { if(managed) delete s; };
+	virtual ~RollbackOutputStream() { delete[] buf; if(managed) delete s; };
 
 	virtual size_t flush() throw(FileException) {
 		return s->flush();
@@ -912,5 +912,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.120 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.121 2004/09/27 16:01:26 arnetheduck Exp $
  */

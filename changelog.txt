@@ -50,7 +50,8 @@ international filenames in it - they will not be correctly converted.
 * Better strategy for removing old filelists on exit (thanks garg)
 * Added Geo-IP license and fixes (thanks garg)
 * Added Help file - make sure you read it (thanks garg)
-	
+* Fixed a memory leak with rollback buffers under certain conditions
+
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
 * Fixed an issue with autosearch by tth not being done
