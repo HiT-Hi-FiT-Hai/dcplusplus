@@ -52,26 +52,52 @@ public:
 
 		char buf[1024];
 		int loc;
+		int count = GetItemCount();
+
 		if(sortColumn == -1) {
-			loc = GetItemCount();
+			loc = count;
+		} else if(count == 0) {
+			loc = 0;
 		} else {
 			string& b = aList[sortColumn];
 			int c = atoi(b.c_str());
-			for(loc = 0; loc<GetItemCount(); loc++) {
-				int comp;
+			
+			int low = 0;
+			int high = count-1;
+			int comp = 0;
+			while(low <= high)
+			{
+				loc = (low + high)/2;
 				GetItemText(loc, sortColumn, buf, 1024);
 				
 				switch(sortType) {
 				case SORT_STRING:
-					comp = compare(string(buf), b, ascending); break;
+					comp = compare(b, string(buf), ascending); break;
 				case SORT_INT:
-					comp = compare(atoi(buf), c, ascending); break;
+					comp = compare(c, atoi(buf), ascending); break;
 				default:
 					dcassert(0);
 				}
-				if(comp > 0)
+				if(comp == -1) {
+					high = loc - 1;
+				} else if(comp == 1) {
+					low = loc + 1;
+				} else {
 					break;
+				} 
 			}
+
+			switch(sortType) {
+			case SORT_STRING:
+				comp = compare(b, string(buf), ascending); break;
+			case SORT_INT:
+				comp = compare(c, atoi(buf), ascending); break;
+			default:
+				dcassert(0);
+			}
+			if(comp == 1)
+				loc++;
+			
 		}
 		int i = InsertItem(LVIF_TEXT | LVIF_PARAM | LVIF_IMAGE, loc, aList[0].c_str(), 0, 0, iImage, lParam);
 		int k = 0;
@@ -162,9 +188,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.5 2001/12/02 11:16:46 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.6 2001/12/02 14:05:36 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.6  2001/12/02 14:05:36  arnetheduck
+ * More sorting work, the hub list is now fully usable...
+ *
  * Revision 1.5  2001/12/02 11:16:46  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing
