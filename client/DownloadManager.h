@@ -34,6 +34,10 @@
 class QueueItem;
 class ConnectionQueueItem;
 
+/**
+ * Comes as an argument in the DownloadManagerListener functions.
+ * Use it to retrieve information about the ongoing transfer.
+ */
 class Download : public Transfer, public Flags {
 public:
 	static const string ANTI_FRAG_EXT;
@@ -60,6 +64,14 @@ public:
 
 	virtual ~Download() { }
 
+	/**
+	 * Gets the target filename for this download without the path element.
+	 *
+	 * @remarks This function is only used from DownloadManager but its
+	 * functionality could be useful in TransferView.
+	 *
+	 * @return Filename without path element.
+	 */
 	string getTargetFileName() {
 		string::size_type i = getTarget().rfind('\\');
 		if(i != string::npos) {
@@ -69,15 +81,24 @@ public:
 		}
 	};
 
+	/**
+	 * Used internally by client.
+	 */
 	string getDownloadTarget() {
 		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
 	}
 
+	/**
+	 * Used internally by client.
+	 */
 	TigerTree& getTigerTree() {
 		return tt;
 	}
 
+	/**
+	 * Used internally by client.
+	 */
 	Command getCommand(bool zlib, bool tthf);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
@@ -98,6 +119,20 @@ private:
 	TigerTree tt;
 };
 
+
+/**
+ * Use this liestener interface to get progress information for downloads.
+ *
+ * @remarks All methods are sending a pointer to a Download but the receiver
+ * (TransferView) is not usig any of the methods in Download, only methods
+ * from its super class, Transfer. The listener functions should send Transfer
+ * objects instead.
+ *
+ * Changing this will will cause a problem with Download::List which is used
+ * in the on Tick function. One solution is reimplement on Tick to call once
+ * for every Downloads, sending one Download at a time. But maybe updating the
+ * GUI is not DownloadManagers problem at all???
+ */
 class DownloadManagerListener {
 public:
 	template<int I>	struct X { enum { TYPE = I };  };
@@ -107,28 +142,64 @@ public:
 	typedef X<2> Starting;
 	typedef X<3> Tick;
 
-	/** This is the first message sent before a download starts. No other messages will be sent before. */
+	/** 
+	 * This is the first message sent before a download starts. 
+	 * No other messages will be sent before.
+	 */
 	virtual void on(Starting, Download*) throw() { };
-	/** Sent once a second if something has actually been downloaded. */
+
+	/**
+	 * Sent once a second if something has actually been downloaded.
+	 */
 	virtual void on(Tick, const Download::List&) throw() { };
-	/** This is the last message sent before a download is deleted. No more messages will be sent after it. */
+
+	/** 
+	 * This is the last message sent before a download is deleted. 
+	 * No more messages will be sent after it.
+	 */
 	virtual void on(Complete, Download*) throw() { };
-	/** This indicates some sort of failure with a particular download. No more messages will be sent after it */
+
+	/** 
+	 * This indicates some sort of failure with a particular download.
+	 * No more messages will be sent after it.
+	 *
+	 * @remarks Should send an error code instead of a string and let the GUI
+	 * display an error string.
+	 */
 	virtual void on(Failed, Download*, const string&) throw() { };
 };
 
+
+/**
+ * Singleton. Use its listener interface to update the download list
+ * in the user interface.
+ */
 class DownloadManager : public Speaker<DownloadManagerListener>, 
 	private UserConnectionListener, private TimerManagerListener, 
 	public Singleton<DownloadManager>
 {
 public:
 
+	/**
+	 * Used internally by client.
+	 */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		checkDownloads(conn);
 	}
 
+	/**
+	 * Used internally by client.
+	 */
 	void abortDownload(const string& aTarget);
+
+	/**
+	 * Get average download speed.
+	 * @remarks This is only used in the tray icons. In MainFrame this is
+	 * calculated instead so there seems to be a little duplication of code.
+	 *
+	 * @return Bytes/s
+	 */
 	int getAverageSpeed() {
 		Lock l(cs);
 		int avg = 0;
@@ -138,12 +209,20 @@ public:
 		}
 		return avg;
 	}
+
+	/**
+	 * Get the count of active downloads.
+	 * @remarks Function should be renamed because it sounds like it returns a
+	 * list with downloads.
+	 *
+	 * @return Number of active downloads.
+	 */ 
 	size_t getDownloads() {
 		Lock l(cs);
 		return downloads.size();
 	}
-private:
 
+private:
 	enum { MOVER_LIMIT = 10*1024*1024 };
 	class FileMover : public Thread {
 	public:
@@ -209,5 +288,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.70 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.71 2004/11/02 10:43:08 arnetheduck Exp $
  */

@@ -105,7 +105,22 @@ void Util::initialize() {
 		appPath += "/.dc++/";
 	}
 #endif // _WIN32
+}
 
+string Util::getConfigPath() {
+#ifdef _WIN32
+		return getAppPath();
+#else
+		char* home = getenv("HOME");
+		if (home) {
+#ifdef __APPLE__
+			return string(home) + "/Library/Application Support/Mac DC++/";
+#else
+			return string(home) + "/.dc++/";
+#endif // __APPLE__
+		}
+		return emptyString;
+#endif // _WIN32
 }
 
 string Util::validateMessage(string tmp, bool reverse, bool checkNewLines) {
@@ -866,6 +881,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.74 2004/11/02 09:03:51 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.75 2004/11/02 10:43:08 arnetheduck Exp $
  */
 

@@ -37,7 +37,7 @@ _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aa
 _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
 _T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
-_T("theparanoidone, gadget, torgny nyblom, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
+_T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston. ")
 _T("Keep it coming!");
 
@@ -128,6 +128,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.39 2004/10/22 17:03:33 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.40 2004/11/02 10:43:12 arnetheduck Exp $
  */
 
