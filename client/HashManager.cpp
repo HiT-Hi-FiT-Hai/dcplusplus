@@ -608,7 +608,6 @@ int HashManager::Hasher::run() {
 				delete buf;
 			}
 			buf = NULL;
-			total = 0;
 		}
 	}
 	return 0;
@@ -616,5 +615,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.33 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.34 2004/11/29 23:21:30 arnetheduck Exp $
  */

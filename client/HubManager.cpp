@@ -225,7 +225,7 @@ void HubManager::onHttpFinished() throw() {
 		Lock l(cs);
 		publicListMatrix[publicListServer].clear();
 
-		if(x->compare(0, 5, "<?xml") == 0) {
+		if(x->compare(0, 5, "<?xml") == 0 || x->compare(0, 8, "\xEF\xBB\xBF<?xml") == 0) {
 			loadXmlList(*x);
 		} else {
 			i = 0;
@@ -599,5 +599,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.58 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.59 2004/11/29 23:21:30 arnetheduck Exp $
  */

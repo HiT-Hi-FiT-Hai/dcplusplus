@@ -11,7 +11,8 @@
 * Small fix with line history (thanks jonathan stone)
 * Added option to use separate TCP and UDP ports
 * Fixed a raw command guessing bug (thanks garg)
-
+* [bug 345] Fixed an xml listing parsing bug
+* [bug 309] Hopefully fixed nt4 startup
 
 -- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)

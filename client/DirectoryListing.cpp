@@ -184,7 +184,7 @@ static const string sName = "Name";
 static const string sSize = "Size";
 static const string sTTH = "TTH";
 
-void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
+void ListLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	if(inListing) {
 		if(name == sFile) {
 			const string& n = getAttrib(attribs, sName, 0);
@@ -212,6 +212,11 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool) {
 			// ADLSearch
 			if(doAdl)
 				ADLSearchManager::getInstance()->MatchesDirectory(destDirs, d, fullPath);
+
+			if(simple) {
+				// To handle <Directory Name="..." />
+				endTag(name, Util::emptyString);
+			}
 		}
 	} else if(name == sFileListing) {
 		inListing = true;
@@ -334,5 +339,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.39 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.40 2004/11/29 23:21:31 arnetheduck Exp $
  */

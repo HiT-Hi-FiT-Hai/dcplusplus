@@ -25,6 +25,7 @@
 #include "ResourceManager.h"
 #include "StringTokenizer.h"
 #include "SettingsManager.h"
+#include "version.h"
 
 #ifndef _WIN32
 #include <sys/socket.h>
@@ -890,6 +891,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.76 2004/11/07 17:04:28 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.77 2004/11/29 23:21:31 arnetheduck Exp $
  */
 

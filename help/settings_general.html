@@ -31,7 +31,7 @@ choose the one closest to your own. </dd>
 <h2><a name="connection"></a>Connection Settings</h2>
 There are three modes of connection in DC++: Active, Passive, or
 SOCKS5. If you have problems configuring them, or problems connecting
-please refer to the FAQ.<br>
+please refer to the <a href="faq_activemode.html">FAQ</a>.<br>
 <dl style="margin-left: 40px;">
   <dt style="text-decoration: underline;">Active</dt>
   <dd> In active mode, DC++ needs to make outbound TCP connections and
@@ -39,18 +39,22 @@ send UDP packets to other machines, as well as receive inbound TCP
 connections and inbound UDP packets. TCP is used for file transfers and
 UDP is used for file search results. Remote DC++ clients will return a
 maximum of 10 search hits to an active user. A user in active mode will
-have M:A in their <a href="plusplus_tag.html">DC++ tag</a>.&nbsp; Use
-	<a href="faq_activemode.html">this guide</a> to set up active mode.<dl>
+have M:A in their <a href="plusplus_tag.html">DC++ tag</a>.&nbsp; Use <a
+ href="faq_activemode.html">this guide</a> to set up active mode.<dl>
       <dt>IP</dt>
       <dd>DC++ will automatically detect and use your local IP. If you
 are behind a router (or your IP is otherwise <a
  href="non-routable.html">non-routable</a>) you will need to put in
 your external IP here. If you put a DNS name here, DC++ will try to
 resolve it into an IP address before use.</dd>
-      <dt>Port</dt>
-      <dd>This is the port that DC++ listens on: TCP for incoming
-client connections and UDP for incoming search results. If this setting
-is blank, DC++ will use a random port between 1025 and 32000.</dd>
+      <dt>TCP Port</dt>
+      <dd>This is the port that DC++ listens on for incoming client
+connections. If this setting is blank, DC++ will use a random port
+between 1025 and 32000.</dd>
+      <dt>UDP Port</dt>
+      <dd>This is the port that DC++ listens on for incoming search
+results. If this setting is blank, DC++ will use a random port between
+1025 and 32000. </dd>
     </dl>
   </dd>
   <dt style="text-decoration: underline;">Passive</dt>

@@ -20,13 +20,20 @@
 #include "autoconf.h"
 #endif
 
+// Remove this line if hashes are not available in your stl
+// Hint: the once that comes with mcvc++ 6.0 doesn't have hashes...
+#define HAS_HASH 1
+
+// --- Shouldn't have to change anything under here...
+
 #ifdef _WIN32
 // Change these values to use different versions...don't know what happens though...=)
-#define WINVER		0x0501
+//#define WINVER		0x0501
 #define _WIN32_WINNT 0x0501
 #define _WIN32_IE	0x0500
-#define _RICHEDIT_VER	0x0200
+//#define _RICHEDIT_VER	0x0200
 
+#ifdef _MSC_VER
 #pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion
 #pragma warning(disable: 4786) // identifier was truncated to '255' characters in the debug information
 #pragma warning(disable: 4290) // C++ Exception Specification ignored
@@ -34,6 +41,7 @@
 #pragma warning(disable: 4710) // function not inlined
 #pragma warning(disable: 4127) // conditional expression is constant
 #pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
+#endif
 
 #ifndef CDECL
 #define CDECL _cdecl
@@ -47,18 +55,12 @@
 
 #endif
 
-// Remove this line if hashes are not available in your stl
-// Hint: the once that comes with mcvc++ 6.0 doesn't have hashes...
-#define HAS_HASH 1
 
-// Remove this if you want to try using the msvc 7.x STL
-//#define HAS_STLPORT 1
-
-// --- Shouldn't have to change anything under here...
-#if (defined(HAS_STLPORT))
 #if !(defined(_REENTRANT))
 #define _REENTRANT 1
 #endif
+
+#ifdef HAVE_STLPORT
 #if !defined(_DEBUG)
 #define _STLP_NO_EXCEPTIONS
 #undef _STLP_DEBUG
@@ -75,7 +77,7 @@
 #define HASH_MAP hash_map
 #define HASH_MULTIMAP hash_multimap
 
-#ifdef HAS_STLPORT
+#ifdef HAVE_STLPORT
 
 #define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
 #define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
@@ -130,5 +132,5 @@ typedef unsigned __int64 u_int64_t;
 
 /**
  * @file
- * $Id: config.h,v 1.27 2004/11/03 08:51:14 arnetheduck Exp $
+ * $Id: config.h,v 1.28 2004/11/29 23:21:31 arnetheduck Exp $
  */

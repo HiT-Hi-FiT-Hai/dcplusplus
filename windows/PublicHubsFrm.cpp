@@ -27,6 +27,7 @@
 
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
+#include "../client/version.h"
 
 int PublicHubsFrame::columnIndexes[] = { 
 	COLUMN_NAME,
@@ -469,6 +470,6 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.32 2004/11/27 15:46:18 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.33 2004/11/29 23:21:20 arnetheduck Exp $
  */
 

@@ -59,7 +59,7 @@
 
 #include <utility>
 
-#ifdef HAS_STLPORT
+#ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
 
@@ -91,5 +91,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.10 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.11 2004/11/29 23:21:30 arnetheduck Exp $
  */

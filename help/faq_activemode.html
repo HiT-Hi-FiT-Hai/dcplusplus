@@ -7,10 +7,10 @@
 </head>
 <body>
 <h1>Setting up active mode</h1>
-<p>Active mode requires both <acronym
+<p>For DC++ to work properly in active mode, it requires access on <acronym
  title="Transmission Control Protocol">TCP</acronym> and <acronym
- title="User Datagram Protocol">UDP</acronym> access on the same port
-incoming and all ports outgoing for DC++ to work properly.</p>
+ title="User Datagram Protocol">UDP</acronym> listening ports, as well
+as outgoing access on all ports for both TCP and UDP.</p>
 <p>You can simplify the process of setting up active mode if your
 router and operating system is <acronym title="Universal Plug and Play">UPnP</acronym>
 compatible. Please read the <a href="faq_upnp.html">Setting up UPnP FAQ</a>
@@ -21,18 +21,19 @@ the computer with DC++. This is could be called Port mapping, port
 redirecting, port forwarding or something like that. Find out how to do
 this with your router / <acronym title="Network Address Translation">NAT</acronym>
 in the user manual.</li>
-  <li>You need to forward one port. Select a number between 1024 -
+  <li>You need to forward two ports, with either the same port number
+or different ones. Select one or two numbers between 1024 -
 65535, they should mostly all be free. Make sure both UDP and TCP is
-being forwarded on the port you chose. </li>
+being forwarded on the port(s) you chose. </li>
   <li>The IP that you are forwarding to should be the <span
  style="font-weight: bold;">internal</span> IP address of your DC++
 computer. It usually begins with <a href="non-routable.html">"192.168",
 "172.16." or "10.x."</a>. Go to the command prompt and type: <span
  style="font-style: italic;">ipconfig</span> (Start Menu -&gt; Run
 -&gt; <span style="font-style: italic;">cmd /k ipconfig</span>)</li>
-  <li>When you have mapped a port on the router, open up DC++ and go to
-Settings. Select active mode. In the port field, enter the port number
-that you are forwarding on the router. </li>
+  <li>When you have mapped the port(s) on the router, open up DC++ and
+go to Settings. Select active mode. In the port fields, enter the port
+number(s) that you forwarded on the router. </li>
   <li>In the IP field, you need to enter the <span
  style="font-weight: bold;">external</span> IP address of your router.
 Your external IP can be checked against <a

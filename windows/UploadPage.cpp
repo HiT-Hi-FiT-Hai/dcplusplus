@@ -28,6 +28,7 @@
 #include "../client/Util.h"
 #include "../client/ShareManager.h"
 #include "../client/SettingsManager.h"
+#include "../client/version.h"
 
 PropPage::TextItem UploadPage::texts[] = {
 	{ IDC_SETTINGS_SHARED_DIRECTORIES, ResourceManager::SETTINGS_SHARED_DIRECTORIES },
@@ -262,6 +263,6 @@ void UploadPage::addDirectory(const tstring& aPath){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.31 2004/11/22 00:13:33 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.32 2004/11/29 23:21:19 arnetheduck Exp $
  */
 

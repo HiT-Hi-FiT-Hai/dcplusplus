@@ -25,6 +25,7 @@
 #include "SimpleXML.h"
 #include "Util.h"
 #include "File.h"
+#include "version.h"
 
 const string SettingsManager::settingTags[] =
 {
@@ -249,8 +250,13 @@ void SettingsManager::load(string const& aFileName)
 			xml.stepOut();
 		}
 
-		// double v = Util::toDouble(SETTING(CONFIG_VERSION));
+		double v = Util::toDouble(SETTING(CONFIG_VERSION));
 		// if(v < 0.x) { // Fix old settings here }
+		if(v < 0.668 && isSet[IN_PORT]) {
+			set(UDP_PORT, SETTING(IN_PORT));
+		}
+
+		setDefault(UDP_PORT, SETTING(IN_PORT));
 
 		fire(SettingsManagerListener::Load(), &xml);
 
@@ -320,6 +326,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.98 2004/11/26 13:48:54 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.99 2004/11/29 23:21:31 arnetheduck Exp $
  */
 

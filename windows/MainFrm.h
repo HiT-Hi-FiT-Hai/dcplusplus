@@ -29,11 +29,12 @@
 #include "../client/QueueManagerListener.h"
 #include "../client/Util.h"
 #include "../client/LogManager.h"
+#include "../client/version.h"
 
 #include "FlatTabCtrl.h"
 #include "SingleInstance.h"
 #include "TransferView.h"
-#include "./upnp.h"
+#include "UPnP.h"
 
 #define SERVER_SOCKET_MESSAGE (WM_APP + 1235)
 
@@ -369,7 +370,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.49 2004/11/15 13:53:43 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.50 2004/11/29 23:21:19 arnetheduck Exp $
  */
 
  

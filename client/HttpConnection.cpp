@@ -22,6 +22,7 @@
 #include "HttpConnection.h"
 
 #include "SettingsManager.h"
+#include "version.h"
 
 /**
  * Downloads a file and returns it as a string
@@ -156,6 +157,6 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.26 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.27 2004/11/29 23:21:31 arnetheduck Exp $
  */
 

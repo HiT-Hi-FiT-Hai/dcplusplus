@@ -293,7 +293,7 @@ void HubFrame::addAsFavorite() {
 	aEntry.setServer(Text::fromT(server));
 	aEntry.setName(Text::fromT(buf));
 	aEntry.setDescription(Text::fromT(buf));
-	aEntry.setConnect(TRUE);
+	aEntry.setConnect(false);
 	aEntry.setNick(client->getNick());
 	HubManager::getInstance()->addFavorite(aEntry);
 	addClientLine(TSTRING(FAVORITE_HUB_ADDED));
@@ -1120,5 +1120,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.90 2004/11/26 13:49:01 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.91 2004/11/29 23:21:20 arnetheduck Exp $
  */

@@ -29,6 +29,7 @@
 #include "Exception.h"
 #include "Singleton.h"
 #include "FastAlloc.h"
+#include "version.h"
 
 STANDARD_EXCEPTION(CryptoException);
 
@@ -127,5 +128,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.39 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.40 2004/11/29 23:21:30 arnetheduck Exp $
  */

@@ -66,7 +66,7 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 {
 public:
 	void connect(const string& aServer, short aPort, const string& aNick);
-	void connect(const string& aServer, short aPort, const CID& cid, u_int32_t aToken);
+	void connect(const string& aServer, short aPort, const CID& cid, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 	void putUploadConnection(UserConnection* aSource);
@@ -110,6 +110,7 @@ private:
 
 	ServerSocket socket;
 	StringList features;
+	StringList adcFeatures;
 
 	u_int32_t floodCounter;
 
@@ -160,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.59 2004/11/22 00:13:29 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.60 2004/11/29 23:21:31 arnetheduck Exp $
  */

@@ -116,7 +116,7 @@ public:
 		}
 
 		h = ::CreateFile(Text::utf8ToWide(aFileName).c_str(), access, FILE_SHARE_READ, NULL, m, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		
+
 		if(h == INVALID_HANDLE_VALUE) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
@@ -150,14 +150,14 @@ public:
 			h = INVALID_HANDLE_VALUE;
 		}
 	}
-	
+
 	virtual int64_t getSize() throw() {
 		DWORD x;
 		DWORD l = ::GetFileSize(h, &x);
-		
+
 		if( (l == INVALID_FILE_SIZE) && (GetLastError() != NO_ERROR))
 			return -1;
-		
+
 		return (int64_t)l | ((int64_t)x)<<32;
 	}
 
@@ -171,7 +171,7 @@ public:
 	virtual int64_t getPos() throw() {
 		LONG x = 0;
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
-		
+
 		return (int64_t)l | ((int64_t)x)<<32;
 	}		
 
@@ -188,7 +188,7 @@ public:
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 	}
-	
+
 	virtual size_t read(void* buf, size_t& len) throw(Exception) {
 		DWORD x;
 		if(!::ReadFile(h, buf, (DWORD)len, &x, NULL)) {
@@ -238,9 +238,9 @@ public:
 	static int64_t getSize(const string& aFileName) throw() {
 		WIN32_FIND_DATA fd;
 		HANDLE hFind;
-		
+
 		hFind = FindFirstFile(Text::toT(aFileName).c_str(), &fd);
-		
+
 		if (hFind == INVALID_HANDLE_VALUE) {
 			return -1;
 		} else {
@@ -262,9 +262,9 @@ public:
 			start++;
 		}
 	}
-	
+
 #else // _WIN32
-	
+
 	enum {
 		READ = 0x01,
 		WRITE = 0x02,
@@ -272,7 +272,7 @@ public:
 	};
 	File(const string& aFileName, int access, int mode) throw(FileException) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
-		
+
 		int m = 0;
 		if(access == READ)
 			m |= O_RDONLY;
@@ -280,7 +280,7 @@ public:
 			m |= O_WRONLY;
 		else
 			m |= O_RDWR;
-		
+
 		if(mode & CREATE) {
 			m |= O_CREAT;
 		}
@@ -313,7 +313,7 @@ public:
 		struct stat s;
 		if(::fstat(h, &s) == -1)
 			return -1;
-		
+
 		return (int64_t)s.st_size;
 	}
 
@@ -332,7 +332,7 @@ public:
 		len = x;
 		return (size_t)x;
 	}
-	
+
 	virtual size_t write(const void* buf, size_t len) throw(FileException) {
 		ssize_t x = ::write(h, buf, len);
 		if(x == -1)
@@ -345,28 +345,28 @@ public:
 	// some ftruncate implementations can't extend files like SetEndOfFile,
 	// not sure if the client code needs this...
 	int extendFile(int64_t len) {
-        char zero;
+		char zero;
 
-        if ( (lseek(h,(off_t) len,SEEK_SET) != -1) && (::write(h,&zero,1) != -1) ) {
-            ftruncate(h,(off_t)len);
-            return 1;
-        }
-        return -1;
-    }
+		if ( (lseek(h,(off_t) len,SEEK_SET) != -1) && (::write(h,&zero,1) != -1) ) {
+			ftruncate(h,(off_t)len);
+			return 1;
+		}
+		return -1;
+	}
 
 	virtual void setEOF() throw(FileException) {
-        int64_t pos;
-        int64_t eof;
-        int ret;
+		int64_t pos;
+		int64_t eof;
+		int ret;
 
-        pos = (int64_t) lseek(h,0,SEEK_CUR);
-        eof = (int64_t) lseek(h,0,SEEK_END);
-        if (eof < pos) 
-            ret = extendFile(pos);
-        else
-            ret = ftruncate(h,(off_t)pos);
-        lseek(h,(off_t)pos,SEEK_SET);
-        if (ret == -1)
+		pos = (int64_t) lseek(h,0,SEEK_CUR);
+		eof = (int64_t) lseek(h,0,SEEK_END);
+		if (eof < pos) 
+			ret = extendFile(pos);
+		else
+			ret = ftruncate(h,(off_t)pos);
+		lseek(h,(off_t)pos,SEEK_SET);
+		if (ret == -1)
 			throw FileException(Util::translateError(errno));
 	}
 
@@ -405,7 +405,7 @@ public:
 		size_t count = sizeof(buffer);
 		File src(source, File::READ, 0);
 		File dst(target, File::WRITE, File::CREATE | File::TRUNCATE);
-		
+
 		while ( src.read((void*)buffer, count) > 0) {
 			char* p = buffer;
 			while (count  > 0) {
@@ -421,7 +421,7 @@ public:
 		struct stat s;
 		if(stat(aFileName.c_str(), &s) == -1)
 			return -1;
-		
+
 		return s.st_size;
 	}
 
@@ -434,7 +434,7 @@ public:
 		}
 	}
 
-	
+
 #endif // _WIN32
 
 	virtual ~File() throw(FileException) {
@@ -559,6 +559,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.44 2004/11/24 17:00:45 arnetheduck Exp $
+ * $Id: File.h,v 1.45 2004/11/29 23:21:30 arnetheduck Exp $
  */
 

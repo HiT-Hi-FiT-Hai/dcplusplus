@@ -34,6 +34,7 @@
 
 #include <limits>
 
+// some strange mac definition
 #ifdef ff
 #undef ff
 #endif
@@ -943,5 +944,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.126 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.127 2004/11/29 23:21:31 arnetheduck Exp $
  */

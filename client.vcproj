@@ -25,7 +25,7 @@
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
-				PreprocessorDefinitions="HAS_STLPORT"
+				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -91,7 +91,7 @@
 				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\stlport&quot;;&quot;$(SolutionDir)\wtl&quot;"
-				PreprocessorDefinitions="HAS_STLPORT"
+				PreprocessorDefinitions="HAVE_STLPORT"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
@@ -437,7 +437,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed for this to work)"
-						CommandLine="makedefs.py"
+						CommandLine="makedefs.py
+"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -445,7 +446,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed for this to work)"
-						CommandLine="makedefs.py"
+						CommandLine="makedefs.py
+"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 			</File>

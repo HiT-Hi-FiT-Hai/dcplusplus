@@ -36,6 +36,8 @@
 #include "../client/UploadManager.h"
 #include "../client/HashManager.h"
 #include "../client/LogManager.h"
+#include "../client/version.h"
+
 #include "HubFrame.h"
 #include "MagnetDlg.h"
 
@@ -991,5 +993,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.66 2004/11/15 13:53:43 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.67 2004/11/29 23:21:21 arnetheduck Exp $
  */

@@ -126,8 +126,6 @@ typedef StringMap TStringMap;
 typedef StringMapIter TStringMapIter;
 #endif
 
-#include "version.h"
-
 extern void startup(void (*f)(void*, const string&), void* p);
 extern void shutdown();
 
@@ -163,6 +161,6 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.44 2004/10/25 14:42:09 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.45 2004/11/29 23:21:31 arnetheduck Exp $
  */
 

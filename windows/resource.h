@@ -313,7 +313,6 @@
 #define IDC_RENAME                      1263
 #define IDC_LIST_EDIT                   1264
 #define IDC_OPEN_OWN_LIST               1265
-#define IDC_EDIT1                       1266
 #define IDC_UDP_PORT                    1266
 #define IDC_SETTINGS_UDP_PORT           1267
 #define IDC_BROWSELIST                  3000
