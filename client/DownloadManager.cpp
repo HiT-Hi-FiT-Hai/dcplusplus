@@ -193,12 +193,12 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 			}
 		} else {
 			d->getFile()->write(aData, aLen);
+			cs.leave();
 		}
 	} catch(FileException e) {
 		running.erase(i);
-		cs.leave();
-
 		fire(DownloadManagerListener::FAILED, d, e.getError());
+		cs.leave();
 		
 		QueueManager::getInstance()->putDownload(d);
 		removeConnection(aSource);
@@ -206,8 +206,6 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 	}
 
 	d->addPos(aLen);
-	cs.leave();
-
 }
 
 void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
@@ -355,9 +353,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.42 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.43 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.43  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.42  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

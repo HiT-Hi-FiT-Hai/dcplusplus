@@ -104,14 +104,15 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == SET_TEXT) {
 		StringListInfo* l = (StringListInfo*)lParam;
 		int n = ctrlTransfers.find(l->lParam);
-		dcassert(n != -1);
-		ctrlTransfers.SetRedraw(FALSE);
-		for(int i = 0; i < COLUMN_LAST; i++) {
-			if(!l->columns[i].empty()) {
-				ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
+		if(n != -1) {
+			ctrlTransfers.SetRedraw(FALSE);
+			for(int i = 0; i < COLUMN_LAST; i++) {
+				if(!l->columns[i].empty()) {
+					ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
+				}
 			}
+			ctrlTransfers.SetRedraw(TRUE);
 		}
-		ctrlTransfers.SetRedraw(TRUE);
 		delete l;
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
@@ -655,9 +656,12 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.57 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.58 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.58  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.57  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

@@ -68,7 +68,7 @@ SettingsManager::SettingsManager()
 	setDefault(FILTER_KICKMSGS, false);
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(OPEN_PUBLIC, true);
-	setDefault(OPEN_QUEUE, false);
+	setDefault(OPEN_QUEUE, true);
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -207,9 +207,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.15 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.16 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.16  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.15  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

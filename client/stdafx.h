@@ -45,6 +45,7 @@ extern CAppModule _Module;
 #include <atlctrlw.h>
 #include <atlmisc.h>
 #include <atlsplit.h>
+#include <Shellapi.h>
 
 #include <ctime>
 #include <algorithm>
@@ -62,9 +63,12 @@ using namespace std;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.17 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.18 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.18  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.17  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

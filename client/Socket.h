@@ -133,7 +133,7 @@ public:
 	};
 	void create(int aType = TYPE_TCP) throw(SocketException) {
 		if(sock != -1)
-			disconnect();
+			Socket::disconnect();
 
 		switch(aType) {
 		case TYPE_TCP:
@@ -223,9 +223,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.18 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: Socket.h,v 1.19 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.19  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.18  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

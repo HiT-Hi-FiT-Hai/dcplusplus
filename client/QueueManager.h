@@ -127,13 +127,19 @@ private:
 	Source* current;
 	
 	Source* addSource(const User::Ptr& aUser, const string& aPath) {
-		Source* s = new Source(aUser, aPath);
-		sources.push_back(s);
+		Source* s = getSource(aUser);
+		if(s == NULL) {
+			Source* s = new Source(aUser, aPath);
+			sources.push_back(s);
+		}
 		return s;
 	}
 	Source* addSource(const string& aNick, const string& aPath) {
-		Source* s = new Source(aNick, aPath);
-		sources.push_back(s);
+		Source* s = getSource(aNick);
+		if(s == NULL) {
+			Source* s = new Source(aNick, aPath);
+			sources.push_back(s);
+		}
 		return s;
 	}
 	
@@ -175,6 +181,23 @@ private:
 
 	Source* getCurrent() { return current; };
 
+	Source* getSource(const User::Ptr& aUser) {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getUser() == aUser) {
+				return *i;
+			}
+		}
+		return NULL;
+	}
+	Source* getSource(const string& aNick) {
+		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
+			if((*i)->getNick() == aNick) {
+				return *i;
+			}
+		}
+		return NULL;
+	}
+	
 	bool isSource(const User::Ptr& aUser) {
 		for(Source::Iter i = sources.begin(); i != sources.end(); ++i) {
 			if((*i)->getUser() == aUser) {

@@ -197,7 +197,7 @@ public:
 			try {
 				QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
 			} catch(QueueException e) {
-				MessageBox(e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			} catch(FileException e) {
 				dcdebug("MainFrm::onGetList caught %s\n", e.getError().c_str());
 			}
@@ -505,9 +505,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.40 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.41 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.41  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.40  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

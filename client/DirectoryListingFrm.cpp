@@ -94,7 +94,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL
 			try {
 				dl->download(file, user, SETTING(DOWNLOAD_DIRECTORY) + file->getName());
 			} catch(Exception e) {
-				MessageBox(e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		} else {
 			DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
@@ -121,7 +121,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 		try {
 			dl->download(dir, user, target);
 		} catch(Exception e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 	return 0;
@@ -136,7 +136,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 			try {
 				dl->download(dir, user, target);
 			} catch(Exception e) {
-				MessageBox(e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		}
 	}
@@ -166,7 +166,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 				dl->download(d, user, target);
 			} 
 		} catch(Exception e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 }
@@ -198,7 +198,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				}
 			} 
 		} catch(Exception e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	} else {
 		string target = SETTING(DOWNLOAD_DIRECTORY);
@@ -370,7 +370,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			else
 				QueueManager::getInstance()->add(f->getName(), f->getSize(), user->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
 			//..
 		}
@@ -380,9 +380,12 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.22 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.23 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.23  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.22  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

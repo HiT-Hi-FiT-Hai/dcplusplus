@@ -162,7 +162,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 				else
 					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), target);
 			} catch(QueueException e) {
-				MessageBox(e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			} catch(FileException e) {
 				//..
 			}
@@ -188,7 +188,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 			else
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
 		} catch(QueueException e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
 			//..
 		}
@@ -417,7 +417,7 @@ LRESULT SearchFrame::onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 			else
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
 		} catch(QueueException e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
 			//..
 		}
@@ -437,7 +437,7 @@ void SearchFrame::downloadSelected(const string& aDir) {
 			else
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getNick(), aDir + sr->getFileName());
 		} catch(Exception e) {
-			MessageBox(e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 }
@@ -455,9 +455,12 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.25 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.26 2002/02/07 22:12:22 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.26  2002/02/07 22:12:22  arnetheduck
+ * Last fixes before 0.152
+ *
  * Revision 1.25  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *
