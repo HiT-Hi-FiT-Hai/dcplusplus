@@ -46,7 +46,11 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	ctrlUsers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
-
+	
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	ctrlClient.SetFont(ctrlUsers.GetFont());
 	ctrlMessage.SetFont(ctrlUsers.GetFont());
 
@@ -410,9 +414,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.26 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.27 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.27  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.26  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

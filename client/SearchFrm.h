@@ -301,7 +301,7 @@ public:
 		return 0;
 	}
 
-	SearchFrame() : searchContainer("edit", this, SEARCH_MESSAGE_MAP),  sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
+	SearchFrame() : lastSearch(0), searchContainer("edit", this, SEARCH_MESSAGE_MAP),  sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
 		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP) {
 		
 		SearchManager::getInstance()->addListener(this);
@@ -333,6 +333,8 @@ private:
 	StringList search;
 	StringList targets;
 	
+	DWORD lastSearch;
+
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) {
 		switch(type) {
@@ -353,9 +355,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.22 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.23 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.23  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.22  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

@@ -39,8 +39,10 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_HUBLIST);
-	ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	ctrlHubs.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 200, 0);
 	ctrlHubs.InsertColumn(1, _T("Description"), LVCFMT_LEFT, 290, 1);
 	ctrlHubs.InsertColumn(2, _T("Users"), LVCFMT_RIGHT, 50, 2);
@@ -206,9 +208,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.14 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.15 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.15  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.14  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -33,7 +33,7 @@ char const* SettingsManager::settingTags[] =
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
 	"ClientVersion", "SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow"
+	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
 	"SENTRY"
 };
 
@@ -55,7 +55,8 @@ SettingsManager::SettingsManager()
 	setDefault(ROLLBACK, 1024);
 	setDefault(CLIENTVERSION, "1,0091");
 	setDefault(AUTO_FOLLOW, true);
-	
+	setDefault(CLEAR_SEARCH, true);
+	setDefault(FULL_ROW_SELECT, false);
 	
 }
 

@@ -430,6 +430,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
+
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
 	
 	ctrlTransfers.InsertColumn(0, "File", LVCFMT_LEFT, 400, 0);
 	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
@@ -948,9 +952,12 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.48 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.49 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.49  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.48  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

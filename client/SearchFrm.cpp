@@ -47,6 +47,10 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_RESULTS);
 
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlResults.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	ctrlSearch.SetFont(ctrlResults.GetFont(), FALSE);
 	ctrlSize.SetFont(ctrlResults.GetFont(), FALSE);
 	ctrlMode.SetFont(ctrlResults.GetFont(), FALSE);
@@ -207,10 +211,17 @@ LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		
 		SearchManager::getInstance()->search(s, (LONGLONG)lsize, 0, ctrlMode.GetCurSel());
 		//client->sendMessage(s);
-		ctrlSearch.SetWindowText("");
+
+		if(lastSearch + 60*1000 < TimerManager::getInstance()->getTick()) {
+			
+			if(BOOLSETTING(CLEAR_SEARCH)){
+				ctrlSearch.SetWindowText("");
+				lastSearch = TimerManager::getInstance()->getTick();
+			}
 		
-		ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
-		search = StringTokenizer(s, ' ').getTokens();
+			ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
+			search = StringTokenizer(s, ' ').getTokens();
+		}
 		
 	}
 	return 0;
@@ -367,9 +378,12 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.19 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.20 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.20  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.19  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

@@ -380,8 +380,12 @@ BEGIN
     GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
     LTEXT           "Client version",IDC_STATIC,15,39,43,8
     EDITTEXT        IDC_CLVERSION,71,36,50,14
-    CONTROL         "Follow redirects",IDC_AUTOFOLLOW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,55,65,10
+    CONTROL         "Follow redirects automatically",IDC_AUTOFOLLOW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,55,107,10
+    CONTROL         "Clear search box after each search",IDC_CLEARSEARCH,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,66,126,10
+    CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,77,81,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225

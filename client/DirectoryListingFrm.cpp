@@ -218,7 +218,10 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+
 	ctrlList.InsertColumn(COLUMN_FILENAME, _T("Filename"), LVCFMT_LEFT, 400, COLUMN_FILENAME);
 	ctrlList.InsertColumn(COLUMN_SIZE, _T("Size"), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	
@@ -368,9 +371,12 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.19 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.20 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.20  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.19  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -40,6 +40,11 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	ctrlHubs.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
+
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
 
 	ctrlHubs.InsertColumn(COLUMN_NAME, _T("Auto Connect / Name"), LVCFMT_LEFT, 200, COLUMN_NAME);
@@ -160,9 +165,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.2 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.3 2002/01/26 12:38:50 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.3  2002/01/26 12:38:50  arnetheduck
+ * Added some user options
+ *
  * Revision 1.2  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

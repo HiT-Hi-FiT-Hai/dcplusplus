@@ -65,8 +65,10 @@
 #define IDC_REMOVESOURCE                1025
 #define IDC_MODEHELP                    1025
 #define IDC_EDIT                        1026
+#define IDC_CLEARSEARCH                 1026
 #define IDC_NOTEPAD                     1027
-#define IDC_SEARCH_ALTERNATES			1028
+#define IDC_FULLROW                     1027
+#define IDC_SEARCH_ALTERNATES           1028
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -83,7 +85,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        221
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1026
+#define _APS_NEXT_CONTROL_VALUE         1028
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
