@@ -98,7 +98,13 @@ private:
 		typedef Directory* Ptr;
 		typedef map<string, Ptr> Map;
 		typedef Map::iterator MapIter;
-		
+#ifdef HAS_HASH
+		typedef hash_multimap<LONGLONG, string> DupeMap;
+#else
+		typedef multimap<LONGLONG, string> DupeMap;
+#endif
+		typedef DupeMap::iterator DupeIter;
+
 		Directory(const string& aName = "", Directory* aParent = NULL) : name(aName), parent(aParent), size(0) { };
 		~Directory() {
 			for(MapIter i = directories.begin(); i!= directories.end(); ++i) {
@@ -135,7 +141,7 @@ private:
 
 		LONGLONG size;
 		
-		string toString(int ident = 0);
+		string toString(DupeMap& dupes, int ident = 0);
 	private:
 		string name; 
 		Directory* parent;
@@ -182,9 +188,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.19 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.20 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.20  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.19  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

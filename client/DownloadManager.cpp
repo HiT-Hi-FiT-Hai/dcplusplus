@@ -106,6 +106,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d) {
 		{
 			Lock l(cs);
+
+			dcassert(running.find(aConn) == running.end());
 			running[aConn] = d;
 
 			if(d->isSet(Download::RESUME)) {
@@ -122,6 +124,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			}
 
 		}
+		aConn->setState(UserConnection::STATE_FILELENGTH);
 		aConn->get(d->getQueueItem()->getSourcePath(aConn->getUser()), d->getPos());
 		dcdebug("Found!\n");
 		return;
@@ -166,17 +169,75 @@ bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) th
 	return true;
 }
 
+void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
+		dcdebug("DM::onFileLength Bad state, ignoring\n");
+		return;
+	}
 
-void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
+	LONGLONG fileLength = Util::toInt64(aFileLength);
 	
-	if(i == running.end()) {
+	cs.enter();
+
+	Download::MapIter i = running.find(aSource);
+	dcassert(i != running.end());
+
+	Download* d = i->second;
+	
+	Util::ensureDirectory(d->getTarget());
+	
+	File* file;
+	try {
+		file = new File(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
+	} catch(FileException e) {
+		running.erase(i);
 		cs.leave();
-		dcdebug("DownloadManager::onData: Unexpected command from %s (%p)\n", aSource->getUser()->getNick().c_str(), aSource);
+		
+		fire(DownloadManagerListener::FAILED, d, "Could not open target file:" + e.getError());
+		QueueManager::getInstance()->putDownload(d);
 		removeConnection(aSource);
 		return;
 	}
+	
+	d->setFile(file, true);
+	
+	if(d->isSet(Download::RESUME) && d->isSet(Download::ROLLBACK)) {
+		if(fileLength > SETTING(ROLLBACK)) {
+			d->setPos(file->getSize() - SETTING(ROLLBACK), true);
+			d->setRollbackBuffer(SETTING(ROLLBACK));
+		} else {
+			d->setPos(0, true);
+			d->setRollbackBuffer((int)fileLength);
+			d->unsetFlag(Download::ROLLBACK);
+		}
+	}
+	
+	d->setSize(fileLength);
+	
+	if(d->getSize() <= d->getPos()) {
+		running.erase(i);
+		cs.leave();
+		
+		QueueManager::getInstance()->putDownload(d, true);
+		removeConnection(aSource);
+	} else {
+		d->setStart(TimerManager::getTick());
+		aSource->setState(UserConnection::STATE_DONE);
+
+		cs.leave();
+		
+		fire(DownloadManagerListener::STARTING, d);
+		
+		aSource->setDataMode(d->getSize() - d->getPos());
+		aSource->startSend();
+	}
+}
+
+void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLen) {
+	dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	cs.enter();
+	Download::MapIter i = running.find(aSource);
+	dcassert(i != running.end());
 
 	Download* d = i->second;
 
@@ -194,11 +255,13 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 				QueueManager::getInstance()->removeSource(target, aSource->getUser());
 				
 				removeConnection(aSource);
+				return;
 			} else {
 				cs.leave();
 			}
 		} else {
 			d->getFile()->write(aData, aLen);
+			d->addPos(aLen);
 			cs.leave();
 		}
 	} catch(FileException e) {
@@ -210,94 +273,23 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 		removeConnection(aSource);
 		return;
 	}
-
-	d->addPos(aLen);
-}
-
-void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
-
-	LONGLONG fileLength = Util::toInt64(aFileLength);
-
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
-
-	if(i == running.end()) {
-		// Ooops, drop this connection at once...
-		cs.leave();
-		dcdebug("DownloadManager::onFileLength: Unexpected command from %s (%p)\n", aSource->getUser()->getNick().c_str(), aSource);
-		
-		removeConnection(aSource);
-		return;		
-	}
-
-	Download* d = i->second;
-	
-	Util::ensureDirectory(d->getTarget());
-
-	File* file;
-	try {
-		file = new File(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
-	} catch(FileException e) {
-		running.erase(i);
-		cs.leave();
-		
-		fire(DownloadManagerListener::FAILED, d, "Could not open target file:" + e.getError());
-		removeConnection(aSource);
-		QueueManager::getInstance()->putDownload(d);
-		return;
-	}
-
-	d->setFile(file, true);
-
-	if(d->isSet(Download::RESUME) && d->isSet(Download::ROLLBACK)) {
-		if(fileLength > SETTING(ROLLBACK)) {
-			d->setPos(file->getSize() - SETTING(ROLLBACK), true);
-			d->setRollbackBuffer(SETTING(ROLLBACK));
-		} else {
-			d->setPos(0, true);
-			d->setRollbackBuffer((int)fileLength);
-			d->unsetFlag(Download::ROLLBACK);
-		}
-	}
-
-	d->setSize(fileLength);
-	
-	if(d->getSize() <= d->getPos()) {
-		running.erase(i);
-		cs.leave();
-
-		removeConnection(aSource);
-		QueueManager::getInstance()->putDownload(d, true);
-	} else {
-		d->setStart(TimerManager::getTick());
-		cs.leave();
-
-		fire(DownloadManagerListener::STARTING, d);
-		
-		aSource->setDataMode(d->getSize() - d->getPos());
-		aSource->startSend();
-	}
 }
 
 /** Download finished! */
 void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
-	cs.enter();
 
-	Download::MapIter i = running.find(aSource);
+	dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	Download* d = NULL;
+	{
+		Lock l(cs);
 
-	if(i == running.end()) {
-		// Ooops, drop this connection at once...
-		cs.leave();
-		dcdebug("DownloadManager::onModeChange: Unexpected command from %s (%p)\n", aSource->getUser()->getNick().c_str(), aSource);
+		Download::MapIter i = running.find(aSource);
+		dcassert(i != running.end());
 		
-		removeConnection(aSource);
-		return;
+		d = i->second;
+		running.erase(i);
+		
 	}
-	
-	Download::Ptr d = i->second;
-	running.erase(i);
-	
-	cs.leave();
 
 	dcassert(d->getPos() == d->getSize());
 	d->setFile(NULL);
@@ -309,22 +301,22 @@ void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 }
 
 void DownloadManager::onMaxedOut(UserConnection* aSource) { 
-
-	cs.enter();
-	Download::MapIter i = running.find(aSource);
-	if(i != running.end()) {
-		Download* d = i->second;
-		running.erase(i);
-
-		cs.leave();
-		fire(DownloadManagerListener::FAILED, d, "No slots available");
-
-		QueueManager::getInstance()->putDownload(d);
-	} else {
-		cs.leave();
-		dcdebug("DownloadManager::onMaxedOut: Unexpected command from %s (%p)\n", aSource->getUser()->getNick().c_str(), aSource);
+	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
+		dcdebug("DM::onMaxedOut Bad state, ignoring\n");
+		return;
 	}
 
+	Download* d = NULL;
+	{
+		Lock l(cs);
+		Download::MapIter i = running.find(aSource);
+		dcassert(i != running.end());
+		d = i->second;
+		running.erase(i);
+	}
+
+	fire(DownloadManagerListener::FAILED, d, "No slots available");
+	QueueManager::getInstance()->putDownload(d);
 	removeConnection(aSource);
 }
 
@@ -350,7 +342,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	QueueManager::getInstance()->putDownload(d);
 
 	if(BOOLSETTING(REMOVE_NOT_AVAILABLE) && (aError == "File Not Available")) {
-		QueueManager::getInstance()->removeSource(target, aSource->getUser());
+		QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
 	}
 
 	removeConnection(aSource);
@@ -358,9 +350,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.46 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.47 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.47  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.46  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

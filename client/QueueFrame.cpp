@@ -221,7 +221,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 			}
 		}
 	} else if(aQI->getStatus() == QueueItem::FINISHED) {
-		i->columns[COLUMN_STATUS] = "Download Finished";
+		i->columns[COLUMN_STATUS] = "Finished";
 	} else if(aQI->getStatus() == QueueItem::RUNNING) {
 		i->columns[COLUMN_STATUS] = "Running...";
 	} 
@@ -354,16 +354,10 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 			if(j == queue.end())
 				return FALSE;
 
-			tmp = j->second->getTargetFileName();
+			tmp = SearchManager::getInstance()->clean(j->second->getTargetFileName());
 			size = j->second->getSize();
 		}
-
-		// Remove all strange characters from the search
-		while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
-			tmp.replace(i, 1, 1, ' ');
-		}
-		
-		
+			
 		StringList tok = StringTokenizer(tmp, ' ').getTokens();
 		tmp = "";
 		
@@ -384,7 +378,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		if(!tmp.empty()) {
 			SearchFrame* pChild = new SearchFrame();
 			pChild->setTab(getTab());
-			pChild->setInitial(tmp, size, ((size > 10*1024*1024) ? 1 : 2) );
+			pChild->setInitial(tmp, ((size > 10*1024*1024) ? size-1: size + 1), ((size > 10*1024*1024) ? SearchManager::SIZE_ATLEAST : SearchManager::SIZE_ATMOST) );
 			pChild->CreateEx(m_hWndMDIClient);
 			
 		}
@@ -479,9 +473,12 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.8 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.8  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.7  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

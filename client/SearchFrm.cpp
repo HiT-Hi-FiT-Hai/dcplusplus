@@ -149,7 +149,10 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		lastSearches.push_back(initialString);
 		ctrlSearchBox.InsertString(0, initialString.c_str());
 		ctrlSearchBox.SetCurSel(0);
-		SearchManager::getInstance()->search(initialString, initialSize, 0, SearchManager::SIZE_ATLEAST);
+		ctrlSizeMode.SetCurSel(0);
+		ctrlSize.SetWindowText(Util::toString(initialSize).c_str());
+		SearchManager::getInstance()->search(initialString, initialSize, 0, initialMode);
+		ctrlStatus.SetText(0, ("Searching for " + initialString + "...").c_str());
 	}
 	
 	bHandled = FALSE;
@@ -478,9 +481,12 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.30 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.30  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.29  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

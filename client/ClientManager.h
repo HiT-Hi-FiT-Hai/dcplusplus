@@ -30,17 +30,6 @@
 class ClientManager : private ClientListener, public Singleton<ClientManager>
 {
 public:
-/*	Client* getConnectedClient() { 
-		Lock l(cs);
-		
-		Client* ret = NULL;
-
-		if(clients.size() > 0) 
-			ret = clients.front(); 
-
-		return ret; 
-	};
-*/
 	Client* getClient();
 	void putClient(Client* aClient);
 
@@ -175,9 +164,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.13 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.14 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.14  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.13  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

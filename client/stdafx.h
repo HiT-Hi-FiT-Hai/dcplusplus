@@ -57,7 +57,7 @@ extern CAppModule _Module;
 #include <deque>
 #include <stdio.h>
 #ifdef HAS_HASH
-//#include <hash_map>
+#include <hash_map>
 #endif
 
 using namespace _STL;
@@ -69,9 +69,12 @@ using namespace _STL;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.20 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.21 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: stdafx.h,v $
+ * Revision 1.21  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.20  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

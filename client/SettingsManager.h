@@ -37,7 +37,7 @@ public:
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT, REMOVE_NOT_AVAILABLE, 
 		BACKGROUND_COLOR, TEXT_COLOR, SHARE_HIDDEN, REMOVE_FINISHED, FILTER_KICKMSGS, MINIMIZE_TRAY,
-		OPEN_PUBLIC, OPEN_QUEUE,
+		OPEN_PUBLIC, OPEN_QUEUE, AUTO_SEARCH, TIME_STAMPS, CONFIRM_EXIT,
 		INT_LAST, SETTINGS_LAST = INT_LAST };
 
 	enum {	SPEED_288K, SPEED_336K, SPEED_576K, SPEED_ISDN, SPEED_SATELLITE, SPEED_CABLE,
@@ -168,9 +168,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.14 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.15 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.15  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.14  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

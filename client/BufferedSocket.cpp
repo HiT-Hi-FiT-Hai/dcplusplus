@@ -43,22 +43,8 @@ void BufferedSocket::threadSendFile() {
 		fire(BufferedSocketListener::FAILED, "Not connected");
 		return;
 	}
-	{
-		Lock l(cs);
-		
-		// Check the task queue that we don't have a pending shutdown / disconnect...
-		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-			if(*i == SHUTDOWN || *i == DISCONNECT) {
-				return;
-			} else {
-				// Should never happen...
-				dcdebug("Bad tasks in BufferedSocket in threadSendFile, %d\n", *i);
-				dcassert(0);
-			} 
-		}
-	}
-	
-	while(WaitForSingleObject(commandEvent, 0) == WAIT_TIMEOUT) {
+
+	while(WaitForSingleObject(taskSem, 0) == WAIT_TIMEOUT) {
 		try {
 
 			if( (len = file->read(inbuf, inbufSize)) == 0) {
@@ -73,6 +59,24 @@ void BufferedSocket::threadSendFile() {
 			return;
 		}
 	}
+
+	// Signal the task again since we don't handle it here...
+	taskSem.signal();
+#ifdef _DEBUG
+	{
+		Lock l(cs);
+		
+		// Check the task queue that we don't have a pending shutdown / disconnect...
+		for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+			if(*i != SHUTDOWN && *i != DISCONNECT) {
+				// Should never happen...
+				dcdebug("Bad tasks in BufferedSocket in threadSendFile, %d\n", *i);
+				dcassert(0);
+			} 
+		}
+	}
+#endif
+	
 }
 
 bool BufferedSocket::threadBind() {
@@ -95,49 +99,41 @@ bool BufferedSocket::threadConnect() {
 	{
 		Lock l(cs);
 		
-		// Check the task queue that we don't have a pending shutdown / disconnect...
-		for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-			if(*i == SHUTDOWN || *i == DISCONNECT) {
-				return false;
-			} else {
-				// Should never happen...
-				dcdebug("Bad tasks in BufferedSocket in threadConnect, %d\n", *i);
-				dcassert(0);
-			} 
-		}
 		s=server;
 		p=port;
 	}
 	
 	try {
 		Socket::create();
-		h[0] = commandEvent;
+		h[0] = taskSem;
 		h[1] = getEvent();
 		
 		Socket::connect(s, p);
 
-		switch(WaitForMultipleObjects(2, h, FALSE, 10000)) {
+		switch(WaitForMultipleObjects(2, h, FALSE, 20000)) {
 		case WAIT_TIMEOUT:
 			Socket::disconnect();
 			fire(BufferedSocketListener::FAILED, "Connection Timeout");
 			return false;
 		case WAIT_OBJECT_0:
+			// Signal the task again since we don't handle it here...
+			taskSem.signal();
+			
 			dcdebug("BufferedSocket::threadConnect: Received task\n");
+#ifdef _DEBUG
 			{
 				Lock l(cs);
 				
 				// Check the task queue that we don't have a pending shutdown / disconnect...
-				for(deque<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
-					if(*i == SHUTDOWN || *i == DISCONNECT) {
-						return false;
-					} else {
+				for(vector<Tasks>::iterator i = tasks.begin(); i != tasks.end(); ++i) {
+					if(*i != SHUTDOWN && *i != DISCONNECT) {
 						// Should never happen...
 						dcdebug("Bad tasks in BufferedSocket in threadConnect 2, %d\n", *i);
 						dcassert(0);
 					} 
 				}
-				
 			}
+#endif
 			return 0x00;
 		case WAIT_OBJECT_0 + 1:
 			// We're connected!
@@ -158,7 +154,6 @@ bool BufferedSocket::threadConnect() {
 	// ?
 	return false;
 }	
-
 
 void BufferedSocket::threadRead() {
 	try {
@@ -183,14 +178,12 @@ void BufferedSocket::threadRead() {
 		int bufpos = 0;
 		string l;
 		
-		if(mode == MODE_LINE) {
-			// We might as well create the string, at least one part will be sent as a string...
-			l = string((char*)inbuf, i);
-		}
-		
 		while(i) {
 			if(mode == MODE_LINE) {
 				string::size_type pos;
+
+				l = string((char*)inbuf + bufpos, i);
+
 				if( (pos = l.find(separator)) != string::npos) {
 					bufpos += sizeof(separator) + pos;
 					if(!line.empty()) {
@@ -208,10 +201,12 @@ void BufferedSocket::threadRead() {
 			} else if(mode == MODE_DATA) {
 				if(dataBytes == -1) {
 					fire(BufferedSocketListener::DATA, inbuf+bufpos, i);
+					bufpos+=i;
 					i = 0;
 				} else {
-					int high = (int)dataBytes < i ? (int)dataBytes - i : i;
+					int high = (int)min(dataBytes, (LONGLONG)i);
 					fire(BufferedSocketListener::DATA, inbuf+bufpos, high);
+					bufpos += high;
 					i-=high;
 					
 					dataBytes -= high;
@@ -283,7 +278,7 @@ void BufferedSocket::threadRun() {
 	
 	HANDLE h[2];
 	
-	h[0] = commandEvent;
+	h[0] = taskSem;
 
 	int handles = 1;
 	int i = 0;
@@ -300,36 +295,32 @@ void BufferedSocket::threadRun() {
 		switch( (i = WaitForMultipleObjects(handles, h, FALSE, INFINITE))) {
 		case WAIT_OBJECT_0:
 			{
-				while(true) {
-					Tasks t;
+				Tasks t;
+				{
+					Lock l(cs);
+					dcassert(tasks.size() > 0);
+					t = tasks.front();
+					tasks.erase(tasks.begin());
+				}
+				switch(t) {
+				case SHUTDOWN: threadShutDown(); return;
+				case DISCONNECT:
 					{
-						Lock l(cs);
-						if(tasks.size() == 0)
-							break;
-						t = tasks.front();
-						tasks.pop_front();
-					}
-					switch(t) {
-					case SHUTDOWN: threadShutDown(); return;
-					case DISCONNECT:
-						{
-							Socket::disconnect(); 
-							fire(BufferedSocketListener::FAILED, "Disconnected");
-							handles = 1;
-							
-							for(int k = 0; k < BUFFERS; k++) {
-								outbufPos[k] = 0;
-							}
-						}
-						break;
-
-					case SEND_FILE: threadSendFile(); break;
-					case SEND_DATA: threadSendData(); break;
-					case CONNECT: threadConnect(); break;
-					case BIND: threadBind(); break;
+						Socket::disconnect(); 
+						fire(BufferedSocketListener::FAILED, "Disconnected");
 						
-					default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
+						for(int k = 0; k < BUFFERS; k++) {
+							outbufPos[k] = 0;
+						}
 					}
+					break;
+
+				case SEND_FILE: threadSendFile(); break;
+				case SEND_DATA: threadSendData(); break;
+				case CONNECT: threadConnect(); break;
+				case BIND: threadBind(); break;
+					
+				default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
 				}
 			}
 			break;
@@ -342,9 +333,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.30 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.30  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.29  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

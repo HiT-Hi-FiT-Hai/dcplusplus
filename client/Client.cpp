@@ -243,8 +243,11 @@ void Client::onLine(const string& aLine) throw() {
 				u = i->second;
 			}
 			
-			if(u->getNick() == getNick())
+			if(u->getNick() == getNick()) {
 				u->setFlag(User::DCPLUSPLUS);
+				if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+					u->setFlag(User::PASSIVE);
+			}
 		}
 
 		fire(ClientListener::HELLO, this, u);
@@ -331,9 +334,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.26 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.27 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.27  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.26  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -25,6 +25,11 @@
 UploadManager* UploadManager::instance = NULL;
 
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
+	if(aSource->getState() != UserConnection::STATE_GET) {
+		dcdebug("UM:onGet Wrong state, ignoring\n");
+		return;
+	}
+	
 	Upload* u;
 	dcassert(aFile.size() > 0);
 	
@@ -77,24 +82,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		}
 	}
 
-	Upload::MapIter i = uploads.find(aSource);
-
-	if(i != uploads.end()) {
-		// This is bad!
-		
-		dcdebug("UploadManager::onGet Unexpected command\n");				
-		
-		u = i->second;
-		uploads.erase(i);
-
-		cs.leave();
-
-		removeConnection(aSource);
-
-		fire(UploadManagerListener::FAILED, u, "Unexpected command");
-		delete u;
-		return;
-	} 
+	dcassert(uploads.find(aSource) == uploads.end());
 
 	File* f;
 	try {
@@ -118,14 +106,14 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	aSource->setStatus(UserConnection::BUSY);
 	
 	uploads[aSource] = u;
-
+	
 	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
 		if(ui != reservedSlots.end()) {
 			aSource->setFlag(UserConnection::FLAG_HASSLOT);
 			running++;
 			reservedSlots.erase(ui);
 		} else {
-			if(isExtra(u)) {
+			if( (getFreeSlots() == 0) && (smallfile || userlist)) {
 				if(!aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
 					extra++;
 					aSource->setFlag(UserConnection::FLAG_HASEXTRASLOT);
@@ -142,6 +130,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 		aSource->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
 	
+	aSource->setState(UserConnection::STATE_SEND);
 	cs.leave();
 
 	aSource->fileLength(Util::toString(u->getSize()));
@@ -149,146 +138,143 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
-	Upload* u;
-	cs.enter();
-	Upload::MapIter i = uploads.find(aSource);
-	if(i==uploads.end()) {
-		// Huh? Where did this come from?
-		cs.leave();
-		removeConnection(aSource);
+	if(aSource->getState() != UserConnection::STATE_SEND) {
+		dcdebug("UM::onSend Bad state, ignoring\n");
 		return;
 	}
-	
-	u = i->second;
-	cs.leave();
 
-	try {
-		u->setStart(TimerManager::getTick());
-		aSource->transmitFile(u->getFile());
-		fire(UploadManagerListener::STARTING, u);
-	} catch(Exception e) {
-		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
+	Upload* u;
+	{
+		Lock l(cs);
+		dcassert(uploads.find(aSource) != uploads.end());
 
-		{
-			Lock l(cs);
-			uploads.erase(aSource);
-		}
-		
-		delete u;
-		removeConnection(aSource);
+		u = uploads[aSource];
 	}
+
+	u->setStart(TimerManager::getTick());
+	aSource->setState(UserConnection::STATE_DONE);
+	aSource->transmitFile(u->getFile());
+	fire(UploadManagerListener::STARTING, u);
 }
 
 void UploadManager::onBytesSent(UserConnection* aSource, DWORD aBytes) {
-	Upload* u;
-	cs.enter();
-	Upload::MapIter i = uploads.find(aSource);
-	if(i == uploads.end()) {
-		// Something strange happened?
-		dcdebug("onBytesSent: Upload not found???\n");
-		cs.leave();
-		removeConnection(aSource);
-		return;
+	dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	Upload* u = NULL;
+
+	{
+		Lock l(cs);
+		dcassert(uploads.find(aSource) != uploads.end());
+		u = uploads[aSource];
 	}
-	u = i->second;
-	cs.leave();
 	u->addPos(aBytes);
-	//fire(UploadManagerListener::TICK, u);
 }
 
 void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
-	Upload* u;
-	cs.enter();
-	Upload::MapIter i = uploads.find(aSource);
-	if(i != uploads.end()) {
-		u = i->second;
-		uploads.erase(i);
+	Upload* u = NULL;
+	{
+		Lock l(cs);
+		Upload::MapIter i = uploads.find(aSource);
+		if(i != uploads.end()) {
+			u = i->second;
+			uploads.erase(i);
+		}
+	}
 
-		cs.leave();
-
+	if(u) {
 		fire(UploadManagerListener::FAILED, u, aError);
-		dcdebug("onError: Removing upload\n");
+		dcdebug("UM::onFailed: Removing upload\n");
 		delete u;
-	} else {
-		cs.leave();
 	}
 
 	removeConnection(aSource);
 }
 
 void UploadManager::onTransmitDone(UserConnection* aSource) {
-	Upload* u;
+	dcassert(aSource->getState() == UserConnection::STATE_DONE);
+	Upload* u = NULL;
 
-	cs.enter();
-	Upload::MapIter i = uploads.find(aSource);
-	if(i == uploads.end()) {
-		// Something strange happened?
-		dcdebug("onTransmitDone: Upload not found???\n");
-		
-		cs.leave();
-		removeConnection(aSource);
-		return;
+	{
+		Lock l(cs);
+		Upload::MapIter i = uploads.find(aSource);
+		dcassert(i != uploads.end());
+		u = i->second;
+		dcdebug("UM::onTransmitDone: Removing upload\n");
+		uploads.erase(i);
 	}
-	u = i->second;
-	dcdebug("onTransmitDone: Removing upload\n");
-	uploads.erase(i);
 
 	aSource->setStatus(UserConnection::IDLE);
-	cs.leave();
+	aSource->setState(UserConnection::STATE_GET);
 
 	fire(UploadManagerListener::COMPLETE, u);
 	delete u;
 	
 }
 
-void UploadManager::removeUpload(Upload* aUpload) {
-
-	bool found = false;
-	UserConnection* c = NULL;
+void UploadManager::removeConnection(UserConnection::Ptr aConn) {
+	aConn->removeListener(this);
 
 	{
 		Lock l(cs);
-		for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-			if(i->second == aUpload) {
-				c = i->first;
-				uploads.erase(i);
-				break;
-			}
+		
+	
+		UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
+		dcassert(i != connections.end());
+		connections.erase(i);
+		
+		if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
+			running--;
+			aConn->unsetFlag(UserConnection::FLAG_HASSLOT);
+		} 
+		if(aConn->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
+			extra--;
+			aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
+		}
+		
+	}
+	ConnectionManager::getInstance()->putUploadConnection(aConn);
+	
+}
+
+void UploadManager::removeConnections() {
+	
+	UserConnection::List tmp;
+	{
+		Lock l(cs);
+		tmp = connections;
+		connections.clear();
+	}
+	
+	for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
+		(*i)->removeListener(this);
+		ConnectionManager::getInstance()->putUploadConnection(*i);
+	}
+}
+
+void UploadManager::onTimerMinute(DWORD aTick) {
+	Lock l(cs);
+	for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
+		UserConnection* c = i->first;
+		if(!c->getUser()->isOnline()) {
+			ConnectionManager::getInstance()->updateUser(c);
 		}
 	}
-
-	if(found) {
-		fire(UploadManagerListener::FAILED, aUpload, "Aborted");
-		removeConnection(c);
-		
-		delete aUpload;	
-	} else {
-		dcassert("Upload not found!");
+	for(map<User::Ptr, DWORD>::iterator j = reservedSlots.begin(); j != reservedSlots.end();) {
+		if(j->second + 600 * 1000 < aTick) {
+			reservedSlots.erase(j++);
+		} else {
+			++j;
+		}
 	}
-}
-
-void UploadManager::removeUpload(UserConnection* aConn) {
-	
-	dcassert(uploads.find(aConn) != uploads.end());
-	Upload* u;
-	
-	{
-		Lock l(cs);
-		u = uploads[aConn];
-		uploads.erase(aConn);
-	}
-	
-	fire(UploadManagerListener::FAILED, u, "Aborted");
-	removeConnection(aConn);
-	
-	delete u;	
-}
+}	
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.18 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.18  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.17  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

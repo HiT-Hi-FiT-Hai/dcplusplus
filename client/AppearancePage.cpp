@@ -29,6 +29,11 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 PropPage::Item AppearancePage::items[] = {
+	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
+	{ IDC_FILTERKICK, SettingsManager::FILTER_KICKMSGS, PropPage::T_BOOL }, 
+	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
+	{ IDC_TIMESTAMPS, SettingsManager::TIME_STAMPS, PropPage::T_BOOL },
+	{ IDC_CONFIRMEXIT, SettingsManager::CONFIRM_EXIT, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -116,9 +121,12 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.4 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.4  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.3  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

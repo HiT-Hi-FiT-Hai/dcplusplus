@@ -29,10 +29,16 @@
 
 CImageList* HubFrame::images = NULL;
 
-char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://sourceforge.net/projects/dcplusplus <DC++ " VERSIONSTRING ">",
-"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://sourceforge.net/projects/dcplusplus <DC++ " VERSIONSTRING ">",
-"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://sourceforge.net/projects/dcplusplus  <DC++ " VERSIONSTRING ">",
-"\r\n-- I share, therefore I am.\r\n-- http://sourceforge.net/projects/dcplusplus  <DC++ " VERSIONSTRING ">"
+char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
+"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
+"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I share, therefore I am.\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
+"\r\n-- I came, I searched, I found...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I came, I shared, I sent...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I can set away mode, can't you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I don't have to see any ads, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I don't have to see those annoying kick messages, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+"\r\n-- I can resume my files to a different filename, can you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
 };
 
 #define MSGS 4
@@ -210,6 +216,13 @@ void HubFrame::onEnter() {
 			} else if(stricmp(s.c_str(), "back") == 0) {
 				Util::setAway(false);
 				addClientLine("Away mode off");
+			} else if(stricmp(s.c_str(), "ts") == 0) {
+				timeStamps = !timeStamps;
+				if(timeStamps) {
+					addClientLine("Timestamps enabled");
+				} else {
+					addClientLine("Timestamps disabled");
+				}
 			}
 		} else {
 			Lock l(cs);
@@ -466,7 +479,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		// We have a spammer!!!
 		string* x = (string*)lParam;
 
-		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches withing 7 seconds)").c_str());
+		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches within 7 seconds)").c_str());
 
 	} else if(wParam == REDIRECT) {
 		Lock l(cs);
@@ -482,9 +495,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.36 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.37 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.37  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.36  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

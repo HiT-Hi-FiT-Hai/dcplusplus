@@ -34,71 +34,10 @@ STANDARD_EXCEPTION(SimpleXMLException);
  */
 class SimpleXML  
 {
-
-	class Tag {
-	public:
-		typedef Tag* Ptr;
-		typedef vector<Ptr> List;
-		typedef List::iterator Iter;
-
-		/**
-		 * A simple list of children. To find a tag, one must search the entire list.
-		 */ 
-		List children;
-		/**
-		 * Attributes of this tag. According to the XML standard the names
-		 * must be unique (case-sensitive).
-		 */
-		StringMap attribs;
-		
-		/** Tag data, may be empty. */
-		string data;
-		
-		/** Tag name */
-		string name;
-		
-		/** Parent tag, for easy traversal */
-		Ptr parent;
-
-		Tag(const string& aName, const string& aData, Ptr aParent) : name(aName), data(aData), parent(aParent) { };
-		
-//		static string escape(const string& aString, boolean aAttrib, boolean aReverse = false);
-		string toXML();
-		void fromXML(const string& aXML);
-		string getAttribString();
-		/** Delete all children! */
-		~Tag() {
-			for(Iter i = children.begin(); i != children.end(); ++i) {
-				delete *i;
-			}
-		}
-	};
-
-	/** Root tag, should be only one! */
-	Tag::List root;
-
-	/** Current position */
-	Tag::Ptr current;
-
-	Tag::Iter currentChild;
-
-	static string emptyString;
-	string cleanUp(const string& aString);
-	void checkChildSelected() throw(SimpleXMLException) {
-		if(current != NULL) {
-			if(currentChild == current->children.end()) {
-				throw SimpleXMLException("No child selected");				
-			}
-		} else {
-			if(currentChild == root.end()) {
-				throw SimpleXMLException("No child selected");				
-			}
-		}
-	}
-
-	bool found;
 public:
-
+	SimpleXML() : found(false) { root = current = new Tag("BOGUSROOT", "", NULL); };
+	~SimpleXML() { delete current; }
+	
 	void addTag(const string& aName, const string& aData = "");
 	void addTag(const string& aName, int aData) {
 		addTag(aName, Util::toString(aData));
@@ -127,11 +66,8 @@ public:
 	}
 	
 	const string& getData() {
-		if(current != NULL) {
-			return current->data;
-		} else {
-			return emptyString;
-		}
+		dcassert(current != NULL);
+		return current->data;
 	}
 	
 	void stepIn() throw(SimpleXMLException) {
@@ -142,48 +78,37 @@ public:
 	}
 
 	void stepOut() throw(SimpleXMLException) {
-		if(current == NULL)
+		if(current == root)
 			throw SimpleXMLException("Already at lowest level");
 
-		if(current->parent != NULL)
-			currentChild = find(current->parent->children.begin(), current->parent->children.end(), current);
-		else
-			currentChild = find(root.begin(), root.end(), current);
+		dcassert(current->parent != NULL);
 
+		currentChild = find(current->parent->children.begin(), current->parent->children.end(), current);
+		
 		current = current->parent;
 		found = true;
 	}
 
 	void resetCurrentChild() {
 		found = false;
-		if(current)
-			currentChild=current->children.begin();
-		else
-			currentChild=root.begin();
+		dcassert(current != NULL);
+		currentChild = current->children.begin();
 	}
 
 	bool findChild(const string& aName) {
-		if(current == NULL) {
-			while(currentChild!=root.end()) {
-				if((*currentChild)->name == aName) {
-					found = true;
-					return true;
-				} else
-					currentChild++;
-			}
-			return false;
-		} else {
-			if(found && currentChild != current->children.end())
+		dcassert(current != NULL);
+
+		if(found && currentChild != current->children.end())
+			currentChild++;
+
+		while(currentChild!=current->children.end()) {
+			if((*currentChild)->name == aName) {
+				found = true;
+				return true;
+			} else
 				currentChild++;
-			while(currentChild!=current->children.end()) {
-				if((*currentChild)->name == aName) {
-					found = true;
-					return true;
-				} else
-					currentChild++;
-			}
-			return false;
 		}
+		return false;
 	}
 
 	const string& getChildData() throw(SimpleXMLException) {
@@ -211,11 +136,66 @@ public:
 		return (tmp.size() > 0) && tmp[0] == '1';
 	}
 	
-	void fromXML(const string& aXML);
-	string toXML() { return (!root.empty()) ? root[0]->toXML() : emptyString; };
+	void fromXML(const string& aXML) throw(SimpleXMLException);
+	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML() : Util::emptyString; };
 	
-	SimpleXML() : current(NULL), found(false) {  };
-	~SimpleXML() { if(!root.empty()) delete root[0]; }
+
+private:
+	class Tag {
+	public:
+		typedef Tag* Ptr;
+		typedef vector<Ptr> List;
+		typedef List::iterator Iter;
+
+		/**
+		 * A simple list of children. To find a tag, one must search the entire list.
+		 */ 
+		List children;
+		/**
+		 * Attributes of this tag. According to the XML standard the names
+		 * must be unique (case-sensitive).
+		 */
+		StringMap attribs;
+		
+		/** Tag data, may be empty. */
+		string data;
+		
+		/** Tag name */
+		string name;
+		
+		/** Parent tag, for easy traversal */
+		Ptr parent;
+
+		Tag(const string& aName, const string& aData, Ptr aParent) : name(aName), data(aData), parent(aParent) { };
+		
+		string toXML();
+		void fromXML(const string& aXML);
+		string getAttribString();
+		/** Delete all children! */
+		~Tag() {
+			for(Iter i = children.begin(); i != children.end(); ++i) {
+				delete *i;
+			}
+		}
+	};
+
+	/** Bogus root tag, should be only one child! */
+	Tag::Ptr root;
+
+	/** Current position */
+	Tag::Ptr current;
+
+	Tag::Iter currentChild;
+
+	string cleanUp(const string& aString);
+	void checkChildSelected() throw(SimpleXMLException) {
+		dcassert(current != NULL);
+		if(currentChild == current->children.end()) {
+			throw SimpleXMLException("No child selected");				
+		}
+	}
+
+	bool found;
 
 };
 
@@ -223,9 +203,12 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.10 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.11 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.11  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.10  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -64,9 +64,9 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	CryptoManager::deleteInstance();
 	DownloadManager::deleteInstance();
 	UploadManager::deleteInstance();
-	SearchManager::deleteInstance();
-	ConnectionManager::deleteInstance();
 	QueueManager::deleteInstance();
+	ConnectionManager::deleteInstance();
+	SearchManager::deleteInstance();
 	ClientManager::deleteInstance();
 	HubManager::deleteInstance();
 	TimerManager::deleteInstance();
@@ -464,6 +464,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Force attempt";
+	mi.wID = IDC_FORCE;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Get File List";
 	mi.wID = IDC_GETLIST;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -657,6 +663,15 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT MainFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		ctrlTransfers.SetItemText(i, COLUMN_STATUS, "Connecting (forced)...");
+		((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser()->connect();
+	}
+	return 0;
+}
+
 LRESULT MainFrame::onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if (wParam== SC_MINIMIZE && BOOLSETTING(MINIMIZE_TRAY)) {
@@ -695,9 +710,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.62 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.63 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.63  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.62  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

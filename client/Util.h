@@ -227,6 +227,15 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 
+	static string getShortTimeString() {
+		char buf[8];
+		time_t _tt;
+		time(&_tt);
+		tm* _tm = localtime(&_tt);
+		strftime(buf, 64, "%H:%M", _tm);
+		return buf;
+	}
+
 	static string getTimeString() {
 		char buf[64];
 		time_t _tt;
@@ -330,7 +339,7 @@ public:
 			strncmp(tmp.c_str(), "169", 3) == 0 || 
 			strncmp(tmp.c_str(), "127", 3) == 0 || 
 			strncmp(tmp.c_str(), "10", 2) == 0 ) {
-
+			
 			while(he->h_addr_list[i]) {
 				memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
 				string tmp2 = inet_ntoa(dest.sin_addr);
@@ -338,7 +347,7 @@ public:
 					strncmp(tmp2.c_str(), "169", 3) != 0 &&
 					strncmp(tmp2.c_str(), "127", 3) != 0 &&
 					strncmp(tmp2.c_str(), "10", 2) != 0) {
-							
+					
 					tmp = tmp2;
 				}
 				i++;
@@ -415,9 +424,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: Util.h,v 1.29 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.29  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.28  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -60,15 +60,18 @@ void HttpConnection::onLine(const string& aLine) {
 	} else if(aLine == "\x0d") {
 		socket.setDataMode(size);
 	} else if(aLine.find("Content-Length") != string::npos) {
-		size = atoi(aLine.substr(16, aLine.length() - 17).c_str());
+		size = Util::toInt(aLine.substr(16, aLine.length() - 17));
 	}
 }
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.5 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.6 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: HttpConnection.cpp,v $
+ * Revision 1.6  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.5  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -91,9 +91,13 @@
 #define IDC_NEWFAV                      1042
 #define IDC_HUBNAME                     1043
 #define IDC_COMBO1                      1044
+#define IDC_AUTOSEARCH                  1045
+#define IDC_TIMESTAMPS                  1046
 #define IDC_HUBDESCR                    1047
+#define IDC_CONFIRMEXIT                 1047
 #define IDC_HUBADDR                     1048
 #define IDC_GRANTSLOT                   1049
+#define IDC_FORCE						1050
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -110,7 +114,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

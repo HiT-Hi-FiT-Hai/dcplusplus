@@ -32,13 +32,11 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
 	{ IDC_AUTOFOLLOW, SettingsManager::AUTO_FOLLOW, PropPage::T_BOOL },
 	{ IDC_CLEARSEARCH, SettingsManager::CLEAR_SEARCH, PropPage::T_BOOL },
-	{ IDC_FULLROW, SettingsManager::FULL_ROW_SELECT, PropPage::T_BOOL },
 	{ IDC_REMOVENOTAVAILABLE, SettingsManager::REMOVE_NOT_AVAILABLE, PropPage::T_BOOL }, 
 	{ IDC_REMOVEFINISHED, SettingsManager::REMOVE_FINISHED, PropPage::T_BOOL },
-	{ IDC_FILTERKICK, SettingsManager::FILTER_KICKMSGS, PropPage::T_BOOL }, 
-	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
 	{ IDC_OPENPUBLIC, SettingsManager::OPEN_PUBLIC, PropPage::T_BOOL },
 	{ IDC_OPENQUEUE, SettingsManager::OPEN_QUEUE, PropPage::T_BOOL },
+	{ IDC_AUTOSEARCH, SettingsManager::AUTO_SEARCH, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -68,9 +66,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.8 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.9 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.9  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.8  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

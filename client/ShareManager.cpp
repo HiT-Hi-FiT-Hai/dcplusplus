@@ -250,9 +250,9 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 			}
 			sm->refreshDirs = false;
 		}
-		
+		Directory::DupeMap dupes;
 		for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
-			tmp = tmp + i->second->toString();
+			tmp += i->second->toString(dupes);
 		}
 		
 		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
@@ -274,16 +274,34 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	return 0;
 }
 
-string ShareManager::Directory::toString(int ident /* = 0 */) {
+string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 	string tmp(ident, '\t');
 	tmp += name + "\r\n";
-	char buf[24];
 
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		tmp += i->second->toString(ident + 1);
+		tmp += i->second->toString(dupes, ident + 1);
 	}
-	for(map<string, LONGLONG>::iterator j = files.begin(); j != files.end(); ++j) {
-		tmp += string(ident + 1, '\t') + j->first + "|" + _i64toa(j->second, buf, 10) + "\r\n";
+	
+	map<string, LONGLONG>::iterator j = files.begin();
+	while(j != files.end()) {
+		bool dupe = false;
+		pair<DupeIter, DupeIter> p = dupes.equal_range(j->second);
+		for(DupeIter k = p.first; k != p.second; ++k) {
+			if(k->second == j->first) {
+				dcdebug("SM::D::toString Dupe found: %s (%I64d bytes)\n", k->second.c_str(), j->second);
+				dupe = true;
+				break;
+			}
+		}
+
+		if(dupe) {
+			size-=j->second;
+			files.erase(j++);
+		} else {
+			dupes.insert(make_pair(j->second, j->first));
+			tmp += string(ident + 1, '\t') + j->first + "|" + Util::toString(j->second) + "\r\n";
+			++j;
+		}
 	}
 
 	return tmp;
@@ -342,11 +360,12 @@ bool checkType(const string& aString, int aType) {
 void ShareManager::Directory::search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, LONGLONG aSize, int aFileType, Client* aClient) {
 	bool found = true;
 
+	StringList notFound;
 	if( (aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_FOLDER) ) {
 		for(StringIter k = aStrings.begin(); k != aStrings.end(); ++k) {
-			if(Util::findSubString(name, *k) == -1) {
+			if(Util::findSubString(name, *k) == string::npos) {
 				found = false;
-				break;
+				notFound.push_back(*k);
 			}
 		}
 	} else {
@@ -363,7 +382,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 				sr->setFreeSlots(slots <= 0 ? 0 : slots);
 				sr->setSlots(SETTING(SLOTS));
 				sr->setNick(aClient->getNick());
-				sr->setHubAddress(aClient->getServer());
+				sr->setHubAddress(aClient->getIp());
 				sr->setHubName(aClient->getName());
 				aResults.push_back(sr);
 			}
@@ -372,11 +391,11 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 		
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end(); ++i) {
 			found = true;
-			for(StringIter j = aStrings.begin(); (j != aStrings.end()); ++j) {
-				if(aSearchType == SearchManager::SIZE_ATLEAST && i->second < aSize) {
+			for(StringIter j = notFound.begin(); (j != notFound.end()); ++j) {
+				if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
 					found = false;
 					break;
-				} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second > aSize) {
+				} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
 					found = false;
 					break;
 				} else if(Util::findSubString(i->first, *j) == -1) {
@@ -426,9 +445,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.25 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.26 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.26  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.25  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

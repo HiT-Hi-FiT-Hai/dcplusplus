@@ -51,16 +51,16 @@ public:
 	
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
-	void setSize(const string& aSize) { size = _atoi64(aSize.c_str()); };
+	void setSize(const string& aSize) { size = Util::toInt64(aSize); };
 	
 	int getSlots() { return slots; };
 	int getFreeSlots() { return freeSlots; };
-	string getSlotString() { char buf[16]; sprintf(buf, "%d/%d", freeSlots, slots); return buf; };
+	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
 	void setSlots(int aSlots) { slots = aSlots; };
-	void setSlots(const string& aSlots) { setSlots(atoi(aSlots.c_str())); };
+	void setSlots(const string& aSlots) { setSlots(Util::toInt(aSlots)); };
 	
 	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
-	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
+	void setFreeSlots(const string& aSlots) { setFreeSlots(Util::toInt(aSlots)); };
 	
 	GETSETREF(string, nick, Nick);
 	GETSETREF(string, file, File);
@@ -110,6 +110,16 @@ public:
 		search(aName, Util::toInt64(aSize), aFlags, aType);
 	}
 	
+	static string clean(const string& aSearchString) {
+		string tmp = aSearchString;
+		// Remove all strange characters from the search string
+		string::size_type i = 0;
+
+		while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
+			tmp.replace(i, 1, 1, ' ');
+		}
+		return tmp;
+	}
 	void setPort(short aPort) throw(SocketException) {
 		socket.disconnect();
 		socket.create(Socket::TYPE_UDP);
@@ -156,9 +166,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.13 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.14 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.14  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.13  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

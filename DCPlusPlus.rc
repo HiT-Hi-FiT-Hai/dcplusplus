@@ -425,23 +425,20 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,55,107,10
     CONTROL         "Clear search box after each search",IDC_CLEARSEARCH,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,66,126,10
-    CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,77,81,10
-    CONTROL         "Remove source automatically on ""File Not Available""",
+    CONTROL         "Automatically remove source on ""File Not Available""",
                     IDC_REMOVENOTAVAILABLE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,88,182,10
+                    WS_TABSTOP,15,88,179,10
     CONTROL         "Automatically remove finished downloads from the queue",
                     IDC_REMOVEFINISHED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     15,99,194,10
-    CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,111,79,10
-    CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,122,64,10
     CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,133,141,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,110,141,10
     CONTROL         "Open the download queue window at startup",
                     IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    144,157,10
+                    121,157,10
+    CONTROL         "Automatically search for alternative download locations",
+                    IDC_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    76,188,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -486,6 +483,18 @@ BEGIN
     GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
     LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
                     SS_SUNKEN | WS_BORDER | NOT WS_GROUP
+    CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,73,81,10
+    GROUPBOX        "Options",IDC_STATIC,7,60,261,158
+    CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,85,79,10
+    CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,96,64,10
+    CONTROL         "Confirm application exit",IDC_CONFIRMEXIT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,119,88,10
+    CONTROL         "Automatically enable timestamps in chat windows",
+                    IDC_TIMESTAMPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,
+                    107,170,10
 END
 
 
@@ -555,6 +564,7 @@ BEGIN
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
+        VERTGUIDE, 16
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END

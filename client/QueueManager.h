@@ -29,6 +29,7 @@
 #include "User.h"
 #include "File.h"
 #include "TimerManager.h"
+#include "SearchManager.h"
 
 STANDARD_EXCEPTION(QueueException);
 
@@ -242,7 +243,7 @@ public:
 	virtual void onAction(Types, QueueItem*) { };
 };
 
-class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener
+class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, private SearchManagerListener
 {
 public:
 	
@@ -275,11 +276,11 @@ public:
 	}
 
 	void remove(const string& aTarget) throw(QueueException);
-	void removeSource(const string& aTarget, const User::Ptr& aUser) {
-		removeSource(aTarget, aUser->getNick());
+	void removeSource(const string& aTarget, const User::Ptr& aUser, bool removeConn = true) {
+		removeSource(aTarget, aUser->getNick(), removeConn);
 	}
 
-	void removeSource(const string& aTarget, const string& aUser);
+	void removeSource(const string& aTarget, const string& aUser, bool removeConn = true);
 	
 	void setPriority(const string& aTarget, QueueItem::Priority p) throw();
 	
@@ -314,9 +315,13 @@ private:
 
 	friend class Singleton<QueueManager>;
 	
-	QueueManager() : dirty(false) { TimerManager::getInstance()->addListener(this); };
+	QueueManager() : dirty(false) { 
+		TimerManager::getInstance()->addListener(this); 
+		SearchManager::getInstance()->addListener(this); 
+	};
 	
 	virtual ~QueueManager() { 
+		SearchManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this); 
 
 		for_each(userLists.begin(), userLists.end(), File::deleteFile);
@@ -329,6 +334,8 @@ private:
 	CriticalSection cs;
 	QueueItem::List queue;
 	StringList userLists;
+	map<string, DWORD> search;
+	
 	static const string USER_LIST_NAME;
 	
 	void remove(QueueItem* aQI) throw(QueueException);
@@ -352,15 +359,20 @@ private:
 	}
 	void onTimerMinute(DWORD aTick);
 	
+	// SearchManagerListener
+	virtual void onAction(SearchManagerListener::Types, SearchResult*);
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.8 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.9 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.9  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.8  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

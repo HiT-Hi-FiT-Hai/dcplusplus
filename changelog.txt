@@ -1,11 +1,12 @@
  -- 0.154 --
-* Added passive user detection, those that are behind a set of bricks are passive...
-  detected when the user searches or tries to connect to you...
+* Added passive user detection, those that are behind a set of bricks are passive.
+  (detected when the user searches or tries to connect to you)
 * Added a primitive search history
 * Fixed a slot freeing bug
 * Added option to grant extra slots to specific users
 * Changed order of kick message sending, to increase the chances of the user actually getting the message
-* Improved XML loading speed a bit (there's more to be done...)
+* Improved XML loading speed a bit (there's more to be done if necessary...)
+* Fixed some XML parser bugs
 * The XML is now backed up before writing a new one, so that you don't lose your queue when ++ crashes
 * Added a quick-fix so that the XML file can be displayed in ie...
 * Fixed crash when trying to send a message to an unconnected hub
@@ -20,7 +21,11 @@
 * Hopefully fixed the growing threads issue
 * Fixed the connection type icon being reported to nmdc users
 * Partially fixed the connection timeout bug (++ now correctly shows reconnection attempts...)
-
+* Added chat timestamps (/ts)
+* Added exit confirmation dialog (optional)
+* Fixed search bug when part of the search string was in the directory and part of it was in the filename
+* Added dupe file removal, files with same name and size are automatically removed from your share
+* Fixed another search results bug
 
  -- 0.153 2002-02-11 --
 * Fixed some potential deadlocks

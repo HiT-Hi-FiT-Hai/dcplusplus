@@ -53,7 +53,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=xilink6.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.15 /subsystem:windows /profile /map /debug /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib /nologo /version:0.15 /subsystem:windows /map /machine:I386
+# SUBTRACT LINK32 /profile /debug
 
 !ELSEIF  "$(CFG)" == "DCPlusPlus - Win32 Debug"
 
@@ -238,6 +239,10 @@ SOURCE=.\client\SearchFrm.cpp
 # Begin Source File
 
 SOURCE=.\client\SearchManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\Semaphore.cpp
 # End Source File
 # Begin Source File
 
@@ -459,6 +464,10 @@ SOURCE=.\client\SearchFrm.h
 # Begin Source File
 
 SOURCE=.\client\SearchManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\Semaphore.h
 # End Source File
 # Begin Source File
 

@@ -190,7 +190,17 @@ public:
 				PostMessage(WM_CLOSE);
 				return 0;
 			}
+			
+			ctrlQueue.DeleteAllItems();
+			{
+				Lock l(cs);
+				for(map<QueueItem*, QueueItem*>::iterator i = queue.begin(); i != queue.end(); ++i) {
+					delete i->second;
+				}
+				queue.clear();
+			}
 			CloseHandle(stopperThread);
+			
 			stopperThread = FALSE;
 			bHandled = FALSE;
 		} else {
@@ -204,14 +214,6 @@ public:
 		QueueFrame* f = (QueueFrame*)p;
 				
 		QueueManager::getInstance()->removeListener(f);
-		f->ctrlQueue.DeleteAllItems();
-		{
-			Lock l(f->cs);
-			for(map<QueueItem*, QueueItem*>::iterator i = f->queue.begin(); i != f->queue.end(); ++i) {
-				delete i->second;
-			}
-			f->queue.clear();
-		}
 		f->PostMessage(WM_CLOSE);
 		QueueFrame::frame = NULL;
 		return 0;
@@ -299,9 +301,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.6 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.7 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.7  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.6  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

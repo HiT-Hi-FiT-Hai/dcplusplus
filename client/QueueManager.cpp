@@ -25,6 +25,7 @@
 #include "DownloadManager.h"
 #include "UserConnection.h"
 #include "SimpleXML.h"
+#include "StringTokenizer.h"
 
 QueueManager* QueueManager::instance = NULL;
 
@@ -47,7 +48,42 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 			
 			if(q->updateUsers(q->getPriority() != QueueItem::PAUSED))
 				updated.push_back(q);
-						
+			
+			if(BOOLSETTING(AUTO_SEARCH) && q->getPriority() != QueueItem::PAUSED) {
+				bool online = false;
+				for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+					if(((*j)->getUser()) && (*j)->getUser()->isOnline()) {
+						online = true;
+						break;
+					}
+				}
+
+				if(!online) {
+					if(search.find(q->getTarget()) == search.end()) {
+						search[q->getTarget()] = TimerManager::getTick();
+					}
+				}
+			}
+		}
+		for(map<string, DWORD>::iterator k = search.begin(); k != search.end(); ++k) {
+			if( (k->second + 3*60*1000) < TimerManager::getTick() ) {
+				QueueItem* q = findByTarget(k->first);
+				if(q != NULL) {
+					bool online = false;
+					for(QueueItem::Source::Iter j = q->getSources().begin(); j != q->getSources().end(); ++j) {
+						if( ((*j)->getUser()) && (*j)->getUser()->isOnline()) {
+							online = true;
+							break;
+						}
+					}
+					if(!online) {
+						dcdebug("QueueManager::onTimerMinute Doing autosearch for %s\n", SearchManager::clean(q->getTargetFileName()).c_str());
+						SearchManager::getInstance()->search(SearchManager::clean(q->getTargetFileName()), q->getSize() - 1, 0, SearchManager::SIZE_ATLEAST);
+						search.erase(k);
+						break;
+					}
+				}
+			}
 		}
 	}
 
@@ -295,12 +331,12 @@ void QueueManager::remove(QueueItem* aQI) throw(QueueException) {
 	}
 }
 
-void QueueManager::removeSource(const string& aTarget, const string& aUser)  {
+void QueueManager::removeSource(const string& aTarget, const string& aUser, bool removeConn /* = true */)  {
 	Lock l(cs);
 	QueueItem* q = findByTarget(aTarget);
 	if(q != NULL) {
 
-		if(q->getStatus() == QueueItem::RUNNING) {
+		if(removeConn && q->getStatus() == QueueItem::RUNNING) {
 			dcassert(q->getCurrent());
 			if(q->getCurrent()->getUser()->getNick() == aUser) {
 				// Oops...
@@ -380,7 +416,7 @@ void QueueManager::load(SimpleXML* aXml) {
 				
 				try {
 					add(path + file, size, nick, target, resume);
-				} catch(...) {
+				} catch(Exception e) {
 					// ...
 				}
 			}
@@ -390,11 +426,43 @@ void QueueManager::load(SimpleXML* aXml) {
 	}
 }
 
+void QueueManager::onAction(SearchManagerListener::Types, SearchResult* sr) {
+	
+	if(BOOLSETTING(AUTO_SEARCH) && sr->getUser()) {
+		StringList l = getTargetsBySize(sr->getSize());
+		StringList tok = StringTokenizer(SearchManager::clean(sr->getFileName()), ' ').getTokens();
+
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			bool found = true;
+
+			for(StringIter j = tok.begin(); j != tok.end(); ++j) {
+				if(Util::findSubString(*i, *j) == string::npos) {
+					found = false;
+					break;
+				}
+			}
+
+			if(found) {
+				// Wow! found a new source that seems to match...add it...
+				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getNick().c_str(), i->c_str());
+				try {
+					add(sr->getFile(), sr->getSize(), sr->getUser(), *i);
+				} catch(Exception e) {
+					// ...
+				}
+			}
+		}
+	}
+}
+
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.8 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.8  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.7  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

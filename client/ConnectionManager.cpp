@@ -100,10 +100,9 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 				if(i != connections.end()) {
 					i->second->setConnection(NULL);
 					i->second->setStatus(ConnectionQueueItem::WAITING);
+					dcassert(pendingDown.find(i->second) == pendingDown.end());
 					pendingDown[i->second] = TimerManager::getTick();
-
 					connections.erase(i);
-					return;
 				}
 
 				dcassert(find(pendingDelete.begin(), pendingDelete.end(), aSource) == pendingDelete.end());
@@ -194,7 +193,7 @@ void ConnectionManager::onTimerSecond(DWORD aTick) {
 						cqi->setStatus(ConnectionQueueItem::CONNECTING);
 					}
 				}
-			} else if(((i->second + 40*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
+			} else if(((i->second + 50*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
 				fire(ConnectionManagerListener::FAILED, cqi, "Connection Timeout");
 				cqi->setStatus(ConnectionQueueItem::WAITING);
 			}
@@ -246,6 +245,7 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->accept(socket);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setStatus(UserConnection::CONNECTING);
+		uc->setState(UserConnection::STATE_NICK);
 		
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
@@ -257,15 +257,17 @@ void ConnectionManager::onIncomingConnection() throw() {
  * Nick received. If it's a downloader, fine, otherwise it must be an uploader.
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
-	dcassert(aNick.size() > 0);
-	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
-	if(aSource->user) {
-		// Not good, this user sent his nick twice, and we don't want that...
-		dcdebug("ConnectionManager::onMyNick Nick sent twice, aborting: %p, %s\n", aSource, aNick.c_str());
-		
-		putConnection(aSource);
+
+	if(aSource->getState() != UserConnection::STATE_NICK) {
+		// Already got this once, ignore...
+		dcdebug("CM::onMyNick %p sent nick twice\n", aSource);
 		return;
 	}
+
+	dcassert(aNick.size() > 0);
+	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
+	dcassert(!aSource->getUser());
+	
 	ConnectionQueueItem* cqi = NULL;
 	{
 		Lock l(cs);
@@ -291,6 +293,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 		// Make sure we know who it is, i e that he/she is connected...
 		aSource->user = ClientManager::getInstance()->findUser(aNick);
 		if(!aSource->user) {
+			dcdebug("CM::onMyNick Incoming connection from unknown user %s\n", aNick.c_str());
 			putConnection(aSource);
 			return;
 		}
@@ -303,16 +306,22 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 		}
 		fire(ConnectionManagerListener::ADDED, cqi);
 		fire(ConnectionManagerListener::CONNECTED, cqi);
-		
 	} 
 
 	if( aSource->isSet(UserConnection::FLAG_INCOMING) ) {
 		aSource->myNick(aSource->getUser()->getClientNick()); 
 		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 	}
+
+	aSource->setState(UserConnection::STATE_LOCK);
 }
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw() {
+	if(aSource->getState() != UserConnection::STATE_LOCK) {
+		dcdebug("CM::onLock %p received lock twice, ignoring\n", aSource);
+		return;
+	}
+
 	if(aLock == CryptoManager::getInstance()->getLock()) {
 		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
 		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
@@ -320,11 +329,16 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 			User::updated(aSource->getUser());
 		}
 	}
+	aSource->setState(UserConnection::STATE_KEY);
 	aSource->direction(aSource->getDirectionString(), "666");
 	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) throw() {
+	if(aSource->getState() != UserConnection::STATE_KEY) {
+		dcdebug("CM::onKey Bad state, ignoring");
+		return;
+	}
 	// We don't want any messages while the Up/DownloadManagers are working...
 	aSource->removeListener(this);
 	aSource->setStatus(UserConnection::BUSY);
@@ -375,15 +389,19 @@ void ConnectionManager::onKey(UserConnection* aSource, const string&/* aKey*/) t
 }
 
 void ConnectionManager::onConnected(UserConnection* aSource) throw() {
+	dcassert(aSource->getState() == UserConnection::STATE_CONNECT);
 	aSource->myNick(aSource->getNick());
 	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
+	aSource->setState(UserConnection::STATE_NICK);
 }
 
 void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
 	UserConnection* c = getConnection();
 	c->setNick(aNick);
 	c->setStatus(UserConnection::CONNECTING);
+	c->setState(UserConnection::STATE_CONNECT);
 	c->connect(aServer, aPort);
+
 }
 
 void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError*/) throw() {
@@ -455,9 +473,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.30 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.31 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.31  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.30  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

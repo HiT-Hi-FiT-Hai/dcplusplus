@@ -36,7 +36,7 @@ char const* SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue",
+	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit",
 	"SENTRY"
 };
 
@@ -69,6 +69,9 @@ SettingsManager::SettingsManager()
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(OPEN_PUBLIC, true);
 	setDefault(OPEN_QUEUE, true);
+	setDefault(AUTO_SEARCH, false);
+	setDefault(TIME_STAMPS, false);
+	setDefault(CONFIRM_EXIT, false);
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -122,7 +125,7 @@ void SettingsManager::load(string const& aFileName)
 			dcassert(attr != "SENTRY");
 
 			if(xml.findChild(attr))
-				set(IntSetting(i), atoi(xml.getChildData().c_str()));
+				set(IntSetting(i), Util::toInt(xml.getChildData()));
 			xml.resetCurrentChild();
 		}
 		
@@ -212,9 +215,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.18 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.18  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.17  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -148,6 +148,23 @@ public:
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1
 	};
+	
+	enum States {
+		// ConnectionManager
+		STATE_CONNECT,
+		STATE_NICK,
+		STATE_LOCK,
+		STATE_KEY,
+		// UploadManager
+		STATE_GET,
+		STATE_SEND,
+		STATE_DONE,
+		// DownloadManager
+		STATE_FILELENGTH
+		
+		
+		
+	};
 
 	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
 	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
@@ -196,6 +213,7 @@ public:
 	
 	User::Ptr& getUser() { return user; };
 
+	GETSET(States, state, State);
 	GETSET(Status, status, Status);
 	GETSETREF(string, server, Server);
 	GETSET(short, port, Port);
@@ -282,9 +300,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.34 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.35 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.35  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.34  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -23,6 +23,7 @@
 #pragma once
 #endif // _MSC_VER >= 1000
 
+#include "ConnectionManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
 #include "ExListViewCtrl.h"
@@ -109,6 +110,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_QUEUE, onQueue)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
+		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		CHAIN_MDI_CHILD_COMMANDS()
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -171,6 +173,7 @@ public:
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);	
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
+	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
@@ -196,7 +199,9 @@ public:
 			stopperThread = NULL;
 			bHandled = FALSE;
 		} else {
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+			if( (!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox("Really exit?", "", MB_YESNO) == IDYES) ) {
+				stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
+			}
 		}
 		return 0;
 	}
@@ -455,9 +460,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.44 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.45 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.45  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.44  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

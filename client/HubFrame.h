@@ -51,6 +51,7 @@ public:
 		client->setPassword(aPassword);
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
+		timeStamps = BOOLSETTING(TIME_STAMPS);
 	}
 
 	~HubFrame() {
@@ -250,8 +251,8 @@ public:
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		Lock l(cs);
 		if(client) {
-			client->connect(server);
 			clearUserList();
+			client->connect(server);
 		}
 		return 0;
 	}
@@ -314,20 +315,20 @@ public:
 		else {
 			ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
 		}
-		ctrlClient.AppendText("\r\n");
-		ctrlClient.AppendText(aLine.c_str());
+		if(timeStamps) {
+			ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		} else {
+			ctrlClient.AppendText(("\r\n" + aLine).c_str());
+		}
 		if(noscroll) {
 			ctrlClient.SetRedraw(TRUE);
 		}
 		setDirty();
 	}
 
-	void addClientLine(const char* aLine) {
-		ctrlStatus.SetText(0, aLine);
-		setDirty();
-	}
 	void addClientLine(const string& aLine) {
-		addClientLine(aLine.c_str());
+		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		setDirty();
 	}
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -395,7 +396,8 @@ private:
 	};
 
 	string redirect;
-
+	bool timeStamps;
+	
 	void clearUserList() {
 		int j = ctrlUsers.GetItemCount();
 		for(int i = 0; i < j; i++) {
@@ -551,9 +553,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.51 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.52 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.52  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.51  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -134,17 +134,14 @@ public:
 		setDirty();
 	}
 
-	void addClientLine(const char* aLine) {
+	void addClientLine(const string& aLine) {
 		if(!created) {
 			CreateEx(parent);
 		}
-		ctrlStatus.SetText(0, aLine);
+		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
 	}
-	void addClientLine(const string& aLine) {
-		addClientLine(aLine.c_str());
-	}
-
+	
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -211,9 +208,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.13 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.14 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.14  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.13  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -25,6 +25,7 @@
 
 #include "Socket.h"
 #include "Util.h"
+#include "Semaphore.h"
 
 class File;
 
@@ -71,12 +72,8 @@ public:
 	};
 
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : inbufSize(4096), curBuf(0),
-		file(NULL), separator(aSeparator), workerThread(NULL), mode(MODE_LINE), dataBytes(0) {
+		file(NULL), separator(aSeparator), workerThread(NULL), mode(MODE_LINE), dataBytes(0), port(0) {
 		
-		if( (commandEvent = CreateEvent(NULL, FALSE, FALSE, NULL)) == NULL) {
-			throw SocketException(Util::translateError(GetLastError()));
-		}
-
 		if( (workerThread = CreateThread(NULL, 0, &worker, this, 0, &threadId)) == NULL) {
 			throw SocketException(Util::translateError(GetLastError()));
 		}
@@ -92,7 +89,6 @@ public:
 	virtual ~BufferedSocket() {
 		stopWorker();
 		
-		CloseHandle(commandEvent);
 		delete inbuf;
 		for(int i = 0; i < BUFFERS; i++) {
 			delete outbuf[i];
@@ -152,8 +148,9 @@ private:
 	}
 
 	CriticalSection cs;
-	
-	deque<Tasks> tasks;
+
+	Semaphore taskSem;
+	vector<Tasks> tasks;
 	string server;
 	short port;
 	int mode;
@@ -169,8 +166,6 @@ private:
 	int curBuf;
 	
 	File* file;
-
-	HANDLE commandEvent;
 
 	HANDLE workerThread;
 	DWORD threadId;
@@ -206,7 +201,7 @@ private:
 	
 	void addTask(Tasks task) {
 		tasks.push_back(task);
-		SetEvent(commandEvent);
+		taskSem.signal();
 	}
 
 	void stopWorker() {
@@ -224,9 +219,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.30 2002/02/25 15:39:28 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.30  2002/02/25 15:39:28  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.29  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *

@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
-#include "ConnectionManager.h"
 #include "ShareManager.h"
 #include "Util.h"
 
@@ -72,8 +71,6 @@ public:
 class UploadManager : private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
-	void removeUpload(Upload* aUpload);
-	void removeUpload(UserConnection* aUpload);
 	
 	int getUploads() { Lock l(cs); return uploads.size(); };
 	int getRunning() { return running; };
@@ -85,61 +82,17 @@ public:
 		reservedSlots[aUser] = TimerManager::getTick();
 	}
 
-	bool isExtra(Upload* u) {
-		if(u->isSet(Upload::SMALL_FILE) || u->isSet(Upload::USER_LIST))
-			return true;
-		else
-			return false;
-	}
-
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
+		conn->setState(UserConnection::STATE_GET);
 		{
 			Lock l(cs);
 			connections.push_back(conn);
 		}
 	}
 
-	void removeConnection(UserConnection::Ptr aConn) {
-		{
-			Lock l(cs);
-
-			UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
-			if(i == connections.end()) {
-				dcdebug("UploadManager::removeConnection Unknown connection\n");
-				return;
-			}
-			connections.erase(i);
-				
-			if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
-				running--;
-				aConn->unsetFlag(UserConnection::FLAG_HASSLOT);
-			} 
-			if(aConn->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
-				extra--;
-				aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
-			}
-				
-		}
-
-		aConn->removeListener(this);
-		ConnectionManager::getInstance()->putUploadConnection(aConn);
-	}
-
-	void removeConnections() {
-
-		UserConnection::List tmp;
-		{
-			Lock l(cs);
-			tmp = connections;
-			connections.clear();
-		}
-
-		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(*i);
-		}
-	}
+	void removeConnection(UserConnection::Ptr aConn);
+	void removeConnections();
 	
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
@@ -155,6 +108,7 @@ private:
 	};
 	~UploadManager() {
 		TimerManager::getInstance()->removeListener(this);
+		removeConnections();
 		{
 			Lock l(cs);
 			for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
@@ -163,7 +117,6 @@ private:
 			uploads.clear();
 		}
 
-		removeConnections();
 	}
 
 	// TimerManagerListener
@@ -177,27 +130,13 @@ private:
 				}
 			}
 			break;
-		case TimerManagerListener::MINUTE:
-			{
-				Lock l(cs);
-				for(Upload::MapIter i = uploads.begin(); i != uploads.end(); ++i) {
-					UserConnection* c = i->first;
-					if(!c->getUser()->isOnline()) {
-						ConnectionManager::getInstance()->updateUser(c);
-					}
-				}
-				for(map<User::Ptr, DWORD>::iterator j = reservedSlots.begin(); j != reservedSlots.end();) {
-					if(j->second + 600 * 1000 < aTick) {
-						reservedSlots.erase(j++);
-					} else {
-						++j;
-					}
-				}
-			}	
+		case TimerManagerListener::MINUTE: onTimerMinute(aTick);	break;
 			break;
 		}
 	}
-	
+
+	void onTimerMinute(DWORD aTick);
+
 	// UserConnectionListener
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
 		switch(type) {
@@ -240,9 +179,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.38 2002/02/18 23:48:32 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.39 2002/02/25 15:39:29 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.39  2002/02/25 15:39:29  arnetheduck
+ * Release 0.154, lot of things fixed...
+ *
  * Revision 1.38  2002/02/18 23:48:32  arnetheduck
  * New prerelease, bugs fixed and features added...
  *
