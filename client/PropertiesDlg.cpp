@@ -23,6 +23,7 @@
 #include "GeneralPage.h"
 #include "DownloadPage.h"
 #include "UploadPage.h"
+#include "AppearancePage.h"
 #include "AdvancedPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
@@ -30,7 +31,8 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : CPropertySheet("Settings")
 	pages[0] = new GeneralPage(s);
 	pages[1] = new DownloadPage(s);
 	pages[2] = new UploadPage(s);
-	pages[3] = new AdvancedPage(s);
+	pages[3] = new AppearancePage(s);
+	pages[4] = new AdvancedPage(s);
 
 	for(int i=0; i<numPages; i++)
 		AddPage(pages[i]->getPSP());

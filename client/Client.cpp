@@ -23,6 +23,21 @@
 #include "Client.h"
 #include "CriticalSection.h"
 
+void Client::connect(const string& aServer) {
+	
+	string tmp;
+	port = 411;
+	Util::decodeUrl(aServer, server, port, tmp);
+
+	if(socket.isConnected()) {
+		disconnect(false);
+	}
+
+	fire(ClientListener::CONNECTING, this);
+	socket.addListener(this);
+	socket.connect(server, port);
+}
+
 void Client::connect(const string& aServer, short aPort) {
 	
 	if(socket.isConnected()) {
@@ -31,9 +46,10 @@ void Client::connect(const string& aServer, short aPort) {
 
 	server = aServer;
 	port = aPort;
+	
 	fire(ClientListener::CONNECTING, this);
 	socket.addListener(this);
-	socket.connect(aServer, aPort);
+	socket.connect(server, port);
 }
 
 /**
@@ -168,9 +184,14 @@ void Client::onLine(const string& aLine) throw() {
 		name = param;
 		fire(ClientListener::HUB_NAME, this);
 	} else if(cmd == "$Lock") {
-	
-		string lock = param.substr(0, param.find(' '));
-		string pk = param.substr(param.find(' ') + 4);
+		int j = param.find(" Pk=");
+		string lock, pk;
+		if( j != string::npos ) {
+			lock = param.substr(0, j);
+			pk = param.substr(j + 4);
+		} else {
+			lock = param;
+		}
 		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
 		User::Ptr u;
@@ -273,9 +294,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.22 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.23 2002/01/26 16:34:00 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.23  2002/01/26 16:34:00  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.22  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

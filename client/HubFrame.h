@@ -118,6 +118,7 @@ public:
 
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(!redirect.empty()) {
+			server = redirect;
 			Lock l(cs);
 			if(client)
 				client->connect(redirect);
@@ -466,9 +467,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.42 2002/01/26 14:59:22 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.43 2002/01/26 16:34:00 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.43  2002/01/26 16:34:00  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.42  2002/01/26 14:59:22  arnetheduck
  * Fixed disconnect crash
  *

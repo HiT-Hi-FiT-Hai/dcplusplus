@@ -24,7 +24,7 @@
 class PropertiesDlg : public CPropertySheet
 {
 public:
-	enum { numPages = 4 };
+	enum { numPages = 5 };
 
 	BEGIN_MSG_MAP(PropertiesDlg)
 		COMMAND_HANDLER(IDOK, BN_CLICKED, onOK)

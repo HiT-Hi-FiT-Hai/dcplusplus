@@ -39,6 +39,7 @@ ConnectionManager* ConnectionManager::instance = NULL;
  * there's probably already a connection in progress).
  */
 int ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
+	dcassert((bool)aUser);
 	cs.enter();
 
 	if( pendingDown.find(aUser) != pendingDown.end() ) {
@@ -207,7 +208,12 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 			return;
 		}
 		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
-		DownloadManager::getInstance()->addConnection(aSource);
+		if(!aSource->getUser()) {
+			// We still don't know who this is!!!
+			putDownloadConnection(aSource);
+		} else {
+			DownloadManager::getInstance()->addConnection(aSource);
+		}
 	} else {
 		dcassert(aSource->flags & UserConnection::FLAG_UPLOAD);
 
@@ -219,7 +225,12 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 		}
 		
 		dcdebug("ConnectionManager::onKey, leaving to uploadmanager\n");
-		UploadManager::getInstance()->addConnection(aSource);
+		if(!aSource->getUser()) {
+			// We still don't know who this is!!!
+			putDownloadConnection(aSource);
+		} else {
+			UploadManager::getInstance()->addConnection(aSource);
+		}
 	}
 }
 
@@ -286,9 +297,12 @@ void ConnectionManager::onDirection(UserConnection* aSource, const string& dir, 
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.22 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.23 2002/01/26 16:34:00 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.23  2002/01/26 16:34:00  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.22  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

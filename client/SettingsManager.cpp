@@ -34,7 +34,7 @@ char const* SettingsManager::settingTags[] =
 	"ClientVersion", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
-	"BackgroundColor", "TextColor",
+	"BackgroundColor", "TextColor", "ShareHidden",
 	"SENTRY"
 };
 
@@ -58,7 +58,11 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
 	setDefault(FULL_ROW_SELECT, false);
-	
+	setDefault(REMOVE_NOT_AVAILABLE, true);
+	setDefault(BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
+	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
+	setDefault(SHARE_HIDDEN, false);
+
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -193,9 +197,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.10 2002/01/26 14:59:23 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.11 2002/01/26 16:34:01 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.11  2002/01/26 16:34:01  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.10  2002/01/26 14:59:23  arnetheduck
  * Fixed disconnect crash
  *

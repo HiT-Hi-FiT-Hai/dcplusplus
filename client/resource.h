@@ -25,6 +25,7 @@
 #define IDD_DOWNLOADPAGE                211
 #define IDD_UPLOADPAGE                  212
 #define IDB_TOOLBAR                     213
+#define IDD_APPEARANCEPAGE              213
 #define IDR_PUBLICHUBS                  215
 #define IDR_SEARCH                      216
 #define IDR_FAVORITES                   217
@@ -67,9 +68,13 @@
 #define IDC_EDIT                        1026
 #define IDC_CLEARSEARCH                 1026
 #define IDC_NOTEPAD                     1027
-#define IDC_FULLROW                     1027
-#define IDC_SEARCH_ALTERNATES           1028
-#define IDC_REMOVENOTAVAILABLE          1028
+#define IDC_FULLROW                     1028
+#define IDC_SEARCH_ALTERNATES           1029
+#define IDC_REMOVENOTAVAILABLE          1030
+#define IDC_SELWINCOLOR                 1031
+#define IDC_SELTEXTCOLOR                1032
+#define IDC_COLOREXAMPLE                1033
+#define IDC_SHAREHIDDEN                 1035
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -86,7 +91,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        221
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1029
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

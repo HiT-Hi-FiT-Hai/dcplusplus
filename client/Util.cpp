@@ -38,7 +38,6 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 	string url = aUrl;
 
 	aServer = "";
-	aPort = 0;
 	aFile = "";
 
 	if( (i=url.find("://")) != string::npos) {
@@ -72,9 +71,12 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.4 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.5 2002/01/26 16:34:01 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.5  2002/01/26 16:34:01  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.4  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

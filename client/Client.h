@@ -210,8 +210,9 @@ public:
 		dcdebug("Client::opForceMove\n");
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
-	void connect(const string& aServer, short aPort = 411);
-
+	void connect(const string& aServer);
+	void connect(const string& aServer, short aPort);
+	
 	bool userConnected(const string& aNick) {
 		Lock l(cs);
 		return !(users.find(aNick) == users.end());
@@ -354,9 +355,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.32 2002/01/26 12:06:39 arnetheduck Exp $
+ * $Id: Client.h,v 1.33 2002/01/26 16:34:00 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.33  2002/01/26 16:34:00  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.32  2002/01/26 12:06:39  arnetheduck
  * Småsaker
  *

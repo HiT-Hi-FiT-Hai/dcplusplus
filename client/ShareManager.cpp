@@ -157,13 +157,16 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				dir->directories[name] = buildTree(aName + '\\' + name, dir);
 			} else {
-				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
-				if(stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
-					dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
-					dir->size+=(LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+
+				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
+
+					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
+					if(stricmp(name.c_str(), "DCPlusPlus.xml") != 0) {
+						dir->files[name] = (LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+						dir->size+=(LONGLONG)data.nFileSizeLow | ((LONGLONG)data.nFileSizeHigh)<<32;
+					}
 				}
 			}
-			
 		} while(FindNextFile(hFind, &data));
 	}
 	
@@ -329,9 +332,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.20 2002/01/26 14:59:23 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.21 2002/01/26 16:34:01 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.21  2002/01/26 16:34:01  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.20  2002/01/26 14:59:23  arnetheduck
  * Fixed disconnect crash
  *

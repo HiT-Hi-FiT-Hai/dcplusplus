@@ -31,6 +31,7 @@ static char THIS_FILE[] = __FILE__;
 
 PropPage::Item UploadPage::items[] = {
 	{ IDC_SLOTS, SettingsManager::SLOTS, PropPage::T_INT }, 
+	{ IDC_SHAREHIDDEN, SettingsManager::SHARE_HIDDEN, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -128,9 +129,12 @@ LRESULT UploadPage::onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 /**
  * @file UploadPage.cpp
- * $Id: UploadPage.cpp,v 1.3 2002/01/26 12:52:51 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.4 2002/01/26 16:34:01 arnetheduck Exp $
  * @if LOG
  * $Log: UploadPage.cpp,v $
+ * Revision 1.4  2002/01/26 16:34:01  arnetheduck
+ * Colors dialog added, as well as some other options
+ *
  * Revision 1.3  2002/01/26 12:52:51  arnetheduck
  * More minor fixes
  *

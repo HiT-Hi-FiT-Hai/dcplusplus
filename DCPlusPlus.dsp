@@ -99,6 +99,10 @@ SOURCE=.\client\AdvancedPage.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\AppearancePage.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\BitInputStream.cpp
 # End Source File
 # Begin Source File
@@ -289,6 +293,10 @@ SOURCE=.\client\AboutDlg.h
 # Begin Source File
 
 SOURCE=.\client\AdvancedPage.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\AppearancePage.h
 # End Source File
 # Begin Source File
 
