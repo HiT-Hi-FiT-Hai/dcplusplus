@@ -68,7 +68,13 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::LOCK, this, param.substr(0, x), param.substr(x + 4));
 		} else {
-			fire(UserConnectionListener::LOCK, this, param, "");
+			// Workaround for faulty linux hubs...
+			x = param.find(" ");
+			if(x != string::npos)
+				fire(UserConnectionListener::LOCK, this, param.substr(0, x), "");
+			else
+				fire(UserConnectionListener::LOCK, this, param, "");
+			
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
@@ -81,9 +87,12 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.15 2002/03/15 11:59:35 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.16 2002/03/26 09:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.16  2002/03/26 09:17:59  arnetheduck
+ * New UsersFrame
+ *
  * Revision 1.15  2002/03/15 11:59:35  arnetheduck
  * Final changes (I hope...) for 0.155
  *

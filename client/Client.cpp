@@ -245,7 +245,12 @@ void Client::onLine(const string& aLine) throw() {
 			lock = param.substr(0, j);
 			pk = param.substr(j + 4);
 		} else {
-			lock = param;
+			// Workaround for faulty linux hubs...
+			j = param.find(" ");
+			if(j != string::npos)
+				lock = param.substr(0, j);
+			else
+				lock = param;
 		}
 		fire(ClientListener::LOCK, this, lock, pk);	
 	} else if(cmd == "$Hello") {
@@ -369,9 +374,12 @@ void Client::search(int aSizeType, LONGLONG aSize, int aFileType, const string& 
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.35 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.36 2002/03/26 09:17:59 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.36  2002/03/26 09:17:59  arnetheduck
+ * New UsersFrame
+ *
  * Revision 1.35  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *
