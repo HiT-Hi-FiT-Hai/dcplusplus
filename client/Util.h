@@ -82,6 +82,7 @@ class Flags {
 		Flags(const Flags& rhs) : flags(rhs.flags) { };
 		Flags(MaskType f) : flags(f) { };
 		bool isSet(MaskType aFlag) const { return (flags & aFlag) == aFlag; };
+		bool isAnySet(MaskType aFlag) const { return (flags & aFlag) != 0; };
 		void setFlag(MaskType aFlag) { flags |= aFlag; };
 		void unsetFlag(MaskType aFlag) { flags &= ~aFlag; };
 		Flags& operator=(const Flags& rhs) { flags = rhs.flags; return *this; };
@@ -588,5 +589,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.89 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: Util.h,v 1.90 2004/08/04 09:35:03 arnetheduck Exp $
  */

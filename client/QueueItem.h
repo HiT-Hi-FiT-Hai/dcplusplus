@@ -187,7 +187,7 @@ public:
 	bool isBadSourceExcept(const User::Ptr& aUser, const string& aFile, Flags::MaskType exceptions) const {
 		Source::ConstIter i = getSource(aUser, aFile, badSources);
 		if(i != badSources.end())
-			return (*i)->isSet(exceptions^Source::FLAG_MASK); 
+			return (*i)->isAnySet(exceptions^Source::FLAG_MASK); 
 		return false;
 	};
 
@@ -279,5 +279,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.11 2004/08/02 15:41:06 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.12 2004/08/04 09:35:03 arnetheduck Exp $
 */
