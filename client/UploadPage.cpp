@@ -125,3 +125,15 @@ LRESULT UploadPage::onClickedRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 	
 	return 0;
 }
+
+/**
+ * @file UploadPage.cpp
+ * $Id: UploadPage.cpp,v 1.3 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: UploadPage.cpp,v $
+ * Revision 1.3  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

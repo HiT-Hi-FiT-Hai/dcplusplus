@@ -190,3 +190,14 @@ void SettingsManager::save(string const& aFileName) const
 	}
 }
 
+/**
+ * @file SettingsManager.h
+ * $Id: SettingsManager.cpp,v 1.9 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: SettingsManager.cpp,v $
+ * Revision 1.9  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

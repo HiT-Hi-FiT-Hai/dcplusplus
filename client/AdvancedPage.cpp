@@ -59,3 +59,15 @@ void AdvancedPage::write()
 	// Do specialized writing here
 	// settings->set(XX, YY);
 }
+
+/**
+ * @file AdvancedPage.cpp
+ * $Id: AdvancedPage.cpp,v 1.4 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: AdvancedPage.cpp,v $
+ * Revision 1.4  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

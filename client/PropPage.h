@@ -47,3 +47,15 @@ protected:
 };
 
 #endif // PROPPAGE_H
+
+/**
+ * @file PropPage.h
+ * $Id: PropPage.h,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: PropPage.h,v $
+ * Revision 1.2  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

@@ -109,3 +109,15 @@ void PropPage::write(HWND page, Item const* items)
 		}
 	}
 }
+
+/**
+ * @file PropPage.cpp
+ * $Id: PropPage.cpp,v 1.3 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: PropPage.cpp,v $
+ * Revision 1.3  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

@@ -431,9 +431,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS | LVS_NOSORTHEADER, WS_EX_CLIENTEDGE, IDC_TRANSFERS);
 
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
 	
 	ctrlTransfers.InsertColumn(0, "File", LVCFMT_LEFT, 400, 0);
 	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
@@ -478,6 +475,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ShareManager::getInstance()->refresh();
 	HubManager::getInstance()->refresh();
 
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		try {
 			ConnectionManager::getInstance()->setPort(SETTING(PORT));
@@ -952,9 +953,12 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.49 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.50 2002/01/26 12:52:51 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.50  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
  * Revision 1.49  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

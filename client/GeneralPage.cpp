@@ -92,3 +92,15 @@ LRESULT GeneralPage::onClickedActive(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 	::EnableWindow(GetDlgItem(IDC_PORT), checked);
 	return 0;
 }
+
+/**
+ * @file GeneralPage.cpp
+ * $Id: GeneralPage.cpp,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: GeneralPage.cpp,v $
+ * Revision 1.2  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

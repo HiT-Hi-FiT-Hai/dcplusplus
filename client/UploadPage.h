@@ -51,3 +51,15 @@ protected:
 };
 
 #endif //UPLOADPAGE_H
+
+/**
+ * @file UploadPage.h
+ * $Id: UploadPage.h,v 1.2 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: UploadPage.h,v $
+ * Revision 1.2  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+

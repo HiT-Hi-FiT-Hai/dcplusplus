@@ -160,3 +160,15 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 #define BOOLSETTING(k) (SettingsManager::getInstance()->getBool(SettingsManager::k, true))
 
 #endif // SETTINGSMANAGER_H
+
+/**
+ * @file SettingsManager.cpp
+ * $Id: SettingsManager.h,v 1.6 2002/01/26 12:52:51 arnetheduck Exp $
+ * @if LOG
+ * $Log: SettingsManager.h,v $
+ * Revision 1.6  2002/01/26 12:52:51  arnetheduck
+ * More minor fixes
+ *
+ * @endif
+ */
+
