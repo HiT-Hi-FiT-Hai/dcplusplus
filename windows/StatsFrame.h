@@ -31,7 +31,7 @@
 class StatsFrame : public MDITabChildWindowImpl<StatsFrame>, public StaticFrame<StatsFrame, ResourceManager::NETWORK_STATISTICS>
 {
 public:
-	StatsFrame() : width(0), height(0), timerId(0), gridX(0), lastTick(GET_TICK()), scrollTick(0),
+	StatsFrame() : width(0), height(0), timerId(0), twidth(0), lastTick(GET_TICK()), scrollTick(0),
 		lastUp(Socket::getTotalUp()), lastDown(Socket::getTotalDown()), max(0) 
 	{ 
 		black.CreateSolidBrush(RGB(0, 0, 0));
@@ -80,8 +80,8 @@ public:
 private:
 	// Pixels per second
 	enum { PIX_PER_SEC = 2 };
-	// Grid span in pixels
-	enum { GRID_SPAN = 10 };
+	enum { LINE_HEIGHT = 10 };
+	enum { AVG_SIZE = 5 };
 
 	CBrush black;
 	CPen red;
@@ -96,13 +96,18 @@ private:
 	};
 	typedef deque<Stat> StatList;
 	typedef StatList::iterator StatIter;
+	typedef deque<int64_t> AvgList;
+	typedef AvgList::iterator AvgIter;
 
 	StatList up;
+	AvgList upAvg;
 	StatList down;
+	AvgList downAvg;
+
 	int width;
 	int height;
 	int timerId;
-	int gridX;
+	int twidth;
 
 	u_int32_t lastTick;
 	u_int32_t scrollTick;
@@ -112,13 +117,13 @@ private:
 	int64_t max;
 
 	void drawLine(CDC& dc, StatIter begin, StatIter end, CRect& rc, CRect& crc);
-
+	void addTick(int64_t bdiff, int64_t tdiff, StatList& lst, AvgList& avg, int scroll);
 };
 
 #endif // !defined(AFX_StatsFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file
- * $Id: StatsFrame.h,v 1.1 2003/10/08 21:59:30 arnetheduck Exp $
+ * $Id: StatsFrame.h,v 1.2 2003/10/19 15:46:34 arnetheduck Exp $
  */
 

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="DCPlusPlus"
 	SccProjectName=""
 	SccLocalPath="">
@@ -73,7 +73,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -93,7 +99,7 @@
 				EnableIntrinsicFunctions="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
-				OptimizeForProcessor="2"
+				OptimizeForProcessor="3"
 				OptimizeForWindowsApplication="TRUE"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,_REENTRANT,BZ_NO_STDIO,_STLP_NO_EXCEPTIONS"
 				StringPooling="TRUE"
@@ -151,9 +157,17 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Resource Files"
@@ -162,10 +176,13 @@
 				RelativePath="res\ADLSearch.ico">
 			</File>
 			<File
-				RelativePath=".\res\DCPlusPlus.Manifest">
+				RelativePath=".\res\arrows.bmp">
 			</File>
 			<File
 				RelativePath=".\res\DCPlusPlus.ico">
+			</File>
+			<File
+				RelativePath=".\res\DCPlusPlus.Manifest">
 			</File>
 			<File
 				RelativePath=".\DCPlusPlus.rc">
@@ -174,10 +191,10 @@
 				RelativePath=".\res\Directory.ico">
 			</File>
 			<File
-				RelativePath="res\FavoriteUser.ico">
+				RelativePath=".\res\Favorites.ico">
 			</File>
 			<File
-				RelativePath=".\res\Favorites.ico">
+				RelativePath="res\FavoriteUser.ico">
 			</File>
 			<File
 				RelativePath="res\FinishedDL.ico">
@@ -186,34 +203,31 @@
 				RelativePath="res\FinishedUL.ico">
 			</File>
 			<File
-				RelativePath=".\res\Hub.ico">
-			</File>
-			<File
-				RelativePath=".\res\PublicHubs.ico">
-			</File>
-			<File
-				RelativePath=".\res\Search.ico">
-			</File>
-			<File
-				RelativePath=".\res\User.ico">
-			</File>
-			<File
-				RelativePath=".\res\arrows.bmp">
-			</File>
-			<File
 				RelativePath=".\res\folders.bmp">
+			</File>
+			<File
+				RelativePath=".\res\Hub.ico">
 			</File>
 			<File
 				RelativePath=".\res\notepad.ico">
 			</File>
 			<File
+				RelativePath=".\res\PublicHubs.ico">
+			</File>
+			<File
 				RelativePath="res\queue.ico">
+			</File>
+			<File
+				RelativePath=".\res\Search.ico">
 			</File>
 			<File
 				RelativePath=".\res\toolbar.bmp">
 			</File>
 			<File
 				RelativePath=".\res\toolbar20.bmp">
+			</File>
+			<File
+				RelativePath=".\res\User.ico">
 			</File>
 			<File
 				RelativePath=".\res\users.bmp">
@@ -223,10 +237,10 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="windows\ADLSProperties.cpp">
+				RelativePath="windows\ADLSearchFrame.cpp">
 			</File>
 			<File
-				RelativePath="windows\ADLSearchFrame.cpp">
+				RelativePath="windows\ADLSProperties.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\Advanced2Page.cpp">
@@ -268,6 +282,9 @@
 				RelativePath=".\windows\HubFrame.cpp">
 			</File>
 			<File
+				RelativePath=".\windows\main.cpp">
+			</File>
+			<File
 				RelativePath=".\windows\MainFrm.cpp">
 			</File>
 			<File
@@ -277,10 +294,10 @@
 				RelativePath=".\windows\PrivateFrame.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\PropPage.cpp">
+				RelativePath=".\windows\PropertiesDlg.cpp">
 			</File>
 			<File
-				RelativePath=".\windows\PropertiesDlg.cpp">
+				RelativePath=".\windows\PropPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\PublicHubsFrm.cpp">
@@ -296,6 +313,21 @@
 			</File>
 			<File
 				RelativePath="windows\StatsFrame.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\stdafx.cpp">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="windows\TextFrame.cpp">
@@ -315,36 +347,18 @@
 			<File
 				RelativePath=".\windows\WinUtil.cpp">
 			</File>
-			<File
-				RelativePath=".\windows\main.cpp">
-			</File>
-			<File
-				RelativePath=".\windows\stdafx.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="windows\ADLSProperties.h">
+				RelativePath=".\windows\AboutDlg.h">
 			</File>
 			<File
 				RelativePath="windows\ADLSearchFrame.h">
 			</File>
 			<File
-				RelativePath=".\windows\AboutDlg.h">
+				RelativePath="windows\ADLSProperties.h">
 			</File>
 			<File
 				RelativePath=".\windows\Advanced2Page.h">
@@ -407,16 +421,19 @@
 				RelativePath=".\windows\PrivateFrame.h">
 			</File>
 			<File
-				RelativePath=".\windows\PropPage.h">
+				RelativePath=".\windows\PropertiesDlg.h">
 			</File>
 			<File
-				RelativePath=".\windows\PropertiesDlg.h">
+				RelativePath=".\windows\PropPage.h">
 			</File>
 			<File
 				RelativePath=".\windows\PublicHubsFrm.h">
 			</File>
 			<File
 				RelativePath=".\windows\QueueFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\resource.h">
 			</File>
 			<File
 				RelativePath=".\windows\SearchFrm.h">
@@ -429,6 +446,9 @@
 			</File>
 			<File
 				RelativePath="windows\StatsFrame.h">
+			</File>
+			<File
+				RelativePath=".\windows\stdafx.h">
 			</File>
 			<File
 				RelativePath="windows\TextFrame.h">
@@ -447,12 +467,6 @@
 			</File>
 			<File
 				RelativePath=".\windows\WinUtil.h">
-			</File>
-			<File
-				RelativePath=".\windows\resource.h">
-			</File>
-			<File
-				RelativePath=".\windows\stdafx.h">
 			</File>
 		</Filter>
 	</Files>
