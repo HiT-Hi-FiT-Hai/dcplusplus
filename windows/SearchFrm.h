@@ -34,6 +34,9 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
+	enum {
+		IDC_DOWNLOAD_TARGET = 5000
+	};
 
 	enum {
 		COLUMN_FIRST,
@@ -230,6 +233,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
  */
 

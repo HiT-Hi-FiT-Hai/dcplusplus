@@ -34,6 +34,10 @@
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
 public:
+	enum {
+		IDC_DOWNLOAD_TARGET = 5000,
+		IDC_DOWNLOAD_TARGET_DIR = 5100
+	};
 	
 	enum {
 		COLUMN_FILENAME,
@@ -81,7 +85,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), lastDirs.size()), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + lastDirs.size(), onDownloadTargetDir)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
@@ -93,6 +98,7 @@ public:
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onGetDispInfoDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
@@ -136,11 +142,12 @@ public:
 	
 private:
 	CMenu targetMenu;
+	CMenu targetDirMenu;
 	CMenu fileMenu;
 	CMenu directoryMenu;
 	
 	StringList targets;
-	StringList lastDirs;
+	static StringList lastDirs;
 	
 	User::Ptr user;
 	CTreeViewCtrl ctrlTree;
@@ -157,5 +164,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
  */

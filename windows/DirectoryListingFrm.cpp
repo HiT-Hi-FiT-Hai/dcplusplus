@@ -23,6 +23,58 @@
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 
+StringList DirectoryListingFrame::lastDirs;
+
+LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	ctrlStatus.Attach(m_hWndStatusBar);
+	
+	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
+	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
+	ctrlList.SetBkColor(WinUtil::bgColor);
+	ctrlList.SetTextBkColor(WinUtil::bgColor);
+	ctrlList.SetTextColor(WinUtil::textColor);
+	
+	ctrlTree.SetBkColor(WinUtil::bgColor);
+	ctrlTree.SetTextColor(WinUtil::textColor);
+	
+	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 350, COLUMN_FILENAME);
+	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
+	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
+	
+	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
+	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
+	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
+	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
+	m_nProportionalPos = 2500;
+	
+	updateTree(dl->getRoot(), NULL);
+	files = dl->getTotalFileCount();
+	size = Util::formatBytes(dl->getTotalSize());
+	
+	ctrlStatus.SetText(1, (STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount())).c_str());
+	ctrlStatus.SetText(2, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
+	
+	fileMenu.CreatePopupMenu();
+	targetMenu.CreatePopupMenu();
+	directoryMenu.CreatePopupMenu();
+	targetDirMenu.CreatePopupMenu();
+	
+	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
+	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
+	
+	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
+	directoryMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_TO));
+	
+	bHandled = FALSE;
+	return 1;
+}
+
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
 	for(DirectoryListing::Directory::Iter i = aTree->directories.begin(); i != aTree->directories.end(); ++i) {
 		HTREEITEM ht = ctrlTree.InsertItem(TVIF_IMAGE | TVIF_TEXT | TVIF_PARAM, (*i)->getName().c_str(), I_IMAGECALLBACK, I_IMAGECALLBACK, 0, 0, (LPARAM)*i, aParent, TVI_SORT);;
@@ -198,7 +250,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 					dl->download(file, user, target);
 			} else {
 				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
-				string target;
+				string target = SETTING(DOWNLOAD_DIRECTORY);
 				if(WinUtil::browseDirectory(target, m_hWnd)) {
 					if(lastDirs.size() > 10)
 						lastDirs.erase(lastDirs.begin());
@@ -221,54 +273,6 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		}
 	}
 	return 0;
-}
-
-LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-
-	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
-	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
-	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	}
-
-	ctrlList.SetBkColor(WinUtil::bgColor);
-	ctrlList.SetTextBkColor(WinUtil::bgColor);
-	ctrlList.SetTextColor(WinUtil::textColor);
-
-	ctrlTree.SetBkColor(WinUtil::bgColor);
-	ctrlTree.SetTextColor(WinUtil::textColor);
-	
-	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 350, COLUMN_FILENAME);
-	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
-	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
-	
-	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
-	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
-	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
-	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
-	m_nProportionalPos = 2500;
-	
-	updateTree(dl->getRoot(), NULL);
-	files = dl->getTotalFileCount();
-	size = Util::formatBytes(dl->getTotalSize());
-	
-	ctrlStatus.SetText(1, (STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount())).c_str());
-	ctrlStatus.SetText(2, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
-
-	fileMenu.CreatePopupMenu();
-	targetMenu.CreatePopupMenu();
-	directoryMenu.CreatePopupMenu();
-	fileMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
-	fileMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
-
-	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD));
-	directoryMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CSTRING(DOWNLOAD_TO));
-
-	bHandled = FALSE;
-	return 1;
 }
 
 LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -310,6 +314,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
 				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 			}
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}
 		
@@ -323,6 +328,15 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		
 		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) 
 		{ 
+			while(targetMenu.GetMenuItemCount() > 0) {
+				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
+			}
+			int n = 0;
+			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET_DIR + (n++), i->c_str());
+			}
+			targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIRTO, CSTRING(BROWSE));
+			
 			ctrlTree.ClientToScreen(&pt);
 			directoryMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			
@@ -353,6 +367,20 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 	} else if(ctrlList.GetSelectedCount() > 1) {
 		dcassert((StringList::size_type)(wID-IDC_DOWNLOAD_TARGET) < lastDirs.size());
 		downloadList(lastDirs[wID-IDC_DOWNLOAD_TARGET]);
+	}
+	return 0;
+}
+
+LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	HTREEITEM t = ctrlTree.GetSelectedItem();
+	if(t != NULL) {
+		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
+		string target = SETTING(DOWNLOAD_DIRECTORY);
+		try {
+			dl->download(dir, user, lastDirs[wID - IDC_DOWNLOAD_TARGET_DIR]);
+		} catch(Exception e) {
+			ctrlStatus.SetText(0, e.getError().c_str());
+		}
 	}
 	return 0;
 }
@@ -472,5 +500,5 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.4 2002/04/18 19:48:10 arnetheduck Exp $
  */

@@ -222,8 +222,8 @@ private:
 		if( (j = aTarget.rfind('\\', i-1)) == string::npos) {
 			return aTarget.substr(0, i+1);
 		}
-		if( (k = aTarget.rfind('\\', j-1)) == string::npos) {
-			return aTarget.substr(0, i+1);
+		if( ((j - i) > 6) || (k = aTarget.rfind('\\', j-1)) == string::npos) {
+			return aTarget.substr(j+1, j-i);
 		}
 		if(k > 3)
 			return aTarget.substr(k+1, i-k);
@@ -252,6 +252,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
  */
 
