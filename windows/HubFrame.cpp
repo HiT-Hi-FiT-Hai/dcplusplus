@@ -517,7 +517,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 			SettingsManager::HUBFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
 		FavoriteHubEntry *fhe = HubManager::getInstance()->getFavoriteHubEntry(server);
-		if(fhe != NULL){
+		if(fhe != NULL && !IsIconic()){
 			CRect rc;
 			
 			//Get position of window
@@ -1141,5 +1141,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.63 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.64 2004/07/05 16:02:44 arnetheduck Exp $
  */

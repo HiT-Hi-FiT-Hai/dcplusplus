@@ -41,6 +41,8 @@ LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(timerId != 0)
 		KillTimer(timerId);
 	
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }
@@ -214,5 +216,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.5 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.6 2004/07/05 16:02:44 arnetheduck Exp $
  */

@@ -234,6 +234,8 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	WinUtil::saveHeaderOrder(ctrlHubs, SettingsManager::FAVORITESFRAME_ORDER, 
 		SettingsManager::FAVORITESFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }
@@ -279,6 +281,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.21 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.22 2004/07/05 16:02:44 arnetheduck Exp $
  */
 

@@ -331,7 +331,6 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	int64_t sz = 0;
 	bool online = false;
 
-	TTHValue root;
 	bool hasTTH = false;
 
 	{
@@ -355,8 +354,8 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 			QueueItem* qi = fileQueue.findAutoSearch(recent);
 			if(qi != NULL) {
 				if(qi->getTTH()) {
-					root = *qi->getTTH();
 					hasTTH = true;
+					searchString = "TTH:" + qi->getTTH()->toBase32();
 				} else {
 					fn = qi->getTargetFileName();
 					sz = qi->getSize() - 1;
@@ -373,7 +372,7 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 
 	if(hasTTH) {
-		SearchManager::getInstance()->search("TTH:" + root.toBase32(), 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
+		SearchManager::getInstance()->search(searchString, 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
 	} else if(!fn.empty()) {
 		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
 		nextSearch = aTick + (online ? 2000 : 5000);
@@ -1258,7 +1257,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 // SearchManagerListener
 void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
-	bool found = false;
+	bool added = false;
 
 	if(BOOLSETTING(AUTO_SEARCH)) {
 		Lock l(cs);
@@ -1282,6 +1281,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			if(found) {
 				try {
 					addSource(qi, sr->getFile(), sr->getUser(), false, false);
+					added = true;
 				} catch(const Exception&) {
 					// ...
 				}
@@ -1290,7 +1290,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 		}
 	}
 
-	if(found && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+	if(added && BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
 		addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 
 }
@@ -1323,5 +1323,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.88 2004/06/27 17:59:20 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.89 2004/07/05 16:02:43 arnetheduck Exp $
  */

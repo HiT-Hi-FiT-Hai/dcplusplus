@@ -370,6 +370,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	_Module.Term();
 	::CoUninitialize();
+	::WSACleanup();
 #ifdef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
 #endif
@@ -378,5 +379,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.23 2004/06/27 17:59:20 arnetheduck Exp $
+ * $Id: main.cpp,v 1.24 2004/07/05 16:02:44 arnetheduck Exp $
  */

@@ -133,7 +133,9 @@ LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
-
+	
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 }
@@ -586,5 +588,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.11 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.12 2004/07/05 16:02:43 arnetheduck Exp $
  */

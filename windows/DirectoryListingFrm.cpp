@@ -457,6 +457,12 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 				}
 			}
+			if(WinUtil::lastDirs.size() > 0) {
+				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				for(StringIter i = WinUtil::lastDirs.begin(); i != WinUtil::lastDirs.end(); ++i) {
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
+				}
+			}
 			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
 			}
@@ -754,5 +760,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.32 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.33 2004/07/05 16:02:43 arnetheduck Exp $
  */

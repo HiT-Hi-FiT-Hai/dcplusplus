@@ -42,7 +42,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/FIXED:NO"
+				AdditionalOptions="/FIXED:NO /SAFESEH:NO"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				LinkIncremental="2"
@@ -413,6 +413,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\LineDlg.h">
+			</File>
+			<File
+				RelativePath=".\windows\ListViewArrows.h">
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.h">

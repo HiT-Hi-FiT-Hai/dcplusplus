@@ -53,7 +53,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 
 	while(i < len) {
 		switch(buf[i]) {
-		case '\\': i++; cur += buf[i];
+		case '\\': i++; cur += buf[i]; break;
 		case ' ': 
 			// New parameter...
 			{
@@ -311,5 +311,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.11 2004/06/27 17:59:20 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.12 2004/07/05 16:02:43 arnetheduck Exp $
  */

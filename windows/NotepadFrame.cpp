@@ -67,6 +67,8 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		}
 	}
 
+	m_hMenu = NULL;
+	MDIDestroy(m_hWnd);
 	bHandled = FALSE;
 	return 0;
 	
@@ -88,7 +90,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.12 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.13 2004/07/05 16:02:44 arnetheduck Exp $
  */
 
 

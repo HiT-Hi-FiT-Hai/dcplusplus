@@ -1,3 +1,17 @@
+ -- 0.404 --
+* Fixed issue with autosearch not getting filelists
+* Fixed an issue with autosearch by tth not being done
+* Added folder histore for single file downloads (thanks slowmo)
+* Fishing locale from os, changes string representations in some places (thanks garg)
+* Caseless icon optimization (thanks garg)
+* CTRL-E shortcut for refresh (thanks garg)
+* Fixed a process termination issue (thanks defr)
+* DCTC file not available detected (thanks defr)
+* Fixed bad window size being saved for minimised windows (thanks trem)
+* Fixed an issue with the ADC parser (thanks trem)
+* More WTL 7.5 preparations (thanks garg)
+* Added a switch to ease the life of the UPX compressor (exe compressors suck btw) (thanks garg)
+
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug
 

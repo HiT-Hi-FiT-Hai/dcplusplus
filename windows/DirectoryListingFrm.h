@@ -124,6 +124,8 @@ public:
 		ctrlList.SetRedraw(FALSE);
 		clearList();
 		bHandled = FALSE;
+		m_hMenu = NULL;
+		MDIDestroy(m_hWnd);
 		return 0;
 	}
 	
@@ -290,5 +292,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.31 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.32 2004/07/05 16:02:44 arnetheduck Exp $
  */
