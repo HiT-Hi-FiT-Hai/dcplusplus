@@ -210,7 +210,7 @@ private:
 		};
 		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = d->getName();
-			if(utf8)
+			if(utf8 && Util::needsAcp(columns[COLUMN_FILENAME]))
 				Util::toAcp(columns[COLUMN_FILENAME]);
 			columns[COLUMN_SIZE] = Util::formatBytes(d->getTotalSize());
 		};
@@ -280,5 +280,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.28 2004/02/23 17:42:17 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.29 2004/03/19 09:29:06 arnetheduck Exp $
  */

@@ -360,7 +360,7 @@ string& Util::toUtf8(string& str) {
 
 	wtmp.resize(sz);
 	str.clear();
-    for(string::size_type i = 0; i < str.length(); ++i) {
+    for(string::size_type i = 0; i < wtmp.length(); ++i) {
 		cToUtf8(wtmp[i], str);
 	}
 	return str;
@@ -382,7 +382,7 @@ string& Util::toAcp(string& str) {
 			wtmp += c;
 		}
 	}
-#ifdef WIN32
+#ifdef _WIN32
 	int x = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), wtmp.length(), NULL, 0, NULL, NULL);
 	if(x == 0) {
 		str.clear();
@@ -602,6 +602,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.46 2004/03/19 08:48:58 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.47 2004/03/19 09:29:06 arnetheduck Exp $
  */
 
