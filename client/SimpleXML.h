@@ -45,20 +45,19 @@ public:
 		 * Refill n with more data.
 		 * @return True if there's more data, false if not
 		 */
-		virtual bool getData(string& n) = 0;
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) = 0;
 		virtual void endTag(const string& name, const string& data) = 0;
 	};
 	SimpleXMLReader(CallBack* callback) : cb(callback) { }
 
-	string::size_type fromXML(string& tmp, const string& n = Util::emptyString, string::size_type start = 0, bool inTag = false) throw(SimpleXMLException);
+	string::size_type fromXML(const string& tmp, const string& n = Util::emptyString, string::size_type start = 0, bool inTag = false) throw(SimpleXMLException);
 private:
 	StringPairList attribs;
 	string data;
 
 	CallBack* cb;
 
-	string::size_type loadAttribs(const string& name, string& tmp, string::size_type start) throw(SimpleXMLException);
+	string::size_type loadAttribs(const string& name, const string& tmp, string::size_type start) throw(SimpleXMLException);
 
 };
 
@@ -158,7 +157,7 @@ public:
 		return (tmp.size() > 0) && tmp[0] == '1';
 	}
 	
-	void fromXML(string aXML) throw(SimpleXMLException);
+	void fromXML(const string& aXML) throw(SimpleXMLException);
 	string toXML() { return (!root.children.empty()) ? root.children[0]->toXML(0) : Util::emptyString; };
 	void toXML(File* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
@@ -267,6 +266,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.26 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.27 2003/12/26 11:00:06 arnetheduck Exp $
  */
 

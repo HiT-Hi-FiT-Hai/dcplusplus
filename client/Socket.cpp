@@ -149,17 +149,13 @@ void Socket::connect(const string& aAddr, short aPort) throw(SocketException) {
 
 	setIp(inet_ntoa(serv_addr.sin_addr));
 	
-	bool blocking = true;
     if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
 		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
 		if(errno != EWOULDBLOCK) {
 			checksockerr(SOCKET_ERROR);
-		} else {
-			blocking = true;
 		}
 	}
-	if(blocking)
-		connected = true;
+	connected = true;
 }
 
 /**
@@ -520,6 +516,6 @@ void Socket::socksUpdated() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.51 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.52 2003/12/26 11:00:06 arnetheduck Exp $
  */
 

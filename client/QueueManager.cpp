@@ -1027,22 +1027,13 @@ void QueueManager::saveQueue() throw() {
 
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
-	enum { READ_SIZE = 64*1024 };
-	QueueLoader(File& f) : file(f), cur(NULL), inDownloads(false) { };
-	virtual bool getData(string& n) {
-		string::size_type start = n.length();
-		n.resize(start + READ_SIZE);
-		u_int32_t r = file.read(&n[start], READ_SIZE);
-		n.resize(start + r);
-		return r > 0;
-	}
+	QueueLoader() : cur(NULL), inDownloads(false) { };
 
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
 private:
 	string target;
 
-	File& file;
 	QueueItem* cur;
 	bool inDownloads;
 
@@ -1054,10 +1045,8 @@ private:
 
 void QueueManager::loadQueue() throw() {
 	try {
-		File f(getQueueFile(), File::READ, File::OPEN);
-		QueueLoader l(f);
-		string x;
-		SimpleXMLReader(&l).fromXML(x);
+		QueueLoader l;
+		SimpleXMLReader(&l).fromXML(File(getQueueFile(), File::READ, File::OPEN).read());
 		dirty = false;
 	} catch(const Exception&) {
 		// ...
@@ -1296,5 +1285,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.67 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.68 2003/12/26 11:00:06 arnetheduck Exp $
  */

@@ -190,30 +190,14 @@ bool SimpleXML::findChild(const string& aName) throw() {
 	return false;
 }
 
-inline bool getData(SimpleXMLReader::CallBack* cb, string& tmp, string::size_type& i, string::size_type& start) {
-	start -= i;
-	tmp.erase(0, i);
-	i = 0;
-	return cb->getData(tmp);
-}
-inline void checkN(SimpleXMLReader::CallBack* cb, string& tmp, string::size_type& i, string::size_type& start, string::size_type& j, string::size_type n) {
-	if(tmp.size() - i <= n) {
-		j -= i;
-		getData(cb, tmp, i, start);
-	}
-}
-
-
-string::size_type SimpleXMLReader::loadAttribs(const string& name, string& tmp, string::size_type start) throw(SimpleXMLException) {
+string::size_type SimpleXMLReader::loadAttribs(const string& name, const string& tmp, string::size_type start) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
+
 	for(;;) {
-		while((j = tmp.find('=', i)) == string::npos) {
-			if(getData(cb, tmp, i, start))
-				continue;
+		if((j = tmp.find('=', i)) == string::npos) {
 			throw SimpleXMLException("Missing '=' in " + name);
 		}
-		checkN(cb, tmp, i, start, j, 16);
 
 		if(tmp[j+1] != '"' && tmp[j+1] != '\'') {
 			throw SimpleXMLException("Invalid character after '=' in " + name);
@@ -221,45 +205,33 @@ string::size_type SimpleXMLReader::loadAttribs(const string& name, string& tmp, 
 
 		string::size_type x = j + 2;
 		string::size_type y;
-		while((y = tmp.find(tmp[j+1], x)) == string::npos) {
-			string::size_type i2 = i;
-			if(getData(cb,tmp, i, start)) {
-				x-= i2;
-				j-= i2;
-				continue;
-			}
+		if((y = tmp.find(tmp[j+1], x)) == string::npos) {
 			throw SimpleXMLException("Missing '" + string(1, tmp[j+1]) + "' in " + name);
 		}
 		// Ok, we have an attribute...
 		attribs.push_back(make_pair(tmp.substr(i, j-i), tmp.substr(x, y-x)));
 		SimpleXML::escape(attribs.back().second, true, true);
 
-		checkN(cb, tmp, i, start, j, 16);
-
 		i = tmp.find_first_not_of(' ', y + 1);
-		if(tmp[i] == '/' || tmp[i] == '>')
+		if(tmp[i] == '/' || tmp[i] == '>') {
 			return i;
+		}
 	}
 }
 
-string::size_type SimpleXMLReader::fromXML(string& tmp, const string& n, string::size_type start, bool inTag) throw(SimpleXMLException) {
+string::size_type SimpleXMLReader::fromXML(const string& tmp, const string& n, string::size_type start, bool inTag) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
 
 	bool hasChildren = false;
-	
-	for(;;) {
-		while((j = tmp.find('<', i)) == string::npos) {
-			if(getData(cb, tmp, i, start))
-				continue;
 
+	for(;;) {
+		if((j = tmp.find('<', i)) == string::npos) {
 			if(inTag) {
 				throw SimpleXMLException("Missing end tag in " + n);
 			}
 			return tmp.size();
 		}
-
-		checkN(cb, tmp, i, start, j, 16);
 
 		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
 		if((j + 3) > tmp.size()) {
@@ -270,9 +242,7 @@ string::size_type SimpleXMLReader::fromXML(string& tmp, const string& n, string:
 
 		if(tmp[i] == '?') {
 			// <? processing instruction ?>, ignore...
-			while((j = tmp.find("?>", i)) == string::npos) {
-				if(getData(cb,tmp,i, start))
-					continue;
+			if((j = tmp.find("?>", i)) == string::npos) {
 				throw SimpleXMLException("Missing '?>' in " + n);
 			}
 			i = j + 2;
@@ -281,9 +251,7 @@ string::size_type SimpleXMLReader::fromXML(string& tmp, const string& n, string:
 
 		if(tmp[i] == '!' && tmp[i+1] == '-' && tmp[i+2] == '-') {
 			// <!-- comment -->, ignore...
-			while((j = tmp.find("-->", i)) == string::npos) {
-				if(getData(cb, tmp, i, start))
-					continue;
+			if((j = tmp.find("-->", i)) == string::npos) {
 				throw SimpleXMLException("Missing '-->' in " + n);
 			}
 			i = j + 3;
@@ -294,8 +262,6 @@ string::size_type SimpleXMLReader::fromXML(string& tmp, const string& n, string:
 		if(tmp[i] == '/') {
 			i++;
 			
-			checkN(cb, tmp, i, start, j, n.length());
-
 			if( (tmp.compare(i, n.length(), n) == 0) && 
 				(tmp[i + n.length()] == '>') )
 			{
@@ -312,19 +278,14 @@ string::size_type SimpleXMLReader::fromXML(string& tmp, const string& n, string:
 		}
 
 		// Alright, we have a real tag for sure...now get the name of it.
-		while((j = tmp.find_first_of(" />", i)) == string::npos) {
-			if(getData(cb, tmp, i, start))
-				continue;
-
+		if((j = tmp.find_first_of(" />", i)) == string::npos) {
 			throw SimpleXMLException("Missing '>' in " + n);
 		}
 
 		string name = tmp.substr(i, j-i);
 		hasChildren = true;
 		if(tmp[j] == ' ') {
-			while((j = tmp.find_first_not_of(' ', j+1)) == string::npos) {
-				if(getData(cb, tmp, i, start))
-					continue;
+			if((j = tmp.find_first_not_of(' ', j+1)) == string::npos) {
 				throw SimpleXMLException("Missing '>' in " + name);
 			}
 		}		
@@ -375,7 +336,7 @@ void SimpleXML::addChildAttrib(const string& aName, const string& aData) throw(S
 	(*currentChild)->attribs.push_back(make_pair(aName, aData));
 }
 
-void SimpleXML::fromXML(string aXML) throw(SimpleXMLException) {
+void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 	if(!root.children.empty()) {
 		delete root.children[0];
 		root.children.clear();
@@ -394,6 +355,6 @@ void SimpleXML::fromXML(string aXML) throw(SimpleXMLException) {
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.23 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.24 2003/12/26 11:00:06 arnetheduck Exp $
  */
 

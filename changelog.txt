@@ -9,6 +9,10 @@
 * Auto-match queue is only done on exact match
 * Fixed a bug in the compressor that may have caused compressed uploads not to finish and/or 100% cpu
 * The sound part of partially corrupted queues is now recovered
+* When opening a file list from search results, the file's directory is automatically shown
+* An extra buffer flush is done to ensure that file lists are fully written to disk
+* Readme automatically shown for new users (thanks johnny)
+* Filename is shown on transfer error (no slots etc) (thanks ciber)
 
  -- 0.305 2003-12-04 --
 * Fixed disappearing queue items bug
