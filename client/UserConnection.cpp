@@ -27,16 +27,13 @@ const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
 void UserConnection::connect(const string& aServer, short aPort /* = 412 */) {
-	if(socket.isConnected())
-		disconnect();
-
+	dcassert(!socket.isConnected());
 	socket.connect(aServer, aPort);
 }
 
 void UserConnection::accept(const ServerSocket& aServer) {
-	if(socket.isConnected())
-		disconnect();
-
+	dcassert(!socket.isConnected());
+	
 	socket.accept(aServer);
 	TimerManager::getInstance()->addListener(this);
 }
@@ -96,14 +93,14 @@ void UserConnection::onLine(const string& aLine) throw () {
 	}
 }
 
-void UserConnection::waitForConnection(short aPort /* = 412 */) {
-	
-}
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.9 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.10 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.10  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.9  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -208,6 +208,10 @@ public:
 	void connect(const string& aServer);
 	void connect(const string& aServer, short aPort);
 	
+	void updated(User::Ptr& aUser) {
+		fire(ClientListener::MY_INFO, this, aUser);
+	}
+
 	bool userConnected(const string& aNick) {
 		Lock l(cs);
 		return !(users.find(aNick) == users.end());
@@ -354,9 +358,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.35 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: Client.h,v 1.36 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.36  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.35  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

@@ -104,6 +104,7 @@ void Socket::bind(short aPort) throw (SocketException){
 }
 
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
+	create();
 	dcassert(type == TYPE_TCP);
 	dcassert(!isConnected());
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
@@ -147,17 +148,16 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
     }
 
 	setIp(inet_ntoa(serv_addr.sin_addr));
-	dcdebug("Server %s = %s\n", aip.c_str(), getIp().c_str());
+//	dcdebug("Server %s = %s\n", aip.c_str(), getIp().c_str());
 	
     if(::connect(sock,(sockaddr*)&serv_addr,sizeof(serv_addr)) == SOCKET_ERROR) {
 		// EWOULDBLOCK is ok, the attempt is still being made, and FD_CONNECT will be signaled...
 		if(errno != EWOULDBLOCK) {
 			checksockerr(SOCKET_ERROR);
 		}
-	}			
-	// This is not really true if we got EWOULDBLOCK, but what the heck..it's close enough, the socket's busy connecting...
-	connected = true;
-
+	} else {
+		connected = true;
+	}
 }
 
 /**
@@ -200,6 +200,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				Sleep(10);
 				if(sendSize > 32) {
 					sendSize /= 2;
+					dcdebug("Reducing send window size to %d\n", sendSize);
 				} else {
 					throw SocketException("Ran out of buffer space");
 				}
@@ -218,9 +219,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.18 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.19 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.19  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.18  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

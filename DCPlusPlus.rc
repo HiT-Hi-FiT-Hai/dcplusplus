@@ -435,6 +435,13 @@ BEGIN
                     15,99,194,10
     CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,111,79,10
+    CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,122,64,10
+    CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,133,141,10
+    CONTROL         "Open the download queue window at startup",
+                    IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    144,157,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225

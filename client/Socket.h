@@ -119,10 +119,9 @@ public:
 	virtual void connect(const string& ip, const string& port) throw(SocketException);
 	
 	virtual void disconnect() {
-		dcdebug("disconnect\n");
+		connected = false;
 		closesocket(sock);
 		sock = -1;
-		connected = false;
 		if(event) {
 			CloseHandle(event);
 			event = NULL;
@@ -163,7 +162,9 @@ public:
 	bool isConnected() {
 		return connected;
 	}
-
+	void setConnected() {
+		connected = true;
+	}
 	/**
 	 * Returns a handle to an event that fires whenever there is data available in the read buffer.
 	 * Note; The socket will automatically be put in non-blocking mode after returning from this 
@@ -222,9 +223,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.17 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: Socket.h,v 1.18 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.18  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.17  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

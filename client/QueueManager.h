@@ -259,6 +259,7 @@ public:
 	}
 
 	Download* getDownload(UserConnection* aUserConnection);
+	bool hasDownload(const User::Ptr& aUser);
 	void putDownload(Download* aDownload, bool finished = false);
 	
 	void getQueue() {

@@ -99,6 +99,11 @@ public:
 		}
 	}
 	
+	virtual void disconnect() {
+		Lock l(cs);
+		addTask(DISCONNECT);
+	}
+	
 	/**
 	 * Sets data mode for aBytes bytes long. Must be called within an action method...
 	 */
@@ -219,9 +224,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.24 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.25 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.25  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.24  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

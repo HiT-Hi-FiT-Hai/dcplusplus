@@ -447,13 +447,7 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 		if(sr->getUser()) {
-			PrivateFrame* frm = PrivateFrame::getFrame(sr->getUser(), m_hWndMDIClient);
-			if(frm->m_hWnd == NULL) {
-				frm->setTab(getTab());
-				frm->CreateEx(m_hWndMDIClient);
-			} else {
-				frm->MDIActivate(frm->m_hWnd);
-			}
+			PrivateFrame::openWindow(sr->getUser(), m_hWndMDIClient, getTab());
 		}
 	}
 	return 0;
@@ -461,9 +455,12 @@ LRESULT SearchFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.24 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.25 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.25  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.24  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

@@ -200,13 +200,32 @@ Download* QueueManager::getDownload(UserConnection* aUserConnection) {
 	return new Download(q, ConnectionManager::getInstance()->getQueueItem(aUserConnection));
 }
 
+bool QueueManager::hasDownload(const User::Ptr& aUser) {
+	
+	{
+		Lock l(cs);
+		
+		// Find a suitable download for this user
+		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+			if( ((*i)->isSource(aUser)) && 
+				((*i)->getStatus() == QueueItem::WAITING) && 
+				((*i)->getPriority() != QueueItem::PAUSED) ) {
+				
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 void QueueManager::putDownload(Download* aDownload, bool finished /* = false */) {
 
 	if(finished) {
 		aDownload->getQueueItem()->setStatus(QueueItem::FINISHED);
 		fire(QueueManagerListener::STATUS_UPDATED, aDownload->getQueueItem());
 
-		if(BOOLSETTING(REMOVE_FINISHED)) {
+		if(aDownload->isSet(Download::USER_LIST) || BOOLSETTING(REMOVE_FINISHED)) {
 			{
 				Lock l(cs);
 				dcassert(find(queue.begin(), queue.end(), aDownload->getQueueItem()) != queue.end());

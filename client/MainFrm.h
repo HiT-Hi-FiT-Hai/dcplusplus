@@ -90,6 +90,10 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+
+		MESSAGE_HANDLER(WM_USER+242, onTrayIcon)
+		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
+		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_CONNECT, OnFileConnect)
 		COMMAND_ID_HANDLER(ID_FILE_SETTINGS, OnFileSettings)
@@ -118,6 +122,55 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	LRESULT onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		if (wParam== SC_MINIMIZE && BOOLSETTING(MINIMIZE_TRAY)) {
+				NOTIFYICONDATA nid;
+				nid.cbSize = sizeof(NOTIFYICONDATA);
+				nid.hWnd = m_hWnd;
+				nid.uID = 0;
+				nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+				nid.uCallbackMessage = WM_USER + 242;
+				nid.hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+				strncpy(nid.szTip, "DC++",64);
+				nid.szTip[63] = '\0';
+
+				::Shell_NotifyIcon(NIM_ADD, &nid);
+				ShowWindow(SW_HIDE);
+				return 0;
+		}
+
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT onTrayIcon(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if (lParam == WM_LBUTTONUP)
+		{
+			NOTIFYICONDATA nid;
+			nid.cbSize = sizeof(NOTIFYICONDATA);
+			nid.hWnd = m_hWnd;
+			nid.uID = 0;
+			nid.uFlags = 0;
+			::Shell_NotifyIcon(NIM_DELETE, &nid);
+			ShowWindow(SW_SHOW);
+		}
+		return 0;
+	}
+
+	LRESULT onDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		NOTIFYICONDATA nid;
+		nid.cbSize = sizeof(NOTIFYICONDATA);
+		nid.hWnd = m_hWnd;
+		nid.uID = 0;
+		nid.uFlags = 0;
+		::Shell_NotifyIcon(NIM_DELETE, &nid);
+		bHandled = FALSE;
+		return 0;
+	}
+
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
@@ -141,7 +194,13 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 		int i = -1;
 		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
+			try {
+				QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
+			} catch(QueueException e) {
+				MessageBox(e.getError().c_str());
+			} catch(FileException e) {
+				dcdebug("MainFrm::onGetList caught %s\n", e.getError().c_str());
+			}
 		}
 		return 0;
 	}
@@ -446,9 +505,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.39 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.40 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.40  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.39  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *
@@ -584,3 +646,4 @@ private:
  * @endif
  */
 
+ 

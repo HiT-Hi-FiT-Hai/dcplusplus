@@ -36,6 +36,9 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_REMOVENOTAVAILABLE, SettingsManager::REMOVE_NOT_AVAILABLE, PropPage::T_BOOL }, 
 	{ IDC_REMOVEFINISHED, SettingsManager::REMOVE_FINISHED, PropPage::T_BOOL },
 	{ IDC_FILTERKICK, SettingsManager::FILTER_KICKMSGS, PropPage::T_BOOL }, 
+	{ IDC_MINIMIZETRAY, SettingsManager::MINIMIZE_TRAY, PropPage::T_BOOL },
+	{ IDC_OPENPUBLIC, SettingsManager::OPEN_PUBLIC, PropPage::T_BOOL },
+	{ IDC_OPENQUEUE, SettingsManager::OPEN_QUEUE, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -65,9 +68,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.7 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.8 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.8  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.7  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

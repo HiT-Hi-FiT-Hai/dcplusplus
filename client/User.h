@@ -72,6 +72,8 @@ public:
 
 	bool isOnline() const { return (flags & ONLINE) != 0; };
 
+	static void updated(User::Ptr& aUser);
+	
 	User() : sharingLong(0), client(NULL), flags(0) { };
 	User(const string& aNick, DWORD aFlags = 0) : sharingLong(0), client(NULL), nick(aNick), flags(aFlags) { };
 	~User() { };
@@ -94,9 +96,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.9 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: User.h,v 1.10 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.10  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.9  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

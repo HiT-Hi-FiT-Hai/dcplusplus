@@ -22,6 +22,7 @@
 #include "PrivateFrame.h"
 #include "Client.h"
 #include "ClientManager.h"
+#include "MainFrm.h"
 
 CriticalSection PrivateFrame::cs;
 map<User::Ptr, PrivateFrame*> PrivateFrame::frames;
@@ -56,10 +57,40 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-
-PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
+void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab) {
 	PrivateFrame* p = NULL;
-	cs.enter();
+	Lock l(cs);
+	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
+	if(i == frames.end()) {
+		bool found = false;
+		for(i = frames.begin(); i != frames.end(); ++i) {
+			if(i->first->getNick() == aUser->getNick()) {
+				found = true;
+				p = i->second;
+				frames.erase(i);
+				frames[aUser] = p;
+				p->setUser(aUser);
+				p->addLine(aMessage);
+				break;
+			}
+		}
+		if(!found) {
+			p = new PrivateFrame(aUser, aParent);
+			frames[aUser] = p;
+			p->setTab(aTab);
+			p->addLine(aMessage);
+			if(MainFrame::getAway()) {
+				p->sendMessage(MainFrame::getAwayMessage());
+			}
+		}
+	} else {
+		i->second->addLine(aMessage);
+	}
+}
+
+void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab) {
+	PrivateFrame* p = NULL;
+	Lock l(cs);
 	map<User::Ptr, PrivateFrame*>::iterator i = frames.find(aUser);
 	if(i == frames.end()) {
 		bool found = false;
@@ -76,13 +107,12 @@ PrivateFrame* PrivateFrame::getFrame(const User::Ptr& aUser, HWND aParent) {
 		if(!found) {
 			p = new PrivateFrame(aUser, aParent);
 			frames[aUser] = p;
+			p->setTab(aTab);
+			p->CreateEx(aParent);
 		}
-
 	} else {
-		p = i->second;
+		i->second->MDIActivate(i->second->m_hWnd);
 	}
-	cs.leave();
-	return p;
 }
 
 LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -115,9 +145,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.14 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.15 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.15  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.14  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

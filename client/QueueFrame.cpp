@@ -39,6 +39,10 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlQueue.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
 	
+	if(BOOLSETTING(FULL_ROW_SELECT)) {
+		ctrlQueue.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	}
+	
 	ctrlQueue.InsertColumn(COLUMN_TARGET, "Target file", LVCFMT_LEFT, 200, COLUMN_TARGET);
 	ctrlQueue.InsertColumn(COLUMN_STATUS, "Status", LVCFMT_LEFT, 300, COLUMN_STATUS);
 	ctrlQueue.InsertColumn(COLUMN_SIZE, "Size", LVCFMT_RIGHT, 75, COLUMN_SIZE);
@@ -458,13 +462,7 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 		QueueItem::Source* s = (QueueItem::Source*)mi.dwItemData;
 		try {
 			if(s->getUser()) {
-				PrivateFrame* frm = PrivateFrame::getFrame(s->getUser(), m_hWndMDIClient);
-				if(frm->m_hWnd == NULL) {
-					frm->setTab(getTab());
-					frm->CreateEx(m_hWndMDIClient);
-				} else {
-					frm->MDIActivate(frm->m_hWnd);
-				}
+				PrivateFrame::openWindow(s->getUser(), m_hWndMDIClient, getTab());
 			}
 		} catch(...) {
 			// ...
@@ -476,9 +474,12 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.4 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.5 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.5  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.4  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

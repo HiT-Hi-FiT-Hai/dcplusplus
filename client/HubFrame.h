@@ -299,8 +299,21 @@ public:
 			ctrlClient.ReplaceSel("");
 			ctrlClient.SetRedraw(TRUE);
 		}
+		BOOL noscroll = TRUE;
+		POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
+		CRect r;
+		ctrlClient.GetClientRect(r);
+
+		if( r.PtInRect(p))
+			noscroll = FALSE;
+		else {
+			ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
+		}
 		ctrlClient.AppendText("\r\n");
 		ctrlClient.AppendText(aLine.c_str());
+		if(noscroll) {
+			ctrlClient.SetRedraw(TRUE);
+		}
 		setDirty();
 	}
 
@@ -353,7 +366,7 @@ private:
 
 	class PMInfo {
 	public:
-		PrivateFrame* frm;
+		User::Ptr user;
 		string msg;
 	};
 
@@ -458,7 +471,7 @@ private:
 		case ClientListener::PRIVATE_MESSAGE:
 			PMInfo* i = new PMInfo();
 			
-			i->frm = PrivateFrame::getFrame(user, m_hWndMDIClient);
+			i->user = user;
 			i->msg = line;
 			PostMessage(WM_SPEAKER, CLIENT_PRIVATEMESSAGE, (LPARAM)i);
 			break;
@@ -498,9 +511,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.47 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.48 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.48  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.47  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

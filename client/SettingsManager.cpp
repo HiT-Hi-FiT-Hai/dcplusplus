@@ -35,7 +35,8 @@ char const* SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
-	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages",
+	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
+	"OpenPublic", "OpenQueue",
 	"SENTRY"
 };
 
@@ -65,7 +66,10 @@ SettingsManager::SettingsManager()
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(REMOVE_FINISHED, true);
 	setDefault(FILTER_KICKMSGS, false);
-	
+	setDefault(MINIMIZE_TRAY, false);
+	setDefault(OPEN_PUBLIC, true);
+	setDefault(OPEN_QUEUE, false);
+
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	setDefault(TEXT_FONT, Util::encodeFont(lf));			
@@ -203,9 +207,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.14 2002/02/03 01:06:56 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.15 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.15  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.14  2002/02/03 01:06:56  arnetheduck
  * More bugfixes and some minor changes
  *

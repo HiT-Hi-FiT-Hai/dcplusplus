@@ -168,7 +168,6 @@ public:
 
 	void connect(const string& aServer, short aPort = 412);
 	void accept(const ServerSocket& aSocket);
-	void waitForConnection(short aPort = 412);
 	void disconnect() {
 		socket.disconnect();
 	}
@@ -293,9 +292,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.30 2002/02/01 02:00:47 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.31 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.31  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.30  2002/02/01 02:00:47  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

@@ -139,6 +139,7 @@ bool BufferedSocket::threadConnect() {
 					} else {
 						// Should never happen...
 						dcassert("Bad tasks in BufferedSocket after SendFile" == NULL);
+						Tasks t = *i;
 					} 
 				}
 				
@@ -146,6 +147,7 @@ bool BufferedSocket::threadConnect() {
 			return 0x00;
 		case WAIT_OBJECT_0 + 1:
 			// We're connected!
+			setConnected();
 			fire(BufferedSocketListener::CONNECTED);
 			return true;
 		default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
@@ -295,6 +297,14 @@ void BufferedSocket::threadRun() {
 	int i = 0;
 	while(true) {
 		handles = isConnected() ? 2 : 1;
+		if(handles == 2) {
+			try {
+				h[1] = getEvent();
+			} catch (SocketException e) {
+				handles = 1;
+			}
+		}
+		
 		switch( (i = WaitForMultipleObjects(handles, h, FALSE, INFINITE))) {
 		case WAIT_OBJECT_0:
 			{
@@ -349,9 +359,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.25 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.26 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.26  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.25  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

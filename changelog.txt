@@ -1,10 +1,23 @@
  -- 0.152 --
-* Fixed a queue saving bug (resulting in overwritten resumes)
+* Fixed a queue saving bug (resulting in overwritten resumes...yes, this is _the_ resume bug...)
 * Improved network efficiency and application responsivness
 * Started improving the threading, which will result in less crashes.
+* Fixed disconnection from hubs at startup
+* Hopefully fixed "unknown error 0x2747", please report if you get "Ran out of buffer space"
+* Fixed circular pm:s (away messages are now only sent once per user when the window is opened, and only when he/she initiates the pm session...)
+* Hopefully fixed pm away message crashes
+* Fixed annoying scroll in hub window (when scolling up to view previous messages)
+* Added option to minimize to tray
+* Fixed a connection timeout bug
+* Fixed "Get User List" in transfer window crash
+* Fixed _some_ of the random crashes
+* DCLists are now removed from the download queue even if "keep finished downloads" is set...
+* Fixed bug where dc++ continued to try to establish a connection to a user even though there were no downloads in the queue
+* Fixed a bug where connections were not correctly removed from the transfer window
+* Added options to disable automatic opening of queue and public hub list windows
+* Fixed full row select in queue window
 
-
- -- 0.151 2001-02-03 --
+ -- 0.151 2002-02-03 --
 * Fixed stupid resume file bug (abnormal progam termination...)
 
  -- 0.15 2002-02-03 --

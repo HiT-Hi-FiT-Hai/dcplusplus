@@ -68,9 +68,9 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 		cqi = new ConnectionQueueItem(aUser);
 		
 		pendingDown[cqi] = 0;
-	}
 
-	fire(ConnectionManagerListener::ADDED, cqi);
+		fire(ConnectionManagerListener::ADDED, cqi);
+	}
 }
 
 void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
@@ -78,19 +78,18 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 	if(reuse) {
 		cs.enter();
 		if(downPool.find(aSource) == downPool.end()) {
+			dcassert(connections.find(aSource) != connections.end());
+
 			ConnectionQueueItem::QueueIter i = connections.find(aSource);
-			if(i == connections.end()) {
-				dcdebug("ConnectionManager::putDownloadConnection CQI not found (%s)\n", aSource->getUser()->getNick().c_str());
-			}
 			aSource->setStatus(UserConnection::IDLE);
 			downPool[aSource] = i->second;
-			
 			cs.leave();
-			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection to %s\n", aSource->getUser()->getNick().c_str());
+
+			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
 			aSource->addListener(this);
 		} else {
 			cs.leave();
-			dcdebug("ConnectionManager::putDownloadConnection Reusable connection pooled twice: %s\n", aSource->getUser()->getNick().c_str());
+			dcdebug("ConnectionManager::putDownloadConnection Reusable connection %p pooled twice: %s\n", aSource, aSource->getUser()->getNick().c_str());
 		}
 	} else {
 		putConnection(aSource);
@@ -102,7 +101,6 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 		UserConnection::List removed;
 		// Max 3 connection attempts every second...
 		ConnectionQueueItem::List add;
-		ConnectionQueueItem::List timeout;
 		ConnectionQueueItem::List remove;
 		int attempts = 0;
 		{
@@ -131,13 +129,18 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 				if( ((i->second + 60*1000) < aTick) ) {
 					if((attempts <= 3) ) {
 						// Nothing's happened for 60 seconds, try again...
+						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
+							i = pendingDown.erase(i);
+							remove.push_back(cqi);
+							continue;
+						}
 						cqi->getUser()->connect();
 						attempts++;
 						i->second = aTick;
 						cqi->setStatus(ConnectionQueueItem::CONNECTING);
 					}
 				} else if(((i->second + 40*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
-					timeout.push_back(cqi);
+					fire(ConnectionManagerListener::FAILED, cqi, "Connection Timeout");
 					cqi->setStatus(ConnectionQueueItem::WAITING);
 				}
 
@@ -146,16 +149,13 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
 		}
 
 		for(UserConnection::Iter j = removed.begin(); j != removed.end(); ++j) {
+			dcdebug("UserConnection %p deleted\n", *j);
 			delete *j;
 		}
 
 		for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
 			fire(ConnectionManagerListener::STATUS_CHANGED, *k);
 			DownloadManager::getInstance()->addConnection((*k)->getConnection());
-		}
-
-		for(ConnectionQueueItem::Iter h = add.begin(); h != add.end(); ++h) {
-			fire(ConnectionManagerListener::FAILED, *h, "Connection timeout");
 		}
 
 		for(ConnectionQueueItem::Iter l = remove.begin(); l != remove.end(); ++l) {
@@ -172,12 +172,12 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) 
  */
 void ConnectionManager::onIncomingConnection() throw() {
 	UserConnection* uc = getConnection();
-
+	
 	try { 
 		uc->accept(socket);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setStatus(UserConnection::CONNECTING);
-
+		
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -189,10 +189,10 @@ void ConnectionManager::onIncomingConnection() throw() {
  */
 void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) throw() {
 	dcassert(aNick.size() > 0);
-	dcdebug("ConnectionManager::onMyNick %s\n", aNick.c_str());
+	dcdebug("ConnectionManager::onMyNick %p, %s\n", aSource, aNick.c_str());
 	if(aSource->user) {
 		// Not good, this user sent his nick twice, and we don't want that...
-		dcdebug("ConnectionManager::onMyNick Nick sent twice, aborting: %s\n", aNick.c_str());
+		dcdebug("ConnectionManager::onMyNick Nick sent twice, aborting: %p, %s\n", aSource, aNick.c_str());
 		
 		putConnection(aSource);
 		return;
@@ -244,22 +244,15 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 }
 
 void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw() {
-	try {
-		if(aLock == CryptoManager::getInstance()->getLock()) {
-			// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
-			if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
-				aSource->getUser()->setFlag(User::DCPLUSPLUS);
-				aSource->getUser()->update();
-			}
+	if(aLock == CryptoManager::getInstance()->getLock()) {
+		// Alright, we have an extended protocol, set a user flag for this user and refresh his info...
+		if( (aPk.find("DCPLUSPLUS") != string::npos) && aSource->getUser()) {
+			aSource->getUser()->setFlag(User::DCPLUSPLUS);
+			User::updated(aSource->getUser());
 		}
-		aSource->direction(aSource->getDirectionString(), "666");
-		aSource->key(CryptoManager::getInstance()->makeKey(aLock));
-	} catch(SocketException e) {
-		dcdebug("ConnectionManager::onLock caught: %s\n", e.getError().c_str());
-		putConnection(aSource);
-		return;
 	}
-				
+	aSource->direction(aSource->getDirectionString(), "666");
+	aSource->key(CryptoManager::getInstance()->makeKey(aLock));
 }
 
 void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw() {
@@ -285,11 +278,11 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 			putDownloadConnection(aSource);
 			return;
 		}
-		dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 		if(!aSource->getUser()) {
 			// We still don't know who this is!!!
 			putDownloadConnection(aSource);
 		} else {
+			dcdebug("ConnectionManager::onKey, leaving to downloadmanager\n");
 			DownloadManager::getInstance()->addConnection(aSource);
 		}
 	} else {
@@ -313,26 +306,15 @@ void ConnectionManager::onKey(UserConnection* aSource, const string& aKey) throw
 }
 
 void ConnectionManager::onConnected(UserConnection* aSource) throw() {
-	try {
-		aSource->myNick(aSource->getNick());
-		aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
-	} catch(Exception e) {
-		dcdebug("ConnectionManager::onConnected caught: %s\n", e.getError().c_str());
-		putConnection(aSource);
-	}
+	aSource->myNick(aSource->getNick());
+	aSource->lock(CryptoManager::getInstance()->getLock(), CryptoManager::getInstance()->getPk());
 }
 
 void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
 	UserConnection* c = getConnection();
 	c->setNick(aNick);
 	c->setStatus(UserConnection::CONNECTING);
-
-	try { 
-		c->connect(aServer, aPort);
-	} catch(Exception e) {
-		dcdebug("ConnectionManager::connect caught: %s\n", e.getError().c_str());
-		putConnection(c);
-	}
+	c->connect(aServer, aPort);
 }
 
 void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) throw() {
@@ -342,7 +324,7 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& aError) 
 			
 			ConnectionQueueItem::QueueIter i = downPool.find(aSource);
 			if(i != downPool.end()) {
-				dcdebug("ConnectionManager::onError Removing connection to %s from active pool\n", aSource->getUser()->getNick().c_str());
+				dcdebug("ConnectionManager::onError Removing connection %p to %s from active pool\n", aSource, aSource->getUser()->getNick().c_str());
 				downPool.erase(i);
 			}
 		}
@@ -382,6 +364,8 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 		if(pendingDown.find(aCqi) != pendingDown.end()) {
 			pendingDown.erase(aCqi);
 			found = true;
+			fire(ConnectionManagerListener::REMOVED, aCqi);
+			delete aCqi;
 		} else {
 			ConnectionQueueItem::QueueIter i;
 			for(i = connections.begin(); i != connections.end(); ++i) {
@@ -392,37 +376,12 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 			if(i!=connections.end()) {
 				found = true;
 				dcassert(aCqi->getConnection());
-				
-				if(aCqi->getConnection()->getStatus() == UserConnection::BUSY) {
-					if(aCqi->getConnection()->isSet(UserConnection::FLAG_DOWNLOAD)) {
-						DownloadManager::getInstance()->removeDownload(aCqi->getConnection(), true);
-						return;
-					} else {
-						UploadManager::getInstance()->removeUpload(aCqi->getConnection());
-						return;
-					}
-				} else {
-					connections.erase(i);
-				}
-			} 
-		}
-	}
-
-	if(found) {
-		if(aCqi->getConnection()) {
-			TimerManager::getInstance()->removeListener(aCqi->getConnection());
-			{
-				Lock l(cs);
-				if(downPool.find(aCqi->getConnection()) != downPool.end()) {
-					downPool.erase(aCqi->getConnection());
-					pendingDelete.push_back(aCqi->getConnection());
-				}
-				
+				aCqi->getConnection()->disconnect();
+			} else {
+				dcdebug("ConnectionManager::removeConnection: %p not found\n", aCqi);
 			}
 		}
-		fire(ConnectionManagerListener::REMOVED, aCqi);
-		delete aCqi;
-	} 
+	}
 }
 
 void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
@@ -434,6 +393,7 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 		Lock l(cs);
 		connections.erase(aCqi->getConnection());
 		aCqi->setConnection(NULL);
+		aCqi->setStatus(ConnectionQueueItem::WAITING);
 	}
 
 	pendingDelete.push_back(uc);
@@ -442,9 +402,12 @@ void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.26 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.27 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.27  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.26  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

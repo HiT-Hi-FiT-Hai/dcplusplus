@@ -42,7 +42,7 @@ public:
 	void addDirectory(const string& aDirectory) throw(ShareException);
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
-	void refresh(bool dirs = false) throw(ShareException);
+	void refresh(bool dirs = false, bool aUpdate = true) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
 	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
@@ -144,7 +144,7 @@ private:
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : refreshDirs(false), listLen(0), dirty(false), refreshThread(NULL) { 
+	ShareManager() : update(false), refreshDirs(false), listLen(0), dirty(false), refreshThread(NULL) { 
 		
 	};
 	
@@ -164,7 +164,8 @@ private:
 	LONGLONG listLen;
 	bool dirty;
 	bool refreshDirs;
-
+	bool update;
+	
 	string listFile;
 
 	CriticalSection cs;
@@ -183,9 +184,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.17 2002/02/01 02:00:45 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.18 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.18  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.17  2002/02/01 02:00:45  arnetheduck
  * A lot of work done on the new queue manager, hopefully this should reduce
  * the number of crashes...

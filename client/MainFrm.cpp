@@ -348,7 +348,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	SettingsManager::getInstance()->load();	
 	
-	ShareManager::getInstance()->refresh();
+	ShareManager::getInstance()->refresh(false, false);
 	HubManager::getInstance()->refresh();
 	
 	Util::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
@@ -473,8 +473,11 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
-	PostMessage(WM_COMMAND, ID_FILE_CONNECT);
-	PostMessage(WM_COMMAND, IDC_QUEUE);
+	if(BOOLSETTING(OPEN_PUBLIC))
+		PostMessage(WM_COMMAND, ID_FILE_CONNECT);
+	if(BOOLSETTING(OPEN_QUEUE))
+		PostMessage(WM_COMMAND, IDC_QUEUE);
+	
 	PostMessage(WM_SPEAKER, AUTO_CONNECT);
 	
 	// We want to pass this one on to the splitter...hope it get's there...
@@ -645,22 +648,19 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		PrivateFrame* frm = PrivateFrame::getFrame(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), m_hWndMDIClient);
-		if(frm->m_hWnd == NULL) {
-			frm->setTab(&ctrlTab);
-			frm->CreateEx(m_hWndMDIClient);
-		} else {
-			frm->MDIActivate(frm->m_hWnd);
-		}
+		PrivateFrame::openWindow(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), m_hWndMDIClient, &ctrlTab);
 	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.56 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.57 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.57  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.56  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

@@ -37,9 +37,6 @@ public:
 	DECLARE_FRAME_WND_CLASS("PrivateFrame", IDR_PRIVATE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		cs.enter();
-		frames.erase(user);
-		cs.leave();
 		delete this;
 	}
 
@@ -51,11 +48,19 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		Lock l(cs);
+		frames.erase(user);
+		bHandled = FALSE;
+		return FALSE;
+	}
+	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -156,7 +161,8 @@ public:
 			addLine(s);
 		}
 	}
-	static PrivateFrame* getFrame(const User::Ptr& aUser, HWND aParent = NULL);
+	static void gotMessage(const User::Ptr& aUser, const string& aMessage, HWND aParent, FlatTabCtrl* aTab);
+	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
 	
 	User::Ptr& getUser() { return user; };
 private:
@@ -183,9 +189,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.10 2002/02/04 01:10:30 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.11 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.11  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.10  2002/02/04 01:10:30  arnetheduck
  * Release 0.151...a lot of things fixed
  *

@@ -217,8 +217,8 @@ StringList ShareManager::getDirectories() {
 	return tmp;
 }
 
-void ShareManager::refresh(bool dirs /* = false */) throw(ShareException) {
-	
+void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */) throw(ShareException) {
+	update = aUpdate;
 	refreshDirs = dirs;
 	if(dirty) {
 		if(refreshThread) {
@@ -268,7 +268,9 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 
 	sm->cs.leave();
 
-	ClientManager::getInstance()->infoUpdated();
+	if(sm->update) {
+		ClientManager::getInstance()->infoUpdated();
+	}
 	return 0;
 }
 
@@ -424,9 +426,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.23 2002/02/02 17:21:27 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.24 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.24  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.23  2002/02/02 17:21:27  arnetheduck
  * Fixed search bugs and some other things...
  *

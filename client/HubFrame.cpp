@@ -43,7 +43,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
+		WS_VSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
@@ -251,13 +251,7 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			string user = buf;
 			User::Ptr& u = client->getUser(user);
 			if(u) {
-				PrivateFrame* frm = PrivateFrame::getFrame(u, m_hWndMDIClient);
-				if(frm->m_hWnd == NULL) {
-					frm->setTab(getTab());
-					frm->CreateEx(m_hWndMDIClient);
-				} else {
-					frm->MDIActivate(frm->m_hWnd);
-				}
+				PrivateFrame::openWindow(u, m_hWndMDIClient, getTab());
 			}
 		}
 	}
@@ -452,18 +446,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
 		PMInfo* i = (PMInfo*)lParam;
-		if(i->frm->m_hWnd == NULL) {
-			i->frm->setTab(getTab());
-			i->frm->CreateEx(m_hWndMDIClient);
-			MessageBeep(MB_OK);
-		}
-		i->frm->addLine(i->msg);
-		if(MainFrame::getAway()) {
-			Lock l(cs);
-			if(client) {
-				i->frm->sendMessage(MainFrame::getAwayMessage());
-			}
-		}
+		PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 		delete i;
 	} else if(wParam == CLIENT_CONNECTED) {
 		//ctrlClient.Invalidate();
@@ -487,9 +470,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.32 2002/02/04 01:10:29 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.33 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.33  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.32  2002/02/04 01:10:29  arnetheduck
  * Release 0.151...a lot of things fixed
  *

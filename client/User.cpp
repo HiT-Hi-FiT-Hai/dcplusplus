@@ -51,6 +51,12 @@ void User::update() {
 	}
 }
 
+void User::updated(User::Ptr& aUser) {
+	Lock l(aUser->cs);
+	if(aUser->client) {
+		aUser->client->updated(aUser);
+	}
+}
 string User::getClientName() {
 	Lock l(cs);
 	if(client) {
@@ -98,9 +104,12 @@ void User::clientMessage(const string& aMsg) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.5 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: User.cpp,v 1.6 2002/02/07 17:25:28 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.6  2002/02/07 17:25:28  arnetheduck
+ * many bugs fixed, time for 0.152 I think
+ *
  * Revision 1.5  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *
