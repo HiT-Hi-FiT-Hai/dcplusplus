@@ -30,6 +30,7 @@
 #define IDC_SLOTS                       1015
 #define IDC_SLOTSPIN                    1016
 #define IDC_TRANSFERS					1017
+#define IDC_CONNECT						1018
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

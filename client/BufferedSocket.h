@@ -78,23 +78,34 @@ public:
 	}
 	virtual void write(const char* aBuf, int aLen) throw(SocketException) {
 		cs.enter();
-		Socket::write(aBuf, aLen);
+		try {
+			Socket::write(aBuf, aLen);
+		} catch(...) {
+			cs.leave();
+			throw;			
+		}
 		cs.leave();
 	}
 	
 	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), readerEvent(NULL), mode(MODE_LINE),
-		writerEvent(NULL), writerThread(NULL), dataBytes(0) {
-
+		dataBytes(0) {
+		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	};
 
 	virtual ~BufferedSocket() {
-		stopWriter();
 		stopReader();
+		CloseHandle(writerEvent);
+		CloseHandle(readerEvent);
 	}
 
+	/**
+	 * Send the file f over this socket. Note; reading is suspended until the whole file has
+	 * been sent.
+	 */
 	void transmitFile(HANDLE f) throw(SocketException){
 		file = f;
-		startWriter();
+		SetEvent(writerEvent);
 	}
 private:
 	BufferedSocket(const BufferedSocket& aSocket) {
@@ -113,46 +124,17 @@ private:
 	HANDLE file;
 
 	HANDLE writerEvent;
-	HANDLE writerThread;
 	
 	HANDLE readerEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
-	static DWORD WINAPI writer(void* p);
+	static bool writer(BufferedSocket* bs);
 	
 	void startReader() {
 		DWORD threadId;
 		stopReader();
 		
-		readerEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
-	}
-
-	void startWriter() {
-		DWORD threadId;
-		stopWriter();
-		
-		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-		writerThread = CreateThread(NULL, 0, &writer, this, 0, &threadId);
-		SetThreadPriority(writerThread, THREAD_PRIORITY_LOWEST);
-	}
-	
-	void stopWriter() {
-		if(writerThread != NULL) {
-			dcassert(writerEvent != NULL);
-			SetEvent(writerEvent);
-			
-			if(WaitForSingleObject(writerThread, 1000) == WAIT_TIMEOUT) {
-//				dcassert(0);
-			}
-			CloseHandle(writerThread);
-			writerThread = NULL;
-		}
-
-		if(writerEvent != NULL) {
-			CloseHandle(writerEvent);
-			writerEvent = NULL;
-		}
 	}
 
 	void stopReader() {
@@ -165,10 +147,6 @@ private:
 			}
 			CloseHandle(readerThread);			
 			readerThread = NULL;
-		}
-		if(readerEvent != NULL) {
-			CloseHandle(readerEvent);
-			readerEvent = NULL;
 		}
 	}
 	
@@ -242,9 +220,15 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.12 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.12  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.11  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

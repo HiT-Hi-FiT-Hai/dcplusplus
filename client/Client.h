@@ -47,7 +47,14 @@ public:
 	};
 
 	bool isConnected() { return socket.isConnected(); };
-	
+	static bool isConnected(const string& aServer) {
+		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
+			if((*i)->getServer() == aServer) {
+				return true;
+			}
+		}
+		return false;
+	}
 	virtual ~Client() {
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
 			if(*i == this) {
@@ -94,6 +101,11 @@ public:
 	}
 
 	void disconnect() {	
+		User::NickMap tmp = users;
+		users.clear();
+		for(User::NickIter i = tmp.begin(); i != tmp.end(); ++i) {
+			delete i->second;
+		}
 		socket.removeListener(this);
 		socket.disconnect();
 	}
@@ -147,7 +159,7 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "$" + aEmail + "$" + aBytesShared + "$|");
+		send("$MyINFO $ALL " + aNick + " " + aDescription+ " $ $" + aSpeed + "\x05$" + aEmail + "$" + aBytesShared + "$|");
 	}
 
 	void connectToMe(User* aUser) {
@@ -225,11 +237,6 @@ protected:
 	virtual void onLine(const string& aLine);
 	
 	virtual void onError(const string& aReason) {
-		User::NickMap tmp = users;
-		users.clear();
-		for(User::NickIter i = tmp.begin(); i != tmp.end(); ++i) {
-			delete i->second;
-		}
 		fireError(aReason);
 		disconnect();
 	}
@@ -420,9 +427,15 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.7 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: Client.h,v 1.8 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.8  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.7  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

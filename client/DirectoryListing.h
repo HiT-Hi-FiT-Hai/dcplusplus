@@ -44,6 +44,32 @@ public:
 		typedef list<Ptr> List;
 		typedef List::iterator Iter;
 		
+		LONGLONG getSize() {
+			LONGLONG x = 0;
+			for(File::Iter i = files.begin(); i != files.end(); ++i) {
+				x+=(*i)->size;
+			}
+			return x;
+		}
+		LONGLONG getTotalSize() {
+			LONGLONG x = getSize();
+			for(Iter i = directories.begin(); i != directories.end(); ++i) {
+				x += (*i)->getTotalSize();
+			}
+			return x;
+		}
+
+		int getFileCount() {
+			return files.size();
+		}
+		int getTotalFileCount() {
+			int x = getFileCount();
+			for(Iter i = directories.begin(); i != directories.end(); ++i) {
+				x += (*i)->getTotalFileCount();
+			}
+			return x;
+		}
+		
 		string name;
 		List directories;
 		File::List files;
@@ -61,6 +87,13 @@ public:
 		}
 		
 	};
+
+	LONGLONG getTotalSize() {
+		return root->getTotalSize();
+	}
+	int getTotalFileCount() {
+		return root->getTotalFileCount();
+	}
 
 	void load(string& i);
 	string getPath(Directory* d);
@@ -82,9 +115,15 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.2 2001/11/29 19:10:54 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.3 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.h,v $
+ * Revision 1.3  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.2  2001/11/29 19:10:54  arnetheduck
  * Refactored down/uploading and some other things completely.
  * Also added download indicators and download resuming, along

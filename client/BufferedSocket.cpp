@@ -30,26 +30,28 @@ void BufferedSocket::accept(const ServerSocket& aSocket) {
 	startReader();
 }
 
-
-DWORD WINAPI BufferedSocket::writer(void* p) {
-	BufferedSocket* bs = (BufferedSocket*)p;
-	BYTE buf[4096];
+/**
+ * Write a file to the socket, stops reading from the socket until the transfer's finished.
+ * @return True if everythings ok and the thread should continue reading, false on error
+ */
+bool BufferedSocket::writer(BufferedSocket* bs) {
+	BYTE buf[BUFSIZE];
 	DWORD len;
 
-	HANDLE h = bs->writerEvent;
+	HANDLE h = bs->readerEvent;
 	HANDLE file = bs->file;
-
+	dcassert(file != NULL);
+	
 	if(!bs->isConnected()) {
 		bs->fireError("Not connected");
-		return 0x11;
-
+		return false;
 	}
 
 	while(WaitForSingleObject(h, 0) == WAIT_TIMEOUT) {
-		if(ReadFile(file, buf, 4096, &len, NULL)) {
+		if(ReadFile(file, buf, BUFSIZE, &len, NULL)) {
 			if(len == 0) {
 				bs->fireTransmitDone();
-				return 0x10;
+				return true;
 			}
 			try {
 				bs->write((char*)buf, len);
@@ -57,18 +59,17 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 			} catch(SocketException e) {
 				dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
 				bs->fireError(e.getError());
-				return 0x12;
+				return false;
 			}
 		} else {
 			bs->fireError("Error reading file");
-			return 0x13;
+			return false;
 		}
 	}
 
 	// Hm, to fire or not to fire, that is the question...
 //	fireError("File not finished");
-	return 0x14;
-	
+	return false;
 }
 
 DWORD WINAPI BufferedSocket::reader(void* p) {
@@ -76,17 +77,18 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	
 	BufferedSocket* bs = (BufferedSocket*) p;
 	
-	HANDLE h[2];
+	HANDLE h[3];
 	
 	h[0] = bs->readerEvent;
-	
+	h[1] = bs->writerEvent;
+
 	try {
 		if(!bs->isConnected()) {
 			bs->create();
-			h[1] = bs->getEvent();
+			h[2] = bs->getEvent();
 
 			bs->Socket::connect(bs->server, bs->port);
-			if(WaitForMultipleObjects(2, h, FALSE, 10000) != WAIT_OBJECT_0 + 1) {
+			if(WaitForMultipleObjects(3, h, FALSE, 10000) != WAIT_OBJECT_0 + 2) {
 				// Either timeout or window stopped...don't care which really...
 				bs->disconnect();
 				bs->fireError("Connection Timeout.");
@@ -95,7 +97,7 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				
 			bs->fireConnected();
 		} else {
-			h[1] = bs->getEvent();
+			h[2] = bs->getEvent();
 		}
 	} catch (SocketException e) {
 		dcdebug("BufferedSocket::Reader caught: %s\n", e.getError().c_str());
@@ -107,71 +109,88 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	string line = "";
 	BYTE buf[BUFSIZE];
 	
-	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		try {
-			//dcdebug("Available bytes: %d\n", bs->getAvailable());
-			int i = bs->read(buf, BUFSIZE);
-			if(i == -1) {
-				// EWOULDBLOCK, no data recived, most probably a read event...
-				continue;
-			} else if(i == 0) {
-				// This socket has been closed...
-				bs->disconnect();
-				bs->fireError("Disconnected.");
+	while(true) {
+		switch( WaitForMultipleObjects(3, h, FALSE, INFINITE) ) {
+		case WAIT_OBJECT_0:				// readerEvent, time to stop
+			return 0;
+		case WAIT_OBJECT_0 + 1:			// writerEvent, send the file
+			if(!writer(bs))
 				return 0x03;
-			}
-			int bufpos = 0;
-			string l;
+			break;
+		case WAIT_OBJECT_0 + 2:
 
-			if(bs->mode == MODE_LINE) {
-				// We might as well create the string, at least one part will be sent as a string...
-				l = string((char*)buf, i);
-			}
-			
-			while(i) {
-				if(bs->mode == MODE_LINE) {
-					string::size_type pos;
-					if( (pos = l.find(bs->separator)) != string::npos) {
-						bufpos += sizeof(bs->separator) + pos;
-						if(!line.empty()) {
-							bs->fireLine(line + l.substr(0, pos));
-							line = "";
-						} else {
-							bs->fireLine(l.substr(0, pos));
-						}
-						l = l.substr(pos+1);
-						i-=(pos+1);
-					} else {
-						line += l;
-						i = 0;
-					}
-				} else if(bs->mode == MODE_DATA) {
-					if(bs->dataBytes == -1) {
-						bs->fireData(buf+bufpos, i);
-						i = 0;
-					} else {
-						int high = bs->dataBytes < i ? bs->dataBytes - i : i;
-						bs->fireData(buf+bufpos, high);
-						i-=high;
-						
-						bs->dataBytes -= high;
-						if(bs->dataBytes == 0) {
-							bs->fireModeChange(MODE_LINE);
-							bs->mode = MODE_LINE;
-						}
-					}
-				} else if(bs->mode == MODE_DGRAM) {
-					bs->fireData(buf, i);
-					i = 0;
+			try {
+				//dcdebug("Available bytes: %d\n", bs->getAvailable());
+				int i = bs->read(buf, BUFSIZE);
+				if(i == -1) {
+					// EWOULDBLOCK, no data recived, most probably a read event...
+					continue;
+				} else if(i == 0) {
+					// This socket has been closed...
+					bs->disconnect();
+					bs->fireError("Disconnected.");
+					return 0x03;
 				}
+				int bufpos = 0;
+				string l;
+
+				if(bs->mode == MODE_LINE) {
+					// We might as well create the string, at least one part will be sent as a string...
+					l = string((char*)buf, i);
+				}
+				
+				while(i) {
+					if(bs->mode == MODE_LINE) {
+						string::size_type pos;
+						if( (pos = l.find(bs->separator)) != string::npos) {
+							bufpos += sizeof(bs->separator) + pos;
+							if(!line.empty()) {
+								bs->fireLine(line + l.substr(0, pos));
+								line = "";
+							} else {
+								bs->fireLine(l.substr(0, pos));
+							}
+							l = l.substr(pos+1);
+							i-=(pos+1);
+						} else {
+							line += l;
+							i = 0;
+						}
+					} else if(bs->mode == MODE_DATA) {
+						if(bs->dataBytes == -1) {
+							bs->fireData(buf+bufpos, i);
+							i = 0;
+						} else {
+							int high = bs->dataBytes < i ? bs->dataBytes - i : i;
+							bs->fireData(buf+bufpos, high);
+							i-=high;
+							
+							bs->dataBytes -= high;
+							if(bs->dataBytes == 0) {
+								bs->fireModeChange(MODE_LINE);
+								bs->mode = MODE_LINE;
+							}
+						}
+					} else if(bs->mode == MODE_DGRAM) {
+						bs->fireData(buf, i);
+						i = 0;
+					}
+				}
+			} catch(SocketException e) {
+				dcdebug("BufferedSocket::Reader caught(2): %s\n", e.getError().c_str());
+				// Ouch...
+				bs->disconnect();
+				bs->fireError(e.getError());
+				bs->readerThread = NULL;
+				return 0x04;
 			}
-		} catch(SocketException e) {
-			dcdebug("BufferedSocket::Reader caught(2): %s\n", e.getError().c_str());
-			// Ouch...
-			bs->disconnect();
-			bs->fireError(e.getError());
-			bs->readerThread = NULL;
-			return 0x04;
+			break;
+		case WAIT_FAILED:
+			// Duuhhh???
+			dcdebug("BufferedSocket::reader Wait failed (%x)\n", GetLastError());
+			return 0x05;
+		default:
+			dcassert(0);
 		}
 	}
 	return 0;
@@ -179,9 +198,15 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.14 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.15 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.15  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.14  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

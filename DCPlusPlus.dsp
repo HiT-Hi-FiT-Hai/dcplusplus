@@ -174,7 +174,7 @@ SOURCE=.\client\ProtocolHandler.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\PublicHubsDlg.cpp
+SOURCE=.\client\PublicHubsFrm.cpp
 # End Source File
 # Begin Source File
 
@@ -327,7 +327,7 @@ SOURCE=.\client\ProtocolHandler.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\PublicHubsDlg.h
+SOURCE=.\client\PublicHubsFrm.h
 # End Source File
 # Begin Source File
 

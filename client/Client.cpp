@@ -46,70 +46,76 @@ void Client::connect(const string& aServer, short aPort) {
  */
 
 void Client::onLine(const string& aLine) {
-	if(aLine.length() == 0) {
-//		dcassert(0); // should never happen...but it does...
-	} else if(aLine.find("$Search") != string::npos) {
-		string tmp = aLine.substr(8);
-		string seeker = tmp.substr(0, tmp.find(' '));
-		tmp = tmp.substr(tmp.find(' ') + 1);
+	string cmd;
+	string param;
+	int x;
+
+	if(aLine.length() == 0)
+		return;
+	
+	if( (x = aLine.find(' ')) == string::npos) {
+		cmd = aLine;
+	} else {
+		cmd = aLine.substr(0, x);
+		param = aLine.substr(x+1);
+	}
+	
+	if(cmd == "$Search") {
+		string seeker = param.substr(0, param.find(' '));
+		param = param.substr(param.find(' ') + 1);
 		int a;
-		if(tmp[0] == 'F') {
+		if(param[0] == 'F') {
 			a = SearchManager::SIZE_DONTCARE;
-		} else if(tmp[2] == 'F') {
+		} else if(param[2] == 'F') {
 			a = SearchManager::SIZE_ATLEAST;
 		} else {
 			a = SearchManager::SIZE_ATMOST;
 		}
-		tmp=tmp.substr(4);
-		string size = tmp.substr(0, tmp.find('?'));
-		tmp = tmp.substr(tmp.find('?')+1);
-		int type = atoi(tmp.substr(0, tmp.find('?')).c_str());
-		tmp = tmp.substr(tmp.find('?')+1);
-		fireSearch(seeker, a, size, type, tmp);
-	} else if(aLine.find("$ConnectToMe") != string::npos) {
-		string tmp = aLine.substr(13);
-		tmp = tmp.substr(tmp.find(' ') + 1);
-		string server = tmp.substr(0, tmp.find(':'));
-		fireConnectToMe(server, tmp.substr(tmp.find(':')+1));
-	} else if(aLine.find("$RevConnectToMe") != string::npos) {
+		param=param.substr(4);
+		string size = param.substr(0, param.find('?'));
+		param = param.substr(param.find('?')+1);
+		int type = atoi(param.substr(0, param.find('?')).c_str());
+		param = param.substr(param.find('?')+1);
+		fireSearch(seeker, a, size, type, param);
+	} else if(cmd == "$ConnectToMe") {
+		param = param.substr(param.find(' ') + 1);
+		string server = param.substr(0, param.find(':'));
+		fireConnectToMe(server, param.substr(param.find(':')+1));
+	} else if(cmd == "$RevConnectToMe") {
 		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
-			string tmp = aLine.substr(16);
-			User::NickIter i = users.find(tmp.substr(0, tmp.find(' ')));
+			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
 				fireRevConnectToMe(i->second);
 			}
 		}
-	} else if(aLine.find("$HubName") != string::npos) {
-		name = aLine.substr(9);
+	} else if(cmd == "$HubName") {
+		name = param;
 		fireHubName();
-	} else if(aLine.find("$Lock")!=string::npos) {
+	} else if(cmd == "$Lock") {
 	
-		string lock = aLine.substr(6);
-		lock = lock.substr(0, lock.find(' '));
-		string pk = lock.substr(lock.find(' ') + 4);
+		string lock = param.substr(0, param.find(' '));
+		string pk = param.substr(param.find(' ') + 4);
 		fireLock(lock, pk);	
-	} else if(aLine.find("$Hello") != string::npos) {
-		string nick = aLine.substr(7);
+	} else if(cmd == "$Hello") {
 		User* u;
-		User::NickIter i = users.find(nick);
+		User::NickIter i = users.find(param);
 		if(i == users.end()) {
-			u = new User(nick);
+			u = new User(param);
 			u->setClient(this);
-			users[nick] = u;
+			users[param] = u;
 		} else {
 			u = i->second;
 		}
 		fireHello(u);
-	} else if(aLine.find("$ForceMove") != string::npos) {
-		fireForceMove(aLine.substr(11));
-	} else if(aLine.find("$HubIsFull") != string::npos) {
+	} else if(cmd == "$ForceMove") {
+		fireForceMove(param);
+	} else if(cmd == "$HubIsFull") {
 		fireHubFull();
-	} else if(aLine.find("$MyINFO $ALL") != string::npos) {
+	} else if(cmd == "$MyINFO") {
 		string nick;
-
-		string tmp = aLine.substr(13);
-		nick = tmp.substr(0, tmp.find(' '));
-		tmp = tmp.substr(tmp.find(' ')+1);
+		param = param.substr(5);
+		nick = param.substr(0, param.find(' '));
+		param = param.substr(param.find(' ')+1);
 		User* u;
 		if(users.find(nick) == users.end()) {
 			u = new User(nick);
@@ -119,34 +125,32 @@ void Client::onLine(const string& aLine) {
 			u = users[nick];
 		}
 
-		u->setDescription(tmp.substr(0, tmp.find('$')));
-		tmp = tmp.substr(tmp.find('$')+3);
-		u->setConnection(tmp.substr(0, tmp.find('$')-1));
-		tmp = tmp.substr(tmp.find('$')+1);
-		u->setEmail(tmp.substr(0, tmp.find('$')));
-		tmp = tmp.substr(tmp.find('$')+1);
-		u->setBytesShared(tmp.substr(0, tmp.find('$')));
+		u->setDescription(param.substr(0, param.find('$')));
+		param = param.substr(param.find('$')+3);
+		u->setConnection(param.substr(0, param.find('$')-1));
+		param = param.substr(param.find('$')+1);
+		u->setEmail(param.substr(0, param.find('$')));
+		param = param.substr(param.find('$')+1);
+		u->setBytesShared(param.substr(0, param.find('$')));
 		
 		fireMyInfo(u);
 		
-	} else if(aLine.find("$Quit") != string::npos) {
-		string nick = aLine.substr(6);
-		if(users.find(nick) != users.end()) {
-			User* u = users[nick];
-			users.erase(nick);
+	} else if(cmd == "$Quit") {
+		if(users.find(param) != users.end()) {
+			User* u = users[param];
+			users.erase(param);
 			
 			fireQuit(u);
 			delete u;
 		}
 		
-	} else if(aLine.find("$ValidateDenide") != string::npos) {
+	} else if(cmd == "$ValidateDenide") {
 		fireValidateDenied();
-	} else if(aLine.find("$NickList") != string::npos) {
+	} else if(cmd == "$NickList") {
 		StringList v;
 		int j;
-		string tmp = aLine.substr(10);
-		while( (j=tmp.find("$$")) != string::npos) {
-			string nick = tmp.substr(0, j);
+		while( (j=param.find("$$")) != string::npos) {
+			string nick = param.substr(0, j);
 			
 			if(users.find(nick) == users.end()) {
 				User* u = new User(nick);
@@ -155,17 +159,16 @@ void Client::onLine(const string& aLine) {
 			}
 
 			v.push_back(nick);
-			tmp = tmp.substr(j+2);
+			param = param.substr(j+2);
 		}
 		
 		fireNickList(v);
 		
-	} else if(aLine.find("$OpList") != string::npos) {
+	} else if(cmd == "$OpList") {
 		StringList v;
 		int j;
-		string tmp = aLine.substr(8);
-		while( (j=tmp.find("$$")) != string::npos) {
-			string nick = tmp.substr(0, j);
+		while( (j=param.find("$$")) != string::npos) {
+			string nick = param.substr(0, j);
 			if(users.find(nick) == users.end()) {
 				User* u = new User(nick, User::FLAG_OP);
 				u->setClient(this);
@@ -173,15 +176,15 @@ void Client::onLine(const string& aLine) {
 			}
 			users[nick]->setFlag(User::FLAG_OP);
 			v.push_back(nick);
-			tmp = tmp.substr(j+2);
+			param = param.substr(j+2);
 		}
 		fireOpList(v);
-	} else if(aLine.find("$To") != string::npos) {
-		string tmp = aLine.substr(aLine.find("From:") + 6);
+	} else if(cmd == "$To:") {
+		string tmp = param.substr(param.find("From:") + 6);
 		string nick = tmp.substr(0, tmp.find("$") - 1);
 		tmp = tmp.substr(tmp.find("$") + 1);
 		firePrivateMessage(nick, tmp);
-	} else if(aLine.find("$") != string::npos) {
+	} else if(cmd == "$") {
 		fireUnknown(aLine);
 	} else {
 		fireMessage(aLine);
@@ -191,9 +194,15 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.6 2001/12/08 14:25:49 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.7 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.7  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.6  2001/12/08 14:25:49  arnetheduck
  * More bugs removed...did my first search as well...
  *

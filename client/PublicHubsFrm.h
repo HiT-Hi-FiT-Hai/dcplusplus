@@ -35,18 +35,21 @@ public:
 	};
 
 	virtual ~PublicHubsFrame() {
-		HubManager::getInstance()->removeListener(this);
 	};
 
 	DECLARE_FRAME_WND_CLASS("PublicHubsFrame", IDR_MDICHILD);
 		
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
+		frame = NULL;
 		delete this;
 	}
 
-	BEGIN_MSG_MAP(PublicHubsDlg)
+	BEGIN_MSG_MAP(PublicHubsFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
+		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, onClickedRefresh)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
@@ -54,10 +57,27 @@ public:
 		CHAIN_MSG_MAP(CMDIChildWindowImpl2<PublicHubsFrame>)
 	END_MSG_MAP()
 		
+	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(&ps);
+		FillRect(hdc, &ps.rcPaint, (HBRUSH) (COLOR_ACTIVEBORDER+1));
+		EndPaint(&ps);
+		return 0;
+	}
 	
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		LPMSG pMsg = (LPMSG)lParam;
+		
+		return CMDIChildWindowImpl2<PublicHubsFrame>::PreTranslateMessage(pMsg);
+	}
+	
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		return 0;
+	}
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	
 	LRESULT onColumnClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -104,48 +124,88 @@ public:
 		rc = rect;
 		rc.bottom -= 2;
 		rc.top = rc.bottom - 22;
-		rc.left +=2;
-		rc.right -= 105;
+
+		rc.left += 140;
+		rc.right -= 100;
 		ctrlHub.MoveWindow(rc);
+
+		rc.left -= 43;
+		rc.right = rc.left + 43;
+		rc.top += 3;
+		ctrlAddress.MoveWindow(rc);
+
+		rc = rect;
+		rc.bottom -= 2;
+		rc.top = rc.bottom - 22;
+
+		rc.left += 2;
+		rc.right = rc.left + 80;
+		ctrlRefresh.MoveWindow(rc);
 		
-		rc.left = rc.right + 5;
-		rc.right += 103;
+		rc = rect;
+		rc.bottom -= 2;
+		rc.top = rc.bottom - 22;
+
+		rc.left = rc.right - 96;
+		rc.right -= 2;
 		ctrlConnect.MoveWindow(rc);
 	}
 	
+	static PublicHubsFrame* frame;
 	
 private:
+	int hubs;
+	int users;
 	CStatusBarCtrl ctrlStatus;
 	CButton ctrlConnect;
+	CButton ctrlRefresh;
+	CStatic ctrlAddress;
+	
 	CEdit ctrlHub;
 	ExListViewCtrl ctrlHubs;
 	bool listing;
 	bool close;
-
+	
 	virtual void onHubMessage(const string& aMessage) {
-		SetWindowText(("Public Hub List - " + aMessage).c_str());
+		ctrlStatus.SetText(0, aMessage.c_str());
 	}
 	
 	virtual void onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers);
 	virtual void onHubFinished() {
+		HubManager::getInstance()->removeListener(this);
 		listing = false;
 		if(close)
-			DestroyWindow();
+			PostMessage(WM_CLOSE);
 	}
 
 	virtual void onHubStarting() {
 		ctrlHubs.DeleteAllItems();
+		hubs = users = 0;
+		updateStatus();
 	}
 	
+	void updateStatus() {
+		char buf[1024];
+		sprintf(buf, "Users: %d", users);
+		ctrlStatus.SetText(2, buf);
+		sprintf(buf, "Hubs: %d", hubs);
+		ctrlStatus.SetText(1, buf);
+	}
 };
 
 #endif // !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.1 2001/12/11 21:17:29 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.2 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.2  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.1  2001/12/11 21:17:29  arnetheduck
  * Changed the dialog to a frame
  *

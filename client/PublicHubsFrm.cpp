@@ -20,6 +20,10 @@
 #include "DCPlusPlus.h"
 
 #include "PublicHubsFrm.h"
+#include "HubFrame.h"
+#include "Client.h"
+
+PublicHubsFrame* PublicHubsFrame::frame = NULL;
 
 void PublicHubsFrame::onHub(const string& aName, const string& aServer, const string& aDescription, const string& aUsers) {
 	StringList l;
@@ -28,10 +32,20 @@ void PublicHubsFrame::onHub(const string& aName, const string& aServer, const st
 	l.push_back(aUsers);
 	l.push_back(aServer);
 	ctrlHubs.insert(l);
+	hubs++;
+	users += atoi(aUsers.c_str());
+	updateStatus();
 }
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+
+	// Only one of this window please...
+	dcassert(frame == NULL);
+	frame = this;
+	
+	SetWindowText("Public Hubs");
+	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 
@@ -47,11 +61,22 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+	ctrlHub.SetFont(ctrlHubs.GetFont());
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_DEFPUSHBUTTON , 0, IDC_CONNECT);
+		BS_PUSHBUTTON , 0, IDC_CONNECT);
 	ctrlConnect.SetWindowText("Connect");
+	ctrlConnect.SetFont(ctrlHubs.GetFont());
 
+	ctrlRefresh.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_REFRESH);
+	ctrlRefresh.SetWindowText("Refresh");
+	ctrlRefresh.SetFont(ctrlHubs.GetFont());
+
+	ctrlAddress.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	ctrlAddress.SetWindowText("Address");
+	ctrlAddress.SetFont(ctrlHubs.GetFont());
+	
 	listing = true;
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getPublicHubs();
@@ -64,26 +89,15 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	return 0;
 }
 
-LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT PublicHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(listing) {
 		close = true;
 		HubManager::getInstance()->stopListing();
-
 	}
-	else
-		DestroyWindow();
-	
-	return 0;
-}
-
-LRESULT PublicHubsFrame::OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
-	
-	if(lv->uNewState & LVIS_FOCUSED) {
-		char buf[1024];
-		ctrlHubs.GetItemText(lv->iItem, 3, buf, 1024);
-		SetDlgItemText(IDC_SERVER, buf);
+	else {
+		bHandled = FALSE;
 	}
+	
 	return 0;
 }
 
@@ -95,14 +109,42 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndC
 }
 
 LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+	char buf[1024];
+	
+	int i = -1;
+	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		ctrlHubs.GetItemText(i, 3, buf, 1024);
+		string tmp = buf;
+		if(!Client::isConnected(tmp)) {
+			HubFrame* frm = new HubFrame(buf);
+			frm->CreateEx(GetParent());
+		}
+	}
 
+	if(ctrlHub.GetWindowTextLength() > 0) {
+		ctrlHub.GetWindowText(buf, 1024);
+		ctrlHub.SetWindowText("");
+		string tmp = buf;
+		if(!Client::isConnected(tmp)) {
+			HubFrame* frm = new HubFrame(buf);
+			frm->CreateEx(GetParent());
+		}
+		
+	}
+	return 0;
 }
 
 /**
- * @file PublicHubsFrame.cpp
- * $Id: PublicHubsFrm.cpp,v 1.1 2001/12/11 21:17:29 arnetheduck Exp $
+ * @file PublicHubsFrm.cpp
+ * $Id: PublicHubsFrm.cpp,v 1.2 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.2  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.1  2001/12/11 21:17:29  arnetheduck
  * Changed the dialog to a frame
  *

@@ -23,7 +23,7 @@
 #include "AboutDlg.h"
 #include "HubFrame.h"
 #include "SearchFrm.h"
-#include "PublicHubsDlg.h"
+#include "PublicHubsFrm.h"
 #include "SettingsDlg.h"
 
 #include "ConnectionManager.h"
@@ -222,16 +222,12 @@ LRESULT MainFrame::OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 }	
 	
 LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	PublicHubsDlg dlg;
-	if(dlg.DoModal(m_hWnd) == IDCANCEL) {
-		return 0;
+	if(PublicHubsFrame::frame == NULL) {
+		PublicHubsFrame* pChild = new PublicHubsFrame();
+		pChild->CreateEx(m_hWndClient);
+	} else {
+		PublicHubsFrame::frame->SetFocus();
 	}
-	if(dlg.server.length() == 0) {
-		return 0;
-	}
-	
-	HubFrame* pChild = new HubFrame(dlg.server);
-	pChild->CreateEx(m_hWndClient);
 
 /*	HANDLE h = CreateFile("c:\\temp\\test.dcl", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 	BYTE* buf = new BYTE[GetFileSize(h, NULL)];
@@ -282,9 +278,15 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.16 2001/12/11 01:10:29 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.17 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.17  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.16  2001/12/11 01:10:29  arnetheduck
  * More bugfixes...I really have to change the bufferedsocket so that it only
  * uses one thread...or maybe even multiple sockets/thread...

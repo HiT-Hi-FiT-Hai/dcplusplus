@@ -110,7 +110,7 @@ public:
 		delete client;
 	}
 
-	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD)
+	DECLARE_FRAME_WND_CLASS("HubFrame", IDR_MDICHILD);
 
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
@@ -126,7 +126,6 @@ public:
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-//		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
@@ -267,9 +266,15 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.12 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.13 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.13  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.12  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

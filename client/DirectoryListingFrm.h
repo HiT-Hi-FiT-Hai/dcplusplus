@@ -49,7 +49,6 @@ public:
 	BEGIN_MSG_MAP(DirectoryListingFrame)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
@@ -80,13 +79,27 @@ public:
 		return 1;
 	}
 	
-	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
-		if(wParam != SIZE_MINIMIZED)
-			SetSplitterRect();
+		RECT rect;
+		GetClientRect(&rect);
+		// position bars and offset their dimensions
+		UpdateBarsPosition(rect, bResizeBars);
 		
-		bHandled = FALSE;
-		return 1;
+		if(ctrlStatus.IsWindow()) {
+			CRect sr;
+			int w[3];
+			ctrlStatus.GetClientRect(sr);
+			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+			
+			w[0] = sr.right - tmp;
+			w[1] = w[0] + (tmp-16)/2;
+			w[2] = w[0] + (tmp-16);
+			
+			ctrlStatus.SetParts(3, w);
+		}
+		
+		SetSplitterRect(&rect);
 	}
 	
 private:
@@ -94,7 +107,8 @@ private:
 	User* user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
-
+	CStatusBarCtrl ctrlStatus;
+	
 	DirectoryListing* dl;
 };
 
@@ -107,9 +121,15 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.3 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.4 2001/12/12 00:06:04 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.4  2001/12/12 00:06:04  arnetheduck
+ * Updated the public hub listings, fixed some minor transfer bugs, reworked the
+ * sockets to use only one thread (instead of an extra thread for sending files),
+ * and fixed a major bug in the client command decoding (still have to fix this
+ * one for the userconnections...)
+ *
  * Revision 1.3  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...
