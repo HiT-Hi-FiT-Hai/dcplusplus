@@ -1194,13 +1194,15 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 
 			if(found) {
 				// Wow! found a new source that seems to match...add it...
-				dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
 				try {
 					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, Util::emptyString, QueueItem::FLAG_RESUME, 
 						QueueItem::DEFAULT, Util::emptyString, false);
+					dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
+					addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 				} catch(const Exception&) {
 					// ...
 				}
+				// Ok, so let's match the file listing at once...
 			}
 		}
 	}
@@ -1246,5 +1248,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.61 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.62 2003/11/28 13:08:07 arnetheduck Exp $
  */

@@ -704,13 +704,12 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 		next = ctrlDirs.GetNextSiblingItem(next);
 	}
 	string* s = (string*)ctrlDirs.GetItemData(ht);
-	string name = target + s->substr(curDir.length());
-	
+
 	DirectoryPair p = directories.equal_range(*s);
 	
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
 		QueueItem* qi = i->second;
-		QueueManager::getInstance()->move(qi->getTarget(), name + qi->getTargetFileName());
+		QueueManager::getInstance()->move(qi->getTarget(), target + qi->getTargetFileName());
 	}			
 }
 
@@ -1263,7 +1262,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.38 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.39 2003/11/28 13:08:07 arnetheduck Exp $
  */
 
 

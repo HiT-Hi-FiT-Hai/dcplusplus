@@ -12,6 +12,12 @@
   if the ip field in settings is blank)
 * Transfer bar colors updated (they'll be made user-configurable one fine day)
 * Fixed possibility to share same folder twice (thanks theparaniodone)
+* Fixed translations of kick & redirect user
+* Fixed missing subdirs when moving directories in the queue
+* Really fixed hublist space trimming =)
+* Added ".wmv" and ".ogm" as video extensions
+* Fixed some issues with same-named fav users
+* Fixed small mem leak in fav users
 
 
  -- 0.304 2003-11-19 --

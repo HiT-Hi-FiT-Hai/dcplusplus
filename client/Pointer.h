@@ -116,6 +116,8 @@ public:
 	
 	bool operator==(T* rhs) const { return (T*)base == rhs; };
 	bool operator==(const Pointer& rhs) const { return base == rhs.base; };
+	bool operator!=(T* rhs) const { return (T*)base != rhs; };
+	bool operator!=(const Pointer& rhs) const { return base != rhs.base; };
 	bool operator<(T* rhs) const { return (T*)base < rhs; };
 	bool operator<(const Pointer& rhs) const { return base < rhs.base; };
 	bool operator>(T* rhs) const { return (T*)base > rhs; };
@@ -164,6 +166,6 @@ struct DeleteFunction {
 
 /**
  * @file
- * $Id: Pointer.h,v 1.13 2003/09/22 13:17:23 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.14 2003/11/28 13:08:06 arnetheduck Exp $
  */
 
