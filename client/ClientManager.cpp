@@ -67,7 +67,7 @@ void ClientManager::putClient(Client* aClient) {
 			}
 		}
 	}
-	delete aClient;
+	aClient->scheduleDestruction();
 }
 
 void ClientManager::infoUpdated() {
@@ -328,5 +328,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.60 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.61 2004/08/03 10:22:14 arnetheduck Exp $
  */

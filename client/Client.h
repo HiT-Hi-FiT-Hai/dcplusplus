@@ -128,6 +128,8 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
+	void scheduleDestruction() const { socket->shutdown(); }
+
 	GETSET(string, nick, Nick);
 	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);
@@ -169,10 +171,15 @@ private:
 
 	CountType countType;
 
+	// BufferedSocketListener
+	virtual void on(BufferedSocketListener::Shutdown) throw() {
+		removeListeners();
+		delete this;
+	}
 };
 
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.82 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: Client.h,v 1.83 2004/08/03 10:22:14 arnetheduck Exp $
  */

@@ -47,7 +47,7 @@
 * Fixed a rare automatch crash (thanks farcry)
 * Allowed sharing of network folders (thanks garg)
 * Added option to automatically add finished files to share without refresh (thanks farcry)
-
+* Fixed a few closing window crashes (thanks farcry)
 
 
  -- 0.403 2004-06-27 --

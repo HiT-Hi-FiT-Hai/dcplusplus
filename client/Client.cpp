@@ -36,7 +36,6 @@ Client::Client(const string& hubURL, char separator, bool usesEscapes) :
 
 Client::~Client() {
 	socket->removeListener(this);
-	BufferedSocket::putSocket(socket);
 
 	updateCounts(true);
 }
@@ -83,5 +82,5 @@ string Client::getLocalIp() const {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.73 2004/07/12 09:50:03 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.74 2004/08/03 10:22:14 arnetheduck Exp $
  */
