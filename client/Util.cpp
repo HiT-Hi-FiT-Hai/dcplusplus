@@ -302,20 +302,18 @@ string Util::getLocalIp() {
 }
 
 bool Util::isPrivateIp(string const& ip) {
-#ifdef _WIN32
-	unsigned long in = inet_addr(ip.c_str());
-	unsigned char* p = (unsigned char*)&in;
-	if( p[0] == 10 ||
-		p[0] == 127 ||
-		(p[0] == 172 && (p[1] >= 16 && p[1] < 32)) ||
-		(p[0] == 192 && p[1] == 168)
-	) {
-		return true;
+	struct in_addr addr;
+
+	addr.s_addr = inet_addr(ip.c_str());
+
+	if (addr.s_addr  != INADDR_NONE) {
+		unsigned long haddr = ntohl(addr.s_addr);
+		return ((haddr & 0xff000000) == 0x0a000000 || // 10.0.0.0/8
+				(haddr & 0xff000000) == 0x7f000000 || // 127.0.0.0/8
+				(haddr & 0xfff00000) == 0xac100000 || // 172.16.0.0/12
+				(haddr & 0xffff0000) == 0xc0a80000);  // 192.168.0.0/16
 	}
 	return false;
-#else
-#warning fixme
-#endif
 }
 
 static void cToUtf8(wchar_t c, string& str) {
@@ -387,7 +385,7 @@ string& Util::toUtf8(string& str) {
 		str.clear();
 		return str;
 	}
-	if(sz < wtmp.length())
+	if(sz < (int)wtmp.length())
 		sz--;
 #endif
 
@@ -663,6 +661,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.51 2004/05/23 18:22:54 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.52 2004/06/26 13:11:50 arnetheduck Exp $
  */
 

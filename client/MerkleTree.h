@@ -73,7 +73,7 @@ public:
 
 	static size_t calcBlockSize(int64_t aFileSize, int maxLevels) {
 		size_t tmp = baseBlockSize;
-		int64_t maxHashes = (int64_t)pow(2, maxLevels - 1);
+		int64_t maxHashes = ((int64_t)1) << (maxLevels - 1);
 		while((maxHashes * tmp) < aFileSize)
 			tmp *= 2;
 		return tmp;
@@ -255,5 +255,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.13 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.14 2004/06/26 13:11:50 arnetheduck Exp $
  */

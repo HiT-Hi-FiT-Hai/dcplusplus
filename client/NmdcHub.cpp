@@ -34,7 +34,7 @@
 
 
 NmdcHub::NmdcHub(const string& aHubURL) : Client(aHubURL, '|'), supportFlags(0),  
-	state(STATE_CONNECT), adapter(this),
+	adapter(this), state(STATE_CONNECT),
 	lastActivity(GET_TICK()), 
 	reconnect(true), lastUpdate(0)
 {
@@ -717,6 +717,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.6 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.7 2004/06/26 13:11:50 arnetheduck Exp $
  */
 

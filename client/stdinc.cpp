@@ -18,7 +18,9 @@
 
 #include "stdinc.h"
 
-#if defined(HAS_STLPORT) && (_STLPORT_VERSION != 0x462)
+#ifdef HAS_STLPORT
+
+#if (_STLPORT_VERSION != 0x462)
 #error STLPort not correctly installed, read compile.txt
 #endif
 
@@ -26,7 +28,9 @@
 #error You're not using the STLPort from the DC++ homepage, that uses a different configuration than the original one. Remove this line only if you know what you're doing.
 #endif
 
+#endif // HAS_STLPORT
+
 /**
  * @file
- * $Id: stdinc.cpp,v 1.4 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: stdinc.cpp,v 1.5 2004/06/26 13:11:50 arnetheduck Exp $
  */

@@ -51,8 +51,7 @@ private:
 #else
 public:
 	CriticalSection() throw() {
-		static pthread_mutex_t init = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
-		mtx = init;
+		mtx = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 	};
 	~CriticalSection() throw() { pthread_mutex_destroy(&mtx); };
 	void enter() throw() { pthread_mutex_lock(&mtx); };
@@ -169,5 +168,5 @@ private:
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.18 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.19 2004/06/26 13:11:50 arnetheduck Exp $
  */

@@ -422,12 +422,7 @@ cleanup:
 int HashManager::Hasher::run() {
 	setThreadPriority(Thread::IDLE);
 
-#ifdef _WIN32
 	u_int8_t* buf = NULL;
-#else
-	u_int8_t buf[BUF_SIZE];
-#endif
-
 	bool virtualBuf = true;
 
 	string fname;
@@ -450,10 +445,12 @@ int HashManager::Hasher::run() {
 		}
 
 		if(!fname.empty()) {
+#ifdef _WIN32
 			if(buf == NULL) {
 				virtualBuf = true;
 				buf = (u_int8_t*)VirtualAlloc(NULL, 2*BUF_SIZE, MEM_COMMIT, PAGE_READWRITE);
 			}
+#endif
 			if(buf == NULL) {
 				virtualBuf = false;
 				buf = new u_int8_t[BUF_SIZE];
@@ -461,8 +458,10 @@ int HashManager::Hasher::run() {
 			try {
 				File f(fname, File::READ, File::OPEN);
 				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
+#ifdef _WIN32
 				int64_t size = f.getSize();
 				u_int32_t start = GET_TICK();
+#endif
 
 				TigerTree slowTTH(bs, f.getLastModified());
 				TigerTree* tth = &slowTTH;
@@ -472,10 +471,11 @@ int HashManager::Hasher::run() {
 				tth = &fastTTH;
 				if(!virtualBuf || !fastHash(fname, buf, fastTTH)) {
 					tth = &slowTTH;
-#endif
 					u_int32_t lastRead = GET_TICK();
+#endif
 					do {
 						size_t bufSize = BUF_SIZE;
+#ifdef _WIN32
 						if(SETTING(MAX_HASH_SPEED) > 0) {
 							u_int32_t now = GET_TICK();
 							u_int32_t minTime = n * 1000LL / (SETTING(MAX_HASH_SPEED) * 1024LL * 1024LL);
@@ -483,38 +483,46 @@ int HashManager::Hasher::run() {
 								Thread::sleep(minTime - (now - lastRead));
 							}
 						}
+#else
+#warning FIXME - Add speed measurement and throttling for non WIN32 platforms
+#endif
 						n = f.read(buf, bufSize);
 						tth->update(buf, n);
 					} while (n > 0 && !stop);
+#ifdef _WIN32
 				}
-
+#endif
 				f.close();
 				tth->finalize();
+#ifdef _WIN32
 				u_int32_t end = GET_TICK();
 				int64_t speed = 0;
 				if(end > start) {
 					speed = size * 1000LL / (end - start);
 				}
+#else
+				int64_t speed = 0;
+#endif				
 				HashManager::getInstance()->hashDone(fname, *tth, speed);
 			} catch(const FileException&) {
 				// Ignore, it'll be readded on the next share refresh...
 			}
 		}
-#ifdef _WIN32
 		if(buf != NULL && (last || stop)) {
 			if(virtualBuf) {
+#ifdef _WIN32
 				VirtualFree(buf, 0, MEM_RELEASE);
+#endif
 			} else {
 				delete buf;
 			}
 			buf = NULL;
 		}
-#endif
 	}
 	return 0;
 }
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.19 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.20 2004/06/26 13:11:50 arnetheduck Exp $
  */
