@@ -54,7 +54,7 @@ const string SettingsManager::settingTags[] =
 	"HubUserCommands", "AutoSearchAutoMatch", "DownloadBarColor", "UploadBarColor", "LogSystem",
 	"LogFilelistTransfers", "SendUnknownCommands", "MaxHashSpeed",
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
-	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist",
+	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -79,6 +79,7 @@ SettingsManager::SettingsManager()
 	}
 	
 	setDefault(DOWNLOAD_DIRECTORY, Util::getAppPath() + "Downloads\\");
+	setDefault(TEMP_DOWNLOAD_DIRECTORY, Util::getAppPath() + "Incomplete\\");
 	setDefault(SLOTS, 1);
 	//setDefault(SERVER, Util::getLocalIp());
 	setDefault(IN_PORT, Util::rand(1025, 32000));
@@ -160,6 +161,9 @@ SettingsManager::SettingsManager()
 	setDefault(SHOW_TOOLBAR, true);
 	setDefault(POPUNDER_PM, false);
 	setDefault(POPUNDER_FILELIST, false);
+	setDefault(MAGNET_REGISTER, true);
+	setDefault(MAGNET_ASK, true);
+	setDefault(MAGNET_ACTION, MAGNET_AUTO_SEARCH);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -303,6 +307,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.79 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.80 2004/08/02 14:20:16 arnetheduck Exp $
  */
 

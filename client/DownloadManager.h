@@ -217,7 +217,7 @@ private:
 	virtual void on(Sending, UserConnection*, int64_t) throw();
 	virtual void on(FileLength, UserConnection*, int64_t) throw();
 	virtual void on(MaxedOut, UserConnection*) throw();
-	virtual void on(ModeChange, UserConnection* aSource) throw() { handleEndData(aSource);}
+	virtual void on(ModeChange, UserConnection* aSource) throw() { }
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
 
 	virtual void on(Command::SND, UserConnection*, const Command&) throw();
@@ -231,5 +231,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.65 2004/06/27 12:46:32 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.66 2004/08/02 14:20:16 arnetheduck Exp $
  */

@@ -469,8 +469,8 @@ string Util::encodeURI(const string& aString, bool reverse) {
 	string tmp = aString;
 	if(reverse) {
 		string::size_type idx;
-		for(idx = 0; idx < tmp.length()-2; ++idx) { // valid escapes are not < 2 characters from eos
-			if(tmp[idx] == '%' && isxdigit(tmp[idx+1]) && isxdigit(tmp[idx+2])) {
+		for(idx = 0; idx < tmp.length(); ++idx) {
+			if(tmp.length() > idx + 2 && tmp[idx] == '%' && isxdigit(tmp[idx+1]) && isxdigit(tmp[idx+2])) {
 				tmp[idx] = fromHexEscape(tmp.substr(idx+1,2));
 				tmp.erase(idx+1, 2);
 			} else { // reference: rfc1630, magnet-uri draft
@@ -725,6 +725,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.56 2004/07/26 20:01:21 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.57 2004/08/02 14:20:16 arnetheduck Exp $
  */
 

@@ -448,31 +448,10 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 	string::size_type j;
 
 	if( (j = cmdLine.find("dchub://", i)) != string::npos) {
-		i = j + 8;
-		string server;
-		string user;
-		if( (j = cmdLine.find('/', i)) == string::npos) {
-			server = cmdLine.substr(i);
-		} else {
-			server = cmdLine.substr(i, j-i);
-			i = j + 1;
-			if( (j = cmdLine.find_first_of("\\/ ", i)) == string::npos) {
-				user = cmdLine.substr(i);
-			} else {
-				user = cmdLine.substr(i, j-i);
-			}
-		}
-
-		if(!server.empty()) {
-			HubFrame::openWindow(server);
-		}
-		if(!user.empty()) {
-			try {
-				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user), QueueItem::FLAG_CLIENT_VIEW);
-			} catch(const Exception&) {
-				// ...
-			}
-		}
+		WinUtil::parseDchubUrl(cmdLine.substr(j));
+	}
+	if( (j = cmdLine.find("magnet:?", i)) != string::npos) {
+		WinUtil::parseMagnetUri(cmdLine.substr(j));
 	}
 }
 
@@ -1061,5 +1040,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.59 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.60 2004/08/02 14:20:17 arnetheduck Exp $
  */

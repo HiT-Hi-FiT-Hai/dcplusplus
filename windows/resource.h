@@ -34,6 +34,7 @@
 #define IDD_FAVORITEHUB                 223
 #define IDR_USERS                       224
 #define IDD_ADVANCED2PAGE               224
+#define IDI_MAGNET                      229
 #define IDD_USER_COMMAND                230
 #define IDR_FINISHED_DL                 231
 #define IDR_FINISHED_UL                 232
@@ -42,6 +43,7 @@
 #define IDB_TOOLBAR20_HOT               235
 #define IDD_UCPAGE                      236
 #define IDR_NET_STATS                   237
+#define IDD_MAGNET                      238
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -256,6 +258,15 @@
 #define IDC_TTH                         1229
 #define IDC_BITZI_LOOKUP                1230
 #define IDC_COPY_MAGNET                 1231
+#define IDC_MAGNET_QUEUE                1232
+#define IDC_MAGNET_SEARCH               1233
+#define IDC_MAGNET_REMEMBER             1234
+#define IDC_MAGNET_HASH                 1235
+#define IDC_MAGNET_NAME                 1236
+#define IDC_MAGNET_NOTHING              1237
+#define IDC_MAGNET_DISP_NAME            1238
+#define IDC_MAGNET_DISP_HASH            1239
+#define IDC_MAGNET_TEXT                 1240
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -289,9 +300,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        238
+#define _APS_NEXT_RESOURCE_VALUE        239
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1232
+#define _APS_NEXT_CONTROL_VALUE         1241
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

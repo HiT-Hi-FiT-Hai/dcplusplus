@@ -570,6 +570,10 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		string x;
 		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
+		string::size_type end = x.find(" ", start);
+
+		if(end == string::npos)
+			end = x.length();
 		
 		if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
 			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
@@ -578,23 +582,15 @@ LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& b
 			(Util::strnicmp(x.c_str() + start, "https://", 8) == 0) )	{
 
 			bHandled = true;
-			// Web links...
-			string::size_type end = x.find(' ', start + 7);
-			if(end == string::npos) {
-				end = x.length();
-			}
-			if(end < start + 10) {
-				return 0;
-			}
-
 			WinUtil::openLink(x.substr(start, end-start));
 		} else if(Util::strnicmp(x.c_str() + start, "dchub://", 8) == 0) {
 			bHandled = true;
-			string server, file;
-			short port = 411;
-			Util::decodeUrl((x.c_str() + start), server, port, file);
-			HubFrame::openWindow(server + ":" + Util::toString(port));
-		} else {
+			WinUtil::parseDchubUrl(x.substr(start, end-start));
+		} else if(Util::strnicmp(x.c_str() + start, "magnet:?", 8) == 0) {
+			bHandled = true;
+			WinUtil::parseMagnetUri(x.substr(start, end-start));
+		}
+		else {
 			string::size_type end = x.find_first_of(" >\t", start+1);
 
 			if(end == string::npos) // get EOL as well
@@ -1139,5 +1135,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.67 2004/07/27 22:21:14 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.68 2004/08/02 14:20:17 arnetheduck Exp $
  */

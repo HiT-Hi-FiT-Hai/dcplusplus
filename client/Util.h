@@ -76,15 +76,17 @@ inline int compare(const T1& v1, const T1& v2) { return (v1 < v2) ? -1 : ((v1 ==
 
 class Flags {
 	public:
+		typedef int MaskType;
+
 		Flags() : flags(0) { };
 		Flags(const Flags& rhs) : flags(rhs.flags) { };
-		Flags(int f) : flags(f) { };
-		bool isSet(int aFlag) const { return (flags & aFlag) == aFlag; };
-		void setFlag(int aFlag) { flags |= aFlag; };
-		void unsetFlag(int aFlag) { flags &= ~aFlag; };
+		Flags(MaskType f) : flags(f) { };
+		bool isSet(MaskType aFlag) const { return (flags & aFlag) == aFlag; };
+		void setFlag(MaskType aFlag) { flags |= aFlag; };
+		void unsetFlag(MaskType aFlag) { flags &= ~aFlag; };
 		Flags& operator=(const Flags& rhs) { flags = rhs.flags; return *this; };
 	private:
-		int flags;
+		MaskType flags;
 };
 
 template<typename T>
@@ -586,5 +588,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.88 2004/07/26 20:01:21 arnetheduck Exp $
+ * $Id: Util.h,v 1.89 2004/08/02 14:20:17 arnetheduck Exp $
  */

@@ -35,6 +35,12 @@
 * Added customizable timestamps (thanks ullner)
 * Added extended dupe logging (thanks xan)
 * Some code pedantry cleanup done (thanks garg)
+* Unfinished files now have a slightly different naming scheme (thanks garg)
+* Added default unfinished folder (thanks garg)
+* When matching queue, users marked with file not available are readded (thanks farcry)
+* Added (limited support for) magnet link handling (thanks garg)
+* Uninstaller now removes the one registry key DC++ creates (thanks garg)
+* Fixed a few link click bugs (thanks garg)
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug
@@ -236,7 +242,7 @@
 * Fixed missing string (thanks gargoyle)
 * Fixed invalid date added formatting
 * Fixed trimming of spaces for http downloads (hub list...)
-* Fixed a bug in autosearch when using auto search strings (thanks ilkka seppälä)
+* Fixed a bug in autosearch when using auto search strings (thanks ilkka seppï¿½lï¿½)
 * Fixed typo in user commands help
 * Fixed missing sort arrows
 * Added time last seen online to fav users (thanks gargoyle)
@@ -439,7 +445,7 @@ Major:
 * Added selection size info to queue frame (same as file listing)
 * Fixed some crashes when closing windows (and perhaps added some new ones...)
 
-ADLSearch: (by Henrik Engström)
+ADLSearch: (by Henrik Engstrï¿½m)
   * Keyboard shortcuts.
   * Context menu (back again).
   * Removed 'Active' column and made it a check box.
@@ -481,7 +487,7 @@ Minor:
 * Added match queue feature to the file listing window. This will take every file in the file listing and see if there
   is any matching file in the queue (exact filename & size match). Every match will then be added to the queue as an
   extra source. Depending on your queue size and the number of files in the listing this might take some time to do...
-* UI updates to ADLSearch (by Henrik Engström)
+* UI updates to ADLSearch (by Henrik Engstrï¿½m)
 
  -- 0.241 2003-04-01 --
 * Made the XML parser a bit more robust against bad XML data (to avoid embarassing situations such as the last one...)
@@ -512,7 +518,7 @@ Minor:
 
  -- 0.24 2003-03-11 --
 * The splash screen is now correctly centered (we thank Vladimir Marko for this important patch =)
-* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engström.
+* Added ADLSearch, a new search filter for browsing files, submitted/made by Henrik Engstrï¿½m.
 * Local ip handling improved, so that a per-hub ip is used if nothing is entered in the active field (good for
   people who connect to local hubs or through different network cards)
 * You can now use $ and | in the chat. DC++ uses the HTML standard &#36; and &#124; to replace them...some people
@@ -609,7 +615,7 @@ Minor:
   open or granting). We'll see how long it takes until someone reports this as a bug...
 * Added ability to set default away message (hm...perhaps this should use the last message set?)
 * Redesigned the appearance dialog a bit (like the advanced options now)
-* If DC++ receives "banned" during the login phase, it'll stop automatically reconnecting (nöjd nu, nev? =)
+* If DC++ receives "banned" during the login phase, it'll stop automatically reconnecting (nï¿½jd nu, nev? =)
 * The splash screen no longer shows on the task bar (avoids flicker when loading is fast) and is not topmost (use
   alt-esc instead of alt-tab to switch to it if you lose it...and it can't be an option because it's shown prior to
   any settings being loaded).
@@ -727,7 +733,7 @@ Minor:
 * Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they
   actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents
   and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in 
-  € (euros) now, which is, of course, my preferred currency =)
+  ï¿½ (euros) now, which is, of course, my preferred currency =)
 * The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. 
   I would open an alternative forum if I could get the old posts, but because all network connections to the server are      
   broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat 

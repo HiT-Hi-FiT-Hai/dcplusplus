@@ -92,7 +92,9 @@ public:
 		typedef Source* Ptr;
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
+		typedef List::const_iterator ConstIter;
 		enum {
+			FLAG_NONE = 0x00,
 			FLAG_FILE_NOT_AVAILABLE = 0x01,
 			FLAG_ROLLBACK_INCONSISTENCY = 0x02,
 			FLAG_PASSIVE = 0x04,
@@ -101,6 +103,8 @@ public:
 			FLAG_CRC_WARN = 0x20,
 			FLAG_UTF8 = 0x40,
 			FLAG_BAD_TREE = 0x80,
+			FLAG_MASK = FLAG_FILE_NOT_AVAILABLE | FLAG_ROLLBACK_INCONSISTENCY 
+				| FLAG_PASSIVE | FLAG_REMOVED | FLAG_CRC_FAILED | FLAG_CRC_WARN | FLAG_UTF8 | FLAG_BAD_TREE
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -180,7 +184,13 @@ public:
 
 	bool isSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, sources); };
 	bool isBadSource(const User::Ptr& aUser, const string& aFile) const { return isSource(aUser, aFile, badSources); };
-	
+	bool isBadSourceExcept(const User::Ptr& aUser, const string& aFile, Flags::MaskType exceptions) const {
+		Source::ConstIter i = getSource(aUser, aFile, badSources);
+		if(i != badSources.end())
+			return (*i)->isSet(exceptions^Source::FLAG_MASK); 
+		return false;
+	};
+
 	void setCurrent(const User::Ptr& aUser) {
 		dcassert(isSource(aUser));
 		current = *getSource(aUser, sources);
@@ -243,6 +253,14 @@ private:
 				return i;
 		return lst.end();
 	}
+	static Source::ConstIter getSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) { 
+		for(Source::ConstIter i = lst.begin(); i != lst.end(); ++i)
+			const Source* s = *i;
+			if( (s->getUser() == aUser) ||
+				((s->getUser()->getNick() == aUser->getNick()) && (s->getPath() == aFile)) )
+				return i;
+		return lst.end();
+	}
 	static bool isSource(const User::Ptr& aUser, const string& aFile, const Source::List& lst) {
 		for(Source::List::const_iterator i = lst.begin(); i != lst.end(); ++i) {
 			Source* s = *i;
@@ -259,5 +277,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.9 2004/05/22 18:17:35 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.10 2004/08/02 14:20:16 arnetheduck Exp $
 */

@@ -96,6 +96,11 @@ Section "un.Uninstall"
   Delete "$INSTDIR\Example.xml"
   Delete "$INSTDIR\GeoIPCountryWhois.csv"
 
+  ; Remove registry entries
+  ;  dchub is likely only to be registered to us
+  ;  magnet is likely to be registere to other p2p apps
+  DeleteRegKey HKCR "dchub"
+  DeleteRegKey HKLM "SOFTWARE\Magnet\Handlers\DC++"
   ; MUST REMOVE UNINSTALLER, too
   Delete $INSTDIR\uninstall.exe
   ; remove shortcuts, if any.

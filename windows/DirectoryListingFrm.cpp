@@ -28,7 +28,6 @@
 #include "DirectoryListingFrm.h"
 #include "WinUtil.h"
 #include "LineDlg.h"
-#include "SearchFrm.h"
 #include "../client/MerkleTree.h"
 
 void DirectoryListingFrame::openWindow(const string& aFile, const User::Ptr& aUser, const string& start) {
@@ -353,7 +352,8 @@ LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, 
 LRESULT DirectoryListingFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	ItemInfo* ii = ctrlList.getSelectedItem();
 	if(ii != NULL) {
-		SearchFrame::openWindow(ii->getText(COLUMN_TTH), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		TTHValue tmp(ii->getText(COLUMN_TTH));
+		WinUtil::searchHash(&tmp);
 	}
 	return 0;
 }
@@ -805,5 +805,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.35 2004/07/26 20:01:21 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.36 2004/08/02 14:20:17 arnetheduck Exp $
  */

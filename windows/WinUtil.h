@@ -231,7 +231,14 @@ public:
 	// Hash related
 	static void bitziLink(TTHValue* /*aHash*/);
 	static void copyMagnet(TTHValue* /*aHash*/, const string& /*aFile*/);
-	
+	static void searchHash(TTHValue* /*aHash*/);
+
+	// URL related
+	static void registerDchubHandler();
+	static void registerMagnetHandler();
+	static void parseDchubUrl(const string& /*aUrl*/);
+	static void parseMagnetUri(const string& /*aUrl*/, bool aOverride = false);
+
 	static void openLink(const string& url);
 	static void openFile(const string& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -271,5 +278,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.29 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.30 2004/08/02 14:20:17 arnetheduck Exp $
  */

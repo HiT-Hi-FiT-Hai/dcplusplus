@@ -149,6 +149,19 @@
 		<String Name="LookupAtBitzi">Lookup TTH at Bitzi.com</String>
 		<String Name="Low">Low</String>
 		<String Name="Lowest">Lowest</String>
+		<String Name="MagnetDlgFile">Filename:</String>
+		<String Name="MagnetDlgHash">File Hash:</String>
+		<String Name="MagnetDlgNothing">Do nothing</String>
+		<String Name="MagnetDlgQueue">Add this file to your download queue</String>
+		<String Name="MagnetDlgRemember">Do the same action next time without asking</String>
+		<String Name="MagnetDlgSearch">Start a search for this file</String>
+		<String Name="MagnetDlgTextBad">A MAGNET link was given to DC++, but it didn't contain a valid file hash for use on the Direct Connect network.  No action will be taken.</String>
+		<String Name="MagnetDlgTextGood">DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?</String>
+		<String Name="MagnetDlgTitle">MAGNET Link detected</String>
+		<String Name="MagnetHandlerDesc">Download files from the Direct Connect network</String>
+		<String Name="MagnetHandlerNotFound">Magnet-Handler was not detected.  Please install it from: http://sf.net/projects/magnethandler/</String>
+		<String Name="MagnetHandlerRoot">DC++</String>
+		<String Name="MagnetShellDesc">URL:MAGNET URI</String>
 		<String Name="ManualAddress">Manual connect address</String>
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
@@ -321,6 +334,7 @@
 		<String Name="SettingsLogSystemMessages">Log system messages</String>
 		<String Name="SettingsLogging">Logging</String>
 		<String Name="SettingsLogs">Logs and Sound</String>
+		<String Name="SettingsMagnetAsk">Ask what to do when a magnet link is detected.</String>
 		<String Name="SettingsMaxHashSpeed">Max hash speed</String>
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
@@ -371,7 +385,8 @@
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
 		<String Name="SettingsUploadsSlots">Upload slots</String>
-		<String Name="SettingsUrlHandler">Install URL handler on startup (to handle dchub:// links)</String>
+		<String Name="SettingsUrlHandler">Register with Windows on startup to handle dchub:// URL links</String>
+		<String Name="SettingsUrlMagnet">Register with Windows on startup to handle magnet: URI links</String>
 		<String Name="SettingsUseOemMonofont">Use OEM monospaced font for viewing text files</String>
 		<String Name="SettingsUseSystemIcons">Use system icons when browsing files (slows browsing down a bit)</String>
 		<String Name="SettingsUserCommands">Advanced\User Commands</String>

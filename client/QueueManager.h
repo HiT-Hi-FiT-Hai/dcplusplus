@@ -220,12 +220,13 @@ private:
 	u_int32_t nextSearch;
 	
 	static const string USER_LIST_NAME;
-	static string getTempName(const string& aFileName);
+	static const string TEMP_EXTENSION;
+	static string getTempName(const string& /*aFileName*/, const TTHValue* /*aRoot*/);
 
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
-	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad, bool utf8) throw(QueueException, FileException);
+	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException);
 
 	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
 
@@ -254,6 +255,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.57 2004/07/26 20:01:21 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.58 2004/08/02 14:20:16 arnetheduck Exp $
  */
 

@@ -200,6 +200,9 @@
 				RelativePath=".\res\Hub.ico">
 			</File>
 			<File
+				RelativePath=".\res\magnet.ico">
+			</File>
+			<File
 				RelativePath=".\res\netstats.ico">
 			</File>
 			<File
@@ -416,6 +419,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\ListViewArrows.h">
+			</File>
+			<File
+				RelativePath=".\windows\MagnetDlg.h">
 			</File>
 			<File
 				RelativePath=".\windows\MainFrm.h">

@@ -47,6 +47,7 @@
 #endif
 
 const string QueueManager::USER_LIST_NAME = "MyList.DcLst";
+const string QueueManager::TEMP_EXTENSION = ".dctmp";
 
 QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 						  int aFlags, QueueItem::Priority p, const string& aTempTarget,
@@ -60,7 +61,7 @@ QueueItem* QueueManager::FileQueue::add(const string& aTarget, int64_t aSize, co
 	if(!qi->isSet(QueueItem::FLAG_USER_LIST)) {
 		if(aTempTarget.empty()) {
 			if(!SETTING(TEMP_DOWNLOAD_DIRECTORY).empty() && (File::getSize(qi->getTarget()) == -1)) {
-				qi->setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(qi->getTargetFileName()));
+				qi->setTempTarget(SETTING(TEMP_DOWNLOAD_DIRECTORY) + getTempName(qi->getTargetFileName(), root));
 			}
 		} else {
 			qi->setTempTarget(aTempTarget);
@@ -379,23 +380,14 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	}
 }
 
-enum { TEMP_LENGTH = 8 };
-string QueueManager::getTempName(const string& aFileName) {
+string QueueManager::getTempName(const string& aFileName, const TTHValue* aRoot) {
 	string tmp;
-	tmp.reserve(aFileName.length() + TEMP_LENGTH);
-	string::size_type j = aFileName.rfind('.');
-	
-	if(j == string::npos) {
-		tmp.append(aFileName);
-	} else {
-		tmp.append(aFileName.data(), j);
+	tmp.clear();
+	if(aRoot != NULL) {
+		TTHValue tmpRoot(*aRoot);
+		tmp = tmpRoot.toBase32() + ".";
 	}
-	for(int i = 0; i < TEMP_LENGTH; i++) {
-		tmp.append(1, (char)Util::rand('a', 'z'));
-	}
-	if(j != string::npos) {
-		tmp.append(aFileName.data() + j, aFileName.length() - j);
-	}
+	tmp += aFileName + TEMP_EXTENSION;
 	return tmp;
 }
 
@@ -450,7 +442,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 				return;
 		}
 
-		wantConnection = addSource(q, aFile, aUser, addBad, utf8);
+		wantConnection = addSource(q, aFile, aUser, addBad ? QueueItem::Source::FLAG_MASK : 0, utf8);
 	}
 
 	if(wantConnection && aUser->isOnline())
@@ -464,7 +456,7 @@ void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueExce
 		QueueItem* q = fileQueue.find(target);
 		if(q != NULL && q->isBadSource(aUser)) {
 			QueueItem::Source* s = *q->getBadSource(aUser);
-			wantConnection = addSource(q, s->getPath(), aUser, true, s->isSet(QueueItem::Source::FLAG_UTF8));
+			wantConnection = addSource(q, s->getPath(), aUser, QueueItem::Source::FLAG_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
 		}
 	}
 	if(wantConnection && aUser->isOnline())
@@ -502,7 +494,7 @@ string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flag
 }
 
 /** Add a source to an existing queue item */
-bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad, bool utf8) throw(QueueException, FileException) {
+bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, Flags::MaskType addBad, bool utf8) throw(QueueException, FileException) {
 	QueueItem::Source* s = NULL;
 	bool wantConnection = (qi->getPriority() != QueueItem::PAUSED);
 
@@ -510,7 +502,7 @@ bool QueueManager::addSource(QueueItem* qi, const string& aFile, User::Ptr aUser
 		throw QueueException(STRING(DUPLICATE_SOURCE));
 	}
 
-	if(!addBad && qi->isBadSource(aUser, aFile)) {
+	if(qi->isBadSourceExcept(aUser, aFile, addBad)) {
 		throw QueueException(STRING(DUPLICATE_SOURCE));
 	}
 
@@ -627,7 +619,7 @@ int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			}
 			if(equal) {
 				try {
-					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), false, curDl->getUtf8());
+					addSource(qi, curDl->getPath(df) + df->getName(), curDl->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, curDl->getUtf8());
 					matches++;
 				} catch(const Exception&) {
 				}
@@ -691,7 +683,7 @@ void QueueManager::move(const string& aSource, const string& aTarget) throw() {
 			try {
 				for(QueueItem::Source::Iter i = qs->getSources().begin(); i != qs->getSources().end(); ++i) {
 					QueueItem::Source* s = *i;
-					addSource(qt, s->getPath(), s->getUser(), true, s->isSet(QueueItem::Source::FLAG_UTF8));
+					addSource(qt, s->getPath(), s->getUser(), QueueItem::Source::FLAG_MASK, s->isSet(QueueItem::Source::FLAG_UTF8));
 				}
 			} catch(const Exception&) {
 			}
@@ -1167,7 +1159,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			bool isUtf8 = (utf8 == "1");
 			User::Ptr user = ClientManager::getInstance()->getUser(nick);
 			try {
-				if(qm->addSource(cur, path, user, false, isUtf8) && user->isOnline())
+				if(qm->addSource(cur, path, user, 0, isUtf8) && user->isOnline())
 					ConnectionManager::getInstance()->getDownloadConnection(user);
 			} catch(const Exception&) {
 				return;
@@ -1223,7 +1215,7 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 
 			if(found) {
 				try {
-					addSource(qi, sr->getFile(), sr->getUser(), false, false);
+					addSource(qi, sr->getFile(), sr->getUser(), 0, false);
 					added = true;
 				} catch(const Exception&) {
 					// ...
@@ -1266,5 +1258,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.91 2004/07/26 20:01:20 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.92 2004/08/02 14:20:16 arnetheduck Exp $
  */

@@ -977,10 +977,9 @@ LRESULT QueueFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 
 		if(ii->getTTH() != NULL) {
-			SearchFrame::openWindow(ii->getTTH()->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+			WinUtil::searchHash(ii->getTTH());
 		}
 	} 
-
 	return 0;
 }
 
@@ -1317,7 +1316,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.56 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.57 2004/08/02 14:20:17 arnetheduck Exp $
  */
 
 

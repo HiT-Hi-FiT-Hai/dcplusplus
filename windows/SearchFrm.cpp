@@ -712,7 +712,7 @@ LRESULT SearchFrame::onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
 
 		if(sr->getTTH() != NULL) {
-			SearchFrame::openWindow(sr->getTTH()->toBase32(), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+			WinUtil::searchHash(sr->getTTH());
 		}
 	} 
 
@@ -935,5 +935,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.57 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.58 2004/08/02 14:20:17 arnetheduck Exp $
  */
