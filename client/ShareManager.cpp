@@ -29,6 +29,8 @@
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
 #include "File.h"
+#include "FilteredFile.h"
+#include "BZUtils.h"
 
 #ifndef _WIN32
 #include <sys/types.h>
@@ -37,8 +39,10 @@
 #include <unistd.h>
 #endif
 
-ShareManager::ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(false), 
-	update(false), listN(0), lFile(NULL), bFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) { 
+ShareManager::ShareManager() : hits(0), listLen(0), bzListLen(0), bzXmlListLen(0),
+	dirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
+	bFile(NULL), xFile(NULL), lastUpdate(GET_TICK()), bloom(1<<20) 
+{ 
 	SettingsManager::getInstance()->addListener(this);
 	TimerManager::getInstance()->addListener(this);
 	/* Common search words used to make search more efficient, should be more dynamic */
@@ -73,10 +77,12 @@ ShareManager::~ShareManager() {
 
 	delete lFile;
 	delete bFile;
+	delete xFile;
 
 	for(int i = 0; i <= listN; ++i) {
 		File::deleteFile(Util::getAppPath() + "MyList" + Util::toString(i) + ".DcLst");
 		File::deleteFile(Util::getAppPath() + "MyList" + Util::toString(i) + ".bz2");
+		File::deleteFile(Util::getAppPath() + "files" + Util::toString(i) + ".xml.bz2");
 	}
 
 	for(Directory::MapIter j = directories.begin(); j != directories.end(); ++j) {
@@ -90,6 +96,8 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		return getListFile();
 	} else if(aFile == "MyList.bz2") {
 		return getBZListFile();
+	} else if(aFile == "files.xml.bz2") {
+		return getBZXmlFile();
 	} else {
 		string::size_type i = aFile.find(PATH_SEPARATOR);
 		if(i == string::npos)
@@ -264,7 +272,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 					dir->addSearchType(getMask(name));
 					dir->addType(getType(name));
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
-					TTHValue* root = HashManager::getInstance()->getTTHRoot(aName + PATH_SEPARATOR + name, size);
+					TTHValue* root = HashManager::getInstance()->getTTHRoot(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
 					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 
 					if(root != NULL)
@@ -276,9 +284,9 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				}
 			}
 		} while(FindNextFile(hFind, &data));
+		FindClose(hFind);
 	}
 	
-	FindClose(hFind);
 
 #else // _WIN32
 	DIR *dirp = opendir(aName.c_str());
@@ -379,53 +387,61 @@ int ShareManager::run() {
 			loadDirs.clear();
 		}
 
-		Directory::DupeMap dupes;
-		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			i->second->toString(tmp, dupes);
-		}
-		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
-		
 		listN++;
 
 		try {
-			if(lFile != NULL) {
-				delete lFile;
-				lFile = NULL;
-				// Try to delete it...
-				File::deleteFile(getListFile());
+			Directory::DupeMap dupes;
+			string indent;
+
+			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
+			{
+
+				FilteredFileWriter<BZFilter> newXmlFile(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
+				newXmlFile.write(SimpleXML::utf8Header);
+				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
+
+				for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+					i->second->toString(tmp, &newXmlFile, dupes, indent);
+				}
+				newXmlFile.write("</FileListing>");
 			}
 
-			setListFile(Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst");
-			
-			lFile = new File(getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
-			lFile->write(tmp2);
-			delete lFile;
-			// Null in case of exception...
-			lFile = NULL;
+			if(xFile != NULL) {
+				delete xFile;
+				xFile = NULL;
+				File::deleteFile(getBZXmlFile());
+			}
+			xFile = new File(newXmlName, File::READ, File::OPEN);
+			setBZXmlFile(newXmlName);
+			bzXmlListLen = File::getSize(newXmlName);
 
-			lFile = new File(getListFile(), File::READ, File::OPEN);
-		} catch(const FileException&) {
-		}
+			string newBZName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2";
 
-		listLen = tmp2.length();
-		tmp2.clear();
-		CryptoManager::getInstance()->encodeBZ2(tmp, tmp2);
-		try {
+			FilteredFileWriter<BZFilter>(newBZName, File::WRITE, File::TRUNCATE | File::CREATE).write(tmp);
+
 			if(bFile != NULL) {
 				delete bFile;
 				bFile = NULL;
 				File::deleteFile(getBZListFile());
 			}
+			bFile = new File(newBZName, File::READ, File::OPEN);
+			setBZListFile(newBZName);
+			bzListLen = File::getSize(newBZName);
 
-			setBZListFile(Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2");
+			string newName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".DcLst";
+			CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
+			File(newName, File::WRITE, File::CREATE | File::TRUNCATE).write(tmp2);
 
-			bFile = new File(getBZListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
-			bFile->write(tmp2);
-			delete bFile;
-			bFile = NULL;
-			
-			bFile = new File(getBZListFile(), File::READ, File::OPEN);
-		} catch(const FileException&) {
+			if(lFile != NULL) {
+				delete lFile;
+				lFile = NULL;
+				File::deleteFile(getListFile());
+			}
+			lFile = new File(newName, File::READ, File::OPEN);
+			setListFile(newName);
+			listLen = File::getSize(newName);
+		} catch(const Exception&) {
+			// No new file lists...
 		}
 		
 		dirty = false;
@@ -437,51 +453,78 @@ int ShareManager::run() {
 	}
 	return 0;
 }
+static const string& escaper(const string& n, string& tmp) {
+	if(Util::needsUtf8(n) || SimpleXML::needsEscape(n, false, false)) {
+		tmp = n;
+		return SimpleXML::escape(Util::toUtf8(tmp), false, false);
+	}
+	return n;
+}
 
-#define STRINGLEN(n) n, sizeof(n)-1
-void ShareManager::Directory::toString(string& tmp, DupeMap& dupes, int ident /* = 0 */) {
-	tmp.append(ident, '\t');
+#define LITERAL(n) n, sizeof(n)-1
+void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, DupeMap& dupes, string& indent) {
+	string tmp2;
+
+	tmp.append(indent);
 	tmp.append(name);
-	tmp.append(STRINGLEN("\r\n"));
+	tmp.append(LITERAL("\r\n"));
 
+	xmlFile->write(indent);
+	xmlFile->write(LITERAL("<Directory Name=\""));
+	xmlFile->write(escaper(name, tmp2));
+	xmlFile->write(LITERAL("\">\r\n"));
+	
+	indent += '\t';
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		i->second->toString(tmp, dupes, ident + 1);
+		i->second->toString(tmp, xmlFile, dupes, indent);
 	}
 	
 	Directory::File::Iter j = files.begin();
 	while(j != files.end()) {
 		pair<DupeIter, DupeIter> p = dupes.equal_range(j->getName());
 		DupeIter k = p.first;
+		bool dupe = false;
 		for(; k != p.second; ++k) {
 			if(k->second == j->getSize()) {
 				dcdebug("SM::D::toString Dupe found: %s (" I64_FMT " bytes)\n", k->first.c_str(), j->getSize());
+				dupe = true;
 				break;
 			}
 		}
 
-		if(k != p.second) {
+		if(dupe) {
 			size-=j->getSize();
-			if(BOOLSETTING(REMOVE_DUPES)) {
-				//j = files.erase(j);
-				files.erase(j++);
-			} else {
-				tmp.append(ident+1, '\t');
-				tmp.append(j->getName());
-				tmp.append(STRINGLEN("|"));
-				tmp.append(Util::toString(j->getSize()));
-				tmp.append(STRINGLEN("\r\n"));
-				++j;
-			}
 		} else {
 			dupes.insert(make_pair(j->getName(), j->getSize()));
-			tmp.append(ident+1, '\t');
+		}
+
+		if(dupe && BOOLSETTING(REMOVE_DUPES)) {
+				//j = files.erase(j);
+				files.erase(j++);
+		} else {
+			tmp.append(indent);
 			tmp.append(j->getName());
-			tmp.append(STRINGLEN("|"));
+			tmp.append(LITERAL("|"));
 			tmp.append(Util::toString(j->getSize()));
-			tmp.append(STRINGLEN("\r\n"));
+			tmp.append(LITERAL("\r\n"));
+
+			xmlFile->write(indent);
+			xmlFile->write(LITERAL("<File Name=\""));
+			xmlFile->write(escaper(j->getName(), tmp2));
+			xmlFile->write(LITERAL("\" Size=\""));
+			xmlFile->write(Util::toString(j->getSize()));
+			if(j->getTTH()) {
+				xmlFile->write(LITERAL("\" TTHRoot=\""));
+				xmlFile->write(j->getTTH()->toBase32());
+			}
+			xmlFile->write(LITERAL("\"/>\r\n"));
+
 			++j;
 		}
 	}
+	indent.erase(indent.length()-1);
+	xmlFile->write(indent);
+	xmlFile->write(LITERAL("</Directory>\r\n"));
 }
 
 
@@ -824,6 +867,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.75 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.76 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

@@ -161,7 +161,7 @@ void ADLSearchManager::Save()
 		// Save string to file			
 		try {
 			File fout(Util::getAppPath() + ADLS_STORE_FILENAME, File::WRITE, File::CREATE | File::TRUNCATE);
-			fout.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
+			fout.write(SimpleXML::w1252Header);
 			fout.write(xml.toXML());
 			fout.close();
 		} catch(const FileException&) {
@@ -177,7 +177,6 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 	for(DestDirList::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {
 		if(id->subdir != NULL) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
-			copyFile->setAdls(true);
 			id->subdir->files.insert(copyFile);
 		}
 		id->fileAdded = false;	// Prepare for next stage
@@ -196,12 +195,11 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 		}
 		if(is->MatchesFile(currentFile->getName(), filePath, currentFile->getSize())) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
-			copyFile->setAdls(true);
 			destDirVector[is->ddIndex].dir->files.insert(copyFile);
 			destDirVector[is->ddIndex].fileAdded = true;
 
 			if(is->isAutoQueue){
-				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), Util::emptyString, QueueItem::FLAG_RESUME);
+				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTHRoot(), Util::emptyString, QueueItem::FLAG_RESUME);
 			}
 
 			if(breakOnFirst) {
@@ -289,6 +287,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.10 2004/01/30 17:05:56 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.11 2004/02/16 13:21:39 arnetheduck Exp $
 */
 

@@ -354,14 +354,128 @@ string Util::getLocalIp() {
 	return tmp;
 }
 
+static int cToUtf8(string& str, string::size_type i) {
+	wchar_t c;
+	int l = mblen(str.c_str() + i, str.length() - i);
+	if(l == -1) {
+		// Invalid multibyte character? Erase it...
+		str.erase(i, 1);
+		return 0;
+	}
+
+	if(mbtowc(&c, str.c_str()+i, l) != l) {
+		str.erase(i, l);
+		return 0 - l;
+	}
+	
+	if(c >= 0x0800) {
+		if(l < 3)
+			str.insert(i+1, 3-l, (u_int8_t)0x80);
+		else if(l > 3)
+			str.erase(i, l-3);
+
+		str[i] = 0x80 | 0x40 | 0x20 & (c >> 12);
+		str[i+1] = 0x80 & ((c >> 6) & 0x3f);
+		str[i+2] = 0x80 & (c & 0x3f);
+		return 3 - l;
+	} else if(c >= 0x0080) {
+		if(l < 2)
+            str.insert(i+1, 2-l, 0);
+		else if(l > 2)
+			str.erase(i, l-2);
+		str[i] = 0x80 | 0x40 | (c >> 6);
+		str[i+1] = 0x80 | (c & 0x3f); 
+		return 2 - l;
+	} else {
+		if(l > 1) {
+			str.erase(i, l-1);
+			str[i] = c & 0x7f;
+		}
+		return 1 - l;
+	}
+}
+
+int cToAcp(string& str, string::size_type i) {
+	wchar_t c;
+	int l = 0;
+	if(str[i] & 0x80) {
+		if(str[i] & 0x40) {
+			if(str[i] & 0x20) {
+				if((i + 2 >= str.length()) || 
+					!((((unsigned char)str[i+1]) & ~0x3f) == 0x80) ||
+					!((((unsigned char)str[i+2]) & ~0x3f) == 0x80))
+				{
+					str.erase(i, 1);
+					return -1;
+				}
+				c = ((wchar_t)(unsigned char)str[i] & 0xf) << 12 |
+					((wchar_t)(unsigned char)str[i+1] & 0x3f) << 6 |
+					((wchar_t)(unsigned char)str[i+2] & 0x3f);
+				l = 3;
+			} else {
+				if((i + 1 >= str.length()) ||
+					!((((unsigned char)str[i+1]) & ~0x3f) == 0x80)) 
+				{
+					str.erase(i, 1);
+					return -1;
+				}
+				c = ((wchar_t)(unsigned char)str[i] & 0x1f) << 6 |
+					((wchar_t)(unsigned char)str[i+1] & 0x3f);
+				l = 2;
+			}
+		} else {
+			str.erase(i, 1);
+			return -1;
+		}
+	} else {
+		c = (unsigned char)str[i];
+		l = 1;
+	}
+
+	// Warning! We assume at most 4 characters in the mb encoding
+	char buf[4];
+	int x = wctomb(buf, c);
+	if(x == -1) {
+		x = 1;
+		buf[0] = '_';
+	}
+
+	if(x < l) {
+		str.erase(i + 1, l-x);
+	}
+	for(int n = 0; n < x; n++)
+		str[i+n] = buf[n];
+
+	return x - l;
+}
+
 /**
-* This function takes a string and a set of parameters and transforms them according to
-* a simple formatting rule, similar to strftime. In the message, every parameter should be
-* represented by %[name]. It will then be replaced by the corresponding item in 
-* the params stringmap. After that, the string is passed through strftime with the current
-* date/time and then finally written to the log file. If the parameter is not present at all,
-* it is removed from the string completely...
-*/
+ * Convert a string in the current locale (whatever that happens to be) to UTF-8.
+ */
+string& Util::toUtf8(string& str) {
+	for(string::size_type i = 0; i < str.length(); ++i) {
+		if(str[i] & 0x80)
+			i += cToUtf8(str, i);
+	}
+	return str;
+}
+
+string& Util::toAcp(string& str) {
+	for(string::size_type i = 0; i < str.length(); ++i) {
+		if(str[i] & 0x80)
+			i += cToAcp(str, i);
+	}
+	return str;
+}
+
+/**
+ * This function takes a string and a set of parameters and transforms them according to
+ * a simple formatting rule, similar to strftime. In the message, every parameter should be
+ * represented by %[name]. It will then be replaced by the corresponding item in 
+ * the params stringmap. After that, the string is passed through strftime with the current
+ * date/time and then finally written to the log file. If the parameter is not present at all,
+ * it is removed from the string completely...
+ */
 string Util::formatParams(const string& msg, StringMap& params) {
 	string result = msg;
 
@@ -554,6 +668,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.43 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.44 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

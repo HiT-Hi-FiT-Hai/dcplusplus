@@ -32,6 +32,7 @@
 #include "QueueItem.h"
 #include "Singleton.h"
 #include "DirectoryListing.h"
+#include "MerkleTree.h"
 
 #include "QueueManagerListener.h"
 #include "SearchManagerListener.h"
@@ -76,7 +77,7 @@ public:
 	
 	/** Add a file to the queue. */
 	void add(const string& aFile, int64_t aSize, User::Ptr aUser, 
-		const string& aTarget, const string& aSearchString = Util::emptyString, 
+		const string& aTarget, const TTHValue* root, const string& aSearchString = Util::emptyString, 
 		int aFlags = QueueItem::FLAG_RESUME, QueueItem::Priority p = QueueItem::DEFAULT, 
 		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
@@ -86,9 +87,9 @@ public:
 		string::size_type i = 0;
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
-		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
+		string file = Util::getAppPath() + "FileLists\\" + x;
 		// We use the searchString to store the start viewing directory for file lists
-		add(USER_LIST_NAME, -1, aUser, file, startDir,
+		add(USER_LIST_NAME, -1, aUser, file, NULL, startDir,
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
 	}
@@ -147,7 +148,7 @@ private:
 		void add(QueueItem* qi);
 		QueueItem* add(const string& aTarget, int64_t aSize, const string& aSearchString, 
 			int aFlags, QueueItem::Priority p, const string& aTempTarget, int64_t aDownloaded,
-			u_int32_t aAdded) throw(QueueException, FileException);
+			u_int32_t aAdded, const TTHValue* root) throw(QueueException, FileException);
 		QueueItem* find(const string& target);
 		void find(StringList& sl, int64_t aSize, const string& ext);
 		QueueItem* findAutoSearch(StringList& recent);
@@ -218,7 +219,7 @@ private:
 	/** Sanity check for the target filename */
 	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
-	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad) throw(QueueException, FileException);
+	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad, bool utf8) throw(QueueException, FileException);
 
 	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
 
@@ -247,6 +248,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.52 2003/12/21 21:41:15 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.53 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

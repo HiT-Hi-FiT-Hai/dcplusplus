@@ -92,6 +92,25 @@ public:
 
 	}
 
+	u_int32_t getLastModified() {
+		FILETIME f = {0};
+		::GetFileTime(h, NULL, NULL, &f);
+		return convertTime(&f);
+	}
+
+	static u_int32_t convertTime(FILETIME* f) {
+		SYSTEMTIME s = { 1970, 1, 0, 1, 0, 0, 0, 0 };
+		FILETIME f2 = {0};
+		if(::SystemTimeToFileTime(&s, &f2)) {
+			u_int64_t* a = (u_int64_t*)f;
+			u_int64_t* b = (u_int64_t*)&f2;
+			*a -= *b;
+			*a /= (1000LL*1000LL*1000LL/100LL);		// 100ns > s
+			return (u_int32_t)*a;
+		}
+		return 0;
+	}
+
 	bool isOpen() { return h != INVALID_HANDLE_VALUE; };
 
 	virtual void close() throw() {
@@ -145,7 +164,7 @@ public:
 		return x;
 	}
 
-	virtual void write(const void* buf, u_int32_t len) throw(FileException) {
+	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
 		DWORD x;
 		if(!::WriteFile(h, buf, len, &x, NULL)) {
 			throw FileException(Util::translateError(GetLastError()));
@@ -158,6 +177,7 @@ public:
 				crc32.update(((u_int8_t*)buf)[i]);
 			}
 		}
+		return x;
 	}
 	virtual void setEOF() throw(FileException) {
 		dcassert(isOpen());
@@ -258,7 +278,7 @@ public:
 		return (u_int32_t)x;
 	}
 	
-	virtual void write(const void* buf, u_int32_t len) throw(FileException) {
+	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
 		ssize_t x = ::write(h, buf, len);
 		if(x == -1)
 			throw FileException("Write error");
@@ -270,6 +290,7 @@ public:
 				crc32.update(((u_int8_t*)buf)[i]);
 			}
 		}
+		return x;
 	}
 
 	/**
@@ -357,10 +378,9 @@ public:
 		}
 	}
 
-	virtual void write(const void* aBuf, u_int32_t len) throw(FileException) {
+	virtual u_int32_t write(const void* aBuf, u_int32_t len) throw(FileException) {
 		if( (size == 0) || ((pos == 0) && (len > size)) ) {
-			File::write(aBuf, len);
-			return;
+			return File::write(aBuf, len);
 		}
 
 		size_t pos2 = 0;
@@ -376,6 +396,7 @@ public:
 			if(pos == size)
 				flush();
 		}
+		return len;
 	}
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
@@ -427,6 +448,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.27 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: File.h,v 1.28 2004/02/16 13:21:39 arnetheduck Exp $
  */
 

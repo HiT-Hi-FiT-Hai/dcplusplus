@@ -41,6 +41,8 @@ Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 		setFlag(Download::FLAG_USER_LIST);
 	if(qi->isSet(QueueItem::FLAG_RESUME))
 		setFlag(Download::FLAG_RESUME);
+	if(qi->getCurrent()->isSet(QueueItem::Source::FLAG_UTF8))
+		setFlag(Download::FLAG_UTF8);
 };
 
 void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
@@ -150,16 +152,22 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			d->setPos(0);
 		}
 
-		if(d->isSet(Download::FLAG_USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
-			d->setSource("MyList.bz2");
+		if(d->isSet(Download::FLAG_USER_LIST)) {
+			if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+				d->setSource("files.xml.bz2");
+			} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+				d->setSource("MyList.bz2");
+			}
 		}
 
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && (aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) || aConn->isSet(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK)) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			d->bytesLeft = d->getSize() - d->getPos();
-			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft);
-		} else {
+			aConn->getZBlock(d->getSource(), d->getPos(), d->bytesLeft, d->isSet(Download::FLAG_UTF8));
+		} else if(d->isSet(Download::FLAG_UTF8)) {
+			aConn->getBlock(d->getSource(), d->getPos(), d->bytesLeft, true);
+		} else{
 			aConn->get(d->getSource(), d->getPos());
 		}
 		return;
@@ -169,13 +177,13 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	removeConnection(aConn, true);
 }
 
-void DownloadManager::onSending(UserConnection* aSource) {
+void DownloadManager::onSending(UserConnection* aSource, int64_t aBytes) {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
 	}
 	
-	if(prepareFile(aSource)) {
+	if(prepareFile(aSource, (aBytes == -1) ? -1 : aSource->getDownload()->getPos() + aBytes)) {
 		aSource->setDataMode();
 	}
 }
@@ -213,8 +221,14 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 	string target = d->getDownloadTarget();
 	Util::ensureDirectory(target);
-	if(d->isSet(Download::FLAG_USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
-		target.replace(target.size() - 5, 5, "bz2");
+	if(d->isSet(Download::FLAG_USER_LIST)) {
+		if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+			target += ".xml.bz2";
+		} else if(aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+			target += ".bz2";
+		} else {
+			target += ".DcLst";
+		}
 	}
 	File* file = NULL;
 	try {
@@ -231,7 +245,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		file->setPos(d->getPos());
 
 		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-			d->setComp(new ZDecompressor);
+			d->setComp(new UnZFilter);
 		}
 
 	} catch(const FileException& e) {
@@ -240,7 +254,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		removeDownload(d);
 		removeConnection(aSource);
 		return false;
-	} catch(const CryptoException& e) {
+	} catch(const Exception& e) {
 		delete file;
 		fire(DownloadManagerListener::FAILED, d, e.getError());
 		aSource->setDownload(NULL);
@@ -252,7 +266,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	dcassert(d->getPos() != -1);
 	d->setFile(file);
 
-	
 	{
 		d->setStart(GET_TICK());
 		aSource->setState(UserConnection::STATE_DONE);
@@ -294,6 +307,8 @@ bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen
 	return true;
 }
 
+static const size_t BUF_SIZE = 64*1024;
+
 void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
@@ -303,15 +318,23 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 		dcassert(d->getComp() != NULL);
 		dcassert(d->bytesLeft > 0);
 		int l = aLen;
+		const u_int8_t* data = aData;
+		u_int8_t buf[BUF_SIZE];
+
 		while(l > 0) {
-			const u_int8_t* data = aData + (aLen - l);
 			try {
-				u_int32_t b = d->getComp()->decompress(data, l);
-				if(!handleData(aSource, d->getComp()->getOutbuf(), b))
+				size_t out = BUF_SIZE;
+				size_t m = l;
+				(*d->getComp())(data, m, buf, out);
+				data += m;
+				l -= m;
+
+				if(!handleData(aSource, buf, out))
 					break;
-				d->bytesLeft -= b;
+
+				d->bytesLeft -= out;
+				d->addActual(m);
 				if(d->bytesLeft == 0) {
-					d->addActual(aLen - l);
 					aSource->setLineMode();
 					handleEndData(aSource);
 					if(l != 0) {
@@ -320,10 +343,10 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 					}
 					return;
 				}
-			} catch(const CryptoException&) {
+			} catch(const Exception&) {
 				// Oops, decompression error...could happen for many reasons
 				// but the most probable is that we received bad data...
-				// We remove whatever we managed to download in this sessions
+				// We remove whatever we managed to download in this session
 				// as it might be bad all of it...
 				try {
 					d->getFile()->movePos(-d->getTotal());
@@ -343,7 +366,6 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 				return;
 			}
 		}
-		d->addActual(aLen - l);
 	} else {
 		if(handleData(aSource, aData, aLen))
 			d->addActual(aLen);
@@ -632,7 +654,6 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 	switch(type) {
 	case UserConnectionListener::MAXED_OUT: onMaxedOut(conn); break;
 	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailable(conn); break;
-	case UserConnectionListener::SENDING: onSending(conn); break;
 	default: break;
 	}
 }
@@ -645,6 +666,10 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 	default:
 		break;
 	}
+}
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) {
+	if(type == UserConnectionListener::SENDING)
+		onSending(conn, bytes);
 }
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw() {
 	switch(type) {
@@ -676,5 +701,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.90 2004/02/01 16:59:21 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.91 2004/02/16 13:21:39 arnetheduck Exp $
  */

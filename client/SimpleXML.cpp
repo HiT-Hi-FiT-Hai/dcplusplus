@@ -21,7 +21,10 @@
 
 #include "SimpleXML.h"
 
-void SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */) {
+const string SimpleXML::utf8Header = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\r\n";
+const string SimpleXML::w1252Header = "<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n";
+
+string& SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false */) {
 	string::size_type i = 0;
 	const char* chars = aAttrib ? "<&>'\"" : "<&>";
 	
@@ -67,6 +70,7 @@ void SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false *
 			}
 		}
 	}
+	return aString;
 }
 
 void SimpleXML::Tag::appendAttribString(string& tmp) {
@@ -355,6 +359,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.24 2003/12/26 11:00:06 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.25 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

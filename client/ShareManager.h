@@ -99,6 +99,8 @@ public:
 	GETSET(u_int32_t, hits, Hits);
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzListFile, BZListFile);
+	GETSET(string, bzXmlFile, BZXmlFile);
+
 private:
 
 	class Directory : public FastAlloc<Directory> {
@@ -189,7 +191,7 @@ private:
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
 		
-		void toString(string& tmp, DupeMap& dupes, int ident = 0);
+		void toString(string& tmp, ::File* xmlFile, DupeMap& dupes, string& indent);
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);
@@ -221,6 +223,7 @@ private:
 
 	int64_t listLen;
 	int64_t bzListLen;
+	int64_t bzXmlListLen;
 	bool dirty;
 	bool refreshDirs;
 	bool update;
@@ -229,6 +232,7 @@ private:
 
 	File* lFile;
 	File* bFile;
+	File* xFile;
 
 	u_int32_t lastUpdate;
 
@@ -265,6 +269,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.42 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.43 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

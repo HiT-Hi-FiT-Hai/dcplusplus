@@ -47,6 +47,7 @@ public:
 		DIRECTION,
 		GET,
 		GET_ZBLOCK,
+		GET_BLOCK,
 		SENDING,
 		FILE_LENGTH,
 		SEND,
@@ -60,14 +61,15 @@ public:
 	};
 
 	virtual void onAction(Types, UserConnection*) throw() { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
-	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };				// BYTES_SENT
+	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };	// BYTES_SENT
 	virtual void onAction(Types, UserConnection*, const string&) throw() { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
 	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) throw() { };	// DATA
 	virtual void onAction(Types, UserConnection*, const string&, const string&) throw() { };	// DIRECTION, LOCK
 	virtual void onAction(Types, UserConnection*, const string&, int64_t) throw() { };	// GET
-	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) throw() { };	// GET_BZ_BLOCK
+	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) throw() { };	// GET_ZBLOCK, GET_BLOCK
 	virtual void onAction(Types, UserConnection*, int) throw() { };						// MODE_CHANGE
 	virtual void onAction(Types, UserConnection*, const StringList&) throw() { };		// SUPPORTS
+	virtual void onAction(Types, UserConnection*, int64_t) { }							// SENDING
 };
 
 class ConnectionQueueItem;
@@ -159,6 +161,7 @@ public:
 		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
 		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
 		FLAG_SUPPORTS_GETTESTZBLOCK = FLAG_SUPPORTS_MINISLOTS << 1,
+		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_GETTESTZBLOCK << 1,
 	};
 	
 	enum States {
@@ -184,10 +187,11 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send((isSet(FLAG_SUPPORTS_GETZBLOCK) ? "$GetZBlock " : "$GetTestZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
+	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((isSet(FLAG_SUPPORTS_GETZBLOCK) ? (utf8 ? "$UGetZBlock " : "$GetZBlock ") : "$GetTestZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
+	void getBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send(utf8 ? "$UGetBlock " : "$GetBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
-	void sending() { send("$Sending|"); };
+	void sending(int64_t bytes) { send(bytes == -1 ? "$Sending|" : "$Sending " + Util::toString(bytes) + "|"); };
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
@@ -283,6 +287,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.64 2004/02/01 16:59:22 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.65 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

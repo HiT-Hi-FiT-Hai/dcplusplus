@@ -61,13 +61,13 @@ public:
 	 * Retrieves TTH root or queue's file for hashing.
 	 * @return TTH root if available, otherwise NULL
 	 */
-	TTHValue* getTTHRoot(const string& aFileName, int64_t aSize);
-
+	TTHValue* getTTHRoot(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
 	void startup() {
 		hasher.start();
 		store.load();
 	}
+
 	void shutdown() {
 		hasher.shutdown();
 		hasher.join();
@@ -117,10 +117,10 @@ private:
 
 		//void rebuild();
 
-		TTHValue* getTTHRoot(const string& aFileName, int64_t aSize) {
+		TTHValue* getTTHRoot(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 			TTHIter i = indexTTH.find(aFileName);
 			if(i != indexTTH.end()) {
-				if(i->second->getSize() == aSize) {
+				if(i->second->getSize() == aSize && i->second->getTimeStamp() == aTimeStamp) {
 					return &(i->second->getRoot());
 				} else {
 					delete i->second;
@@ -136,8 +136,8 @@ private:
 	private:
 		class FileInfo : public FastAlloc<FileInfo> {
 		public:
-			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize) { }
+			FileInfo(const TTHValue& aRoot, int64_t aSize, int64_t aIndex, size_t aBlockSize, u_int32_t aTimeStamp) :
+			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp) { }
 
 			TTHValue& getRoot() { return root; }
 			void setRoot(const TTHValue& aRoot) { root = aRoot; }
@@ -146,6 +146,7 @@ private:
 			GETSET(int64_t, size, Size)
 			GETSET(int64_t, index, Index);
 			GETSET(size_t, blockSize, BlockSize);
+			GETSET(u_int32_t, timeStamp, TimeStamp);
 		};
 
 		typedef HASH_MAP_X(string, FileInfo*, noCaseStringHash, noCaseStringEq, noCaseStringLess) TTHMap;
@@ -160,7 +161,7 @@ private:
 
 		bool dirty;
 
-		void createFiles();
+		void createDataFile(const string& name);
 	};
 
 	friend class HashLoader;
@@ -184,5 +185,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.5 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.6 2004/02/16 13:21:39 arnetheduck Exp $
  */

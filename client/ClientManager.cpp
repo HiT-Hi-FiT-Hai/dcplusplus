@@ -263,7 +263,12 @@ void ClientManager::onTimerMinute(u_int32_t /* aTick */) {
 
 void ClientManager::onClientLock(Client* client, const string& aLock) throw() {
 	if(CryptoManager::getInstance()->isExtended(aLock)) {
-		client->supports(features);
+		StringList feat = features;
+		if(BOOLSETTING(HASH_FILES))
+			feat.push_back("TTHSearch");
+		if(BOOLSETTING(COMPRESS_TRANSFERS))
+			feat.push_back("GetZBlock");
+		client->supports(feat);
 	}
 	client->key(CryptoManager::getInstance()->makeKey(aLock));
 	client->validateNick(client->getNick());
@@ -353,5 +358,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.48 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.49 2004/02/16 13:21:39 arnetheduck Exp $
  */

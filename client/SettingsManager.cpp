@@ -277,7 +277,7 @@ void SettingsManager::save(string const& aFileName) {
 
 	try {
 		BufferedFile f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
+		f.write(SimpleXML::w1252Header);
 		xml.toXML(&f);
 		f.close();
 		File::deleteFile(aFileName);
@@ -289,6 +289,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.66 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.67 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

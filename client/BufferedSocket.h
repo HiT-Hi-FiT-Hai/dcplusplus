@@ -27,6 +27,8 @@
 #include "Semaphore.h"
 #include "Thread.h"
 #include "Speaker.h"
+#include "ZUtils.h"
+#include "FilteredFile.h"
 
 class File;
 
@@ -53,8 +55,6 @@ public:
 	virtual void onAction(Types, const u_int8_t*, int) throw() { };
 	virtual void onAction(Types, int) throw() { };
 };
-
-class ZCompressor;
 
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
 {
@@ -196,7 +196,7 @@ private:
 	int outbufPos[BUFFERS];
 	int curBuf;
 
-	ZCompressor* comp;
+	FilteredReader<ZFilter>* comp;
 	bool compress;
 	File* file;
 	int64_t size;
@@ -236,5 +236,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.54 2003/12/14 20:41:37 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.55 2004/02/16 13:21:39 arnetheduck Exp $
  */

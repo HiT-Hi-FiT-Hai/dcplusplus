@@ -338,6 +338,18 @@ public:
 #endif
 	}
 
+	static bool needsUtf8(const string& str) {
+		for(string::size_type i = 0; i < str.length(); ++i)
+			if(str[i] & 0x80)
+				return true;
+		return false;
+	}
+	static bool needsAcp(const string& str) {
+		return needsUtf8(str);
+	}
+	static string& toUtf8(string& str);
+	static string& toAcp(string& str);
+
 	static string toString(u_int32_t val) {
 		char buf[16];
 		sprintf(buf, "%lu", (unsigned long)val);
@@ -523,5 +535,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.78 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: Util.h,v 1.79 2004/02/16 13:21:40 arnetheduck Exp $
  */

@@ -139,6 +139,9 @@
 				RelativePath=".\client\BufferedSocket.cpp">
 			</File>
 			<File
+				RelativePath=".\client\BZUtils.cpp">
+			</File>
+			<File
 				RelativePath=".\client\Client.cpp">
 			</File>
 			<File
@@ -246,6 +249,9 @@
 			<File
 				RelativePath=".\client\Util.cpp">
 			</File>
+			<File
+				RelativePath=".\client\ZUtils.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -264,6 +270,9 @@
 			</File>
 			<File
 				RelativePath=".\client\BufferedSocket.h">
+			</File>
+			<File
+				RelativePath=".\client\BZUtils.h">
 			</File>
 			<File
 				RelativePath=".\client\Client.h">
@@ -321,6 +330,9 @@
 			</File>
 			<File
 				RelativePath=".\client\HashManager.h">
+			</File>
+			<File
+				RelativePath=".\client\HashValue.h">
 			</File>
 			<File
 				RelativePath=".\client\HttpConnection.h">
@@ -420,6 +432,9 @@
 			</File>
 			<File
 				RelativePath=".\client\version.h">
+			</File>
+			<File
+				RelativePath=".\client\ZUtils.h">
 			</File>
 		</Filter>
 	</Files>

@@ -809,6 +809,8 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			if(username.rfind('.') != string::npos) {
 				username.erase(username.rfind('.'));
 			}
+			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, ".xml") == 0)
+				username.erase(username.length()-4);
 			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(username));
 		}
 	}
@@ -927,12 +929,7 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 				// This is a file listing, show it...
 
 				DirectoryListInfo* i = new DirectoryListInfo();
-				if(qi->isSet(QueueItem::FLAG_BZLIST) ){
-					dcassert(qi->getTarget().rfind('.') != string::npos);
-					i->file = qi->getTarget().substr(0, qi->getTarget().rfind('.')+1) + "bz2";
-				} else {
-					i->file = qi->getTarget();
-				}
+				i->file = qi->getListName();
 				i->user = qi->getCurrent()->getUser();
 				i->start = qi->getSearchString();
 
@@ -946,6 +943,5 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.45 2004/01/30 14:13:00 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.46 2004/02/16 13:21:41 arnetheduck Exp $
  */
-

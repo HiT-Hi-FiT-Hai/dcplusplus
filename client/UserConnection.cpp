@@ -91,7 +91,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
-	} else if(cmd == "$GetTestZBlock" || cmd == "$GetZBlock") {
+	} else if(cmd == "$GetTestZBlock" || cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "UGetBlock") {
 		string::size_type i = param.find(' ');
 		if(i == string::npos)
 			return;
@@ -105,11 +105,10 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(j == string::npos)
 			return;
 		int64_t bytes = Util::toInt64(param.substr(i, j-i));
-		if(bytes < 0) {
-			disconnect();
-		} else {
-			fire(UserConnectionListener::GET_ZBLOCK, this, param.substr(j+1), start, bytes);
-		}
+		string name = param.substr(j+1);
+		if(cmd == "$UGetZBlock" || cmd == "$UGetBlock")
+			Util::toAcp(name);
+		fire(cmd == "$UGetBlock" ? UserConnectionListener::GET_BLOCK : UserConnectionListener::GET_ZBLOCK, this, name, start, bytes);
 	} else if(cmd == "$Key") {
 		if(!param.empty())
 			fire(UserConnectionListener::KEY, this, param);
@@ -132,7 +131,10 @@ void UserConnection::onLine(const string& aLine) throw () {
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
 	} else if(cmd == "$Sending") {
-		fire(UserConnectionListener::SENDING, this);
+		int64_t bytes = -1;
+		if(!param.empty())
+			bytes = Util::toInt64(param);
+		fire(UserConnectionListener::SENDING, this, bytes);
 	} else if(cmd == "$MaxedOut") {
 		fire(UserConnectionListener::MAXED_OUT, this);
 	} else if(cmd == "$Supports") {
@@ -199,5 +201,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.36 2004/02/01 16:59:22 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.37 2004/02/16 13:21:40 arnetheduck Exp $
  */

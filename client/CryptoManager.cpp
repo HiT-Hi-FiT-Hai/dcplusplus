@@ -31,109 +31,6 @@
 #include <bzlib.h>
 #endif
 
-ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
-	inbuf(NULL), f(file), maxBytes(aMaxBytes), level(aStrength) {
-	
-	memset(&zs, 0, sizeof(zs));
-	
-	if(deflateInit(&zs, level) != Z_OK) {
-		throw CryptoException(STRING(COMPRESSION_ERROR));
-	}
-
-	inbuf = new u_int8_t[INBUF_SIZE];
-}
-
-u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(FileException, CryptoException) {
-	dcassert(buf);
-
-	if(bufLen == 0) {
-		return 0;
-	}
-
-	zs.avail_out = bufLen;
-	zs.next_out = (u_int8_t*) buf;
-	bytesRead = 0;
-
-	// Check if we're compressing at all...if not; set level to 0 to just compute
-	// the adler32...we want at least 5% compression, a completely arbitrary value.
-	// The 64kb probe zone is also taken out of the air...
-	if( (maxBytes != 0) && (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
-		dcdebug("Disabling compression for 0x%p (%ld/%ld = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
-		setStrength(0);
-	}
-
-	while(zs.avail_out > 0) {
-		// Check if we need to read more
-		if(zs.avail_in == 0 && maxBytes != 0) {
-			// Read more data
-			u_int32_t bytes = (maxBytes == -1) ? INBUF_SIZE : (u_int32_t) min((int64_t) INBUF_SIZE, maxBytes);
-			zs.avail_in = f.read(inbuf, bytes);
-			zs.next_in = (u_int8_t*)inbuf;
-			bytesRead += zs.avail_in;
-
-			if(maxBytes != -1) {
-				if(zs.avail_in == 0)
-					throw CryptoException(STRING(COMPRESSION_ERROR));
-				maxBytes -= zs.avail_in;
-			} else {
-				if(zs.avail_in == 0)
-					maxBytes = 0;
-			}
-		}
-
-		int err = ::deflate(&zs, ((maxBytes == 0) ? Z_FINISH : Z_NO_FLUSH));
-			
-		if(err == Z_STREAM_END)
-			return bufLen - zs.avail_out;
-		if(err != Z_OK) {
-			throw CryptoException(STRING(COMPRESSION_ERROR));
-		}
-	}
-
-	return bufLen;
-}
-
-void ZCompressor::setStrength(int str) throw(CryptoException) {
-	if(level != str) {
-		u_int32_t x = zs.avail_in;
-		zs.avail_in = 0;
-		int err = ::deflateParams(&zs, str, Z_DEFAULT_STRATEGY);
-		zs.avail_in = x;
-		dcassert(err != Z_BUF_ERROR);
-
-		if(err != Z_OK) {
-			throw CryptoException(STRING(COMPRESSION_ERROR));
-		}
-		level = str;
-	}
-}
-
-ZDecompressor::ZDecompressor() throw(CryptoException) : outbuf(NULL) {
-	memset(&zs, 0, sizeof(zs));
-
-	if(inflateInit(&zs) != Z_OK)
-		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
-
-	outbuf = new u_int8_t[OUTBUF_SIZE];
-}
-
-u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(CryptoException) {
-	zs.avail_in = inbytes;
-	zs.avail_out = OUTBUF_SIZE;
-	zs.next_in = (u_int8_t*)const_cast<void*>(inbuf);
-	zs.next_out = (u_int8_t*)outbuf;
-
-	int err = inflate(&zs, Z_NO_FLUSH);
-
-	if(err == Z_OK || err == Z_STREAM_END) {
-		inbytes = zs.avail_in;
-		return OUTBUF_SIZE - zs.avail_out;
-	} else {
-		dcdebug("ZDecompressor::decompress Error %d while decompressing\n", err);
-		throw CryptoException(STRING(DECOMPRESSION_ERROR));
-	}
-}
-
 void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (CryptoException) {
 	bz_stream bs = { 0 };
 
@@ -173,36 +70,6 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw (
 		// This was a real error
 		throw CryptoException(STRING(DECOMPRESSION_ERROR));	
 	}
-}
-
-void CryptoManager::encodeBZ2(const string& is, string& os, int strength /* = 9 */) {
-	bz_stream bs;
-	
-	memset(&bs, 0, sizeof(bs));
-
-	if(BZ2_bzCompressInit(&bs, strength, 0, 30) != BZ_OK) {
-		return;
-	}
-
-	// This size guarantees that the compressed data will fit (according to the bzip docs)
-	int bufsize = (int)((double)is.size() * 1.01) + 600;
-	
-	AutoArray<char> buf(bufsize);
-
-	bs.next_in = const_cast<char*>(is.data());
-	bs.avail_in = is.size();
-
-	bs.next_out = buf;
-	bs.avail_out = bufsize;
-
-	int err = BZ2_bzCompress ( &bs, BZ_FINISH );
-	dcassert(err != BZ_FINISH);
-	if(err == BZ_STREAM_END) {
-		os = string(buf, bufsize-bs.avail_out);
-	}
-
-	BZ2_bzCompressEnd(&bs);
-
 }
 
 string CryptoManager::keySubst(const u_int8_t* aKey, int len, int n) {
@@ -529,5 +396,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.42 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.43 2004/02/16 13:21:39 arnetheduck Exp $
  */

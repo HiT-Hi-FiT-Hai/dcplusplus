@@ -1,12 +1,20 @@
  -- 0.307 --
 * Fixed full name being displayed in user commands with submenus
-* Bloom filters dramatically improve search efficiency (if you have a large share)
-* Merkle trees and tiger hashing added TTH support
+* Bloom filters dramatically improve cpu efficiency (if you have a large share)
 * Auto match results shown in status bar
 * Added option to match autosearch filenames exactly to further avoid the wrong file being downloaded (default on)
 * End of zlib transfer test period ($GetTestZBlock -> $GetZBlock)
 * Speed increase when loading shares with many files of the same size (thanks farcry)
-* Added file hashing, turn it on in advanced settings (experimental)
+* Added file hashing, turn it off in advanced settings (experimental)
+* Merkle trees and tiger hashing added for TTH hash support
+* Compression totally rewritten, should also fix a few minor issues
+* Compression (GetZBlock) and hashing (TTHSearch) is advertised to hubs through $Supports, I advise hubs to advise 
+  its users to keep at least hashes on so that searching by hashes will work efficiently (as it'll only work ok if 
+  all clients on the hub support it).
+* Fixed bug where no/invalid file listing would be written if there was no disk space (the old one is used now 
+  instead...)
+* XML File lists that contain hashes if available, and support full utf-8 names (correct viewing is not guaranteed,
+  but download should work)
 
 
  -- 0.306 2004-01-09 --

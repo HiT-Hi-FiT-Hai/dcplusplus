@@ -30,12 +30,6 @@
 #include "Singleton.h"
 #include "FastAlloc.h"
 
-#ifdef _WIN32
-#include "../zlib/zlib.h"
-#else
-#include <zlib.h>
-#endif
-
 STANDARD_EXCEPTION(CryptoException);
 
 class Node : public FastAlloc<Node> {
@@ -73,73 +67,7 @@ public:
 };
 
 class File;
-
-class ZDecompressor {
-public:
-	
-	ZDecompressor() throw(CryptoException);
-	~ZDecompressor() { 	
-		dcdebug("Decompression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
-		inflateEnd(&zs); 
-		delete[] outbuf;
-	};
-
-	/**
-	 * To decompress some given bytes, keep calling this until inbytes
-	 * reaches 0.
-	 * @return The number of bytes available in the out buffer.
-	 */
-	u_int32_t decompress(const void* inbuf, int& inbytes) throw(CryptoException);
-	GETSET(u_int8_t*, outbuf, Outbuf);
-private:
-	enum { OUTBUF_SIZE = 64*1024 };
-	ZDecompressor(const ZDecompressor&);
-	ZDecompressor& operator=(const ZDecompressor&);
-
-	z_stream zs;
-};
-
 class FileException;
-
-class ZCompressor : public FastAlloc<ZCompressor> {
-public:
-	/**
-	 * @param maxBytes The maximum number of bytes to read from f, -1 = until EOF.
-	 * @param strength Zip compression strength, more = better, slower (0 <= strength <= 9)
-	 */
-	ZCompressor(File& file, int64_t maxBytes = -1, int aStrength = SETTING(MAX_COMPRESSION)) throw(CryptoException);
-	~ZCompressor() throw() {
-		dcdebug("Compression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
-		deflateEnd(&zs);
-		delete[] inbuf;
-	};
-
-	/**
-	 * Compress data from the file until the buffer is full or no more data is
-	 * available. Call this method until it returns 0 to get all bytes necessary
-	 * for decompression.
-	 * @return The final number of bytes used for the compression. When this equals 0,
-	 * the compression is finished.
-	 */
-	u_int32_t compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(FileException, CryptoException);
-
-private:
-
-	enum { INBUF_SIZE = 64*1024 };
-
-	z_stream zs;
-	u_int8_t* inbuf;
-	
-	File& f;
-	int64_t maxBytes;
-
-	int level;
-
-	ZCompressor(const ZCompressor&);
-	ZCompressor& operator=(const ZCompressor&);
-
-	void setStrength(int str) throw(CryptoException);
-};
 
 class CryptoManager : public Singleton<CryptoManager>
 {
@@ -152,7 +80,6 @@ public:
 	void decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
 	void decodeBZ2(const u_int8_t* is, size_t sz, string& os) throw(CryptoException);
-	void encodeBZ2(const string& is, string& os, int strength = 9);
 private:
 
 	friend class Singleton<CryptoManager>;
@@ -194,13 +121,11 @@ private:
 	bool isExtra(u_int8_t b) {
 		return (b == 0 || b==5 || b==124 || b==96 || b==126 || b==36);
 	}
-	
-	
 };
 
 #endif // !defined(AFX_CRYPTO_H__28F66860_0AD5_44AD_989C_BA4326C42F46__INCLUDED_)
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.35 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.36 2004/02/16 13:21:39 arnetheduck Exp $
  */

@@ -27,6 +27,7 @@
 
 #include "UserConnection.h"
 #include "Singleton.h"
+#include "ZUtils.h"
 
 class QueueItem;
 class ConnectionQueueItem;
@@ -47,7 +48,8 @@ public:
 		FLAG_ZDOWNLOAD = 0x08,
 		FLAG_CALC_CRC32 = 0x10,
 		FLAG_CRC32_OK = 0x20,
-		FLAG_ANTI_FRAG = 0x40
+		FLAG_ANTI_FRAG = 0x40,
+		FLAG_UTF8 = 0x80
 	};
 
 	Download(QueueItem* qi) throw();
@@ -87,7 +89,7 @@ public:
 	GETSETREF(string, source, Source);
 	GETSETREF(string, target, Target);
 	GETSETREF(string, tempTarget, TempTarget);
-	GETSET(ZDecompressor*, comp, Comp);
+	GETSET(UnZFilter*, comp, Comp);
 
 	int64_t bytesLeft;
 private:
@@ -202,6 +204,7 @@ private:
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) throw();
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int64_t bytes) throw();
 	
 	void onFileNotAvailable(UserConnection* aSource) throw();
 	void onFailed(UserConnection* aSource, const string& aError);
@@ -209,7 +212,7 @@ private:
 	void onFileLength(UserConnection* aSource, const string& aFileLength);
 	void onMaxedOut(UserConnection* aSource);
 	void onModeChange(UserConnection* aSource, int aNewMode);
-	void onSending(UserConnection* aSource);
+	void onSending(UserConnection* aSource, int64_t aBytes);
 	
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
@@ -222,5 +225,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.54 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.55 2004/02/16 13:21:39 arnetheduck Exp $
  */

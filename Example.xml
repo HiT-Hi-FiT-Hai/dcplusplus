@@ -94,6 +94,7 @@
 		<String Name="FileNotAvailable">File not available</String>
 		<String Name="FileType">File type</String>
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
+		<String Name="FileWithDifferentTth">A file with diffent tth root already exists in the queue</String>
 		<String Name="Filename">Filename</String>
 		<String Name="Filter">F&amp;ilter</String>
 		<String Name="Find">Find</String>
@@ -104,6 +105,7 @@
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
+		<String Name="HashingFinished">Finished hashing </String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
 		<String Name="HitRatio">Hit Ratio: </String>
@@ -384,6 +386,7 @@
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
 		<String Name="TimestampsEnabled">Timestamps enabled</String>
 		<String Name="Total">Total: </String>
+		<String Name="TthRoot">TTH Root</String>
 		<String Name="Type">Type</String>
 		<String Name="UnableToCreateThread">Unable to create thread</String>
 		<String Name="Unknown">Unknown</String>

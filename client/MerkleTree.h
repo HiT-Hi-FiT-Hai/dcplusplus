@@ -23,6 +23,7 @@
 
 #include "TigerHash.h"
 #include "Encoder.h"
+#include "HashValue.h"
 
 #include <math.h>
 
@@ -39,26 +40,26 @@ template<class Hasher, size_t baseBlockSize = 1024>
 class MerkleTree {
 public:
 	enum { HASH_SIZE = Hasher::HASH_SIZE };
-	struct HashValue {
-		enum { SIZE = Hasher::HASH_SIZE };
+	typedef HashValue<Hasher> MerkleValue;
+	typedef vector<MerkleValue> MerkleList;
+	typedef typename MerkleList::iterator MerkleIter;
 
-		HashValue() { };
-		HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
-		HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); };
-		HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
-		HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
-		bool operator==(const HashValue& rhs) { return memcmp(data, rhs.data, SIZE) == 0; }
+	MerkleTree(size_t aBlockSize, u_int32_t aTimeStamp = 0) : fileSize(0), timeStamp(aTimeStamp), blockSize(aBlockSize) {
+	}
 
-		string toBase32() { return Encoder::toBase32(data, SIZE); };
+	/**
+	 * Loads a set of leaf hashes, calculating the root
+	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
+	 *             stored consecutively left to right
+	 */
+	MerkleTree(int64_t aFileSize, u_int32_t lastMod, size_t aBlockSize, u_int8_t* aData) : 
+		fileSize(aFileSize), timeStamp(aTimeStamp), blockSize(aBlockSize) 
+	{
+		size_t n = (size_t)((fileSize + blockSize - 1) / blockSize);
+		for(int i = 0; i < n; i++)
+			leaves.push_back(HashValue(data + i * Hasher::HASH_SIZE));
 
-		u_int8_t data[SIZE];
-	};
-
-	typedef vector<HashValue> HashList;
-	typedef typename HashList::iterator HashIter;
-
-	MerkleTree(int64_t aFileSize, size_t aBlockSize) : fileSize(aFileSize), blockSize(aBlockSize) {
-		leaves.reserve((size_t)(aFileSize / blockSize) + 1);
+		calcRoot();
 	}
 
 	~MerkleTree() {
@@ -92,19 +93,20 @@ public:
 			h.update(&zero, 1);
 			h.update(buf + i, n);
 			if(baseBlockSize < blockSize) {
-				blocks.push_back(make_pair(HashValue(h.finalize()), baseBlockSize));
+				blocks.push_back(make_pair(MerkleValue(h.finalize()), baseBlockSize));
 				reduceBlocks();
 			} else {
-				leaves.push_back(HashValue(h.finalize()));
+				leaves.push_back(MerkleValue(h.finalize()));
 			}
 			i += n;
 		} while(i < len);
+		fileSize += len;
 	}
 
 	u_int8_t* finalize() {
 		while(blocks.size() > 1) {
-			HashBlock& a = blocks[blocks.size()-2];
-			HashBlock& b = blocks[blocks.size()-1];
+			MerkleBlock& a = blocks[blocks.size()-2];
+			MerkleBlock& b = blocks[blocks.size()-1];
 			a.first = combine(a.first, b.first);
 			blocks.pop_back();
 		}
@@ -116,46 +118,38 @@ public:
 		return root.data;
 	}
 
-	/**
-	 * Loads a set of leaf hashes, calculating the root
-	 * @param data Pointer to (aFileSize + aBlockSize - 1) / aBlockSize) hash values,
-	 *             stored consecutively left to right
-     */
-	void load(u_int8_t* data) {
-		size_t n = (size_t)((fileSize + blockSize - 1) / blockSize);
-		for(int i = 0; i < n; i++)
-			leaves.push_back(HashValue(data + i * Hasher::HASH_SIZE));
-
-		calcRoot();
-	}
-
-	HashValue& getRoot() { return root; }
-	HashList& getLeaves() { return leaves; }
+	MerkleValue& getRoot() { return root; }
+	MerkleList& getLeaves() { return leaves; }
 
 	size_t getBlockSize() { return blockSize; }
 	int64_t getFileSize() { return fileSize; }
+	u_int32_t getTimeStamp() { return timeStamp; }
 
 	bool verifyRoot(const u_int8_t* aRoot) {
 		return memcmp(aRoot, getRoot().data(), Hasher::HASH_SIZE) == 0;
 	}
 
 private:	
-	typedef pair<HashValue, size_t> HashBlock;
-	typedef vector<HashBlock> HBList;
+	typedef pair<MerkleValue, size_t> MerkleBlock;
+	typedef vector<MerkleBlock> MBList;
 
-	HBList blocks;
+	MBList blocks;
 
-	HashList leaves;
+	MerkleList leaves;
 
-	HashValue root;
+	MerkleValue root;
+	/** Total size of hashed data */
 	int64_t fileSize;
+	/** Last modification date of data */
+	u_int32_t timeStamp;
+	/** Final block size */
 	size_t blockSize;
 	
 	void calcRoot() {
 		root = getHash(0, fileSize);
 	}
 
-	HashValue getHash(int64_t start, int64_t length) {
+	MerkleValue getHash(int64_t start, int64_t length) {
 		dcassert((start % blockSize) == 0);
 		if(length <= blockSize) {
 			dcassert((start / blockSize) < leaves.size());
@@ -168,19 +162,19 @@ private:
 		}
 	}
 
-	HashValue combine(const HashValue& a, const HashValue& b) {
+	MerkleValue combine(const MerkleValue& a, const MerkleValue& b) {
 		u_int8_t one = 1;
 		Hasher h;
 		h.update(&one, 1);
-		h.update(a.data, Hasher::HASH_SIZE);
-		h.update(b.data, Hasher::HASH_SIZE);
-		return HashValue(h.finalize());
+		h.update(a.data, MerkleValue::SIZE);
+		h.update(b.data, MerkleValue::SIZE);
+		return MerkleValue(h.finalize());
 	}
 
 	void reduceBlocks() {
 		while(blocks.size() > 1) {
-			HashBlock& a = blocks[blocks.size()-2];
-			HashBlock& b = blocks[blocks.size()-1];
+			MerkleBlock& a = blocks[blocks.size()-2];
+			MerkleBlock& b = blocks[blocks.size()-1];
 			if(a.second == b.second) {
 				if(a.second*2 == blockSize) {
 					leaves.push_back(combine(a.first, b.first));
@@ -199,11 +193,11 @@ private:
 };
 
 typedef MerkleTree<TigerHash> TigerTree;
-typedef TigerTree::HashValue TTHValue;
+typedef TigerTree::MerkleValue TTHValue;
 
 #endif // _MERKLE_TREE
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.4 2004/01/30 14:12:59 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.5 2004/02/16 13:21:40 arnetheduck Exp $
  */

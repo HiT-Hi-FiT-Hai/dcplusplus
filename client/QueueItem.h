@@ -28,6 +28,7 @@ class Download;
 
 #include "User.h"
 #include "FastAlloc.h"
+#include "MerkleTree.h"
 
 class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
@@ -79,7 +80,11 @@ public:
 		/** This file exists on the hard disk and should be prioritised */
 		FLAG_EXISTS = 0x40,
 		/** Match the queue against this list */
-		FLAG_MATCH_QUEUE = 0x80
+		FLAG_MATCH_QUEUE = 0x80,
+		/** The source being added has its filename in utf-8 */
+		FLAG_SOURCE_UTF8 = 0x100,
+		/** The file list downloaded was actually an .xml.bz2 list */
+		FLAG_XML_BZLIST = 0x200,
 	};
 
 	class Source : public Flags, public FastAlloc<Source> {
@@ -94,6 +99,7 @@ public:
 			FLAG_REMOVED = 0x08,
 			FLAG_CRC_FAILED = 0x10,
 			FLAG_CRC_WARN = 0x20,
+			FLAG_UTF8 = 0x40,
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -110,16 +116,17 @@ public:
 	};
 
 	QueueItem(const string& aTarget, int64_t aSize, const string& aSearchString, 
-		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded) : 
+		Priority aPriority, int aFlag, int64_t aDownloadedBytes, u_int32_t aAdded, const TTHValue* tth) : 
 	Flags(aFlag), target(aTarget), searchString(aSearchString), 
 		size(aSize), downloadedBytes(aDownloadedBytes), status(STATUS_WAITING), 
-		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded) 
+		priority(aPriority), current(NULL), currentDownload(NULL), added(aAdded),
+		tthRoot(tth == NULL ? NULL : new TTHValue(*tth))
 	{ };
 
 	QueueItem(const QueueItem& rhs) : 
 	Flags(rhs), target(rhs.target), tempTarget(rhs.tempTarget), searchString(rhs.searchString),
 		size(rhs.size), downloadedBytes(rhs.downloadedBytes), status(rhs.status), priority(rhs.priority), 
-		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added)
+		current(rhs.current), currentDownload(rhs.currentDownload), added(rhs.added), tthRoot(rhs.tthRoot == NULL ? NULL : new TTHValue(*rhs.tthRoot))
 	{
 		// Deep copy the source lists
 		Source::List::const_iterator i;
@@ -134,6 +141,7 @@ public:
 	virtual ~QueueItem() { 
 		for_each(sources.begin(), sources.end(), DeleteFunction<Source*>());
 		for_each(badSources.begin(), badSources.end(), DeleteFunction<Source*>());
+		delete tthRoot;
 	};
 
 	int countOnlineUsers() const {
@@ -177,6 +185,17 @@ public:
 		current = *getSource(aUser, sources);
 	}
 
+	string getListName() {
+		dcassert(isSet(QueueItem::FLAG_USER_LIST));
+		if(isSet(QueueItem::FLAG_XML_BZLIST)) {
+			return getTarget() + ".xml.bz2";
+		} else if(isSet(QueueItem::FLAG_BZLIST)) {
+			return getTarget() + ".bz2";
+		} else {
+			return getTarget() + ".DcLst";
+		}
+	}
+
 	GETSETREF(string, target, Target);
 	GETSETREF(string, tempTarget, TempTarget);
 	GETSETREF(string, searchString, SearchString);
@@ -187,6 +206,7 @@ public:
 	GETSET(Source*, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
 	GETSET(u_int32_t, added, Added);
+	GETSET(TTHValue*, tthRoot, TTHRoot);
 private:
 	friend class QueueManager;
 	Source::List sources;
@@ -238,5 +258,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.5 2004/01/28 19:37:54 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.6 2004/02/16 13:21:40 arnetheduck Exp $
 */

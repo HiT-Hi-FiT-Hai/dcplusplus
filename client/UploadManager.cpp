@@ -66,7 +66,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		return false;
 	}
 	
-	if( (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) ) {
+	if( (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) || Util::stricmp(aFile.c_str(), "files.xml.bz2") == 0) {
 		userlist = true;
 	}
 
@@ -180,20 +180,25 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 	}
 }
 
-void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
-	if(BOOLSETTING(COMPRESS_TRANSFERS)) {
+void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z) {
+	if(!z || BOOLSETTING(COMPRESS_TRANSFERS)) {
 		if(prepareFile(aSource, aFile, aResume)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
-			if(u->getFile()->getPos() + aBytes > u->getFile()->getSize()) {
+			if(aBytes == -1)
+				aBytes = aResume - u->getFile()->getSize();
+
+			if(aBytes < 0 || u->getFile()->getPos() + aBytes > u->getFile()->getSize()) {
 				// Can't do...
 				aSource->disconnect();
 				return;
 			}
 
 			u->setStart(GET_TICK());
-			u->setFlag(Upload::FLAG_ZUPLOAD);
-			aSource->sending();
+			if(z)
+				u->setFlag(Upload::FLAG_ZUPLOAD);
+
+			aSource->sending(aBytes);
 			aSource->setState(UserConnection::STATE_DONE);
 			aSource->transmitFile(u->getFile(), aBytes, true);
 			fire(UploadManagerListener::STARTING, u);
@@ -375,7 +380,9 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw() {
 	switch(type) {
 	case UserConnectionListener::GET_ZBLOCK:
-		onGetZBlock(conn, line, resume, bytes); break;
+		onGetBlock(conn, line, resume, bytes, true); break;
+	case UserConnectionListener::GET_BLOCK:
+		onGetBlock(conn, line, resume, bytes, false); break;
 	default: 
 		break;
 	}
@@ -383,5 +390,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.50 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.51 2004/02/16 13:21:40 arnetheduck Exp $
  */

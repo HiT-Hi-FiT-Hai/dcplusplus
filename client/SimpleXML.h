@@ -41,10 +41,6 @@ STANDARD_EXCEPTION(SimpleXMLException);
 class SimpleXMLReader {
 public:
 	struct CallBack {
-		/**
-		 * Refill n with more data.
-		 * @return True if there's more data, false if not
-		 */
 		virtual void startTag(const string& name, StringPairList& attribs, bool simple) = 0;
 		virtual void endTag(const string& name, const string& data) = 0;
 
@@ -167,7 +163,7 @@ public:
 	string toXML() { return (!root.children.empty()) ? root.children[0]->toXML(0) : Util::emptyString; };
 	void toXML(File* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
-	static void escape(string& aString, bool aAttrib, bool aLoading = false);
+	static string& escape(string& aString, bool aAttrib, bool aLoading = false);
 	/** 
 	 * This is a heurestic for whether escape needs to be called or not. The results are
  	 * only guaranteed for false, i e sometimes true might be returned even though escape
@@ -176,6 +172,8 @@ public:
 	static bool needsEscape(const string& aString, bool aAttrib, bool aLoading = false) {
 		return ((aLoading) ? aString.find('&') : aString.find_first_of(aAttrib ? "<&>'\"" : "<&>")) != string::npos;
 	}
+	static const string utf8Header;
+	static const string w1252Header;
 private:
 	class Tag {
 	public:
@@ -272,6 +270,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.28 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.29 2004/02/16 13:21:40 arnetheduck Exp $
  */
 

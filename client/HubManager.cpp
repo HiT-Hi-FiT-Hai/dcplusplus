@@ -125,7 +125,7 @@ void HubManager::save() {
 		string fname = Util::getAppPath() + FAVORITES_FILE;
 
 		File f(fname + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
-		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\" standalone=\"yes\"?>\r\n");
+		f.write(SimpleXML::w1252Header);
 		f.write(xml.toXML());
 		f.close();
 		File::deleteFile(fname);
@@ -339,5 +339,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.45 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.46 2004/02/16 13:21:40 arnetheduck Exp $
  */

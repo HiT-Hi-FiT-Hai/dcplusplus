@@ -35,6 +35,7 @@ ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 
 	features.push_back("BZList");
 	features.push_back("MiniSlots");
+	features.push_back("XmlBZList");
 };
 
 /**
@@ -612,6 +613,8 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 				else if(*i == "MiniSlots")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
+				else if(*i == "XmlBZList")
+					conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
 			}
 		}
 		break;
@@ -630,5 +633,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.68 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.69 2004/02/16 13:21:39 arnetheduck Exp $
  */

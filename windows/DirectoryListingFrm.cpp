@@ -19,7 +19,6 @@
 #include "stdafx.h"
 #include "../client/DCPlusPlus.h"
 
-#include "../client/CryptoManager.h"
 #include "../client/File.h"
 #include "../client/QueueManager.h"
 #include "../client/StringTokenizer.h"
@@ -45,30 +44,12 @@ DirectoryListingFrame::DirectoryListingFrame(const string& aFile, const User::Pt
 		return;
 	}
 
-	bool isBZ2 = (Util::stricmp(aFile.c_str() + aFile.length() - 4, ".bz2") == 0);
 	dl = new DirectoryListing(aUser);
-	
 	try {
-		File f(aFile, File::READ, File::OPEN);
-		size_t size = (size_t)f.getSize();
-
-		if(size > 16) {
-			AutoArray<u_int8_t> buf(size);
-			f.read(buf, size);
-			if(isBZ2) {
-				CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
-			} else {
-				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-			}
-		} else {
-			tmp = Util::emptyString;
-		}
+		dl->loadFile(aFile);
 	} catch(const Exception& e) {
 		error = aUser->getFullNick() + ": " + e.getError();
-		return;
 	}
-
-	dl->load(tmp);
 }
 
 LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -90,9 +71,10 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetBkColor(WinUtil::bgColor);
 	ctrlTree.SetTextColor(WinUtil::textColor);
 	
-	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 350, COLUMN_FILENAME);
+	ctrlList.InsertColumn(COLUMN_FILENAME, CSTRING(FILENAME), LVCFMT_LEFT, 300, COLUMN_FILENAME);
 	ctrlList.InsertColumn(COLUMN_TYPE, CSTRING(FILE_TYPE), LVCFMT_LEFT, 60, COLUMN_TYPE);
 	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
+	ctrlList.InsertColumn(COLUMN_TTH, CSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
 
 	ctrlList.setSort(COLUMN_FILENAME, ExListViewCtrl::SORT_FUNC, true, sortFile);
 	
@@ -235,16 +217,25 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 	return 0;
 }
 
+
+static const string& escaper(const string& s, string& tmp, bool utf8) {
+	if(utf8 && Util::needsAcp(s)) {
+		tmp = s;
+		return Util::toAcp(tmp);
+	}
+	return s;
+}
 void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw)
 {
 	ctrlList.SetRedraw(FALSE);
 	updating = true;
 	clearList();
+	string tmp;
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
 		DirectoryListing::Directory* d = *i;
 		StringList l;
-		l.push_back(d->getName());
+		l.push_back(escaper(d->getName(), tmp, dl->getUtf8()));
 		l.push_back(Util::emptyString);
 		l.push_back(Util::formatBytes(d->getTotalSize()));
 		ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getDirIconIndex(), (LPARAM)new ItemInfo(d));
@@ -253,11 +244,14 @@ void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enabl
 		string::size_type k = (*j)->getName().rfind('.');
 		string suffix = (k != string::npos) ? (*j)->getName().substr(k + 1) : Util::emptyString;
 		StringList l;
-		l.push_back((*j)->getName());
+		const string& n = escaper((*j)->getName(), tmp, dl->getUtf8());
+		l.push_back(n);
 		l.push_back(suffix);
 		l.push_back(Util::formatBytes((*j)->getSize()));
+		if((*j)->getTTHRoot() != NULL)
+			l.push_back((*j)->getTTHRoot()->toBase32());
 
-		ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getIconIndex((*j)->getName()), (LPARAM)new ItemInfo(*j));
+		ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getIconIndex(n), (LPARAM)new ItemInfo(*j));
 	}
 	ctrlList.SetRedraw(enableRedraw);
 	ctrlList.resort();
@@ -274,7 +268,8 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
-				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + ii->file->getName());
+				string tmp;
+				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + escaper(ii->file->getName(), tmp, dl->getUtf8()));
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			}
@@ -335,7 +330,8 @@ void DirectoryListingFrame::downloadList(const string& aTarget, bool view /* = f
 				if(view) {
 					File::deleteFile(target + Util::validateFileName(ii->file->getName()));
 				}
-				dl->download(ii->file, target + ii->file->getName(), view);
+				string tmp;
+				dl->download(ii->file, target + escaper(ii->file->getName(), tmp, dl->getUtf8()), view);
 			} else if(!view) {
 				dl->download(ii->dir, target);
 			} 
@@ -356,7 +352,8 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
-				string target = ii->file->getName();
+				string tmp;
+				string target = escaper(ii->file->getName(), tmp, dl->getUtf8());
 				if(WinUtil::browseFile(target, m_hWnd)) {
 					WinUtil::addLastDir(Util::getFilePath(target));
 					dl->download(ii->file, target);
@@ -872,5 +869,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.25 2003/12/26 11:16:28 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.26 2004/02/16 13:21:41 arnetheduck Exp $
  */

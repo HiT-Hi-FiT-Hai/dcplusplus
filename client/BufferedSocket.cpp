@@ -51,9 +51,8 @@ bool BufferedSocket::threadSendFile() {
 	try {
 		if(compress) {
 			if(comp == NULL) {
-				comp = new ZCompressor(*file, size);
+				comp = new FilteredReader<ZFilter>(file, size);
 			}
-			u_int32_t s = (u_int32_t)min(size, (int64_t) (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize));
 			while(true) {
 				{
 					Lock l(cs);
@@ -64,21 +63,23 @@ bool BufferedSocket::threadSendFile() {
 				if(wait(0, WAIT_READ) & WAIT_READ)
 					return false;
 
-				u_int32_t br = 0;
-				u_int32_t bytes = comp->compress(inbuf, s, br);
-				if(bytes == 0) {
+				u_int32_t s = (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize);
+				u_int32_t initial = s;
+				u_int32_t br = comp->read(inbuf, s);
+				size -= br;
+				dcassert(size >= 0);
+				if(s > 0) {
+					Socket::write((char*) inbuf, s);
+					fire(BufferedSocketListener::BYTES_SENT, br, s);
+				} 
+				if(s < initial) {
 					// Finished!
 					delete comp;
 					comp = NULL;
 					dcassert(size == 0);
 					fire(BufferedSocketListener::TRANSMIT_DONE);
 					return true;
-				} else {
-					Socket::write((char*) inbuf, bytes);
-					fire(BufferedSocketListener::BYTES_SENT, br, bytes);
-					size -= br;
-					dcassert(size >= 0);
-				}
+				} 
 			}
 		} else {
 			while(size > 0) {
@@ -455,5 +456,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.63 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.64 2004/02/16 13:21:39 arnetheduck Exp $
  */

@@ -91,12 +91,11 @@ Usage: Instead of $Get and $Send, use
 (yes, 0-based, not like get that's 1-based) starting index of the file 
 used, <numbytes> is the number of bytes to send and <filename> obviously 
 is the filename. The other client then responds 
-"$Sending|<compressed data>", if the sending is ok or 
+"$Sending <bytes>|<compressed data>", if the sending is ok or 
 "$Failed <errordescription>|" if it isn't. If everything's ok, the data is 
-sent until the whole uncompressed length has been sent. $Filelength or a 
-similar command is never sent because it's not possible to know 
-from the beginning how many bytes will be sent, instead, check how many 
-decompressed bytes you've received and act accordingly...$Sending is 
+sent until the whole uncompressed length has been sent. <bytes> specifies
+how many uncompressed bytes will be sent, not compressed, as the sending
+client doesn't know how well the file will compress. $Sending is 
 needed to be able to distinguish the failure command from file data. Only 
 one roundtrip is done for each block though, minimizing the need for 
 maintaining states.
@@ -116,6 +115,40 @@ file list. $Supports is needed because nmdc closes the file list browser
 when the connection is broken, which it becomes when the client on the
 other side tries to download its first file and fails because it has no
 real slot (there were lots of nmdc users bitching about this...).
+
+--------------------------------------------------------------------
+
+Feature: XmlBZList
+
+Usage: Supporing this means supporting utf-8 XML file lists with the 
+following general structure:
+
+<FileList Version="1" Generator="your DC name and version">
+ <Directory Name="xxx">
+  <Directory Name="yyy">
+   <File Name="zzz" Size="1"/>
+  </Directory>
+ </Directory>
+</FileList>
+
+Other fields may be added as necessary. DC++ for instance adds the
+TTHRoot attribute to each file it knows the TTH root of in base32 encoding.
+
+The file list is available as "files.xml.bz2" (vs MyList.DcLst), and is
+compressed using bzip2.
+
+Other than the file list, the client must also support one or two new
+commands, $UGetBlock and $UGetZBlock. The syntax and semantics of $UGetZBlock 
+are exactly the same as the $GetZBlock, but the filename must be given in 
+utf-8 encoding.
+
+$UGetZBlock must only be supported if $GetZBlock is supported, $UGetBlock 
+always.
+
+$UGetBlock follows $UGetZBlock semantics, but without compressing 
+the data. It is allowed to set <numbytes> to -1, in which case the whole
+file will be sent, and $Sending will get a parameter, <bytes> that specify
+how many bytes of the file will be sent.
 
 --------------------------------------------------------------------
 

@@ -45,7 +45,9 @@ public:
 	enum {
 		COLUMN_FILENAME,
 		COLUMN_TYPE,
-		COLUMN_SIZE
+		COLUMN_SIZE,
+		COLUMN_TTH,
+		COLUMN_LAST
 	};
 	
 	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser, const string& s);
@@ -259,5 +261,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.26 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.27 2004/02/16 13:21:41 arnetheduck Exp $
  */

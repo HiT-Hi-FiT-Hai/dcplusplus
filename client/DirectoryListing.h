@@ -26,6 +26,10 @@
 #include "User.h"
 #include "FastAlloc.h"
 
+#include "MerkleTree.h"
+
+class ListLoader;
+
 class DirectoryListing  
 {
 public:
@@ -50,11 +54,21 @@ public:
 		typedef set<Ptr, FileSort> List;
 		typedef List::iterator Iter;
 		
-		File(Directory* aDir = NULL, const string& aName = Util::emptyString, int64_t aSize = -1) throw() : Name(aName), size(aSize), parent(aDir), adls(false) { };
+		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTHRoot) throw() : 
+			Name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTHRoot)) { };
+		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
+			Name(aName), size(aSize), parent(aDir), tthRoot(NULL) { };
+			~File() {
+				delete tthRoot;
+			}
+
+		bool getAdls() {
+			return getParent()->getAdls();
+		}
 
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
-		GETSET(bool, adls, Adls);
+		GETSET(TTHValue*, tthRoot, TTHRoot);
 	};
 
 	class Directory : public Name, public FastAlloc<Directory> {
@@ -105,16 +119,21 @@ public:
 		GETSETREF(string, fullPath, FullPath);
 	};
 
-	DirectoryListing(const User::Ptr& aUser) : user(aUser), root(new Directory()) {
+	DirectoryListing(const User::Ptr& aUser) : user(aUser), utf8(false), root(new Directory()) {
 	};
 	
 	~DirectoryListing() {
 		delete root;
 	};
 
+	void loadFile(const string& name);
+
+	void load(const string& i);
+	void loadXML(const string& xml);
+
 	void download(const string& aDir, const string& aTarget);
 	void download(Directory* aDir, const string& aTarget);
-	void load(const string& i);
+	
 	string getPath(Directory* d);
 	
 	string getPath(File* f) { return getPath(f->getParent()); };
@@ -125,12 +144,15 @@ public:
 	void download(File* aFile, const string& aTarget, bool view = false);
 
 	GETSETREF(User::Ptr, user, User);
+	GETSET(bool, utf8, Utf8);
 
 private:
+	friend class ListLoader;
+
 	DirectoryListing(const DirectoryListing&);
 	DirectoryListing& operator=(const DirectoryListing&);
 
-	Directory* root;
+	Directory* root;	
 		
 	Directory* find(const string& aName, Directory* current);
 		
@@ -140,5 +162,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.21 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.22 2004/02/16 13:21:39 arnetheduck Exp $
  */

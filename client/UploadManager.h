@@ -145,6 +145,7 @@ private:
 	void onTransmitDone(UserConnection* aSource);
 	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
 	void onGetZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
+	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	void onSend(UserConnection* aSource);
 
 	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume);
@@ -154,5 +155,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.57 2003/11/21 17:00:54 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.58 2004/02/16 13:21:40 arnetheduck Exp $
  */
