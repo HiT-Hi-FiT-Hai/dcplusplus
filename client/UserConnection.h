@@ -92,7 +92,7 @@ class Transfer {
 public:
 	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
 		last(0), actual(0), pos(0), startPos(0), size(-1) { };
-	virtual ~Transfer() { dcassert(userConnection == NULL); };
+	virtual ~Transfer() { };
 	
 	int64_t getPos() { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
@@ -342,6 +342,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.73 2004/05/22 15:28:07 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.74 2004/05/22 18:17:35 arnetheduck Exp $
  */
 

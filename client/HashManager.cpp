@@ -42,7 +42,7 @@ bool HashManager::getTree(const string& aFileName, TigerTree& tmp) {
 	return store.getTree(aFileName, tmp);
 }
 
-void HashManager::hashDone(const string& aFileName, TigerTree& tth, int64_t speed) {
+void HashManager::hashDone(const string& aFileName, const TigerTree& tth, int64_t speed) {
 	TTHValue* root = NULL;
 	{
 		Lock l(cs);
@@ -63,12 +63,12 @@ void HashManager::hashDone(const string& aFileName, TigerTree& tth, int64_t spee
 	}
 	if(speed > 0) {
 		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn + " (" + Util::formatBytes(speed) + "/s)");
-	} else {
+	} else if(speed == 0) {
 		LogManager::getInstance()->message(STRING(HASHING_FINISHED) + fn);
 	}
 }
 
-void HashManager::HashStore::addFile(const string& aFileName, TigerTree& tth, bool aUsed) {
+void HashManager::HashStore::addFile(const string& aFileName, const TigerTree& tth, bool aUsed) {
 	TTHIter i = indexTTH.find(aFileName);
 	if(i == indexTTH.end()) {
 		try {
@@ -93,7 +93,7 @@ void HashManager::HashStore::addFile(const string& aFileName, TigerTree& tth, bo
 	}
 }
 
-int64_t HashManager::HashStore::addLeaves(TigerTree::MerkleList& leaves) {
+int64_t HashManager::HashStore::addLeaves(const TigerTree::MerkleList& leaves) {
 	File f(dataFile, File::RW, File::OPEN);
 	f.setPos(0);
 	int64_t pos = 0;
@@ -516,5 +516,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.17 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.18 2004/05/22 18:17:35 arnetheduck Exp $
  */

@@ -244,6 +244,8 @@ void QueueFrame::QueueItemInfo::update() {
 						tmp += STRING(ROLLBACK_INCONSISTENCY);
 					} else if(j->isSet(QueueItem::Source::FLAG_CRC_FAILED)) {
 						tmp += STRING(SFV_INCONSISTENCY);
+					} else if(j->isSet(QueueItem::Source::FLAG_BAD_TREE)) {
+						tmp += STRING(INVALID_TREE);
 					}
 					tmp += ')';
 				}
@@ -1291,7 +1293,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.50 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.51 2004/05/22 18:17:35 arnetheduck Exp $
  */
 
 

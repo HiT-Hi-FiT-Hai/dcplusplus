@@ -127,6 +127,7 @@
 		<String Name="IgnoredMessage">Ignored message: </String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
 		<String Name="InvalidTargetFile">Invalid target file (missing directory, check default download directory setting)</String>
+		<String Name="InvalidTree">Downloaded tree does not match TTH root</String>
 		<String Name="Ip">IP: </String>
 		<String Name="IpBare">IP</String>
 		<String Name="Items">Items</String>

@@ -131,6 +131,7 @@ enum Strings { // @DontAdd
 	IGNORED_MESSAGE, // "Ignored message: "
 	INVALID_NUMBER_OF_SLOTS, // "Invalid number of slots"
 	INVALID_TARGET_FILE, // "Invalid target file (missing directory, check default download directory setting)"
+	INVALID_TREE, // "Downloaded tree does not match TTH root"
 	IP, // "IP: "
 	IP_BARE, // "IP"
 	ITEMS, // "Items"

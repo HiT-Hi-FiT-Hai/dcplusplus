@@ -36,12 +36,12 @@ static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download() throw() : file(NULL),
-crcCalc(NULL), treeValid(false), oldDownload(false) { 
+crcCalc(NULL), treeValid(false), oldDownload(false), tth(NULL) { 
 }
 
 Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
 	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
-	crcCalc(NULL), treeValid(false), oldDownload(false) { 
+	crcCalc(NULL), treeValid(false), oldDownload(false), tth(qi->getTTH()) { 
 	
 	setSize(qi->getSize());
 	if(qi->isSet(QueueItem::FLAG_USER_LIST))
@@ -170,18 +170,20 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		aConn->setDownload(d);
 	}
 
-	if(!d->getTreeValid() && !d->isSet(Download::FLAG_TREE_TRIED) && 
-		!d->isSet(Download::FLAG_USER_LIST) && 
-		aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 
+	if(!d->getTreeValid() && 
+		!d->isSet(Download::FLAG_USER_LIST) && d->getTTH() != NULL)
 	{
 		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
 			d->setTreeValid(true);
-		} else {
+		} else if(!d->isSet(Download::FLAG_TREE_TRIED) && 
+			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 
+		{
 			// So, we need to download the tree...
 			Download* tthd = new Download();
 			tthd->setOldDownload(d);
 			tthd->setFlag(Download::FLAG_TREE_DOWNLOAD);
 			tthd->setTarget(d->getTarget());
+			tthd->setSource(d->getSource());
 
 			tthd->setUserConnection(aConn);
 			aConn->setDownload(tthd);
@@ -416,14 +418,6 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 
 	if(newSize != -1) {
 		d->setSize(newSize);
-		if(d->getTreeValid()) {
-			size_t bl = 1024;
-			while(bl * d->getTigerTree().getLeaves().size() < newSize)
-				bl *= 2;
-			d->getTigerTree().setBlockSize(bl);
-			d->getTigerTree().setFileSize(newSize);
-			d->getTigerTree().calcRoot();
-		}
 	}
 	if(d->getPos() >= d->getSize()) {
 		// Already finished?
@@ -546,7 +540,35 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		d->getFile()->flush();
 		delete d->getFile();
 		d->setFile(NULL);
+
+		Download* old = d->getOldDownload();
+
+		size_t bl = 1024;
+		while(bl * old->getTigerTree().getLeaves().size() < old->getSize())
+			bl *= 2;
+		old->getTigerTree().setBlockSize(bl);
+		dcassert(old->getSize() != -1);
+		old->getTigerTree().setFileSize(old->getSize());
+
+		old->getTigerTree().calcRoot();
+
+		if(!(*old->getTTH() == old->getTigerTree().getRoot())) {
+			// This tree is for a different file, remove from queue...
+			fire(DownloadManagerListener::Failed(), old, STRING(INVALID_TREE));
+
+			string target = old->getTarget();
+
+			aSource->setDownload(NULL);
+			removeDownload(old);
+
+			QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_BAD_TREE, false);
+			checkDownloads(aSource);
+			return;
+		}
+
 		d->getOldDownload()->setTreeValid(true);
+
+		HashManager::getInstance()->addTree(old->getTarget(), old->getTigerTree());
 
 		aSource->setDownload(d->getOldDownload());
 
@@ -826,5 +848,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.102 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.103 2004/05/22 18:17:35 arnetheduck Exp $
  */

@@ -128,6 +128,7 @@ public:
 	}
 
 	MerkleValue& getRoot() { return root; }
+	const MerkleValue& getRoot() const { return root; }
 	MerkleList& getLeaves() { return leaves; }
 	const MerkleList& getLeaves() const { return leaves; }
 
@@ -254,5 +255,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.11 2004/05/09 22:06:22 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.12 2004/05/22 18:17:35 arnetheduck Exp $
  */

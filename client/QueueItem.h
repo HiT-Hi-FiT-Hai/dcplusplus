@@ -100,6 +100,7 @@ public:
 			FLAG_CRC_FAILED = 0x10,
 			FLAG_CRC_WARN = 0x20,
 			FLAG_UTF8 = 0x40,
+			FLAG_BAD_TREE = 0x80,
 		};
 
 		Source(const User::Ptr& aUser, const string& aPath) : path(aPath), user(aUser) { };
@@ -258,5 +259,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.8 2004/04/24 09:40:58 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.9 2004/05/22 18:17:35 arnetheduck Exp $
 */
