@@ -96,6 +96,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 		if(!found) {
 			p = new PrivateFrame(aUser);
 			frames[aUser] = p;
+			p->readLog();
 			p->addLine(aMessage);
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
@@ -371,9 +372,45 @@ LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+void PrivateFrame::readLog() {
+	StringMap params;	
+	params["user"] = user->getNick();	
+	params["hub"] = user->getClientName();
+	params["mynick"] = user->getClientNick();	
+	params["mycid"] = user->getClientCID().toBase32();	
+	params["cid"] = user->getCID().toBase32();	
+	params["hubaddr"] = user->getClientAddressPort();	
+	string path = SETTING(LOG_DIRECTORY) + Util::formatParams(SETTING(LOG_FILE_PRIVATE_CHAT), params);
+
+	try {
+		if (SETTING(SHOW_LAST_LINES_LOG) > 0) {
+			File f(path, File::READ, File::OPEN);
+		
+			int64_t size = f.getSize();
+
+			if(size > 32*1024) {
+				f.setPos(size - 32*1024);
+			}
+
+			StringList lines = StringTokenizer<string>(f.read(32*1024), "\r\n").getTokens();
+
+			int linesCount = lines.size();
+
+			int i = linesCount > (SETTING(SHOW_LAST_LINES_LOG) + 1) ? linesCount - (SETTING(SHOW_LAST_LINES_LOG) + 1) : 0;
+
+			for(; i < (linesCount - 1); ++i){
+				addLine(_T("- ") + Text::acpToWide(lines[i]));
+			}
+
+			f.close();
+		}
+	} catch(FileException & /*e*/){
+	}
+}
+
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.40 2004/12/05 15:51:03 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.41 2004/12/28 17:34:40 arnetheduck Exp $
  */
 
 

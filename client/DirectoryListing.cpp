@@ -42,6 +42,8 @@ void DirectoryListing::loadFile(const string& name, bool doAdl) {
 	string ext = Util::getFileExt(name);
 	if(Util::stricmp(ext, ".DcLst") == 0) {
 		size_t len = (size_t)::File::getSize(name);
+		if(len == -1)
+			return;
 		AutoArray<u_int8_t> buf(len);
 		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
 		CryptoManager::getInstance()->decodeHuffman(buf, txt, len);
@@ -339,5 +341,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.40 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.41 2004/12/28 17:34:42 arnetheduck Exp $
  */

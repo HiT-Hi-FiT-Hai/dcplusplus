@@ -220,6 +220,7 @@
 		<String Name="MenuHomepage">DC++ Homepage</String>
 		<String Name="MenuHorizontalTile">Horizontal Tile</String>
 		<String Name="MenuMinimizeAll">Minimize &amp;All</String>
+		<String Name="MenuRestoreAll">Restore All</String>
 		<String Name="MenuNetworkStatistics">Network Statistics</String>
 		<String Name="MenuNotepad">&amp;Notepad	Ctrl+N</String>
 		<String Name="MenuOpenDownloadsDir">Open downloads directory</String>
@@ -409,6 +410,7 @@
 		<String Name="SettingsPersonalInformation">Personal Information</String>
 		<String Name="SettingsPmBeep">Make an annoying sound every time a private message is received</String>
 		<String Name="SettingsPmBeepOpen">Make an annoying sound when a private message window is opened</String>
+		<String Name="SettingsPmHistory">PM history</String>
 		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
 		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>

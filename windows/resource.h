@@ -329,6 +329,9 @@
 #define IDC_SETTINGS_FILE_NAME4         1276
 #define IDC_ONLYTTH                     1277
 #define IDC_SETTINGS_FILELIST_MENU      1278
+#define IDC_REMOVE_SOURCE_ALL           1279
+#define IDC_SHOW_LAST_LINES_LOG         1280
+#define IDC_SETTINGS_PM_HISTORY         1281
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -359,6 +362,7 @@
 #define IDC_SEND_MESSAGE                32786
 #define IDC_FILTER_FOCUS                32788
 #define ID_WINDOW_MINIMIZE_ALL          57654
+#define ID_WINDOW_RESTORE_ALL           57655
 
 // Next default values for new objects
 // 

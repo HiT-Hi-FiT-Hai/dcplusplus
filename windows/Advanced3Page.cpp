@@ -36,6 +36,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
 	{ IDC_SETTINGS_MBS, ResourceManager::MBPS },
+	{ IDC_SETTINGS_PM_HISTORY, ResourceManager::SETTINGS_PM_HISTORY }, 
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -44,6 +45,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_BUFFERSIZE, SettingsManager::BUFFER_SIZE, PropPage::T_INT },
 	{ IDC_MAX_TAB_ROWS, SettingsManager::MAX_TAB_ROWS, PropPage::T_INT },
 	{ IDC_MAX_HASH_SPEED, SettingsManager::MAX_HASH_SPEED, PropPage::T_INT },
+	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },
 	{ 0, 0, PropPage::T_END }
 };
 

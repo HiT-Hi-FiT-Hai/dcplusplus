@@ -74,6 +74,7 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGHEST, onPriority)
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
+		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE_ALL, IDC_REMOVE_SOURCE_ALL, onRemoveSourceAll)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCES, IDC_REMOVE_SOURCES + menuItems, onRemoveSources)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
 		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + readdItems, onReadd)
@@ -86,6 +87,7 @@ public:
 	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemoveSourceAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSources(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onReadd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -424,5 +426,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.45 2004/11/07 17:04:09 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.46 2004/12/28 17:34:40 arnetheduck Exp $
  */

@@ -130,6 +130,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_TRAY_QUIT, onTrayQuit)
 		COMMAND_ID_HANDLER(IDC_TRAY_SHOW, onTrayShow)
 		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
+		COMMAND_ID_HANDLER(ID_WINDOW_RESTORE_ALL, onWindowRestoreAll)
 		COMMAND_ID_HANDLER(IDC_FINISHED, onFinished)
 		COMMAND_ID_HANDLER(IDC_FINISHED_UL, onFinishedUploads)
 		COMMAND_ID_HANDLER(IDC_CLOSE_DISCONNECTED, onCloseDisconnected)
@@ -282,6 +283,15 @@ public:
 		}
 		return 0;
 	}	
+	LRESULT onWindowRestoreAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
+		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
+		while (tmpWnd!=NULL) {
+			::ShowWindow(tmpWnd, SW_RESTORE);
+			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
+		}
+		return 0;
+	}	
 
 private:
 
@@ -370,7 +380,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.50 2004/11/29 23:21:19 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.51 2004/12/28 17:34:40 arnetheduck Exp $
  */
 
  

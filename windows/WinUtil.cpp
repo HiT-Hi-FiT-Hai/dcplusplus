@@ -247,6 +247,7 @@ void WinUtil::init(HWND hWnd) {
 	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_VERT, CTSTRING(MENU_VERTICAL_TILE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CTSTRING(MENU_ARRANGE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CTSTRING(MENU_MINIMIZE_ALL));
+	window.AppendMenu(MF_STRING, ID_WINDOW_RESTORE_ALL, CTSTRING(MENU_RESTORE_ALL));
 	window.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	window.AppendMenu(MF_STRING, IDC_CLOSE_DISCONNECTED, CTSTRING(MENU_CLOSE_DISCONNECTED));
 
@@ -1043,5 +1044,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.71 2004/12/19 18:15:46 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.72 2004/12/28 17:34:40 arnetheduck Exp $
  */

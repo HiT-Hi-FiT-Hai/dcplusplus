@@ -91,6 +91,7 @@ public:
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
 	void runUserCommand(UserCommand& uc);
+	void readLog();
 	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
@@ -200,6 +201,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.23 2004/09/25 21:56:05 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.24 2004/12/28 17:34:40 arnetheduck Exp $
  */
 

@@ -2,10 +2,10 @@ The most important thing about compiling: If it didn't work, *you* screwed up.
 
 How to compile in 3 easy steps:
 
-1) Dowload the source and STLPort from the download site. Download WTL from http://sf.net/projects/wtl.
-   Unpack the source, then create two  more directories under there, "stlport" and "wtl". Unpack the 
-   two other archives in their folders. If you're brave, you can try compiling without STLPort, see 
-   config.h (I don't maintain it though)
+1) Download the source and STLPort from the download site. Download WTL from http://sf.net/projects/wtl.  
+   Unpack the source, then create two more directories under there, "stlport" and "wtl". Unpack stlport 
+   into the stlport directory, and extract the contents of the wtl's include directory into wtl\.  If 
+   you're brave, you can try compiling without STLPort, see config.h (I don't maintain it though)
 
 2) You most probably have to update your Platform SDK, http://msdn.microsoft.com will tell you how.
    You have to do this if you get an error that "natupnp.h" is missing. Since all you need is this
@@ -15,7 +15,7 @@ How to compile in 3 easy steps:
 3) Open the solution and press your build button. If you find your executable unreasonably large, you
    probably compiled in debug mode - switch to release once you're done testing the code.
 
-Note 1;	I now use vc7.1 (2003). I don't care particularily if you use an older MS compiler (6.0, 7.0),
+Note 1;	I now use vc7.1 (2003). I don't care particularly if you use an older MS compiler (6.0, 7.0),
 	because these don't even come close to supporting the c++ standard. If you want to try anyway,
 	you're on your own.  You will need a new Platform SDK if you're using VS 6.0.
 	That said, the client part usually compiles fine with g++ 3.x, although there's a bug in 3.3
@@ -31,7 +31,7 @@ Note 3;	If you have problems, read the forum posts before posting. Somebody else
 	it works on my computer, so it's yours that is not correctly set up.
 
 Note 4;	To build the HTML Help file, you will need to download and install the HTML Help Workshop 
-	application.  The custom build setup relies on it being installed to the the default path, which 
+	application.  The custom build setup relies on it being installed to the default path, which 
 	is: "C:\Program Files\HTML Help Workshop\"
 	http://msdn.microsoft.com/library/default.asp?url=/library/en-us/htmlhelp/html/hwMicrosoftHTMLHelpDownloads.asp
 

@@ -39,7 +39,7 @@ _T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbet
 _T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
-_T("bsod, sulan, jonathan stone, tim burton. ")
+_T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm. ")
 _T("Keep it coming!");
 
 class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
@@ -129,6 +129,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.44 2004/11/24 17:01:51 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.45 2004/12/28 17:34:40 arnetheduck Exp $
  */
 

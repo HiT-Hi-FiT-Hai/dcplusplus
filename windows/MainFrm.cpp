@@ -145,7 +145,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_MINIMIZE_ALL);
-	
+	m_CmdBar.m_arrCommand.Add(ID_WINDOW_RESTORE_ALL);
+
 	// remove old menu
 	SetMenu(NULL);
 
@@ -1182,5 +1183,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.78 2004/12/18 14:49:14 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.79 2004/12/28 17:34:40 arnetheduck Exp $
  */
