@@ -510,6 +510,7 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 
 	uc->removeListener(this);
 
+	bool addConn = false;
 	{
 		Lock l(cs);
 
@@ -527,14 +528,14 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 				fire(ConnectionManagerListener::Connected(), cqi);
 				
 				dcdebug("ConnectionManager::addDownloadConnection, leaving to downloadmanager\n");
-				DownloadManager::getInstance()->addConnection(uc);
-
-				return;
+				addConn = true;
 			}
 		}
 	}
 
-	if(sendNTD) {
+	if(addConn) {
+		DownloadManager::getInstance()->addConnection(uc);
+	} else if(sendNTD) {
 		uc->ntd();
 		uc->unsetFlag(UserConnection::FLAG_DOWNLOAD);
 		uc->setFlag(UserConnection::FLAG_UPLOAD);
@@ -542,7 +543,6 @@ void ConnectionManager::addDownloadConnection(UserConnection* uc, bool sendNTD) 
 	} else {
 		putConnection(uc);
 	}
-
 }
 
 void ConnectionManager::addUploadConnection(UserConnection* uc) {
@@ -550,6 +550,7 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 
 	uc->removeListener(this);
 
+	bool addConn = false;
 	{
 		Lock l(cs);
 
@@ -564,13 +565,15 @@ void ConnectionManager::addUploadConnection(UserConnection* uc) {
 			fire(ConnectionManagerListener::Connected(), cqi);
 
 			dcdebug("ConnectionManager::addUploadConnection, leaving to uploadmanager\n");
-			UploadManager::getInstance()->addConnection(uc);
-
-			return;
+			addConn = true;
 		}
 	}
 
-	putConnection(uc);
+	if(addConn) {
+		UploadManager::getInstance()->addConnection(uc);
+	} else {
+		putConnection(uc);
+	}
 }
 
 void ConnectionManager::on(UserConnectionListener::Key, UserConnection* aSource, const string&/* aKey*/) throw() {
@@ -685,5 +688,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.94 2005/03/14 14:04:31 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.95 2005/03/16 14:12:00 arnetheduck Exp $
  */
