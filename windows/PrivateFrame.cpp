@@ -183,8 +183,11 @@ void PrivateFrame::onEnter()
 			} else if((Util::stricmp(s.c_str(), "favorite") == 0) || (Util::stricmp(s.c_str(), "fav") == 0)) {
 				HubManager::getInstance()->addFavoriteUser(getUser());
 				addLine(STRING(FAVORITE_USER_ADDED));
+			} else if(Util::stricmp(s.c_str(), "getlist") == 0) {
+				BOOL bTmp;
+				onGetList(0,0,0,bTmp);
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /clear, /grant, /close, /favorite");
+				addLine("*** " + WinUtil::commands + ", /getlist, /clear, /grant, /close, /favorite");
 			} else {
 				if(user->isOnline()) {
 					sendMessage(s);
@@ -341,7 +344,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.21 2003/11/04 20:18:14 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.22 2003/11/19 15:07:58 arnetheduck Exp $
  */
 
 

@@ -278,7 +278,9 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const s
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, int aType, int ctx, const string& name, const string& command) throw() {
 	if(type == ClientListener::USER_COMMAND) {
-		HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+		if(BOOLSETTING(HUB_USER_COMMANDS)) {
+			HubManager::getInstance()->addUserCommand(aType, ctx, UserCommand::FLAG_NOSAVE, name, command, client->getAddressPort());
+		}
 	}
 }
 
@@ -358,5 +360,5 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.44 2003/11/11 13:16:08 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.45 2003/11/19 15:07:58 arnetheduck Exp $
  */

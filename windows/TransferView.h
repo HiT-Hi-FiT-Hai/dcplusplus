@@ -42,6 +42,8 @@ public:
 	typedef UserInfoBaseHandler<TransferView> uibBase;
 
 	BEGIN_MSG_MAP(TransferView)
+		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_GETDISPINFO, ctrlTransfers.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, ctrlTransfers.onColumnClick)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
@@ -52,7 +54,6 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		CHAIN_COMMANDS(uibBase)
-		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -165,7 +166,7 @@ private:
 		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
 			if(a->status == b->status) {
 				if(a->type != b->type) {
-					return (a->status == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
+					return (a->type == ItemInfo::TYPE_DOWNLOAD) ? -1 : 1;
 				}
 			} else {
 				return (a->status == ItemInfo::STATUS_RUNNING) ? -1 : 1;
@@ -229,5 +230,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.5 2003/11/12 01:17:12 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.6 2003/11/19 15:07:58 arnetheduck Exp $
  */

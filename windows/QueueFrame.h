@@ -60,6 +60,8 @@ public:
 	typedef CSplitterImpl<QueueFrame> splitBase;
 
 	BEGIN_MSG_MAP(QueueFrame)
+		NOTIFY_HANDLER(IDC_QUEUE, LVN_GETDISPINFO, ctrlQueue.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, ctrlQueue.onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_ITEMCHANGED, onItemChangedQueue)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
@@ -80,7 +82,6 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + readdItems, onReadd)
 		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(baseClass)
-		REFLECT_NOTIFICATIONS();
 	ALT_MSG_MAP(SHOWTREE_MESSAGE_MAP)
 		MESSAGE_HANDLER(BM_SETCHECK, onShowTree)
 	END_MSG_MAP()
@@ -362,5 +363,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.28 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.29 2003/11/19 15:07:58 arnetheduck Exp $
  */

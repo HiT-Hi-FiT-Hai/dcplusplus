@@ -37,8 +37,8 @@ public:
 	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
-		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_GETDISPINFO, onGetDispInfo)
-		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_COLUMNCLICK, onColumnClick)
+//		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_GETDISPINFO, onGetDispInfo)
+//		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_COLUMNCLICK, onColumnClick)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -179,5 +179,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.4 2003/11/12 21:45:00 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.5 2003/11/19 15:07:58 arnetheduck Exp $
 */

@@ -204,8 +204,15 @@ void HubFrame::onEnter() {
 				addClientLine((STRING(IP) + client->getLocalIp() + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT))));
 			} else if((Util::stricmp(cmd.c_str(), "favorite") == 0) || (Util::stricmp(cmd.c_str(), "fav") == 0)) {
 				addAsFavorite();
+			} else if(Util::stricmp(cmd.c_str(), "getlist") == 0){
+				if( !param.empty() ){
+					int k = ctrlUsers.findItem(param);
+					if(k != -1) {
+						ctrlUsers.getItemData(k)->getList();
+					}
+				}
 			} else if(Util::stricmp(cmd.c_str(), "help") == 0) {
-				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message]");
+				addLine("*** " + WinUtil::commands + ", /join <hub-ip>, /clear, /ts, /showjoins, /close, /userlist, /connection, /favorite, /pm <user> [message], /getlist <user>");
 			} else if(Util::stricmp(cmd.c_str(), "pm") == 0) {
 				string::size_type j = param.find(' ');
 				if(j != string::npos) {
@@ -318,7 +325,8 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */) {
 
 LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPDATE_USERS) {
-		bool needsSort = false;
+		bool userAdded = false;
+		bool userUpdated = false;
 		ctrlUsers.SetRedraw(FALSE);
 		{
 			Lock l(updateCS);
@@ -326,13 +334,18 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				User::Ptr& u = i->first;
 				switch(i->second) {
 				case UPDATE_USER:
-					if(updateUser(u, true) && showJoins) {
-						addLine("*** " + STRING(JOINS) + u->getNick());
+					if(updateUser(u, true)) {
+						if(showJoins)
+							addLine("*** " + STRING(JOINS) + u->getNick());
+					} else {
+						userUpdated = true;
 					}
 					break;
 				case UPDATE_USERS:
-					needsSort = true;
-					updateUser(u);
+					if(updateUser(u))
+						userAdded = true;
+					else
+						userUpdated = true;
 					break;
 				case REMOVE_USER:
 					int j = ctrlUsers.findItem(u->getNick());
@@ -349,8 +362,9 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			}
 			updateList.clear();
 		}
-		if(needsSort || ctrlUsers.getSortColumn() != COLUMN_NICK)
+		if(userAdded || (userUpdated && (ctrlUsers.getSortColumn() != COLUMN_NICK)))
 			ctrlUsers.resort();
+
 		ctrlUsers.SetRedraw(TRUE);
 	} else if(wParam == DISCONNECTED) {
 		clearUserList();
@@ -1102,5 +1116,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.43 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.44 2003/11/19 15:07:58 arnetheduck Exp $
  */

@@ -41,9 +41,9 @@ string SearchResult::toSR() {
 		tmp.append(file, 0, file.length() - 1);
 	}
 	tmp.append(1, ' ');
-	tmp.append(Util::toString(slots));
-	tmp.append(1, '/');
 	tmp.append(Util::toString(freeSlots));
+	tmp.append(1, '/');
+	tmp.append(Util::toString(slots));
 	tmp.append(1, '\x05');
 	tmp.append(hubName);
 	tmp.append(" (", 2);
@@ -206,6 +206,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.29 2003/11/12 01:17:11 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.30 2003/11/19 15:07:58 arnetheduck Exp $
  */
 

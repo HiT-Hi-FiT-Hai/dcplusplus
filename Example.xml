@@ -58,6 +58,7 @@
 		<String Name="DiscFull">Disk full(?)</String>
 		<String Name="Document">Document</String>
 		<String Name="Done">Done</String>
+		<String Name="DontShareTempDirectory">The temporary download directory cannot be shared</String>
 		<String Name="Download">Download</String>
 		<String Name="DownloadFailed">Download failed: </String>
 		<String Name="DownloadFinishedIdle">Download finished, idle...</String>

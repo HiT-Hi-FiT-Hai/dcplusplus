@@ -49,6 +49,8 @@ public:
 	typedef UserInfoBaseHandler<HubFrame> uibBase;
 
 	BEGIN_MSG_MAP(HubFrame)
+		NOTIFY_HANDLER(IDC_USERS, LVN_GETDISPINFO, ctrlUsers.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, ctrlUsers.onColumnClick)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_KEYDOWN, onKeyDownUsers)
 		NOTIFY_HANDLER(IDC_USERS, NM_RETURN, onEnterUsers)
@@ -72,7 +74,6 @@ public:
 		CHAIN_COMMANDS(uibBase)
 		CHAIN_MSG_MAP(baseClass)
 		CHAIN_MSG_MAP(splitBase)
-		REFLECT_NOTIFICATIONS()
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -377,6 +378,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.33 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.34 2003/11/19 15:07:58 arnetheduck Exp $
  */
 

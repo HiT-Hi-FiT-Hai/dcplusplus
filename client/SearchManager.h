@@ -47,26 +47,27 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, int64_t aSize, 
-		const string& aFile, const string& aHubName, const string& aHubIpPort) : 
-	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), size(aSize), slots(aSlots),
-		freeSlots(aFreeSlots), ref(1) { };
+	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
+		int64_t aSize, const string& aFile, const string& aHubName, 
+		const string& aHubIpPort) :
+	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), 
+		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), ref(1) { }
 
 	string getFileName();
 	string toSR();
 
-	User::Ptr& getUser() { return user; };
-	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
+	User::Ptr& getUser() { return user; }
+	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
 
-	const string& getFile() { return file; };
-	const string& getHubIpPort() { return hubIpPort; };
-	const string& getHubName() { return hubName; };
-	int64_t getSize() { return size; };
-	Types getType() { return type; };
-	int getSlots() { return slots; };
-	int getFreeSlots() { return freeSlots; };
+	const string& getFile() { return file; }
+	const string& getHubIpPort() { return hubIpPort; }
+	const string& getHubName() { return hubName; }
+	int64_t getSize() { return size; }
+	Types getType() { return type; }
+	int getSlots() { return slots; }
+	int getFreeSlots() { return freeSlots; }
 
-	void incRef() { Thread::safeInc(&ref); };
+	void incRef() { Thread::safeInc(&ref); }
 	void decRef() { 
 		if(Thread::safeDec(&ref) == 0) 
 			delete this; 
@@ -75,12 +76,12 @@ public:
 private:
 	friend class SearchManager;
 
-	SearchResult() : size(0), slots(0), freeSlots(0), ref(1) { };
+	SearchResult() : size(0), type(TYPE_FILE), slots(0), freeSlots(0), ref(1) { }
 	~SearchResult() { };
 
 	SearchResult(const SearchResult& rhs) : 
 	   file(rhs.file), hubName(rhs.hubName), hubIpPort(rhs.hubIpPort), 
-		   user(rhs.user), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots), ref(1) { };
+		   user(rhs.user), size(rhs.size), type(rhs.type), slots(rhs.slots), freeSlots(rhs.freeSlots), ref(1) { }
 
 	string file;
 	string hubName;
@@ -171,5 +172,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.28 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.29 2003/11/19 15:07:58 arnetheduck Exp $
  */

@@ -156,7 +156,8 @@ public:
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
 		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
 		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
-		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1
+		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
+		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1
 	};
 	
 	enum States {
@@ -278,6 +279,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.59 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.60 2003/11/19 15:07:58 arnetheduck Exp $
  */
 

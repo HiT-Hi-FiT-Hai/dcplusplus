@@ -52,6 +52,7 @@ const string SettingsManager::settingTags[] =
 	"CompressTransfers", "ShowProgressBars", "SFVCheck", "MaxTabRows", "AutoUpdateList",
 	"MaxCompression", "FinishedDirty", "AntiFrag", "MDIMaxmimized", "NoAwayMsgToBots",
 	"SkipZeroByte", "AdlsBreakOnFirst", "TabCompletion", "OpenFavoriteHubs", "OpenFinishedDownloads",
+	"HubUserCommands",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -143,6 +144,7 @@ SettingsManager::SettingsManager()
 	setDefault(TAB_COMPLETION, true);
 	setDefault(OPEN_FAVORITE_HUBS, false);
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
+	setDefault(HUB_USER_COMMANDS, true);
 
 #ifdef WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -285,6 +287,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.57 2003/11/19 15:07:58 arnetheduck Exp $
  */
 

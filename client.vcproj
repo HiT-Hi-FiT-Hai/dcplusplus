@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
@@ -40,31 +40,13 @@
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
-				CompileAs="0">
-				<IntelOptions
-					Optimization="0"
-					OptimizeForProcessor="2"
-					OptimizeForWindowsApplication="1"
-					StringPooling="1"
-					MinimalRebuild="1"
-					ExceptionHandling="1"
-					SmallerTypeCheck="0"
-					BasicRuntimeChecks="3"
-					RuntimeLibrary="3"
-					BufferSecurityCheck="1"
-					EnableFunctionLevelLinking="1"
-					ForceConformanceInForLoopScope="1"
-					AllOptions="/c  /ZI /nologo /W4 /Od /G6 /GA /D &quot;_DEBUG&quot; /D &quot;WIN32&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /Zc:forScope /Yu&quot;stdinc.h&quot; /Fp&quot;.\vc7\Debug\client/client.pch&quot; /Fo&quot;.\vc7\Debug\client/&quot; /Fd&quot;.\vc7\Debug\client/vc70.pdb&quot; /Gd"/>
-			</Tool>
+				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile="$(OutDir)/client.lib"
-				SuppressStartupBanner="TRUE">
-				<IntelOptions
-					AllOptions="/OUT:&quot;.\vc7\Debug\client/client.lib&quot; /NOLOGO"/>
-			</Tool>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -108,7 +90,7 @@
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="TRUE"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
@@ -120,34 +102,13 @@
 				SuppressStartupBanner="TRUE"
 				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="3"
-				CallingConvention="1">
-				<IntelOptions
-					Optimization="4"
-					GlobalOptimizations="1"
-					InlineFunctionExpansion="2"
-					EnableIntrinsicFunctions="1"
-					FavorSizeOrSpeed="2"
-					OmitFramePointers="1"
-					OptimizeForProcessor="3"
-					OptimizeForWindowsApplication="1"
-					StringPooling="1"
-					MinimalRebuild="1"
-					ExceptionHandling="1"
-					RuntimeLibrary="2"
-					BufferSecurityCheck="1"
-					EnableFunctionLevelLinking="1"
-					ForceConformanceInForLoopScope="1"
-					AllOptions="/c  /Zi /nologo /W4 /Ox /Og /Ob2 /Oi /Os /Oy /G7 /GA /D &quot;NDEBUG&quot; /D &quot;WIN32&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /D &quot;_STLP_NO_EXCEPTIONS&quot; /GF /Gm /EHsc /MD /GS /Gy /Zc:forScope /Yu&quot;stdinc.h&quot; /Fp&quot;.\vc7/Release/client/client.pch&quot; /FAs /Fa&quot;.\vc7/Release/client/&quot; /Fo&quot;.\vc7/Release/client/&quot; /Fd&quot;.\vc7/Release/client/vc70.pdb&quot; /Gr /TP"/>
-			</Tool>
+				CallingConvention="1"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLibrarianTool"
 				OutputFile=".\$(OutDir)\client.lib"
-				SuppressStartupBanner="TRUE">
-				<IntelOptions
-					AllOptions="/OUT:&quot;.\.\vc7/Release/client\client.lib&quot; /NOLOGO"/>
-			</Tool>
+				SuppressStartupBanner="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -170,197 +131,273 @@
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
-	<References/>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
-				RelativePath="client\ADLSearch.cpp"/>
+				RelativePath="client\ADLSearch.cpp">
+			</File>
 			<File
-				RelativePath=".\client\BufferedSocket.cpp"/>
+				RelativePath=".\client\BufferedSocket.cpp">
+			</File>
 			<File
-				RelativePath=".\client\Client.cpp"/>
+				RelativePath=".\client\Client.cpp">
+			</File>
 			<File
-				RelativePath=".\client\ClientManager.cpp"/>
+				RelativePath=".\client\ClientManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\ConnectionManager.cpp"/>
+				RelativePath=".\client\ConnectionManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\CryptoManager.cpp"/>
+				RelativePath=".\client\CryptoManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\DCPlusPlus.cpp"/>
+				RelativePath=".\client\DCPlusPlus.cpp">
+			</File>
 			<File
-				RelativePath=".\client\DirectoryListing.cpp"/>
+				RelativePath=".\client\DirectoryListing.cpp">
+			</File>
 			<File
-				RelativePath=".\client\DownloadManager.cpp"/>
+				RelativePath=".\client\DownloadManager.cpp">
+			</File>
 			<File
-				RelativePath="client\FinishedManager.cpp"/>
+				RelativePath="client\FinishedManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\HttpConnection.cpp"/>
+				RelativePath=".\client\HttpConnection.cpp">
+			</File>
 			<File
-				RelativePath=".\client\HubManager.cpp"/>
+				RelativePath=".\client\HubManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\LogManager.cpp"/>
+				RelativePath=".\client\LogManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\QueueManager.cpp"/>
+				RelativePath=".\client\QueueManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\ResourceManager.cpp"/>
+				RelativePath=".\client\ResourceManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\SearchManager.cpp"/>
+				RelativePath=".\client\SearchManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\ServerSocket.cpp"/>
+				RelativePath=".\client\ServerSocket.cpp">
+			</File>
 			<File
-				RelativePath=".\client\SettingsManager.cpp"/>
+				RelativePath=".\client\SettingsManager.cpp">
+			</File>
 			<File
-				RelativePath="client\SFVReader.cpp"/>
+				RelativePath="client\SFVReader.cpp">
+			</File>
 			<File
-				RelativePath=".\client\ShareManager.cpp"/>
+				RelativePath=".\client\ShareManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\SimpleXML.cpp"/>
+				RelativePath=".\client\SimpleXML.cpp">
+			</File>
 			<File
-				RelativePath=".\client\Socket.cpp"/>
+				RelativePath=".\client\Socket.cpp">
+			</File>
 			<File
 				RelativePath=".\client\stdinc.cpp">
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1">
-						<IntelOptions
-							AllOptions="/c  /ZI /nologo /W4 /Od /G6 /GA /D &quot;_DEBUG&quot; /D &quot;WIN32&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /GF /Gm /EHsc /RTC1 /MDd /GS /Gy /Zc:forScope /Yc&quot;stdinc.h&quot; /Fp&quot;.\vc7\Debug\client/client.pch&quot; /Fo&quot;.\vc7\Debug\client/&quot; /Fd&quot;.\vc7\Debug\client/vc70.pdb&quot; /Gd"/>
-					</Tool>
+						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1">
-						<IntelOptions
-							AllOptions="/c  /Zi /nologo /W4 /Ox /Og /Ob2 /Oi /Os /Oy /G7 /GA /D &quot;NDEBUG&quot; /D &quot;WIN32&quot; /D &quot;_WINDOWS&quot; /D &quot;_REENTRANT&quot; /D &quot;BZ_NO_STDIO&quot; /D &quot;_STLP_NO_EXCEPTIONS&quot; /GF /Gm /EHsc /MD /GS /Gy /Zc:forScope /Yc&quot;stdinc.h&quot; /Fp&quot;.\vc7/Release/client/client.pch&quot; /FAs /Fa&quot;.\vc7/Release/client/&quot; /Fo&quot;.\vc7/Release/client/&quot; /Fd&quot;.\vc7/Release/client/vc70.pdb&quot; /Gr /TP"/>
-					</Tool>
+						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\client\StringDefs.cpp"/>
+				RelativePath=".\client\StringDefs.cpp">
+			</File>
 			<File
-				RelativePath=".\client\StringTokenizer.cpp"/>
+				RelativePath=".\client\StringTokenizer.cpp">
+			</File>
 			<File
-				RelativePath=".\client\Thread.cpp"/>
+				RelativePath=".\client\Thread.cpp">
+			</File>
 			<File
-				RelativePath=".\client\TimerManager.cpp"/>
+				RelativePath=".\client\TimerManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\UploadManager.cpp"/>
+				RelativePath=".\client\UploadManager.cpp">
+			</File>
 			<File
-				RelativePath=".\client\User.cpp"/>
+				RelativePath=".\client\User.cpp">
+			</File>
 			<File
-				RelativePath=".\client\UserConnection.cpp"/>
+				RelativePath=".\client\UserConnection.cpp">
+			</File>
 			<File
-				RelativePath=".\client\Util.cpp"/>
+				RelativePath=".\client\Util.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
-				RelativePath="client\ADLSearch.h"/>
+				RelativePath="client\ADLSearch.h">
+			</File>
 			<File
-				RelativePath=".\client\BitInputStream.h"/>
+				RelativePath=".\client\BitInputStream.h">
+			</File>
 			<File
-				RelativePath=".\client\BitOutputStream.h"/>
+				RelativePath=".\client\BitOutputStream.h">
+			</File>
 			<File
-				RelativePath=".\client\BufferedSocket.h"/>
+				RelativePath=".\client\BufferedSocket.h">
+			</File>
 			<File
-				RelativePath=".\client\Client.h"/>
+				RelativePath=".\client\Client.h">
+			</File>
 			<File
-				RelativePath=".\client\ClientManager.h"/>
+				RelativePath=".\client\ClientManager.h">
+			</File>
 			<File
-				RelativePath="client\ClientManagerListener.h"/>
+				RelativePath="client\ClientManagerListener.h">
+			</File>
 			<File
-				RelativePath=".\client\config.h"/>
+				RelativePath=".\client\config.h">
+			</File>
 			<File
-				RelativePath=".\client\ConnectionManager.h"/>
+				RelativePath=".\client\ConnectionManager.h">
+			</File>
 			<File
-				RelativePath=".\client\ConnectionManagerListener.h"/>
+				RelativePath=".\client\ConnectionManagerListener.h">
+			</File>
 			<File
-				RelativePath=".\client\CriticalSection.h"/>
+				RelativePath=".\client\CriticalSection.h">
+			</File>
 			<File
-				RelativePath=".\client\CryptoManager.h"/>
+				RelativePath=".\client\CryptoManager.h">
+			</File>
 			<File
-				RelativePath=".\client\DCPlusPlus.h"/>
+				RelativePath=".\client\DCPlusPlus.h">
+			</File>
 			<File
-				RelativePath=".\client\DirectoryListing.h"/>
+				RelativePath=".\client\DirectoryListing.h">
+			</File>
 			<File
-				RelativePath=".\client\DownloadManager.h"/>
+				RelativePath=".\client\DownloadManager.h">
+			</File>
 			<File
-				RelativePath=".\client\Exception.h"/>
+				RelativePath=".\client\Exception.h">
+			</File>
 			<File
-				RelativePath=".\client\FavoriteUser.h"/>
+				RelativePath=".\client\FavoriteUser.h">
+			</File>
 			<File
-				RelativePath=".\client\File.h"/>
+				RelativePath=".\client\File.h">
+			</File>
 			<File
-				RelativePath="client\FinishedManager.h"/>
+				RelativePath="client\FinishedManager.h">
+			</File>
 			<File
-				RelativePath=".\client\HttpConnection.h"/>
+				RelativePath=".\client\HttpConnection.h">
+			</File>
 			<File
-				RelativePath=".\client\HubManager.h"/>
+				RelativePath=".\client\HubManager.h">
+			</File>
 			<File
-				RelativePath=".\client\LogManager.h"/>
+				RelativePath=".\client\LogManager.h">
+			</File>
 			<File
-				RelativePath=".\client\Pointer.h"/>
+				RelativePath=".\client\Pointer.h">
+			</File>
 			<File
-				RelativePath=".\client\QueueItem.h"/>
+				RelativePath=".\client\QueueItem.h">
+			</File>
 			<File
-				RelativePath=".\client\QueueManager.h"/>
+				RelativePath=".\client\QueueManager.h">
+			</File>
 			<File
-				RelativePath="client\QueueManagerListener.h"/>
+				RelativePath="client\QueueManagerListener.h">
+			</File>
 			<File
-				RelativePath=".\client\ResourceManager.h"/>
+				RelativePath=".\client\ResourceManager.h">
+			</File>
 			<File
-				RelativePath=".\client\SearchManager.h"/>
+				RelativePath=".\client\SearchManager.h">
+			</File>
 			<File
-				RelativePath="client\SearchManagerListener.h"/>
+				RelativePath="client\SearchManagerListener.h">
+			</File>
 			<File
-				RelativePath=".\client\Semaphore.h"/>
+				RelativePath=".\client\Semaphore.h">
+			</File>
 			<File
-				RelativePath=".\client\ServerSocket.h"/>
+				RelativePath=".\client\ServerSocket.h">
+			</File>
 			<File
-				RelativePath=".\client\SettingsManager.h"/>
+				RelativePath=".\client\SettingsManager.h">
+			</File>
 			<File
-				RelativePath="client\SFVReader.h"/>
+				RelativePath="client\SFVReader.h">
+			</File>
 			<File
-				RelativePath=".\client\ShareManager.h"/>
+				RelativePath=".\client\ShareManager.h">
+			</File>
 			<File
-				RelativePath=".\client\SimpleXML.h"/>
+				RelativePath=".\client\SimpleXML.h">
+			</File>
 			<File
-				RelativePath=".\client\Singleton.h"/>
+				RelativePath=".\client\Singleton.h">
+			</File>
 			<File
-				RelativePath=".\client\Socket.h"/>
+				RelativePath=".\client\Socket.h">
+			</File>
 			<File
-				RelativePath="client\Speaker.h"/>
+				RelativePath="client\Speaker.h">
+			</File>
 			<File
-				RelativePath=".\client\stdinc.h"/>
+				RelativePath=".\client\stdinc.h">
+			</File>
 			<File
-				RelativePath=".\client\StringDefs.h"/>
+				RelativePath=".\client\StringDefs.h">
+			</File>
 			<File
-				RelativePath="client\StringSearch.h"/>
+				RelativePath="client\StringSearch.h">
+			</File>
 			<File
-				RelativePath=".\client\StringTokenizer.h"/>
+				RelativePath=".\client\StringTokenizer.h">
+			</File>
 			<File
-				RelativePath=".\client\Thread.h"/>
+				RelativePath=".\client\Thread.h">
+			</File>
 			<File
-				RelativePath=".\client\TimerManager.h"/>
+				RelativePath=".\client\TimerManager.h">
+			</File>
 			<File
-				RelativePath=".\client\UploadManager.h"/>
+				RelativePath=".\client\UploadManager.h">
+			</File>
 			<File
-				RelativePath=".\client\User.h"/>
+				RelativePath=".\client\User.h">
+			</File>
 			<File
-				RelativePath=".\client\UserCommand.h"/>
+				RelativePath=".\client\UserCommand.h">
+			</File>
 			<File
-				RelativePath=".\client\UserConnection.h"/>
+				RelativePath=".\client\UserConnection.h">
+			</File>
 			<File
-				RelativePath=".\client\Util.h"/>
+				RelativePath=".\client\Util.h">
+			</File>
 			<File
-				RelativePath=".\client\version.h"/>
+				RelativePath=".\client\version.h">
+			</File>
 		</Filter>
 	</Files>
-	<Globals/>
+	<Globals>
+	</Globals>
 </VisualStudioProject>

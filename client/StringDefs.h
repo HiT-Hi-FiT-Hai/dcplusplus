@@ -62,6 +62,7 @@ enum Strings { // @DontAdd
 	DISC_FULL, // "Disk full(?)"
 	DOCUMENT, // "Document"
 	DONE, // "Done"
+	DONT_SHARE_TEMP_DIRECTORY, // "The temporary download directory cannot be shared"
 	DOWNLOAD, // "Download"
 	DOWNLOAD_FAILED, // "Download failed: "
 	DOWNLOAD_FINISHED_IDLE, // "Download finished, idle..."

@@ -88,7 +88,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		if( ((getLastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
 			if( !(smallfile || userlist) ||
 				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) || (aSource->getUser()->isSet(User::OP)) ) || 
-				!(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
+				!(aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS)) 
 				) 
 			{
 
@@ -370,5 +370,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.43 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.44 2003/11/19 15:07:58 arnetheduck Exp $
  */

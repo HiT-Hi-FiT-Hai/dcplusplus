@@ -1,4 +1,21 @@
- -- 0.302 --
+ -- 0.304 --
+* Fixed missing usercommands (thanks sed)
+* Added option not to receive usercommands 
+* Fixed a bug with bad search result type (hub owners, make sure your users upgrade if they use 0.302-0.303) 
+  (thanks saurod)
+* Added "$Supports MiniSlots" for other clients to profit from dc++'s free small files and filelist free slots
+  (thanks sed)
+* Added /getlist command to get users list from chat (thanks twink)
+* Added check so that temp directory cannot be added to share list
+* Hopefully speeded up hub connect a little
+* Fixed transfer view sorting I think, this is how it should be: running downloads, running uploads, waiting 
+  downloads, waiting uploads
+
+
+ -- 0.303 2003-11-14 --
+* Fixed reversed free and open slots in search results (oops...=)...upgrade or you're likely to be banned!
+
+ -- 0.302 2003-11-14 --
 * Added a small menu to the tray icon (thanks orkblutt)
 * Added port to hub log files
 * Some fixes so that \client will compile better under linux (thanks christer palm, he's working on

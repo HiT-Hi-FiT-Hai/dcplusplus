@@ -64,7 +64,7 @@ public:
 					{
 						menu.AppendMenu(MF_SEPARATOR);
 					}
-				} else if(uc.getType() == UserCommand::TYPE_RAW) {
+				} else if(uc.getType() == UserCommand::TYPE_RAW || uc.getType() == UserCommand::TYPE_RAW_ONCE) {
 					menu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
 				} else {
 					dcasserta(0);
@@ -89,5 +89,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.2 2003/11/12 21:45:00 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.3 2003/11/19 15:07:58 arnetheduck Exp $
 */
