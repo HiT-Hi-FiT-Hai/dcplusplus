@@ -33,9 +33,11 @@ ConnectionManager::ConnectionManager() : floodCounter(0), shuttingDown(false) {
 	TimerManager::getInstance()->addListener(this);
 	socket.addListener(this);
 
-	features.push_back("BZList");
-	features.push_back("MiniSlots");
-	features.push_back("XmlBZList");
+	features.push_back(UserConnection::FEATURE_BZLIST);
+	features.push_back(UserConnection::FEATURE_MINISLOTS);
+	features.push_back(UserConnection::FEATURE_XML_BZLIST);
+	features.push_back(UserConnection::FEATURE_ADCGET);
+	features.push_back(UserConnection::FEATURE_TTHL);
 };
 
 /**
@@ -397,8 +399,8 @@ void ConnectionManager::on(UserConnectionListener::CLock, UserConnection* aSourc
 		}
 		StringList defFeatures = features;
 		if(BOOLSETTING(COMPRESS_TRANSFERS)) {
-			defFeatures.push_back("GetTestZBlock");
-			defFeatures.push_back("GetZBlock");
+			defFeatures.push_back(UserConnection::FEATURE_GET_ZBLOCK);
+			defFeatures.push_back(UserConnection::FEATURE_ZLIB_GET);
 		}
 
 		aSource->supports(defFeatures);
@@ -559,20 +561,24 @@ void ConnectionManager::shutdown() {
 // UserConnectionListener
 void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* conn, const StringList& feat) throw() {
 	for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-		if(*i == "BZList")
+		if(*i == UserConnection::FEATURE_BZLIST)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
-		else if(*i == "GetTestZBlock")
-			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETTESTZBLOCK);
-		else if(*i == "GetZBlock")
+		else if(*i == UserConnection::FEATURE_GET_ZBLOCK)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
-		else if(*i == "MiniSlots")
+		else if(*i == UserConnection::FEATURE_MINISLOTS)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_MINISLOTS);
-		else if(*i == "XmlBZList")
+		else if(*i == UserConnection::FEATURE_XML_BZLIST)
 			conn->setFlag(UserConnection::FLAG_SUPPORTS_XML_BZLIST);
+		else if(*i == UserConnection::FEATURE_ADCGET)
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_ADCGET);
+		else if(*i == UserConnection::FEATURE_ZLIB_GET)
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_ZLIB_GET);
+		else if(*i == UserConnection::FEATURE_TTHL)
+			conn->setFlag(UserConnection::FLAG_SUPPORTS_TTHL);
 	}
 }
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.72 2004/05/03 12:38:04 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.73 2004/05/09 22:06:22 arnetheduck Exp $
  */

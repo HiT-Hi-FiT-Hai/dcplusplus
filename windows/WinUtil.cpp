@@ -156,6 +156,19 @@ void UserInfoBase::removeAll() {
 	QueueManager::getInstance()->removeSources(user, QueueItem::Source::FLAG_REMOVED);
 }
 
+bool WinUtil::getVersionInfo(OSVERSIONINFOEX& ver) {
+	memset(&ver, 0, sizeof(OSVERSIONINFOEX));
+	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+		ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		if(!GetVersionEx((OSVERSIONINFO*)&ver)) {
+			return false;
+		}
+	}
+	return true;
+}
+
 static LRESULT CALLBACK KeyboardProc(int code, WPARAM wParam, LPARAM lParam) {
 	if(code == HC_ACTION) {
 		if(wParam == VK_CONTROL && LOWORD(lParam) == 1) {
@@ -634,5 +647,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.41 2004/03/24 20:38:18 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.42 2004/05/09 22:06:23 arnetheduck Exp $
  */

@@ -33,7 +33,8 @@ public:
 	enum {
 		TYPE_SEPARATOR,
 		TYPE_RAW,
-		TYPE_RAW_ONCE
+		TYPE_RAW_ONCE,
+		TYPE_CLEAR = 255
 	};
 
 	enum {
@@ -75,6 +76,6 @@ public:
 
 /**
  * @file
- * $Id: UserCommand.h,v 1.6 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: UserCommand.h,v 1.7 2004/05/09 22:06:23 arnetheduck Exp $
  */
 

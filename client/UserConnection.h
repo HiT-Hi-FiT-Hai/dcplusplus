@@ -91,19 +91,22 @@ class ConnectionQueueItem;
 class Transfer {
 public:
 	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
-		last(0), total(0), actual(0), pos(-1), size(-1) { };
+		last(0), actual(0), pos(0), startPos(0), size(-1) { };
 	virtual ~Transfer() { dcassert(userConnection == NULL); };
 	
 	int64_t getPos() { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
 
-	void addPos(int64_t aBytes) { pos += aBytes; total+=aBytes; };
-	void addActual(int64_t aBytes) { actual += aBytes; };
+	void resetPos() { pos = getStartPos(); };
+	void setStartPos(int64_t aPos) { startPos = aPos; pos = aPos; };
+	int64_t getStartPos() { return startPos; }
+
+	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; };
 
 	enum { AVG_PERIOD = 30000 };
 	void updateRunningAverage();
 
-	int64_t getTotal() { return total; };
+	int64_t getTotal() { return getPos() - getStartPos(); };
 	int64_t getActual() { return actual; };
 	
 	int64_t getSize() { return size; };
@@ -121,6 +124,10 @@ public:
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
+	int64_t getBytesLeft() {
+		return getSize() - getPos();
+	}
+
 	GETSET(UserConnection*, userConnection, UserConnection);
 	GETSET(u_int32_t, start, Start);
 	GETSET(u_int32_t, lastTick, LastTick);
@@ -128,12 +135,12 @@ public:
 private:
 	/** Bytes on last avg update */
 	int64_t last;
-	/** Total effective bytes transfered this session */
-	int64_t total;
 	/** Total actual bytes transfered this session (compression?) */
 	int64_t actual;
 	/** Write position in file */
 	int64_t pos;
+	/** Starting position */
+	int64_t startPos;
 	/** Target size of this transfer */
 	int64_t size;
 
@@ -152,6 +159,14 @@ public:
 	typedef UserConnection* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
+
+	static const string FEATURE_BZLIST;
+	static const string FEATURE_GET_ZBLOCK;
+	static const string FEATURE_MINISLOTS;
+	static const string FEATURE_XML_BZLIST;
+	static const string FEATURE_ADCGET;
+	static const string FEATURE_ZLIB_GET;
+	static const string FEATURE_TTHL;
 	
 	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
@@ -168,9 +183,10 @@ public:
 		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
 		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1,
 		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
-		FLAG_SUPPORTS_GETTESTZBLOCK = FLAG_SUPPORTS_MINISLOTS << 1,
-		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_GETTESTZBLOCK << 1,
-		FLAG_SUPPORTS_XGET = FLAG_SUPPORTS_XML_BZLIST << 1,
+		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_MINISLOTS << 1,
+		FLAG_SUPPORTS_ADCGET = FLAG_SUPPORTS_XML_BZLIST << 1,
+		FLAG_SUPPORTS_ZLIB_GET = FLAG_SUPPORTS_ADCGET << 1,
+		FLAG_SUPPORTS_TTHL = FLAG_SUPPORTS_ZLIB_GET << 1,
 	};
 	
 	enum States {
@@ -186,7 +202,8 @@ public:
 		STATE_SEND,
 		STATE_DONE,
 		// DownloadManager
-		STATE_FILELENGTH
+		STATE_FILELENGTH,
+		STATE_TREE,
 	};
 
 	int getNumber() { return (((u_int32_t)this)>>2) & 0x7fff; };
@@ -255,13 +272,14 @@ public:
 		fire(t, this, c);
 	}
 	template<typename T>
-	void handle(T , Command& ) {
+	void handle(T , const Command& ) {
 	}
 	GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
 	GETSET(string, nick, Nick);
-	
+	GETSET(Download*, tempDownload, TempDownload);
+
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
@@ -326,6 +344,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.71 2004/04/24 20:56:27 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.72 2004/05/09 22:06:23 arnetheduck Exp $
  */
 

@@ -403,7 +403,15 @@ public:
 	using OutputStream::write;
 
 	BufferedOutputStream(OutputStream* aStream, size_t aBufSize = SETTING(BUFFER_SIZE) * 1024) : s(aStream), pos(0), bufSize(aBufSize), buf(new u_int8_t[bufSize]) { }
-	virtual ~BufferedOutputStream() { if(managed) delete s; delete buf; }
+	virtual ~BufferedOutputStream() { 
+		try {
+			// We must do this in order not to lose bytes when a download
+			// is disconnected prematurely
+			flush();
+		} catch(const Exception&) {
+		}
+		if(managed) delete s; delete buf; 
+	}
 
 	virtual size_t flush() throw(Exception) {
 		if(pos > 0)
@@ -456,6 +464,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.36 2004/04/26 14:05:26 arnetheduck Exp $
+ * $Id: File.h,v 1.37 2004/05/09 22:06:22 arnetheduck Exp $
  */
 

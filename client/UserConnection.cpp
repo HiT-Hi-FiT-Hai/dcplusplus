@@ -24,6 +24,14 @@
 #include "StringTokenizer.h"
 #include "AdcCommand.h"
 
+const string UserConnection::FEATURE_BZLIST = "BZList";
+const string UserConnection::FEATURE_GET_ZBLOCK = "GetZBlock";
+const string UserConnection::FEATURE_MINISLOTS = "MiniSlots";
+const string UserConnection::FEATURE_XML_BZLIST = "XmlBZList";
+const string UserConnection::FEATURE_ADCGET = "ADCGet";
+const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
+const string UserConnection::FEATURE_TTHL = "TTHL";
+
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
 
@@ -31,12 +39,13 @@ void Transfer::updateRunningAverage() {
 	u_int32_t tick = GET_TICK();
 	if(tick > lastTick) {
 		u_int32_t diff = tick - lastTick;
+		int64_t tot = getTotal();
 		if(diff == 0) {
 			// No time passed, don't update runningAverage;
 		} else if( ((tick - getStart()) < AVG_PERIOD) ) {
 			runningAverage = getAverageSpeed();
 		} else {
-			int64_t bdiff = total - last;
+			int64_t bdiff = tot - last;
 			int64_t avg = bdiff * (int64_t)1000 / diff;
 			if(diff > AVG_PERIOD) {
 				runningAverage = avg;
@@ -45,7 +54,7 @@ void Transfer::updateRunningAverage() {
 				runningAverage = ((avg * diff) + (runningAverage*(AVG_PERIOD-diff)))/AVG_PERIOD;
 			}
 		}
-		last = total;
+		last = tot;
 	}
 	lastTick = tick;
 }
@@ -146,7 +155,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			fire(UserConnectionListener::Supports(), this, StringTokenizer(param, ' ').getTokens());
 		}
 	} else if(cmd.compare(0, 4, "$ADC") == 0) {
-		dispatch(cmd, true);
+		dispatch(aLine, true);
 	} else {
 		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
 	}
@@ -159,5 +168,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.40 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.41 2004/05/09 22:06:23 arnetheduck Exp $
  */

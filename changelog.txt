@@ -28,7 +28,9 @@
   regardless of how many minislots are already taken.
 * Matching by name removed for queue items with a TTH root (for autosearches)
 * Autosearch is done by TTH for queue items that have a root
-
+* Removed GetTestZBlock (no more safe/compressed transfers from old clients)
+* Added support for automatic user command clearing (code 255) (thanks sedulus)
+* User country shown in ip field (thanks pofis)
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue

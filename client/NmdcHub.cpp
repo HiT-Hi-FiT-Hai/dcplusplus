@@ -370,7 +370,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 		int type = Util::toInt(param.substr(0, j));
 		i = j+1;
-		if(type == UserCommand::TYPE_SEPARATOR) {
+ 		if(type == UserCommand::TYPE_SEPARATOR || type == UserCommand::TYPE_CLEAR) {
 			int ctx = Util::toInt(param.substr(i));
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::UserCommand(), this, type, ctx, Util::emptyString, Util::emptyString);
 		} else if(type == UserCommand::TYPE_RAW || type == UserCommand::TYPE_RAW_ONCE) {
@@ -715,6 +715,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.3 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.4 2004/05/09 22:06:22 arnetheduck Exp $
  */
 

@@ -130,6 +130,8 @@ bool HashManager::HashStore::getTree(const string& aFileName, TigerTree& tth) {
 		AutoArray<u_int8_t> buf(datalen);
 		f.read((u_int8_t*)buf, datalen);
 		tth = TigerTree(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf);
+		if(!(tth.getRoot() == fi->getRoot()))
+			return false;
 	} catch(const FileException& ) {
 		return false;
 	}
@@ -514,5 +516,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.16 2004/05/03 12:38:04 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.17 2004/05/09 22:06:22 arnetheduck Exp $
  */

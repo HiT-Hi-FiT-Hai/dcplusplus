@@ -265,85 +265,6 @@ static BOOL GetSourceInfoFromAddress( UINT address, LPTSTR lpszSourceInfo )
 	return ret;
 }
 
-void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f )
-{
-	STACKFRAME     callStack;
-	BOOL           bResult;
-	CONTEXT        context;
-	TCHAR          symInfo[BUFFERSIZE] = _T("?");
-	TCHAR          srcInfo[BUFFERSIZE] = _T("?");
-	HANDLE         hProcess = GetCurrentProcess();
-
-   // If it's not this thread, let's suspend it, and resume it at the end
-	if ( hThread != GetCurrentThread() )
-		if ( SuspendThread( hThread ) == -1 )
-		{
-		   // whaaat ?!
-			f.write(LIT("Call stack info failed\r\n"));
-			return;
-		}
-
-	::ZeroMemory( &context, sizeof(context) );
-	context.ContextFlags = CONTEXT_FULL;
-
-	if ( !GetThreadContext( hThread, &context ) )
-	{
-		f.write(LIT("Call stack info failed\r\n"));
-		return;
-	}
-	
-	::ZeroMemory( &callStack, sizeof(callStack) );
-	callStack.AddrPC.Offset    = context.Eip;
-	callStack.AddrStack.Offset = context.Esp;
-	callStack.AddrFrame.Offset = context.Ebp;
-	callStack.AddrPC.Mode      = AddrModeFlat;
-	callStack.AddrStack.Mode   = AddrModeFlat;
-	callStack.AddrFrame.Mode   = AddrModeFlat;
-
-	f.write(LIT("Call stack info: \r\n"));
-	f.write(lpszMessage, strlen(lpszMessage));
-
-	GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
-	GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-	f.write(LIT("     "));
-	f.write(srcInfo, strlen(srcInfo));
-	f.write(LIT(" : "));
-	f.write(symInfo, strlen(symInfo));
-	f.write(LIT("\r\n"));
-	
-	for( ULONG index = 0; ; index++ ) 
-	{
-		bResult = StackWalk(
-			IMAGE_FILE_MACHINE_I386,
-			hProcess,
-			hThread,
-	      &callStack,
-			NULL, 
-			NULL,
-			SymFunctionTableAccess,
-			SymGetModuleBase,
-			NULL);
-
-		if ( index == 0 )
-		   continue;
-
-		if( !bResult || callStack.AddrFrame.Offset == 0 ) 
-			break;
-	
-		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
-		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
-
-		f.write(LIT("     "));
-		f.write(srcInfo, strlen(srcInfo));
-		f.write(LIT(" : "));
-		f.write(symInfo, strlen(symInfo));
-		f.write(LIT("\r\n"));
-	}
-
-	if ( hThread != GetCurrentThread() )
-		ResumeThread( hThread );
-}
-
 void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD esp, DWORD ebp )
 {
 	STACKFRAME     callStack;
@@ -357,7 +278,7 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		if ( SuspendThread( hThread ) == -1 )
 		{
 			// whaaat ?!
-			f.write(LIT("Call stack info failed\r\n"));
+			f.write(LIT("No call stack\r\n"));
 			return;
 		}
 
@@ -369,15 +290,13 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		callStack.AddrStack.Mode   = AddrModeFlat;
 		callStack.AddrFrame.Mode   = AddrModeFlat;
 
-		f.write(LIT("Call stack info: \r\n"));
 		f.write(lpszMessage, strlen(lpszMessage));
 
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-		f.write(LIT("     "));
 		f.write(srcInfo, strlen(srcInfo));
-		f.write(LIT(" : "));
+		f.write(LIT(": "));
 		f.write(symInfo, strlen(symInfo));
 		f.write(LIT("\r\n"));
 
@@ -403,9 +322,8 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-			f.write(LIT("     "));
 			f.write(srcInfo, strlen(srcInfo));
-			f.write(LIT(" : "));
+			f.write(LIT(": "));
 			f.write(symInfo, strlen(symInfo));
 			f.write(LIT("\r\n"));
 

@@ -262,6 +262,31 @@ public:
 		}
 		return buf;
 	}
+
+	static string toAdcFile(const string& file) {
+		string ret;
+		ret.reserve(file.length() + 1);
+		ret += '/';
+		ret += file;
+		for(string::size_type i = 0; i < ret.length(); ++i) {
+			if(ret[i] == '\\') {
+				ret[i] = '/';
+			}
+		}
+		return ret;
+	}
+	static string toNmdcFile(const string& file) {
+		if(file.empty())
+			return Util::emptyString;
+		
+		string ret(file.substr(1));
+		for(string::size_type i = 0; i < ret.length(); ++i) {
+			if(ret[i] == '/') {
+				ret[i] = '\\';
+			}
+		}
+		return ret;
+	}
 	
 	static string formatBytes(int64_t aBytes);
 
@@ -560,5 +585,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.84 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: Util.h,v 1.85 2004/05/09 22:06:23 arnetheduck Exp $
  */

@@ -29,6 +29,7 @@
 #include "Singleton.h"
 #include "FilteredFile.h"
 #include "ZUtils.h"
+#include "MerkleTree.h"
 
 class QueueItem;
 class ConnectionQueueItem;
@@ -49,9 +50,11 @@ public:
 		FLAG_CALC_CRC32 = 0x10,
 		FLAG_CRC32_OK = 0x20,
 		FLAG_ANTI_FRAG = 0x40,
-		FLAG_UTF8 = 0x80
+		FLAG_UTF8 = 0x80,
+		FLAG_TREE_DOWNLOAD=0x100,
 	};
 
+	Download() throw();
 	Download(QueueItem* qi) throw();
 
 	virtual ~Download() { }
@@ -70,18 +73,25 @@ public:
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
 	}
 
+	TigerTree& getTigerTree() {
+		return tt;
+	}
+
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);
 	GETSET(string, target, Target);
 	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
-	int64_t bytesLeft;
+	GETSET(bool, treeValid, TreeValid);
+	GETSET(Download*, oldDownload, OldDownload);
+
 private:
-	Download();
 	Download(const Download&);
 
 	Download& operator=(const Download&);
+
+	TigerTree tt;
 };
 
 class DownloadManagerListener {
@@ -111,7 +121,7 @@ public:
 
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
-		checkDownloads(conn);
+		checkDownloads(conn, false);
 	}
 
 	void abortDownload(const string& aTarget);
@@ -173,7 +183,7 @@ private:
 		}
 	};
 	
-	void checkDownloads(UserConnection* aConn);
+	void checkDownloads(UserConnection* aConn, bool afterTree);
 	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener
@@ -184,6 +194,8 @@ private:
 	virtual void on(MaxedOut, UserConnection*) throw();
 	virtual void on(ModeChange, UserConnection* aSource) throw() { handleEndData(aSource);}
 	virtual	void on(FileNotAvailable, UserConnection*) throw();
+
+	virtual void on(Command::SND, UserConnection*, const Command&) throw();
 	
 	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
@@ -194,5 +206,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.59 2004/04/24 09:40:58 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.60 2004/05/09 22:06:22 arnetheduck Exp $
  */

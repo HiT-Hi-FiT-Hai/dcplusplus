@@ -147,7 +147,7 @@ private:
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
 	virtual void on(Command::GET, UserConnection*, const Command&) throw();
-	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+	//virtual void on(Command::STA, UserConnection*, const Command&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
@@ -157,5 +157,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.64 2004/05/03 12:38:05 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.65 2004/05/09 22:06:23 arnetheduck Exp $
  */

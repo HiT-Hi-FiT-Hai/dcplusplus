@@ -155,6 +155,8 @@ public:
 
 	static void decodeFont(const string& setting, LOGFONT &dest);
 
+	static bool getVersionInfo(OSVERSIONINFOEX& ver);
+
 	/**
 	 * Check if this is a common /-command.
 	 * @param cmd The whole text string, will be updated to contain only the command.
@@ -250,5 +252,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.25 2004/03/26 19:23:29 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.26 2004/05/09 22:06:24 arnetheduck Exp $
  */

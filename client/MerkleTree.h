@@ -43,6 +43,8 @@ template<class Hasher, size_t baseBlockSize = 1024>
 class MerkleTree {
 public:
 	enum { HASH_SIZE = Hasher::HASH_SIZE };
+	enum { BASE_BLOCK_SIZE = baseBlockSize };
+
 	typedef HashValue<Hasher> MerkleValue;
 	typedef vector<MerkleValue> MerkleList;
 	typedef typename MerkleList::iterator MerkleIter;
@@ -127,13 +129,22 @@ public:
 
 	MerkleValue& getRoot() { return root; }
 	MerkleList& getLeaves() { return leaves; }
+	const MerkleList& getLeaves() const { return leaves; }
 
 	size_t getBlockSize() const { return blockSize; }
+	void setBlockSize(size_t aSize) { blockSize = aSize; }
+
 	int64_t getFileSize() const { return fileSize; }
+	void setFileSize(int64_t aSize) { fileSize = aSize; }
+
 	u_int32_t getTimeStamp() const { return timeStamp; }
 
 	bool verifyRoot(const u_int8_t* aRoot) {
 		return memcmp(aRoot, getRoot().data(), Hasher::HASH_SIZE) == 0;
+	}
+
+	void calcRoot() {
+		root = getHash(0, fileSize);
 	}
 
 private:	
@@ -152,10 +163,6 @@ private:
 	/** Final block size */
 	size_t blockSize;
 	
-	void calcRoot() {
-		root = getHash(0, fileSize);
-	}
-
 	MerkleValue getHash(int64_t start, int64_t length) {
 		dcassert((start % blockSize) == 0);
 		if(length <= blockSize) {
@@ -247,5 +254,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.10 2004/05/03 12:38:04 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.11 2004/05/09 22:06:22 arnetheduck Exp $
  */
