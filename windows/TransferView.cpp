@@ -291,7 +291,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 				COLORREF barBase = ::GetSysColor(COLOR_HIGHLIGHT);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -40 : 40;
-				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -mod, 50), barBase, HLS_TRANSFORM(barBase, mod, -30) };
+				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -40, 50), barBase, HLS_TRANSFORM(barBase, 40, -30) };
 				COLORREF bgPal[2] = { HLS_TRANSFORM(bgBase, mod, 0), HLS_TRANSFORM(bgBase, mod/2, 0) };
 
 				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
@@ -416,7 +416,7 @@ LRESULT TransferView::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 			delete l;
 		}
 
-		if(ctrlTransfers.getSortColumn() != COLUMN_USER)
+		if(ctrlTransfers.getSortColumn() != COLUMN_USER && ctrlTransfers.getSortColumn() != COLUMN_STATUS)
 			ctrlTransfers.resort();
 		ctrlTransfers.SetRedraw(TRUE);
 		
@@ -493,6 +493,7 @@ void TransferView::onDownloadStarting(Download* aDownload) {
 	ii->status = ItemInfo::STATUS_RUNNING;
 	ii->pos = 0;
 	ii->start = aDownload->getPos();
+	ii->actual = ii->start;
 	ii->size = aDownload->getSize();
 
 	StringListInfo* i = new StringListInfo((LPARAM)ii);
@@ -564,6 +565,7 @@ void TransferView::onUploadStarting(Upload* aUpload) {
 	}
 	ii->pos = 0;
 	ii->start = aUpload->getPos();
+	ii->actual = ii->start;
 	ii->size = aUpload->getSize();
 	ii->status = ItemInfo::STATUS_RUNNING;
 	ii->speed = 0;
@@ -688,5 +690,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.8 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.9 2003/11/07 01:31:58 arnetheduck Exp $
  */
