@@ -74,8 +74,8 @@ int __cdecl main(int argc, char* argv[])
 			return 0;
 		}
 		
-		varStr += " = {\r\n\t";
-		varName += " = {\r\n\t";
+		varStr += " = {\r\n";
+		varName += " = {\r\n";
 		
 		ex.addTag("Language");
 		ex.addChildAttrib("Name", string("Example Language"));

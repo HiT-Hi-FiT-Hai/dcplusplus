@@ -360,26 +360,28 @@ void Client::onLine(const string& aLine) throw() {
 	} else if(cmd == "$Supports") {
 		fire(ClientListener::SUPPORTS, this, param);
 	} else if(cmd == "$UserCommand") {
-		string::size_type i, j = param.find(' ');
+		string::size_type i = string::npos;
+		string::size_type j = param.find(' ');
 		if(j == string::npos)
 			return;
 
 		int type = Util::toInt(param.substr(0, j));
 		i = j+1;
-		j = param.find(' ', i);
-		if(j == string::npos)
-			return;
-		int ctx = Util::toInt(param.substr(i, j-i));
 		if(type == UserCommand::TYPE_SEPARATOR) {
+			int ctx = Util::toInt(param.substr(i));
 			fire(ClientListener::USER_COMMAND, this, type, ctx, Util::emptyString, Util::emptyString);
 		} else if(type == UserCommand::TYPE_RAW) {
+			j = param.find(' ', i);
+			if(j == string::npos)
+				return;
+			int ctx = Util::toInt(param.substr(i));
 			i = j+1;
 			j = param.find('$');
 			if(j == string::npos)
 				return;
 			string name = param.substr(i, j-i);
 			i = j+1;
-			string command = param.substr(i, param.length() - i - 1);
+			string command = param.substr(i, param.length() - i);
 			fire(ClientListener::USER_COMMAND, this, type, ctx, Util::validateMessage(name, true, false), Util::validateMessage(command, true, false));
 		}
 	} else if(cmd == "$Lock") {
@@ -681,6 +683,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.56 2003/10/20 21:04:54 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.57 2003/10/21 17:10:40 arnetheduck Exp $
  */
 

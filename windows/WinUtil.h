@@ -68,9 +68,6 @@ public:
 	static CMenu mainMenu;
 	static int dirIconIndex;
 	static StringList lastDirs;
-	static string lastKick;
-	static string lastRedirect;
-	static string lastServer;
 	static HWND mainWnd;
 	static HWND mdiClient;
 	static FlatTabCtrl* tabCtrl;
@@ -169,5 +166,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.16 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.17 2003/10/21 17:10:41 arnetheduck Exp $
  */

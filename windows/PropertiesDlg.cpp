@@ -28,15 +28,7 @@
 #include "AppearancePage.h"
 #include "AdvancedPage.h"
 #include "Advanced2Page.h"
-
-ResourceManager::Strings titles[] = {
-	ResourceManager::SETTINGS_GENERAL,
-	ResourceManager::SETTINGS_DOWNLOADS,
-	ResourceManager::SETTINGS_UPLOADS,
-	ResourceManager::SETTINGS_APPEARANCE,
-	ResourceManager::SETTINGS_LOGS,
-	ResourceManager::SETTINGS_ADVANCED
-};
+#include "UCPage.h"
 
 PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet("Settings")
 {
@@ -46,6 +38,7 @@ PropertiesDlg::PropertiesDlg(SettingsManager *s) : TreePropertySheet("Settings")
 	pages[3] = new AppearancePage(s);
 	pages[4] = new Advanced2Page(s);
 	pages[5] = new AdvancedPage(s);
+	pages[6] = new UCPage(s);
 
 	for(int i=0; i<numPages; i++) {
 		AddPage(pages[i]->getPSP());
@@ -84,6 +77,6 @@ LRESULT PropertiesDlg::onOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file
- * $Id: PropertiesDlg.cpp,v 1.6 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: PropertiesDlg.cpp,v 1.7 2003/10/21 17:10:41 arnetheduck Exp $
  */
 

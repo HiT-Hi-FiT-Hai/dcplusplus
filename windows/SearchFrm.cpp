@@ -167,7 +167,6 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	targetDirMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	resultsMenu.CreatePopupMenu();
-	opMenu.CreatePopupMenu();
 	
 	resultsMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
 	resultsMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
@@ -176,23 +175,11 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	resultsMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	resultsMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(GET_FILE_LIST));
 	resultsMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	resultsMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	resultsMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-
-	opMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD, CSTRING(DOWNLOAD));
-	opMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetMenu, CSTRING(DOWNLOAD_TO));
-	opMenu.AppendMenu(MF_STRING, IDC_DOWNLOADDIR, CSTRING(DOWNLOAD_WHOLE_DIR));
-	opMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)targetDirMenu, CSTRING(DOWNLOAD_WHOLE_DIR_TO));
-	opMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
-	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	opMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
-	opMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
-	opMenu.AppendMenu(MF_STRING, IDC_REDIRECT, CSTRING(REDIRECT));
 
 	if(!initialString.empty()) {
 		search = StringTokenizer(initialString, ' ').getTokens();
@@ -387,63 +374,6 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	l->push_back((aResult->getType() == SearchResult::TYPE_FILE) ? Util::formatNumber(aResult->getSize()) : Util::emptyString);
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
 }
-
-LRESULT SearchFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	LineDlg dlg;
-	dlg.title = STRING(KICK_USER);
-	dlg.description = STRING(ENTER_REASON);
-	dlg.line = WinUtil::lastKick;
-	if(dlg.DoModal() == IDOK) {
-		WinUtil::lastKick = dlg.line;
-		int i = -1;
-		User::List kicked;
-		kicked.reserve(ctrlResults.GetSelectedCount());
-		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-			if(find(kicked.begin(), kicked.end(), sr->getUser()) != kicked.end()) {
-				continue;
-			}
-			kicked.push_back(sr->getUser());
-			if(sr->getUser() && sr->getUser()->isOnline()) {
-				sr->getUser()->kick(dlg.line);
-			}
-		}
-	}
-	
-	return 0; 
-};
-
-LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	LineDlg dlg1, dlg2;
-	dlg1.title = STRING(REDIRECT_USER);
-	dlg1.description = STRING(ENTER_REASON);
-	dlg1.line = WinUtil::lastRedirect;
-	if(dlg1.DoModal() == IDOK) {
-		dlg2.title = STRING(REDIRECT_USER);
-		dlg2.description = STRING(ENTER_SERVER);
-		dlg2.line = WinUtil::lastServer;
-		if(dlg2.DoModal() == IDOK) {
-			WinUtil::lastRedirect = dlg1.line;
-			WinUtil::lastServer = dlg2.line;
-			
-			int i = -1;
-			User::List kicked;
-			kicked.reserve(ctrlResults.GetSelectedCount());
-			while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-				if(find(kicked.begin(), kicked.end(), sr->getUser()) != kicked.end()) {
-					continue;
-				}
-				kicked.push_back(sr->getUser());
-				if(sr->getUser() && sr->getUser()->isOnline()) {
-					sr->getUser()->redirect(dlg2.line, STRING(YOU_ARE_BEING_REDIRECTED) + dlg2.line + ": " + dlg1.line);
-				}
-			}
-		}
-	}
-	
-	return 0; 
-};
 
 LRESULT SearchFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i=-1;
@@ -667,17 +597,9 @@ void SearchFrame::UpdateLayout(BOOL bResizeBars)
 	}	
 }
 
-LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	dcassert(wID >= IDC_USER_COMMAND);
-	size_t n = (size_t)wID - IDC_USER_COMMAND;
-
-	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-	dcassert(n < ul.size());
-
-	UserCommand& uc = ul[n];
-
+void SearchFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
-		return 0;
+		return;
 
 	int sel = -1;
 	while((sel = ctrlResults.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -687,7 +609,7 @@ LRESULT SearchFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		ucParams["file"] = sr->getFile();
 		sr->getUser()->send(Util::formatParams(uc.getCommand(), ucParams));
 	}
-	return 0;
+	return;
 };
 
 LRESULT SearchFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -791,25 +713,8 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 		}
 	}
 
-#if 0
-	int image = 0;
-	const string& tmp = sr->getUser()->getConnection();
-	if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_288K]) ||
-		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_576K]) ||
-		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_SATELLITE]) ||
-		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_ISDN]) ) {
-		image = 1;
-	} else if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_CABLE]) ||
-		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_DSL]) ) {
-		image = 2;
-	} else if( (tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_T1]) ||
-		(tmp == SettingsManager::connectionSpeeds[SettingsManager::SPEED_T3]) ) {
-		image = 3;
-	}
-#endif
 	int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(sr->getFile()) : WinUtil::getDirIconIndex();
 	ctrlResults.insert(*(StringList*)wParam, image, lParam);
-//	ctrlResults.SetItemState(i, INDEXTOOVERLAYMASK(image), LVIS_OVERLAYMASK)
 	delete (StringList*)wParam;
 	return 0;
 }
@@ -953,56 +858,9 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			}
 		}
 
-		if(op) {
-			// Alrite, now add the special menu items...
-			int added = 0;
-			int n = 0;
-			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
-				UserCommand& uc = *ui;
-				if(uc.getHub().empty() || uc.getHub() == "op" || 
-					Util::stricmp(uc.getHub(), oneHub) == 0) {
-						// We add!
-						if(added == 0) {
-							opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
-							added++;
-						}
-						opMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
-						added++;
-					}
-					n++;
-			}
-			commands = ul.size();
-			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			while(added > 0) {
-				opMenu.DeleteMenu(opMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-				added--;
-			}
-		} else {
-			int added = 0;
-			int n = 0;
-			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
-				UserCommand& uc = *ui;
-				if(uc.getHub().empty() || 
-					Util::stricmp(uc.getHub(), oneHub) == 0) {
-						// We add!
-						if(added == 0) {
-							resultsMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
-							added++;
-						}
-						resultsMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
-						added++;
-					}
-					n++;
-			}
-			commands = ul.size();
-			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			while(added > 0) {
-				resultsMenu.DeleteMenu(resultsMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-				added--;
-			}
-		}
+		prepareMenu(resultsMenu, UserCommand::CONTEXT_SEARCH, oneHub, op);
+		resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		cleanMenu(resultsMenu);
 		return TRUE; 
 	}
 	return FALSE; 
@@ -1059,5 +917,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.27 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.28 2003/10/21 17:10:41 arnetheduck Exp $
  */

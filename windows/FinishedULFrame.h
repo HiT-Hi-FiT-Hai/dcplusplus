@@ -51,6 +51,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_TOTAL, onRemove)
+		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE, onOpenFile)
 		COMMAND_ID_HANDLER(IDC_OPEN_FOLDER, onOpenFolder)
 		NOTIFY_HANDLER(IDC_FINISHED_UL, LVN_COLUMNCLICK, onColumnClickFinished)
@@ -64,6 +65,7 @@ public:
 	LRESULT onDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	
@@ -211,5 +213,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.9 2003/10/21 17:10:41 arnetheduck Exp $
  */

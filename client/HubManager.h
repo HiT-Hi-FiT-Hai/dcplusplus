@@ -184,6 +184,8 @@ public:
 			save();
 	}
 
+	UserCommand::List getUserCommands(int ctx, const string& hub, bool op);
+
 	UserCommand::List& getUserCommands() {
 		return userCommands;
 	}
@@ -260,6 +262,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.41 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.42 2003/10/21 17:10:40 arnetheduck Exp $
  */
 

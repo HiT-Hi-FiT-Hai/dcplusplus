@@ -30,10 +30,6 @@ public:
 
 	void loadLanguage(const string& aFile);
 	const string& getString(Strings x) const { dcassert(x != -1); return strings[x]; };
-	int getStringNumber(const string& aName) {
-		NameIter i = nameMap.find(aName);
-		return ((i==nameMap.end()) ? -1 : (int)i->second);
-	}
 
 private:
 	friend class Singleton<ResourceManager>;
@@ -42,20 +38,12 @@ private:
 	typedef NameMap::iterator NameIter;
 
 	ResourceManager() { 
-		buildMap();
 	};
 
 	virtual ~ResourceManager() { };
 	
 	static string strings[LAST];
 	static string names[LAST];
-	NameMap nameMap;
-
-	void buildMap() {
-		for(int i = 0; i < LAST; ++i) {
-			nameMap.insert(make_pair(names[i], Strings(i)));
-		}
-	}
 };
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
@@ -67,5 +55,5 @@ private:
 
 /**
  * @file
- * $Id: ResourceManager.h,v 1.8 2003/10/07 00:35:08 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.9 2003/10/21 17:10:40 arnetheduck Exp $
  */

@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C+generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
@@ -42,6 +42,7 @@
 #define IDR_ADLSEARCH                   233
 #define IDD_ADLS_PROPERTIES             234
 #define IDB_TOOLBAR20_HOT               235
+#define IDD_UCPAGE                      235
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -142,8 +143,11 @@
 #define IDC_USE_SYSTEM_ICONS            1072
 #define IDC_PRIVATE_MESSAGE_BEEP_OPEN   1073
 #define IDC_POPUP_PMS                   1073
+#define IDC_USE_OEM_MONOFONT            1073
 #define IDC_STATUS_IN_CHAT              1074
 #define IDC_MIN_UPLOAD_SPEED            1074
+#define IDC_FINISHED_DIRTY              1074
+#define IDC_SETTINGS_TYPE               1074
 #define IDC_SHOW_JOINS                  1075
 #define IDC_MIN_UPLOAD_SPIN             1075
 #define IDC_CHEVRON                     1076
@@ -209,9 +213,9 @@
 #define IDC_GO_TO_DIRECTORY             1124
 #define IDC_MATCH_QUEUE                 1125
 #define IDC_HELP_CHANGELOG              1126
-#define IDC_VIEW_AS_TEXT				1129
-#define IDC_PAGE						1130
-#define IDC_NET_STATS					1131
+#define IDC_VIEW_AS_TEXT                1129
+#define IDC_PAGE                        1130
+#define IDC_NET_STATS                   1131
 #define IDC_SETTINGS_PERSONAL_INFORMATION 1132
 #define IDC_SETTINGS_NICK               1133
 #define IDC_SETTINGS_EMAIL              1134
@@ -255,7 +259,21 @@
 #define IDC_SETTINGS_KB                 1172
 #define IDC_SETTINGS_B                  1173
 #define IDC_SETTINGS_KBPS               1174
-#define IDC_ADD_AS_FAVORITE				1175
+#define IDC_ADD_AS_FAVORITE             1175
+#define IDC_SETTINGS_SEPARATOR          1194
+#define IDC_SETTINGS_RAW                1195
+#define IDC_SETTINGS_CHAT               1196
+#define IDC_SETTINGS_PM                 1197
+#define IDC_SETTINGS_HUB_MENU           1198
+#define IDC_SETTINGS_SEARCH_MENU        1200
+#define IDC_SETTINGS_CONTEXT            1201
+#define IDC_SETTINGS_PARAMETERS         1202
+#define IDC_SETTINGS_NAME               1203
+#define IDC_SETTINGS_COMMAND            1204
+#define IDC_SETTINGS_HUB                1205
+#define IDC_SETTINGS_TO                 1206
+#define IDC_EDIT1                       1207
+#define IDC_FINAL_TEXT                  1207
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -275,7 +293,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        236
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1176
+#define _APS_NEXT_CONTROL_VALUE         1208
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

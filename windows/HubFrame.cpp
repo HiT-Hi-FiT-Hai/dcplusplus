@@ -107,19 +107,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 
-	opMenu.CreatePopupMenu();
-	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	opMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
-	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
-	opMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
-	opMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
-	opMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
-	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	opMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
-	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	opMenu.AppendMenu(MF_STRING, IDC_KICK, CSTRING(KICK_USER));
-	opMenu.AppendMenu(MF_STRING, IDC_REDIRECT, CSTRING(REDIRECT));
-	
 	tabMenu = CreatePopupMenu();
 	tabMenu.AppendMenu(MF_STRING, IDC_ADD_AS_FAVORITE, CSTRING(ADD_TO_FAVORITES));
 	tabMenu.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
@@ -328,57 +315,11 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	return 0;
 }
 
-LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	LineDlg dlg;
-	dlg.title = STRING(KICK_USER);
-	dlg.description = STRING(ENTER_REASON);
-	dlg.line = lastKick;
-	if(dlg.DoModal() == IDOK) {
-		lastKick = dlg.line;
-		
-		int i = -1;
-		int k = 0;
-		bool op = false;
-		while( (k < 15) && (!op) && ((i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) ) {
-			UserInfo* ui = (UserInfo*)ctrlUsers.GetItemData(i);
-			if(ui->user->isSet(User::OP))
-				op = true;
-			ui->user->kick(dlg.line);
-			k++;
-		}
-	}
-	
-	return 0; 
-};
-
 LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
 	int i = -1;
 	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		UploadManager::getInstance()->reserveSlot(((UserInfo*)ctrlUsers.GetItemData(i))->user);
 	}
-	return 0; 
-};
-
-LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
-	LineDlg dlg1, dlg2;
-	dlg1.title = STRING(REDIRECT_USER);
-	dlg1.description = STRING(ENTER_REASON);
-	dlg1.line = lastRedir;
-
-	if(dlg1.DoModal() == IDOK) {
-		dlg2.title = STRING(REDIRECT_USER);
-		dlg2.description = STRING(ENTER_SERVER);
-		dlg2.line = lastServer;
-		if(dlg2.DoModal() == IDOK) {
-			lastRedir = dlg1.line;
-			lastServer = dlg2.line;
-			int i = -1;
-			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				client->opForceMove(((UserInfo*)ctrlUsers.GetItemData(i))->user, dlg2.line, STRING(YOU_ARE_BEING_REDIRECTED) + dlg2.line + ": " + dlg1.line);
-			}
-		}
-	}
-	
 	return 0; 
 };
 
@@ -727,7 +668,7 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 	if(uMsg == WM_CONTEXTMENU)
 		ctrlClient.ScreenToClient(&pt);
 	
-	bool showMenu = false;
+	bool doMenu = false;
 
 	if (PtInRect(&rc, pt)) {
 		string x;
@@ -753,7 +694,7 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 			ctrlUsers.EnsureVisible(pos, FALSE);
 			
 			ctrlClient.ClientToScreen(&pt);
-			showMenu = true; 
+			doMenu = true; 
 		} else {
 			bHandled = FALSE;
 		}
@@ -766,77 +707,24 @@ LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOO
 		
 		if (PtInRect(&rc, pt)) { 
 			ctrlUsers.ClientToScreen(&pt);
-			showMenu = true;
+			doMenu = true;
 		}
 	}
 
-	if(showMenu) {
-		if(client->getOp()) {
-			// Alrite, now add the special menu items...
-			int added = 0;
-			int n = 0;
-			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
-				UserCommand& uc = *ui;
-				if(uc.getHub().empty() || uc.getHub() == "op" || 
-					Util::stricmp(uc.getHub(), server) == 0) {
-					// We add!
-					if(added == 0) {
-						opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
-						added++;
-					}
-					opMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
-					added++;
-				}
-				n++;
-			}
-			commands = ul.size();
-			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			while(added > 0) {
-				opMenu.DeleteMenu(opMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-				added--;
-			}
-		} else {
-			int added = 0;
-			int n = 0;
-			UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-			for(UserCommand::Iter ui = ul.begin(); ui != ul.end(); ++ui) {
-				UserCommand& uc = *ui;
-				if(uc.getHub().empty() || 
-					Util::stricmp(uc.getHub(), server) == 0) {
-					// We add!
-					if(added == 0) {
-						userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)0);
-						added++;
-					}
-					userMenu.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, uc.getName().c_str());
-					added++;
-				}
-				n++;
-			}
-			commands = ul.size();
-			userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			while(added > 0) {
-				userMenu.DeleteMenu(userMenu.GetMenuItemCount()-1, MF_BYPOSITION);
-				added--;
-			}
-		}
+	if(doMenu) {
+		prepareMenu(userMenu, UserCommand::CONTEXT_CHAT, client->getServer(), client->getOp());
+		userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		cleanMenu(userMenu);
+		return TRUE;
 	}
 	return FALSE;
 }
 
-LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	dcassert(wID >= IDC_USER_COMMAND);
-	size_t n = (size_t)wID - IDC_USER_COMMAND;
-
-	UserCommand::List& ul = HubManager::getInstance()->getUserCommands();
-	dcassert(n < ul.size());
-
-	UserCommand& uc = ul[n];
-	ucParams["mynick"] = client->getNick();
-
+void HubFrame::runUserCommand(UserCommand& uc) {
 	if(!WinUtil::getUCParams(m_hWnd, uc, ucParams))
-		return 0;
+		return;
+
+	ucParams["mynick"] = client->getNick();
 
 	int sel = -1;
 	while((sel = ctrlUsers.GetNextItem(sel, LVNI_SELECTED)) != -1) {
@@ -844,7 +732,7 @@ LRESULT HubFrame::onUserCommand(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 		ucParams["nick"] = u->user->getNick();
 		client->send(Util::formatParams(uc.getCommand(), ucParams));
 	}
-	return 0;
+	return;
 };
 
 void HubFrame::onTab() {
@@ -1129,5 +1017,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.33 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.34 2003/10/21 17:10:41 arnetheduck Exp $
  */

@@ -22,6 +22,7 @@
 
 #include "FinishedULFrame.h"
 #include "WinUtil.h"
+#include "TextFrame.h"
 
 #include "../client/ClientManager.h"
 #include "../client/StringTokenizer.h"
@@ -68,6 +69,7 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	FinishedManager::getInstance()->unlockList();
 	
 	ctxMenu.CreatePopupMenu();
+	ctxMenu.AppendMenu(MF_STRING, IDC_VIEW_AS_TEXT, CSTRING(VIEW_AS_TEXT));
 	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FILE, CSTRING(OPEN));
 	ctxMenu.AppendMenu(MF_STRING, IDC_OPEN_FOLDER, CSTRING(OPEN_FOLDER));
 	ctxMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -87,6 +89,16 @@ LRESULT FinishedULFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	if(item->iItem != -1) {
 		FinishedItem* entry = (FinishedItem*)ctrlList.GetItemData(item->iItem);
 		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+	return 0;
+}
+
+LRESULT FinishedULFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i;
+	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
+		TextFrame::openWindow(entry->getTarget());
 	}
 	return 0;
 }
@@ -195,5 +207,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.7 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.8 2003/10/21 17:10:41 arnetheduck Exp $
  */

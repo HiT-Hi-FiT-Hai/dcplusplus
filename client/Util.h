@@ -70,6 +70,7 @@ class Flags {
 		bool isSet(int aFlag) const { return (flags & aFlag) == aFlag; };
 		void setFlag(int aFlag) { flags |= aFlag; };
 		void unsetFlag(int aFlag) { flags &= ~aFlag; };
+		int getFlags() { return flags; };
 
 	private:
 		int flags;
@@ -478,5 +479,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.62 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: Util.h,v 1.63 2003/10/21 17:10:41 arnetheduck Exp $
  */

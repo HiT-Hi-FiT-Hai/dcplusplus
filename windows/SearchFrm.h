@@ -30,10 +30,13 @@
 #include "../client/SearchManager.h"
 #include "../client/CriticalSection.h"
 
+#include "UCHandler.h"
+
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 #define SHOWUI_MESSAGE_MAP 7
 
-class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, private SearchManagerListener
+class SearchFrame : public MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)>, 
+	private SearchManagerListener, public UCHandler<SearchFrame>
 {
 public:
 	static void openWindow(const string& str = Util::emptyString, LONGLONG size = 0, SearchManager::SizeModes mode = SearchManager::SIZE_ATLEAST, SearchManager::TypeModes type = SearchManager::TYPE_ANY);
@@ -41,6 +44,8 @@ public:
 	DECLARE_FRAME_WND_CLASS_EX("SearchFrame", IDR_SEARCH, 0, COLOR_3DFACE)
 
 	typedef MDITabChildWindowImpl<SearchFrame, RGB(127, 127, 255)> baseClass;
+	typedef UCHandler<SearchFrame> ucBase;
+
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
@@ -59,18 +64,16 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadWholeTo)
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
-		COMMAND_ID_HANDLER(IDC_KICK, onKick)
+		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
-		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		COMMAND_ID_HANDLER(IDC_FREESLOTS, onFreeSlots)
-		COMMAND_ID_HANDLER(IDC_MATCH_QUEUE, onMatchQueue)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
-		COMMAND_RANGE_HANDLER(IDC_USER_COMMAND, IDC_USER_COMMAND + commands, onUserCommand)
 		CHAIN_MSG_MAP(baseClass)
+		CHAIN_MSG_MAP(ucBase)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
@@ -91,7 +94,7 @@ public:
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), commands(0)
+		showUI(true), onlyFree(false), closed(false)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -113,14 +116,12 @@ public:
 	LRESULT onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onUserCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
+	void runUserCommand(UserCommand& uc);
 
 	static int sortSize(LPARAM a, LPARAM b) {
 		SearchResult* c = (SearchResult*)a;
@@ -259,7 +260,6 @@ private:
 
 	ExListViewCtrl ctrlResults;
 	CMenu resultsMenu;
-	CMenu opMenu;
 	CMenu targetMenu;
 	CMenu targetDirMenu;
 	
@@ -269,7 +269,6 @@ private:
 
 	/** Parameter map for user commands */
 	StringMap ucParams;
-	size_t commands;
 
 	bool onlyFree;
 
@@ -310,6 +309,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.22 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.23 2003/10/21 17:10:41 arnetheduck Exp $
  */
 

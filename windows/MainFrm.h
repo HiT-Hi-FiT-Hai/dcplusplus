@@ -56,7 +56,7 @@ public:
 		STATS,
 		AUTO_CONNECT,
 		PARSE_COMMAND_LINE,
-		VIEW_TEXT
+		VIEW_FILE_AND_DELETE
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
@@ -315,7 +315,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.25 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.26 2003/10/21 17:10:41 arnetheduck Exp $
  */
 
  

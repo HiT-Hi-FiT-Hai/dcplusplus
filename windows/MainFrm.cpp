@@ -356,7 +356,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		DirectoryListingFrame::openWindow(i->file, i->user);
 		delete i;
-	} else if(wParam == VIEW_TEXT) {
+	} else if(wParam == VIEW_FILE_AND_DELETE) {
 		string* file = (string*)lParam;
 		TextFrame::openWindow(*file);
 		File::deleteFile(*file);
@@ -889,7 +889,7 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 				i->user = qi->getCurrent()->getUser();
 				PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 			} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
-				PostMessage(WM_SPEAKER, VIEW_TEXT, (LPARAM) new string(qi->getTarget()));
+				PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new string(qi->getTarget()));
 			}
 		}
 	}
@@ -897,6 +897,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.33 2003/10/20 21:04:56 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.34 2003/10/21 17:10:41 arnetheduck Exp $
  */
 

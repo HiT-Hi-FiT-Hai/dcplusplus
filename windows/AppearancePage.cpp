@@ -56,6 +56,8 @@ PropPage::Item AppearancePage::items[] = {
 	{ IDC_STATUS_IN_CHAT, SettingsManager::STATUS_IN_CHAT, PropPage::T_BOOL },
 	{ IDC_SHOW_JOINS, SettingsManager::SHOW_JOINS, PropPage::T_BOOL },
 	{ IDC_USE_SYSTEM_ICONS, SettingsManager::USE_SYSTEM_ICONS, PropPage::T_BOOL },
+	{ IDC_USE_OEM_MONOFONT, SettingsManager::USE_OEM_MONOFONT, PropPage::T_BOOL },
+	{ IDC_FINISHED_DIRTY, SettingsManager::FINISHED_DIRTY, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -68,6 +70,7 @@ PropPage::ListItem AppearancePage::listItems[] = {
 	{ SettingsManager::STATUS_IN_CHAT, ResourceManager::SETTINGS_STATUS_IN_CHAT },
 	{ SettingsManager::SHOW_JOINS, ResourceManager::SETTINGS_SHOW_JOINS },
 	{ SettingsManager::USE_SYSTEM_ICONS, ResourceManager::SETTINGS_USE_SYSTEM_ICONS },
+	{ SettingsManager::USE_OEM_MONOFONT, ResourceManager::SETTINGS_USE_OEM_MONOFONT },
 	{ SettingsManager::FINISHED_DIRTY, ResourceManager::SETTINGS_FINISHED_DIRTY },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
@@ -165,5 +168,5 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.9 2003/10/21 17:10:41 arnetheduck Exp $
  */

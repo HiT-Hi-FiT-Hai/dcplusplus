@@ -221,7 +221,13 @@
 				RelativePath=".\res\Search.ico">
 			</File>
 			<File
+				RelativePath=".\res\searchspy.ico">
+			</File>
+			<File
 				RelativePath=".\res\toolbar.bmp">
+			</File>
+			<File
+				RelativePath=".\res\toolbar20-highlight.bmp">
 			</File>
 			<File
 				RelativePath=".\res\toolbar20.bmp">
@@ -250,6 +256,9 @@
 			</File>
 			<File
 				RelativePath=".\windows\AppearancePage.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\CommandDlg.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\DirectoryListingFrm.cpp">
@@ -337,6 +346,9 @@
 			</File>
 			<File
 				RelativePath="windows\TreePropertySheet.cpp">
+			</File>
+			<File
+				RelativePath=".\windows\UCPage.cpp">
 			</File>
 			<File
 				RelativePath=".\windows\UploadPage.cpp">
@@ -460,6 +472,12 @@
 				RelativePath="windows\TreePropertySheet.h">
 			</File>
 			<File
+				RelativePath=".\windows\UCHandler.h">
+			</File>
+			<File
+				RelativePath=".\windows\UCPage.h">
+			</File>
+			<File
 				RelativePath=".\windows\UploadPage.h">
 			</File>
 			<File
@@ -471,5 +489,8 @@
 		</Filter>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="DCPlusPlus.rc"/>
 	</Globals>
 </VisualStudioProject>

@@ -42,6 +42,10 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_SEPARATOR, onType)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_RAW, onType)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_CHAT, onType)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_PM, onType)
 	END_MSG_MAP()
 
 	CommandDlg() { };
@@ -79,6 +83,8 @@ Example: +ban %[nick] %[line:Time] %[line:Reason]");
 		return FALSE;
 	}
 
+	LRESULT onType(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		if(wID == IDOK) {
@@ -112,5 +118,5 @@ Example: +ban %[nick] %[line:Time] %[line:Reason]");
 
 /**
  * @file
- * $Id: CommandDlg.h,v 1.3 2003/05/28 11:53:05 arnetheduck Exp $
+ * $Id: CommandDlg.h,v 1.4 2003/10/21 17:10:41 arnetheduck Exp $
  */

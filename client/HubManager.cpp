@@ -137,6 +137,17 @@ void HubManager::save() {
 }
 
 void HubManager::load() {
+	
+	// Add standard op commands
+	static const char kickstr[] = 
+		"$To: %[nick] From: %[mynick] $<%[mynick]> You are being kicked because: %[line:Reason]|<%[mynick]> %[mynick] is kicking %[nick] because: %[line:Reason]|$Kick %[nick]|";
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB | UserCommand::FLAG_NOSAVE, 
+		STRING(KICK_USER), kickstr, "op");
+	static const char redirstr[] =
+		"$OpForceMove $Who:%[nick]$Where:%[line:Target Server]$Msg:%[line:Message]|";
+	addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_HUB | UserCommand::FLAG_NOSAVE, 
+		STRING(REDIRECT_USER), redirstr, "op");
+
 	try {
 		SimpleXML xml(8);
 		xml.fromXML(File(Util::getAppPath() + FAVORITES_FILE, File::READ, File::OPEN).read());
@@ -185,7 +196,7 @@ void HubManager::load(SimpleXML* aXml) {
 					name, "<%[mynick]> " + command + "|", hub);
 			} else {
 				addUserCommand(UserCommand::TYPE_RAW, UserCommand::CONTEXT_CHAT | UserCommand::CONTEXT_SEARCH,
-					name, "$To: %[nick] From: %[mynick] $" + command + "|", hub);
+					name, "$To: " + nick + " From: %[mynick] $" + command + "|", hub);
 			}
 		}
 		aXml->stepOut();
@@ -265,6 +276,23 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 		dcassert(0);
 	}
 }
+
+UserCommand::List HubManager::getUserCommands(int ctx, const string& hub, bool op) {
+	UserCommand::List lst;
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		UserCommand& uc = *i;
+		if(uc.getFlags() & ctx) {
+			if( (uc.getHub().empty()) || 
+				(op && uc.getHub() == "op") || 
+				(Util::stricmp(hub, uc.getHub()) == 0) )
+			{
+				lst.push_back(*i);
+			}
+		}
+	}
+	return lst;
+}
+
 void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) throw() {
 	switch(type) {
 	case HttpConnectionListener::COMPLETE:
@@ -304,5 +332,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.32 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.33 2003/10/21 17:10:40 arnetheduck Exp $
  */

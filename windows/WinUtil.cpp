@@ -46,9 +46,6 @@ CImageList WinUtil::fileImages;
 CImageList WinUtil::userImages;
 int WinUtil::dirIconIndex = 0;
 StringList WinUtil::lastDirs;
-string WinUtil::lastKick;
-string WinUtil::lastRedirect;
-string WinUtil::lastServer;
 HWND WinUtil::mainWnd = NULL;
 HWND WinUtil::mdiClient = NULL;
 FlatTabCtrl* WinUtil::tabCtrl = NULL;
@@ -157,7 +154,7 @@ void WinUtil::init(HWND hWnd) {
 	lf.lfWeight = FW_BOLD;
 	boldFont = ::CreateFontIndirect(&lf);
 	systemFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
-	monoFont = (HFONT)::CreateFontIndirect(&lf2);
+	monoFont = (HFONT)::GetStockObject(BOOLSETTING(USE_OEM_MONOFONT)?OEM_FIXED_FONT:ANSI_FIXED_FONT);
 }
 
 void WinUtil::uninit() {
@@ -274,6 +271,7 @@ void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1
 
 bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) throw() {
 	string::size_type i = 0;
+	StringMap done;
 
 	while( (i = uc.getCommand().find("%[line:", i)) != string::npos) {
 		i += 7;
@@ -282,14 +280,17 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 			break;
 
 		string name = uc.getCommand().substr(i, j-i);
-		LineDlg dlg;
-		dlg.title = uc.getName();
-		dlg.description = name;
-		dlg.line = sm["line:" + name];
-		if(dlg.DoModal(parent) == IDOK) {
-			sm["line:" + name] = dlg.line;
-		} else {
-			return false;
+		if(done.find(name) == done.end()) {
+			LineDlg dlg;
+			dlg.title = uc.getName();
+			dlg.description = name;
+			dlg.line = sm["line:" + name];
+			if(dlg.DoModal(parent) == IDOK) {
+				sm["line:" + name] = dlg.line;
+				done[name] = dlg.line;
+			} else {
+				return false;
+			}
 		}
 		i = j + 1;
 	}
@@ -419,5 +420,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.22 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.23 2003/10/21 17:10:41 arnetheduck Exp $
  */

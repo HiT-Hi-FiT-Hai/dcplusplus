@@ -30,6 +30,7 @@
 #include "../client/UploadManager.h"
 #include "../client/ShareManager.h"
 #include "../client/HubManager.h"
+#include "../client/QueueManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -51,6 +52,12 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlMessage.SetFont(WinUtil::font);
+
+	tabMenu.CreatePopupMenu();
+	tabMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
+	tabMenu.AppendMenu(MF_STRING, IDC_MATCH_QUEUE, CSTRING(MATCH_QUEUE));
+	tabMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	tabMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 
 	PostMessage(WM_SPEAKER, USER_UPDATED);
 	created = true;
@@ -227,6 +234,46 @@ void PrivateFrame::addLine(const string& aLine) {
 	setDirty();
 }
 
+LRESULT PrivateFrame::onTabContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, user->getClientServer(), user->isClientOp());
+	tabMenu.AppendMenu(MF_SEPARATOR);
+	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CSTRING(CLOSE));
+	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	tabMenu.DeleteMenu(tabMenu.GetMenuItemCount()-1, MF_BYPOSITION);
+	cleanMenu(tabMenu);
+	return TRUE;
+}
+
+LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	try {
+		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
+	} catch(const Exception& e) {
+		addClientLine(e.getError());
+	}
+	return 0;
+}
+
+LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	try {
+		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
+	} catch(const Exception& e) {
+		addClientLine(e.getError());
+	}
+	return 0;
+}
+
+LRESULT PrivateFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	UploadManager::getInstance()->reserveSlot(user);
+	return 0;
+}
+
+LRESULT PrivateFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	HubManager::getInstance()->addFavoriteUser(user);
+	return 0;
+}
+
 void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	RECT rect;
 	GetClientRect(&rect);
@@ -267,7 +314,7 @@ void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& 
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.17 2003/10/08 21:55:11 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.18 2003/10/21 17:10:41 arnetheduck Exp $
  */
 
 
