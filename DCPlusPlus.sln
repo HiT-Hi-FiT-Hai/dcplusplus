@@ -1,0 +1,39 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DCPlusPlus", "DCPlusPlus.vcproj", "{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakeDefs", "MakeDefs\MakeDefs.vcproj", "{DB7806C6-23A7-4124-B299-319C847913F6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bzip2", "bzip2.vcproj", "{8B162F1B-5D6C-41C1-8A80-858B379DE07D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client.vcproj", "{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.0 = {F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.1 = {8B162F1B-5D6C-41C1-8A80-858B379DE07D}
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Debug.ActiveCfg = Debug|Win32
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Debug.Build.0 = Debug|Win32
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Release.ActiveCfg = Release|Win32
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Release.Build.0 = Release|Win32
+		{DB7806C6-23A7-4124-B299-319C847913F6}.Debug.ActiveCfg = Debug|Win32
+		{DB7806C6-23A7-4124-B299-319C847913F6}.Release.ActiveCfg = Release|Win32
+		{8B162F1B-5D6C-41C1-8A80-858B379DE07D}.Debug.ActiveCfg = Debug|Win32
+		{8B162F1B-5D6C-41C1-8A80-858B379DE07D}.Debug.Build.0 = Debug|Win32
+		{8B162F1B-5D6C-41C1-8A80-858B379DE07D}.Release.ActiveCfg = Release|Win32
+		{8B162F1B-5D6C-41C1-8A80-858B379DE07D}.Release.Build.0 = Release|Win32
+		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Debug.ActiveCfg = Debug|Win32
+		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Debug.Build.0 = Debug|Win32
+		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Release.ActiveCfg = Release|Win32
+		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
