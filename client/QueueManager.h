@@ -60,8 +60,8 @@ public:
 	User::Ptr& getUser() { return user; };
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	
-	GETSETREF(string, name, Name);
-	GETSETREF(string, target, Target);
+	GETSET(string, name, Name);
+	GETSET(string, target, Target);
 	GETSET(QueueItem::Priority, priority, Priority);
 private:
 	User::Ptr user;
@@ -138,7 +138,7 @@ public:
 	void saveQueue() throw();
 	
 	GETSET(u_int32_t, lastSave, LastSave);
-	GETSETREF(string, queueFile, QueueFile);
+	GETSET(string, queueFile, QueueFile);
 private:
 
 	/** All queue items by target */
@@ -255,6 +255,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.55 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.56 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

@@ -27,7 +27,7 @@ class ConnectionQueueItem;
 
 class ConnectionManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;
 	typedef X<1> Connected;
@@ -46,5 +46,5 @@ public:
 
 /**
 * @file
-* $Id: ConnectionManagerListener.h,v 1.2 2004/04/18 12:51:13 arnetheduck Exp $
+* $Id: ConnectionManagerListener.h,v 1.3 2004/04/24 09:40:58 arnetheduck Exp $
 */

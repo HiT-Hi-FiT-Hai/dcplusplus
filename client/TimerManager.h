@@ -34,7 +34,7 @@
 
 class TimerManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Second;
 	typedef X<1> Minute;
@@ -90,6 +90,6 @@ private:
 
 /**
  * @file
- * $Id: TimerManager.h,v 1.22 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.23 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

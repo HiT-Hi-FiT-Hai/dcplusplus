@@ -417,7 +417,7 @@ public:
 		while(len > 0) {
 			if(pos == 0 && len >= bufSize) {
 				s->write(b, len);
-				return len;
+				return l2;
 			} else {
 				size_t n = min(bufSize - pos, len);
 				memcpy(buf + pos, b, n);
@@ -454,6 +454,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.33 2004/04/18 20:38:30 arnetheduck Exp $
+ * $Id: File.h,v 1.34 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

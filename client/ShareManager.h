@@ -122,7 +122,7 @@ private:
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
 
-			GETSETREF(string, name, Name);
+			GETSET(string, name, Name);
 			GETSET(int64_t, size, Size);
 			GETSET(Directory*, parent, Parent);
 			GETSET(TTHValue*, tth, TTH);
@@ -197,7 +197,7 @@ private:
 		
 		void toString(string& tmp, OutputStream* xmlFile, string& indent);
 		
-		GETSETREF(string, name, Name);
+		GETSET(string, name, Name);
 		GETSET(Directory*, parent, Parent);
 	private:
 		/** Set of flags that say which SearchManager::TYPE_* a directory contains */
@@ -279,6 +279,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.47 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.48 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

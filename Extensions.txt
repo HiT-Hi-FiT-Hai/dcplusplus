@@ -160,6 +160,17 @@ mainly for debugging and informative purposes.
 
 --------------------------------------------------------------------
 
+Feature: ADCGet
+
+Usage: 
+
+"$adcGET <type> <filename> <startpos> <bytes> <flag0>...<flagN>"
+A complete replacement for all binary data transfers using an ADC-like syntax.
+
+
+
+--------------------------------------------------------------------
+
 
 *** Client-Hub communication ***
 

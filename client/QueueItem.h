@@ -110,7 +110,7 @@ public:
 		void setUser(const User::Ptr& aUser) { user = aUser; };
 		string getFileName() { return Util::getFileName(path); };
 
-		GETSETREF(string, path, Path);
+		GETSET(string, path, Path);
 	private:
 		User::Ptr user;
 	};
@@ -196,9 +196,9 @@ public:
 		}
 	}
 
-	GETSETREF(string, target, Target);
-	GETSETREF(string, tempTarget, TempTarget);
-	GETSETREF(string, searchString, SearchString);
+	GETSET(string, target, Target);
+	GETSET(string, tempTarget, TempTarget);
+	GETSET(string, searchString, SearchString);
 	GETSET(int64_t, size, Size);
 	GETSET(int64_t, downloadedBytes, DownloadedBytes);
 	GETSET(Status, status, Status);
@@ -258,5 +258,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.7 2004/02/23 17:42:17 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.8 2004/04/24 09:40:58 arnetheduck Exp $
 */

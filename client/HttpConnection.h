@@ -29,7 +29,7 @@ class HttpConnection;
 
 class HttpConnectionListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Data;
 	typedef X<1> Failed;
@@ -89,6 +89,6 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.18 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.19 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

@@ -233,8 +233,8 @@ private:
 
 		void update() { shared = Util::formatBytes(user->getBytesShared()); op = user->isSet(User::OP); }
 
-		GETSETREF(string, shared, Shared);
-		GETSETREF(bool, op, Op);
+		GETSET(string, shared, Shared);
+		GETSET(bool, op, Op);
 	};
 
 	class PMInfo {
@@ -401,6 +401,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.43 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.44 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

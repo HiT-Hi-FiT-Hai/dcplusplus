@@ -318,14 +318,14 @@ private:
 				setTTH(sr->getTTH()->toBase32());
 		}
 
-		GETSETREF(string, fileName, FileName);
-		GETSETREF(string, path, Path);
-		GETSETREF(string, type, Type);
-		GETSETREF(string, size, Size);
-		GETSETREF(string, slots, Slots);
-		GETSETREF(string, exactSize, ExactSize);
-		GETSETREF(string, ip, IP);
-		GETSETREF(string, tth, TTH);
+		GETSET(string, fileName, FileName);
+		GETSET(string, path, Path);
+		GETSET(string, type, Type);
+		GETSET(string, size, Size);
+		GETSET(string, slots, Slots);
+		GETSET(string, exactSize, ExactSize);
+		GETSET(string, ip, IP);
+		GETSET(string, tth, TTH);
 	};
 
 	struct HubInfo : public FastAlloc<HubInfo> {
@@ -444,6 +444,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.37 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.38 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

@@ -27,7 +27,7 @@ class QueueItem;
 
 class QueueManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Added;
 	typedef X<1> Finished;
@@ -50,5 +50,5 @@ public:
 
 /**
  * @file
- * $Id: QueueManagerListener.h,v 1.5 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: QueueManagerListener.h,v 1.6 2004/04/24 09:40:58 arnetheduck Exp $
  */

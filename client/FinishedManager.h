@@ -61,7 +61,7 @@ private:
 
 class FinishedManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> AddedUl;
 	typedef X<1> AddedDl;
@@ -139,5 +139,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.11 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.12 2004/04/24 09:40:58 arnetheduck Exp $
  */

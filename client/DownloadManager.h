@@ -71,9 +71,9 @@ public:
 	}
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
-	GETSETREF(string, source, Source);
-	GETSETREF(string, target, Target);
-	GETSETREF(string, tempTarget, TempTarget);
+	GETSET(string, source, Source);
+	GETSET(string, target, Target);
+	GETSET(string, tempTarget, TempTarget);
 	GETSET(OutputStream*, file, File);
 	GETSET(CrcOS*, crcCalc, CrcCalc);
 	int64_t bytesLeft;
@@ -86,7 +86,7 @@ private:
 
 class DownloadManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Complete;
 	typedef X<1> Failed;
@@ -194,5 +194,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.58 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.59 2004/04/24 09:40:58 arnetheduck Exp $
  */

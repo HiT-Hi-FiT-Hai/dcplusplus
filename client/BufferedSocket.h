@@ -33,7 +33,7 @@ class InputStream;
 
 class BufferedSocketListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
@@ -81,6 +81,7 @@ public:
 	};
 
 	static void putSocket(BufferedSocket* aSock) { 
+		aSock->removeListeners(); 
 		aSock->Socket::disconnect();
 		Lock l(aSock->cs);
 		aSock->addTask(SHUTDOWN); 
@@ -140,29 +141,7 @@ public:
 
 	GETSET(char, separator, Separator);
 private:
-	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
-		
-		inbuf = new u_int8_t[inbufSize];
-		
-		// MSVC: Non-standard scope for i
-		{
-			for(int i = 0; i < BUFFERS; i++) {
-				outbuf[i] = new u_int8_t[inbufSize];
-				outbufPos[i] = 0;
-				outbufSize[i] = inbufSize;
-			}
-		}
-		try {
-			start();
-		} catch(const ThreadException& e) {
-			delete[] inbuf;
-			for(int i = 0; i < BUFFERS; i++) {
-				delete[] outbuf[i];
-			}
-			throw SocketException(e.getError());
-		}
-	};
+	BufferedSocket(char aSeparator = 0x0a) throw(SocketException);
 
 	// Dummy...
 	BufferedSocket(const BufferedSocket&);
@@ -227,5 +206,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.57 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.58 2004/04/24 09:40:58 arnetheduck Exp $
  */

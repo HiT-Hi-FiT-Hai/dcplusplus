@@ -345,15 +345,15 @@ void HubManager::on(Data, HttpConnection*, u_int8_t* buf, size_t len) throw() {
 }
 
 void HubManager::on(Failed, HttpConnection* c, const string& aLine) throw() { 
+	c->removeListener(this);
 	lastServer++;
 	running = false;
-	c->removeListener(this);
 	fire(HubManagerListener::DownloadFailed(), aLine);
 }
 void HubManager::on(Complete, HttpConnection* c, const string& aLine) throw() {
+	c->removeListener(this);
 	onHttpFinished();
 	running = false;
-	c->removeListener(this);
 	fire(HubManagerListener::DownloadFinished(), aLine);
 }
 void HubManager::on(Redirected, HttpConnection*, const string& aLine) throw() { 
@@ -368,5 +368,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.48 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.49 2004/04/24 09:40:58 arnetheduck Exp $
  */

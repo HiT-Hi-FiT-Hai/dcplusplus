@@ -22,6 +22,7 @@
 #include "UserConnection.h"
 
 #include "StringTokenizer.h"
+#include "AdcCommand.h"
 
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
@@ -48,7 +49,6 @@ void Transfer::updateRunningAverage() {
 	}
 	lastTick = tick;
 }
-
 
 void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw () {
 
@@ -145,6 +145,8 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 		if(!param.empty()) {
 			fire(UserConnectionListener::Supports(), this, StringTokenizer(param, ' ').getTokens());
 		}
+	} else if(cmd.compare(0, 4, "$ADC") == 0) {
+		dispatch(cmd, true);
 	} else {
 		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
 	}
@@ -157,5 +159,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.39 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.40 2004/04/24 09:40:58 arnetheduck Exp $
  */

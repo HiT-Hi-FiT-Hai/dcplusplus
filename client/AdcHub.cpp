@@ -23,14 +23,27 @@
 #include "ClientManager.h"
 #include "ShareManager.h"
 #include "StringTokenizer.h"
+#include "AdcCommand.h"
 
-void Command::parse(const string& aLine) {
-	if(aLine.length() < 4)
-		return;
-	type = aLine[0];
-	memcpy(cmd, &aLine[1], 3);
-
+void Command::parse(const string& aLine, bool nmdc /* = false */) {
 	string::size_type i = 5;
+
+	if(nmdc) {
+
+		// "$ADCxxx ..."
+		if(aLine.length() < 7)
+			return;
+		type = Command::TYPE_CLIENT;
+		memcpy(cmd, &aLine[4], 3);
+		i += 3;
+	} else {
+		// "yxxx ..."
+		if(aLine.length() < 4)
+			return;
+		type = aLine[0];
+		memcpy(cmd, &aLine[1], 3);
+	}
+
 	string::size_type k = i;
 
 	while(k < aLine.length() && i < aLine.length()) {
@@ -58,7 +71,7 @@ void Command::parse(const string& aLine) {
 AdcHub::AdcHub(const string& aHubURL) : Client(aHubURL, '\n') {
 }
 
-void AdcHub::handle(Command& c, Command::INF) {
+void AdcHub::handle(Command::INF, Command& c) throw() {
 	if(c.getParameters().empty())
 		return;
 	User::Ptr u = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), this, true);
@@ -134,7 +147,7 @@ void AdcHub::handle(Command& c, Command::INF) {
 	fire(ClientListener::UserUpdated(), this, u);
 }
 
-void AdcHub::handle(Command& c, Command::SUP) {
+void AdcHub::handle(Command::SUP, Command& c) throw() {
 	if(find(c.getParameters().begin(), c.getParameters().end(), "+BASE") == c.getParameters().end()) {
 		disconnect();
 		return;
@@ -142,7 +155,7 @@ void AdcHub::handle(Command& c, Command::SUP) {
 	info();
 }
 
-void AdcHub::handle(Command& c, Command::MSG) {
+void AdcHub::handle(Command::MSG, Command& c) throw() {
 	if(c.getParameters().size() < 2)
 		return;
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
@@ -152,7 +165,7 @@ void AdcHub::handle(Command& c, Command::MSG) {
 	fire(ClientListener::Message(), this, msg);
 }
 
-void AdcHub::handle(Command& c, Command::GPA) {
+void AdcHub::handle(Command::GPA, Command& c) throw() {
 	if(c.getParameters().size() < 1)
 		return;
 	salt = c.getParameters()[0];
@@ -160,7 +173,7 @@ void AdcHub::handle(Command& c, Command::GPA) {
 	fire(ClientListener::GetPassword(), this);
 }
 
-void AdcHub::handle(Command& c, Command::QUI) {
+void AdcHub::handle(Command::QUI, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(CID(c.getParameters()[0]), false);
 	if(!p)
 		return;
@@ -274,5 +287,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.5 2004/04/18 13:44:47 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.6 2004/04/24 09:40:58 arnetheduck Exp $
  */

@@ -293,9 +293,9 @@ private:
 			return false;
 		}
 		
-		GETSETREF(string, target, Target);
-		GETSETREF(string, searchString, SearchString);
-		GETSETREF(string, path, Path);
+		GETSET(string, target, Target);
+		GETSET(string, searchString, SearchString);
+		GETSET(string, path, Path);
 		GETSET(int64_t, size, Size);
 		GETSET(int64_t, downloadedBytes, DownloadedBytes);
 		GETSET(u_int32_t, added, Added);
@@ -448,5 +448,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.38 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.39 2004/04/24 09:40:58 arnetheduck Exp $
  */

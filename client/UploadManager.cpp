@@ -55,11 +55,9 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		return false;
 	}
 	
-	Upload* u;
 	dcassert(aFile.size() > 0);
 	
 	bool userlist = false;
-	bool smallfile = false;
 
 	string file;
 	try {
@@ -83,9 +81,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		return false;
 	}
 
-	if( sz < (int64_t)(32 * 1024) ) {
-		smallfile = true;
-	}
+	bool smallfile = (sz < (int64_t)(32 * 1024) );
 
 	cs.enter();
 	SlotIter ui = reservedSlots.find(aSource->getUser());
@@ -102,7 +98,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 				!(aSource->getUser()->isSet(User::DCPLUSPLUS) || aSource->isSet(UserConnection::FLAG_SUPPORTS_MINISLOTS)) 
 				) 
 			{
-
 				cs.leave();
 				aSource->maxedOut();
 				removeConnection(aSource);
@@ -135,7 +130,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 		}
 	}
 	
-	u = new Upload();
+	Upload* u = new Upload();
 	u->setUserConnection(aSource);
 	u->setFile(f);
 	u->setSize(f->getSize());
@@ -144,7 +139,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	u->setFileName(aFile);
 	u->setLocalFileName(file);
 
-	if(aBytes != -1 && aResume + aBytes < f->getSize()) {
+	if(aBytes != -1 && (aResume + aBytes) < f->getSize()) {
 		u->setFile(new LimitedInputStream<true>(u->getFile(), aBytes));
 	}
 
@@ -181,7 +176,6 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	
 	cs.leave();
 	return true;
-
 }
 
 void UploadManager::on(UserConnectionListener::Get, UserConnection* aSource, const string& aFile, int64_t aResume) {
@@ -314,7 +308,13 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
 }
 
+void UploadManager::on(Command::STA, UserConnection* conn, const Command& c) throw() {
 
+}
+
+void UploadManager::on(Command::GET, UserConnection* conn, const Command& c) throw() {
+	
+}
 // TimerManagerListener
 void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 	Lock l(cs);
@@ -351,5 +351,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.56 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.57 2004/04/24 09:40:58 arnetheduck Exp $
  */

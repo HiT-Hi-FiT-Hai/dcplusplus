@@ -30,7 +30,7 @@
 
 class LogManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Message;
 	virtual void on(Message, const string&) throw() { };
@@ -77,5 +77,5 @@ private:
 
 /**
  * @file
- * $Id: LogManager.h,v 1.10 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.11 2004/04/24 09:40:58 arnetheduck Exp $
  */

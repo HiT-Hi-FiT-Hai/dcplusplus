@@ -271,25 +271,34 @@ string Util::getLocalIp() {
 	// We take the first ip as default, but if we can find a better one, use it instead...
 	memcpy(&(dest.sin_addr), he->h_addr_list[i++], he->h_length);
 	tmp = inet_ntoa(dest.sin_addr);
-	if( strncmp(tmp.c_str(), "192", 3) == 0 || 
-		strncmp(tmp.c_str(), "169", 3) == 0 || 
-		strncmp(tmp.c_str(), "127", 3) == 0 || 
-		strncmp(tmp.c_str(), "10.", 3) == 0 ) {
-		
+	if(Util::isPrivateIp(tmp) || strncmp(tmp.c_str(), "169", 3) == 0) {
 		while(he->h_addr_list[i]) {
 			memcpy(&(dest.sin_addr), he->h_addr_list[i], he->h_length);
 			string tmp2 = inet_ntoa(dest.sin_addr);
-			if(	strncmp(tmp2.c_str(), "192", 3) != 0 &&
-				strncmp(tmp2.c_str(), "169", 3) != 0 &&
-				strncmp(tmp2.c_str(), "127", 3) != 0 &&
-				strncmp(tmp2.c_str(), "10.", 3) != 0) {
-				
+			if(!Util::isPrivateIp(tmp2) && strncmp(tmp2.c_str(), "169", 3) != 0) {
 				tmp = tmp2;
 			}
 			i++;
 		}
 	}
 	return tmp;
+}
+
+bool Util::isPrivateIp(string const& ip) {
+#ifdef _WIN32
+	unsigned long in = inet_addr(ip.c_str());
+	unsigned char* p = (unsigned char*)&in;
+	if( p[0] == 10 ||
+		p[0] == 127 ||
+		(p[0] == 172 && (p[1] >= 16 && p[1] < 32)) ||
+		(p[0] == 192 && p[1] == 168)
+	) {
+		return true;
+	}
+	return false;
+#else
+# error fixme
+#endif
 }
 
 static void cToUtf8(wchar_t c, string& str) {
@@ -609,6 +618,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.48 2004/04/04 12:11:51 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.49 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

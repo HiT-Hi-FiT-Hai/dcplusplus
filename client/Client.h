@@ -32,7 +32,7 @@ class Client;
 class ClientListener  
 {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
@@ -126,8 +126,8 @@ public:
 	const string& getDescription() const { return description.empty() ? SETTING(DESCRIPTION) : description; };
 	void setDescription(const string& aDesc) { description = aDesc; };
 
-	GETSETREF(string, nick, Nick);
-	GETSETREF(string, defpassword, Password);
+	GETSET(string, nick, Nick);
+	GETSET(string, defpassword, Password);
 	GETSET(bool, registered, Registered);
 protected:
 	struct Counts {
@@ -172,5 +172,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.79 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: Client.h,v 1.80 2004/04/24 09:40:58 arnetheduck Exp $
  */

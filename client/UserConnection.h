@@ -29,12 +29,13 @@
 #include "CriticalSection.h"
 #include "File.h"
 #include "User.h"
+#include "AdcCommand.h"
 
 class UserConnection;
 
 class UserConnectionListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> BytesSent;
 	typedef X<1> Connected;
@@ -56,6 +57,9 @@ public:
 	typedef X<17> TransmitDone;
 	typedef X<18> Supports;
 	typedef X<19> FileNotAvailable;
+	typedef X<20> ADCGet;
+	typedef X<21> ADCSnd;
+	typedef X<22> ADCSta;
 
 	virtual void on(BytesSent, UserConnection*, size_t, size_t) throw() { }
 	virtual void on(Connected, UserConnection*) throw() { }
@@ -77,6 +81,9 @@ public:
 	virtual void on(TransmitDone, UserConnection*) throw() { }
 	virtual void on(Supports, UserConnection*, const StringList&) throw() { }
 	virtual void on(FileNotAvailable, UserConnection*) throw() { }
+	virtual void on(Command::GET, UserConnection*, const Command&) throw() { }
+	virtual void on(Command::SND, UserConnection*, const Command&) throw() { }
+	virtual void on(Command::STA, UserConnection*, const Command&) throw() { }
 };
 
 class ConnectionQueueItem;
@@ -136,7 +143,8 @@ class ServerSocket;
 class Upload;
 class Download;
 
-class UserConnection : public Speaker<UserConnectionListener>, private BufferedSocketListener, public Flags
+class UserConnection : public Speaker<UserConnectionListener>, 
+	private BufferedSocketListener, public Flags, private CommandHandler<UserConnection>
 {
 public:
 	friend class ConnectionManager;
@@ -162,6 +170,7 @@ public:
 		FLAG_SUPPORTS_MINISLOTS = FLAG_SUPPORTS_GETZBLOCK << 1,
 		FLAG_SUPPORTS_GETTESTZBLOCK = FLAG_SUPPORTS_MINISLOTS << 1,
 		FLAG_SUPPORTS_XML_BZLIST = FLAG_SUPPORTS_GETTESTZBLOCK << 1,
+		FLAG_SUPPORTS_XGET = FLAG_SUPPORTS_XML_BZLIST << 1,
 	};
 	
 	enum States {
@@ -195,6 +204,10 @@ public:
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
+
+	void send(const Command& c) {
+		send(c.toString(true));
+	}
 	void supports(const StringList& feat) { 
 		string x;
 		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
@@ -231,10 +244,22 @@ public:
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
 	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
 
+	void handle(Command::GET t, const Command& c) {
+		fire(t, this, c);
+	}
+	void handle(Command::SND t, const Command& c) {
+		fire(t, this, c);
+	}
+	void handle(Command::STA t, const Command& c) {
+		fire(t, this, c);
+	}
+	template<typename T>
+	void handle(T , Command& ) {
+	}
 	GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
-	GETSETREF(string, nick, Nick);
+	GETSET(string, nick, Nick);
 	
 private:
 	BufferedSocket* socket;
@@ -275,11 +300,23 @@ private:
 		socket->write(aString);
 	}
 
-	virtual void on(Connected) throw() { fire(UserConnectionListener::Connected(), this); }
+	virtual void on(Connected) throw() {
+        lastActivity = GET_TICK();
+        fire(UserConnectionListener::Connected(), this); 
+    }
 	virtual void on(Line, const string&) throw();
-	virtual void on(Data, u_int8_t* data, size_t len) throw() { lastActivity = GET_TICK(); fire(UserConnectionListener::Data(), this, data, len); }
-	virtual void on(BytesSent, size_t bytes, size_t actual) throw() { fire(UserConnectionListener::BytesSent(), this, bytes, actual); }
-	virtual void on(ModeChange) throw() { lastActivity = GET_TICK(); fire(UserConnectionListener::ModeChange(), this); }
+	virtual void on(Data, u_int8_t* data, size_t len) throw() { 
+        lastActivity = GET_TICK(); 
+        fire(UserConnectionListener::Data(), this, data, len); 
+    }
+	virtual void on(BytesSent, size_t bytes, size_t actual) throw() { 
+        lastActivity = GET_TICK();
+        fire(UserConnectionListener::BytesSent(), this, bytes, actual); 
+    }
+	virtual void on(ModeChange) throw() { 
+        lastActivity = GET_TICK(); 
+        fire(UserConnectionListener::ModeChange(), this); 
+    }
 	virtual void on(TransmitDone) throw() { fire(UserConnectionListener::TransmitDone(), this); }
 	virtual void on(Failed, const string&) throw();
 };
@@ -288,6 +325,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.69 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.70 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

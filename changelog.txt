@@ -20,6 +20,9 @@
 * Updated installer to optionally create a backup of the settings when upgrading
 * Changed to a more convenient observer implementation (no, not a functor (or something more fancy) based one)
 * Fixed an invalid XML file list crash
+* Copy address to clipboard from public hub list (thanks joakim tosteberg)
+* Changed to IEC binary multiple units (MiB, KiB etc)
+* GETSETREF templetized (thanks farcry)
 
 
  -- 0.401 2004-03-28 --

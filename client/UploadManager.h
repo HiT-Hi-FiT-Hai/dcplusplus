@@ -48,14 +48,14 @@ public:
 	
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
-	GETSETREF(string, fileName, FileName);
-	GETSETREF(string, localFileName, LocalFileName);
+	GETSET(string, fileName, FileName);
+	GETSET(string, localFileName, LocalFileName);
 	GETSET(InputStream*, file, File);
 };
 
 class UploadManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 	
 	typedef X<0> Complete;
 	typedef X<1> Failed;
@@ -139,6 +139,9 @@ private:
 	virtual void on(GetListLength, UserConnection* conn) throw();
 	virtual void on(TransmitDone, UserConnection*) throw();
 	
+	virtual void on(Command::GET, UserConnection*, const Command&) throw();
+	virtual void on(Command::STA, UserConnection*, const Command&) throw();
+
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
 	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 };
@@ -147,5 +150,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.61 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.62 2004/04/24 09:40:58 arnetheduck Exp $
  */

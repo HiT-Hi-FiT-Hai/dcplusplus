@@ -1,10 +1,11 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by d:\DC - sources + include\DC++ source\Cvs\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
 #define IDC_TRAY_SHOW                   103
+#define IDC_COPY_HUB                    104
 #define IDD_GENERALPAGE                 107
 #define IDR_MAINFRAME                   128
 #define IDR_HUB                         129

@@ -25,7 +25,7 @@
 
 class ClientManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> UserUpdated;
 	typedef X<1> IncomingSearch;
@@ -44,5 +44,5 @@ public:
 
 /**
  * @file
- * $Id: ClientManagerListener.h,v 1.6 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: ClientManagerListener.h,v 1.7 2004/04/24 09:40:58 arnetheduck Exp $
  */

@@ -384,6 +384,7 @@ public:
 		return buf;
 	}
 	static string getLocalIp();
+	static bool isPrivateIp(string const& ip);
 	/**
 	 * Case insensitive substring search.
 	 * @return First position found or string::npos
@@ -548,5 +549,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.82 2004/03/09 12:20:20 arnetheduck Exp $
+ * $Id: Util.h,v 1.83 2004/04/24 09:40:58 arnetheduck Exp $
  */

@@ -27,7 +27,7 @@ class SimpleXML;
 
 class SettingsManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> Load;
 	typedef X<1> Save;
@@ -183,6 +183,6 @@ private:
 
 /**
  * @file
- * $Id: SettingsManager.h,v 1.57 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.58 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

@@ -44,6 +44,7 @@
 		<String Name="ConnectionRefused">Connection refused by target machine</String>
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
+		<String Name="CopyHub">Copy address to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
 		<String Name="CouldNotOpenTargetFile">Could not open target file: </String>
 		<String Name="Count">Count</String>
@@ -104,7 +105,7 @@
 		<String Name="FinishedDownloads">Finished Downloads</String>
 		<String Name="FinishedUploads">Finished Uploads</String>
 		<String Name="ForceAttempt">Force attempt</String>
-		<String Name="Gb">GB</String>
+		<String Name="Gb">GiB</String>
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
@@ -132,8 +133,8 @@
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>
 		<String Name="JoinShowingOn">Join/part showing on</String>
-		<String Name="Kb">kB</String>
-		<String Name="Kbps">kB/s</String>
+		<String Name="Kb">KiB</String>
+		<String Name="Kbps">KiB/s</String>
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastChange">Last change: </String>
@@ -145,7 +146,7 @@
 		<String Name="ManualAddress">Manual connect address</String>
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
-		<String Name="Mb">MB</String>
+		<String Name="Mb">MiB</String>
 		<String Name="MenuFile">&amp;File</String>
 		<String Name="MenuAdlSearch">ADL Search</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>
@@ -391,7 +392,7 @@
 		<String Name="StoredPasswordSent">Stored password sent...</String>
 		<String Name="Tag">Tag</String>
 		<String Name="TargetFilenameTooLong">Target filename too long</String>
-		<String Name="Tb">TB</String>
+		<String Name="Tb">TiB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimeLeft">Time left</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>

@@ -34,7 +34,7 @@ public:
 		FLAG_GRANTSLOT = 1 << 0
 	};
 
-	GETSETREF(string, description, Description);
+	GETSET(string, description, Description);
 	GETSET(u_int32_t, lastSeen, LastSeen);
 
 	FavoriteUser() : lastSeen(0) {}
@@ -45,5 +45,5 @@ public:
 
 /**
  * @file
- * $Id: FavoriteUser.h,v 1.5 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: FavoriteUser.h,v 1.6 2004/04/24 09:40:58 arnetheduck Exp $
  */

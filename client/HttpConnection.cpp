@@ -144,8 +144,8 @@ void HttpConnection::on(BufferedSocketListener::Failed, const string& aLine) {
 }
 
 void HttpConnection::on(BufferedSocketListener::ModeChange) throw() {
-	socket->disconnect();
 	socket->removeListener(this);
+	socket->disconnect();
 	BufferedSocket::putSocket(socket);
 	socket = NULL;
 	fire(HttpConnectionListener::Complete(), this, currentUrl); 
@@ -156,6 +156,6 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.23 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.24 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

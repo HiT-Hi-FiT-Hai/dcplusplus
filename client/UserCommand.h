@@ -66,15 +66,15 @@ public:
 	GETSET(int, id, Id);
 	GETSET(int, type, Type);
 	GETSET(int, ctx, Ctx);
-	GETSETREF(string, name, Name);
-	GETSETREF(string, command, Command);
-	GETSETREF(string, hub, Hub);
+	GETSET(string, name, Name);
+	GETSET(string, command, Command);
+	GETSET(string, hub, Hub);
 };
 
 #endif
 
 /**
  * @file
- * $Id: UserCommand.h,v 1.5 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: UserCommand.h,v 1.6 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

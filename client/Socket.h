@@ -223,7 +223,7 @@ public:
 
 	string getRemoteIp() const;
 
-	GETSETREF(string, ip, Ip);
+	GETSET(string, ip, Ip);
 
 	GETSET(bool, noproxy, Noproxy);
 protected:
@@ -251,6 +251,6 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.51 2004/03/12 08:20:59 arnetheduck Exp $
+ * $Id: Socket.h,v 1.52 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

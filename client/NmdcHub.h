@@ -37,7 +37,7 @@ class NmdcHub;
 class NmdcHubListener  
 {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 	
 	typedef X<0> Connecting;
 	typedef X<1> Connected;
@@ -291,6 +291,6 @@ private:
 
 /**
  * @file
- * $Id: NmdcHub.h,v 1.2 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: NmdcHub.h,v 1.3 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

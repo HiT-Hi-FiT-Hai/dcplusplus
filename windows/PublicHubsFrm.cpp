@@ -22,6 +22,7 @@
 
 #include "PublicHubsFrm.h"
 #include "HubFrame.h"
+#include "WinUtil.h"
 
 #include "../client/Client.h"
 #include "../client/StringTokenizer.h"
@@ -112,6 +113,7 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CSTRING(ADD_TO_FAVORITES));
+	hubsMenu.AppendMenu(MF_STRING, IDC_COPY_HUB, CSTRING(COPY_HUB));
 	hubsMenu.SetMenuDefaultItem(IDC_CONNECT);
 	
 	m_hMenu = WinUtil::mainMenu;
@@ -397,8 +399,18 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return FALSE; 
 }
 
+LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlHubs.GetSelectedCount() == 1) {
+		char buf[256];
+		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+		WinUtil::setClipboard(buf);
+	}
+	return 0;
+}
+
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.20 2004/03/27 11:16:27 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.21 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

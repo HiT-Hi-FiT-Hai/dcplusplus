@@ -253,7 +253,7 @@ public:
 
 	// Settings
 	GETSET(bool, breakOnFirst, BreakOnFirst);		
-	GETSETREF(User::Ptr, user, User);
+	GETSET(User::Ptr, user, User);
 
 	// Search for file match
 	void MatchesFile(DestDirList& destDirVector, DirectoryListing::File *currentFile, string& fullPath);
@@ -294,5 +294,5 @@ public:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.13 2004/03/02 09:30:19 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.14 2004/04/24 09:40:58 arnetheduck Exp $
  */

@@ -520,6 +520,7 @@ void ConnectionManager::on(UserConnectionListener::Failed, UserConnection* aSour
 			}
 		}
 	}
+	putConnection(aSource);
 }
 
 void ConnectionManager::removeConnection(const User::Ptr& aUser, int isDownload) {
@@ -573,5 +574,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.70 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.71 2004/04/24 09:40:58 arnetheduck Exp $
  */

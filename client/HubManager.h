@@ -43,10 +43,10 @@ public:
 	HubEntry(const HubEntry& rhs) throw() : name(rhs.name), server(rhs.server), description(rhs.description), users(rhs.users) { }
 	virtual ~HubEntry() throw() { };
 
-	GETSETREF(string, name, Name);
-	GETSETREF(string, server, Server);
-	GETSETREF(string, description, Description);
-	GETSETREF(string, users, Users);
+	GETSET(string, name, Name);
+	GETSET(string, server, Server);
+	GETSET(string, description, Description);
+	GETSET(string, users, Users);
 };
 
 class FavoriteHubEntry {
@@ -67,11 +67,11 @@ public:
 
 	void setNick(const string& aNick) { nick = aNick; };
 
-	GETSETREF(string, userdescription, UserDescription);
-	GETSETREF(string, name, Name);
-	GETSETREF(string, server, Server);
-	GETSETREF(string, description, Description);
-	GETSETREF(string, password, Password);
+	GETSET(string, userdescription, UserDescription);
+	GETSET(string, name, Name);
+	GETSET(string, server, Server);
+	GETSET(string, description, Description);
+	GETSET(string, password, Password);
 	GETSET(bool, connect, Connect);
 
 	GETSET(u_int16_t, bottom, Bottom);
@@ -86,7 +86,7 @@ private:
 
 class HubManagerListener {
 public:
-	template<int I>	struct X { static const int TYPE = I; };
+	template<int I>	struct X { enum { TYPE = I };  };
 
 	typedef X<0> DownloadStarting;
 	typedef X<1> DownloadFailed;
@@ -292,6 +292,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.51 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.52 2004/04/24 09:40:58 arnetheduck Exp $
  */
 

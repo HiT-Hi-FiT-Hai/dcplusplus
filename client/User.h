@@ -118,15 +118,15 @@ public:
 
 	static void updated(User::Ptr& aUser);
 	
-	GETSETREF(string, connection, Connection);
-	GETSETREF(string, nick, Nick);
-	GETSETREF(string, email, Email);
-	GETSETREF(string, description, Description);
-	GETSETREF(string, tag, Tag);
-	GETSETREF(string, lastHubAddress, LastHubAddress);
-	GETSETREF(string, lastHubName, LastHubName);
-	GETSETREF(string, ip, Ip);
-	GETSETREF(CID, cid, CID);
+	GETSET(string, connection, Connection);
+	GETSET(string, nick, Nick);
+	GETSET(string, email, Email);
+	GETSET(string, description, Description);
+	GETSET(string, tag, Tag);
+	GETSET(string, lastHubAddress, LastHubAddress);
+	GETSET(string, lastHubName, LastHubName);
+	GETSET(string, ip, Ip);
+	GETSET(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
 	mutable RWLock cs;
@@ -142,5 +142,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.41 2004/04/18 13:44:47 arnetheduck Exp $
+ * $Id: User.h,v 1.42 2004/04/24 09:40:58 arnetheduck Exp $
  */

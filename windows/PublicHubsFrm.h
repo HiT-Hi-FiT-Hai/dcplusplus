@@ -64,6 +64,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
 		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
+		COMMAND_ID_HANDLER(IDC_COPY_HUB, onCopyHub);
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
@@ -84,7 +85,8 @@ public:
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	bool checkNick();
@@ -192,5 +194,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.18 2004/04/18 12:51:15 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.19 2004/04/24 09:40:58 arnetheduck Exp $
  */

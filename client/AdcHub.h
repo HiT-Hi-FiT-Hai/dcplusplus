@@ -48,16 +48,15 @@ public:
 	virtual User::NickMap& lockUserList() { return nickMap; };
 	virtual void unlockUserList() { };
 
-	template<typename T> void handle(Command& , T ) { 
+	template<typename T> void handle(T, Command&) { 
 		//Speaker<AdcHubListener>::fire(t, this, c);
 	}
 
-	void handle(Command& c, Command::SUP);
-	void handle(Command& c, Command::MSG);
-	void handle(Command& c, Command::INF);
-	void handle(Command& c, Command::GPA);
-
-	void handle(Command& c, Command::QUI);
+	void handle(Command::SUP, Command& c) throw();
+	void handle(Command::MSG, Command& c) throw();
+	void handle(Command::INF, Command& c) throw();
+	void handle(Command::GPA, Command& c) throw();
+	void handle(Command::QUI, Command& c) throw();
 
 private:
 	friend class ClientManager;
@@ -84,5 +83,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.4 2004/04/18 12:51:13 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.5 2004/04/24 09:40:58 arnetheduck Exp $
  */
