@@ -22,6 +22,7 @@
 #include "../client/File.h"
 #include "../client/QueueManager.h"
 #include "../client/StringTokenizer.h"
+#include "../client/ADLSearch.h"
 
 #include "Resource.h"
 
@@ -51,7 +52,8 @@ DirectoryListingFrame::DirectoryListingFrame(const tstring& aFile, const User::P
 
 	dl = new DirectoryListing(aUser);
 	try {
-		dl->loadFile(Text::fromT(aFile), true);
+		dl->loadFile(Text::fromT(aFile));
+		ADLSearchManager::getInstance()->matchListing(dl);
 	} catch(const Exception& e) {
 		error = Text::toT(aUser->getFullNick() + ": " + e.getError());
 	}
@@ -944,5 +946,5 @@ void DirectoryListingFrame::runUserCommand(UserCommand& uc) {
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.47 2004/12/18 14:49:14 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.48 2005/01/04 14:16:10 arnetheduck Exp $
  */

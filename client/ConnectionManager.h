@@ -65,11 +65,11 @@ class ConnectionManager : public Speaker<ConnectionManagerListener>,
 	public Singleton<ConnectionManager>
 {
 public:
-	void connect(const string& aServer, short aPort, const string& aNick);
-	void connect(const string& aServer, short aPort, const CID& cid, const string& aToken);
+	void nmdcConnect(const string& aServer, short aPort, const string& aNick);
+	void adcConnect(const string& aServer, short aPort, const string& aToken);
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false, bool ntd = false);
-	void putUploadConnection(UserConnection* aSource);
+	void putUploadConnection(UserConnection* aSource, bool ntd);
 	
 	void removeConnection(const User::Ptr& aUser, int isDownload);
 	void shutdown();	
@@ -161,5 +161,5 @@ private:
 
 /**
  * @file
- * $Id: ConnectionManager.h,v 1.61 2005/01/03 20:23:33 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.62 2005/01/04 14:16:05 arnetheduck Exp $
  */

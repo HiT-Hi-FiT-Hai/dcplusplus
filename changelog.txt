@@ -1,4 +1,4 @@
-﻿-- 0.669 --
+﻿-- 0.669  --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)
@@ -28,6 +28,9 @@
 * Fixed a queue count issue on removal (thanks ullner)
 * Fixed a queue move issue (thanks paka)
 * Fixed upload auto-slot granting (thanks naga)
+* Redid adl search to accomodate for partial list browsing (thanks garg)
+* Added initial ADC file transfers support
+* ADC hub connectivity improved
 
 
 -- 0.668 2004-11-30 --

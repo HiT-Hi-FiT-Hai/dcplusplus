@@ -329,7 +329,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			return;
 		}
 		string port = param.substr(j+1);
-		ConnectionManager::getInstance()->connect(server, (short)Util::toInt(port), getNick()); 
+		ConnectionManager::getInstance()->nmdcConnect(server, (short)Util::toInt(port), getNick()); 
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::ConnectToMe(), this, server, (short)Util::toInt(port));
 	} else if(cmd == "$RevConnectToMe") {
 		if(state != STATE_CONNECTED) {
@@ -714,6 +714,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.25 2004/11/26 13:48:54 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.26 2005/01/04 14:16:06 arnetheduck Exp $
  */
 

@@ -265,7 +265,7 @@ void UploadManager::on(UserConnectionListener::Failed, UserConnection* aSource, 
 		removeUpload(u);
 	}
 
-	removeConnection(aSource);
+	removeConnection(aSource, false);
 }
 
 void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSource) throw() {
@@ -301,7 +301,7 @@ void UploadManager::on(UserConnectionListener::TransmitDone, UserConnection* aSo
 	removeUpload(u);
 }
 
-void UploadManager::removeConnection(UserConnection::Ptr aConn) {
+void UploadManager::removeConnection(UserConnection::Ptr aConn, bool ntd) {
 	dcassert(aConn->getUpload() == NULL);
 	aConn->removeListener(this);
 	if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
@@ -312,7 +312,7 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 		extra--;
 		aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
-	ConnectionManager::getInstance()->putUploadConnection(aConn);
+	ConnectionManager::getInstance()->putUploadConnection(aConn, ntd);
 }
 
 void UploadManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
@@ -330,9 +330,9 @@ void UploadManager::on(GetListLength, UserConnection* conn) throw() {
 	conn->listLen(ShareManager::getInstance()->getListLenString()); 
 }
 
-//void UploadManager::on(Command::STA, UserConnection* conn, const Command& c) throw() {
+void UploadManager::on(Command::NTD, UserConnection* conn, const Command& c) throw() {
 
-//}
+}
 
 void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) throw() {
 	int64_t aBytes = Util::toInt64(c.getParam(3));
@@ -368,6 +368,11 @@ void UploadManager::on(Command::GET, UserConnection* aSource, const Command& c) 
 		aSource->transmitFile(u->getFile());
 		fire(UploadManagerListener::Starting(), u);
 	}
+}
+
+/** @todo fixme */
+void UploadManager::on(Command::GFI, UserConnection* aSource, const Command& c) throw() {
+
 }
 
 // TimerManagerListener
@@ -406,5 +411,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.80 2005/01/03 20:23:34 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.81 2005/01/04 14:16:06 arnetheduck Exp $
  */

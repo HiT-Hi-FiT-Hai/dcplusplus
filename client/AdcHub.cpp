@@ -151,9 +151,7 @@ void AdcHub::handle(Command::GPA, Command& c) throw() {
 }
 
 void AdcHub::handle(Command::QUI, Command& c) throw() {
-	if(c.getFrom().isZero())
-		return;
-	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
+	User::Ptr p = ClientManager::getInstance()->getUser(c.getParam(0), false);
 	if(!p)
 		return;
 	ClientManager::getInstance()->putUserOffline(p);
@@ -179,7 +177,7 @@ void AdcHub::handle(Command::CTM, Command& c) throw() {
 	}
 	string token;
 	c.getParam("TO", 2, token);
-	ConnectionManager::getInstance()->connect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), getMe()->getCID(), token);
+	ConnectionManager::getInstance()->adcConnect(p->getIp(), (short)Util::toInt(c.getParameters()[1]), token);
 }
 
 void AdcHub::handle(Command::RCM, Command& c) throw() {
@@ -260,7 +258,7 @@ void AdcHub::password(const string& pwd) {
 		u_int8_t buf[SALT_SIZE];
 		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
 		TigerHash th;
-		th.update(getMe()->getCID().getData(), CID::SIZE);
+		th.update(SETTING(CLIENT_ID).c_str(), SETTING(CLIENT_ID).length());
 		th.update(pwd.data(), pwd.length());
 		th.update(buf, SALT_SIZE);
 		send(Command(Command::PAS(), Command::TYPE_HUB).addParam(Encoder::toBase32(th.finalize(), TigerHash::HASH_SIZE)));
@@ -346,5 +344,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.31 2005/01/03 20:23:35 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.32 2005/01/04 14:16:06 arnetheduck Exp $
  */

@@ -245,7 +245,7 @@ public:
 	}
 	void inf(bool withToken) { 
 		Command c = Command(Command::INF());
-		c.addParam("CI", getCID().toBase32());
+		c.addParam("CI", SETTING(CLIENT_ID));
 		if(withToken) {
 			c.addParam("TO", getToken());
 		}
@@ -320,7 +320,6 @@ public:
 
 	GETSET(string, nick, Nick);
 	GETSET(string, token, Token);
-	GETSET(CID, cid, CID);
 	GETSET(ConnectionQueueItem*, cqi, CQI);
 	GETSET(States, state, State);
 	GETSET(u_int32_t, lastActivity, LastActivity);
@@ -390,6 +389,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.85 2005/01/03 20:23:33 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.86 2005/01/04 14:16:05 arnetheduck Exp $
  */
 

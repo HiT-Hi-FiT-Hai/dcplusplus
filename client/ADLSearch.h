@@ -264,6 +264,12 @@ public:
 	GETSET(bool, breakOnFirst, BreakOnFirst);		
 	GETSET(User::Ptr, user, User);
 
+	// @remarks Used to add ADLSearch directories to an existing DirectoryListing
+	void matchListing(DirectoryListing* /*aDirList*/) throw();
+
+private:
+	// @internal
+	void matchRecurse(DestDirList& /*aDestList*/, DirectoryListing::Directory* /*aDir*/, string& /*aPath*/);
 	// Search for file match
 	void MatchesFile(DestDirList& destDirVector, DirectoryListing::File *currentFile, string& fullPath);
 	// Search for directory match
@@ -303,5 +309,5 @@ public:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.18 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.19 2005/01/04 14:16:06 arnetheduck Exp $
  */
