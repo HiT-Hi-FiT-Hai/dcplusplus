@@ -45,6 +45,8 @@ public:
 		listeners.insert(listeners.end(), staticListeners.begin(), staticListeners.end());
 	};
 
+	bool isConnected() { return socket.isConnected(); };
+	
 	virtual ~Client() {
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
 			if(*i == this) {
@@ -170,6 +172,19 @@ public:
 		}
 		return NULL;
 	}
+	
+	int getUserCount() {
+		return users.size();
+	}
+
+	static int getTotalUserCount() {
+		int c = 0;
+		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
+			c+=(*i)->getUserCount();
+		}
+		return c;
+	}
+
 	static List& getList() { return clientList; }
 protected:
 	
@@ -189,7 +204,13 @@ protected:
 	virtual void onLine(const string& aLine);
 	
 	virtual void onError(const string& aReason) {
+		User::NickMap tmp = users;
+		users.clear();
+		for(User::NickIter i = tmp.begin(); i != tmp.end(); ++i) {
+			delete i->second;
+		}
 		fireError(aReason);
+		disconnect();
 	}
 
 	virtual void onConnected() {
@@ -378,9 +399,13 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: Client.h,v 1.5 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.5  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

@@ -70,6 +70,7 @@ END
 IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
 IDR_MDICHILD            BITMAP  DISCARDABLE     "res\\mdichild.bmp"
 IDB_FOLDERS             BITMAP  DISCARDABLE     "res\\folders.bmp"
+IDB_ARROWS              BITMAP  DISCARDABLE     "res\\arrows.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -216,6 +217,15 @@ BEGIN
     EDITTEXT        IDC_PORT,355,52,29,14,ES_AUTOHSCROLL
     CONTROL         "Passive (behind a firewall)",IDC_PASSIVE,"Button",
                     BS_AUTORADIOBUTTON | WS_TABSTOP,202,72,97,10
+    CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,14,105,370,89
+    PUSHBUTTON      "&Add  folder",IDC_ADD,334,199,50,14
+    PUSHBUTTON      "&Remove",IDC_REMOVE,277,199,50,14,WS_DISABLED
+    EDITTEXT        IDC_SLOTS,202,199,36,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,238,199,11,14
     DEFPUSHBUTTON   "OK",IDOK,340,224,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,283,224,50,14
     GROUPBOX        "Personal information",IDC_STATIC,7,7,178,84
@@ -229,13 +239,9 @@ BEGIN
     LTEXT           "This is the most common configuration. Select this and enter IP and port you want to use for incoming connections, or the default will be used.",
                     IDC_STATIC,238,18,146,34
     GROUPBOX        "File sharing",IDC_STATIC,7,95,383,124
-    CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,14,105,370,89
-    PUSHBUTTON      "&Add  folder",IDC_ADD,334,199,50,14
-    PUSHBUTTON      "&Remove",IDC_REMOVE,277,199,50,14,WS_DISABLED
     LTEXT           "Total size:",IDC_STATIC,14,202,33,8
-    LTEXT           "0 B",IDC_TOTAL,49,202,200,8
+    LTEXT           "0 B",IDC_TOTAL,49,202,43,8
+    LTEXT           "Upload slots",IDC_STATIC,155,202,40,8
 END
 
 

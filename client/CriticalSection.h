@@ -26,17 +26,14 @@
 class CriticalSection  
 {
 	CRITICAL_SECTION cs;
-	int i;
 public:
 	void enter() {
-//		dcdebug("enter %d\n", ++i);
 		EnterCriticalSection(&cs);
 	}
 	void leave() {
-//		dcdebug("leave %d\n", --i);
 		LeaveCriticalSection(&cs);
 	}
-	CriticalSection() : i(0) {
+	CriticalSection() {
 		InitializeCriticalSection(&cs);
 	}
 	~CriticalSection() {
@@ -49,9 +46,13 @@ public:
 
 /**
  * @file CriticalSection.h
- * $Id: CriticalSection.h,v 1.2 2001/11/26 23:40:36 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: CriticalSection.h,v $
+ * Revision 1.3  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.2  2001/11/26 23:40:36  arnetheduck
  * Downloads!! Now downloads are possible, although the implementation is
  * likely to change in the future...more UI work (splitters...) and some bug

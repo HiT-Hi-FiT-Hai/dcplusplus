@@ -26,6 +26,7 @@
 #include "ServerSocket.h"
 #include "UserConnection.h"
 #include "User.h"
+#include "CriticalSection.h"
 
 class ConnectionManager : public UserConnectionListener, ServerSocketListener
 {
@@ -49,15 +50,30 @@ public:
 	int getDownloadConnection(User* aUser);
 	void putDownloadConnection(UserConnection* aSource) {
 		aSource->disconnect();
-		downloaders.erase(downloaders.find(aSource->user->getNick()));
-
+		downloaderCS.enter();
+		int j = downloaders.size();
+		for(UserConnection::NickIter i = downloaders.begin(); i != downloaders.end(); ++i) {
+			// Can't search by user, he/she might have disconnected...
+			if(i->second == aSource) {
+				downloaders.erase(i);
+				break;
+			}
+		}
+		downloaderCS.leave();		
 		// Pool it for later usage...
 		pool.push_back(aSource);
 	}
 	void putUploadConnection(UserConnection* aSource) {
 		aSource->disconnect();
-		uploaders.erase(uploaders.find(aSource->user->getNick()));
-
+		uploaderCS.enter();
+		for(UserConnection::NickIter i = uploaders.begin(); i != uploaders.end(); ++i) {
+			// Can't search by user, he/she might have disconnected...
+			if(i->second == aSource) {
+				uploaders.erase(i);
+				break;
+			}
+		}
+		uploaderCS.leave();
 		pool.push_back(aSource);
 	}
 	void connect(const string& aServer, short aPort);
@@ -82,32 +98,34 @@ public:
 	virtual void onKey(UserConnection* aSource, const string& aKey);
 private:
 	User::NickMap pendingDown;
+	CriticalSection downloaderCS;
 	UserConnection::NickMap downloaders;
+	CriticalSection uploaderCS;
 	UserConnection::NickMap uploaders;
 	
 	UserConnection::List pool;
 
-	void addConnection(UserConnection::Ptr conn) {
-		conn->addListener(this);
-		connections.push_back(conn);
-	}
-	void removeConnection(UserConnection::Ptr aConn) {
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-			if(*i == aConn) {
-				aConn->removeListener(this);
-				connections.erase(i);
-				return;
-			}
+	/**
+	 * Returns an unused connection, either from the pool or a brand new fresh one.
+	 */
+	UserConnection* getConnection() {
+		UserConnection* uc;
+		if(pool.size() == 0) {
+			uc = new UserConnection();
+			uc->addListener(this);
+		} else {
+			uc = pool.back();
+			pool.pop_back();
 		}
+		return uc;
 	}
-	void removeConnections() {
-		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
-			(*i)->removeListener(this);
-			connections.erase(i);
-		}
+	/**
+	 * Put a connection back into the pool.
+	 */
+	void putConnection(UserConnection* aConn) {
+		aConn->disconnect();
+		pool.push_back(aConn);
 	}
-
-	UserConnection::List connections;
 	static ConnectionManager* instance;
 	/**
 	 * @todo Something clever when the port is busy.
@@ -123,7 +141,10 @@ private:
 
 	~ConnectionManager() {
 		socket.removeListener(this);
-		removeConnections();
+		// Time to empty the pool...
+		for(UserConnection::Iter i = pool.begin(); i != pool.end(); ++i) {
+			delete *i;
+		}
 	}
 
 	ServerSocket socket;
@@ -133,9 +154,13 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

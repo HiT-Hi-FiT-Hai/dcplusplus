@@ -43,6 +43,7 @@ public:
 	string server;
 	string port;
 	int connectionType;
+	int slots;
 	
 	enum { IDD = IDD_SETTINGS };
 	
@@ -123,12 +124,17 @@ public:
 		for(int i = 0; i < Settings::SPEED_LAST; i++) {
 			ctrlConnection.AddString(Settings::connectionSpeeds[i]);
 		}
+		char buf[16];
+
 		SetDlgItemText(IDC_NICK, nick.c_str());
 		SetDlgItemText(IDC_EMAIL, email.c_str());
 		SetDlgItemText(IDC_DESCRIPTION, description.c_str());
 		SetDlgItemText(IDC_SERVER, server.c_str());
 		SetDlgItemText(IDC_PORT, port.c_str());
-		
+		SetDlgItemText(IDC_SLOTS, itoa(slots, buf, 10));
+
+		CUpDownCtrl updown(GetDlgItem(IDC_SLOTS));
+		updown.SetRange(0, 100);
 		if(connectionType == Settings::CONNECTION_ACTIVE) {
 			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
 		} else if(connectionType == Settings::CONNECTION_PASSIVE) {
@@ -175,7 +181,9 @@ public:
 			server = buf;
 			GetDlgItemText(IDC_PORT, buf, SETTINGS_BUF_LEN);
 			port = buf;
-
+			GetDlgItemText(IDC_SLOTS, buf, SETTINGS_BUF_LEN);
+			slots = atoi(buf);
+			
 			if(IsDlgButtonChecked(IDC_ACTIVE)) {
 				connectionType = Settings::CONNECTION_ACTIVE;
 			} else if(IsDlgButtonChecked(IDC_PASSIVE)) {
@@ -205,9 +213,13 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.4 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.5 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.5  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.4  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

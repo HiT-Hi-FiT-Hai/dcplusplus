@@ -77,10 +77,15 @@ void Client::onLine(const string& aLine) {
 		fireLock(lock, pk);	
 	} else if(aLine.find("$Hello") != string::npos) {
 		string nick = aLine.substr(7);
-		User* u = new User(nick);
-		u->setClient(this);
-		dcassert(users.find(nick) == users.end());
-		users[nick] = u;
+		User* u;
+		User::NickIter i = users.find(nick);
+		if(i == users.end()) {
+			u = new User(nick);
+			u->setClient(this);
+			users[nick] = u;
+		} else {
+			u = i->second;
+		}
 		fireHello(u);
 	} else if(aLine.find("$ForceMove") != string::npos) {
 		fireForceMove(aLine.substr(11));
@@ -95,6 +100,7 @@ void Client::onLine(const string& aLine) {
 		User* u;
 		if(users.find(nick) == users.end()) {
 			u = new User(nick);
+			u->setClient(this);
 			users[nick] = u;
 		} else {
 			u = users[nick];
@@ -149,6 +155,7 @@ void Client::onLine(const string& aLine) {
 			string nick = tmp.substr(0, j);
 			if(users.find(nick) == users.end()) {
 				User* u = new User(nick, User::FLAG_OP);
+				u->setClient(this);
 				users[nick] = u;
 			}
 			users[nick]->setFlag(User::FLAG_OP);
@@ -179,9 +186,13 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.3 2001/12/01 17:15:03 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.4 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.4  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.3  2001/12/01 17:15:03  arnetheduck
  * Added a crappy version of huffman encoding, and some other minor changes...
  *

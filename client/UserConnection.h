@@ -35,6 +35,7 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
+	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) { };
 	virtual void onConnecting(UserConnection* aSource, const string& aServer) { };
 	virtual void onConnected(UserConnection* aSource) { };
 	virtual void onData(UserConnection* aSource, BYTE* aBuf, int aLen) { };
@@ -53,6 +54,47 @@ public:
 	virtual void onTransmitDone(UserConnection* aSource) { };
 };
 
+class Transfer {
+public:
+	const string& getFileName() { return fileName; };
+	void setFileName(const string& aName) { fileName = aName; };
+
+	HANDLE getFile() { return file; };
+	void setFile(HANDLE aFile, bool aUpdate = false) { 
+		file = aFile;
+		if(aUpdate) {
+			DWORD high;
+			size = (LONGLONG) GetFileSize(aFile, &high) | (((LONGLONG)high) << 32);
+		}
+	}
+
+	LONGLONG getPos() { return pos; };
+	void setPos(LONGLONG aPos) { pos = aPos; };
+	void setPos(LONGLONG aPos, bool aUpdate) { 
+		pos = aPos;
+		if(aUpdate) {
+			long high = pos >> 32;
+			SetFilePointer(file, (DWORD)pos, &high, FILE_BEGIN);
+		}
+	};
+	void addPos(LONGLONG aPos) { pos += aPos; };
+	
+	LONGLONG getSize() { return size; };
+	void setSize(LONGLONG aSize) { size = aSize; };
+	void setSize(const string& aSize) { setSize(_atoi64(aSize.c_str())); };
+	User* getUser() { return user; };
+	void setUser(User* aUser) { user = aUser; };
+
+	Transfer() : pos(-1), size(-1), file(NULL) { };
+	~Transfer() { if(file) CloseHandle(file); };
+private:
+	User* user;
+	string fileName;
+	HANDLE file;
+	LONGLONG pos;
+	LONGLONG size;
+
+};
 class ServerSocket;
 
 class UserConnection : public Speaker<UserConnectionListener>, public BufferedSocketListener
@@ -82,6 +124,7 @@ public:
 		FLAG_UPLOAD = 0x01,
 	};
 
+	virtual void onBytesSent(DWORD aBytes) { fireBytesSent(aBytes); };
 	virtual void onConnected() { fireConnected(); };
 	virtual void onLine(const string& aLine);
 	virtual void onError(const string& aError) { fireError(aError); };
@@ -140,6 +183,15 @@ private:
 	
 	void send(const string& aString) {
 		socket.write(aString);
+	}
+	void fireBytesSent(DWORD aBytes) {
+		listenerCS.enter();
+	//	dcdebug("UserConnection::fireBytesSent\n");
+		UserConnectionListener::List tmp = listeners;
+		listenerCS.leave();
+		for(UserConnectionListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onBytesSent(this, aBytes);
+		}
 	}
 	void fireConnected() {
 		listenerCS.enter();
@@ -291,9 +343,13 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.7 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.8  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.7  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

@@ -30,6 +30,7 @@ string Settings::connection;
 string Settings::server;
 string Settings::port;
 int Settings::connectionType;
+int Settings::slots;
 
 char* Settings::connectionSpeeds[] = { "28.8Kbps", "33.6Kbps", "56Kbps", "ISDN", "Satellite", "Cable", "DSL", "Lan(T1)", "Lan(T3)" };
 
@@ -66,6 +67,7 @@ void Settings::load(const string& aFileName) {
 		server = xml.getChildAttrib("Server");
 		port = xml.getChildAttrib("Port");
 		connectionType = xml.getIntChildAttrib("ConnectionType");
+		slots = xml.getIntChildAttrib("Slots");
 	}
 	
 	xml.resetCurrentChild();
@@ -87,6 +89,7 @@ void Settings::save(const string& aFileName) {
 	xml.addChildAttrib("Server", server);
 	xml.addChildAttrib("Port", port);
 	xml.addChildAttrib("ConnectionType", connectionType);
+	xml.addChildAttrib("Slots", slots);
 
 	ShareManager::getInstance()->save(&xml);
 
@@ -103,9 +106,13 @@ void Settings::save(const string& aFileName) {
 }
 /**
  * @file Settings.cpp
- * $Id: Settings.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: Settings.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.cpp,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

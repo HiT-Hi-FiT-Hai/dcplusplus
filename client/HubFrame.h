@@ -139,11 +139,12 @@ public:
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
 		string user;
 		char buf[1024];
-		if(item->iItem != -1) {
+
+		if(client->isConnected() && item->iItem != -1) {
 			ctrlUsers.GetItemText(item->iItem, 0, buf, 1024);
 			user = buf;
 			string file = Settings::getAppPath() + user + ".DcLst";
-			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), file);
+			DownloadManager::getInstance()->download("MyList.DcLst", "", client->getUser(user), file, false);
 			userLists.push_back(file);
 		}
 		return 0;
@@ -210,9 +211,13 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.8 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.9 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.9  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.8  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

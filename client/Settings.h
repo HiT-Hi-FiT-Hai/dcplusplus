@@ -32,6 +32,7 @@ private:
 	static string connection;
 	static string server;
 	static string port;
+	static int slots;
 	static int connectionType;
 	
 public:
@@ -68,6 +69,7 @@ public:
 	static const string& getServer() { return server; }
 	static const string& getPort() { return port; }
 	static int getConnectionType() { return connectionType; };
+	static int getSlots() { return slots; };
 	
 	static void setNick(const string& aNick) { nick = aNick; };
 	static void setEmail(const string& aEmail) { email = aEmail; };
@@ -76,6 +78,8 @@ public:
 	static void setServer(const string& aServer) { server = aServer; };
 	static void setPort(const string& aPort) { port = aPort; };
 	static void setConnectionType(int aType) { connectionType = aType; };
+	static void setSlots(int aSlots) { slots = aSlots; };
+	
 	static void load() { load(getAppPath() + "DCPlusPlus.xml"); };
 	static void save() { save(getAppPath() + "DCPlusPlus.xml"); };
 
@@ -87,9 +91,13 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.6 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: Settings.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.7  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.6  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

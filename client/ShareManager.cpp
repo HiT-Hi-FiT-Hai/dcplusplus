@@ -28,9 +28,21 @@ ShareManager* ShareManager::instance = NULL;
 string ShareManager::translateFileName(const string& aFile) throw(ShareException) {
 	if(aFile == "MyList.DcLst") {
 		return Settings::getAppPath() + "\\MyList.DcLst";
+	} else {
+		string::size_type i = aFile.find('\\');
+		if(i == string::npos)
+			throw ShareException("File Not Available");
+		
+		string aDir = aFile.substr(0, i);
+		StringMapIter j = dirs.find(aDir);
+		if(j == dirs.end()) {
+			throw ShareException("File Not Available");
+		}
+
+		return j->second + aFile.substr(i);
 	}
 
-	throw ShareException("Not available");
+	throw ShareException("File Not Available");
 }
 
 void ShareManager::load(SimpleXML* aXml) {
@@ -39,6 +51,8 @@ void ShareManager::load(SimpleXML* aXml) {
 		while(aXml->findChild("Directory")) {
 			string name = aXml->getChildData();
 			directories[name] = buildTree(name, NULL);
+			string dir = name.substr(name.rfind('\\') + 1);
+			dirs[dir] = name;
 		}
 		aXml->stepOut();
 	}
@@ -63,7 +77,8 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	}
 
 	directories[aDirectory] = buildTree(aDirectory, NULL);
-
+	string dir = aDirectory.substr(aDirectory.rfind('\\') + 1);
+	dirs[dir] = aDirectory;
 }
 
 void ShareManager::removeDirectory(const string& aDirectory) {
@@ -119,10 +134,6 @@ void ShareManager::refresh() throw(ShareException) {
 		tmp = tmp + i->second->toString();
 	}
 
-	HANDLE h = CreateFile("c:\\temp\\dclst2.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-	WriteFile(h, tmp.c_str(), tmp.size(),&d, NULL);
-	CloseHandle(h);
-	
 	CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 
 	HANDLE hf = CreateFile((Settings::getAppPath() + "\\MyList.DcLst").c_str(), GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
@@ -151,9 +162,13 @@ string ShareManager::Directory::toString(int ident /* = 0 */) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.3  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.2  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

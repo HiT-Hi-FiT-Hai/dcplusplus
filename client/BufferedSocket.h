@@ -32,6 +32,7 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
+	virtual void onBytesSent(DWORD bytes) { };
 	virtual void onConnected() { };
 	virtual void onLine(const string& aLine) { };
 	virtual void onError(const string& aReason) { };
@@ -65,7 +66,7 @@ public:
 	char getSeparator() { return separator; };
 	void setSeparator(char aSeparator) { separator = aSeparator; };
 
-	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), stopEvent(NULL), mode(MODE_LINE),
+	BufferedSocket(char aSeparator = 0x0a) : separator(aSeparator), readerThread(NULL), readerEvent(NULL), mode(MODE_LINE),
 		writerEvent(NULL), writerThread(NULL) {
 
 	};
@@ -81,7 +82,7 @@ public:
 	}
 private:
 	BufferedSocket(const BufferedSocket& aSocket) {
-		// Copy not allowed
+		// Copy still not allowed
 	}
 	
 	string server;
@@ -96,7 +97,7 @@ private:
 	HANDLE writerEvent;
 	HANDLE writerThread;
 	
-	HANDLE stopEvent;
+	HANDLE readerEvent;
 	HANDLE readerThread;
 	static DWORD WINAPI reader(void* p);
 	static DWORD WINAPI writer(void* p);
@@ -105,12 +106,13 @@ private:
 		DWORD threadId;
 		stopReader();
 		
-		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
+		readerEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerThread=CreateThread(NULL, 0, &reader, this, 0, &threadId);
 	}
 
 	void startWriter() {
 		DWORD threadId;
+		stopWriter();
 		
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		writerThread = CreateThread(NULL, 0, &writer, this, 0, &threadId);
@@ -118,13 +120,17 @@ private:
 	
 	void stopWriter() {
 		if(writerThread != NULL) {
+			dcassert(writerEvent != NULL);
 			SetEvent(writerEvent);
 			
 			if(WaitForSingleObject(writerThread, 1000) == WAIT_TIMEOUT) {
-				MessageBox(NULL, _T("BufferedSocket: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+				MessageBox(NULL, _T("BufferedSocket: Unable to stop writer thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
 			
 			writerThread = NULL;
+		}
+
+		if(writerEvent != NULL) {
 			CloseHandle(writerEvent);
 			writerEvent = NULL;
 		}
@@ -132,25 +138,37 @@ private:
 
 	void stopReader() {
 		if(readerThread != NULL) {
-			SetEvent(stopEvent);
+			dcassert(readerEvent != NULL);
+			SetEvent(readerEvent);
 			
 			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
 				MessageBox(NULL, _T("BufferedSocket: Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
 			
 			readerThread = NULL;
-			CloseHandle(stopEvent);
-			stopEvent = NULL;
+		}
+		if(readerEvent != NULL) {
+			CloseHandle(readerEvent);
+			readerEvent = NULL;
 		}
 	}
 	
-	void fireLine(const string& aLine) {
+	void fireBytesSent(DWORD aLen) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
 		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onLine(aLine);
+			(*i)->onBytesSent(aLen);
+		}
+	}
+	void fireConnected() {
+		listenerCS.enter();
+		BufferedSocketListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onConnected();
 		}
 	}
 	void fireData(BYTE* aBuf, int aLen) {
@@ -171,13 +189,13 @@ private:
 			(*i)->onError(aLine);
 		}
 	}
-	void fireConnected() {
+	void fireLine(const string& aLine) {
 		listenerCS.enter();
 		BufferedSocketListener::List tmp = listeners;
 		listenerCS.leave();
 		//		dcdebug("fireGotLine %s\n", aLine.c_str());
 		for(BufferedSocketListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->onConnected();
+			(*i)->onLine(aLine);
 		}
 	}
 	void fireModeChange(int aNewMode) {
@@ -205,9 +223,13 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.5 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

@@ -132,6 +132,7 @@ private:
 	static ShareManager* instance;
 	
 	Directory::Map directories;
+	StringMap dirs;
 
 };
 
@@ -139,9 +140,13 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.1 2001/12/02 23:51:22 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.2 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.2  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.1  2001/12/02 23:51:22  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

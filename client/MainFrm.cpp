@@ -45,24 +45,53 @@ MainFrame::~MainFrame() {
 	HubManager::deleteInstance();
 }
 
-void MainFrame::onDownloadAdded(Download::Ptr p) {
-	int i = ctrlDownloads.insert(ctrlDownloads.GetItemCount(), p->fileName.c_str(), 0, (LPARAM)p);
+void MainFrame::onUploadComplete(Upload::Ptr p) {
+	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
+	//	ctrlUploads.SetItemText(ctrlUploads.find((LPARAM)p), 1, "Upload finished");
+	
+}
+
+void MainFrame::onUploadFailed(Upload::Ptr aUpload, const string& aReason) {
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, aReason.c_str());
+}
+
+void MainFrame::onUploadStarting(Upload* aUpload) {
+	int i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), aUpload->getFileName().c_str(), 1, (LPARAM)aUpload);
+	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aUpload->getSize()).c_str());
+	ctrlTransfers.SetItemText(i, 3, aUpload->getUser()->getNick().c_str());
+}
+void MainFrame::onUploadTick(Upload* aUpload) {
+	char buf[1024];
+	sprintf(buf, "Uploaded %s (%.01f%%)", Util::shortenBytes(aUpload->getPos()).c_str(), (double)aUpload->getPos()*100.0/(double)aUpload->getSize());
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, buf);
+}
+
+void MainFrame::onDownloadAdded(Download* p) {
+	int i;
+	if(p->getFileName() == "MyList.DcLst") {
+		i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), (p->getLastNick() + ".DcLst").c_str(), 0, (LPARAM)p);
+	} else {
+		i = ctrlTransfers.insert(ctrlTransfers.GetItemCount(), p->getFileName().c_str(), 0, (LPARAM)p);
+	}
 	char buf[24];
-	ctrlDownloads.SetItemText(i, 2, _i64toa(p->size, buf, 10));
+	if(p->getSize() != -1) {
+		ctrlTransfers.SetItemText(i, 2, _i64toa(p->getSize(), buf, 10));
+	}
 }
 
 void MainFrame::onDownloadConnecting(Download* aDownload) {
-	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->user->getNick()).c_str());
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, ("Connecting to " + aDownload->getUser()->getNick()).c_str());
 }
 
-void MainFrame::onDownloadComplete(Download::Ptr p) {
-	if(p->fileName.find(".DcLst")!=string::npos) {
+void MainFrame::onDownloadComplete(Download* p) {
+	if(p->getFileName().find(".DcLst")!=string::npos) {
 		// We have a new DC listing, show it...
-		DirectoryListing* dl = new DirectoryListing();
-		HANDLE h = CreateFile(p->targetFileName.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		if(h==NULL) {
+		ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Preparing file list...");
+		HANDLE h = CreateFile(p->getTarget().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		if(h==INVALID_HANDLE_VALUE) {
 			return;
 		}
+		DirectoryListing* dl = new DirectoryListing();
 		DWORD size = GetFileSize(h, NULL);
 		char* buf = new char[size];
 		ReadFile(h, buf, size, &size, NULL);
@@ -73,32 +102,28 @@ void MainFrame::onDownloadComplete(Download::Ptr p) {
 		CryptoManager::getInstance()->decodeHuffman(code, tmp);
 		dl->load(tmp);
 
-		h = CreateFile("c:\\temp\\dclst1.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-		WriteFile(h, tmp.c_str(), tmp.size(), &size, NULL);
-		CloseHandle(h);
-
-		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->user);
+		DirectoryListingFrame* pChild = new DirectoryListingFrame(dl, p->getUser());
 		SendMessage(WM_CREATEDIRECTORYLISTING, (WPARAM)pChild);
 		
 	}
 
-	ctrlDownloads.DeleteItem(ctrlDownloads.find((LPARAM)p));
-//	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)p), 1, "Download finished");
+	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
+//	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)p), 1, "Download finished");
 	
 }
 
 void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason) {
-	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, aReason.c_str());
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, aReason.c_str());
 }
 void MainFrame::onDownloadStarting(Download* aDownload) {
-	char buf[24];
-	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 2, _i64toa(aDownload->size, buf, 10));
-	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 3, aDownload->user->getNick().c_str());
+	int i = ctrlTransfers.find((LPARAM)aDownload);
+	ctrlTransfers.SetItemText(i, 2, Util::shortenBytes(aDownload->getSize()).c_str());
+	ctrlTransfers.SetItemText(i, 3, aDownload->getUser()->getNick().c_str());
 }
 void MainFrame::onDownloadTick(Download* aDownload) {
 	char buf[1024];
-	sprintf(buf, "Downloaded %I64d bytes(%.01f%%)", aDownload->pos, (double)aDownload->pos*100.0/(double)aDownload->size);
-	ctrlDownloads.SetItemText(ctrlDownloads.find((LPARAM)aDownload), 1, buf);
+	sprintf(buf, "Downloaded %s (%.01f%%)", Util::shortenBytes(aDownload->getPos()).c_str(), (double)aDownload->getPos()*100.0/(double)aDownload->getSize());
+	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aDownload), 1, buf);
 }
 
 LRESULT MainFrame::OnCreateDirectory(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -133,15 +158,18 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	
-	ctrlDownloads.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_USERS);
+	arrows.CreateFromImage(IDB_ARROWS, 16, 2, CLR_DEFAULT, IMAGE_BITMAP, LR_SHARED);
+	ctrlTransfers.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_USERS);
 	
-	ctrlDownloads.InsertColumn(0, "File", LVCFMT_LEFT, 300, 0);
-	ctrlDownloads.InsertColumn(1, "Status", LVCFMT_LEFT, 400, 1);
-	ctrlDownloads.InsertColumn(2, "Size", LVCFMT_LEFT, 300, 2);
-	ctrlDownloads.InsertColumn(3, "Downloading from", LVCFMT_LEFT, 100, 3);
-
-	SetSplitterPanes(m_hWndClient, ctrlDownloads.m_hWnd);
+	ctrlTransfers.InsertColumn(0, "File", LVCFMT_LEFT, 400, 0);
+	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
+	ctrlTransfers.InsertColumn(2, "Size", LVCFMT_RIGHT, 100, 2);
+	ctrlTransfers.InsertColumn(3, "User", LVCFMT_LEFT, 100, 3);
+	
+	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
+	
+	SetSplitterPanes(m_hWndClient, ctrlTransfers.m_hWnd);
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 8000;
 	
@@ -168,6 +196,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	HubManager::newInstance();
 	ProtocolHandler::newInstance();
 	DownloadManager::getInstance()->addListener(this);
+	UploadManager::getInstance()->addListener(this);
 
 	ShareManager::getInstance()->refresh();
 
@@ -206,6 +235,8 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.server = Settings::getServer();
 	dlg.port = Settings::getPort();
 	dlg.connectionType = Settings::getConnectionType();
+	dlg.slots = Settings::getSlots();
+
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 		Settings::setNick(dlg.nick);
 		Settings::setDescription(dlg.description);
@@ -214,6 +245,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setServer(dlg.server);
 		Settings::setPort(dlg.port);
 		Settings::setConnectionType(dlg.connectionType);
+		Settings::setSlots(dlg.slots);
 		Settings::save();
 		ShareManager::getInstance()->refresh();
 		ConnectionManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
@@ -223,9 +255,13 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.11 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.12 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.12  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.11  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

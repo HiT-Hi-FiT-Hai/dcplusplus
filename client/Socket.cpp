@@ -52,10 +52,11 @@ string SocketException::errorToString(int aError) {
 	case ESHUTDOWN:
 		return "Socket has been shut down.";
 	case ECONNABORTED:
-		return "Connection aborted.";
+		return "Connection closed.";
 	case ECONNRESET:
 		return "Connection reset by server.";
-		
+	case ENOTSOCK:
+		return "Socket error.";
 	default:
 		char tmp[1024];
 		sprintf(tmp, "Unknown error: 0x%x", aError);
@@ -63,18 +64,18 @@ string SocketException::errorToString(int aError) {
 	}
 }
 
-Socket::Socket() : readEvent(NULL), connected(false), sock(-1) {
+Socket::Socket() : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 }
 
-Socket::Socket(const string& ip, const string& port) throw(SocketException) : readEvent(NULL), connected(false), sock(-1) {
+Socket::Socket(const string& ip, const string& port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 	connect(ip, port);	
 }
 
-Socket::Socket(const string& ip, short port) throw(SocketException) : readEvent(NULL), connected(false), sock(-1) {
+Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL), connected(false), sock(-1) {
 	buffer = "";
 	buffer.reserve(256);
 	connect(ip, port);	
@@ -151,7 +152,7 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 /**
  * Sends data, throwing an error if all data is not sent (note; an error may be thrown
  * even if some data has been sent).
- * @todo Fix the blocking stuff!!! This is really ugly...and slows things down dramatically...maybe an internal buffer?
+ * @todo Fix the blocking stuff!!! This is really ugly...
  * @param aData The string to send
  * @throw SocketExcpetion Send failed.
  */
@@ -175,71 +176,14 @@ void Socket::write(const string& aData) throw(SocketException) {
 }
 
 /**
- * Sends data, throwing an error if all data is not sent. (note; an error may be thrown
- * even if some data has been sent). A LF(0x0a) is appended to the string sent.
- * @param aData The string to send
- * @throw SocketExcpetion Send failed.
- */
-void Socket::writeLine(const string& aData) throw(SocketException) {
-	checkconnected();
-
-	string temp = aData + (char)0x0a;
-	write(temp.c_str(), temp.length());
-}
-
-/**
- * Reads a line of input, waiting until there is one.
- * @param aTimeOut Timeout in seconds
- * @throw SocketException Read error or connection lost.
- * @throw TimeOutExecption No data received befor timeout.
- */
-string Socket::readLine(int aTimeOut, char aSeparator) throw(SocketException, TimeOutException) {
-	char buf[BUFSIZE];
-	int len;
-	
-	if( !connected ) {
-		throw SocketException("Not connected");
-	}
-
-	while( buffer.find_first_of(aSeparator, 0) == string::npos) {
-		
-		// Wait for data
-		timeval tv;
-		tv.tv_sec = aTimeOut;
-		tv.tv_usec = 0;
-
-		fd_set set;
-		FD_ZERO(&set);
-		FD_SET(sock, &set);
-		
-		select(sock + 1, &set, NULL, NULL, (aTimeOut == -1)?NULL : &tv);
-		if(! FD_ISSET(sock, &set) ) {
-			throw TimeOutException("No data received within timeout");
-		}
-		
-		checkrecv(len = ::recv(sock, buf, BUFSIZE, 0));
-		stats.down += len;
-		stats.totalDown += len;
-		if(len == 0) {
-			// We've lost our connection!!
-			connected = false;
-			throw SocketException("Connection lost");
-
-		}
-		buffer.append(buf, len);
-	}
-
-	int i;
-	string temp(buffer, 0, (i=buffer.find_first_of(aSeparator, 0)));
-	buffer.erase(0, i + 1);
-	return temp;
-}
-
-/**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

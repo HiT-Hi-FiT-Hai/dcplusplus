@@ -107,7 +107,7 @@ public:
 		return loc;
 	}
 	int insert(int nItem, const string& aString, int iImage = 0, LPARAM lParam = NULL) {
-		return InsertItem(LVIF_PARAM | LVIF_TEXT, nItem, aString.c_str(), 0, 0, 0, lParam);
+		return InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, nItem, aString.c_str(), 0, 0, iImage, lParam);
 	}
 
 	int find(LPARAM lParam, int aStart = -1) {
@@ -188,9 +188,13 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.6 2001/12/02 14:05:36 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.7  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.6  2001/12/02 14:05:36  arnetheduck
  * More sorting work, the hub list is now fully usable...
  *

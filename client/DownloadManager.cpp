@@ -30,67 +30,96 @@ void DownloadManager::onTimerSecond(DWORD aTick) {
 
 	for(Download::Iter i = tmp.begin(); i != tmp.end(); ++i) {
 		Download* d = *i;
-		if(aTick > d->lastTry + 60 * 1000) {
+		if(aTick > d->getLastTry() + 60 * 1000) {
 			// Time to go hot...
-			User* u = Client::findUser(d->lastNick);
+			User* u = Client::findUser(d->getLastNick());
 			if(u != NULL) {
-				d->user = u;
-				ConnectionManager::getInstance()->getDownloadConnection(u);
+				d->setUser(u);
+				d->setLastTry(aTick);
+				if(ConnectionManager::getInstance()->getDownloadConnection(u)!=UserConnection::BUSY) {
+					fireConnecting(d);
+				}
 			}
 		}
 	}
 }
 
-void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume /* = true /*/) {
-	
-	Download* d = new Download();
-	
-	if(aFile.find('\\')) {
-		d->fileName = aFile.substr(aFile.rfind('\\')+1);
-		d->lastPath = aFile.substr(0, aFile.rfind('\\')+1);
-	} else {
-		d->fileName = aFile;
-		d->lastPath = "";
+/**
+ * Add a file to the download queue. When added, a connection attempt will automatically be
+ * made, unless there is an existing connection to the user specified that is busy.
+ * Note; make sure that there is a point in asking for a download, i.e. if the target file
+ * has the same size as a download, the other client will complain that there's nothing to
+ * send...
+ * @param aFile Filename and path at server.
+ * @param aSize Size of file, set to -1 if unknown.
+ * @param aUser Pointer to a _connected_ user.
+ * @param aTarget Target location of a file.
+ * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
+ */
+void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser, const string& aTarget, bool aResume /* = true /*/) {
+	Download* d = NULL;
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		// First, search the queue for the same download...
+		Download* dd = *i;
+		if(dd->getUser() == aUser && (dd->getLastPath() + dd->getFileName()) == aFile && dd->getTarget() == aTarget) {
+			// Same download it seems
+			d = dd;
+		}
 	}
-	d->targetFileName = aDestination;
-	d->lastNick = aUser->getNick();
-	d->user = aUser;
-	d->size = aSize;
-	queue.push_back(d);
-	fireAdded(d);
 
-	if(ConnectionManager::getInstance()->getDownloadConnection(aUser)!=UserConnection::BUSY) {
+	if(d == NULL) {
+		d = new Download();
+	
+		if(aFile.find('\\')) {
+			d->setFileName(aFile.substr(aFile.rfind('\\')+1));
+			d->setLast(aUser->getNick(), aFile.substr(0, aFile.rfind('\\')+1));
+		} else {
+			d->setFileName(aFile);
+			d->setLast(aUser->getNick(), "");
+		}
+
+		d->setTarget(aTarget);
+		d->setUser(aUser);
+		d->setSize(aSize);
+		d->setLastTry(TimerManager::getInstance()->getTick());
+		d->setResume(aResume);
+
+		queue.push_back(d);
+		fireAdded(d);
+	}
+
+	int status = ConnectionManager::getInstance()->getDownloadConnection(aUser);
+	if(status == UserConnection::CONNECTING) {
 		fireConnecting(d);
 	}
 }
 
 void DownloadManager::checkDownloads(UserConnection* aConn) {
 	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
-		if(aConn->getUser() == (*i)->user) {
+		if(aConn->getUser() == (*i)->getUser()) {
 			Download* d = *i;
 			queue.erase(i);
 			running[aConn] = d;
 			
-			if(d->fileName == "MyList.DcLst") {
-				d->pos = 0;
-			} else {
+			if(d->getResume()) {
 				WIN32_FIND_DATA fd;
 				HANDLE hFind;
 				
-				hFind = FindFirstFile(d->targetFileName.c_str(), &fd);
+				hFind = FindFirstFile(d->getTarget().c_str(), &fd);
 				
 				if (hFind == INVALID_HANDLE_VALUE) {
-					d->pos = 0;
+					d->setPos(0);
 				} else {
-					d->pos = fd.nFileSizeHigh << 32 | fd.nFileSizeLow;
+					d->setPos(fd.nFileSizeHigh << 32 | fd.nFileSizeLow);
 					FindClose(hFind);
 				}
+			} else {
+				d->setPos(0);
 			}
-			aConn->get(d->lastPath+d->fileName, d->pos);
+			aConn->get(d->getLastPath()+d->getFileName(), d->getPos());
 			return;
 		}
 	}
-
 	// Connection not needed any more, return it to the ConnectionManager...
 	aConn->removeListener(this);
 	ConnectionManager::getInstance()->putDownloadConnection(aConn);
@@ -101,8 +130,8 @@ void DownloadManager::onData(UserConnection* aSource, BYTE* aData, int aLen) {
 	DWORD len;
 	Download* d = running[aSource];
 	
-	WriteFile(d->hFile, aData, aLen, &len, NULL);
-	d->pos += len;
+	WriteFile(d->getFile(), aData, aLen, &len, NULL);
+	d->addPos(len);
 	fireTick(d);
 }
 
@@ -111,23 +140,25 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	dcassert(i != running.end());
 	Download* d = i->second;
 
-	if(d->fileName == "MyList.DcList")
-		d->hFile = CreateFile(d->targetFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+	HANDLE file;
+	if(d->getResume())
+		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	else
-		d->hFile = CreateFile(d->targetFileName.c_str(), GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+		file = CreateFile(d->getTarget().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 	
-	if(d->hFile == NULL) {
+	if(file == NULL) {
+		aSource->disconnect();
 		fireFailed(d, "Could not open target file");
+		ConnectionManager::getInstance()->putDownloadConnection(aSource);
+		return;
 	}
 	
-	SetFilePointer(d->hFile, 0, NULL, FILE_END);
-	DWORD high;
-	d->pos = GetFileSize(d->hFile, &high);
-	d->pos|=high<<32;
-	d->size = _atoi64(aFileLength.c_str());
-	if(d->size == d->pos) {
+	d->setFile(file, true);
+	d->setPos(d->getSize(), true);
+	d->setSize(aFileLength);
+
+	if(d->getSize() == d->getPos()) {
 		// We're done...
-		CloseHandle(d->hFile);
 		running.erase(i);
 		fireComplete(d);
 		delete d;
@@ -135,7 +166,8 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 		aSource->startSend();
 		checkDownloads(aSource);
 	} else {
-		aSource->setDataMode(d->size - d->pos);
+		fireStarting(d);
+		aSource->setDataMode(d->getSize() - d->getPos());
 		aSource->startSend();
 	}
 }
@@ -148,11 +180,13 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 	Download::Ptr p = i->second;
 	running.erase(i);
 
-	CloseHandle(p->hFile);
-	if(p->pos != p->size)
+	if(p->getPos() != p->getSize())
 		dcdebug("Download incomplete??? : ");
+	
+	CloseHandle(p->getFile());
+	p->setFile(NULL);
 
-	dcdebug("Download finished: %s to %s, size %I64d\n", p->fileName.c_str(), p->targetFileName.c_str(), p->size);
+	dcdebug("Download finished: %s to %s, size %I64d\n", p->getFileName().c_str(), p->getTarget().c_str(), p->getSize());
 	fireComplete(p);
 	delete p;
 
@@ -160,18 +194,27 @@ void DownloadManager::onModeChange(UserConnection* aSource, int aNewMode) {
 }
 
 void DownloadManager::onMaxedOut(UserConnection* aSource) { 
-	Download* d = running[aSource];
+	Download::MapIter i = running.find(aSource);
+	dcassert(i != running.end());
+
+	Download* d = i->second;
 	
-	fireFailed(d, "No slots available"); 
+	fireFailed(d, "No slots available");
+	running.erase(i);
+	aSource->removeListener(this);
 	ConnectionManager::getInstance()->putDownloadConnection(aSource);
 	queue.insert(queue.begin(), d);
 };
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

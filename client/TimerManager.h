@@ -38,6 +38,8 @@ public:
 class TimerManager : public Speaker<TimerManagerListener>
 {
 public:
+	static DWORD getTick() { return GetTickCount(); };
+	
 	static TimerManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -92,8 +94,7 @@ private:
 	static DWORD WINAPI ticker(void* p);
 
 	static TimerManager* instance;
-	DWORD nextTick;
-	
+
 	void fireSecond(DWORD aTick) {
 		listenerCS.enter();
 		TimerManagerListener::List tmp = listeners;
@@ -110,9 +111,13 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.2 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.3  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.2  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

@@ -36,7 +36,8 @@ public:
 	}
 	
 	void skipToByte() {
-		bitPos = ((bitPos>>3)+1)<<3;
+		if(bitPos%8 != 0)
+			bitPos = ((bitPos>>3)+1)<<3;
 	}
 	
 	void skip(int n) {
@@ -52,9 +53,13 @@ private:
 
 /**
  * @file BitInputStream.h
- * $Id: BitInputStream.h,v 1.2 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: BitInputStream.h,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: BitInputStream.h,v $
+ * Revision 1.3  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.2  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

@@ -26,65 +26,117 @@
 #include "UserConnection.h"
 #include "ConnectionManager.h"
 #include "ShareManager.h"
+#include "Util.h"
 
-class UploadManager : public UserConnectionListener
+class Upload : public Transfer {
+public:
+	typedef Upload* Ptr;
+	typedef map<UserConnection::Ptr, Ptr> Map;
+	typedef Map::iterator MapIter;
+	
+};
+
+
+class UploadManagerListener {
+public:
+	typedef UploadManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+	virtual void onUploadComplete(Upload* aUpload) { };
+	virtual void onUploadFailed(Upload* aUpload, const string& aReason) { };
+	virtual void onUploadStarting(Upload* aUpload) { };
+	virtual void onUploadTick(Upload* aUpload) { };
+};
+
+class UploadManager : public UserConnectionListener, public Speaker<UploadManagerListener>
 {
 public:
-	virtual void onDisconnected(UserConnection* aSource) {
-		removeConnection(aSource);
-	}
-	virtual void onError(UserConnection* aSource, const string& aError) {
+	virtual void onBytesSent(UserConnection* aSource, DWORD aBytes) {
 		Upload * u;
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
-			aSource->disconnect();
-			aSource->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(aSource);
+			removeConnection(aSource);
+			return;
 		}
 		u = i->second;
-		uploads.erase(i);
-		delete u;
+		u->addPos(aBytes);
+		fireTick(u);
 	}
 
+	virtual void onDisconnected(UserConnection* aSource) {
+		Upload * u;
+		Upload::MapIter i = uploads.find(aSource);
+		if(i != uploads.end()) {
+			u = i->second;
+			fireFailed(u, "Disconnected");
+			uploads.erase(i);
+			delete u;
+		}
+		removeConnection(aSource);
+	}
+
+	virtual void onError(UserConnection* aSource, const string& aError) {
+		Upload* u;
+		Upload::MapIter i = uploads.find(aSource);
+		if(i != uploads.end()) {
+			u = i->second;
+			fireFailed(u, aError);
+			uploads.erase(i);
+			delete u;
+		}
+		removeConnection(aSource);
+	}
+
+	/**
+	 * Transfer finished, release the Upload and wait for the next command.
+	 */
 	virtual void onTransmitDone(UserConnection* aSource) {
 		Upload * u;
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
-			aSource->disconnect();
-			aSource->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(aSource);
+			removeConnection(aSource);
+			return;
 		}
 		u = i->second;
+		fireComplete(u);
 		uploads.erase(i);
 		delete u;
+
 	}
 
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 		Upload* u;
+		HANDLE h;
 		try {
+			if(uploads.size() >= Settings::getSlots()) {
+				aSource->maxedOut();
+				removeConnection(aSource);
+				return;
+			}
 			string file = ShareManager::getInstance()->translateFileName(aFile);
 			Upload::MapIter i = uploads.find(aSource);
 			if(i != uploads.end()) {
 				delete i->second;
 				uploads.erase(i);
-			} else {
-				u = new Upload();
-			}
+			} 
 
-			u->file = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
-			if(u->file == INVALID_HANDLE_VALUE) {
-				delete u;
+			h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+			if(h == INVALID_HANDLE_VALUE) {
 				aSource->error("File Not Available");
 				return;
 			}
+
+			u = new Upload();
+			u->setFile(h, true);
+			u->setPos(aResume, true);
+			u->setFileName(aFile);
+			u->setUser(aSource->getUser());
+			
 			char buf[24];
-			DWORD high = 0;
-			long h = (int) (aResume >> 32);
-			DWORD l = (DWORD) (aResume & 0xffffffff);
-			SetFilePointer(u->file, l, &h, FILE_BEGIN);
-			aSource->fileLength(_i64toa((LONGLONG)GetFileSize(u->file, &high) | ((LONGLONG)high) << 32, buf, 10));
+			aSource->fileLength(_i64toa(u->getSize(), buf, 10));
 
 			uploads[aSource] = u;
 
@@ -98,18 +150,19 @@ public:
 		Upload::MapIter i = uploads.find(aSource);
 		if(i == uploads.end()) {
 			// Something strange happened?
-			aSource->disconnect();
-			aSource->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(aSource);
+			removeConnection(aSource);
+			return;
 		}
 		u = i->second;
 		try {
-			aSource->transmitFile(u->file);
+			aSource->transmitFile(u->getFile());
+			fireStarting(u);
 		} catch(Exception e) {
-			delete u;
 			uploads.erase(i);
-			aSource->disconnect();
+			delete u;
 			aSource->removeListener(this);
+
+			aSource->disconnect();
 			ConnectionManager::getInstance()->putUploadConnection(aSource);
 		}
 	}
@@ -127,15 +180,16 @@ public:
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			if(*i == aConn) {
 				aConn->removeListener(this);
-				ConnectionManager::getInstance()->putDownloadConnection(aConn);
 				connections.erase(i);
+				ConnectionManager::getInstance()->putUploadConnection(aConn);
 			}
 		}
 	}
+
 	void removeConnections() {
 		for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
 			(*i)->removeListener(this);
-			ConnectionManager::getInstance()->putDownloadConnection(*i);
+			ConnectionManager::getInstance()->putUploadConnection(*i);
 			i = connections.erase(i);
 		}
 	}
@@ -155,22 +209,6 @@ public:
 		instance = NULL;
 	}
 private:
-	class Upload {
-	public:
-		typedef Upload* Ptr;
-		typedef map<UserConnection::Ptr, Ptr> Map;
-		typedef Map::iterator MapIter;
-		
-		UserConnection* user;
-		HANDLE file;
-		
-		Upload() : file(NULL), user(NULL) { };
-		~Upload() {
-			if(file)
-				CloseHandle(file);
-		}
-	};
-
 	static UploadManager* instance;
 	UserConnection::List connections;
 	Upload::Map uploads;
@@ -182,11 +220,43 @@ private:
 		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
 			delete j->second;
 		}
+		removeConnections();
+	}
 
-		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
-			(*i)->removeListener(this);
-			(*i)->disconnect();
-			ConnectionManager::getInstance()->putUploadConnection(*i);
+	void fireComplete(Upload::Ptr aPtr) {
+		listenerCS.enter();
+		UploadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(UploadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onUploadComplete(aPtr);
+		}
+	}
+	void fireFailed(Upload::Ptr aPtr, const string& aReason) {
+		listenerCS.enter();
+		UploadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(UploadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onUploadFailed(aPtr, aReason);
+		}
+	}
+	void fireStarting(Upload::Ptr aPtr) {
+		listenerCS.enter();
+		UploadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(UploadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onUploadStarting(aPtr);
+		}
+	}
+	void fireTick(Upload::Ptr aPtr) {
+		listenerCS.enter();
+		UploadManagerListener::List tmp = listeners;
+		listenerCS.leave();
+		//		dcdebug("fireGotLine %s\n", aLine.c_str());
+		for(UploadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onUploadTick(aPtr);
 		}
 	}
 };
@@ -195,9 +265,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.6 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.7  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.6  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other

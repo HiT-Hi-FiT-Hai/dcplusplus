@@ -30,7 +30,7 @@
 
 class User;
 
-class Download {
+class Download : public Transfer {
 public:
 	typedef Download* Ptr;
 	typedef list<Ptr> List;
@@ -38,17 +38,25 @@ public:
 	typedef map<UserConnection::Ptr, Ptr> Map;
 	typedef Map::iterator MapIter;
 	
-	Download() : size(-1), pos(-1), hFile(NULL), lastTry(0) { }
-	
-	string fileName;
-	LONGLONG size;
-	LONGLONG pos;
-	string targetFileName;
-	User* user;
+	Download() : lastTry(0), resume(false) { }
+
+	bool getResume() { return resume; };
+	void setResume(bool aResume) { resume = aResume; };
+
+	const string& getTarget() { return target; };
+	void setTarget(const string& aTarget) { target = aTarget; };
+
+	const string& getLastNick() { return lastNick; };
+	const string& getLastPath() { return lastPath; };
+	void setLast(const string& aNick, const string& aPath) { lastNick = aNick; lastPath = aPath; };
+
+	DWORD getLastTry() { return lastTry; };
+	void setLastTry(DWORD aTime) { lastTry = aTime; };
+
+private:
 	bool resume;
+	string target;
 	DWORD lastTry;
-	
-	HANDLE hFile;
 	
 	string lastNick;
 	string lastPath;
@@ -210,9 +218,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.5 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

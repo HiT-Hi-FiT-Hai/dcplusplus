@@ -25,19 +25,27 @@ TimerManager* TimerManager::instance;
 
 DWORD WINAPI TimerManager::ticker(void* p) {
 	TimerManager* t = (TimerManager*)p;
-	t->nextTick = GetTickCount() + 1000;
-	while(WaitForSingleObject(t->stopEvent, t->nextTick - GetTickCount()) == WAIT_TIMEOUT) {
-		t->nextTick = GetTickCount() + 1000;
-		t->fireSecond(GetTickCount());
+	DWORD nextTick;
+	int x;
+
+	nextTick = GetTickCount() + 1000;
+	while(WaitForSingleObject(t->stopEvent, (x = (nextTick - GetTickCount())) > 0 ? x : 0) == WAIT_TIMEOUT) {
+		DWORD z = GetTickCount();
+		nextTick = z + 1000;
+		t->fireSecond(z);
 	}
 
 	return 0;
 }
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.2 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.3 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.cpp,v $
+ * Revision 1.3  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.2  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

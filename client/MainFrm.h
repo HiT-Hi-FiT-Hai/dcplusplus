@@ -26,6 +26,7 @@
 #include "AtlCmdBar2.h"
 
 #include "DownloadManager.h"
+#include "UploadManager.h"
 #include "ExListViewCtrl.h"
 #include "TimerManager.h"
 
@@ -33,7 +34,7 @@
 
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
-		public TimerManagerListener
+		public TimerManagerListener, public UploadManagerListener
 {
 public:
 	virtual ~MainFrame();
@@ -41,6 +42,13 @@ public:
 
 	CCommandBarCtrl2 m_CmdBar;
 
+	// UploadManagerListener
+	virtual void onUploadComplete(Upload* aUpload);
+	virtual void onUploadFailed(Upload* aUpload, const string& aReason);
+	virtual void onUploadStarting(Upload* aUpload);
+	virtual void onUploadTick(Upload* aUpload);
+	
+	// DownloadManagerListener
 	virtual void onDownloadAdded(Download* aDownload);
 	virtual void onDownloadComplete(Download* aDownload);
 	virtual void onDownloadConnecting(Download* aDownload);
@@ -188,9 +196,9 @@ public:
 		return 0;
 	}
 protected:
-	ExListViewCtrl ctrlDownloads;
+	ExListViewCtrl ctrlTransfers;
 	CStatusBarCtrl ctrlStatus;		
-		
+	CImageList arrows;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -202,9 +210,13 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.7 2001/12/02 23:47:35 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.8  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.7  2001/12/02 23:47:35  arnetheduck
  * Added the framework for uploading and file sharing...although there's something strange about
  * the file lists...my client takes them, but not the original...

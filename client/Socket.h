@@ -105,7 +105,7 @@ public:
 	Socket(const string& ip, const string& port) throw(SocketException);
 	Socket(const string& ip, short port) throw(SocketException);
 	virtual ~Socket() {
-		closesocket(sock);
+		disconnect();
 	};
 	
 	virtual void connect(const string& ip, short port) throw(SocketException);
@@ -114,9 +114,9 @@ public:
 	virtual void disconnect() {
 		closesocket(sock);
 		connected = false;
-		if(readEvent) {
-			CloseHandle(readEvent);
-			readEvent = NULL;
+		if(event) {
+			CloseHandle(event);
+			event = NULL;
 		}
 	}
 
@@ -135,34 +135,34 @@ public:
 
 	/**
 	 * Returns a handle to an event that fires whenever there is data available in the read buffer.
+	 * Note; The socket will automatically be put in non-blocking mode after returning from this 
+	 * function, and there's no way back!
 	 * @return An event to be user with WaitForSingleObject och MultiObjects
 	 * @todo This is pretty windows-specific...put it someplace else...
 	 */
-	HANDLE getReadEvent() throw(SocketException) {
-		if(readEvent == NULL) {
-			readEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-			if(readEvent == NULL)
+	HANDLE getEvent() throw(SocketException) {
+		if(event == NULL) {
+			event = CreateEvent(NULL, FALSE, FALSE, NULL);
+			if(event == NULL)
 				throw SocketException(WSAGetLastError());
 			
-			checksockerr(WSAEventSelect(sock, readEvent, FD_ACCEPT | FD_READ | FD_CLOSE));
+			checksockerr(WSAEventSelect(sock, event, FD_ACCEPT | FD_READ | FD_WRITE | FD_CLOSE));
 		}
-		return readEvent;
+		return event;
 	}
 		
 	int read(void* aBuffer, int aBufLen) throw(SocketException); 
-	void writeLine(const string& aData) throw(SocketException);
-	virtual string readLine(int aTimeOut = -1, char separator = 0x0a) throw(SocketException, TimeOutException);
 
 	static void resetStats() { stats.up = stats.down = 0; };
 	static DWORD getDown() { return stats.down; };
 	static DWORD getUp() { return stats.up; };
 	static LONGLONG getTotalDown() { return stats.totalDown; };
 	static LONGLONG getTotalUp() { return stats.totalUp; };
-protected:
+private:
 	Socket(const Socket& aSocket) {
 		// Copies not allowed
 	}
-	HANDLE readEvent;
+	HANDLE event;
 	int sock;
 	bool connected;
 	string buffer;
@@ -180,9 +180,13 @@ protected:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.5 2001/12/02 11:16:47 arnetheduck Exp $
+ * $Id: Socket.h,v 1.6 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.6  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.5  2001/12/02 11:16:47  arnetheduck
  * Optimised hub listing, removed a few bugs and leaks, and added a few small
  * things...downloads are now working, time to start writing the sharing

@@ -25,8 +25,8 @@ static const int BUFSIZE = 4096;
 
 void BufferedSocket::accept(const ServerSocket& aSocket) {
 	Socket::accept(aSocket);
-	connected = true;
-	dcdebug("Socket %x accepted\n", sock);
+	
+	dcdebug("Socket accepted\n");
 	startReader();
 }
 
@@ -39,13 +39,16 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 	while(ReadFile(bs->file, buf, sizeof(buf), &len, NULL) && len != 0) {
 		if(WaitForSingleObject(bs->writerEvent, 0) != WAIT_TIMEOUT) {
 			// Time to finish...
+			bs->disconnect();
 			bs->fireError("Writer stopped before end of file");
 			bs->writerThread = NULL;
 			return 0;
 		}
 		try {
 			bs->write((char*)buf, len);
+			bs->fireBytesSent(len);
 		} catch(SocketException e) {
+			bs->disconnect();
 			bs->fireError(e.getError());
 		}
 	}
@@ -61,15 +64,16 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	
 	HANDLE h[2];
 	
-	h[0] = bs->stopEvent;
+	h[0] = bs->readerEvent;
 	
 	try {
 		if(!bs->isConnected()) {
 			bs->Socket::connect(bs->server, bs->port);
 			bs->fireConnected();
 		}
-		h[1] = bs->getReadEvent();
+		h[1] = bs->getEvent();
 	} catch (SocketException e) {
+		bs->disconnect();
 		bs->fireError(e.getError());
 		return 0;
 	}
@@ -78,6 +82,8 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 	BYTE buf[BUFSIZE];
 	
 	while(WaitForMultipleObjects(2, h, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
+		if(bs->getAvailable() == 0)
+			continue;
 		try {
 			//dcdebug("Available bytes: %d\n", bs->getAvailable());
 			int i = bs->read(buf, BUFSIZE);
@@ -125,24 +131,25 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			}
 		} catch(SocketException e) {
 			// Ouch...
+			bs->disconnect();
 			bs->fireError(e.getError());
 			bs->readerThread = NULL;
-			bs->disconnect();
-			bs->connected = false;
 			return 0;
 		}
 	}
 	bs->readerThread = NULL;
-	bs->disconnect();
-	bs->connected = false;
 	return 0;
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.7 2001/12/03 20:52:19 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.8 2001/12/04 21:50:34 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.8  2001/12/04 21:50:34  arnetheduck
+ * Work done towards application stability...still a lot to do though...
+ * a bit more and it's time for a new release.
+ *
  * Revision 1.7  2001/12/03 20:52:19  arnetheduck
  * Blah! Finally, the listings are working...one line of code missing (of course),
  * but more than 2 hours of search...hate that kind of bugs...=(...some other
