@@ -17,7 +17,7 @@
 * Added options to open file lists and pm's in background (thanks sed)
 * Minor number formatting fixes (thanks palm and garg)
 * Some more linux compile fixes (thanks palm)
-* Additional translatioin strings (thanks garg)
+* Additional translation strings (thanks garg)
 * Fixed own search results bug (thanks garg)
 * <64KiB files auto-highest priority (thanks garg)
 * Fixed search in utf-8 file lists (thanks fleetcommand)
@@ -32,7 +32,9 @@
 * Fixed dialog modality in several places (thanks garg)
 * Fixed some debug assertions (thanks garg)
 * Queue sorted sensibly (thanks garg)
-
+* Added customizable timestamps (thanks ullner)
+* Added extended dupe logging (thanks xan)
+* Some code pedantry cleanup done (thanks garg)
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug

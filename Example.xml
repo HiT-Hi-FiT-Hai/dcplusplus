@@ -166,7 +166,7 @@
 		<String Name="MenuOpenFileList">Open file list...</String>
 		<String Name="MenuPublicHubs">&amp;Public Hubs	Ctrl+P</String>
 		<String Name="MenuReconnect">&amp;Reconnect	Ctrl+R</String>
-		<String Name="MenuRefreshFileList">Refresh file list</String>
+		<String Name="MenuRefreshFileList">Refresh file list	Ctrl+E</String>
 		<String Name="MenuShow">Show</String>
 		<String Name="MenuSearch">&amp;Search	Ctrl+S</String>
 		<String Name="MenuSearchSpy">Search Spy</String>
@@ -300,7 +300,7 @@
 		<String Name="SettingsDownloadLimits">Limits</String>
 		<String Name="SettingsDownloads">Downloads</String>
 		<String Name="SettingsDownloadsMax">Maximum simultaneous downloads (0 = infinite)</String>
-		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (kB/s, 0 = disable)</String>
+		<String Name="SettingsDownloadsSpeedPause">No new downloads if speed exceeds (KiB/s, 0 = disable)</String>
 		<String Name="SettingsExampleText">Donate $$$:s! (well, €€€ preferably =) (see help menu)</String>
 		<String Name="SettingsFavShowJoins">Only show joins / parts for favorite users</String>
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
@@ -308,7 +308,7 @@
 		<String Name="SettingsFormat">Format</String>
 		<String Name="SettingsGeneral">General</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
-		<String Name="SettingsIgnoreOffline">Ignore messages from users that are not online (effective against bots)</String>
+		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
 		<String Name="SettingsIp">IP</String>
 		<String Name="SettingsKeepLists">Don't delete file lists when exiting</String>
 		<String Name="SettingsLanguageFile">Language file</String>
@@ -337,8 +337,8 @@
 		<String Name="SettingsPmBeepOpen">Make an annoying sound when a private message window is opened</String>
 		<String Name="SettingsPopunderFilelist">Open new file list windows in the background</String>
 		<String Name="SettingsPopunderPm">Open new private message windows in the background</String>
-		<String Name="SettingsPopupOffline">Popup messages from users that are not online (if not ignoring, messages go to main chat if enabled)</String>
-		<String Name="SettingsPopupPms">Popup private messages</String>
+		<String Name="SettingsPopupOffline">Open private messages from offline users in their own window</String>
+		<String Name="SettingsPopupPms">Open private messages in their own window</String>
 		<String Name="SettingsPort">Port (empty=random)</String>
 		<String Name="SettingsPublicHubList">Public Hubs list</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>

@@ -116,7 +116,7 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 LRESULT UCPage::onRemoveMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlCommands.GetSelectedCount() == 1) {
 		int i = ctrlCommands.GetNextItem(-1, LVNI_SELECTED);
-		HubManager::getInstance()->removeUserCommnad(ctrlCommands.GetItemData(i));
+		HubManager::getInstance()->removeUserCommand(ctrlCommands.GetItemData(i));
 		ctrlCommands.DeleteItem(i);
 	}
 	return 0;
@@ -174,6 +174,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.7 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.8 2004/07/27 22:21:14 arnetheduck Exp $
  */
 

@@ -213,7 +213,7 @@ private:
 
 			columns[COLUMN_SIZE] = Util::formatBytes(f->getSize());
 			if(f->getTTH() != NULL)
-                columns[COLUMN_TTH] = f->getTTH()->toBase32();
+				columns[COLUMN_TTH] = f->getTTH()->toBase32();
 		};
 		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
 			columns[COLUMN_FILENAME] = d->getName();
@@ -294,5 +294,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.35 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.36 2004/07/27 22:21:14 arnetheduck Exp $
  */

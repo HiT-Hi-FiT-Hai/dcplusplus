@@ -365,7 +365,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 		}
 		Speaker<NmdcHubListener>::fire(NmdcHubListener::Supports(), this, sl);
 	} else if(cmd == "$UserCommand") {
-		string::size_type i = string::npos;
+		string::size_type i = 0;
 		string::size_type j = param.find(' ');
 		if(j == string::npos)
 			return;
@@ -717,6 +717,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.8 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.9 2004/07/27 22:21:14 arnetheduck Exp $
  */
 

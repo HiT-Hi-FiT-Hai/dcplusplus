@@ -150,7 +150,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
 	string* x = new string(s);
-	string::size_type i = string::npos;
+	string::size_type i = 0;
 	while( (i=x->find('$')) != string::npos) {
 		(*x)[i] = ' ';
 	}
@@ -170,5 +170,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.20 2004/07/16 09:53:47 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.21 2004/07/27 22:21:14 arnetheduck Exp $
  */

@@ -189,7 +189,7 @@ public:
 			save();
 	}
 
-	void removeUserCommnad(int id) {
+	void removeUserCommand(int id) {
 		bool nosave = true;
 		Lock l(cs);
 		for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
@@ -303,6 +303,6 @@ private:
 
 /**
  * @file
- * $Id: HubManager.h,v 1.54 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.55 2004/07/27 22:21:14 arnetheduck Exp $
  */
 

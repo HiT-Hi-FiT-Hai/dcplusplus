@@ -796,7 +796,7 @@ void HubFrame::onTab() {
 			UserInfo* ui = ctrlUsers.getItemData(i);
 			const string& nick = ui->user->getNick();
 			bool found = (Util::strnicmp(nick, complete, complete.length()) == 0);
-			string::size_type x = string::npos;
+			string::size_type x = 0;
 			if(!found) {
 				// Check if there's one or more [ISP] tags to ignore...
 				string::size_type y = 0;
@@ -847,21 +847,21 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 		complete.clear();
 
 	if (uMsg != WM_KEYDOWN) {
-	switch(wParam) {
+		switch(wParam) {
 			case VK_RETURN:
 				if( (GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				}
 				break;
-		case VK_TAB:
+			case VK_TAB:
 				bHandled = TRUE;
-  				break;
-  			default:
-  				bHandled = FALSE;
 				break;
-			}
+			default:
+				bHandled = FALSE;
+				break;
+		}
 		return 0;
-			}
+	}
 
 	switch(wParam) {
 		case VK_TAB:
@@ -872,9 +872,9 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				(GetKeyState(VK_MENU) & 0x8000) ) {
 					bHandled = FALSE;
 				} else {
-						onEnter();
-					}
-			break;
+					onEnter();
+				}
+				break;
 		case VK_UP:
 			if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000)) {
 				//scroll up in chat command history
@@ -935,8 +935,8 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 				ctrlMessage.SetWindowText(currentCommand.c_str());
 			} else {
 				bHandled = FALSE;
-				}
-				break;
+			}
+			break;
 		default:
 			bHandled = FALSE;
 	}
@@ -1139,5 +1139,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.66 2004/07/16 09:53:46 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.67 2004/07/27 22:21:14 arnetheduck Exp $
  */

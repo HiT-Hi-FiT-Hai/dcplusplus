@@ -370,9 +370,9 @@ private:
 	virtual void on(GetPassword, Client*) throw();
 	virtual void on(HubUpdated, Client*) throw();
 	virtual void on(Message, Client*, const string&) throw();
-	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw() ;
-	virtual void on(NickTaken, Client*) throw() ;
-	virtual void on(SearchFlood, Client*, const string&) throw() ;
+	virtual void on(PrivateMessage, Client*, const User::Ptr&, const string&) throw();
+	virtual void on(NickTaken, Client*) throw();
+	virtual void on(SearchFlood, Client*, const string&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
 	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new string(msg)); };
@@ -393,6 +393,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.46 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.47 2004/07/27 22:21:14 arnetheduck Exp $
  */
 

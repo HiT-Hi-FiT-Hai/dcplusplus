@@ -704,16 +704,16 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 }
 
 void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
- 	missedAutoConnect = false;
+	missedAutoConnect = false;
 	for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 		FavoriteHubEntry* entry = *i;
- 		if(entry->getConnect()) {
- 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
+		if(entry->getConnect()) {
+			if(!entry->getNick().empty() || !SETTING(NICK).empty())
 				HubFrame::openWindow(entry->getServer(), entry->getNick(), entry->getPassword(), entry->getUserDescription());
- 			else
- 				missedAutoConnect = true;
- 		}
- 	}
+			else
+				missedAutoConnect = true;
+		}
+	}
 }
 
 void MainFrame::updateTray(bool add /* = true */) {
@@ -838,7 +838,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		}
 		bHandled = TRUE;
 	} else {
-		// This should end immideately, as it only should be the stopper that sends another WM_CLOSE
+		// This should end immediately, as it only should be the stopper that sends another WM_CLOSE
 		WaitForSingleObject(stopperThread, 60*1000);
 		CloseHandle(stopperThread);
 		stopperThread = NULL;
@@ -1061,5 +1061,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.58 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.59 2004/07/27 22:21:14 arnetheduck Exp $
  */
