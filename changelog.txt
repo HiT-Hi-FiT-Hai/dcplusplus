@@ -1,4 +1,9 @@
-﻿-- 0.673 2005-03-22 --
+﻿-- 0.674 --
+* Added stats window to autoopen (thanks paka)
+* Fixed context menu open for multi-screen setups (thanks trem)
+
+
+-- 0.673 2005-03-22 --
 * Added auto-prio by file size settings (thanks paka)
 * Fixed yet another context menu fix (in case anyone wondered, it should now
   be possible to use the context menu key for all context menus)

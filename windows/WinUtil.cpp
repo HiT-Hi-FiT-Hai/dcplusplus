@@ -1105,7 +1105,40 @@ int WinUtil::getOsMinor()
 	return ver.dwMinorVersion;
 }
 
+void WinUtil::getContextMenuPos(CListViewCtrl& aList, POINT& aPt) {
+	int pos = aList.GetNextItem(-1, LVNI_SELECTED | LVNI_FOCUSED);
+	if(pos >= 0) {
+		CRect lrc;
+		aList.GetItemRect(pos, &lrc, LVIR_LABEL);
+		aPt.x = lrc.left;
+		aPt.y = lrc.top + (lrc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aList.ClientToScreen(&aPt);
+}
+
+void WinUtil::getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt) {
+	CRect trc;
+	HTREEITEM ht = aTree.GetSelectedItem();
+	if(ht) {
+		aTree.GetItemRect(ht, &trc, TRUE);
+		aPt.x = trc.left;
+		aPt.y = trc.top + (trc.Height() / 2);
+	} else {
+		aPt.x = aPt.y = 0;
+	}
+	aTree.ClientToScreen(&aPt);
+}
+void WinUtil::getContextMenuPos(CEdit& aEdit, POINT& aPt) {
+	CRect erc;
+	aEdit.GetRect(&erc);
+	aPt.x = erc.Width() / 2;
+	aPt.y = erc.Height() / 2;
+	aEdit.ClientToScreen(&aPt);
+}
+
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.79 2005/03/22 18:54:36 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.80 2005/04/03 14:48:31 arnetheduck Exp $
  */

@@ -75,12 +75,13 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT UsersFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if ((HWND)wParam == ctrlUsers && ctrlUsers.GetSelectedCount() > 0 ) { 
+	if (reinterpret_cast<HWND>(wParam) == ctrlUsers && ctrlUsers.GetSelectedCount() > 0 ) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
-			pt.x = pt.y = 0;
-			ctrlUsers.ClientToScreen(&pt);
+		
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlUsers, pt);
 		}
+
 		checkAdcItems(usersMenu);
 		usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 
@@ -198,6 +199,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.31 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.32 2005/04/03 14:48:31 arnetheduck Exp $
  */
 

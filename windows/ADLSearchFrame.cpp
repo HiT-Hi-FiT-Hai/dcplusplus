@@ -216,14 +216,14 @@ LRESULT ADLSearchFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	return 0;
 }
 	
-LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) 
-{
-	if((HWND)wParam == ctrlList) { 
+LRESULT ADLSearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlList) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
-			pt.x = pt.y = 0;
-			ctrlList.ClientToScreen(&pt);
+		
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlList, pt);
 		}
+
 		int status = ctrlList.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_GRAYED;
 		contextMenu.EnableMenuItem(IDC_EDIT, status);
 		contextMenu.EnableMenuItem(IDC_REMOVE, status);
@@ -549,5 +549,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.22 2005/03/19 17:59:26 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.23 2005/04/03 14:48:31 arnetheduck Exp $
  */

@@ -740,12 +740,13 @@ void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
 }
 
 LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-	if ((HWND)wParam == ctrlQueue && ctrlQueue.GetSelectedCount() > 0) { 
+	if (reinterpret_cast<HWND>(wParam) == ctrlQueue && ctrlQueue.GetSelectedCount() > 0) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
-			pt.x = pt.y = 0;
-			ctrlQueue.ClientToScreen(&pt);
+		
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlQueue, pt);
 		}
+
 		usingDirMenu = false;
 		CMenuItemInfo mi;
 		
@@ -840,11 +841,11 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		}
 		
 		return TRUE; 
-	} else if ((HWND)wParam == ctrlDirs && ctrlDirs.GetSelectedItem() != NULL) { 
+	} else if (reinterpret_cast<HWND>(wParam) == ctrlDirs && ctrlDirs.GetSelectedItem() != NULL) { 
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
-			pt.x = pt.y = 0;
-			ctrlDirs.ClientToScreen(&pt);
+		
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlDirs, pt);
 		} else {
 			// Strange, windows doesn't change the selection on right-click... (!)
 			UINT a = 0;
@@ -1261,7 +1262,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.74 2005/03/20 15:35:21 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.75 2005/04/03 14:48:15 arnetheduck Exp $
  */
 
 

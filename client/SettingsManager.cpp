@@ -64,7 +64,7 @@ const string SettingsManager::settingTags[] =
 	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize",
 	"HighestPrioSize", "HighPrioSize", "NormalPrioSize", "LowPrioSize", "LowestPrio", 
 	"OpenPublic", "OpenFavoriteHubs", "OpenFavoriteUsers", "OpenQueue", "OpenFinishedDownloads",
-	"OpenFinishedUploads", "OpenSearchSpy", "OpenNotepad",
+	"OpenFinishedUploads", "OpenSearchSpy", "OpenNetworkStatistics", "OpenNotepad",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -207,6 +207,7 @@ SettingsManager::SettingsManager()
 	setDefault(OPEN_FINISHED_DOWNLOADS, false);
 	setDefault(OPEN_FINISHED_UPLOADS, false);
 	setDefault(OPEN_SEARCH_SPY, false);
+	setDefault(OPEN_NETWORK_STATISTICS, false);
 	setDefault(OPEN_NOTEPAD, false);
 	
 #ifdef _WIN32
@@ -368,6 +369,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.119 2005/03/22 18:54:07 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.120 2005/04/03 14:48:37 arnetheduck Exp $
  */
 

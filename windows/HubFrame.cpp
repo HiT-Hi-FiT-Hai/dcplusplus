@@ -656,15 +656,16 @@ LRESULT HubFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	return TRUE;
 }
 
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	RECT rc; 
-	POINT pt; 
-	GetCursorPos(&pt);			//need cursor pos
-	ctrlClient.GetWindowRect(&rc);
-
+LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) }; 
+	
 	bool doMenu = false;
 
-	if (PtInRect(&rc, pt)) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlClient) {
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlClient, pt);
+		}
+
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
 		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
@@ -693,7 +694,11 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		} 
 	} 
 	
-	if((doMenu || ((HWND)wParam == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
+	if((doMenu || (reinterpret_cast<HWND>(wParam) == ctrlUsers)) && ctrlUsers.GetSelectedCount() > 0) {
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlUsers, pt);
+		}
+
 		tabMenuShown = false;
 		prepareMenu(userMenu, ::UserCommand::CONTEXT_CHAT, Text::toT(client->getAddressPort()), client->getOp());
 		checkAdcItems(userMenu);
@@ -1131,5 +1136,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.102 2005/03/20 15:35:21 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.103 2005/04/03 14:48:31 arnetheduck Exp $
  */

@@ -139,8 +139,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(IDC_SEARCH_SPY);
 	m_CmdBar.m_arrCommand.Add(IDC_OPEN_FILE_LIST);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
-	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
 	m_CmdBar.m_arrCommand.Add(IDC_NET_STATS);
+	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_CASCADE);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_HORZ);
 	m_CmdBar.m_arrCommand.Add(ID_WINDOW_TILE_VERT);
@@ -201,6 +201,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	if(BOOLSETTING(OPEN_FINISHED_DOWNLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED);
 	if(BOOLSETTING(OPEN_FINISHED_UPLOADS)) PostMessage(WM_COMMAND, IDC_FINISHED_UL);
 	if(BOOLSETTING(OPEN_SEARCH_SPY)) PostMessage(WM_COMMAND, IDC_SEARCH_SPY);
+	if(BOOLSETTING(OPEN_NETWORK_STATISTICS)) PostMessage(WM_COMMAND, IDC_NET_STATS);
 	if(BOOLSETTING(OPEN_NOTEPAD)) PostMessage(WM_COMMAND, IDC_NOTEPAD);
 	
 	if(!BOOLSETTING(SHOW_STATUSBAR)) PostMessage(WM_COMMAND, ID_VIEW_STATUS_BAR);
@@ -783,6 +784,7 @@ LRESULT MainFrame::onGetToolTip(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 			case IDC_SEARCH_SPY: stringId = ResourceManager::MENU_SEARCH_SPY; break;
 			case IDC_OPEN_FILE_LIST: stringId = ResourceManager::MENU_OPEN_FILE_LIST; break;
 			case ID_FILE_SETTINGS: stringId = ResourceManager::MENU_SETTINGS; break;
+			case IDC_NET_STATS: stringId = ResourceManager::MENU_NETWORK_STATISTICS; break;
 			case IDC_NOTEPAD: stringId = ResourceManager::MENU_NOTEPAD; break;
 		}
 		if(stringId != -1) {
@@ -1210,5 +1212,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.87 2005/03/22 18:54:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.88 2005/04/03 14:48:32 arnetheduck Exp $
  */

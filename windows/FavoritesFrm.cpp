@@ -128,12 +128,11 @@ void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 }
 
 LRESULT FavoriteHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-
-	if((HWND)wParam == ctrlHubs) {
+	if(reinterpret_cast<HWND>(wParam) == ctrlHubs) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
-		if(pt.x < 0 || pt.y < 0) {
-			pt.x = pt.y = 0;
-			ctrlHubs.ClientToScreen(&pt);
+		
+		if(pt.x == -1 && pt.y == -1) {
+			WinUtil::getContextMenuPos(ctrlHubs, pt);
 		}
 
 		int status = ctrlHubs.GetSelectedCount() > 0 ? MFS_ENABLED : MFS_DISABLED;
@@ -318,6 +317,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.33 2005/03/22 18:54:23 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.34 2005/04/03 14:48:31 arnetheduck Exp $
  */
 

@@ -311,6 +311,13 @@ public:
 	
 	static int getOsMajor();
 	static int getOsMinor();
+
+	//returns the position where the context menu should be
+	//opened if it was invoked from the keyboard.
+	//aPt is relative to the screen not the control.
+	static void getContextMenuPos(CListViewCtrl& aList, POINT& aPt);
+	static void getContextMenuPos(CTreeViewCtrl& aTree, POINT& aPt);
+	static void getContextMenuPos(CEdit& aEdit,			POINT& aPt);
 	
 	static bool getUCParams(HWND parent, const UserCommand& cmd, StringMap& sm) throw();
 
@@ -340,5 +347,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.45 2005/03/22 18:54:36 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.46 2005/04/03 14:48:31 arnetheduck Exp $
  */

@@ -81,7 +81,7 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUsers)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
-		MESSAGE_HANDLER(WM_RBUTTONDOWN, onContextMenu)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 	END_MSG_MAP()
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
@@ -387,6 +387,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.58 2005/03/19 13:00:53 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.59 2005/04/03 14:48:31 arnetheduck Exp $
  */
 
