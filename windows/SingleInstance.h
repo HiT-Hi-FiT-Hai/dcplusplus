@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2002
+ * Copyright (C) 2001-2005 Jacek Sieka, arnetheduck on gmail point com
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,5 +54,5 @@ public:
 
 /**
  * @file
- * $Id: SingleInstance.h,v 1.4 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: SingleInstance.h,v 1.5 2005/01/18 11:17:51 arnetheduck Exp $
  */

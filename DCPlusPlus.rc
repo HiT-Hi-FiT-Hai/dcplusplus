@@ -262,7 +262,7 @@ BEGIN
     GROUPBOX        "Colors",IDC_SETTINGS_COLORS,7,7,261,50
     PUSHBUTTON      "Select &window color",IDC_SELWINCOLOR,16,17,82,14
     PUSHBUTTON      "Select &text style",IDC_SELTEXT,16,35,82,14
-    LTEXT           "Donate €€€:s! (ok, $$$ is fine too =) (see help menu)",
+    LTEXT           "Donate ï¿½ï¿½ï¿½:s! (ok, $$$ is fine too =) (see help menu)",
                     IDC_COLOREXAMPLE,107,17,91,32,SS_NOPREFIX | SS_SUNKEN | 
                     WS_BORDER | NOT WS_GROUP
     PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
@@ -758,7 +758,7 @@ BEGIN
             VALUE "FileDescription", "DC++"
             VALUE "FileVersion", "0, 6, 6, 7"
             VALUE "InternalName", "DC++"
-            VALUE "LegalCopyright", "Copyright 2001-2004 Jacek Sieka"
+            VALUE "LegalCopyright", "Copyright 2001-2005 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
             VALUE "ProductVersion", "0, 6, 6, 7"

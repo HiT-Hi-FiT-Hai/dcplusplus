@@ -35,8 +35,8 @@ _T("The following people have contributed code to ")
 _T("DC++ (I hope I haven't missed someone, they're in roughly chronological order...=):\r\n")
 _T("geoff, carxor, luca rota, dan kline, mike, anton, zc, sarf, farcry, kyrre aalerud, opera, ")
 _T("patbateman, xeroc, fusbar, vladimir marko, kenneth skovhede, ondrea, todd pederzani, who, ")
-_T("sedulus, sandos, henrik engström, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
-_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppälä, johnny, ciber, ")
+_T("sedulus, sandos, henrik engstrï¿½m, dwomac, robert777, saurod, atomicjo, bzbetty, orkblutt, ")
+_T("distiller, citruz, dan fulger, cologic, christer palm, twink, ilkka seppï¿½lï¿½, johnny, ciber, ")
 _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, lauris ievins, ")
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston, ")
 _T("bsod, sulan, jonathan stone, tim burton, izzzo, guitarm, paka. ")
@@ -59,7 +59,7 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2004 Jacek Sieka\nCodeveloper: Per Lindén\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
+		SetDlgItemText(IDC_VERSION, _T("DC++ v") _T(VERSIONSTRING) _T("\n(c) Copyright 2001-2005 Jacek Sieka\nCodeveloper: Per LindÃ©n\nGraphics: Martin Skogevall\nDC++ is licenced under GPL\nhttp://dcplusplus.sourceforge.net/"));
 		CEdit ctrl(GetDlgItem(IDC_THANKS));
 		ctrl.FmtLines(TRUE);
 		ctrl.AppendText(thanks, TRUE);
@@ -129,6 +129,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.47 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.48 2005/01/18 11:17:51 arnetheduck Exp $
  */
 

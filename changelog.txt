@@ -39,7 +39,7 @@
 * Small spy frame fix (thanks garg)
 * Small pm fix (thanks garg)
 * Added password warning for n00bs (thanks sed)
-* Help file updates (thanks pretorian, garg)
+* Help file updates (thanks ullner, garg)
 * Probably fixed the list redownloading bug
 * Hash index format change (as a side effect, it's very easy to find dupes
   in the new format, someone should make a tool)
