@@ -75,15 +75,18 @@ void UserConnection::onLine(const string& aLine) throw () {
 	} else if(cmd == "$MaxedOut"){
 		fire(UserConnectionListener::MAXED_OUT, this);
 	} else {
-		dcdebug("Unknown UserConnection command: %s\n", aLine.c_str());
+		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
 	}
 }
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.14 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.15 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.cpp,v $
+ * Revision 1.15  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.14  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

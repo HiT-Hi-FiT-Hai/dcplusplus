@@ -244,6 +244,7 @@ void HubFrame::onEnter() {
 				if(j > 0) {
 					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
 					ctrlStatus.SetText(0, CSTRING(SLOTS_SET));
+					ClientManager::getInstance()->infoUpdated();
 				} else {
 					ctrlStatus.SetText(0, CSTRING(INVALID_NUMBER_OF_SLOTS));
 				}
@@ -590,12 +591,66 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	return 0;
 }
 
+void HubFrame::addLine(const string& aLine) {
+	if(ctrlClient.GetWindowTextLength() > 20000) {
+		// We want to limit the buffer to the last 20000 characters...after that, w95 becomes sad...
+		ctrlClient.SetRedraw(FALSE);
+		ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
+		ctrlClient.ReplaceSel("");
+		ctrlClient.SetRedraw(TRUE);
+	}
+	BOOL noscroll = TRUE;
+	POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
+	CRect r;
+	ctrlClient.GetClientRect(r);
+	
+	if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
+		noscroll = FALSE;
+	else {
+		ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
+	}
+	if(timeStamps) {
+		ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
+	} else {
+		ctrlClient.AppendText(("\r\n" + aLine).c_str());
+	}
+	if(noscroll) {
+		ctrlClient.SetRedraw(TRUE);
+	}
+	setDirty();
+}
+
+LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlUsers.GetClientRect(&rc);
+	ctrlUsers.ScreenToClient(&pt); 
+	
+	if (PtInRect(&rc, pt)) 
+	{ 
+		ctrlUsers.ClientToScreen(&pt);
+		if(op) {
+			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		} else {
+			userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		}
+		
+		return TRUE; 
+	}
+	
+	return FALSE; 
+}
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.45 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.46 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.46  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.45  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

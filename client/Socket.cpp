@@ -200,7 +200,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
-				TIMEVAL t = { 0, 500 };
+				TIMEVAL t = { 0, 500000 };
 				fd_set rfd, wfd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
@@ -209,7 +209,7 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				// Wait until something happens with the socket...
 				select(1, &rfd, &wfd, NULL, &t);
 			} else if(errno == ENOBUFS) {
-				TIMEVAL t = { 0, 500 };
+				TIMEVAL t = { 0, 500000 };
 				fd_set rfd, wfd;
 				FD_ZERO(&rfd);
 				FD_ZERO(&wfd);
@@ -240,9 +240,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.25 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.26 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.26  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.25  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

@@ -52,7 +52,7 @@ public:
 
 	static QueueFrame* frame;
 
-	QueueFrame() : stopperThread(NULL) { 
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), stopperThread(NULL) { 
 		QueueManager::getInstance()->addListener(this);
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
@@ -93,6 +93,13 @@ public:
 	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
@@ -148,81 +155,9 @@ public:
 		}
 		return 0;
 	}
-	
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
 
-		CRect rc = rect;
-
-		rc.bottom -= 2;
-		rc.top += 2;
-		rc.left +=2;
-		rc.right -=2;
-		ctrlQueue.MoveWindow(rc);
-
-	}
-	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-		
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		DWORD id = 0;
-
-		if(stopperThread) {
-			if(WaitForSingleObject(stopperThread, 0) == WAIT_TIMEOUT) {
-				// Hm, the thread's not finished stopping the client yet...post a close message and continue processing...
-				PostMessage(WM_CLOSE);
-				return 0;
-			}
-			
-			ctrlQueue.DeleteAllItems();
-			{
-				Lock l(cs);
-				for(QueueIter i = queue.begin(); i != queue.end(); ++i) {
-					delete i->second;
-				}
-				queue.clear();
-			}
-			CloseHandle(stopperThread);
-			
-			stopperThread = NULL;
-			bHandled = FALSE;
-		} else {
-			stopperThread = CreateThread(NULL, 0, stopper, this, 0, &id);
-			
-		}
-		return 0;
-	}
-
-	static DWORD WINAPI stopper(void* p) {
-		QueueFrame* f = (QueueFrame*)p;
-				
-		QueueManager::getInstance()->removeListener(f);
-		f->PostMessage(WM_CLOSE);
-		QueueFrame::frame = NULL;
-		return 0;
-	}
-	
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		
 		return MDITabChildWindowImpl<QueueFrame>::PreTranslateMessage(pMsg);
 	}
 	
@@ -230,7 +165,6 @@ public:
 		return 0;
 	}
 		
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
@@ -239,17 +173,18 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	
 	
 private:
 
 	enum {
-		COLUMN_TARGET,
+		COLUMN_FIRST,
+		COLUMN_TARGET = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_SIZE,
 		COLUMN_PRIORITY,
 		COLUMN_USERS,
+		COLUMN_PATH,
 		COLUMN_LAST
 	};
 
@@ -273,7 +208,26 @@ private:
 	
 	int menuItems;
 	StringList searchFilter;
+
+	typedef map<QueueItem*, QueueItem*> QueueMap;
+	typedef QueueMap::iterator QueueIter;
+	QueueMap queue;
 	
+	CriticalSection cs;
+	ExListViewCtrl ctrlQueue;
+	CStatusBarCtrl ctrlStatus;
+	
+	LONGLONG queueSize;
+	int queueItems;
+
+	static int columnIndexes[COLUMN_LAST];
+	static int columnSizes[COLUMN_LAST];
+	
+	void updateStatus() {
+		ctrlStatus.SetText(1, ("Items: " + Util::toString(queueItems)).c_str());
+		ctrlStatus.SetText(2, ("Size: " + Util::formatBytes(queueSize)).c_str());
+	}
+
 	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
 		switch(type) {
 		case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
@@ -288,13 +242,6 @@ private:
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
-	typedef map<QueueItem*, QueueItem*> QueueMap;
-	typedef QueueMap::iterator QueueIter;
-	QueueMap queue;
-
-	CriticalSection cs;
-	ExListViewCtrl ctrlQueue;
-	CStatusBarCtrl ctrlStatus;
 	
 };
 
@@ -302,9 +249,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.9 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.10 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.10  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.9  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

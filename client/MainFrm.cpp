@@ -660,6 +660,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 				delete buf;
 			}
 		}
+		ClientManager::getInstance()->infoUpdated();
 	}
 	return 0;
 }
@@ -805,9 +806,12 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.69 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.70 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.70  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.69  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

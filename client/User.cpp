@@ -25,7 +25,7 @@
 User::Ptr User::nuser = User::Ptr(NULL);
 
 void User::connect() {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 			client->connectToMe(this);
@@ -36,7 +36,7 @@ void User::connect() {
 }
 
 string User::getClientNick() {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		return client->getNick();
 	} else {
@@ -45,21 +45,21 @@ string User::getClientNick() {
 }
 
 void User::update() {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		client->getInfo(this);
 	}
 }
 
 void User::updated(User::Ptr& aUser) {
-	Lock l(aUser->cs);
+	RLock l(aUser->cs);
 	if(aUser->client) {
 		aUser->client->updated(aUser);
 	}
 }
 
 string User::getClientName() {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		return client->getName();
 	} else {
@@ -68,14 +68,14 @@ string User::getClientName() {
 }
 
 void User::privateMessage(const string& aMsg) {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		client->privateMessage(this, aMsg);
 	}
 }
 
 bool User::isClientOp() {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		return client->getOp();
 	}
@@ -83,28 +83,28 @@ bool User::isClientOp() {
 }
 
 void User::kick(const string& aMsg) {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		client->kick(this, aMsg);
 	}
 }
 
 void User::redirect(const string& aTarget, const string& aReason) {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		client->opForceMove(this, aTarget, aReason);
 	}
 }
 
 void User::clientMessage(const string& aMsg) {
-	Lock l(cs);
+	RLock l(cs);
 	if(client) {
 		client->sendMessage(aMsg);
 	}
 }
 
 void User::setClient(Client* aClient) { 
-	Lock l(cs); 
+	WLock l(cs); 
 	client = aClient; 
 	if(client == NULL)
 		unsetFlag(ONLINE);
@@ -117,9 +117,12 @@ void User::setClient(Client* aClient) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.10 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: User.cpp,v 1.11 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.11  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.10  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

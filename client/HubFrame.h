@@ -89,6 +89,20 @@ public:
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+	void addLine(const string& aLine);
+	
 	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlMessage.SetFocus();
 		bHandled = FALSE;
@@ -108,10 +122,6 @@ public:
 		}
 		
 	}
-	
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(!redirect.empty()) {
@@ -130,37 +140,7 @@ public:
 		}
 		return 0;
 	}
-
-	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		// Get the bounding rectangle of the client area. 
-		ctrlUsers.GetClientRect(&rc);
-		ctrlUsers.ScreenToClient(&pt); 
-		
-		if (PtInRect(&rc, pt)) 
-		{ 
-			ctrlUsers.ClientToScreen(&pt);
-			if(op) {
-				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			} else {
-				userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			}
-			
-			return TRUE; 
-		}
-
-		return FALSE; 
-	}
-
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
-	void UpdateLayout(BOOL bResizeBars = TRUE);
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
 		ctrlMessage.SetFocus();
@@ -175,10 +155,8 @@ public:
 		return 0;
 	}
 
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-	{
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
-		
 		return MDITabChildWindowImpl<HubFrame>::PreTranslateMessage(pMsg);
 	}
 	
@@ -186,8 +164,6 @@ public:
 		return 0;
 	}
 		
-	LRESULT onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	
 	static int sortSize(LPARAM a, LPARAM b) {
 		UserInfo* c = (UserInfo*)a;
 		UserInfo* d = (UserInfo*)b;
@@ -215,41 +191,11 @@ public:
 		return 0;
 	}
 
-	void addLine(const string& aLine) {
-		if(ctrlClient.GetWindowTextLength() > 20000) {
-			// We want to limit the buffer to the last 20000 characters...after that, w95 becomes sad...
-			ctrlClient.SetRedraw(FALSE);
-			ctrlClient.SetSel(0, ctrlClient.LineIndex(ctrlClient.LineFromChar(2000)), TRUE);
-			ctrlClient.ReplaceSel("");
-			ctrlClient.SetRedraw(TRUE);
-		}
-		BOOL noscroll = TRUE;
-		POINT p = ctrlClient.PosFromChar(ctrlClient.GetWindowTextLength() - 1);
-		CRect r;
-		ctrlClient.GetClientRect(r);
-
-		if( r.PtInRect(p) || MDIGetActive() != m_hWnd)
-			noscroll = FALSE;
-		else {
-			ctrlClient.SetRedraw(FALSE); // Strange!! This disables the scrolling...????
-		}
-		if(timeStamps) {
-			ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		} else {
-			ctrlClient.AppendText(("\r\n" + aLine).c_str());
-		}
-		if(noscroll) {
-			ctrlClient.SetRedraw(TRUE);
-		}
-		setDirty();
-	}
-
 	void addClientLine(const string& aLine) {
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
 	}
 
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		PAINTSTRUCT ps;
@@ -258,6 +204,7 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
+
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		switch(wParam) {
 		case VK_RETURN:
@@ -484,9 +431,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.58 2002/03/11 22:58:54 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.59 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.59  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.58  2002/03/11 22:58:54  arnetheduck
  * A step towards internationalization
  *

@@ -24,8 +24,17 @@
 #include "StringTokenizer.h"
 #include "SearchFrm.h"
 #include "PrivateFrame.h"
+#include "ResourceManager.h"
 
 QueueFrame* QueueFrame::frame = NULL;
+
+int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_PRIORITY,
+COLUMN_USERS, COLUMN_PATH };
+
+int QueueFrame::columnSizes[] = { 200, 300, 75, 75, 200, 200 };
+
+static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, 
+	ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -40,14 +49,46 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_QUEUE);
 	
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlQueue.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+		ctrlQueue.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+	}
+	else {
+		ctrlQueue.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 	
-	ctrlQueue.InsertColumn(COLUMN_TARGET, "Target file", LVCFMT_LEFT, 200, COLUMN_TARGET);
-	ctrlQueue.InsertColumn(COLUMN_STATUS, "Status", LVCFMT_LEFT, 300, COLUMN_STATUS);
-	ctrlQueue.InsertColumn(COLUMN_SIZE, "Size", LVCFMT_RIGHT, 75, COLUMN_SIZE);
-	ctrlQueue.InsertColumn(COLUMN_PRIORITY, "Priority", LVCFMT_LEFT, 75, COLUMN_PRIORITY);
-	ctrlQueue.InsertColumn(COLUMN_USERS, "User(s)", LVCFMT_LEFT, 200, COLUMN_USERS);
+	// Create listview columns
+	StringList l = StringTokenizer(SETTING(QUEUEFRAME_ORDER), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnIndexes[k++] = Util::toInt(*i);
+		}
+	}
+	
+	l = StringTokenizer(SETTING(QUEUEFRAME_WIDTHS), ',').getTokens();
+	{
+		int k = 0;
+		for(StringIter i = l.begin(); i != l.end(); ++i) {
+			if(k >= COLUMN_LAST)
+				break;
+			columnSizes[k++] = Util::toInt(*i);
+		}
+	}
+	
+	LV_COLUMN lvc;
+	ZeroMemory(&lvc, sizeof(lvc));
+	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
+	
+	for(int j=0; j<COLUMN_LAST; j++)
+	{
+		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
+		lvc.fmt = j == COLUMN_SIZE ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		lvc.cx = columnSizes[j];
+		lvc.iOrder = columnIndexes[j];
+		lvc.iSubItem = j;
+		ctrlQueue.InsertColumn(j, &lvc);
+	}
 	
 	ctrlQueue.SetBkColor(Util::bgColor);
 	ctrlQueue.SetTextBkColor(Util::bgColor);
@@ -64,37 +105,37 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Search for alternates";
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEARCH_FOR_ALTERNATES));
 	mi.wID = IDC_SEARCH_ALTERNATES;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Remove Download";
+	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE));
 	mi.wID = IDC_REMOVE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Set Priority";
+	mi.dwTypeData = const_cast<char*>(CSTRING(SET_PRIORITY));
 	mi.hSubMenu = priorityMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Get File List";
+	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.hSubMenu = browseMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Remove Source";
+	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE_SOURCE));
 	mi.hSubMenu = removeMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Send Private Message";
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
 	mi.hSubMenu = pmMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
@@ -102,30 +143,32 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Paused";
+	mi.dwTypeData = const_cast<char*>(CSTRING(PAUSED));
 	mi.wID = IDC_PRIORITY_PAUSED;
 	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Low";
+	mi.dwTypeData = const_cast<char*>(CSTRING(LOW));
 	mi.wID = IDC_PRIORITY_LOW;
 	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "Normal";
+	mi.dwTypeData = const_cast<char*>(CSTRING(NORMAL));
 	mi.wID = IDC_PRIORITY_NORMAL;
 	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = "High";
+	mi.dwTypeData = const_cast<char*>(CSTRING(HIGH));
 	mi.wID = IDC_PRIORITY_HIGH;
 	priorityMenu.InsertMenuItem(n++, TRUE, &mi);
 
+	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 	QueueManager::getInstance()->getQueue();
 	
+	updateStatus();
 	bHandled = FALSE;
 	return 1;
 }
@@ -136,24 +179,38 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 		Lock l(cs);
 		dcassert(queue.find(aQI) == queue.end());
 		queue[aQI] = qi;
+		if(!aQI->isSet(QueueItem::USER_LIST)) {
+			queueSize+=aQI->getSize();
+		}
+		queueItems++;
 	}
 	StringListInfo* i = new StringListInfo((LPARAM)aQI);
 
 	i->columns[COLUMN_TARGET] = aQI->getTargetFileName();
-	i->columns[COLUMN_STATUS] = "Waiting to connect...";
-	i->columns[COLUMN_SIZE] = aQI->getSize() == -1 ? "Unknown" : Util::formatBytes(aQI->getSize());
+	i->columns[COLUMN_STATUS] = STRING(WAITING);
+	i->columns[COLUMN_SIZE] = aQI->getSize() == -1 ?STRING(UNKNOWN) : Util::formatBytes(aQI->getSize());
 	switch(aQI->getPriority()) {
-	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
-	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
-	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
-	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
+	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
+	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = STRING(LOW); break;
+	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
+	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
 	default: dcassert(0); break;
 	}
-	
+	i->columns[COLUMN_PATH] = aQI->getTarget();
 	PostMessage(WM_SPEAKER, ADD_ITEM, (LPARAM)i);
 }
 
 void QueueFrame::onQueueRemoved(QueueItem* aQI) {
+	{
+		Lock l(cs);
+		if(!aQI->isSet(QueueItem::USER_LIST)) {
+			queueSize-=aQI->getSize();
+			dcassert(queueSize >= 0);
+		}
+		queueItems--;
+		dcassert(queueItems >= 0);
+	}
+
 	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM) aQI);
 }
 
@@ -199,34 +256,34 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		if(online > 0) {
 			
 			if(aQI->getSources().size() == 1) {
-				i->columns[COLUMN_STATUS] = "Waiting to connect (User online)";
+				i->columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
 			} else {
-				sprintf(buf, "Waiting to connect (%d of %d users online)", online, aQI->getSources().size());
+				sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, aQI->getSources().size());
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		} else {
 			if(aQI->getSources().size() == 0) {
-				i->columns[COLUMN_STATUS] = "No users to download from";
+				i->columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD);
 			} else if(aQI->getSources().size() == 1) {
-				i->columns[COLUMN_STATUS] = "User offline";
+				i->columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
 			} else if(aQI->getSources().size() == 2) {
-				i->columns[COLUMN_STATUS] = "Both users offline";
+				i->columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
 			} else {
-				sprintf(buf, "All %d users offline", aQI->getSources().size());
+				sprintf(buf, CSTRING(ALL_USERS_OFFLINE), aQI->getSources().size());
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		}
 	} else if(aQI->getStatus() == QueueItem::FINISHED) {
-		i->columns[COLUMN_STATUS] = "Finished";
+		i->columns[COLUMN_STATUS] = STRING(FINISHED);
 	} else if(aQI->getStatus() == QueueItem::RUNNING) {
-		i->columns[COLUMN_STATUS] = "Running...";
+		i->columns[COLUMN_STATUS] = STRING(RUNNING);
 	} 
 	
 	switch(aQI->getPriority()) {
-	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
-	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
-	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
-	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
+	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
+	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = STRING(LOW); break;
+	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = STRING(NORMAL); break;
+	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = STRING(HIGH); break;
 	default: dcassert(0); break;
 	}
 	
@@ -243,6 +300,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 		}
 		dcassert(ctrlQueue.find(i->lParam) == -1);
 		ctrlQueue.insert(l, 0, i->lParam);
+		updateStatus();
 		delete i;
 	} else if(wParam == REMOVE_ITEM) {
 		dcassert(ctrlQueue.find(lParam) != -1);
@@ -254,7 +312,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			delete queue[(QueueItem*)lParam];
 			queue.erase((QueueItem*)lParam);
 		}
-		
+		updateStatus();
 	} else if(wParam == SET_TEXT) {
 		StringListInfo* l = (StringListInfo*)lParam;
 		int n = ctrlQueue.find(l->lParam);
@@ -462,11 +520,76 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	return 0;
 }
 
+
+void QueueFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
+	RECT rect;
+	GetClientRect(&rect);
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+	
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[3];
+		ctrlStatus.GetClientRect(sr);
+		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)/2;
+		w[2] = w[0] + (tmp-16);
+		
+		ctrlStatus.SetParts(3, w);
+	}
+	
+	CRect rc = rect;
+	
+	rc.bottom -= 2;
+	rc.top += 2;
+	rc.left +=2;
+	rc.right -=2;
+	ctrlQueue.MoveWindow(rc);
+}
+
+LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	
+	QueueManager::getInstance()->removeListener(this);
+	QueueFrame::frame = NULL;
+	
+	{
+		Lock l(cs);
+		for(QueueIter i = queue.begin(); i != queue.end(); ++i) {
+			delete i->second;
+		}
+		queue.clear();
+	}
+	ctrlQueue.DeleteAllItems();
+	
+	string tmp1;
+	string tmp2;
+	
+	ctrlQueue.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	for(int j = COLUMN_FIRST; j != COLUMN_LAST; j++) {
+		columnSizes[j] = ctrlQueue.GetColumnWidth(j);
+		tmp1 += Util::toString(columnIndexes[j]) + ",";
+		tmp2 += Util::toString(columnSizes[j]) + ",";
+	}
+	tmp1.erase(tmp1.size()-1, 1);
+	tmp2.erase(tmp2.size()-1, 1);
+	
+	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_ORDER, tmp1);
+	SettingsManager::getInstance()->set(SettingsManager::QUEUEFRAME_WIDTHS, tmp2);
+	
+	bHandled = FALSE;		
+	return 0;
+}
+
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.13 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.13  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.12  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

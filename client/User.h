@@ -80,7 +80,7 @@ public:
 	GETSETREF(string, lastHubIp, LastHubIp);
 	GETSETREF(string, lastHubName, LastHubName)
 private:
-	CriticalSection cs;
+	RWLock cs;
 	
 	Client* client;
 	string sharing;
@@ -92,9 +92,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.14 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: User.h,v 1.15 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.15  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.14  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

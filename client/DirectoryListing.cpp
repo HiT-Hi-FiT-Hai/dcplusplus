@@ -31,18 +31,17 @@ void DirectoryListing::load(string& in) {
 	Directory* cur = root;
 
 	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) {
-		string tok = *i;
+		string& tok = *i;
 		int j = tok.find_first_not_of('\t');
 		while(j < ident) {
 			cur = cur->getParent();
 			dcassert(cur != NULL);
 			ident--;
 		}
-		if( tok.find('|')!=string::npos) {
+		string::size_type k = tok.find('|', j);
+		if( k!=string::npos) {
 			// this must be a file...
-			tok = tok.substr(j);
-			j = tok.find('|');
-			cur->files.push_back(new File(cur, tok.substr(0, j), Util::toInt64(tok.substr(j+1))));
+			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
 		} else {
 			// A directory
 			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
@@ -66,9 +65,12 @@ string DirectoryListing::getPath(Directory* d) {
 
 /**
  * @file DirectoryListing.cpp
- * $Id: DirectoryListing.cpp,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.7 2002/03/15 11:59:35 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListing.cpp,v $
+ * Revision 1.7  2002/03/15 11:59:35  arnetheduck
+ * Final changes (I hope...) for 0.155
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *
