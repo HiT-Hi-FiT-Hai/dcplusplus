@@ -37,6 +37,8 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_OPENPUBLIC, SettingsManager::OPEN_PUBLIC, PropPage::T_BOOL },
 	{ IDC_OPENQUEUE, SettingsManager::OPEN_QUEUE, PropPage::T_BOOL },
 	{ IDC_AUTOSEARCH, SettingsManager::AUTO_SEARCH, PropPage::T_BOOL },
+	{ IDC_IGNOREOFFLINE, SettingsManager::IGNORE_OFFLINE, PropPage::T_BOOL },
+	{ IDC_POPUPOFFLINE, SettingsManager::POPUP_OFFLINE, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -66,9 +68,12 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.9 2002/02/25 15:39:28 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.10 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: AdvancedPage.cpp,v $
+ * Revision 1.10  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.9  2002/02/25 15:39:28  arnetheduck
  * Release 0.154, lot of things fixed...
  *

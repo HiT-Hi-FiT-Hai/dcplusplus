@@ -36,7 +36,7 @@ char const* SettingsManager::settingTags[] =
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
-	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit",
+	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline"
 	"SENTRY"
 };
 
@@ -72,6 +72,8 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_SEARCH, false);
 	setDefault(TIME_STAMPS, false);
 	setDefault(CONFIRM_EXIT, false);
+	setDefault(IGNORE_OFFLINE, false);
+	setDefault(POPUP_OFFLINE, false);
 
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -215,9 +217,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.19 2002/02/26 23:25:22 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.20 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.20  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.19  2002/02/26 23:25:22  arnetheduck
  * Minor updates and fixes
  *

@@ -167,7 +167,7 @@ void Client::onLine(const string& aLine) throw() {
 			Lock l(cs);
 			User::NickIter i = users.find(param);
 			if(i == users.end()) {
-				dcdebug("C::onLine Quitting user %s not found", param.c_str());
+				dcdebug("C::onLine Quitting user %s not found\n", param.c_str());
 				return;
 			}
 			
@@ -323,9 +323,12 @@ void Client::disconnect(bool rl /* = true */) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.28 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.29 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.29  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.28  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

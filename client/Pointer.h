@@ -39,7 +39,10 @@ public:
 			delete this;
 		}
 	}
-
+	bool unique() {
+		return (ref == 1);
+	}
+	
 protected:
 	PointerBase() : ref(0) { };
 	
@@ -133,7 +136,6 @@ public:
 			base = 0;
 		}
 	}
-	
 private:
 	PointerBase* base;
 	
@@ -160,9 +162,12 @@ bool operator>(T* lhs, const Pointer<T>& rhs) { return rhs < lhs; };
 
 /**
  * @file Pointer.h
- * $Id: Pointer.h,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Pointer.h,v 1.7 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: Pointer.h,v $
+ * Revision 1.7  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -439,6 +439,12 @@ BEGIN
     CONTROL         "Automatically search for alternative download locations",
                     IDC_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
                     76,188,10
+    CONTROL         "Ignore messages from users that are not online (effective agains bots)",
+                    IDC_IGNOREOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,132,233,10
+    CONTROL         "Popup messages from users that are not online (if not ignoring)",
+                    IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    15,144,211,10
 END
 
 IDD_DOWNLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225

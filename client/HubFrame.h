@@ -524,15 +524,6 @@ private:
 		}
 	}
 
-	virtual void onAction(ClientListener::Types type, Client* /*client*/, const string& line1, const string& line2) {
-		switch(type) {
-		case ClientListener::PRIVATE_MESSAGE:
-			string* msg = new string("Private message from " + line1 + "\r\n" + line2);
-			PostMessage(WM_SPEAKER, CLIENT_MESSAGE, (LPARAM) msg);
-			break;
-		}
-	}
-	
 	void updateStatusBar() {
 		if(m_hWnd)
 			PostMessage(WM_SPEAKER, STATS);
@@ -557,9 +548,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.54 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.55 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.55  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.54  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

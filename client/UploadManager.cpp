@@ -229,7 +229,6 @@ void UploadManager::removeConnection(UserConnection::Ptr aConn) {
 			extra--;
 			aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 		}
-		
 	}
 	ConnectionManager::getInstance()->putUploadConnection(aConn);
 	
@@ -263,9 +262,12 @@ void UploadManager::onTimerMinute(DWORD aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.19 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.20 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.20  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.19  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

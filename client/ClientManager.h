@@ -26,8 +26,9 @@
 #include "Client.h"
 #include "CryptoManager.h"
 #include "ConnectionManager.h"
+#include "TimerManager.h"
 
-class ClientManager : private ClientListener, public Singleton<ClientManager>
+class ClientManager : private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
 {
 public:
 	Client* getClient();
@@ -104,12 +105,13 @@ private:
 
 	Client::List clients;
 	CriticalSection cs;
-	
+	int minutes;
+
 	UserMap users;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() { };
-	virtual ~ClientManager() { };
+	ClientManager() : minutes(0) { TimerManager::getInstance()->addListener(this); };
+	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
@@ -160,22 +162,40 @@ private:
 			onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
 		}
 	}
-		
 	
 	void onClientHello(Client* aClient, const User::Ptr& aUser) throw();
-
 	void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
 		int aFileType, const string& aString) throw();
-	
+
+	// TimerManagerListener
+	void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+		if(type == TimerManagerListener::MINUTE) {
+			if(minutes++ >= 5) {
+				Lock l(cs);
+				UserIter i = users.begin();
+				while(i != users.end()) {
+					if(i->second->unique()) {
+						dcdebug("Removing unique user %s\n", i->second->getNick().c_str());
+						users.erase(i++);
+					} else {
+						++i;
+					}
+				}
+			}
+		}
+	}
 };
 
 #endif // !defined(AFX_CLIENTMANAGER_H__8EF173E1_F7DC_40B5_B2F3_F92297701034__INCLUDED_)
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.15 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.16 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.16  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.15  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

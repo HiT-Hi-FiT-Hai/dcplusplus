@@ -142,10 +142,11 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = Util::emptyString */) {
 	Lock l(cs);
-
+	dcassert(aNick.size() > 0);
 	UserPair p = users.equal_range(aNick);
 
 	if(p.first == p.second) {
+		dcdebug("Allocating %d bytes for user %s (#%d)\n", sizeof(User), aNick.c_str(), users.size());
 		return users.insert(make_pair(aNick, new User(aNick)))->second;
 	}
 
@@ -160,6 +161,7 @@ User::Ptr& ClientManager::getUser(const string& aNick, const string& aHint /* = 
 
 User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool putOnline /* = true */) {
 	Lock l(cs);
+	dcassert(aNick.size() > 0);
 	dcassert(aClient != NULL);
 	dcassert(find(clients.begin(), clients.end(), aClient) != clients.end());
 
@@ -190,17 +192,22 @@ User::Ptr& ClientManager::getUser(const string& aNick, Client* aClient, bool put
 		}
 	}
 	
+	dcdebug("Allocating %d bytes for user %s (#%d)\n", sizeof(User), aNick.c_str(), users.size());
 	// Create a new user
 	UserIter k = users.insert(make_pair(aNick, new User(aNick)));
-	k->second->setClient(aClient);
+	if(putOnline)
+		k->second->setClient(aClient);
 	return k->second;
 }
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.10 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.11 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.11  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.10  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *

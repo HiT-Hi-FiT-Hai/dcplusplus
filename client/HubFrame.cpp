@@ -272,14 +272,13 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-	string user;
 	char buf[256];
 
 	Lock l(cs);
 	if(client && client->isConnected() && item->iItem != -1) {
 		ctrlUsers.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
 		try {
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user, client->getIp()));
+			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(buf, client->getIp()));
 		} catch(...) {
 			// ...
 		}
@@ -299,11 +298,10 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			char buf[256];
 			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-			string user = buf;
 			{
 				Lock l(cs);
 				if(client) {
-					ClientManager::getInstance()->getUser(user, client->getIp())->kick(dlg.line);
+					ClientManager::getInstance()->getUser(buf, client->getIp())->kick(dlg.line);
 				}
 			}
 		}
@@ -317,11 +315,10 @@ LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		char buf[256];
 		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-		string user = buf;
 		{
 			Lock l(cs);
 			if(client) {
-				UploadManager::getInstance()->reserveSlot(ClientManager::getInstance()->getUser(user, client->getIp()));
+				UploadManager::getInstance()->reserveSlot(ClientManager::getInstance()->getUser(buf, client->getIp()));
 			}
 		}
 	}
@@ -345,11 +342,10 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				char buf[256];
 				ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
-				string user = buf;
 				{
 					Lock l(cs);
 					if(client) {
-						client->opForceMove(ClientManager::getInstance()->getUser(user, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+						client->opForceMove(ClientManager::getInstance()->getUser(buf, client->getIp()), dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
 					}
 				}
 			}
@@ -389,10 +385,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			ctrlUsers.SetRedraw(FALSE);
 			
 			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
-			ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
-			ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
-			ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
-			ctrlUsers.SetItemText(j, 4, u->getEmail().c_str());
+			ctrlUsers.SetItemText(j, COLUMN_SHARED, Util::formatBytes(u->getBytesShared()).c_str());
+			ctrlUsers.SetItemText(j, COLUMN_DESCRIPTION, u->getDescription().c_str());
+			ctrlUsers.SetItemText(j, COLUMN_CONNECTION, u->getConnection().c_str());
+			ctrlUsers.SetItemText(j, COLUMN_EMAIL, u->getEmail().c_str());
 			
 			ctrlUsers.SetRedraw(TRUE);
 			RECT rc;
@@ -460,16 +456,25 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			client->disconnect();
 	} else if(wParam == CLIENT_PRIVATEMESSAGE) {
 		PMInfo* i = (PMInfo*)lParam;
-		PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
+		if(i->user->isOnline()) {
+			PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
+		} else {
+			if(BOOLSETTING(IGNORE_OFFLINE)) {
+				addClientLine("Ignored message from " + i->user->getNick() + ": " + i->msg);
+			} else if(BOOLSETTING(POPUP_OFFLINE)) {
+				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
+			} else {
+				addLine("Private message from " + i->user->getNick() + ": \r\n" + i->msg);
+			}
+		}
 		delete i;
 	} else if(wParam == CLIENT_CONNECTED) {
 		//ctrlClient.Invalidate();
 	} else if(wParam == CLIENT_SEARCH_FLOOD) {
 		// We have a spammer!!!
 		string* x = (string*)lParam;
-
-		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches within 7 seconds)").c_str());
-
+		addClientLine("Search spam detected from " + (*x) + " (more than 5 searches within 7 seconds)");
+		delete x;
 	} else if(wParam == REDIRECT) {
 		Lock l(cs);
 		if(client)
@@ -484,9 +489,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.39 2002/02/27 12:02:09 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.40 2002/02/28 00:10:47 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.40  2002/02/28 00:10:47  arnetheduck
+ * Some fixes to the new user model
+ *
  * Revision 1.39  2002/02/27 12:02:09  arnetheduck
  * Completely new user handling, wonder how it turns out...
  *
