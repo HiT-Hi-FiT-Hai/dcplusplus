@@ -198,8 +198,13 @@ void SettingsManager::save(string const& aFileName) const
 	NotepadFrame::save(&xml);
 	
 	try {
-		File f(aFileName, File::WRITE, File::CREATE | File::TRUNCATE);
+		
+		File f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>");
 		f.write(xml.toXML());
+		f.close();
+		File::deleteFile(aFileName);
+		File::renameFile(aFileName + ".tmp", aFileName);
 	} catch(FileException e) {
 		// ...
 	}
@@ -207,9 +212,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.16 2002/02/07 22:12:22 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.17  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.16  2002/02/07 22:12:22  arnetheduck
  * Last fixes before 0.152
  *

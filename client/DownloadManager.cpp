@@ -40,6 +40,7 @@ void DownloadManager::onTimerSecond(DWORD /*aTick*/) {
 }
 
 void DownloadManager::removeDownload(QueueItem* aItem) {
+	UserConnection* conn = NULL;
 	Download* d = NULL;
 	{
 		Lock l(cs);
@@ -47,15 +48,16 @@ void DownloadManager::removeDownload(QueueItem* aItem) {
 		// Check the running downloads...
 		for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
 			if(j->second->getQueueItem() == aItem) {
-				UserConnection* conn = j->first;
+				conn = j->first;
 				d = j->second;
 				running.erase(j);
-				removeConnection(conn);
 				break;
 			}
 		}
 	}
-
+	
+	dcassert(conn);
+	removeConnection(conn);
 	dcassert(d);
 	QueueManager::getInstance()->putDownload(d);
 }
@@ -131,7 +133,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	removeConnection(aConn, true);
 }
 
-bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) {
+bool DownloadManager::checkRollback(Download* d, const BYTE* aData, int aLen) throw(FileException) {
 	
 	dcassert(d->getRollbackBuffer());
 
@@ -317,7 +319,6 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 		cs.leave();
 		fire(DownloadManagerListener::FAILED, d, "No slots available");
 
-		ConnectionManager::getInstance()->retryDownload(d->getCQI());
 		QueueManager::getInstance()->putDownload(d);
 	} else {
 		cs.leave();
@@ -357,9 +358,12 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.45 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.46 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.46  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.45  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

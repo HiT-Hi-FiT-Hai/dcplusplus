@@ -1,3 +1,27 @@
+ -- 0.154 --
+* Added passive user detection, those that are behind a set of bricks are passive...
+  detected when the user searches or tries to connect to you...
+* Added a primitive search history
+* Fixed a slot freeing bug
+* Added option to grant extra slots to specific users
+* Changed order of kick message sending, to increase the chances of the user actually getting the message
+* Improved XML loading speed a bit (there's more to be done...)
+* The XML is now backed up before writing a new one, so that you don't lose your queue when ++ crashes
+* Added a quick-fix so that the XML file can be displayed in ie...
+* Fixed crash when trying to send a message to an unconnected hub
+* Fixed some random crashes
+* Fixed default download folder error (when missing '\')
+* Fixed multiline posting
+* Reworked ip detection once more, should now be able to detect changing ip's as well...
+* Fixed various invalid display bugs in the download queue
+* Fixed missing users and bots in the user list
+* Upgraded STLport (4.5.3 now...)
+* Added a primitive search history function
+* Hopefully fixed the growing threads issue
+* Fixed the connection type icon being reported to nmdc users
+* Partially fixed the connection timeout bug (++ now correctly shows reconnection attempts...)
+
+
  -- 0.153 2002-02-11 --
 * Fixed some potential deadlocks
 * Fixed some potential crashes

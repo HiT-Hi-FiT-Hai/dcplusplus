@@ -107,7 +107,7 @@ public:
 	
 	void search(const string& aName, LONGLONG aSize = 0, DWORD aFlags = 0, int aType = 0);
 	void search(const string& aName, const string& aSize, DWORD aFlags = 0, int aType = 0) {
-		search(aName, _atoi64(aSize.c_str()), aFlags, aType);
+		search(aName, Util::toInt64(aSize), aFlags, aType);
 	}
 	
 	void setPort(short aPort) throw(SocketException) {
@@ -156,9 +156,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.12 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.13 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.13  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.12  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -25,6 +25,7 @@
 #include "ShareManager.h"
 #include "SearchFrm.h"
 #include "Util.h"
+#include "UploadManager.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -50,7 +51,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.SetFont(Util::font);
 
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
+		ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
@@ -82,56 +83,60 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	
 	if(!images) {
 		images = new CImageList();
-		images->CreateFromImage(IDB_USERS, 16, 4, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+		images->CreateFromImage(IDB_USERS, 16, 8, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	}
 	ctrlUsers.SetImageList(*images, LVSIL_SMALL);
 
 	CMenuItemInfo mi;
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 13;
-	mi.dwTypeData = "Get File List";
-	mi.wID = IDC_GETLIST;
-	userMenu.InsertMenuItem(0, TRUE, &mi);
-	opMenu.InsertMenuItem(0, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.cch = 15;
-	mi.dwTypeData = "Private Message";
-	mi.wID = IDC_PRIVATEMESSAGE;
-	userMenu.InsertMenuItem(1, TRUE, &mi);
-	opMenu.InsertMenuItem(1, TRUE, &mi);
-	
-	mi.fType = MFT_SEPARATOR;
-	userMenu.InsertMenuItem(2, TRUE, &mi);
-	opMenu.InsertMenuItem(2, TRUE, &mi);
+	int n = 0;
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 17;
+	mi.dwTypeData = "Get File List";
+	mi.wID = IDC_GETLIST;
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Private Message";
+	mi.wID = IDC_PRIVATEMESSAGE;
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Grant extra slot";
+	mi.wID = IDC_GRANTSLOT;
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.fType = MFT_SEPARATOR;
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
 	mi.dwTypeData = "Refresh User List";
 	mi.wID = IDC_REFRESH;
-	userMenu.InsertMenuItem(3, TRUE, &mi);
-	opMenu.InsertMenuItem(3, TRUE, &mi);
+	userMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_TYPE;
 	mi.fType = MFT_SEPARATOR;
-	opMenu.InsertMenuItem(4, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 9;
 	mi.dwTypeData = "Kick User";
 	mi.wID = IDC_KICK;
-	opMenu.InsertMenuItem(5, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 8;
 	mi.dwTypeData = "Redirect";
 	mi.wID = IDC_REDIRECT;
-	opMenu.InsertMenuItem(6, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	bHandled = FALSE;
 	client->connect(server);
@@ -139,10 +144,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 }
 
 
-LRESULT HubFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+void HubFrame::onEnter() {
 	char* message;
 	
-	if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
+	if(ctrlMessage.GetWindowTextLength() > 0) {
 		message = new char[ctrlMessage.GetWindowTextLength()+1];
 		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 		string s(message, ctrlMessage.GetWindowTextLength());
@@ -187,7 +192,7 @@ LRESULT HubFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 				if(!param.empty()) {
 					SearchFrame* pChild = new SearchFrame();
 					pChild->setTab(getTab());
-					pChild->setInitial(param);
+					pChild->setInitial(param, 0, 1);
 					pChild->CreateEx(m_hWndMDIClient);
 				} else {
 					ctrlStatus.SetText(0, "Specify a search string");
@@ -213,9 +218,8 @@ LRESULT HubFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 		}
 		ctrlMessage.SetWindowText("");
 	} else {
-		bHandled = FALSE;
+		MessageBeep(MB_ICONEXCLAMATION);
 	}
-	return 0;
 }
 
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -295,15 +299,32 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 				if(client) {
 					User::Ptr& u = client->getUser(user);
 					if(u) {
-						client->sendMessage(client->getNick() + " is kicking " + u->getNick() + " because: " + dlg.line);
-						client->privateMessage(u, "You are being kicked because: " + dlg.line);
-						client->kick(u);
+						u->kick(dlg.line);
 					}
 				}
 			}
 		}
 	}
 	
+	return 0; 
+};
+
+LRESULT HubFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	int i = -1;
+	while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		char buf[256];
+		ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
+		string user = buf;
+		{
+			Lock l(cs);
+			if(client) {
+				User::Ptr& u = client->getUser(user);
+				if(u) {
+					UploadManager::getInstance()->reserveSlot(u);
+				}
+			}
+		}
+	}
 	return 0; 
 };
 
@@ -361,20 +382,11 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			l.push_back(u->getDescription());
 			l.push_back(u->getConnection());
 			l.push_back(u->getEmail());
-			int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
-			
-			if(u->isSet(User::DCPLUSPLUS))
-				image+=2;
-
-			ctrlUsers.insert(l, image, (LPARAM)ui);
+			ctrlUsers.insert(l, getImage(u), (LPARAM)ui);
 		} else {
-			int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
-			if(u->isSet(User::DCPLUSPLUS))
-				image+=2;
-			
 			ctrlUsers.SetRedraw(FALSE);
 			
-			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, image, 0, 0, NULL);
+			ctrlUsers.SetItem(j, 0, LVIF_IMAGE, NULL, getImage(u), 0, 0, NULL);
 			ctrlUsers.SetItemText(j, 1, Util::formatBytes(u->getBytesShared()).c_str());
 			ctrlUsers.SetItemText(j, 2, u->getDescription().c_str());
 			ctrlUsers.SetItemText(j, 3, u->getConnection().c_str());
@@ -387,7 +399,6 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 			((UserInfo*)ctrlUsers.GetItemData(j))->size = u->getBytesShared();
 		}
-		
 	} else if(wParam==STATS) {
 		Lock l(cs);
 		if(client) {
@@ -471,9 +482,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.35 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.36 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.36  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.35  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -87,31 +87,7 @@ public:
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<QueueFrame>)
 	END_MSG_MAP()
 
-	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		int i = -1;
-		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			string tmp;
-			QueueItem::Priority p;
-			{
-				Lock l(cs);
-				map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
-				if(j == queue.end())
-					continue;
-				
-				tmp = j->second->getTarget();
-				switch(wID) {
-				case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
-				case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
-				case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
-				case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
-				default: p = QueueItem::NORMAL; break;
-				}
-			}
-			QueueManager::getInstance()->setPriority(tmp, p);
-		}
-		return 0;
-	}
-	
+	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPM(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -302,7 +278,7 @@ private:
 		case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); onQueueUpdated(aQI); break;
 		case QueueManagerListener::REMOVED: onQueueRemoved(aQI); break;
 		case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
-		case QueueManagerListener::STATUS_UPDATED: onQueueStatus(aQI); break;
+		case QueueManagerListener::STATUS_UPDATED: onQueueUpdated(aQI); break;
 		default: dcassert(0); break;
 		}
 	};
@@ -310,7 +286,6 @@ private:
 	void onQueueAdded(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
-	void onQueueStatus(QueueItem* aQI);
 	
 	map<QueueItem*, QueueItem*> queue;
 
@@ -324,9 +299,12 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.6 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.h,v $
+ * Revision 1.6  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.5  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

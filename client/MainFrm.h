@@ -90,8 +90,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(FTN_SELECTED, onSelected)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-
-		MESSAGE_HANDLER(WM_USER+242, onTrayIcon)
+		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -409,7 +408,7 @@ private:
 	void onConnectionConnected(ConnectionQueueItem* /*aCqi*/) { };
 	void onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason);
 	void onConnectionRemoved(ConnectionQueueItem* aCqi);
-	void onConnectionStatus(ConnectionQueueItem* /*aCqi*/) { };
+	void onConnectionStatus(ConnectionQueueItem* aCqi);
 
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
@@ -456,9 +455,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.43 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.44 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.44  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.43  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

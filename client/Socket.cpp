@@ -24,7 +24,6 @@
 
 #define checkconnected() if(!connected) throw SocketException("Not connected")
 
-#define BUFSIZE 4096
 #ifdef _DEBUG
 
 SocketException::SocketException(int aError) {
@@ -190,9 +189,11 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 	checkconnected();
 //	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
 	dcassert(aLen > 0);
-	int sendSize = aLen;
-	while(aLen) {
-		int i = ::send(sock, aBuffer, sendSize, 0);
+	int pos = 0;
+	int sendSize = min(aLen, 8192);
+
+	while(pos < aLen) {
+		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
 				Sleep(10);
@@ -208,7 +209,9 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 				checksockerr(SOCKET_ERROR);
 			}
 		} else {
-			aLen-=i;
+			dcassert(i != 0);
+			pos+=i;
+
 			stats.up += i;
 			stats.totalUp += i;
 			
@@ -219,9 +222,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.21 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.21  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.20  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

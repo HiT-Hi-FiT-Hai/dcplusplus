@@ -28,110 +28,124 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	Upload* u;
 	dcassert(aFile.size() > 0);
 	
+	bool userlist = false;
+	bool smallfile = false;
+
+	string file;
 	try {
-		bool userlist = false;
-		bool smallfile = false;
+		file = ShareManager::getInstance()->translateFileName(aFile);
+	} catch(ShareException e) {
+		aSource->error("File Not Available");
+		return;
+	}
+	
+	if( stricmp(aFile.c_str(), "MyList.DcLst") == 0 ) {
+		userlist = true;
+	}
 
-		string file;
-		try {
-			file = ShareManager::getInstance()->translateFileName(aFile);
-		} catch(ShareException e) {
-			aSource->error("File Not Available");
-			return;
-		}
-		
-		if( stricmp(aFile.c_str(), "MyList.DcLst") == 0 ) {
-			userlist = true;
-		}
+	if( File::getSize(file) < (LONGLONG)(16 * 1024) ) {
+		smallfile = true;
+	}
 
-		if( File::getSize(file) < (LONGLONG)(16 * 1024) ) {
-			smallfile = true;
-		}
+	cs.enter();
+	map<User::Ptr, DWORD>::iterator ui = reservedSlots.find(aSource->getUser());
 
-		cs.enter();
-		UserConnection::Iter si = find(slots.begin(), slots.end(), aSource);
+	if( (!aSource->isSet(UserConnection::FLAG_HASSLOT)) && 
+		(getFreeSlots()<=0) && 
+		(ui == reservedSlots.end()) ) {
 
-		if( si == slots.end() && (getFreeSlots()<=0) && !( (smallfile || userlist) && (getFreeExtraSlots() > 0) && (aSource->getUser()->isSet(User::DCPLUSPLUS)) ) ) {
+		if( !(	(smallfile || userlist) && 
+				( (aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) || (getFreeExtraSlots() > 0) ) && 
+				(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
+			) ) {
+			
 			cs.leave();
 			aSource->maxedOut();
 			removeConnection(aSource);
 			return;
+
 		}
+	}
 
-		// We only give out one connection / user...
-		for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
-			if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
-				cs.leave();
-				aSource->maxedOut();
-				removeConnection(aSource);
-				return;					
-			}
-		}
-
-		Upload::MapIter i = uploads.find(aSource);
-
-		if(i != uploads.end()) {
-			// This is bad!
-			
-			dcdebug("UploadManager::onGet Unexpected command\n");				
-			
-			u = i->second;
-			uploads.erase(i);
-
-			if(isExtra(u)) {
-				extra--;
-			} else {
-				running--;
-			}
-						
+	// We only give out one connection / user...
+	for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
+		if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
 			cs.leave();
-
+			aSource->maxedOut();
 			removeConnection(aSource);
-
-			fire(UploadManagerListener::FAILED, u, "Unexpected command");
-			delete u;
-			return;
-		} 
-
-		File* f;
-		try {
-			f = new File(file, File::READ, File::OPEN);
-		} catch(FileException e) {
-			cs.leave();
-			aSource->error("File Not Available");
-			return;
+			return;					
 		}
-		
-		u = new Upload(ConnectionManager::getInstance()->getQueueItem(aSource));
-		u->setFile(f, true);
-		u->setPos(aResume, true);
-		u->setFileName(aFile);
-		u->setUser(aSource->getUser());
-		if(smallfile)
-			u->setFlag(Upload::SMALL_FILE);
-		if(userlist)
-			u->setFlag(Upload::USER_LIST);
+	}
 
-		if(!isExtra(u) && si == slots.end()) {
-			slots.push_back(aSource);
-		}
-		aSource->setStatus(UserConnection::BUSY);
+	Upload::MapIter i = uploads.find(aSource);
+
+	if(i != uploads.end()) {
+		// This is bad!
 		
-		uploads[aSource] = u;
-		if(isExtra(u)) {
-			extra++;
-		} else {
-			running++;
-		}
+		dcdebug("UploadManager::onGet Unexpected command\n");				
 		
+		u = i->second;
+		uploads.erase(i);
+
 		cs.leave();
 
-		aSource->fileLength(Util::toString(u->getSize()));
-
-	} catch(SocketException e) {
-		dcdebug("UploadManager::onGet caught: %s\n", e.getError().c_str());
 		removeConnection(aSource);
+
+		fire(UploadManagerListener::FAILED, u, "Unexpected command");
+		delete u;
+		return;
+	} 
+
+	File* f;
+	try {
+		f = new File(file, File::READ, File::OPEN);
+	} catch(FileException e) {
+		cs.leave();
+		aSource->error("File Not Available");
+		return;
 	}
+	
+	u = new Upload(ConnectionManager::getInstance()->getQueueItem(aSource));
+	u->setFile(f, true);
+	u->setPos(aResume, true);
+	u->setFileName(aFile);
+	u->setUser(aSource->getUser());
+	if(smallfile)
+		u->setFlag(Upload::SMALL_FILE);
+	if(userlist)
+		u->setFlag(Upload::USER_LIST);
+
+	aSource->setStatus(UserConnection::BUSY);
+	
+	uploads[aSource] = u;
+
+	if(!aSource->isSet(UserConnection::FLAG_HASSLOT)) {
+		if(ui != reservedSlots.end()) {
+			aSource->setFlag(UserConnection::FLAG_HASSLOT);
+			running++;
+			reservedSlots.erase(ui);
+		} else {
+			if(isExtra(u)) {
+				if(!aSource->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
+					extra++;
+					aSource->setFlag(UserConnection::FLAG_HASEXTRASLOT);
+				}
+			} else {
+				running++;
+				aSource->setFlag(UserConnection::FLAG_HASSLOT);
+			}
+		}
+	}
+	
+	if(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) && aSource->isSet(UserConnection::FLAG_HASSLOT)) {
+		extra--;
+		aSource->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
+	}
+	
+	cs.leave();
+
+	aSource->fileLength(Util::toString(u->getSize()));
+
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
@@ -158,12 +172,6 @@ void UploadManager::onSend(UserConnection* aSource) {
 		{
 			Lock l(cs);
 			uploads.erase(aSource);
-
-			if(isExtra(u)) {
-				extra--;
-			} else {
-				running--;
-			}
 		}
 		
 		delete u;
@@ -196,12 +204,6 @@ void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
 		u = i->second;
 		uploads.erase(i);
 
-		if(isExtra(u)) {
-			extra--;
-		} else {
-			running--;
-		}
-		
 		cs.leave();
 
 		fire(UploadManagerListener::FAILED, u, aError);
@@ -231,12 +233,6 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	dcdebug("onTransmitDone: Removing upload\n");
 	uploads.erase(i);
 
-	if(isExtra(u)) {
-		extra--;
-	} else {
-		running--;
-	}
-	
 	aSource->setStatus(UserConnection::IDLE);
 	cs.leave();
 
@@ -256,11 +252,6 @@ void UploadManager::removeUpload(Upload* aUpload) {
 			if(i->second == aUpload) {
 				c = i->first;
 				uploads.erase(i);
-				if(isExtra(aUpload)) {
-					extra--;
-				} else {
-					running--;
-				}
 				break;
 			}
 		}
@@ -285,13 +276,6 @@ void UploadManager::removeUpload(UserConnection* aConn) {
 		Lock l(cs);
 		u = uploads[aConn];
 		uploads.erase(aConn);
-
-		if(isExtra(u)) {
-			extra--;
-		} else {
-			running--;
-		}
-		
 	}
 	
 	fire(UploadManagerListener::FAILED, u, "Aborted");
@@ -302,9 +286,12 @@ void UploadManager::removeUpload(UserConnection* aConn) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.16 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.17  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.16  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

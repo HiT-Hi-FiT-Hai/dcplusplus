@@ -26,7 +26,6 @@
 #include "FlatTabCtrl.h"
 #include "SearchManager.h"
 #include "ExListViewCtrl.h"
-#include "StringTokenizer.h"
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 
@@ -47,10 +46,17 @@ public:
 
 	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_SEARCH)
 
-	virtual void OnFinalMessage(HWND /*hWnd*/)
-	{
-		delete this;
+	SearchFrame() : lastSearch(0), searchBoxContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), searchContainer("edit", this, SEARCH_MESSAGE_MAP),  sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
+		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), initialSize(0), initialMode(1) {
+		
+		SearchManager::getInstance()->addListener(this);
 	}
+	
+	~SearchFrame() {
+		SearchManager::getInstance()->removeListener(this);
+	}
+
+	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	BEGIN_MSG_MAP(SearchFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -59,11 +65,10 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_ENTER, onEnter)
-		MESSAGE_HANDLER(WM_TAB, onTab)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
@@ -96,16 +101,12 @@ public:
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-		HWND hWnd = (HWND)lParam;
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		//HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlSearch.m_hWnd || hWnd == ctrlSize.m_hWnd || hWnd == ctrlSizeMode.m_hWnd || hWnd == ctrlMode.m_hWnd) {
-			::SetBkColor(hDC, Util::bgColor);
-			::SetTextColor(hDC, Util::textColor);
-			return (LRESULT)Util::bgBrush;
-		}
-		bHandled = FALSE;
-		return FALSE;
+		::SetBkColor(hDC, Util::bgColor);
+		::SetTextColor(hDC, Util::textColor);
+		return (LRESULT)Util::bgBrush;
 	};
 
 	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -191,11 +192,11 @@ public:
 		rc.bottom = rc.top - 2;
 		rc.top -= 23;
 		rc.right -= 200;
-		ctrlSearch.MoveWindow(rc);
+		rc.bottom += 50;
+		ctrlSearchBox.MoveWindow(rc);
 		
 		rc.left = rc.right;
 		rc.right += 73;
-		rc.bottom += 50;
 		ctrlMode.MoveWindow(rc);
 		
 		rc.bottom -= 50;
@@ -207,6 +208,16 @@ public:
 		rc.right += 50;
 		rc.bottom += 70;
 		ctrlSizeMode.MoveWindow(rc);
+
+		POINT pt;
+		pt.x = 10; 
+		pt.y = 10;
+		HWND hWnd = ctrlSearchBox.ChildWindowFromPoint(pt);
+		if(!ctrlSearch.IsWindow() && hWnd != ctrlSearchBox.m_hWnd) {
+			ctrlSearch.Attach(hWnd); 
+			searchContainer.SubclassWindow(ctrlSearch.m_hWnd);
+		}
+		
 	}
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -216,30 +227,22 @@ public:
 	}
 
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		switch (uMsg) 
-		{ 
-        case WM_KEYDOWN: 
-            switch (wParam) { 
-			case VK_TAB: 
-				SendMessage(WM_TAB); 
-				return 0; 
-			case VK_RETURN: 
-				SendMessage(WM_ENTER); 
-				return 0; 
-			default:
+		switch(wParam) {
+		case VK_TAB:
+			if(uMsg == WM_KEYDOWN) {
+				onTab();
+			}
+			break;
+		case VK_RETURN:
+			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
+				(GetKeyState(VK_CONTROL) & 0x8000) || 
+				(GetKeyState(VK_MENU) & 0x8000) ) {
 				bHandled = FALSE;
-            } 
-            break; 
-			
-		case WM_KEYUP: 
-		case WM_CHAR: 
-			switch (wParam) { 
-            case VK_TAB:		// Fall through
-            case VK_RETURN: 
-                return 0; 
-			default: 
-				bHandled = FALSE;
-			} 
+			} else {
+				if(uMsg == WM_KEYDOWN) {
+					onEnter();
+				}
+			}
 			break;
 		default:
 			bHandled = FALSE;
@@ -247,42 +250,40 @@ public:
 		return 0;
 	}
 	
-	LRESULT onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	
-	LRESULT onTab(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	void onEnter();
+	void onTab() {
 		HWND focus = GetFocus();
-		if(focus == ctrlSearch.m_hWnd) {
+		if(focus == ctrlSearch.m_hWnd || focus == ctrlSearchBox.m_hWnd) {
 			ctrlMode.SetFocus();
 		} else if(focus == ctrlMode.m_hWnd) {
 			ctrlSize.SetFocus();
 		} else if(focus == ctrlSize.m_hWnd) {
 			ctrlSizeMode.SetFocus();
 		} else if(focus == ctrlSizeMode.m_hWnd) {
-			ctrlSearch.SetFocus();
+			ctrlSearchBox.SetFocus();
 		}
-		return 0;
 	}
 
-	SearchFrame() : lastSearch(0), searchContainer("edit", this, SEARCH_MESSAGE_MAP),  sizeContainer("edit", this, SEARCH_MESSAGE_MAP), 
-		modeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP), sizeModeContainer("COMBOBOX", this, SEARCH_MESSAGE_MAP) {
-		
-		SearchManager::getInstance()->addListener(this);
+	void setInitial(const string& str, LONGLONG size, int mode) {
+		initialString = str;
+		initialSize = size;
+		initialMode = mode;
 	}
-
-	~SearchFrame() {
-		SearchManager::getInstance()->removeListener(this);
-	}
-
-	GETSETREF(string, initial, Initial);
 	
 private:
+	string initialString;
+	LONGLONG initialSize;
+	int initialMode;
+
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
+	CComboBox ctrlSearchBox;
 	CEdit ctrlSize;
 	CComboBox ctrlMode;
 	CComboBox ctrlSizeMode;
 	
 	CContainedWindow searchContainer;
+	CContainedWindow searchBoxContainer;
 	CContainedWindow sizeContainer;
 	CContainedWindow modeContainer;
 	CContainedWindow sizeModeContainer;
@@ -295,6 +296,8 @@ private:
 	StringList search;
 	StringList targets;
 	
+	static StringList lastSearches;
+
 	DWORD lastSearch;
 
 	// SearchManagerListener
@@ -317,9 +320,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.29  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.28  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

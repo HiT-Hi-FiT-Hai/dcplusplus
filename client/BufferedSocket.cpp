@@ -56,7 +56,6 @@ void BufferedSocket::threadSendFile() {
 				dcassert(0);
 			} 
 		}
-		
 	}
 	
 	while(WaitForSingleObject(commandEvent, 0) == WAIT_TIMEOUT) {
@@ -143,6 +142,9 @@ bool BufferedSocket::threadConnect() {
 		case WAIT_OBJECT_0 + 1:
 			// We're connected!
 			setConnected();
+			// Update the default local ip...this one should in any case be better than 
+			// whatever we might have guessed from the beginning...
+			SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, getLocalIp());
 			fire(BufferedSocketListener::CONNECTED);
 			return true;
 		default: dcassert("BufferedSocket::threadRun: Unknown command received" == NULL);
@@ -255,11 +257,8 @@ void BufferedSocket::threadSendData() {
 	}
 }
 
-void BufferedSocket::write(const char* aBuf, int aLen) throw(SocketException) {
+void BufferedSocket::write(const char* aBuf, int aLen) throw() {
 
-	if(!isConnected()) {
-		throw("Not connected");
-	}
 	{
 		Lock l(cs);
 		int mybuf = curBuf;
@@ -343,9 +342,12 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.29  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.28  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -77,8 +77,13 @@ public:
 	
 	int getUploads() { Lock l(cs); return uploads.size(); };
 	int getRunning() { return running; };
-	int getFreeSlots() { int i =  (SETTING(SLOTS) - running); return (i > 0) ? i : 0; }
-	int getFreeExtraSlots() { int i = 3 - getExtra(); return (i > 0) ? i : 0; };
+	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
+	
+	void reserveSlot(const User::Ptr& aUser) {
+		Lock l(cs);
+		reservedSlots[aUser] = TimerManager::getTick();
+	}
 
 	bool isExtra(Upload* u) {
 		if(u->isSet(Upload::SMALL_FILE) || u->isSet(Upload::USER_LIST))
@@ -96,23 +101,29 @@ public:
 	}
 
 	void removeConnection(UserConnection::Ptr aConn) {
-		cs.enter();
-		UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
-		if(i != connections.end()) {
-			connections.erase(i);
+		{
+			Lock l(cs);
 
-			UserConnection::Iter j = find(slots.begin(), slots.end(), aConn);
-			if(j != slots.end()) {
-				slots.erase(j);
+			UserConnection::Iter i = find(connections.begin(), connections.end(), aConn);
+			if(i == connections.end()) {
+				dcdebug("UploadManager::removeConnection Unknown connection\n");
+				return;
 			}
-
-			cs.leave();
-			aConn->removeListener(this);
-			ConnectionManager::getInstance()->putUploadConnection(aConn);
-			return;
+			connections.erase(i);
+				
+			if(aConn->isSet(UserConnection::FLAG_HASSLOT)) {
+				running--;
+				aConn->unsetFlag(UserConnection::FLAG_HASSLOT);
+			} 
+			if(aConn->isSet(UserConnection::FLAG_HASEXTRASLOT)) {
+				extra--;
+				aConn->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
+			}
+				
 		}
 
-		cs.leave();
+		aConn->removeListener(this);
+		ConnectionManager::getInstance()->putUploadConnection(aConn);
 	}
 
 	void removeConnections() {
@@ -122,7 +133,6 @@ public:
 			Lock l(cs);
 			tmp = connections;
 			connections.clear();
-			slots.clear();
 		}
 
 		for(UserConnection::Iter i = tmp.begin(); i != tmp.end(); ++i) {
@@ -137,7 +147,7 @@ private:
 	UserConnection::List connections;
 	Upload::Map uploads;
 	CriticalSection cs;
-	UserConnection::List slots;
+	map<User::Ptr, DWORD> reservedSlots;
 
 	friend class Singleton<UploadManager>;
 	UploadManager() : running(0), extra(0) { 
@@ -157,7 +167,7 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		switch(type) {
 		case TimerManagerListener::SECOND: 
 			{
@@ -174,6 +184,13 @@ private:
 					UserConnection* c = i->first;
 					if(!c->getUser()->isOnline()) {
 						ConnectionManager::getInstance()->updateUser(c);
+					}
+				}
+				for(map<User::Ptr, DWORD>::iterator j = reservedSlots.begin(); j != reservedSlots.end();) {
+					if(j->second + 600 * 1000 < aTick) {
+						reservedSlots.erase(j++);
+					} else {
+						++j;
 					}
 				}
 			}	
@@ -223,9 +240,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.37 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.38 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.38  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.37  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

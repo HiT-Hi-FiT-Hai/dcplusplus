@@ -76,103 +76,161 @@ void ConnectionManager::getDownloadConnection(const User::Ptr& aUser) {
 void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reuse /* = false */) {
 	// Pool it for later usage...
 	if(reuse) {
-		cs.enter();
-		if(downPool.find(aSource) == downPool.end()) {
+		aSource->addListener(this);
+		{
+			Lock l(cs);
+			dcassert(downPool.find(aSource) == downPool.end());
 			dcassert(connections.find(aSource) != connections.end());
-
+			
 			ConnectionQueueItem::QueueIter i = connections.find(aSource);
 			aSource->setStatus(UserConnection::IDLE);
 			downPool[aSource] = i->second;
 			aSource->setLastActivity(TimerManager::getTick());
-			cs.leave();
-
-			dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
-			aSource->addListener(this);
-		} else {
-			cs.leave();
-			dcdebug("ConnectionManager::putDownloadConnection Reusable connection %p pooled twice: %s\n", aSource, aSource->getUser()->getNick().c_str());
 		}
+		dcdebug("ConnectionManager::putDownloadConnection Pooing reusable connection %p to %s\n", aSource, aSource->getUser()->getNick().c_str());
+		
 	} else {
+		if(aSource->getUser()) {
+			if(QueueManager::getInstance()->hasDownload(aSource->getUser())) {
+				aSource->removeListeners();
+				aSource->disconnect();
+				Lock l(cs);
+				
+				ConnectionQueueItem::QueueIter i = connections.find(aSource);
+				if(i != connections.end()) {
+					i->second->setConnection(NULL);
+					i->second->setStatus(ConnectionQueueItem::WAITING);
+					pendingDown[i->second] = TimerManager::getTick();
+
+					connections.erase(i);
+					return;
+				}
+
+				dcassert(find(pendingDelete.begin(), pendingDelete.end(), aSource) == pendingDelete.end());
+				dcassert(find(userConnections.begin(), userConnections.end(), aSource) != userConnections.end());
+				userConnections.erase(find(userConnections.begin(), userConnections.end(), aSource));
+				pendingDelete.push_back(aSource);
+				return;
+			}
+			
+		}
 		putConnection(aSource);
 	}
 }
 
-void ConnectionManager::onAction(TimerManagerListener::Types type, DWORD aTick) {
-	if(type == TimerManagerListener::SECOND) {
-		UserConnection::List removed;
-		// Max 3 connection attempts every second...
-		ConnectionQueueItem::List add;
-		ConnectionQueueItem::List remove;
-		int attempts = 0;
-		{
-			Lock l(cs);
-			add = pendingAdd;
-			pendingAdd.clear();
+void ConnectionManager::putConnection(UserConnection* aConn) {
+	aConn->removeListeners();
+	aConn->disconnect();
+	ConnectionQueueItem* cqi = NULL;
+	{
+		Lock l(cs);
+		
+		ConnectionQueueItem::QueueIter i = connections.find(aConn);
+		if(i != connections.end()) {
+			cqi = i->second;
+			connections.erase(i);
+		}
+		dcassert(find(pendingDelete.begin(), pendingDelete.end(), aConn) == pendingDelete.end());
+		dcassert(find(userConnections.begin(), userConnections.end(), aConn) != userConnections.end());
+		userConnections.erase(find(userConnections.begin(), userConnections.end(), aConn));
+		pendingDelete.push_back(aConn);
+	}
+	if(cqi) {
+		fire(ConnectionManagerListener::REMOVED, cqi);
+		delete cqi;
+	}
+}
 
-			removed = pendingDelete;
-			pendingDelete.clear();
+void ConnectionManager::onTimerSecond(DWORD aTick) {
+	UserConnection::List removed;
+	ConnectionQueueItem::List add;
+	ConnectionQueueItem::List remove;
+	ConnectionQueueItem::List failPassive;
+	ConnectionQueueItem::List connecting;
+	int attempts = 0;
 
-			ConnectionQueueItem::TimeIter i = pendingDown.begin();
-			
-			while(i != pendingDown.end()) {
-				ConnectionQueueItem* cqi = i->first;
+	{
+		Lock l(cs);
+		add = pendingAdd;
+		pendingAdd.clear();
 
-				if(!cqi->getUser()->isOnline()) {
-					// Not online anymore...remove him from the pending...
-					cqi->setUser(ClientManager::getInstance()->findUser(cqi->getUser()->getNick()));
-					if(!cqi->getUser()) {
+		removed = pendingDelete;
+		pendingDelete.clear();
+
+		ConnectionQueueItem::TimeIter i = pendingDown.begin();
+		
+		while(i != pendingDown.end()) {
+			ConnectionQueueItem* cqi = i->first;
+
+			if(!cqi->getUser()->isOnline()) {
+				// Not online anymore...remove him from the pending...
+				cqi->setUser(ClientManager::getInstance()->findUser(cqi->getUser()->getNick()));
+				if(!cqi->getUser()) {
+					pendingDown.erase(i++);
+					remove.push_back(cqi);
+				} else {
+					++i;
+				}
+				continue;
+			}
+
+			if( ((i->second + 60*1000) < aTick) ) {
+				if((attempts <= 3) ) {
+					// Nothing's happened for 60 seconds, try again...
+					if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
 						pendingDown.erase(i++);
 						// i = pendingDown.erase(i);	// This works with MSVC++ STL 
 						remove.push_back(cqi);
-					} else {
-						++i;
+						continue;
 					}
-					continue;
-				}
+					i->second = aTick;
 
-				if( ((i->second + 60*1000) < aTick) ) {
-					if((attempts <= 3) ) {
-						// Nothing's happened for 60 seconds, try again...
-						if(!QueueManager::getInstance()->hasDownload(cqi->getUser())) {
-							pendingDown.erase(i++);
-							// i = pendingDown.erase(i);	// This works with MSVC++ STL 
-							remove.push_back(cqi);
-							continue;
-						}
+					if(cqi->getUser()->isSet(User::PASSIVE) && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
+						failPassive.push_back(cqi);
+					} else {
 						cqi->getUser()->connect();
+						connecting.push_back(cqi);
 						attempts++;
-						i->second = aTick;
 						cqi->setStatus(ConnectionQueueItem::CONNECTING);
 					}
-				} else if(((i->second + 40*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
-					fire(ConnectionManagerListener::FAILED, cqi, "Connection Timeout");
-					cqi->setStatus(ConnectionQueueItem::WAITING);
 				}
-
-				++i;
+			} else if(((i->second + 40*1000) < aTick) && cqi->getStatus() == ConnectionQueueItem::CONNECTING) {
+				fire(ConnectionManagerListener::FAILED, cqi, "Connection Timeout");
+				cqi->setStatus(ConnectionQueueItem::WAITING);
 			}
-		}
 
-		for(UserConnection::Iter j = removed.begin(); j != removed.end(); ++j) {
-			dcdebug("UserConnection %p deleted\n", *j);
-			delete *j;
+			++i;
 		}
+	}
 
-		for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
-			fire(ConnectionManagerListener::STATUS_CHANGED, *k);
-			DownloadManager::getInstance()->addConnection((*k)->getConnection());
-		}
+	for(UserConnection::Iter j = removed.begin(); j != removed.end(); ++j) {
+		dcdebug("UserConnection %p deleted\n", *j);
+		delete *j;
+	}
 
-		for(ConnectionQueueItem::Iter l = remove.begin(); l != remove.end(); ++l) {
-			fire(ConnectionManagerListener::REMOVED, *l);
-			delete *l;
-		}
-		
-	} else if(type == TimerManagerListener::MINUTE) {
-		for(ConnectionQueueItem::QueueIter j = connections.begin(); j != connections.end(); ++j) {
-			if((j->first->getLastActivity() + 180*1000) < aTick) {
-				j->first->disconnect();
-			}
+	for(ConnectionQueueItem::Iter k = add.begin(); k != add.end(); ++k) {
+		fire(ConnectionManagerListener::STATUS_CHANGED, *k);
+		DownloadManager::getInstance()->addConnection((*k)->getConnection());
+	}
+
+	for(ConnectionQueueItem::Iter l = remove.begin(); l != remove.end(); ++l) {
+		fire(ConnectionManagerListener::REMOVED, *l);
+		delete *l;
+	}
+	for(ConnectionQueueItem::Iter m = failPassive.begin(); m != failPassive.end(); ++m) {
+		fire(ConnectionManagerListener::FAILED, *m, "Can't connect to passive user while in passive mode");
+	}
+	for(ConnectionQueueItem::Iter n = connecting.begin(); n != connecting.end(); ++n) {
+		fire(ConnectionManagerListener::STATUS_CHANGED, *n);
+	}
+	
+}
+
+void ConnectionManager::onTimerMinute(DWORD aTick) {
+	Lock l(cs);
+	for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+		if(((*j)->getLastActivity() + 180*1000) < aTick) {
+			(*j)->disconnect();
 		}
 	}
 }
@@ -211,7 +269,7 @@ void ConnectionManager::onMyNick(UserConnection* aSource, const string& aNick) t
 	ConnectionQueueItem* cqi = NULL;
 	{
 		Lock l(cs);
-
+		
 		for(ConnectionQueueItem::TimeIter i = pendingDown.begin(); i != pendingDown.end(); ++i) {
 			cqi = i->first;
 			if(cqi->getUser()->getNick() == aNick) {
@@ -395,26 +453,14 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 	}
 }
 
-void ConnectionManager::retryDownload(ConnectionQueueItem* aCqi) {
-	dcassert(aCqi);
-	UserConnection* uc = aCqi->getConnection();
-	dcassert(uc);
-	{
-		Lock l(cs);
-		connections.erase(aCqi->getConnection());
-		aCqi->setConnection(NULL);
-		aCqi->setStatus(ConnectionQueueItem::WAITING);
-	}
-
-	pendingDelete.push_back(uc);
-	pendingDown[aCqi] = TimerManager::getInstance()->getTick();
-}
-
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.29 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.30 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.cpp,v $
+ * Revision 1.30  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.29  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

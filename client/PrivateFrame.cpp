@@ -40,7 +40,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.LimitText(0);
 	ctrlClient.SetFont(Util::font);
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
+		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
@@ -115,7 +115,7 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 	}
 }
 
-LRESULT PrivateFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+void PrivateFrame::onEnter()
 {
 	if(!user->isOnline()) {
 		User::Ptr& p = ClientManager::getInstance()->findUser(user->getNick());
@@ -127,27 +127,26 @@ LRESULT PrivateFrame::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 	if(user->isOnline()) {
 		char* message;
 		
-		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
+		if(ctrlMessage.GetWindowTextLength() > 0) {
 			message = new char[ctrlMessage.GetWindowTextLength()+1];
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 			sendMessage(string(message, ctrlMessage.GetWindowTextLength()));
 			delete message;
 			ctrlMessage.SetWindowText("");
-		} else {
-			bHandled = FALSE;
-		}
+		} 
 	} else {
 		ctrlStatus.SetText(0, "User went offline");
-		bHandled = FALSE;
 	}
-	return 0;
 }
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.16 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.17 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.17  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.16  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

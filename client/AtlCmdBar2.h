@@ -35,7 +35,7 @@ namespace WTL
 /////////////////////////////////////////////////////////////////////////////
 // CMDIChildWindowImpl2 - Base class for MDI child frame
 
-#define WM_MDICHILDSIZED	(WM_USER + 123)
+#define WM_MDICHILDSIZED	(WM_APP + 123)
 
 // Seems that static variables can not be initialized in a template hence we
 // need this class...

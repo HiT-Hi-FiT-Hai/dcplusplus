@@ -173,7 +173,7 @@ public:
 	
 	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
 		dcdebug("MyInfo %s...\n", aNick.c_str());
-		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + "$ $" + aSpeed + "\x05$" + Util::removeInvalid(aEmail) + '$' + aBytesShared + "$|");
+		send("$MyINFO $ALL " + Util::removeInvalid(aNick) + " " + Util::removeInvalid(aDescription) + "$ $" + aSpeed + "\x01$" + Util::removeInvalid(aEmail) + '$' + aBytesShared + "$|");
 	}
 
 	void connectToMe(const User::Ptr& aUser) {
@@ -300,14 +300,8 @@ private:
 				lastActivity = aTick;
 				// Try to send something for the fun of it...
 				if(isConnected()) {
-					try {
-						dcdebug("Testing writing...\n");
-						socket.write("|", 1);
-					} catch(Exception e) {
-						dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
-						fire(ClientListener::FAILED, this, e.getError());
-						connect(server, port);
-					}
+					dcdebug("Testing writing...\n");
+					socket.write("|", 1);
 				} else {
 					// Try to reconnect...
 					connect(server, port);
@@ -348,12 +342,8 @@ private:
 
 	void send(const string& a) throw() {
 		lastActivity = TimerManager::getTick();
-		try {
-			//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
-			socket.write(a);
-		} catch(SocketException e) {
-			fire(ClientListener::FAILED, this, e.getError());
-		}
+		//dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
+		socket.write(a);
 	}
 };
 
@@ -362,9 +352,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.38 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: Client.h,v 1.39 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.39  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.38  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -171,6 +171,13 @@ void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 	}
 }
 
+void MainFrame::onConnectionStatus(ConnectionQueueItem* aCqi) {
+	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
+	i->columns[COLUMN_STATUS] = aCqi->getStatus() == ConnectionQueueItem::CONNECTING ? "Connecting..." : "Waiting to retry...";
+	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+}
+
+
 void MainFrame::onConnectionRemoved(ConnectionQueueItem* aCqi) {
 	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)aCqi);
 }
@@ -658,7 +665,7 @@ LRESULT MainFrame::onSysCommand(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		nid.hWnd = m_hWnd;
 		nid.uID = 0;
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
-		nid.uCallbackMessage = WM_USER + 242;
+		nid.uCallbackMessage = WM_APP + 242;
 		nid.hIcon = (HICON)::LoadImage(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MAINFRAME), IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
 		strncpy(nid.szTip, "DC++",64);
 		nid.szTip[63] = '\0';
@@ -688,9 +695,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.61 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.62 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.62  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.61  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

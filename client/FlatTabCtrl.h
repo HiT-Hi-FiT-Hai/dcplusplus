@@ -26,9 +26,9 @@
 #include "AtlCmdBar2.h"
 
 /** This will be sent when the user presses a tab. WPARAM = HWND */
-#define FTN_SELECTED (WM_USER + 700)
+#define FTN_SELECTED (WM_APP + 700)
 /** Set currently active tab to the HWND pointed by WPARAM */
-#define FTM_SETACTIVE (WM_USER + 701)
+#define FTM_SETACTIVE (WM_APP + 701)
 
 template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
@@ -339,9 +339,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.6 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.7  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.6  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

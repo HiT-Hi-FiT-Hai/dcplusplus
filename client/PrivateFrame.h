@@ -51,7 +51,9 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, OnChar)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
+		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
+		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -152,7 +154,27 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		switch(wParam) {
+		case VK_RETURN:
+			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
+				(GetKeyState(VK_CONTROL) & 0x8000) || 
+				(GetKeyState(VK_MENU) & 0x8000) ) {
+				bHandled = FALSE;
+			} else {
+				if(uMsg == WM_KEYDOWN) {
+					onEnter();
+				}
+			}
+			break;
+		default:
+			bHandled = FALSE;
+		}
+		return 0;
+	}
+
+	void onEnter();
+	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const string& msg) {
 		if(user && user->isOnline()) {
@@ -189,9 +211,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.12 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.13 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.13  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.12  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

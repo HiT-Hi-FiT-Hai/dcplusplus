@@ -81,9 +81,13 @@ bool User::isClientOp() {
 	return false;
 }
 
-void User::kick() {
+void User::kick(const string& aMsg) {
 	Lock l(cs);
 	if(client) {
+		client->privateMessage(this, "You are being kicked because: " + aMsg);
+		// Short, short break to allow the message to reach the client...
+		Sleep(10);
+		client->sendMessage(client->getNick() + " is kicking " + getNick() + " because: " + aMsg);
 		client->kick(this);
 	}
 }
@@ -104,9 +108,12 @@ void User::clientMessage(const string& aMsg) {
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.6 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: User.cpp,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.7  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.6  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

@@ -90,7 +90,6 @@ public:
 	
 	void getDownloadConnection(const User::Ptr& aUser);
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
-	void retryDownload(ConnectionQueueItem* aCqi);
 	void putUploadConnection(UserConnection* aSource) {
 		putConnection(aSource);
 	}
@@ -128,6 +127,7 @@ private:
 	ConnectionQueueItem::QueueMap downPool;
 	ConnectionQueueItem::QueueMap connections;
 	ConnectionQueueItem::List pendingAdd;
+	UserConnection::List userConnections;
 
 	ServerSocket socket;
 
@@ -188,55 +188,41 @@ private:
 	void onFailed(UserConnection* aSource, const string& aError) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD aTick);
+	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
+		switch(type) {
+		case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
+		case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
+		}
+	}
 	
+	void onTimerSecond(DWORD aTick);
+	void onTimerMinute(DWORD aTick);
+
 	/**
 	 * Returns an connection, either from the pool or a brand new fresh one.
 	 */
 	UserConnection* getConnection() {
-
 		UserConnection* uc = new UserConnection();
 		uc->addListener(this);
-		return uc;
-	}
-	/**
-	 * Put a connection back into the pool. There are a few reasons for pooling user connections, the
-	 * most notable one is that it is possible that the connection's own socket thread will call this function,
-	 * and therefore, it cannot be removed at once. And since we have to store the connections on in a pool
-	 * we might as well reuse them instead of always deleting and creating new ones...
-	 */
-	void putConnection(UserConnection* aConn) {
-		aConn->removeListeners();
-		aConn->disconnect();
-		ConnectionQueueItem* cqi = NULL;
 		{
 			Lock l(cs);
-			
-			ConnectionQueueItem::QueueIter i = connections.find(aConn);
-			if(i != connections.end()) {
-				cqi = i->second;
-				connections.erase(i);
-			}
-			if(find(pendingDelete.begin(), pendingDelete.end(), aConn) == pendingDelete.end()) {
-				pendingDelete.push_back(aConn);
-			} else {
-				dcdebug("ConnectionManager::putConnection %p put back twice\n", aConn);
-			}
+			userConnections.push_back(uc);
 		}
-		if(cqi) {
-			fire(ConnectionManagerListener::REMOVED, cqi);
-			delete cqi;
-		}
+		return uc;
 	}
+	void putConnection(UserConnection* aConn);
 };
 
 #endif // !defined(AFX_ConnectionManager_H__675A2F66_AFE6_4A15_8386_6B6FD579D5FF__INCLUDED_)
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.27 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.28 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.28  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.27  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

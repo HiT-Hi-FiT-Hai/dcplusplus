@@ -32,10 +32,13 @@ LRESULT DownloadPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 void DownloadPage::write()
 {
+	
 	PropPage::write((HWND)*this, items);
-
-	// Do specialized writing here
-	// settings->set(XX, YY);
+	
+	string s = SETTING(DOWNLOAD_DIRECTORY);
+	if(s.length() > 0 && s[s.length() - 1] != '\\') {
+		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, s);
+	}
 }
 
 LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

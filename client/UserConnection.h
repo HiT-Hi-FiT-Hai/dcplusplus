@@ -143,8 +143,10 @@ public:
 
 	enum Flags {
 		FLAG_UPLOAD = 0x01,
-		FLAG_DOWNLOAD = 0x02,
-		FLAG_INCOMING = 0x04
+		FLAG_DOWNLOAD = FLAG_UPLOAD << 1,
+		FLAG_INCOMING = FLAG_DOWNLOAD << 1,
+		FLAG_HASSLOT = FLAG_INCOMING << 1,
+		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1
 	};
 
 	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
@@ -272,11 +274,7 @@ private:
 
 	void send(const string& aString) {
 		TimerManager::getTick();
-		try {
-			socket.write(aString);
-		} catch(SocketException e) {
-			fire(UserConnectionListener::FAILED, this, e.getError());
-		}
+		socket.write(aString);
 	}
 };
 
@@ -284,9 +282,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.33 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.34 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.34  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.33  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -103,17 +103,36 @@ void Client::onLine(const string& aLine) throw() {
 			if(s != searchFlood.end()) {
 				if(++s->second > 5) {
 					// We have a search spammer!!!
-					if(seeker.find("Hub:"))
+					if(seeker.find("Hub:") != string::npos)
 						fire(ClientListener::SEARCH_FLOOD, this, seeker.substr(4));
 					else
 						fire(ClientListener::SEARCH_FLOOD, this, seeker + " (Nick unknown)");
 					spam = true;
 				}
+			} else {
+				searchFlood[seeker] = 1;
 			}
 		}
 
-		if(!spam && param.size() > 0)
+		if(!spam && param.size() > 0) {
 			fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
+			
+			if(seeker.find("Hub:") != string::npos) {
+				User::Ptr u;
+				{
+					Lock l(cs);
+					User::NickIter i = users.find(seeker.substr(4));
+					if(i != users.end() && !i->second->isSet(User::PASSIVE)) {
+						u = i->second;
+						u->setFlag(User::PASSIVE);
+					}
+				}
+
+				if(u) {
+					updated(u);
+				}
+			}
+		}
 	} else if(cmd == "$MyINFO") {
 		int i, j;
 		i = 5;
@@ -168,15 +187,31 @@ void Client::onLine(const string& aLine) throw() {
 		string server = param.substr(0, param.find(':'));
 		fire(ClientListener::CONNECT_TO_ME, this, server, param.substr(param.find(':')+1));
 	} else if(cmd == "$RevConnectToMe") {
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			cs.enter();
+		User::Ptr u;
+		bool up = false;
+		{
+			Lock l(cs);
 			User::NickIter i = users.find(param.substr(0, param.find(' ')));
 			if(i != users.end()) {
-				cs.leave();
-				fire(ClientListener::REV_CONNECT_TO_ME, this, i->second);
-			} else {
-				cs.leave();
+				u = i->second;
+				if(!u->isSet(User::PASSIVE)) {
+					u->setFlag(User::PASSIVE);
+					up = true;
+				}
 			}
+		}
+
+		if(u) {
+			if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+				fire(ClientListener::REV_CONNECT_TO_ME, this, u);
+			} else {
+				// Notify the user that we're passive too...
+				if(up)
+					revConnectToMe(u);
+			}
+
+			if(up)
+				updated(u);
 		}
 	} else if(cmd == "$SR") {
 		SearchManager::getInstance()->onSearchResult(aLine);
@@ -296,9 +331,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.25 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.26 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.26  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.25  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

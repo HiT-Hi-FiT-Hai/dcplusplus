@@ -23,18 +23,25 @@
 #include "LineDlg.h"
 #include "QueueManager.h"
 #include "PrivateFrame.h"
+#include "StringTokenizer.h"
+
+StringList SearchFrame::lastSearches;
 
 LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
-	ctrlSearch.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
-	searchContainer.SubclassWindow(ctrlSearch.m_hWnd);
+
+	ctrlSearchBox.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
+		WS_VSCROLL | CBS_DROPDOWN, 0);
+	for(StringIter i = lastSearches.begin(); i != lastSearches.end(); ++i) {
+		ctrlSearchBox.InsertString(0, i->c_str());
+	}
+	searchBoxContainer.SubclassWindow(ctrlSearchBox.m_hWnd);
+	ctrlSearchBox.SetExtendedUI();
 	
 	ctrlMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_RESULTS);
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
 	modeContainer.SubclassWindow(ctrlMode.m_hWnd);
 
 	ctrlSize.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -42,7 +49,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	sizeContainer.SubclassWindow(ctrlSize.m_hWnd);
 	
 	ctrlSizeMode.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE, IDC_RESULTS);
+		WS_HSCROLL | WS_VSCROLL | CBS_DROPDOWNLIST, WS_EX_CLIENTEDGE);
 	sizeModeContainer.SubclassWindow(ctrlSizeMode.m_hWnd);
 
 	ctrlResults.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -52,7 +59,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlResults.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	}
 	
-	ctrlSearch.SetFont(ctrlResults.GetFont(), FALSE);
+	ctrlSearchBox.SetFont(ctrlResults.GetFont(), FALSE);
 	ctrlSize.SetFont(ctrlResults.GetFont(), FALSE);
 	ctrlMode.SetFont(ctrlResults.GetFont(), FALSE);
 	ctrlSizeMode.SetFont(ctrlResults.GetFont(), FALSE);
@@ -137,10 +144,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	if(!initial.empty()) {
-		ctrlSearch.SetWindowText(initial.c_str());
-		BOOL dummy;
-		onEnter(0, 0, 0, dummy);
+	if(!initialString.empty()) {
+		search = StringTokenizer(initialString, ' ').getTokens();
+		lastSearches.push_back(initialString);
+		ctrlSearchBox.InsertString(0, initialString.c_str());
+		ctrlSearchBox.SetCurSel(0);
+		SearchManager::getInstance()->search(initialString, initialSize, 0, SearchManager::SIZE_ATLEAST);
 	}
 	
 	bHandled = FALSE;
@@ -196,7 +205,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	return 0;
 }
 
-LRESULT SearchFrame::onEnter(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+void SearchFrame::onEnter() {
 	char* message;
 	
 	if(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 1*1000 < TimerManager::getInstance()->getTick()) {
@@ -234,11 +243,19 @@ LRESULT SearchFrame::onEnter(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			lastSearch = TimerManager::getInstance()->getTick();
 		}
 		
+		if(ctrlSearchBox.GetCount() >= 10)
+			ctrlSearchBox.DeleteString(10);
+		ctrlSearchBox.InsertString(0, s.c_str());
+		
+		while(lastSearches.size() >= 10) {
+			lastSearches.erase(lastSearches.begin());
+		}
+		lastSearches.push_back(s);
+		
 		ctrlStatus.SetText(0, ("Searching for " + s + "...").c_str());
 		search = StringTokenizer(s, ' ').getTokens();
 		
 	}
-	return 0;
 }
 
 void SearchFrame::onSearchResult(SearchResult* aResult) {
@@ -359,9 +376,7 @@ LRESULT SearchFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 			if(sr->getUser() && sr->getUser()->isOnline()) {
-				sr->getUser()->clientMessage(sr->getUser()->getClientNick() + " is kicking " + sr->getUser()->getNick() + " because: " + dlg.line);
-				sr->getUser()->privateMessage("You are being kicked because: " + dlg.line);
-				sr->getUser()->kick();
+				sr->getUser()->kick(dlg.line);
 			}
 		}
 	}
@@ -463,9 +478,12 @@ LRESULT SearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.29  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.28  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

@@ -157,32 +157,6 @@ void QueueFrame::onQueueRemoved(QueueItem* aQI) {
 	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM) aQI);
 }
 
-void QueueFrame::onQueueStatus(QueueItem* aQI) {
-	{
-		Lock l(cs);
-		dcassert(queue.find(aQI) != queue.end());
-		queue[aQI]->setPriority(aQI->getPriority());
-	}
-
-	StringListInfo*i = new StringListInfo((LPARAM) aQI);
-
-	switch(aQI->getStatus()) {
-	case QueueItem::FINISHED: i->columns[COLUMN_STATUS] = "Download Finished"; break;
-	case QueueItem::RUNNING: i->columns[COLUMN_STATUS] = "Running..."; break;
-	case QueueItem::WAITING: break;
-	default: dcassert(0); break;
-	}
-	switch(aQI->getPriority()) {
-	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
-	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
-	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
-	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
-	default: dcassert(0); break;
-	}
-	
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
-}
-
 void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 
 	{
@@ -199,9 +173,9 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		q->setPriority(aQI->getPriority());
 		q->setStatus(aQI->getStatus());
 	}
+	StringListInfo* i = new StringListInfo((LPARAM)aQI);
 	
-	if(aQI->getStatus() != QueueItem::FINISHED) {
-		StringListInfo* i = new StringListInfo((LPARAM)aQI);
+	if(aQI->getStatus() == QueueItem::WAITING) {
 		string tmp;
 			
 		int online = 0;
@@ -246,16 +220,21 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		}
-		switch(aQI->getPriority()) {
-		case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
-		case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
-		case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
-		case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
-		default: dcassert(0); break;
-		}
-		
-		PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	} else if(aQI->getStatus() == QueueItem::FINISHED) {
+		i->columns[COLUMN_STATUS] = "Download Finished";
+	} else if(aQI->getStatus() == QueueItem::RUNNING) {
+		i->columns[COLUMN_STATUS] = "Running...";
+	} 
+	
+	switch(aQI->getPriority()) {
+	case QueueItem::PAUSED: i->columns[COLUMN_PRIORITY] = "Paused"; break;
+	case QueueItem::LOW: i->columns[COLUMN_PRIORITY] = "Low"; break;
+	case QueueItem::NORMAL: i->columns[COLUMN_PRIORITY] = "Normal"; break;
+	case QueueItem::HIGH: i->columns[COLUMN_PRIORITY] = "High"; break;
+	default: dcassert(0); break;
 	}
+	
+	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -366,6 +345,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlQueue.GetSelectedCount() == 1) {
 		string tmp;
+		LONGLONG size;
+
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		{
 			Lock l(cs);
@@ -374,6 +355,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 				return FALSE;
 
 			tmp = j->second->getTargetFileName();
+			size = j->second->getSize();
 		}
 
 		// Remove all strange characters from the search
@@ -402,7 +384,7 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		if(!tmp.empty()) {
 			SearchFrame* pChild = new SearchFrame();
 			pChild->setTab(getTab());
-			pChild->setInitial(tmp);
+			pChild->setInitial(tmp, size, ((size > 10*1024*1024) ? 1 : 2) );
 			pChild->CreateEx(m_hWndMDIClient);
 			
 		}
@@ -470,12 +452,39 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 	return 0;
 }
 	
+LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i = -1;
+	while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+		string tmp;
+		QueueItem::Priority p;
+		{
+			Lock l(cs);
+			map<QueueItem*, QueueItem*>::iterator j = queue.find((QueueItem*)ctrlQueue.GetItemData(i));
+			if(j == queue.end())
+				continue;
+			
+			tmp = j->second->getTarget();
+			switch(wID) {
+			case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
+			case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
+			case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
+			case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
+			default: p = QueueItem::NORMAL; break;
+			}
+		}
+		QueueManager::getInstance()->setPriority(tmp, p);
+	}
+	return 0;
+}
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.6 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.7 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.7  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.6  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

@@ -39,7 +39,8 @@ public:
 	enum {
 		OP = 0x01,
 		ONLINE = 0x02,
-		DCPLUSPLUS = 0x04
+		DCPLUSPLUS = 0x04,
+		PASSIVE = 0x08
 	};
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
@@ -56,7 +57,7 @@ public:
 	string getClientName();
 	void privateMessage(const string& aMsg);
 	void clientMessage(const string& aMsg);
-	void kick();
+	void kick(const string& aMsg);
 	void redirect(const string& aTarget, const string& aReason);
 
 	bool isClientOp();
@@ -96,9 +97,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.10 2002/02/07 17:25:28 arnetheduck Exp $
+ * $Id: User.h,v 1.11 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.11  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.10  2002/02/07 17:25:28  arnetheduck
  * many bugs fixed, time for 0.152 I think
  *

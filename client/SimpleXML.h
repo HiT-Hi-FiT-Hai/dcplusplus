@@ -101,18 +101,15 @@ public:
 
 	void addTag(const string& aName, const string& aData = "");
 	void addTag(const string& aName, int aData) {
-		char buf[32];
-		addTag(aName, itoa(aData, buf, 10));
+		addTag(aName, Util::toString(aData));
 	}
 
 	void addAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
 	void addAttrib(const string& aName, int aData) throw(SimpleXMLException) {
-		char buf[16];
-		addAttrib(aName, string(itoa(aData, buf, 10)));
+		addAttrib(aName, Util::toString(aData));
 	}
 	void addAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
-		char buf[32];
-		addAttrib(aName, string(_i64toa(aData, buf, 10)));
+		addAttrib(aName, Util::toString(aData));
 	}
 	void addAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
 		addAttrib(aName, string(aData ? "1" : "0"));
@@ -120,12 +117,10 @@ public:
 	
 	void addChildAttrib(const string& aName, const string& aData) throw(SimpleXMLException);
 	void addChildAttrib(const string& aName, int aData) throw(SimpleXMLException) {	
-		char buf[16];
-		addChildAttrib(aName, string(itoa(aData, buf, 10)));
+		addChildAttrib(aName, Util::toString(aData));
 	}
 	void addChildAttrib(const string& aName, LONGLONG aData) throw(SimpleXMLException) {	
-		char buf[32];
-		addChildAttrib(aName, string(_i64toa(aData, buf, 10)));
+		addChildAttrib(aName, Util::toString(aData));
 	}
 	void addChildAttrib(const string& aName, bool aData) throw(SimpleXMLException) {	
 		addChildAttrib(aName, string(aData ? "1" : "0"));
@@ -203,11 +198,11 @@ public:
 
 	int getIntChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
-		return atoi(getChildAttrib(aName).c_str());
+		return Util::toInt(getChildAttrib(aName));
 	}
 	LONGLONG getLongLongChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
-		return _atoi64(getChildAttrib(aName).c_str());
+		return Util::toInt64(getChildAttrib(aName));
 	}
 	bool getBoolChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
@@ -228,9 +223,12 @@ public:
 
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.h,v 1.9 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.10 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.h,v $
+ * Revision 1.10  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.9  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

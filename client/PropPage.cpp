@@ -50,7 +50,7 @@ namespace
 	};
 }
 
-#define SETTING_STR_MAXLEN 512
+#define SETTING_STR_MAXLEN 1024
 
 void PropPage::read(HWND page, Item const* items)
 {
@@ -82,7 +82,7 @@ void PropPage::write(HWND page, Item const* items)
 {
 	dcassert(page != NULL);
 
-	char buf[SETTING_STR_MAXLEN];
+	char *buf = new char[SETTING_STR_MAXLEN];
 	for(Item const* i = items; i->type != T_END; i++)
 	{
 		switch(i->type)
@@ -110,13 +110,17 @@ void PropPage::write(HWND page, Item const* items)
 			}
 		}
 	}
+	delete buf;
 }
 
 /**
  * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.4 2002/02/06 12:29:06 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.5 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: PropPage.cpp,v $
+ * Revision 1.5  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.4  2002/02/06 12:29:06  arnetheduck
  * New Buffered socket handling with asynchronous sending (asynchronous everything really...)
  *

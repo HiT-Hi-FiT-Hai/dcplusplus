@@ -65,9 +65,15 @@ public:
 	}
 
 	virtual ~File() {
-		CloseHandle(h);
+		close();
 	}
 
+	void close() {
+		if(h != INVALID_HANDLE_VALUE) {
+			CloseHandle(h);
+			h = INVALID_HANDLE_VALUE;
+		}
+	}
 	LONGLONG getSize() {
 		DWORD x;
 		DWORD l = ::GetFileSize(h, &x);
@@ -137,7 +143,10 @@ public:
 	static void deleteFile(const string& aFileName) {
 		::DeleteFile(aFileName.c_str());
 	}
-
+	static void renameFile(const string& source, const string& target) {
+		::MoveFile(source.c_str(), target.c_str());
+	}
+	
 	static LONGLONG getSize(const string& aFileName) {
 		WIN32_FIND_DATA fd;
 		HANDLE hFind;
@@ -160,9 +169,12 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.4 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: File.h,v 1.5 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.5  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.4  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

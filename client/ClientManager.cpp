@@ -111,21 +111,30 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					aClient->searchResults(str);
 				
 			} else {
-				Socket s;
-				s.create(Socket::TYPE_UDP);
-				string ip, file;
-				short port = 412;
-				Util::decodeUrl(aSeeker, ip, port, file);
-				s.connect(ip, port);
 				char* buf = new char[1024];
-				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
-					SearchResult* sr = *i;
-					sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-						sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-					s.write(buf, strlen(buf));
-					delete sr;
+
+				try {
+					Socket s;
+					s.create(Socket::TYPE_UDP);
+					string ip, file;
+					short port = 412;
+					Util::decodeUrl(aSeeker, ip, port, file);
+					s.connect(ip, port);
+					char* buf = new char[1024];
+					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+						SearchResult* sr = *i;
+						sprintf(buf, "$SR %s %s%c%I64d %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+							sr->getSize(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+						s.write(buf, strlen(buf));
+					}
+				} catch(SocketException /* e */) {
+					dcdebug("Search caught error\n");
 				}
 				delete buf;
+
+				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
+					delete *i;
+				}
 			}
 		}
 	}
@@ -133,9 +142,12 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.8 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.9 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.cpp,v $
+ * Revision 1.9  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.8  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

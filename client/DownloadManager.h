@@ -130,7 +130,7 @@ public:
 
 private:
 	
-	bool checkRollback(Download* aDownload, const BYTE* aBuf, int aLen);
+	bool checkRollback(Download* aDownload, const BYTE* aBuf, int aLen) throw(FileException);
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
 
 	friend class Singleton<DownloadManager>;
@@ -211,9 +211,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.33 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.34 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.34  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.33  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

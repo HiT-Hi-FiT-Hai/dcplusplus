@@ -177,40 +177,66 @@ void SimpleXML::addChildAttrib(const string& aName, const string& aData) {
 	(*currentChild)->attribs[aName] = aData;
 }
 
-string SimpleXML::cleanUp(const string& aString) {
-	string tmp = aString;
+string SimpleXML::cleanUp(const string& tmp) {
+	string::size_type i = 0;
+	string::size_type j;
+
 	string ret;
+	ret.reserve(tmp.size());
 
-	while(!tmp.empty() && tmp.find('<') != -1) {
-
-		tmp = tmp.substr(tmp.find('<'));
-		if(tmp[1] == '?') {
+	while( (j = tmp.find('<', i)) != string::npos) {
+		if(j + 1 >= tmp.size()) {
+			break;
+		} else if(tmp[j+1] == '?') {
 			// Directive, skip
-			tmp = tmp.substr(tmp.find("?>")+2);
+			i = tmp.find("?>", j);
+			if(i == string::npos)
+				break;
+			i += 2;
+			continue;
 		} else if(tmp.substr(0, 4) == "<!--") {
 			// Comment, skip
-			tmp = tmp.substr(tmp.find("-->")+3);
-		} else if(tmp.find("/>") < tmp.find('>')) {
-			// Simple tag, OK
-			ret = ret + tmp.substr(0, tmp.find('>')+1);
-			tmp = tmp.substr(tmp.find('>')+1);
+			i = tmp.find("-->", j);
+			if(i == string::npos)
+				break;
+			i += 3;
+			continue;
+		} 
+
+		// Find the end of this tag...
+		i = tmp.find('>', j);
+		if(i == string::npos)
+			break;
+		if(tmp[i-1] == '/') {
+			// Simple tag, ok...
+			i++;
+			ret += tmp.substr(j, i-j);
 		} else {
 			// Normal tag with end tag...find it
-			string name = tmp.substr(1, tmp.find_first_of(" >")-1);
+			string name = tmp.substr(j + 1, tmp.find_first_of(" >", j)-1-j);
 			string endTag = "</" + name + ">";
 			
 			// Add start tag
-			ret = ret + tmp.substr(0, tmp.find('>')+1);
-			tmp = tmp.substr(tmp.find('>')+1);
-
-			string data = tmp.substr(0, tmp.find(endTag));
-			tmp = tmp.substr(tmp.find(endTag) + endTag.length());
-			if(data.find('<') != string::npos) {
-				// We have tags inside...
-				data = cleanUp(data);
+			i++;
+			ret += tmp.substr(j, i-j);
+			j = i;
+			i = tmp.find(endTag, j);
+			if(i == string::npos) {
+				// No end tag...add it and return...
+				ret += endTag;
+				break;
 			}
 
-			ret = ret + data + endTag;
+			string data = tmp.substr(j, i-j);
+			i += endTag.length();
+			if(data.find('<') != string::npos) {
+				// We have tags inside...
+				ret += cleanUp(data);
+			} else {
+				ret += data;
+			}
+
+			ret += endTag;
 		}
 	}
 	return ret;
@@ -265,9 +291,12 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.8 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.9 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.9  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.8  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

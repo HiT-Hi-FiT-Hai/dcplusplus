@@ -62,10 +62,7 @@ typedef StringMap::iterator StringMapIter;
  * might block the main window thread if it's trying to access a resource that the Speaker owns.
  * wParam Specifies what actually happened
  */
-#define WM_SPEAKER (WM_USER + 100)		
-
-#define WM_ENTER (WM_USER + 120)
-#define WM_TAB (WM_ENTER + 1)
+#define WM_SPEAKER (WM_APP + 100)		
 
 #define IDC_DOWNLOAD_TARGET 5000
 
@@ -73,9 +70,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.15 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.16 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.16  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.15  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

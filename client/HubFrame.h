@@ -75,7 +75,7 @@ public:
 
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_ACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
@@ -90,6 +90,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onRefresh)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
+		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
@@ -97,7 +98,9 @@ public:
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<HubFrame>)
 		CHAIN_MSG_MAP(splitBase)
 	ALT_MSG_MAP(EDIT_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, OnChar)
+		MESSAGE_HANDLER(WM_CHAR, onChar)
+		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
+		MESSAGE_HANDLER(WM_KEYUP, onChar)
 	END_MSG_MAP()
 
 	LRESULT onMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -142,6 +145,7 @@ public:
 		return 0;
 	}
 
+	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
@@ -335,7 +339,26 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		switch(wParam) {
+		case VK_RETURN:
+			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
+				(GetKeyState(VK_CONTROL) & 0x8000) || 
+				(GetKeyState(VK_MENU) & 0x8000) ) {
+				bHandled = FALSE;
+			} else {
+				if(uMsg == WM_KEYDOWN) {
+					onEnter();
+				}
+			}
+			break;
+		default:
+			bHandled = FALSE;
+		}
+		return 0;
+	}
+
+	void onEnter();
 private:
 	enum {
 		CLIENT_CONNECTING,
@@ -380,6 +403,18 @@ private:
 		}
 		ctrlUsers.DeleteAllItems();
 	}
+
+	int getImage(const User::Ptr& u) {
+		int image = u->isSet(User::OP) ? IMAGE_OP : IMAGE_USER;
+		
+		if(u->isSet(User::DCPLUSPLUS))
+			image+=2;
+		if(u->isSet(User::PASSIVE)) {
+			image+=4;
+		}
+		return image;	
+	}
+	
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
 		switch(type) {
@@ -452,7 +487,9 @@ private:
 		case ClientListener::QUIT:
 			x = new User::Ptr(user);
 			PostMessage(WM_SPEAKER, CLIENT_QUIT, (LPARAM)x); break;
-			
+		case ClientListener::HELLO:
+			x = new User::Ptr(user);
+			PostMessage(WM_SPEAKER, CLIENT_MYINFO, (LPARAM)x); break;
 		}
 	}
 	
@@ -514,9 +551,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.50 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.51 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.51  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.50  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *

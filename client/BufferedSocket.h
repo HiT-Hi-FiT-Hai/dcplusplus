@@ -130,10 +130,10 @@ public:
 	}
 	
 	virtual void accept(const ServerSocket& aSocket);
-	virtual void write(const string& aData) throw(SocketException) {
+	virtual void write(const string& aData) throw() {
 		write(aData.data(), aData.length());
 	}
-	virtual void write(const char* aBuf, int aLen) throw(SocketException);
+	virtual void write(const char* aBuf, int aLen) throw();
 
 	/**
 	 * Send the file f over this socket. Note; reading is suspended until the whole file has
@@ -224,9 +224,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.28 2002/02/12 00:35:37 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.29 2002/02/18 23:48:32 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.29  2002/02/18 23:48:32  arnetheduck
+ * New prerelease, bugs fixed and features added...
+ *
  * Revision 1.28  2002/02/12 00:35:37  arnetheduck
  * 0.153
  *
