@@ -349,6 +349,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	ShareManager::getInstance()->refresh(false, false);
 	HubManager::getInstance()->refresh();
+
+	TimerManager::getInstance()->start();
 	
 	Util::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	Util::textColor = SETTING(TEXT_COLOR);
@@ -650,9 +652,12 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.59 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.60 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.60  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.59  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

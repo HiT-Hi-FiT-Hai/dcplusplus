@@ -165,6 +165,10 @@ SOURCE=.\client\ExListViewCtrl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\FavHubProperties.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\FavoritesFrm.cpp
 # End Source File
 # Begin Source File
@@ -371,6 +375,10 @@ SOURCE=.\client\Exception.h
 # Begin Source File
 
 SOURCE=.\client\ExListViewCtrl.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\FavHubProperties.h
 # End Source File
 # Begin Source File
 

@@ -23,6 +23,7 @@
 #include "HubFrame.h"
 #include "Client.h"
 #include "LineDlg.h"
+#include "FavHubProperties.h"
 
 FavoriteHubsFrame* FavoriteHubsFrame::frame = NULL;
 
@@ -62,6 +63,11 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlConnect.SetWindowText("Connect");
 	ctrlConnect.SetFont(ctrlHubs.GetFont());
 
+	ctrlNew.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON , 0, IDC_NEWFAV);
+	ctrlNew.SetWindowText("New...");
+	ctrlNew.SetFont(ctrlHubs.GetFont());
+
 	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->getFavoriteHubs();
 	
@@ -76,16 +82,23 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 22;
-	mi.dwTypeData = "Edit nick and password";
-	mi.wID = IDC_EDIT;
+	mi.cch = 21;
+	mi.dwTypeData = "Remove from favorites";
+	mi.wID = IDC_REMOVE;
 	hubsMenu.InsertMenuItem(1, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 21;
-	mi.dwTypeData = "Remove from favorites";
-	mi.wID = IDC_REMOVE;
+	mi.cch = 6;
+	mi.dwTypeData = "New...";
+	mi.wID = IDC_NEWFAV;
+	hubsMenu.InsertMenuItem(1, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.cch = 13;
+	mi.dwTypeData = "Properties...";
+	mi.wID = IDC_EDIT;
 	hubsMenu.InsertMenuItem(1, TRUE, &mi);
 	
 	bHandled = FALSE;
@@ -135,43 +148,42 @@ LRESULT FavoriteHubsFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 }
 
 LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	char buf[256];
-	LineDlg dlg;
-
 	int i = -1;
-	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		string server;
-		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+	if((i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1)
+	{
 		FavoriteHubEntry* e = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		server = buf;
-		dlg.title = "Enter alternative nick, or blank out to use the default";
-		dlg.line = e->getNick(false);
-		if(dlg.DoModal()) {
-			e->setNick(dlg.line);
-			ctrlHubs.SetItemText(i, COLUMN_NICK, dlg.line.c_str());
-		} else {
-			break;
+		dcassert(e != NULL);
+		FavHubProperties dlg(e);
+		if(dlg.DoModal((HWND)*this))
+		{
+			ctrlHubs.SetItemText(i, COLUMN_NAME, e->getName().c_str());
+			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, e->getDescription().c_str());
+			ctrlHubs.SetItemText(i, COLUMN_SERVER, e->getServer().c_str());
+			ctrlHubs.SetItemText(i, COLUMN_NICK, e->getNick(false).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, string(e->getPassword().size(), '*').c_str());
 		}
-
-		dlg.title = "Enter password";
-		dlg.password = true;
-		dlg.line = e->getPassword();
-		if(dlg.DoModal()) {
-			e->setPassword(dlg.line);
-			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, string(dlg.line.size(), '*').c_str());
-		} else {
-			break;
-		}
-
 	}
+	return 0;
+}
+
+LRESULT FavoriteHubsFrame::onNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	FavoriteHubEntry e;
+	FavHubProperties dlg(&e);
+
+	if(dlg.DoModal((HWND)*this))
+		HubManager::getInstance()->addFavorite(e);
 	return 0;
 }
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.5 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.6 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.6  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.5  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

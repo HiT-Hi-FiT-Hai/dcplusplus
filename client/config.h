@@ -23,11 +23,11 @@
 #define _RICHEDIT_VER	0x0200
 
 
-// This enables stlport's debug mode
+// This enables stlport's debug mode (and slows it down to a crawl...)
 # ifdef _DEBUG
-# define _STLP_DEBUG 1
+//# define _STLP_DEBUG 1
 # else
-# undef _STLP_DEBUG
+//# undef _STLP_DEBUG
 # endif
 
 // Remove this line if hashes are not available in your stl

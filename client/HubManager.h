@@ -216,7 +216,7 @@ private:
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len) {
 		switch(type) {
 		case HttpConnectionListener::DATA:
-			onHttpData(buf, len); break;
+			downloadBuf.append((char*)buf, len); break;
 		default:
 			dcassert(0);
 		}
@@ -233,13 +233,14 @@ private:
 		switch(type) {
 		case HttpConnectionListener::COMPLETE:
 			conn->removeListener(this);
+			onHttpFinished();
 			running = false;
 			downloaded = true;
 			fire(HubManagerListener::FINISHED);
 		}
 	}
 	
- 	void onHttpData(const BYTE* aBuf, int aLen) throw();
+ 	void onHttpFinished() throw();
 
 };
 
@@ -247,9 +248,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.20 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.21 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.21  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.20  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

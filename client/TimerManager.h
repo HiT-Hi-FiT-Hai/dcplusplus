@@ -42,12 +42,14 @@ class TimerManager : public Speaker<TimerManagerListener>, public Singleton<Time
 {
 public:
 	static DWORD getTick() { return GetTickCount(); };
-	
+	void start() {
+		startTicker();
+	}
 private:
 
 	friend class Singleton<TimerManager>;
 	TimerManager() : stopEvent(NULL), readerThread(NULL) { 
-		startTicker();		
+			
 	};
 	
 	virtual ~TimerManager() {
@@ -87,9 +89,12 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.7 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.8 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: TimerManager.h,v $
+ * Revision 1.8  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.7  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

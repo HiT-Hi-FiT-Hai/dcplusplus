@@ -64,6 +64,7 @@ public:
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_EDIT, BN_CLICKED, onEdit)
+		COMMAND_HANDLER(IDC_NEWFAV, BN_CLICKED, onNew)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, onItemChanged)
@@ -160,6 +161,7 @@ public:
 	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onNew(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
@@ -192,6 +194,10 @@ public:
 		rc.left = rc.right - 96;
 		rc.right -= 2;
 		ctrlConnect.MoveWindow(rc);
+
+		rc.left = rc.left - 96;
+		rc.right -= 98;
+		ctrlNew.MoveWindow(rc);
 	}
 	
 	static FavoriteHubsFrame* frame;
@@ -203,6 +209,7 @@ private:
 	CButton ctrlConnect;
 	CButton ctrlRemove;
 	CButton ctrlEdit;
+	CButton ctrlNew;
 	CMenu hubsMenu;
 	
 	ExListViewCtrl ctrlHubs;
@@ -261,9 +268,12 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.3 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.4 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.h,v $
+ * Revision 1.4  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.3  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

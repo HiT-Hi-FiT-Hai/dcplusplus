@@ -34,6 +34,7 @@
 #define IDR_NOTEPAD                     220
 #define IDB_TOOLBAR20                   221
 #define IDR_QUEUE                       221
+#define IDD_FAVORITEHUB                 223
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -85,6 +86,12 @@
 #define IDC_MINIMIZETRAY                1038
 #define IDC_OPENPUBLIC                  1039
 #define IDC_OPENQUEUE                   1040
+#define IDC_HUBNICK                     1041
+#define IDC_HUBPASS                     1042
+#define IDC_NEWFAV                      1042
+#define IDC_HUBNAME                     1043
+#define IDC_HUBDESCR                    1047
+#define IDC_HUBADDR                     1048
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -99,9 +106,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        223
+#define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1041
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_CONTROL_VALUE         1044
+#define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

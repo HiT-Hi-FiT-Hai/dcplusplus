@@ -131,7 +131,6 @@ public:
 	
 	virtual void accept(const ServerSocket& aSocket);
 	virtual void write(const string& aData) throw(SocketException) {
-		dcassert(isConnected());
 		write(aData.data(), aData.length());
 	}
 	virtual void write(const char* aBuf, int aLen) throw(SocketException);
@@ -224,9 +223,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.26 2002/02/09 18:13:51 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.27 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.27  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.26  2002/02/09 18:13:51  arnetheduck
  * Fixed level 4 warnings and started using new stl
  *

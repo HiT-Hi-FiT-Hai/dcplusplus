@@ -27,25 +27,26 @@
 
 HubManager* HubManager::instance = NULL;
 
-void HubManager::onHttpData(const BYTE* aBuf, int aLen) throw() {
-	downloadBuf.append((char*)aBuf, aLen);
-	string::size_type i;
+void HubManager::onHttpFinished() throw() {
+	string::size_type i, j;
 	
 	{
 		Lock l(cs);
+		i = 0;
+		
+		while( (i < downloadBuf.size()) && ((j=downloadBuf.find("\r\n", i)) != string::npos)) {
+			StringTokenizer tok(downloadBuf.substr(i, j-i), '|');
+			i = j + 2;
 
-		while( (i=downloadBuf.find("\r\n")) != string::npos) {
-			StringTokenizer tok(downloadBuf.substr(0, i), '|');
-			downloadBuf = downloadBuf.substr(i+2);
-
-			StringIter j = tok.getTokens().begin();
-			string& name = *j++;
-			string& server = *j++;
-			string& desc = *j++;
-			string& users = *j++;
+			StringList::const_iterator k = tok.getTokens().begin();
+			const string& name = *k++;
+			const string& server = *k++;
+			const string& desc = *k++;
+			const string& users = *k++;
 			publicHubs.push_back(HubEntry(name, server, desc, users));
 		}
 	}
+	downloadBuf = "";
 }
 
 void HubManager::save(SimpleXML* aXml) {
@@ -85,9 +86,12 @@ void HubManager::load(SimpleXML* aXml) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.15 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.16 2002/02/10 12:25:24 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.16  2002/02/10 12:25:24  arnetheduck
+ * New properties for favorites, and some minor performance tuning...
+ *
  * Revision 1.15  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

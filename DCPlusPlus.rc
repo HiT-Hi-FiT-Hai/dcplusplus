@@ -750,6 +750,53 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_FAVORITEHUB DIALOG DISCARDABLE  0, 0, 201, 148
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Favorite Hub Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,90,127,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,127,50,14
+    GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
+    GROUPBOX        "Identification (leave blank for defaults)",IDC_STATIC,7,
+                    74,187,48
+    LTEXT           "Nick",IDC_STATIC,15,89,16,8
+    LTEXT           "Password",IDC_STATIC,15,104,32,8
+    LTEXT           "Name",IDC_STATIC,15,21,20,8
+    LTEXT           "Description",IDC_STATIC,16,51,36,8
+    LTEXT           "Address",IDC_STATIC,16,36,26,8
+    EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBNICK,56,87,131,12
+    EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_FAVORITEHUB, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 141
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 #endif    // Swedish resources
 /////////////////////////////////////////////////////////////////////////////
 
