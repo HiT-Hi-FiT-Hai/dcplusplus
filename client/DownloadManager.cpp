@@ -42,7 +42,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 		if(d->isSet(Download::RUNNING)) {
 			continue;
 		}
-		bool online = false;
 		for(Download::Source::Iter j = d->getSources().begin(); j != d->getSources().end(); ++j) {
 			Download::Source* s = *j;
 
@@ -63,7 +62,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 				for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
 					if((*k)->getUser() == s->getUser()) {
 						found = true;
-						online = true;
 					}
 				}
 				if(!found) {
@@ -75,8 +73,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 					}
 				}
 			}
-
-			online = true;
 
 			// Check if we already have a connection to this fellow...
 			bool found = false;
@@ -98,13 +94,6 @@ void DownloadManager::onTimerMinute(DWORD aTick) {
 			}
 		}
 
-		if(!online) {
-			if(d->getSources().size() > 1) {
-				fire(DownloadManagerListener::FAILED, d, "All users offline");
-			} else {
-				fire(DownloadManagerListener::FAILED, d, "User is offline");
-			}
-		}
 	}
 	cs.leave();
 
@@ -793,9 +782,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.38 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.39 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.39  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.38  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

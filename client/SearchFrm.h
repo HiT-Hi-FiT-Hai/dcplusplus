@@ -311,7 +311,8 @@ public:
 		SearchManager::getInstance()->removeListener(this);
 	}
 
-
+	GETSETREF(string, initial, Initial);
+	
 private:
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
@@ -352,9 +353,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.21 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.22 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.22  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.21  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

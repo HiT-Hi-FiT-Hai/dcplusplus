@@ -37,7 +37,12 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener
 {
 public:
-	MainFrame() : lastUpload(-1), stopperThread(NULL), menuItems(0) { };
+	MainFrame() : lastUpload(-1), stopperThread(NULL), menuItems(0) { 
+		searchFilter.push_back("the");
+		searchFilter.push_back("of");
+		searchFilter.push_back("divx");
+		searchFilter.push_back("frail");
+	};
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
@@ -109,6 +114,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_NOTEPAD, onNotepad)
+		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		CHAIN_MDI_CHILD_COMMANDS()
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, (IDC_BROWSELIST + menuItems), onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, (IDC_REMOVE_SOURCE + menuItems), onRemoveSource)
@@ -141,6 +147,7 @@ public:
 		return 0;
 	}
 
+	LRESULT onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onNotepad(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -281,6 +288,14 @@ private:
 		IDC_REMOVE_SOURCE = 3200,
 		IDC_PM = 3400
 	};
+
+	enum {
+		COLUMN_FILE,
+		COLUMN_STATUS,
+		COLUMN_SIZE,
+		COLUMN_USER
+	};
+	
 	int menuItems;
 	
 	class StringInfo {
@@ -312,6 +327,7 @@ private:
 	HttpConnection c;
 	string versionInfo;
 	CImageList images;
+	StringList searchFilter;
 	
 	CMenu transferMenu;
 	CMenu browseMenu;
@@ -424,9 +440,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.34 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.35 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.35  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.34  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

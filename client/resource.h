@@ -66,6 +66,7 @@
 #define IDC_MODEHELP                    1025
 #define IDC_EDIT                        1026
 #define IDC_NOTEPAD                     1027
+#define IDC_SEARCH_ALTERNATES			1028
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775

@@ -43,7 +43,8 @@ public:
 	void removeDirectory(const string& aDirectory);	
 	string translateFileName(const string& aFile) throw(ShareException);
 	void refresh() throw(ShareException);
-
+	void setDirty() { dirty = true; };
+	
 	SearchResult::List search(const string& aString, int aSearchType, const string& aSize, int aFileType, Client* aClient) {
 		return search(aString, aSearchType, Util::toInt64(aSize), aFileType, aClient);
 	}
@@ -179,9 +180,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.13 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.14 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.14  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.13  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

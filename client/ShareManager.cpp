@@ -203,6 +203,12 @@ DWORD WINAPI ShareManager::refresher(void* p) {
 	string tmp, tmp2;
 	sm->cs.enter();
 
+	StringList dirs = sm->getDirectories();
+	for(StringIter k = dirs.begin(); k != dirs.end(); ++k) {
+		sm->removeDirectory(*k);
+		sm->addDirectory(*k);
+	}
+
 	for(Directory::MapIter i = sm->directories.begin(); i != sm->directories.end(); ++i) {
 		tmp = tmp + i->second->toString();
 	}
@@ -317,9 +323,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.18 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.19 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.19  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.18  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

@@ -10,7 +10,11 @@
 * Almost made compatible with VC++ 7.0 (You still have to change one line in the WTL to compile due to changes in ATL...)
 * Fixed some performance issues with large download queues (the app was doing a lot of unnecessary saving...). This should also
   solve the problems people have had with unsaved settings...
-
+* Corrected transfer list display (Offline/Online users)
+* Added search flood detection (If more than 5 searches are received from the same user within 7 seconds, DC++ will send
+  out a warning)
+* Added /dc++, /search <string>, /slots #, /refresh and /join <hub> commands to the main chat
+* Enabled multi-line messages in chat and in pm window
 
  -- 0.132 2002-01-21 --
 * Fixed a bug when downloading tiny file lists (people with 0b share...)

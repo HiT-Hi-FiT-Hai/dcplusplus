@@ -61,7 +61,8 @@ public:
 			SEARCH,
 			QUIT,
 			UNKNOWN,
-			VALIDATE_DENIED
+			VALIDATE_DENIED,
+			SEARCH_FLOOD
 	};
 	
 	virtual void onAction(Types, Client*) { };
@@ -89,8 +90,10 @@ public:
 
 	bool isConnected() { return socket.isConnected(); };
 
-	void disconnect() throw() {	
-		socket.removeListener(this);
+	void disconnect(bool rl = true) throw() {	
+		if(rl)
+			socket.removeListener(this);
+
 		socket.disconnect();
 
 		{ 
@@ -268,7 +271,10 @@ private:
 	CriticalSection cs;
 	User::NickMap users;
 
-	Client() : op(false), socket('|'), lastActivity(TimerManager::getTick()) {
+	map<string, int> searchFlood;
+	DWORD lastSearchFlood;
+
+	Client() : lastSearchFlood(0), op(false), socket('|'), lastActivity(TimerManager::getTick()) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
@@ -292,7 +298,6 @@ private:
 					} catch(Exception e) {
 						dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
 						fire(ClientListener::FAILED, this, e.getError());
-						disconnect();
 						connect(server, port);
 					}
 				} else {
@@ -300,7 +305,14 @@ private:
 					connect(server, port);
 				}
 			}
-		}
+
+			// Empty spam filter every 7 seconds...
+			if(lastSearchFlood + 7 * 1000 < aTick) {
+				Lock l(cs);
+				searchFlood.clear();
+				lastSearchFlood = aTick;
+			}
+		} 
 	}
 
 	// BufferedSocketListener
@@ -342,9 +354,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.31 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: Client.h,v 1.32 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.32  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.31  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

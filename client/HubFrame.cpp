@@ -22,6 +22,8 @@
 #include "HubFrame.h"
 #include "DownloadManager.h"
 #include "LineDlg.h"
+#include "ShareManager.h"
+#include "SearchFrm.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -38,7 +40,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlClient.LimitText(0);
 	
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
@@ -117,6 +119,71 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	bHandled = FALSE;
 	client->connect(server);
 	return 1;
+}
+
+
+LRESULT HubFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	char* message;
+	
+	if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
+		message = new char[ctrlMessage.GetWindowTextLength()+1];
+		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
+		string s(message, ctrlMessage.GetWindowTextLength());
+		delete message;
+
+		// Special command
+		if(s[0] == '/') {
+			string param;
+			int i = s.find(' ');
+			if(i != string::npos) {
+				param = s.substr(i+1);
+				s = s.substr(1, i - 1);
+			} else {
+				s = s.substr(1);
+			}
+
+			if(stricmp(s.c_str(), "refresh")==0) {
+				try {
+					ShareManager::getInstance()->setDirty();
+					ShareManager::getInstance()->refresh();
+					ctrlStatus.SetText(0, "File list refreshed");
+				} catch(ShareException e) {
+					ctrlStatus.SetText(0, e.getError().c_str());
+				}
+			} else if(stricmp(s.c_str(), "slots")==0) {
+				int j = Util::toInt(param);
+				if(j > 0) {
+					SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
+					ctrlStatus.SetText(0, "Slots set");
+				} else {
+					ctrlStatus.SetText(0, "Invalid number of slots");
+				}
+			} else if(stricmp(s.c_str(), "join")==0) {
+				if(!param.empty()) {
+					client->connect(param);
+				} else {
+					ctrlStatus.SetText(0, "Specify a server to connect to");
+				}
+			} else if(stricmp(s.c_str(), "search") == 0) {
+				if(!param.empty()) {
+					SearchFrame* pChild = new SearchFrame();
+					pChild->setTab(getTab());
+					pChild->setInitial(param);
+					pChild->CreateEx(m_hWndMDIClient);
+				} else {
+					ctrlStatus.SetText(0, "Specify a search string");
+				}
+			} else if(stricmp(s.c_str(), "dc++") == 0) {
+				client->sendMessage("\r\n-- I'm a happy dc++ user. You could be happy too. --\r\n-- http://sourceforge.net/projects/dcplusplus --");
+			}
+		} else {
+			client->sendMessage(s);
+		}
+		ctrlMessage.SetWindowText("");
+	} else {
+		bHandled = FALSE;
+	}
+	return 0;
 }
 
 LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -331,15 +398,24 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete i;
 	} else if(wParam == CLIENT_CONNECTED) {
 		//ctrlClient.Invalidate();
+	} else if(wParam == CLIENT_SEARCH_FLOOD) {
+		// We have a spammer!!!
+		string* x = (string*)lParam;
+
+		ctrlStatus.SetText(0, ("Search spam detected from " + (*x) + " (more than 5 searches withing 7 seconds)").c_str());
+
 	}
 	return 0;
 };
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.25 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.26 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.26  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.25  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

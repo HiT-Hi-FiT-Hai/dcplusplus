@@ -88,27 +88,22 @@ public:
 	
 	
 	void addListener(Listener* aListener) {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		if(find(listeners.begin(), listeners.end(), aListener) == listeners.end())
 			listeners.push_back(aListener);
-		listenerCS.leave();
 	}
 	
 	void removeListener(Listener* aListener) {
-		listenerCS.enter();
-		for(vector<Listener*>::iterator i = listeners.begin(); i != listeners.end(); ++i) {
-			if(*i == aListener) {
-				listeners.erase(i);
-				break;
-			}
-		}
-		listenerCS.leave();
+		Lock l(listenerCS);
+
+		vector<Listener*>::iterator i = find(listeners.begin(), listeners.end(), aListener);
+		if(i != listeners.end())
+			listeners.erase(i);
 	}
 	
 	void removeListeners() {
-		listenerCS.enter();
+		Lock l(listenerCS);
 		listeners.clear();
-		listenerCS.leave();
 	}
 protected:
 	vector<Listener*> listeners;
@@ -411,9 +406,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.22 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: Util.h,v 1.23 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.23  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.22  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

@@ -49,6 +49,13 @@ SettingsManager::SettingsManager()
 		intDefaults[j] = 0;
 		intSettings[j] = 0;
 	}
+
+	setDefault(SERVER, Util::getLocalIp());
+	setDefault(PORT, 412);
+	setDefault(ROLLBACK, 1024);
+	setDefault(CLIENTVERSION, "1,0091");
+	setDefault(AUTO_FOLLOW, true);
+	
 	
 }
 

@@ -118,7 +118,6 @@ public:
 
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		if(!redirect.empty()) {
-			client->disconnect();
 			client->connect(redirect);
 		}
 		return 0;
@@ -233,10 +232,9 @@ public:
 	}
 	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
-		cs.enter();
-		client->disconnect();
-		ctrlUsers.DeleteAllItems();
 		client->connect(server);
+		cs.enter();
+		ctrlUsers.DeleteAllItems();
 		cs.leave();
 		return 0;
 	}
@@ -311,22 +309,7 @@ public:
 		EndPaint(&ps);
 		return 0;
 	}
-	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-	{
-		char* message;
-
-		if(wParam == VK_RETURN && ctrlMessage.GetWindowTextLength() > 0) {
-			message = new char[ctrlMessage.GetWindowTextLength()+1];
-			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
-			string s(message, ctrlMessage.GetWindowTextLength());
-			delete message;
-			client->sendMessage(s);
-			ctrlMessage.SetWindowText("");
-		} else {
-			bHandled = FALSE;
-		}
-		return 0;
-	}
+	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 private:
 	enum {
 		CLIENT_CONNECTING,
@@ -340,6 +323,7 @@ private:
 		CLIENT_QUIT,
 		CLIENT_UNKNOWN,
 		CLIENT_VALIDATEDENIED,
+		CLIENT_SEARCH_FLOOD,
 		STATS
 	};
 
@@ -390,6 +374,8 @@ private:
 	virtual void onAction(ClientListener::Types type, Client* client, const string& line) {
 		string* x = new string(line);
 		switch(type) {
+		case ClientListener::SEARCH_FLOOD:
+			PostMessage(WM_SPEAKER, CLIENT_SEARCH_FLOOD, (LPARAM)x); break;
 		case ClientListener::FAILED:
 			PostMessage(WM_SPEAKER, CLIENT_FAILED, (LPARAM)x); break;
 		case ClientListener::MESSAGE:
@@ -470,9 +456,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.40 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.41 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.41  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.40  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

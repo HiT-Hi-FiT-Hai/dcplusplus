@@ -12,7 +12,7 @@ static char THIS_FILE[] = __FILE__;
 PropPage::Item AdvancedPage::items[] = {
 	{ IDC_ROLLBACK, SettingsManager::ROLLBACK, PropPage::T_INT }, 
 	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
-	{ IDC_FOLLOW, SettingsManager::AUTO_FOLLOW, PropPage::T_BOOL },
+	{ IDC_AUTOFOLLOW, SettingsManager::AUTO_FOLLOW, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 

@@ -26,7 +26,7 @@
 void Client::connect(const string& aServer, short aPort) {
 	
 	if(socket.isConnected()) {
-		disconnect();
+		disconnect(false);
 	}
 
 	server = aServer;
@@ -80,8 +80,23 @@ void Client::onLine(const string& aLine) throw() {
 		int type = Util::toInt(param.substr(i, j-i));
 		i = j + 1;
 		param = param.substr(i);
-		
-		if(param.size() > 0)
+		bool spam = false;
+		{
+			Lock l(cs);
+			map<string, int>::iterator s = searchFlood.find(seeker);
+			if(s != searchFlood.end()) {
+				if(++s->second > 5) {
+					// We have a search spammer!!!
+					if(seeker.find("Hub:"))
+						fire(ClientListener::SEARCH_FLOOD, this, seeker.substr(4));
+					else
+						fire(ClientListener::SEARCH_FLOOD, this, seeker + " (Nick unknown)");
+					spam = true;
+				}
+			}
+		}
+
+		if(!spam && param.size() > 0)
 			fire(ClientListener::SEARCH, this, seeker, a, size, type, param);
 	} else if(cmd == "$MyINFO") {
 		int i, j;
@@ -258,9 +273,12 @@ void Client::onLine(const string& aLine) throw() {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.21 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.22 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.22  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.21  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

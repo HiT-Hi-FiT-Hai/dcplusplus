@@ -85,7 +85,7 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 
 		string& b = aList[sortColumn];
 		int c;
-		LPARAM data;			
+		LPARAM data = NULL;			
 		int low = 0;
 		int high = count-1;
 		int comp = 0;
@@ -202,9 +202,12 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.3 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.4 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.cpp,v $
+ * Revision 1.4  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.3  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

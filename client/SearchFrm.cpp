@@ -121,6 +121,12 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
+	if(!initial.empty()) {
+		ctrlSearch.SetWindowText(initial.c_str());
+		BOOL dummy;
+		onEnter(0, 0, 0, dummy);
+	}
+	
 	bHandled = FALSE;
 	
 	return 1;
@@ -361,9 +367,12 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.18 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.19 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.19  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.18  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

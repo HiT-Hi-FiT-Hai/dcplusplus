@@ -38,7 +38,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		ES_AUTOHSCROLL, WS_EX_CLIENTEDGE);
+		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
@@ -118,9 +118,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.11 2002/01/25 00:11:26 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.12 2002/01/26 12:06:40 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.12  2002/01/26 12:06:40  arnetheduck
+ * Småsaker
+ *
  * Revision 1.11  2002/01/25 00:11:26  arnetheduck
  * New settings dialog and various fixes
  *

@@ -74,12 +74,14 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == UPLOAD_COMPLETE || wParam == UPLOAD_FAILED) {
 		int i = ctrlTransfers.find(lParam);
-		if(i > 0 && ctrlTransfers.getItemImage(i-1) == IMAGE_UPLOAD ) {
+		ctrlTransfers.DeleteItem(i);
+		if(ctrlTransfers.GetItemCount() > 0 && ( (ctrlTransfers.getItemImage(i) == IMAGE_UPLOAD) || ((i > 0) && ctrlTransfers.getItemImage(i-1) == IMAGE_UPLOAD) ) )  {
 			// ...
 		} else {
 			lastUpload = -1;
 		}
-		ctrlTransfers.DeleteItem(i);
+		
+	
 	} else if(wParam == DOWNLOAD_REMOVED) {
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
 		if(lastUpload > -1)
@@ -107,8 +109,8 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == DOWNLOAD_FAILED) {
 		StringListInfo* i = (StringListInfo*)lParam;
 		int j = ctrlTransfers.find(i->lParam);
-		ctrlTransfers.SetItemText(j, 1, i->l[0].c_str());
-		ctrlTransfers.SetItemText(j, 3, i->l[1].c_str());
+		ctrlTransfers.SetItemText(j, COLUMN_STATUS, i->l[0].c_str());
+		ctrlTransfers.SetItemText(j, COLUMN_USER, i->l[1].c_str());
 		delete i;
 	} else if(wParam == UPLOAD_TICK || wParam == DOWNLOAD_TICK) {
 		StringInfo* i = (StringInfo*)lParam;
@@ -123,8 +125,10 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		ctrlTransfers.SetItemText(pos, 2, i->l[0].c_str());
 		ctrlTransfers.SetItemText(pos, 3, i->l[1].c_str());
 	} else if(wParam == DOWNLOAD_SOURCEADDED) {
-		StringInfo* i = (StringInfo*)lParam;
-		ctrlTransfers.SetItemText(ctrlTransfers.find(i->lParam), 3, i->str.c_str());
+		StringListInfo* i = (StringListInfo*)lParam;
+		int j = ctrlTransfers.find(i->lParam);
+		ctrlTransfers.SetItemText(j, COLUMN_STATUS, i->l[0].c_str());
+		ctrlTransfers.SetItemText(j, COLUMN_USER, i->l[1].c_str());
 		delete i;
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
@@ -260,18 +264,47 @@ void MainFrame::onDownloadFailed(Download::Ptr aDownload, const string& aReason)
 
 void MainFrame::onDownloadSourceAdded(Download::Ptr aDownload, Download::Source* aSource) {
 	if(!aDownload->isSet(Download::RUNNING)) {
-		StringInfo* i = new StringInfo((LPARAM)aDownload);
+		StringListInfo* i = new StringListInfo((LPARAM)aDownload);
+		string tmp;
+
+		int online = 0;
 		for(Download::Source::Iter j = aDownload->getSources().begin(); j != aDownload->getSources().end(); ++j) {
-			if(i->str.size() > 0)
-				i->str += ", ";
+			if(tmp.size() > 0)
+				tmp += ", ";
 
 			Download::Source::Ptr sr = *j;
 			if(sr->getUser()) {
-				i->str += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
+				
+				if(sr->getUser()->isOnline())
+					online++;
+
+				tmp += sr->getUser()->getNick() + " (" + sr->getUser()->getClientName() + ")";
 			} else {
-				i->str += sr->getNick() + " (Offline)";
+				tmp += sr->getNick() + " (Offline)";
 			}
 		}
+
+		char buf[64];
+		if(online > 0) {
+
+			if(aDownload->getSources().size() == 1) {
+				i->l.push_back("Waiting to connect (User online)");
+			} else {
+				sprintf(buf, "Waiting to connect (%d of %d users online)", online, aDownload->getSources().size());
+				i->l.push_back(buf);
+			}
+		} else {
+			if(aDownload->getSources().size() == 0) {
+				i->l.push_back("No users to download from");
+			} else if(aDownload->getSources().size() == 1) {
+				i->l.push_back("User offline");
+			} else {
+				sprintf(buf, "All %d users offline", aDownload->getSources().size());
+				i->l.push_back(buf);
+			}
+		}
+		
+		i->l.push_back(tmp);
 
 		PostMessage(WM_SPEAKER, DOWNLOAD_SOURCEADDED, (LPARAM)i);
 	}
@@ -438,12 +471,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	SettingsManager::getInstance()->load();	
 
-	SettingsManager::getInstance()->setDefault(SettingsManager::SERVER, Util::getLocalIp());
-	SettingsManager::getInstance()->setDefault(SettingsManager::PORT, 412);
-	SettingsManager::getInstance()->setDefault(SettingsManager::ROLLBACK, 1024);
-	SettingsManager::getInstance()->setDefault(SettingsManager::CLIENTVERSION, "1,0091");
-	SettingsManager::getInstance()->setDefault(SettingsManager::AUTO_FOLLOW, true);
-
 	ShareManager::getInstance()->refresh();
 	HubManager::getInstance()->refresh();
 
@@ -464,6 +491,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	CMenuItemInfo mi;
 	int n = 0;
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Search for alternates";
+	mi.wID = IDC_SEARCH_ALTERNATES;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
@@ -860,11 +893,67 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 	}
 }
 
+LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlTransfers.GetSelectedCount() == 1) {
+		
+		LVITEM lvi;
+		lvi.iItem = ctrlTransfers.GetNextItem(-1, LVNI_SELECTED);
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_IMAGE | LVIF_PARAM;
+		
+		ctrlTransfers.GetItem(&lvi);
+		
+		if(lvi.iImage == IMAGE_DOWNLOAD) {
+			char buf[256];
+			ctrlTransfers.GetItemText(lvi.iItem, COLUMN_FILE, buf, 256);
+			string tmp(buf);
+			int i = -1;
+
+			// Remove all strange characters from the search
+			while( (i = tmp.find_first_of(".[]()-_+")) != string::npos) {
+				tmp.replace(i, 1, 1, ' ');
+			}
+
+			
+			StringList tok = StringTokenizer(tmp, ' ').getTokens();
+			tmp = "";
+
+			for(StringIter si = tok.begin(); si != tok.end(); ++si) {
+				bool found = false;
+
+				for(StringIter j = searchFilter.begin(); j != searchFilter.end(); ++j) {
+					if(stricmp(si->c_str(), j->c_str()) == 0) {
+						found = true;
+					}
+				}
+
+				if(!found && !si->empty()) {
+					tmp += *si + ' ';
+				}
+			}
+
+			if(!tmp.empty()) {
+				SearchFrame* pChild = new SearchFrame();
+				pChild->setTab(&ctrlTab);
+				pChild->setInitial(tmp);
+				pChild->CreateEx(m_hWndClient);
+
+			}
+		} 
+	}
+	
+	return 0;
+}
+
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.47 2002/01/25 00:15:41 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.48 2002/01/26 12:06:39 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.48  2002/01/26 12:06:39  arnetheduck
+ * Småsaker
+ *
  * Revision 1.47  2002/01/25 00:15:41  arnetheduck
  * New Settings dialogs
  *
