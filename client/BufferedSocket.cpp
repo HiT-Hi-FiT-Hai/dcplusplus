@@ -166,6 +166,9 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 							bs->mode = MODE_LINE;
 						}
 					}
+				} else if(bs->mode == MODE_DGRAM) {
+					bs->fireData(buf, i);
+					i = 0;
 				}
 			}
 		} catch(SocketException e) {
@@ -182,9 +185,12 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.11 2001/12/07 20:03:00 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.12 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.12  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.11  2001/12/07 20:03:00  arnetheduck
  * More work done towards application stability
  *

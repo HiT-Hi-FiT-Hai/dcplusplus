@@ -111,19 +111,26 @@ public:
 	virtual void onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 		Upload* u;
 		HANDLE h;
+		uploadCS.enter();
+
 		try {
 			if(uploads.size() >= Settings::getSlots()) {
 				aSource->maxedOut();
 				removeConnection(aSource);
+				uploadCS.leave();
 				return;
 			}
 			string file = ShareManager::getInstance()->translateFileName(aFile);
-			uploadCS.enter();
 			Upload::MapIter i = uploads.find(aSource);
 			if(i != uploads.end()) {
+				// This is bad!
+				fireFailed(i->second, "Unexpected command");
 				delete i->second;
 				dcdebug("onGet: Removing upload\n");
 				uploads.erase(i);
+				uploadCS.leave();
+				removeConnection(aSource);
+				return;
 			} 
 			h = CreateFile(file.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
 			if(h == INVALID_HANDLE_VALUE) {
@@ -141,18 +148,24 @@ public:
 			char buf[24];
 			aSource->fileLength(_i64toa(u->getSize(), buf, 10));
 			uploads[aSource] = u;
-			uploadCS.leave();
 
 		} catch (ShareException e) {
 			aSource->error("File Not Available");
 		}
+
+		uploadCS.leave();
 	}
 	
 	virtual void onSend(UserConnection* aSource) {
 		Upload* u;
 		uploadCS.enter();
 		Upload::MapIter i = uploads.find(aSource);
-		dcassert(i!=uploads.end());
+		if(i==uploads.end()) {
+			// Huh? Where did this come from?
+			removeConnection(aSource);
+			uploadCS.leave();
+			return;
+		}
 
 		u = i->second;
 		try {
@@ -270,9 +283,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.10 2001/12/07 20:03:26 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.11  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.10  2001/12/07 20:03:26  arnetheduck
  * More work done towards application stability
  *

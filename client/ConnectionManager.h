@@ -49,7 +49,7 @@ public:
 
 	int getDownloadConnection(User* aUser);
 	void putDownloadConnection(UserConnection* aSource) {
-		aSource->disconnect();
+		aSource->reset();
 		downloaderCS.enter();
 		int j = downloaders.size();
 		for(UserConnection::NickIter i = downloaders.begin(); i != downloaders.end(); ++i) {
@@ -64,7 +64,7 @@ public:
 		pool.push_back(aSource);
 	}
 	void putUploadConnection(UserConnection* aSource) {
-		aSource->disconnect();
+		aSource->reset();
 		uploaderCS.enter();
 		for(UserConnection::NickIter i = uploaders.begin(); i != uploaders.end(); ++i) {
 			// Can't search by user, he/she might have disconnected...
@@ -138,7 +138,7 @@ private:
 	ConnectionManager() {
 		try {
 			socket.addListener(this);
-			socket.waitForConnections(atoi(Settings::getPort().c_str()));
+			socket.waitForConnections(Settings::getPort());
 		} catch(SocketException e) {
 			// Doh!
 		}
@@ -161,9 +161,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.7 2001/12/07 20:03:05 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.8  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.7  2001/12/07 20:03:05  arnetheduck
  * More work done towards application stability
  *

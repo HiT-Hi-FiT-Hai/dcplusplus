@@ -108,6 +108,7 @@ public:
 		disconnect();
 		
 	};
+	virtual void bind(short aPort);
 	
 	virtual void connect(const string& ip, short port) throw(SocketException);
 	virtual void connect(const string& ip, const string& port) throw(SocketException);
@@ -139,6 +140,7 @@ public:
 		default:
 			dcassert(0);
 		}
+		type = aType;
 	}
 
 	int getAvailable() {
@@ -202,9 +204,12 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.9 2001/12/07 20:03:26 arnetheduck Exp $
+ * $Id: Socket.h,v 1.10 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.h,v $
+ * Revision 1.10  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.9  2001/12/07 20:03:26  arnetheduck
  * More work done towards application stability
  *

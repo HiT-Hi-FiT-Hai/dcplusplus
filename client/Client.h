@@ -27,6 +27,7 @@
 #include "BufferedSocket.h"
 #include "User.h"
 #include "Util.h"
+#include "SearchManager.h"
 
 class Client : public Speaker<ClientListener>, public BufferedSocketListener
 {
@@ -116,7 +117,16 @@ public:
 		dcdebug("getNickList\n");
 		send("$GetNickList|");
 	}
-	
+
+	void search(int aSearchType, LONGLONG aSize, int aFileType, const string& aString){
+		char buf[MAX_PATH + 128];
+		char c1 = (aSearchType == SearchManager::SIZE_DONTCARE) ? 'F' : 'T';
+		char c2 = (aSearchType == SearchManager::SIZE_ATLEAST) ? 'F' : 'T';
+
+		sprintf(buf, "$Search %s:%d %c?%c?%I64d?%d?%s|", Settings::getServer().c_str(), Settings::getPort(), c1, c2, aSize, aFileType+1, aString.c_str());
+		send(buf);
+	}
+
 	void sendMessage(const string& aMessage) {
 		dcdebug("sendMessage ...\n");
 		int i;
@@ -142,7 +152,7 @@ public:
 
 	void connectToMe(User* aUser) {
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Settings::getServer() + ":" + Settings::getPort() + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + Settings::getServer() + ":" + Settings::getPortString() + "|");
 	}
 	void revConnectToMe(User* aUser) {
 		dcdebug("Client::revConnectToMe %s\n", aUser->getNick().c_str());
@@ -180,6 +190,14 @@ public:
 		return users.size();
 	}
 
+	LONGLONG getAvailable() {
+		LONGLONG x = 0;
+		for(User::NickIter i = users.begin(); i != users.end(); ++i) {
+			x+=i->second->getBytesShared();
+		}
+		return x;
+	}
+	
 	static int getTotalUserCount() {
 		int c = 0;
 		for(Iter i = clientList.begin(); i != clientList.end(); ++i) {
@@ -402,9 +420,12 @@ protected:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.6 2001/12/07 20:03:02 arnetheduck Exp $
+ * $Id: Client.h,v 1.7 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.7  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.6  2001/12/07 20:03:02  arnetheduck
  * More work done towards application stability
  *

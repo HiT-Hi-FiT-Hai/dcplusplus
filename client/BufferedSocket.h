@@ -46,7 +46,8 @@ class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket
 public:
 	enum {	
 		MODE_LINE,
-		MODE_DATA
+		MODE_DATA,
+		MODE_DGRAM
 	};
 
 	void setDataMode(LONGLONG aBytes = -1) {
@@ -56,6 +57,12 @@ public:
 
 	int getMode() { return mode; };
 	
+	virtual void bind(short aPort) {
+		Socket::bind(aPort);
+		mode = MODE_DGRAM;
+		startReader();
+	}
+
 	virtual void connect(const string& aServer, short aPort) {
 		server = aServer;
 		port = aPort;
@@ -224,9 +231,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.7 2001/12/07 20:03:01 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.8  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.7  2001/12/07 20:03:01  arnetheduck
  * More work done towards application stability
  *

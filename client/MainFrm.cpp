@@ -54,14 +54,15 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	return 0;
 }
 
-void MainFrame::onUploadComplete(Upload::Ptr p) {
+void MainFrame::onUploadComplete(Upload* p) {
 	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)p));
 	//	ctrlUploads.SetItemText(ctrlUploads.find((LPARAM)p), 1, "Upload finished");
 	
 }
 
-void MainFrame::onUploadFailed(Upload::Ptr aUpload, const string& aReason) {
-	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, aReason.c_str());
+void MainFrame::onUploadFailed(Upload* aUpload, const string& aReason) {
+	ctrlTransfers.DeleteItem(ctrlTransfers.find((LPARAM)aUpload));
+//	ctrlTransfers.SetItemText(ctrlTransfers.find((LPARAM)aUpload), 1, aReason.c_str());
 }
 
 void MainFrame::onUploadStarting(Upload* aUpload) {
@@ -157,7 +158,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP | SBARS_TOOLTIPS);
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
@@ -251,7 +252,7 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	dlg.description = Settings::getDescription();
 	dlg.connection = Settings::getConnection();
 	dlg.server = Settings::getServer();
-	dlg.port = Settings::getPort();
+	dlg.port = Settings::getPortString();
 	dlg.connectionType = Settings::getConnectionType();
 	dlg.slots = Settings::getSlots();
 
@@ -266,16 +267,19 @@ LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		Settings::setSlots(dlg.slots);
 		Settings::save();
 		ShareManager::getInstance()->refresh();
-		ConnectionManager::getInstance()->setPort(atoi(Settings::getPort().c_str()));
+		ConnectionManager::getInstance()->setPort(Settings::getPort());
 	}
 	return 0;
 }
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.13 2001/12/07 20:03:13 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.14 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.14  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.13  2001/12/07 20:03:13  arnetheduck
  * More work done towards application stability
  *

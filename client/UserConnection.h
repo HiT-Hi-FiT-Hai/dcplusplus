@@ -172,8 +172,17 @@ private:
 	int state;
 	int flags;
 	
+	void reset() {
+		disconnect();
+		user = NULL;
+		flags = 0;
+		state = LOGIN;
+		server = "";
+		port = 0;
+
+	}
 	// We only want ConnectionManager to create this...
-	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0) { 
+	UserConnection() : socket('|'), user(NULL), state(LOGIN), flags(0), port(0) { 
 		socket.addListener(this);
 	};
 	virtual ~UserConnection() {
@@ -333,9 +342,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.10 2001/12/07 20:03:28 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.11  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.10  2001/12/07 20:03:28  arnetheduck
  * More work done towards application stability
  *

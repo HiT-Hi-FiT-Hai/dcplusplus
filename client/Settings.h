@@ -67,7 +67,8 @@ public:
 	static const string& getDescription() { return description; }
 	static const string& getConnection() { return connection; }
 	static const string& getServer() { return server; }
-	static const string& getPort() { return port; }
+	static short getPort() { return atoi(port.c_str()); }
+	static const string& getPortString() { return port; };
 	static int getConnectionType() { return connectionType; };
 	static int getSlots() { return slots; };
 	
@@ -91,9 +92,12 @@ public:
 
 /**
  * @file Settings.h
- * $Id: Settings.h,v 1.7 2001/12/04 21:50:34 arnetheduck Exp $
+ * $Id: Settings.h,v 1.8 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: Settings.h,v $
+ * Revision 1.8  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.7  2001/12/04 21:50:34  arnetheduck
  * Work done towards application stability...still a lot to do though...
  * a bit more and it's time for a new release.

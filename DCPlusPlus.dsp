@@ -423,6 +423,10 @@ SOURCE=.\res\idr_mdid.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\mdichild.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\toolbar.bmp
 # End Source File
 # End Group

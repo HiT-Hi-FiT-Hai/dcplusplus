@@ -32,7 +32,7 @@
 
 #define EDIT_MESSAGE_MAP 5		// This could be any number, really...
 
-class HubFrame : public CMDIChildWindowImpl2<HubFrame>, public ClientListener, public CSplitterImpl<HubFrame>
+class HubFrame : public CMDIChildWindowImpl2<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>
 {
 protected:
 	virtual void onClientConnecting(Client* aClient) {
@@ -48,9 +48,11 @@ protected:
 	}
 	virtual void onClientQuit(Client* aClient, User* aUser) {
 		ctrlUsers.deleteItem(aUser->getNick());
+		updateStatusBar();		
 	}
 	virtual void onClientHubName(Client* aClient) {
 		SetWindowText(aClient->getName().c_str());
+		addClientLine("Connected");
 	}
 	virtual void onClientError(Client* aClient, const string& aReason) {
 		addClientLine("Connection failed: " + aReason);
@@ -73,11 +75,21 @@ protected:
 		ctrlUsers.SetItemText(i, 2, aUser->getDescription().c_str());
 		ctrlUsers.SetItemText(i, 3, aUser->getConnection().c_str());
 		ctrlUsers.SetItemText(i, 4, aUser->getEmail().c_str());
+
+		updateStatusBar();		
 	}
+
 	virtual void onClientPrivateMessage(Client* aClient, const string& aFrom, const string& aMessage) {
 		addLine("Private message from " + aFrom + ":\r\n" + aMessage);
 	}
 
+	void updateStatusBar() {
+		char buf[256];
+		sprintf(buf, "%d users", client->getUserCount());
+		ctrlStatus.SetText(1, buf);
+		ctrlStatus.SetText(2, Util::shortenBytes(client->getAvailable()).c_str());
+		
+	}
 	Client::Ptr client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
@@ -103,7 +115,8 @@ public:
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
 	ExListViewCtrl ctrlUsers;
-	
+	CStatusBarCtrl ctrlStatus;
+
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
 		delete this;
 	}
@@ -111,8 +124,9 @@ public:
 	typedef CSplitterImpl<HubFrame> splitBase;
 
 	BEGIN_MSG_MAP(HubFrame)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
+//		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
@@ -126,6 +140,44 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 
+	void UpdateLayout(BOOL bResizeBars = TRUE)
+	{
+		RECT rect;
+		GetClientRect(&rect);
+		// position bars and offset their dimensions
+		UpdateBarsPosition(rect, bResizeBars);
+		
+		if(ctrlStatus.IsWindow()) {
+			CRect sr;
+			int w[3];
+			ctrlStatus.GetClientRect(sr);
+			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+			
+			w[0] = sr.right - tmp;
+			w[1] = w[0] + (tmp-16)/2;
+			w[2] = w[0] + (tmp-16);
+			
+			ctrlStatus.SetParts(3, w);
+		}
+		
+		CRect rc = rect;
+		rc.bottom -=28;
+		SetSplitterRect(rc);
+		
+		rc = rect;
+		rc.bottom -= 2;
+		rc.top = rc.bottom - 22;
+		rc.left +=2;
+		rc.right -=2;
+		ctrlMessage.MoveWindow(rc);
+
+	}
+	
+	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+		ctrlMessage.SetFocus();
+		return 0;
+	}
+	
 	LRESULT OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
@@ -173,13 +225,14 @@ public:
 		ctrlClient.AppendText("\r\n");
 	}
 
+	void addClientLine(const char* aLine) {
+		ctrlStatus.SetText(0, aLine);
+	}
 	void addClientLine(const string& aLine) {
-		ctrlClient.AppendText("<Client> ");
-		addLine(aLine);
+		addClientLine(aLine.c_str());
 	}
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		PAINTSTRUCT ps;
@@ -197,7 +250,8 @@ public:
 			ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
 			string s(message, ctrlMessage.GetWindowTextLength());
 			delete message;
-			client->sendMessage(s);
+			SearchManager::getInstance()->search(s);
+			//client->sendMessage(s);
 			ctrlMessage.SetWindowText("");
 		} else {
 			bHandled = FALSE;
@@ -215,9 +269,12 @@ public:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.10 2001/12/07 20:03:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.11 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.11  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.10  2001/12/07 20:03:07  arnetheduck
  * More work done towards application stability
  *

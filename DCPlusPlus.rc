@@ -58,6 +58,8 @@ BEGIN
     BUTTON      ID_FILE_CONNECT
     BUTTON      ID_FILE_RECONNECT
     SEPARATOR
+    BUTTON      ID_FILE_SEARCH
+    SEPARATOR
     BUTTON      ID_FILE_SETTINGS
 END
 
@@ -82,6 +84,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Connect to public hub\tCtrl+N", ID_FILE_CONNECT
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                ID_FILE_SETTINGS
         MENUITEM SEPARATOR
@@ -133,8 +136,8 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Connect to public hub...\tCtrl+N", ID_FILE_CONNECT
-        MENUITEM SEPARATOR
         MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM SEPARATOR
         MENUITEM "&Reconnect\tCtrl+R",          ID_FILE_RECONNECT
         MENUITEM SEPARATOR
         MENUITEM "&Settings...",                ID_FILE_SETTINGS
@@ -433,6 +436,7 @@ BEGIN
     ID_FILE_CONNECT         "Displays a list of public hubs\nConnect"
     ID_FILE_SETTINGS        "Change application settings\nSettings"
     ID_FILE_RECONNECT       "Reconnect to the server\nReconnect"
+    ID_FILE_SEARCH          "Search for files\nSearch"
     IDC_DOWNLOAD            "Download selected file\nDownload"
 END
 

@@ -23,21 +23,79 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-class SearchManager  
+#include "BufferedSocket.h"
+
+class SearchManagerListener {
+public:
+	typedef SearchManagerListener* Ptr;
+	typedef vector<Ptr> List;
+	typedef List::iterator Iter;
+	
+};
+
+class SearchResult {
+
+	const string& getNick() { return nick; };
+	void setNick(const string& aNick) { nick = aNick; };
+
+	const string& getFile() { return file; };
+	void setFile(const string& aFile) { file = aFile; };
+
+	const string& getHubName() { return hubName; };
+	void setHubName(const string aHub) { hubName = aHub; };
+	
+	const string& getHubAddress() { return hubAddress; };
+	void setHubAddress(const string& aAddress) { hubAddress = aAddress; };
+
+	LONGLONG getSize() { return size; };
+	void setSize(LONGLONG aSize) { size = aSize; };
+	void setSize(const string& aSize) { size = _atoi64(aSize.c_str()); };
+
+	int getSlots() { return slots; };
+	int getFreeSlots() { return freeSlots; };
+	string getSlotString() { char buf[16]; sprintf(buf, "%d/%d", slots, freeSlots); return buf; };
+	void setSlots(int aSlots) { slots = aSlots; };
+	void setSlots(const string& aSlots) { setSlots(atoi(aSlots.c_str())); };
+
+	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
+	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
+
+private:
+	string nick;
+	string file;
+	string hubName;
+	string hubAddress;
+
+	LONGLONG size;
+	int slots;
+	int freeSlots;
+};
+
+class SearchManager : public Speaker<SearchManagerListener>, private BufferedSocketListener
 {
 public:
 	enum {
 		SIZE_DONTCARE = 0x00,
 		SIZE_ATLEAST = 0x01,
 		SIZE_ATMOST = 0x02,
-		SIZE_EXACT = 0x04
 	};
 
-	void search(const string& aName, LONGLONG aSize, DWORD aFlags = 0, int aType = 0);
+	enum {
+		TYPE_ANY = 0,
+		TYPE_AUDIO,
+		TYPE_COMPRESSED,
+		TYPE_DOCUMENT,
+		TYPE_EXECUTABLE,
+		TYPE_PICTURE,
+		TYPE_VIDEO,
+		TYPE_FOLDER
+	};
+	
+	void search(const string& aName, LONGLONG aSize = 0, DWORD aFlags = 0, int aType = 0);
 	void search(const string& aName, const string& aSize, DWORD aFlags = 0, int aType = 0) {
 		search(aName, _atoi64(aSize.c_str()), aFlags, aType);
 	}
-
+	
 	static SearchManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -56,18 +114,33 @@ public:
 private:
 	static SearchManager* instance;
 	
-	SearchManager() { };
-	virtual ~SearchManager() { };
+	BufferedSocket socket;
 
+	SearchManager() : socket('|') { 
+		socket.addListener(this);
+		socket.create(Socket::TYPE_UDP);
+		socket.bind(Settings::getPort());
+	};
+	virtual ~SearchManager() { 
+		socket.removeListener(this);
+	};
+
+	virtual void onData(BYTE* buf, int aLen) {
+		string x((char*)buf, aLen);
+		dcdebug("Search: %s\n", x.c_str());
+	}
 };
 
 #endif // !defined(AFX_SEARCHMANAGER_H__E8F009DF_D216_4F8F_8C81_07D2FA0BFB7F__INCLUDED_)
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.1 2001/12/07 20:04:32 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.2 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.2  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.1  2001/12/07 20:04:32  arnetheduck
  * Time to start working on searching...
  *

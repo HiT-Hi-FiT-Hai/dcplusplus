@@ -75,8 +75,29 @@ Socket::Socket(const string& ip, short port) throw(SocketException) : event(NULL
 	connect(ip, port);	
 }
 
+/**
+ * Binds an UDP socket to a certain port.
+ */
+void Socket::bind(short aPort) throw (SocketException){
+	if(type != TYPE_UDP) {
+		throw SocketException("Only UDP Sockets supported by bind()");
+	}
+
+	if(isConnected()) {
+		disconnect();
+	}
+	SOCKADDR_IN sock_addr;
+		
+	sock_addr.sin_family = AF_INET;
+	sock_addr.sin_port = htons(aPort);
+	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    checksockerr(::bind(sock, (SOCKADDR *)&sock_addr, sizeof(sock_addr)));
+
+	connected = true;
+}
+
 void Socket::accept(const ServerSocket& aSocket) throw(SocketException){
-	if(connected)
+	if(isConnected())
 		disconnect();
 	
 	checksockerr(sock=::accept(aSocket.getSocket(), NULL, NULL));
@@ -95,7 +116,9 @@ void Socket::connect(const string& ip, const string& port) throw(SocketException
 }
 
 void Socket::connect(const string& ip, short port) throw(SocketException) {
-	
+	if(type != TYPE_TCP) {
+		throw SocketException("Only TCP Sockets supported by connect()");
+	}
 	SOCKADDR_IN  serv_addr;
 	hostent* host;
 
@@ -143,7 +166,11 @@ void Socket::connect(const string& ip, short port) throw(SocketException) {
 int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 	checkconnected();
 	int len = 0;
-	checkrecv(len=::recv(sock, (char*)aBuffer, aBufLen, 0));
+	if(type == TYPE_TCP) {
+		checkrecv(len=::recv(sock, (char*)aBuffer, aBufLen, 0));
+	} else if(type == TYPE_UDP) {
+		checkrecv(len=::recvfrom(sock, (char*)aBuffer, aBufLen, 0, NULL, NULL));
+	}
 	stats.down += len;
 	stats.totalDown += len;
 	return len;
@@ -181,9 +208,12 @@ void Socket::write(const string& aData) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.9 2001/12/07 20:03:25 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.10 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.10  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.9  2001/12/07 20:03:25  arnetheduck
  * More work done towards application stability
  *

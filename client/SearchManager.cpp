@@ -20,13 +20,26 @@
 #include "DCPlusPlus.h"
 
 #include "SearchManager.h"
+#include "Client.h"
 
 SearchManager* SearchManager::instance = NULL;
+
+void SearchManager::search(const string& aName, LONGLONG aSize, DWORD aFlags /* = 0 */, int aType /* = 0 */ ) {
+	Client::List ls = Client::getList();
+	for(Client::Iter i = ls.begin(); i != ls.end(); ++i) {
+		(*i)->search(aType, aSize, aType, aName);
+	}
+}
+
+
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.1 2001/12/07 20:04:32 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.2 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.2  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.1  2001/12/07 20:04:32  arnetheduck
  * Time to start working on searching...
  *

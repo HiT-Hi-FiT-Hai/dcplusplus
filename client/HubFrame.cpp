@@ -23,6 +23,10 @@
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	ctrlStatus.Attach(m_hWndStatusBar);
+	
 	ctrlClient.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL | ES_READONLY, WS_EX_CLIENTEDGE);
 
@@ -47,11 +51,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.InsertColumn(4, _T("E-Mail"), LVCFMT_LEFT, 100, 4);
 
 	bHandled = FALSE;
-
 	client->connect(server);
 	return 1;
 }
-
+/*
 LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if(wParam != SIZE_MINIMIZED) {
@@ -69,7 +72,7 @@ LRESULT HubFrame::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled
 	}	
 	return 0;
 }
-
+*/
 LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	client->disconnect();
 	ctrlUsers.DeleteAllItems();
@@ -79,9 +82,12 @@ LRESULT HubFrame::OnFileReconnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.6 2001/12/07 20:03:07 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.7 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.7  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.6  2001/12/07 20:03:07  arnetheduck
  * More work done towards application stability
  *

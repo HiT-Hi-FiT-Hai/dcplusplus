@@ -54,11 +54,11 @@ void Client::onLine(const string& aLine) {
 		tmp = tmp.substr(tmp.find(' ') + 1);
 		int a;
 		if(tmp[0] == 'F') {
-			a = SEARCH_PLAIN;
+			a = SearchManager::SIZE_DONTCARE;
 		} else if(tmp[2] == 'F') {
-			a = SEARCH_ATLEAST;
+			a = SearchManager::SIZE_ATLEAST;
 		} else {
-			a = SEARCH_ATMOST;
+			a = SearchManager::SIZE_ATMOST;
 		}
 		tmp=tmp.substr(4);
 		string size = tmp.substr(0, tmp.find('?'));
@@ -133,10 +133,10 @@ void Client::onLine(const string& aLine) {
 		string nick = aLine.substr(6);
 		if(users.find(nick) != users.end()) {
 			User* u = users[nick];
+			users.erase(nick);
 			
 			fireQuit(u);
 			delete u;
-			users.erase(nick);
 		}
 		
 	} else if(aLine.find("$ValidateDenide") != string::npos) {
@@ -191,9 +191,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.5 2001/12/07 20:03:02 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.6 2001/12/08 14:25:49 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.6  2001/12/08 14:25:49  arnetheduck
+ * More bugs removed...did my first search as well...
+ *
  * Revision 1.5  2001/12/07 20:03:02  arnetheduck
  * More work done towards application stability
  *
