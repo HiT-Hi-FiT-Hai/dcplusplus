@@ -73,6 +73,8 @@ public:
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + lastDirs.size(), onDownloadTargetDir)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
+		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_KEYDOWN, onKeyDown)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
 	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
@@ -154,6 +156,21 @@ public:
 		return 0;
 	}
 
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+		
+		if(kd->wVKey == VK_BACK) {
+			HTREEITEM cur = ctrlTree.GetSelectedItem();
+			if(cur != NULL)
+			{
+				HTREEITEM parent = ctrlTree.GetParentItem(cur);
+				if(parent != NULL)
+					ctrlTree.SelectItem(parent);
+			}
+		} 
+		return 0;
+	}
+
 private:
 	static DirectoryListing::Directory *findFile(string const& str,
 		DirectoryListing::Directory *root, DirectoryListing::File *&foundFile, int &skipHits);
@@ -202,5 +219,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.10 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.11 2002/06/16 09:34:47 arnetheduck Exp $
  */

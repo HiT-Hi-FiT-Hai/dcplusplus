@@ -42,11 +42,8 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 	SetWindowText(CSTRING(FINISHED_DOWNLOADS));
 	
-//	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-//	ctrlStatus.Attach(m_hWndStatusBar);
-
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_FINISHED);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
@@ -99,6 +96,7 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 	ctxMenu.CreatePopupMenu();
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
+	ctxMenu.AppendMenu(MF_STRING, IDC_OPENPUBLIC, "Open");
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 
 	bHandled = FALSE;
@@ -107,13 +105,22 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	
-	NMITEMACTIVATE* item = (NMITEMACTIVATE*) pnmh;
+	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
 
 	if(item->iItem != -1) {
 		FinishedItem* entry = (FinishedItem*)ctrlList.GetItemData(item->iItem);
 		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
 	}
-	
+	return 0;
+}
+
+LRESULT FinishedFrame::onOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i;
+	if((i = ctrlList.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		FinishedItem * const entry = (FinishedItem*)ctrlList.GetItemData(i);
+		ShellExecute(NULL, NULL, entry->getTarget().c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
 	return 0;
 }
 
@@ -172,5 +179,5 @@ void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* 
 
 /**
  * @file FinishedFrame.cpp
- * $Id: FinishedFrame.cpp,v 1.1 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.2 2002/06/16 09:34:47 arnetheduck Exp $
  */

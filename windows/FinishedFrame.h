@@ -50,8 +50,10 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, onRemove)
 		COMMAND_HANDLER(IDC_TOTAL, BN_CLICKED, onRemove)
-		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickFinished)
-		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClick)
+		COMMAND_HANDLER(IDC_OPENPUBLIC, BN_CLICKED, onOpen)
+		NOTIFY_HANDLER(IDC_FINISHED, LVN_COLUMNCLICK, onColumnClickFinished)
+		NOTIFY_HANDLER(IDC_FINISHED, LVN_KEYDOWN, onKeyDown)
+		NOTIFY_HANDLER(IDC_FINISHED, NM_DBLCLK, onDoubleClick)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<FinishedFrame>)
 	END_MSG_MAP()
 		
@@ -59,6 +61,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT onRemove(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onOpen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 		
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		RECT rc;                    // client area of window 
@@ -82,16 +85,48 @@ public:
 		return CMDIChildWindowImpl<FinishedFrame>::PreTranslateMessage(pMsg);
 	}
 	
+	static int sortSize(LPARAM a, LPARAM b) {
+		FinishedItem* c = (FinishedItem*)((LVITEM *)a)->lParam;
+		FinishedItem* d = (FinishedItem*)((LVITEM *)b)->lParam;
+		return compare(c->getSize(), d->getSize());
+	}
+
+	static int sortSpeed(LPARAM a, LPARAM b) {
+		FinishedItem* c = (FinishedItem*)((LVITEM *)a)->lParam;
+		FinishedItem* d = (FinishedItem*)((LVITEM *)b)->lParam;
+		return compare(c->getAvgSpeed(), d->getAvgSpeed());
+	}
+
 	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlList.getSortColumn()) {
 			ctrlList.setSortDirection(!ctrlList.getSortDirection());
 		} else {
-			ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			switch(l->iSubItem) {
+			case COLUMN_SIZE:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+				break;
+			case COLUMN_SPEED:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSpeed);
+				break;
+			default:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+				break;
+			}
 		}
 		return 0;
 	}
 	
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+		
+		if(kd->wVKey == VK_DELETE) {
+			BOOL dummy;
+			onRemove(0, IDC_REMOVE, 0, dummy);
+		} 
+		return 0;
+	}
+
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		RECT rect;
@@ -99,21 +134,7 @@ public:
 
 		// position bars and offset their dimensions
 		UpdateBarsPosition(rect, bResizeBars);
-		/*
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-		*/
-		CRect rc = rect;
+		CRect rc(rect);
 		ctrlList.MoveWindow(rc);
 	}
 	
@@ -154,7 +175,8 @@ private:
 		l.push_back(entry->getUser());
 		l.push_back(Util::formatBytes(entry->getSize()));
 		l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
-		ctrlList.insert(l, 0, (LPARAM)entry);
+		int loc = ctrlList.insert(l, 0, (LPARAM)entry);
+		ctrlList.EnsureVisible(loc, FALSE);
 	}
 	
 	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry);
@@ -164,5 +186,5 @@ private:
 
 /**
  * @file FinishedFrame.h
- * $Id: FinishedFrame.h,v 1.1 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.2 2002/06/16 09:34:47 arnetheduck Exp $
  */
