@@ -133,10 +133,10 @@ BEGIN
     LTEXT           "",IDC_MODEHELP,55,109,203,66
 END
 
-IDD_ADVANCEDPAGE DIALOG  0, 0, 275, 225
+IDD_ADVANCEDPAGE DIALOGEX 0, 0, 275, 225
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_ROLLBACK,71,17,50,14,ES_AUTOHSCROLL | ES_NUMBER
     EDITTEXT        IDC_BUFFERSIZE,71,33,50,14,ES_AUTOHSCROLL
@@ -148,25 +148,22 @@ BEGIN
     CONTROL         "Automatically search for alternative download locations",
                     IDC_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
                     89,188,10
-    CONTROL         "Automatically remove source on ""File Not Available""",
-                    IDC_REMOVENOTAVAILABLE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,99,179,10
     CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,110,141,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,99,141,10
     CONTROL         "Open the download queue window at startup",
                     IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    121,157,10
+                    110,157,10
     CONTROL         "Popup private messages",IDC_POPUP_PMS,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,15,132,93,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,121,93,10
     CONTROL         "Ignore messages from users that are not online (effective agains bots)",
                     IDC_IGNOREOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,143,233,10
+                    15,132,233,10
     CONTROL         "Popup messages from users that are not online (if not ignoring)",
                     IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,154,211,10
+                    15,143,211,10
     CONTROL         "Remove dupes completely (instead of just subtracting their size)",
                     IDC_REMOVEDUPES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    165,215,10
+                    154,215,10
     LTEXT           "Download public hublist from:",IDC_STATIC,15,187,93,8
     EDITTEXT        IDC_PUBLIC_HUBS,16,197,246,14,ES_AUTOHSCROLL
     LTEXT           "Rollback",IDC_STATIC,15,20,29,8
@@ -402,8 +399,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,1,7,6
- PRODUCTVERSION 0,1,7,6
+ FILEVERSION 0,1,7,7
+ PRODUCTVERSION 0,1,7,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -420,12 +417,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://dcplusplus.sourceforge.net"
             VALUE "FileDescription", "DC++"
-            VALUE "FileVersion", "0, 1, 7, 6"
+            VALUE "FileVersion", "0, 1, 7, 7"
             VALUE "InternalName", "DC++"
             VALUE "LegalCopyright", "Copyright 2001-2002 Jacek Sieka"
             VALUE "OriginalFilename", "DCPlusPlus.exe"
             VALUE "ProductName", "DC++"
-            VALUE "ProductVersion", "0, 1, 7, 6"
+            VALUE "ProductVersion", "0, 1, 7, 7"
         END
     END
     BLOCK "VarFileInfo"

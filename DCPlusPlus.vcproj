@@ -122,14 +122,15 @@
 				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
 				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib Release/client/client.lib Release/bzip/bzip2.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
-				Version="0.176"
+				Version="0.177"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
 				GenerateMapFile="TRUE"
 				MapFileName=".\App\DCPlusPlus.map"
-				SubSystem="2"/>
+				SubSystem="2"
+				OptimizeReferences="2"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

@@ -34,7 +34,6 @@ PropPage::Item AdvancedPage::items[] = {
 	{ IDC_CLVERSION, SettingsManager::CLIENTVERSION, PropPage::T_STR }, 
 	{ IDC_AUTOFOLLOW, SettingsManager::AUTO_FOLLOW, PropPage::T_BOOL },
 	{ IDC_CLEARSEARCH, SettingsManager::CLEAR_SEARCH, PropPage::T_BOOL },
-	{ IDC_REMOVENOTAVAILABLE, SettingsManager::REMOVE_NOT_AVAILABLE, PropPage::T_BOOL }, 
 	{ IDC_OPENPUBLIC, SettingsManager::OPEN_PUBLIC, PropPage::T_BOOL },
 	{ IDC_OPENQUEUE, SettingsManager::OPEN_QUEUE, PropPage::T_BOOL },
 	{ IDC_AUTOSEARCH, SettingsManager::AUTO_SEARCH, PropPage::T_BOOL },
@@ -65,6 +64,6 @@ void AdvancedPage::write()
 
 /**
  * @file AdvancedPage.cpp
- * $Id: AdvancedPage.cpp,v 1.5 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.6 2002/06/08 09:34:34 arnetheduck Exp $
  */
 

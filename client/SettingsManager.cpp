@@ -36,7 +36,7 @@ const string SettingsManager::settingTags[] =
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
+	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
@@ -73,7 +73,6 @@ SettingsManager::SettingsManager()
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
 	setDefault(FULL_ROW_SELECT, true);
-	setDefault(REMOVE_NOT_AVAILABLE, true);
 	setDefault(SHARE_HIDDEN, false);
 	setDefault(FILTER_KICKMSGS, false);
 	setDefault(MINIMIZE_TRAY, false);
@@ -232,6 +231,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.41 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.42 2002/06/08 09:34:34 arnetheduck Exp $
  */
 

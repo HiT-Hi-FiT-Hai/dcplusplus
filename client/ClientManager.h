@@ -130,11 +130,6 @@ private:
 
 	friend class Singleton<ClientManager>;
 	ClientManager() : minutes(0) { 
-		try {
-			s.create(Socket::TYPE_UDP); 
-		} catch(SocketException e) {
-			dcassert(0);
-		}
 		TimerManager::getInstance()->addListener(this); 
 	};
 
@@ -160,6 +155,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.28 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.29 2002/06/08 09:34:34 arnetheduck Exp $
  */
 

@@ -282,8 +282,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	removeDownload(d);
 	
 	if(aError == "File Not Available") {
-		if(SETTING(REMOVE_NOT_AVAILABLE))
-			QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
+		QueueManager::getInstance()->removeSource(target, aSource->getUser(), false);
 	}
 
 	removeConnection(aSource);
@@ -387,5 +386,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.64 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.65 2002/06/08 09:34:34 arnetheduck Exp $
  */

@@ -1,6 +1,7 @@
- -- 0.177 --
+ -- 0.177 2002-06-07 --
 * Improved performance on "File not available" (connection / slot is now kept)
-* Changed the queue back to the old behaviour, that files are downloaded in the order they're added (to aviod
+* Remove source on "File Not Available" is no longer an option. Don't ask why.
+* Changed the queue back to the old behaviour, that files are downloaded in the order they're added (to avoid
   having all the smallest files of multiple unfinished directories)
 * Fixed some queue random crash bugs
 * Fixed the wrong transfer icon bug (I think...)
@@ -10,14 +11,17 @@
   to all users, in nmhub v1.0.25 at least...complain if I'm wrong...)
 * Fixed the long shutdown time when a _very_ slow transfer was in progress
 * Added some other minor bandwidth saving features (only the users that need to be updated are updated when
-  reviewing the user list after having seen it)
+  reviewing the user list after having closed it for a while)
 * More potential connection timeout fixed (go, farcry, go!)
 * Fixed some minor client-client protocol issues
 * Fixed some more faulty "user offline" errors
 * Made autosearch more effective (much less hub bandwidth usage...)
-* Added a tiny splash sceen
+* Added a tiny splash sceen (no gfx, just text...)
 * Added a search hit counter to the search spy
 * Fixed a small redrawing bug in the tabs at the bottom
+* Fixed the sort by slots in search results
+* Fixed the slow upload speeds I think...at least it should be a bit better...
+* Switched to vc.net...we'll see if it's any good...
 
  -- 0.176 2002-05-26 --
 * Various optimizations of search handling and list sorting for better perfomance

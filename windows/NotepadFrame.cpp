@@ -36,7 +36,8 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
 	ctrlPad.SetWindowText(SETTING(NOTEPAD_TEXT).c_str());
-
+	
+	SetWindowText(CSTRING(NOTEPAD));
 	frame = this;
 	
 	bHandled = FALSE;
@@ -45,7 +46,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.4 2002/06/08 09:34:34 arnetheduck Exp $
  */
 
 

@@ -151,6 +151,7 @@ enum Strings { // @DontAdd
 	NO_USERS, // "No users"
 	NO_USERS_TO_DOWNLOAD_FROM, // "No users to download from"
 	NORMAL, // "Normal"
+	NOTEPAD, // "Notepad"
 	OFFLINE, // "Offline"
 	ONLINE, // "Online"
 	ONLY_FREE_SLOTS, // "Only users with free slots"

@@ -133,14 +133,12 @@ public:
 	static int sortSize(LPARAM a, LPARAM b) {
 		SearchResult* c = (SearchResult*)a;
 		SearchResult* d = (SearchResult*)b;
-
-		if(c->getSize() < d->getSize()) {
-			return -1;
-		} else if(c->getSize() == d->getSize()) {
-			return 0;
-		} else {
-			return 1;
-		}
+		return compare(c->getSize(), d->getSize());
+	}
+	static int sortSlots(LPARAM a, LPARAM b) {
+		SearchResult* c = (SearchResult*)a;
+		SearchResult* d = (SearchResult*)b;
+		return compare(c->getFreeSlots(), d->getFreeSlots());
 	}
 
 	void removeSelected() {
@@ -275,6 +273,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.10 2002/05/25 16:10:17 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.11 2002/06/08 09:34:34 arnetheduck Exp $
  */
 

@@ -85,14 +85,6 @@ LIB32=link.exe -lib
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\client\BitInputStream.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\BitOutputStream.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\client\BufferedSocket.cpp
 # End Source File
 # Begin Source File
@@ -106,10 +98,6 @@ SOURCE=.\client\ClientManager.cpp
 # Begin Source File
 
 SOURCE=.\client\ConnectionManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\CriticalSection.cpp
 # End Source File
 # Begin Source File
 
@@ -129,14 +117,6 @@ SOURCE=.\client\DownloadManager.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\Exception.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\File.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\client\HttpConnection.cpp
 # End Source File
 # Begin Source File
@@ -149,10 +129,6 @@ SOURCE=.\client\LogManager.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\client\Pointer.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\client\QueueManager.cpp
 # End Source File
 # Begin Source File
@@ -162,10 +138,6 @@ SOURCE=.\client\ResourceManager.cpp
 # Begin Source File
 
 SOURCE=.\client\SearchManager.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\client\Semaphore.cpp
 # End Source File
 # Begin Source File
 

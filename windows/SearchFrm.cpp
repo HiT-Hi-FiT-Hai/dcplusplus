@@ -126,10 +126,10 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlMode.AddString(CSTRING(AT_MOST));
 	ctrlMode.SetCurSel(1);
 	
-	ctrlSizeMode.AddString("B");
-	ctrlSizeMode.AddString("kB");
-	ctrlSizeMode.AddString("MB");
-	ctrlSizeMode.AddString("GB");
+	ctrlSizeMode.AddString(CSTRING(B));
+	ctrlSizeMode.AddString(CSTRING(KB));
+	ctrlSizeMode.AddString(CSTRING(MB));
+	ctrlSizeMode.AddString(CSTRING(GB));
 	ctrlSizeMode.SetCurSel(2);
 
 	ctrlFiletype.AddString(CSTRING(ANY));
@@ -629,7 +629,7 @@ LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 		if(l->iSubItem == COLUMN_SIZE) {
 			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 		} else if(l->iSubItem == COLUMN_SLOTS) {
-			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSlots);
 		} else {
 			ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 		}
@@ -848,5 +848,5 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 }
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.11 2002/05/25 16:10:17 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.12 2002/06/08 09:34:34 arnetheduck Exp $
  */
