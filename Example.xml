@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<Language Name="Example Language" Author="arnetheduck" Version="0.667" Revision="1">
+<Language Name="Example Language" Author="arnetheduck" Version="0.6675" Revision="1">
 	<Strings>
 		<String Name="Active">Active</String>
 		<String Name="ActiveSearchString">Enabled / Search String</String>

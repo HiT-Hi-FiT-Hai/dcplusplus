@@ -16,6 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+// NT4 fix
+
 #include "stdafx.h"
 #include "Resource.h"
 
@@ -31,6 +33,6 @@
 
 /**
  * @file
- * $Id: stdafx.cpp,v 1.12 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.13 2004/11/30 14:49:35 arnetheduck Exp $
  */
 

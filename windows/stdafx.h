@@ -40,7 +40,6 @@
 #include <winsock2.h>
 
 // Fix nt4 startup
-#define COMPILE_MULTIMON_STUBS
 #include <multimon.h>
 
 #include <atlbase.h>
@@ -68,6 +67,6 @@ extern CAppModule _Module;
 
 /**
  * @file
- * $Id: stdafx.h,v 1.10 2004/11/29 23:21:20 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.11 2004/11/30 14:49:35 arnetheduck Exp $
  */
 
