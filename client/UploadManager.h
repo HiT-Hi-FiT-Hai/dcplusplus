@@ -150,12 +150,12 @@ private:
 	//virtual void on(Command::STA, UserConnection*, const Command&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
-	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
+	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool adc, bool utf8);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.65 2004/05/09 22:06:23 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.66 2004/06/26 18:16:54 arnetheduck Exp $
  */

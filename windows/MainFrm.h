@@ -42,13 +42,9 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private LogManagerListener
 {
 public:
-	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
-		lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
-		closing(false), missedAutoConnect(false) 
-	{ 
-		memset(statusSizes, 0, sizeof(statusSizes));
-	};
+	MainFrame();
 	virtual ~MainFrame();
+
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
 	CMDICommandBarCtrl m_CmdBar;
@@ -317,6 +313,16 @@ private:
 
 	bool missedAutoConnect;
 
+	struct {
+		string homepage;
+		string downloads;
+		string faq;
+		string help;
+		string discuss;
+		string features;
+		string bugs;
+	} links;
+
 	HWND createToolbar();
 	void buildMenu();
 	void updateTray(bool add = true);
@@ -344,7 +350,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.36 2004/06/23 18:48:48 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.37 2004/06/26 18:16:54 arnetheduck Exp $
  */
 
  

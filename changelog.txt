@@ -42,6 +42,13 @@
 * HTTPS added as chat click link (thanks torgny)
 * Autoconnect postponed if no nick has been set (thanks sed)
 * Various unix compile fixes (thanks christer palm)
+* Fixes for IEC in settings pages (thanks slowmo)
+* Remove multiple directories from share (thanks slowmo)
+* Added executable TTH to about box (for reporting bugs)
+* Changed exceptioninfo.txt format to prepare for automatic crash logging
+* Added download by TTH root instead of share path. This feature enables
+  the downloading client to find the file even if the uploader has reorganized
+  its share.
 
  -- 0.401 2004-03-28 --
 * Fixed the dupe file issue

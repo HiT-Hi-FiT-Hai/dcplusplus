@@ -148,6 +148,7 @@
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="Mb">MiB</String>
+		<String Name="Mbps">MiB/s</String>
 		<String Name="MenuFile">&amp;File</String>
 		<String Name="MenuAdlSearch">ADL Search</String>
 		<String Name="MenuDownloadQueue">&amp;Download Queue	Ctrl+D</String>

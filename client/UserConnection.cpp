@@ -30,6 +30,7 @@ const string UserConnection::FEATURE_XML_BZLIST = "XmlBZList";
 const string UserConnection::FEATURE_ADCGET = "ADCGet";
 const string UserConnection::FEATURE_ZLIB_GET = "ZLIG";
 const string UserConnection::FEATURE_TTHL = "TTHL";
+const string UserConnection::FEATURE_TTHF = "TTHF";
 
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
@@ -167,5 +168,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.42 2004/05/22 15:28:07 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.43 2004/06/26 18:16:54 arnetheduck Exp $
  */

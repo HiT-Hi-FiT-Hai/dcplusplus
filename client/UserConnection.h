@@ -166,6 +166,7 @@ public:
 	static const string FEATURE_ADCGET;
 	static const string FEATURE_ZLIB_GET;
 	static const string FEATURE_TTHL;
+	static const string FEATURE_TTHF;
 	
 	enum Modes {	
 		MODE_COMMAND = BufferedSocket::MODE_LINE,
@@ -185,6 +186,7 @@ public:
 		FLAG_SUPPORTS_ADCGET = FLAG_SUPPORTS_XML_BZLIST << 1,
 		FLAG_SUPPORTS_ZLIB_GET = FLAG_SUPPORTS_ADCGET << 1,
 		FLAG_SUPPORTS_TTHL = FLAG_SUPPORTS_ZLIB_GET << 1,
+		FLAG_SUPPORTS_TTHF = FLAG_SUPPORTS_TTHL << 1,
 	};
 	
 	enum States {
@@ -342,6 +344,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.75 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.76 2004/06/26 18:16:54 arnetheduck Exp $
  */
 

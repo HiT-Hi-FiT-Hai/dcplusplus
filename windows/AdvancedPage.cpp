@@ -40,6 +40,7 @@ PropPage::TextItem AdvancedPage::texts[] = {
 	{ IDC_SETTINGS_KB, ResourceManager::KB },
 	{ IDC_SETTINGS_MAX_TAB_ROWS, ResourceManager::SETTINGS_MAX_TAB_ROWS },
 	{ IDC_SETTINGS_MAX_HASH_SPEED, ResourceManager::SETTINGS_MAX_HASH_SPEED },
+	{ IDC_SETTINGS_MBS, ResourceManager::MBPS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -100,6 +101,6 @@ void AdvancedPage::write() {
 
 /**
  * @file
- * $Id: AdvancedPage.cpp,v 1.30 2004/05/23 18:22:54 arnetheduck Exp $
+ * $Id: AdvancedPage.cpp,v 1.31 2004/06/26 18:16:54 arnetheduck Exp $
  */
 

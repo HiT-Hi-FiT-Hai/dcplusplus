@@ -164,9 +164,45 @@ Feature: ADCGet
 
 Usage: 
 
-"$adcGET <type> <filename> <startpos> <bytes> <flag0>...<flagN>"
+"$ADCGET <type> <filename> <startpos> <bytes> <flag0>...<flagN>"
 A complete replacement for all binary data transfers using an ADC-like syntax.
+See the ADC specs to see how GET behaves. (http://dcplusplus.sf.net/ADC.html)
 
+
+--------------------------------------------------------------------
+
+Feature: TTHL
+
+Usage:
+
+Supporting this means supporting the upload of tth leaf data. Instead
+of transfering the file itself, the TTH data of all leaves is transferred
+in binary. The size transferred back is the number of bytes of leaf data,
+from this and the file size the receiving client can calculate which
+level (tree depth) the sending client is offering. The receiver should
+obviosly check that the received leaf data is correct by rebuilding the
+tree and checking that it's recorded root matches.
+
+--------------------------------------------------------------------
+
+Feature: TTHF
+
+Usage:
+
+Supporting this means supporting file identification by TTH root. This
+means supporting downloads by TTH root instead of share directory and
+name. The advantage is that moved files can still be found by the
+downloader without requeuing the file.
+
+The extension adds a namespace "TTH" before the ADC file root. A TTHF
+filename has the following syntax:
+
+TTH/<TTH root in base32, 192 binary bits>
+
+i e the TTH namespace consists of TTH root values directly under the
+"TTH/" root.
+
+The naming scheme is valid in all types (i e also for getting TTH leaves)
 
 
 --------------------------------------------------------------------

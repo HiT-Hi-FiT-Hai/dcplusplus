@@ -64,6 +64,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 				cur.clear();
 				first = false;
 			}
+			break;
 		default:
 			cur += buf[i];
 		}
@@ -296,5 +297,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.8 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.9 2004/06/26 18:16:54 arnetheduck Exp $
  */

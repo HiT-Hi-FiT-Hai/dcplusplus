@@ -139,10 +139,13 @@ LRESULT UploadPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	item.mask = LVIF_TEXT;
 	item.cchTextMax = sizeof(buf);
 	item.pszText = buf;
-	if(ctrlDirectories.GetSelectedItem(&item)) {
+
+	int i = -1;
+	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		ctrlDirectories.GetSelectedItem(&item);
 		ShareManager::getInstance()->removeDirectory(buf);
 		ctrlTotal.SetWindowText(Util::formatBytes(ShareManager::getInstance()->getShareSize()).c_str());
-		ctrlDirectories.DeleteItem(item.iItem);
+		ctrlDirectories.DeleteItem(i);
 	}
 	
 	return 0;
@@ -190,6 +193,6 @@ void UploadPage::addDirectory(string path){
 
 /**
  * @file
- * $Id: UploadPage.cpp,v 1.16 2004/06/13 11:27:33 arnetheduck Exp $
+ * $Id: UploadPage.cpp,v 1.17 2004/06/26 18:16:55 arnetheduck Exp $
  */
 

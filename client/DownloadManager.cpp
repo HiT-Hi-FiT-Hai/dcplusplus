@@ -32,6 +32,8 @@
 #include "File.h"
 #include "FilteredFile.h"
 
+#include <limits>
+
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
@@ -142,7 +144,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 	Download* d = aConn->getDownload();
 
+	bool firstTry = false;
 	if(d == NULL) {
+		firstTry = true;
+
 		bool slotsFull = (SETTING(DOWNLOAD_SLOTS) != 0) && (getDownloads() >= SETTING(DOWNLOAD_SLOTS));
 		bool speedFull = (SETTING(MAX_DOWNLOAD_SPEED) != 0) && (getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024));
 
@@ -170,7 +175,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		aConn->setDownload(d);
 	}
 
-	if(!d->getTreeValid() && 
+	if(firstTry && !d->getTreeValid() && 
 		!d->isSet(Download::FLAG_USER_LIST) && d->getTTH() != NULL)
 	{
 		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTigerTree())) {
@@ -189,8 +194,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			aConn->setDownload(tthd);
 
 			aConn->setState(UserConnection::STATE_TREE);
-			aConn->send(tthd->getCommand(false));
-
+			// Hack to get by TTH if possible
+			tthd->setTTH(d->getTTH());
+			aConn->send(tthd->getCommand(false, aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF)));
+			tthd->setTTH(NULL);
 			return;
 		}
 	}
@@ -233,7 +240,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 
 	if(aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && d->isSet(Download::FLAG_UTF8)) {
-		aConn->send(d->getCommand(aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET)));
+		aConn->send(d->getCommand(
+			aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET),
+			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF)
+			));
 	} else {
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
 			// This one, we'll download with a zblock download instead...
@@ -487,8 +497,19 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		d->setFile(crc);
 	}
 
-	if(d->getPos() == 0 && d->getTreeValid()) {
-		d->setFile(new TigerCheckOutputStream<true>(d->getTigerTree(), d->getFile()));
+	if(d->getPos() == 0) {
+		if(!d->getTreeValid() && d->getTTH() != NULL && d->getSize() < numeric_limits<size_t>::max()) {
+			// We make a single node tree...
+			d->getTigerTree().setFileSize(d->getSize());
+			d->getTigerTree().setBlockSize((size_t)d->getSize());
+
+			d->getTigerTree().getLeaves().push_back(*d->getTTH());
+			d->getTigerTree().calcRoot();
+			d->setTreeValid(true);
+		}
+		if(d->getTreeValid()) {
+			d->setFile(new TigerCheckOutputStream<true>(d->getTigerTree(), d->getFile()));
+		}
 	}
 
 	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
@@ -852,5 +873,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.104 2004/05/23 18:22:53 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.105 2004/06/26 18:16:54 arnetheduck Exp $
  */

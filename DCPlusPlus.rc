@@ -102,8 +102,8 @@ BEGIN
     GROUPBOX        "Latest version",IDC_STATIC,7,224,191,24,BS_CENTER
     CTEXT           "0.xxx",IDC_LATEST,13,235,179,8
     GROUPBOX        "Totals",IDC_STATIC,7,182,191,39,BS_CENTER
-    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,193,
-                    179,8
+    CTEXT           "Upload: xx.xx MiB, Download: xx.xx MiB",IDC_TOTALS,13,
+                    193,179,8
     CTEXT           "Ratio (Up/Down): x.xx",IDC_RATIO,13,206,179,8
     EDITTEXT        IDC_THANKS,13,107,179,66,ES_MULTILINE | ES_READONLY | 
                     WS_VSCROLL
@@ -185,7 +185,7 @@ BEGIN
     RTEXT           "Max tab rows",IDC_SETTINGS_MAX_TAB_ROWS,126,27,78,8
     LTEXT           "Max Hash Speed",IDC_SETTINGS_MAX_HASH_SPEED,7,27,57,8,0,
                     WS_EX_RIGHT
-    LTEXT           "MiB/s",IDC_SETTINGS_MBS,117,27,18,8
+    LTEXT           "MiB/s",IDC_SETTINGS_MBS,117,27,20,8
 END
 
 IDD_DOWNLOADPAGE DIALOGEX 0, 0, 275, 225
@@ -237,7 +237,7 @@ BEGIN
     GROUPBOX        "Shared directories",IDC_SETTINGS_SHARED_DIRECTORIES,7,7,
                     261,179
     CONTROL         "List1",IDC_DIRECTORIES,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_NOSORTHEADER | WS_BORDER | 
+                    LVS_SHOWSELALWAYS | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,14,17,247,146,WS_EX_ACCEPTFILES
     LTEXT           "Total size:",IDC_SETTINGS_SHARE_SIZE,14,170,33,8
     LTEXT           "0 B",IDC_TOTAL,50,170,41,8
@@ -246,17 +246,17 @@ BEGIN
     PUSHBUTTON      "&Remove",IDC_REMOVE,167,166,44,14,WS_DISABLED
     PUSHBUTTON      "&Add  folder",IDC_ADD,215,166,46,14
     RTEXT           "Automatically open an extra slot if speed is below (0 = disable)",
-                    IDC_SETTINGS_UPLOADS_MIN_SPEED,7,192,211,8
-    EDITTEXT        IDC_MIN_UPLOAD_SPEED,222,189,28,14,ES_AUTOHSCROLL
+                    IDC_SETTINGS_UPLOADS_MIN_SPEED,7,192,208,8
+    EDITTEXT        IDC_MIN_UPLOAD_SPEED,219,189,28,14,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_MIN_UPLOAD_SPIN,"msctls_updown32",
                     UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | 
-                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,250,188,11,14
-    LTEXT           "kiB/s",IDC_SETTINGS_KBPS,252,192,16,8
-    RTEXT           "Upload slots",IDC_SETTINGS_UPLOADS_SLOTS,7,207,211,8
-    EDITTEXT        IDC_SLOTS,222,204,28,14,ES_NUMBER
+                    UDS_ARROWKEYS | UDS_NOTHOUSANDS,247,188,14,14
+    LTEXT           "kiB/s",IDC_SETTINGS_KBPS,249,192,19,8
+    RTEXT           "Upload slots",IDC_SETTINGS_UPLOADS_SLOTS,7,207,208,8
+    EDITTEXT        IDC_SLOTS,219,204,28,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
-                    UDS_NOTHOUSANDS,250,204,11,14
+                    UDS_NOTHOUSANDS,247,204,14,14
 END
 
 IDD_APPEARANCEPAGE DIALOG  0, 0, 275, 225
@@ -315,8 +315,8 @@ BEGIN
     EDITTEXT        IDC_POST_UPLOAD,60,138,198,12,ES_AUTOHSCROLL
     CONTROL         "Log system messages",IDC_LOG_SYSTEM,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,18,153,240,10
-    CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
+    CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
     GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,186,264,42
     CONTROL         "Make an annoying sound every time a private message is received",
                     IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
@@ -510,10 +510,10 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
         VERTGUIDE, 14
-        VERTGUIDE, 218
-        VERTGUIDE, 222
-        VERTGUIDE, 250
-        VERTGUIDE, 252
+        VERTGUIDE, 215
+        VERTGUIDE, 219
+        VERTGUIDE, 247
+        VERTGUIDE, 249
         VERTGUIDE, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 218

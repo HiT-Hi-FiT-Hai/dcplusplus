@@ -78,14 +78,18 @@ public:
 		return tt;
 	}
 
-	Command getCommand(bool zlib) {
+	Command getCommand(bool zlib, bool tthf) {
 		Command cmd = Command(Command::GET());
 		if(isSet(FLAG_TREE_DOWNLOAD)) {
 			cmd.addParam("tthl");
 		} else {
 			cmd.addParam("file");
 		}
-		cmd.addParam(Util::toAdcFile(getSource()));
+		if(tthf && getTTH() != NULL) {
+			cmd.addParam("TTH/" + getTTH()->toBase32());
+		} else {
+			cmd.addParam(Util::toAdcFile(getSource()));
+		}
 		cmd.addParam(Util::toString(getPos()));
 		cmd.addParam(Util::toString(getSize() - getPos()));
 
@@ -227,5 +231,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.63 2004/06/13 11:27:32 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.64 2004/06/26 18:16:54 arnetheduck Exp $
  */

@@ -154,6 +154,7 @@ enum Strings { // @DontAdd
 	MATCH_QUEUE, // "Match queue"
 	MATCHED_FILES, // "Matched %d file(s)"
 	MB, // "MiB"
+	MBPS, // "MiB/s"
 	MENU_FILE, // "&File"
 	MENU_ADL_SEARCH, // "ADL Search"
 	MENU_DOWNLOAD_QUEUE, // "&Download Queue\tCtrl+D"

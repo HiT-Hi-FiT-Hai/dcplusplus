@@ -45,6 +45,22 @@
 #include "../client/SimpleXML.h"
 #include "../client/ShareManager.h"
 
+MainFrame::MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
+lastUp(0), lastDown(0), oldshutdown(false), stopperThread(NULL), c(new HttpConnection()), 
+closing(false), missedAutoConnect(false) 
+{ 
+	memset(statusSizes, 0, sizeof(statusSizes));
+	
+	links.homepage = "http://dcplusplus.sourceforge.net/";
+	links.downloads = links.homepage + "download/";
+	links.faq = links.homepage + "faq/faq.php?list=all&prog=1&lang=en";
+	links.help = links.homepage + "forum/";
+	links.discuss = links.homepage + "forum/";
+	links.features = links.homepage + "bugs/";
+	links.bugs = links.homepage + "bugs/";
+
+};
+
 MainFrame::~MainFrame() {
 	m_CmdBar.m_hImageList = NULL;
 
@@ -587,9 +603,44 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 							PostMessage(WM_CLOSE);
 						}
 					}
+					xml.stepOut();
 				}
 			}
+
+			xml.resetCurrentChild();
+			if(xml.findChild("Links")) {
+				xml.stepIn();
+				if(xml.findChild("Homepage")) {
+					links.homepage = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Downloads")) {
+					links.downloads = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Faq")) {
+					links.faq = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Bugs")) {
+					links.bugs = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Features")) {
+					links.features = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Help")) {
+					links.help = xml.getChildData();
+				}
+				xml.resetCurrentChild();
+				if(xml.findChild("Forum")) {
+					links.discuss = xml.getChildData();
+				}
+				xml.stepOut();
+			}
 		}
+		xml.stepOut();
 	} catch (const Exception&) {
 		// ...
 	}
@@ -793,13 +844,13 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	switch(wID) {
 	case IDC_HELP_README: site = Util::getAppPath() + "README.txt"; isFile = true; break;
 	case IDC_HELP_CHANGELOG: site = Util::getAppPath() + "changelog.txt"; isFile = true; break;
-	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
-	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
-	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1&lang=en"; break;
-	case IDC_HELP_HELP_FORUM: site = "http://dcplusplus.sf.net/forum"; break;
-	case IDC_HELP_DISCUSS: site = "http://dcplusplus.sf.net/forum"; break;
-	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
-	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
+	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
+	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
+	case IDC_HELP_FAQ: site = links.faq; break;
+	case IDC_HELP_HELP_FORUM: site = links.help; break;
+	case IDC_HELP_DISCUSS: site = links.discuss; break;
+	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
+	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
 	case IDC_HELP_DONATE: site = "https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"; break;
 	default: dcassert(0);
 	}
@@ -1011,5 +1062,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.54 2004/06/23 18:48:48 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.55 2004/06/26 18:16:54 arnetheduck Exp $
  */

@@ -50,7 +50,7 @@ public:
 	StringList getDirectories();
 	void addDirectory(const string& aDirectory) throw(ShareException);
 	void removeDirectory(const string& aDirectory);	
-	string translateFileName(const string& aFile) throw(ShareException);
+	string translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { dirty = true; };
 	
@@ -122,6 +122,10 @@ private:
 			File(const string& aName, int64_t aSize, Directory* aParent, TTHValue* aRoot) : 
 			    name(aName), size(aSize), parent(aParent), tth(aRoot) { };
 
+			string getADCPath() const {
+				return parent->getADCPath() + name;
+			}
+
 			GETSET(string, name, Name);
 			GETSET(int64_t, size, Size);
 			GETSET(Directory*, parent, Parent);
@@ -148,6 +152,12 @@ private:
 					ShareManager::getInstance()->tthIndex.erase(i->getTTH());
 				}
 			}
+		}
+
+		string getADCPath() const {
+			if(parent == NULL)
+				return '/' + name + '/';
+			return parent->getADCPath() + name + '/';
 		}
 
 		bool hasType(u_int32_t type) throw() {
@@ -311,6 +321,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.50 2004/05/22 15:28:06 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.51 2004/06/26 18:16:54 arnetheduck Exp $
  */
 
