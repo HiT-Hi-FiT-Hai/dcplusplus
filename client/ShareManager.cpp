@@ -158,7 +158,13 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(!checkFile(j->second, file, it)) {
 			throw ShareException("File Not Available");
 		}
-		
+
+#ifdef _WIN32
+		for(i = 0; i < file.length(); ++i) {
+			if(file[i] == '/')
+				file[i] = '\\';
+		}
+#endif
 		return j->second + file;
 	}
 }
@@ -1424,6 +1430,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.121 2004/12/29 20:00:02 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.122 2005/01/02 20:59:52 arnetheduck Exp $
  */
 

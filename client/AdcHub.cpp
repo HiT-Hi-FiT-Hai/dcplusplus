@@ -188,9 +188,11 @@ void AdcHub::handle(Command::RCM, Command& c) throw() {
 	User::Ptr p = ClientManager::getInstance()->getUser(c.getFrom(), false);
 	if(!p || p == getMe())
 		return;
-	if(c.getParameters().size() != 2 || c.getParameters()[1] != "ADC/0.8")
+	if(c.getParameters().empty() || c.getParameters()[0] != CLIENT_PROTOCOL)
 		return;
-    connect(&*p, c.getParameters()[0]);
+	string token;
+	c.getParam("TO", 1, token);
+    connect(&*p, token);
 }
 
 void AdcHub::connect(const User* user) {
@@ -203,9 +205,9 @@ void AdcHub::connect(const User* user, string const& token) {
 		return;
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		send(Command(Command::CTM(), user->getCID()).addParam(token).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))));
+		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL).addParam(Util::toString(SETTING(IN_PORT))).addParam(token));
 	} else {
-		send(Command(Command::CTM(), user->getCID()).addParam(CLIENT_PROTOCOL));
+		send(Command(Command::RCM(), user->getCID()).addParam(CLIENT_PROTOCOL));
 	}
 }
 
@@ -344,5 +346,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.29 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.30 2005/01/02 20:59:52 arnetheduck Exp $
  */

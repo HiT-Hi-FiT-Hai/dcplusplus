@@ -147,7 +147,7 @@ SettingsManager::SettingsManager()
 	setDefault(COMPRESS_TRANSFERS, true);
 	setDefault(SHOW_PROGRESS_BARS, true);
 	setDefault(SFV_CHECK, false);
-	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. I might answer later if you're lucky.");
+	setDefault(DEFAULT_AWAY_MESSAGE, "I'm away. State your business and I might answer later if you're lucky.");
 	setDefault(TIME_STAMPS_FORMAT, "%H:%M");
 	setDefault(MAX_TAB_ROWS, 2);
 	setDefault(AUTO_UPDATE_LIST, true);
@@ -343,6 +343,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.105 2005/01/01 18:38:39 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.106 2005/01/02 20:59:52 arnetheduck Exp $
  */
 
