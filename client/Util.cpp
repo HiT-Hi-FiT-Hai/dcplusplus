@@ -220,10 +220,12 @@ string Util::validateFileName(string tmp) {
 	// Then, eliminate all ':' that are not the second letter ("c:\...")
 	i = 0;
 	while( (i = tmp.find(':', i)) != string::npos) {
-		if(i == 1)
+		if(i == 1) {
+			i++;
 			continue;
-		
+		}
 		tmp[i] = '_';	
+		i++;
 	}
 
 	// Remove the .\ that doesn't serve any purpose
@@ -542,6 +544,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.37 2003/11/21 01:56:59 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.38 2003/11/21 17:00:55 arnetheduck Exp $
  */
 

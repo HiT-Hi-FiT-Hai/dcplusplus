@@ -60,7 +60,7 @@ public:
 	};
 
 	virtual void onAction(Types, UserConnection*) throw() { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
-	virtual void onAction(Types, UserConnection*, u_int32_t) throw() { };				// BYTES_SENT
+	virtual void onAction(Types, UserConnection*, u_int32_t, u_int32_t) throw() { };				// BYTES_SENT
 	virtual void onAction(Types, UserConnection*, const string&) throw() { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
 	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) throw() { };	// DATA
 	virtual void onAction(Types, UserConnection*, const string&, const string&) throw() { };	// DIRECTION, LOCK
@@ -268,7 +268,7 @@ private:
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type) throw();
-	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes) throw();
+	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes, u_int32_t actual) throw();
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) throw();
 	virtual void onAction(BufferedSocketListener::Types type, int mode) throw();
 	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) throw();
@@ -279,6 +279,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.60 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.61 2003/11/21 17:00:55 arnetheduck Exp $
  */
 

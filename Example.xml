@@ -223,6 +223,7 @@
 		<String Name="PrivateMessageFrom">Private message from </String>
 		<String Name="Properties">&amp;Properties</String>
 		<String Name="PublicHubs">Public Hubs</String>
+		<String Name="Ratio">Ratio</String>
 		<String Name="ReaddSource">Readd source</String>
 		<String Name="ReallyExit">Really exit?</String>
 		<String Name="Redirect">Redirect</String>

@@ -26,11 +26,12 @@
 #include "WinUtil.h"
 #include "TransferView.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH };
-int TransferView::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
+int TransferView::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200, 75 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::STATUS,
-ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH };
+ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
+ResourceManager::RATIO};
 
 TransferView::~TransferView() {
 	arrows.Destroy();
@@ -296,6 +297,9 @@ void TransferView::ItemInfo::update() {
 	if(colMask & MASK_PATH) {
 		columns[COLUMN_PATH] = path;
 	}
+	if(colMask & MASK_RATIO) {
+		columns[COLUMN_RATIO] = Util::toString(getRatio());
+	}
 }
 
 void TransferView::onConnectionAdded(ConnectionQueueItem* aCqi) {
@@ -556,5 +560,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.14 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.15 2003/11/21 17:00:55 arnetheduck Exp $
  */

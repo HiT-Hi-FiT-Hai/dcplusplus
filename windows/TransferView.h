@@ -104,6 +104,7 @@ private:
 		COLUMN_FILE,
 		COLUMN_SIZE,
 		COLUMN_PATH,
+		COLUMN_RATIO,
 		COLUMN_LAST
 	};
 
@@ -151,6 +152,7 @@ private:
 			MASK_FILE = 1 << COLUMN_FILE,
 			MASK_SIZE = 1 << COLUMN_SIZE,
 			MASK_PATH = 1 << COLUMN_PATH,
+			MASK_RATIO = 1 << COLUMN_RATIO,
 		};
 		string columns[COLUMN_LAST];
 		u_int32_t updateMask;
@@ -158,6 +160,8 @@ private:
 
 		void disconnect();
 		void removeAll();
+
+		double getRatio() { return (pos > 0) ? (double)actual / (double)pos : 1.0; }
 
 		const string& getText(int col) const {
 			return columns[col];
@@ -180,6 +184,7 @@ private:
 			case COLUMN_FILE: return Util::stricmp(a->columns[COLUMN_FILE], b->columns[COLUMN_FILE]);
 			case COLUMN_SIZE: return compare(a->size, b->size);
 			case COLUMN_PATH: return Util::stricmp(a->columns[COLUMN_PATH], b->columns[COLUMN_PATH]);
+			case COLUMN_RATIO: return compare(a->getRatio(), b->getRatio());
 			}
 			return 0;
 		}
@@ -230,5 +235,5 @@ private:
 
 /**
  * @file
- * $Id: TransferView.h,v 1.6 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: TransferView.h,v 1.7 2003/11/21 17:00:56 arnetheduck Exp $
  */

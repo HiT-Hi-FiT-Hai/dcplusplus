@@ -151,11 +151,11 @@ void UserConnection::onAction(BufferedSocketListener::Types type) throw() {
 		break;
 	}
 }
-void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t bytes) throw() {
+void UserConnection::onAction(BufferedSocketListener::Types type, u_int32_t bytes, u_int32_t actual) throw() {
 	lastActivity = GET_TICK();
 	switch(type) {
 	case BufferedSocketListener::BYTES_SENT:
-		fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
+		fire(UserConnectionListener::BYTES_SENT, this, bytes, actual); break;
 	default:
 		dcassert(0);
 	}
@@ -193,5 +193,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.31 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.32 2003/11/21 17:00:55 arnetheduck Exp $
  */

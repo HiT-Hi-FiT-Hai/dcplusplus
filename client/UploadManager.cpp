@@ -206,11 +206,12 @@ void UploadManager::onSend(UserConnection* aSource) {
 	fire(UploadManagerListener::STARTING, u);
 }
 
-void UploadManager::onBytesSent(UserConnection* aSource, u_int32_t aBytes) {
+void UploadManager::onBytesSent(UserConnection* aSource, u_int32_t aBytes, u_int32_t aActual) {
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 	Upload* u = aSource->getUpload();
 	dcassert(u != NULL);
 	u->addPos(aBytes);
+	u->addActual(aBytes);
 }
 
 void UploadManager::onFailed(UserConnection* aSource, const string& aError) {
@@ -334,10 +335,10 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 		break;
 	}
 }
-void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) throw() {
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes, u_int32_t actual) throw() {
 	switch(type) {
 	case UserConnectionListener::BYTES_SENT:
-		onBytesSent(conn, bytes); break;
+		onBytesSent(conn, bytes, actual); break;
 	default: 
 		break;
 	}
@@ -370,5 +371,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.44 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.45 2003/11/21 17:00:54 arnetheduck Exp $
  */

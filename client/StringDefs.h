@@ -227,6 +227,7 @@ enum Strings { // @DontAdd
 	PRIVATE_MESSAGE_FROM, // "Private message from "
 	PROPERTIES, // "&Properties"
 	PUBLIC_HUBS, // "Public Hubs"
+	RATIO, // "Ratio"
 	READD_SOURCE, // "Readd source"
 	REALLY_EXIT, // "Really exit?"
 	REDIRECT, // "Redirect"

@@ -1,3 +1,9 @@
+ -- 0.305 --
+* Fixed disappearing queue items bug
+* Fixed displaying of upload compression in progress bar
+* Added compression ratio column
+
+
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)
 * Added option not to receive usercommands 

@@ -135,12 +135,12 @@ private:
 
 	// UserConnectionListener
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) throw();
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) throw();
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes, u_int32_t actual) throw();
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) throw();
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) throw();
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) throw();
 	
-	void onBytesSent(UserConnection* aSource, u_int32_t aBytes);
+	void onBytesSent(UserConnection* aSource, u_int32_t aBytes, u_int32_t aActual);
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onTransmitDone(UserConnection* aSource);
 	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
@@ -154,5 +154,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.56 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.57 2003/11/21 17:00:54 arnetheduck Exp $
  */

@@ -48,7 +48,7 @@ public:
 	};
 	
 	virtual void onAction(Types) throw() { };
-	virtual void onAction(Types, u_int32_t) throw() { };
+	virtual void onAction(Types, u_int32_t, u_int32_t) throw() { };
 	virtual void onAction(Types, const string&) throw() { };
 	virtual void onAction(Types, const u_int8_t*, int) throw() { };
 	virtual void onAction(Types, int) throw() { };
@@ -239,5 +239,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.51 2003/11/04 20:18:10 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.52 2003/11/21 17:00:53 arnetheduck Exp $
  */

@@ -918,13 +918,9 @@ void QueueManager::setSearchString(const string& aTarget, const string& searchSt
 }
 
 static const string& escaper(const string& n, string& tmp) {
-	if(SimpleXML::needsEscape(n, true)) {
-		tmp = n;
-		escape(tmp, true);
-		return tmp;
-	} else {
-		return n;
-	}
+	tmp = n;
+	SimpleXML::escape(tmp, true);
+	return tmp;
 }
 
 void QueueManager::saveQueue() throw() {
@@ -936,9 +932,9 @@ void QueueManager::saveQueue() throw() {
 	try {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
-#define CHECKESCAPE(n) escaper(n, tmp)
+#define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
 		
-		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE, false, 256);
 		f.write(STRINGLEN("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n"));
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
@@ -1246,5 +1242,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.59 2003/11/21 01:56:37 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.60 2003/11/21 17:00:53 arnetheduck Exp $
  */
