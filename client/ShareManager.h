@@ -119,6 +119,15 @@ private:
 				delete i->second;
 			}
 		}
+		string getFullName() {
+			Directory* x = this;
+			string str;
+			while(x) {
+				str = x->getName() + '\\' + str;
+				x = x->getParent();
+			}
+			return str;
+		}
 		const string& getName() { return name; };
 		void setName(const string& aName) { name = aName; };
 
@@ -186,9 +195,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.9 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.10 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.10  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.9  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

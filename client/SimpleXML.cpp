@@ -46,6 +46,18 @@ static string escape(const string& aString, bool aAttrib, bool aReverse = false)
 				tmp.replace(i, 4, 1, '"');
 			}
 		}
+		if( (i = tmp.find('\n')) != string::npos) {
+			if(i > 0 && tmp[i-1] != '\r') {
+				// This is a unix thing...decode it...
+				i = 0;
+				while( (i = tmp.find('\n', i) ) != string::npos) {
+					if(tmp[i-1] != '\r')
+						tmp.insert(i, 1, '\r');
+
+					i+=2;
+				}
+			}
+		}
 	} else {
 		while( (i = tmp.find_first_of(chars)) != string::npos) {
 			
@@ -252,9 +264,12 @@ void SimpleXML::fromXML(const string& aXML) {
 }
 /**
  * @file SimpleXML.cpp
- * $Id: SimpleXML.cpp,v 1.5 2002/01/05 10:13:40 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.6 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: SimpleXML.cpp,v $
+ * Revision 1.6  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.5  2002/01/05 10:13:40  arnetheduck
  * Automatic version detection and some other updates
  *

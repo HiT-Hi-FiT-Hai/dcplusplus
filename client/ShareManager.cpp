@@ -225,7 +225,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 	if(found && aSearchType == SearchManager::SIZE_DONTCARE) {
 		for(map<string, LONGLONG>::iterator i = files.begin(); i != files.end() && (aResults.size() < MAX_RESULTS); ++i) {
 			SearchResult* sr = new SearchResult();
-			sr->setFile(name + '\\' + i->first);
+			sr->setFile(getFullName() + i->first);
 			sr->setSize(i->second);
 			sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
 			sr->setSlots(Settings::getSlots());
@@ -256,7 +256,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 			
 			if(found) {
 				SearchResult* sr = new SearchResult();
-				sr->setFile(name + '\\' + i->first);
+				sr->setFile(getFullName() + i->first);
 				sr->setSize(i->second);
 				sr->setFreeSlots(Settings::getSlots() - UploadManager::getInstance()->getConnections());
 				sr->setSlots(Settings::getSlots());
@@ -292,9 +292,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.9 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.10 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.10  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.9  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

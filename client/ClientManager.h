@@ -155,9 +155,11 @@ private:
 	}
 	
 	virtual void onClientRevConnectToMe(Client::Ptr aClient, User::Ptr& aUser) {
-		aClient->cs.enter();
-		aClient->connectToMe(aUser);
-		aClient->cs.leave();
+		if(Settings::getConnectionType() == Settings::CONNECTION_ACTIVE) {
+			aClient->cs.enter();
+			aClient->connectToMe(aUser);
+			aClient->cs.leave();
+		}
 	}
 
 	virtual void onClientSearch(Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
@@ -177,7 +179,7 @@ private:
 		if(search) {
 			int pos = aSeeker.find("Hub:");
 			// We don't wan't to answer passive searches if we're in passive mode...
-			if(pos == string::npos && Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
+			if(pos != string::npos && Settings::getConnectionType() == Settings::CONNECTION_PASSIVE) {
 				return;
 			}
 
@@ -221,9 +223,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.3 2002/01/06 00:14:54 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.4 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.4  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.3  2002/01/06 00:14:54  arnetheduck
  * Incoming searches almost done, just need some testing...
  *

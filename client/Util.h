@@ -56,22 +56,6 @@ protected:
 	CriticalSection listenerCS;
 };
 
-class StringInfo {
-public:
-	StringInfo(LPARAM lp = NULL, const string& s = "") : lParam(lp), str(s) { };
-	string str;
-	LPARAM lParam;
-};
-
-class StringListInfo {
-public:
-	StringListInfo(LPARAM lp = NULL) : lParam(lp) { };
-	StringList l;
-	LPARAM lParam;
-};
-
-
-
 class Util  
 {
 public:
@@ -224,9 +208,12 @@ public:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.10 2002/01/05 19:06:09 arnetheduck Exp $
+ * $Id: Util.h,v 1.11 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.11  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.10  2002/01/05 19:06:09  arnetheduck
  * Added user list images, fixed bugs and made things more effective
  *

@@ -74,6 +74,41 @@ void Client::onLine(const string& aLine) {
 		int type = Util::toInt(param.substr(0, param.find('?')));
 		param = param.substr(param.find('?')+1);
 		fireSearch(seeker, a, size, type, param);
+	} else if(cmd == "$MyINFO") {
+		string nick;
+		param = param.substr(5);
+		nick = param.substr(0, param.find(' '));
+		param = param.substr(param.find(' ')+1);
+		User::Ptr u;
+		cs.enter();
+		if(users.find(nick) == users.end()) {
+			u = new User(nick, User::ONLINE);
+			u->setClient(this);
+			users[nick] = u;
+		} else {
+			u = users[nick];
+		}
+		cs.leave();
+		u->setDescription(param.substr(0, param.find('$')));
+		param = param.substr(param.find('$')+3);
+		u->setConnection(param.substr(0, param.find('$')-1));
+		param = param.substr(param.find('$')+1);
+		u->setEmail(param.substr(0, param.find('$')));
+		param = param.substr(param.find('$')+1);
+		u->setBytesShared(param.substr(0, param.find('$')));
+		
+		fireMyInfo(u);
+		
+	} else if(cmd == "$Quit") {
+		if(users.find(param) != users.end()) {
+			cs.enter();
+			User::Ptr u = users[param];
+			users.erase(param);
+			cs.leave();
+			u->unsetFlag(User::ONLINE);
+			fireQuit(u);
+		}
+		
 	} else if(cmd == "$ConnectToMe") {
 		param = param.substr(param.find(' ') + 1);
 		string server = param.substr(0, param.find(':'));
@@ -114,41 +149,6 @@ void Client::onLine(const string& aLine) {
 		fireForceMove(param);
 	} else if(cmd == "$HubIsFull") {
 		fireHubFull();
-	} else if(cmd == "$MyINFO") {
-		string nick;
-		param = param.substr(5);
-		nick = param.substr(0, param.find(' '));
-		param = param.substr(param.find(' ')+1);
-		User::Ptr u;
-		cs.enter();
-		if(users.find(nick) == users.end()) {
-			u = new User(nick, User::ONLINE);
-			u->setClient(this);
-			users[nick] = u;
-		} else {
-			u = users[nick];
-		}
-		cs.leave();
-		u->setDescription(param.substr(0, param.find('$')));
-		param = param.substr(param.find('$')+3);
-		u->setConnection(param.substr(0, param.find('$')-1));
-		param = param.substr(param.find('$')+1);
-		u->setEmail(param.substr(0, param.find('$')));
-		param = param.substr(param.find('$')+1);
-		u->setBytesShared(param.substr(0, param.find('$')));
-		
-		fireMyInfo(u);
-		
-	} else if(cmd == "$Quit") {
-		if(users.find(param) != users.end()) {
-			cs.enter();
-			User::Ptr u = users[param];
-			users.erase(param);
-			cs.leave();
-			u->unsetFlag(User::ONLINE);
-			fireQuit(u);
-		}
-		
 	} else if(cmd == "$ValidateDenide") {
 		fireValidateDenied();
 	} else if(cmd == "$NickList") {
@@ -209,9 +209,12 @@ void Client::onLine(const string& aLine) {
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.13 2001/12/30 15:03:44 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.14 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: Client.cpp,v $
+ * Revision 1.14  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.13  2001/12/30 15:03:44  arnetheduck
  * Added framework to handle incoming searches
  *

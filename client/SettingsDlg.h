@@ -130,8 +130,8 @@ public:
 		SetDlgItemText(IDC_DOWNLOADDIR, directory.c_str());
 		
 		CUpDownCtrl updown;
-		updown.Attach(GetDlgItem(IDC_SLOTS));
-		updown.SetRange(100, 0);
+		updown.Attach(GetDlgItem(IDC_SLOTSPIN));
+		updown.SetRange(1, 100);
 		
 		if(connectionType == Settings::CONNECTION_ACTIVE) {
 			CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
@@ -213,9 +213,12 @@ public:
 
 /**
  * @file SettingsDlg.h
- * $Id: SettingsDlg.h,v 1.8 2002/01/02 16:12:33 arnetheduck Exp $
+ * $Id: SettingsDlg.h,v 1.9 2002/01/06 11:13:07 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsDlg.h,v $
+ * Revision 1.9  2002/01/06 11:13:07  arnetheduck
+ * Last fixes before 0.10
+ *
  * Revision 1.8  2002/01/02 16:12:33  arnetheduck
  * Added code for multiple download sources
  *
