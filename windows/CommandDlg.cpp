@@ -75,7 +75,7 @@ LRESULT CommandDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		// More difficult, determine type by what it seems to be...
 		if((_tcsncmp(command.c_str(), _T("$To: "), 5) == 0) &&
 			command.find(_T(" From: %[mynick] $<%[mynick]> ")) != string::npos &&
-			command.find(_T('|')) == string::npos) 
+			command.find(_T('|')) == command.length() - 1) // if it has | anywhere but the end, it is raw
 		{
 			string::size_type i = command.find(_T(' '), 5);
 			dcassert(i != string::npos);
@@ -187,5 +187,5 @@ LRESULT CommandDlg::onHelpCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.13 2004/10/17 19:25:24 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.14 2004/11/27 15:46:18 arnetheduck Exp $
 */

@@ -213,6 +213,20 @@ LRESULT PublicHubsFrame::onClickedConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
+LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(!checkNick())
+		return 0;
+
+	if(ctrlHubs.GetSelectedCount() == 1) {
+		TCHAR buf[256];
+		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+		HubFrame::openWindow(buf);
+	}
+
+	return 0;
+}
+
 LRESULT PublicHubsFrame::onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled) {
 	bHandled = true;
 	ctrlFilter.SetFocus();
@@ -455,6 +469,6 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.31 2004/11/09 20:29:25 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.32 2004/11/27 15:46:18 arnetheduck Exp $
  */
 

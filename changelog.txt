@@ -10,6 +10,8 @@
 * PgUp/PgDn now scroll the chat window (thanks jonathan stone)
 * Small fix with line history (thanks jonathan stone)
 * Added option to use separate TCP and UDP ports
+* Fixed a raw command guessing bug (thanks garg)
+
 
 -- 0.667 2004-11-15 --
 * Improved multiple hublist support (thanks garg)
