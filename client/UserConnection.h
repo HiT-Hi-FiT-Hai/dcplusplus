@@ -228,8 +228,8 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); }; 	// No acp - utf conversion here...
-	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((isSet(FLAG_SUPPORTS_GETZBLOCK) ? (utf8 ? "$UGetZBlock " : "$GetZBlock ") : "$GetTestZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
-	void getBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((utf8 ? "$UGetBlock " : "$GetBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
+	void getZBlock(const string& aFile, int64_t aResume, int64_t aBytes, bool utf8) { send((utf8 ? "$UGetZBlock " : "$GetZBlock ") + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
+	void uGetBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$UGetBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); }
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
 	void sending(int64_t bytes) { send(bytes == -1 ? string("$Sending|") : "$Sending " + Util::toString(bytes) + "|"); };
@@ -397,6 +397,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.89 2005/01/06 18:19:49 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.90 2005/01/12 01:16:55 arnetheduck Exp $
  */
 

@@ -31,10 +31,15 @@ Default format: [%Y-%m-%d %H:%M] %[message] </dd>
 Downloads.log. File list transfers may not be logged if you've
 disabled them under <a href="settings_advanced.html#filelist">Advanced</a>
 options. </dd>
-  <dt>Download Log Format </dt>
-  <dd>%[target] - Local path and filename<br>
-%[user] - User name<br>
-%[userip] - The user's IP<br>
+  <dt>Log Uploads</dt>
+  <dd>Enables the logging of completed uploads to Uploads.log.&nbsp;
+File list transfers may not be logged if you've disabled them under <a
+ href="settings_advanced.html#filelist">Advanced</a> options. Uploaded
+Tiger
+Tree Hash Leaves, added in 0.402, will also be logged.</dd>
+  <dt>Download and Upload Log Format </dt>
+  <dd>%[user] - User name<br>
+%[userip] - User's IP address<br>
 %[hub] - Hub name<br>
 %[hubip] - Hub's IP address<br>
 %[size] - File Size<br>
@@ -49,31 +54,15 @@ units<br>
 %[sfv] - Whether the file was checked against a SFV file (0 = no, 1 =
 yes).<br>
 %[tth] - Base32 representation of the tiger tree root hash<br>
-Default format: %Y-%m-%d %H:%M: %[target] downloaded from %[user],
-%[size] (%[chunksize]), %[speed], %[time] </dd>
-  <dt>Log Uploads</dt>
-  <dd>Enables the logging of completed uploads to Uploads.log.&nbsp;
-File list transfers may not be logged if you've disabled them under <a
- href="settings_advanced.html#filelist">Advanced</a> options. Uploaded
-Tiger
-Tree Hash Leaves, added in 0.402, will also be logged.</dd>
-  <dt>Upload Log Format </dt>
-  <dd>%[source] - Local path for the upload.<br>
-%[user] - User name<br>
-%[hub] - Hub name<br>
-%[hubip] - Hub's IP address<br>
-%[size] - File size<br>
-%[sizeshort] - File size, shortened and including units<br>
-%[chunksize] - Size uploaded this session<br>
-%[chunksizeshort] - Size uploaded this session, short and including
-units<br>
-%[actualsize] - Actual uploaded bytes, affected by compression<br>
-%[actualsizeshort] - Actual uploaded bytes, short and including units<br>
-%[speed] - Speed of the transfer<br>
-%[time] - Elapsed time of the transfer<br>
-%[tth] - Base32 representation of the tiger tree root hash<br>
-Default format: %Y-%m-%d %H:%M: %[source] uploaded to %[user], %[size]
-(%[chunksize]), %[speed], %[time]</dd>
+Only for Download log: %[target] - Local path and filename<br>
+Only for Upload log: %[source] - Local path for the upload.<br>
+<b>Default download log format</b>: %Y-%m-%d %H:%M: %[target] downloaded from %[user],
+%[size] (%[chunksize]), %[speed], %[time]
+<br>
+<b>Default upload log format</b>: %Y-%m-%d %H:%M: %[source] uploaded to %[user], %[size]
+(%[chunksize]), %[speed], %[time]
+<br>
+</dd></dt>
   <dt><a name="system"></a>Log System Messages</dt>
   <dd>Enables the logging of system-level messages. Examples of
 such messages are: notifications of files that have finished hashing,

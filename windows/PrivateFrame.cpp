@@ -200,7 +200,7 @@ void PrivateFrame::onEnter()
 				addLine(_T("*** ") + WinUtil::commands + _T(", /getlist, /clear, /grant, /close, /favorite, /log  <system, downloads, uploads>"));
 			} else {
 				if(user->isOnline()) {
-					sendMessage(s);
+					sendMessage(tstring(msg));
 				} else {
 					ctrlStatus.SetText(0, CTSTRING(USER_WENT_OFFLINE));
 					resetText = false;
@@ -410,7 +410,7 @@ void PrivateFrame::readLog() {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.44 2005/01/05 19:30:21 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.45 2005/01/12 01:16:48 arnetheduck Exp $
  */
 
 

@@ -279,8 +279,8 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			// This one, we'll download with a zblock download instead...
 			d->setFlag(Download::FLAG_ZDOWNLOAD);
 			aConn->getZBlock(d->getSource(), d->getPos(), d->getBytesLeft(), d->isSet(Download::FLAG_UTF8));
-		} else if(d->isSet(Download::FLAG_UTF8)) {
-			aConn->getBlock(d->getSource(), d->getPos(), d->getBytesLeft(), true);
+		} else if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST) && d->isSet(Download::FLAG_UTF8)) {
+			aConn->uGetBlock(d->getSource(), d->getPos(), d->getBytesLeft());
 		} else {
 			aConn->get(d->getSource(), d->getPos());
 		}
@@ -978,5 +978,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.137 2005/01/07 20:12:44 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.138 2005/01/12 01:16:55 arnetheduck Exp $
  */

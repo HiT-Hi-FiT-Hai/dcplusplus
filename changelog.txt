@@ -11,23 +11,23 @@
 * Small socket fix (thanks tremor)
 * Search tab goes bold if set to (thanks naga)
 * Hopefully fixed an UPnP crash
-* User commands in file lists (thanks joakim tosteberg)
+* [bug 302] User commands in file lists (thanks joakim tosteberg)
 * ADC url's clickable (thanks naga)
 * Improved search timer to avoid spamming hub (thanks naga)
 * Redid some of the hash storage code, should be slighly more efficient
-* Share is cached for faster startup
+* [bug 94] Share is cached for faster startup
 * Temporary targetnames are now filled in when download starts, not when item is added to queue,
   which makes temp target dir changes happen for current queue items as well, plus we get a huge
   memory save on huge queues.
-* Added "Remove All Sources" to queue (thanks izzzo & garg)
+* [bug 363] Added "Remove All Sources" to queue (thanks izzzo & garg)
 * Queue menu items greyed out when there are no itels (thanks izzzo)
 * Fixed a crash with certain empty lists (thanks garg)
 * Added "restore all" to undo "minimize all" (thanks guitarm)
 * Added optional pm history (thanks trem and ullner)
 * Better log file managment (thanks trem)
-* Fixed a queue count issue on removal (thanks ullner)
-* Fixed a queue move issue (thanks paka)
-* Fixed upload auto-slot granting (thanks naga)
+* [bug 412] Fixed a queue count issue on removal (thanks ullner)
+* [bug 9] Fixed a queue move issue (thanks paka)
+* [bug 20] Fixed upload auto-slot granting (thanks naga)
 * Redid adl search to accomodate for partial list browsing (thanks garg)
 * Added initial ADC file transfers support
 * ADC hub connectivity improved
@@ -36,6 +36,11 @@
 * Added readd all sources (thanks garg)
 * Fixed a deadlock when closing hub windows (thanks trem)
 * Added user ip logging in up and downloads (thanks ullner)
+* Small spy frame fix (thanks garg)
+* Small pm fix (thanks garg)
+* Added password warning for n00bs (thanks sed)
+* Help file updates (thanks pretorian, garg)
+
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

@@ -31,6 +31,7 @@ determinism of the protocol.
 *** Client-Client communication ***
 
 Feature: Supports
+Since: 0.17
 
 Purpose: To identify which features a certain client supports
 
@@ -60,7 +61,19 @@ some random data (not beginning with a number...=).
 
 --------------------------------------------------------------------
 
+Feature: MiniSlots
+Since: 0.304
+
+Usage: This allows the other client to use a free slot for small files / 
+file list. $Supports is needed because nmdc closes the file list browser
+when the connection is broken, which it becomes when the client on the
+other side tries to download its first file and fails because it has no
+real slot (there were lots of nmdc users bitching about this...).
+
+--------------------------------------------------------------------
+
 Feature: GetZBlock
+Since: 0.307
 
 Usage: Instead of $Get and $Send, use 
 "$GetZBlock <start> <numbytes> <filename>|" where <start> is the 0-based
@@ -82,19 +95,14 @@ changed by the implementator to reduce CPU usage, or even just store
 compression in the case of non-compressible files, which then works as 
 adler32 check of the transferred data.
 
---------------------------------------------------------------------
-
-Feature: MiniSlots
-
-Usage: This allows the other client to use a free slot for small files / 
-file list. $Supports is needed because nmdc closes the file list browser
-when the connection is broken, which it becomes when the client on the
-other side tries to download its first file and fails because it has no
-real slot (there were lots of nmdc users bitching about this...).
+Support of $GetZBlock also implies support for $UGetZBlock.  The syntax
+and semantics of $UGetZBlock are the same as the $GetZBlock, but the
+filename must be given in utf-8 encoding.
 
 --------------------------------------------------------------------
 
 Feature: XmlBZList
+Since: 0.307
 
 Usage: Supporing this means supporting utf-8 XML file lists with the 
 following general structure:
@@ -116,13 +124,9 @@ TTH attribute to each file it knows the TTH root of in base32 encoding.
 The file list is available as "files.xml.bz2" (vs MyList.DcLst), and is
 compressed using bzip2.
 
-Other than the file list, the client must also support one or two new
-commands, $UGetBlock and $UGetZBlock. The syntax and semantics of $UGetZBlock 
-are exactly the same as the $GetZBlock, but the filename must be given in 
-utf-8 encoding.
-
-$UGetZBlock must only be supported if $GetZBlock is supported, $UGetBlock 
-always.
+To retrieve unicode files from the file list, the client may also support
+the above GetZBlock and its utf-8 derivatives.  Support for XmlBZList
+implies support for $UGetBlock, so files are guaranteed to be retrievable.
 
 $UGetBlock follows $UGetZBlock semantics, but without compressing 
 the data. The <bytes> parameter of $Sending specifies how many bytes
@@ -137,6 +141,7 @@ mainly for debugging and informative purposes.
 --------------------------------------------------------------------
 
 Feature: ADCGet
+Since: 0.402
 
 Usage: 
 
@@ -144,10 +149,10 @@ Usage:
 A complete replacement for all binary data transfers using an ADC-like syntax.
 See the ADC specs to see how GET behaves. (http://dcplusplus.sf.net/ADC.html)
 
-
 --------------------------------------------------------------------
 
 Feature: TTHL
+Since: 0.402
 
 Usage:
 
@@ -162,6 +167,7 @@ tree and checking that it's recorded root matches.
 --------------------------------------------------------------------
 
 Feature: TTHF
+Since: 0.402
 
 Usage:
 
@@ -180,13 +186,21 @@ i e the TTH namespace consists of TTH root values directly under the
 
 The naming scheme is valid in all types (i e also for getting TTH leaves)
 
-
 --------------------------------------------------------------------
 
+Feature: ZLIG
+Since: 0.402
+
+Usage:
+
+Supporting this means that zlib compressed $ADCGET transfers are supported.
+
+--------------------------------------------------------------------
 
 *** Client-Hub communication ***
 
 Feature: Supports
+Since: 0.300
 
 Usage: "$Supports <feature1> <feature2> ... <featureN>|"
 This is mostly analogous to the client-client communcation part. The hub 
@@ -202,12 +216,14 @@ Should be sent: After $Lock, before $Key
 --------------------------------------------------------------------
 
 Feature: UserCommand
+Since: 0.300
 
-See dcplusplus.sf.net/wiki
+Usage: See http://dcplusplus.sf.net/wiki/
 
 --------------------------------------------------------------------
 
 Feature: NoGetINFO
+Since: 0.302
 
 Usage: This indicates that hub doesn't need $GetINFO's to send out $MyINFO's
 at connect. This is a sort of light-weight QuickList that's very easy to
@@ -215,10 +231,34 @@ implement and does half of QuickList's job.
 
 --------------------------------------------------------------------
 
+Feature: UserIP2
+Since: 0.305
+
+Usage: This indicates support for $UserIP, see http://dcplusplus.sf.net/wiki/
+
+--------------------------------------------------------------------
+
 Feature: NoHello
+Since: 0.305
 
 Usage: This indicates that the client doesn't need neither $Hello nor $NickList
 when connecting to a hub and receiving its users (i e $myinfo for each user is
 enough). It still accepts $Hello though (to add bots to the user list),
 and will still send getnicklist to indicate that it indeed is interested
 in the user list. It still requires a $hello to be sent about itself during login!
+--------------------------------------------------------------------
+
+Feature: GetZBlock
+Since: 0.307
+
+Usage: This indicates that the client is capable of compressed 
+transfers, and has the option to use them enabled.
+
+--------------------------------------------------------------------
+
+Feature: TTHSearch
+Since: 0.307
+
+Usage: This indicates that the client supports searching for queued 
+files by TTH, if there is one available to it.  TTH searching is more 
+CPU efficient than the previous method. 

@@ -144,7 +144,7 @@
 		<String Name="HashProgressStats">Statistics</String>
 		<String Name="HashProgressText">Please wait while DC++ indexes your files (they won't be shared until they've been indexed)...</String>
 		<String Name="HashRebuilt">Hash database rebuilt</String>
-		<String Name="HashingFinished">Finished hashing </String>
+		<String Name="HashingFinished">Finished hashing: </String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>
 		<String Name="HitRatio">Hit Ratio: </String>
@@ -399,7 +399,7 @@
 		<String Name="SettingsName">Name</String>
 		<String Name="SettingsNetwork">Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
-		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
+		<String Name="SettingsOnlyHashed">Note; Files appear in the share only after they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>
 		<String Name="SettingsOpenFavoriteHubs">Open the favorite hubs window at startup</String>
 		<String Name="SettingsOpenFinishedDownloads">Open the finished downloads window at startup</String>

@@ -366,7 +366,7 @@ public:
 		// Work-around for atof and locales...
 		lconv* lv = localeconv();
 		string::size_type i = aString.find_last_of(".,");
-		if(aString[i] != lv->decimal_point[0]) {
+		if(i != string::npos && aString[i] != lv->decimal_point[0]) {
 			string tmp(aString);
 			tmp[i] = lv->decimal_point[0];
 			return atof(tmp.c_str());
@@ -587,5 +587,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.117 2005/01/06 18:19:48 arnetheduck Exp $
+ * $Id: Util.h,v 1.118 2005/01/12 01:16:54 arnetheduck Exp $
  */

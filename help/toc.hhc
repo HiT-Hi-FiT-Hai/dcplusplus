@@ -75,7 +75,7 @@
 			<param name="Local" value="settings_general.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="General">
+			<param name="Name" value="Connection settings">
 			<param name="Local" value="settings_connection.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">

@@ -390,7 +390,7 @@ void UploadManager::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 }
 
-void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) throw() {
+void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw() {
 	if( (!aUser->isOnline()) && 
 		(aUser->isSet(User::QUIT_HUB)) && 
 		(BOOLSETTING(AUTO_KICK)) ){
@@ -412,5 +412,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, User::Ptr& aUser) thr
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.84 2005/01/07 20:12:44 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.85 2005/01/12 01:16:55 arnetheduck Exp $
  */

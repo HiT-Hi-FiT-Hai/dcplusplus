@@ -259,10 +259,16 @@ void HubFrame::onEnter() {
 					addClientLine(TSTRING(UNKNOWN_COMMAND) + cmd);
 				}
 			}
+			ctrlMessage.SetWindowText(_T(""));
+		} else if(waitingForPW) {
+			addClientLine(TSTRING(DONT_REMOVE_SLASH_PASSWORD));
+			ctrlMessage.SetWindowText(_T("/password "));
+			ctrlMessage.SetFocus();
+			ctrlMessage.SetSel(10, 10);
 		} else {
 			client->hubMessage(Text::fromT(s));
+			ctrlMessage.SetWindowText(_T(""));
 		}
-		ctrlMessage.SetWindowText(_T(""));
 	} else {
 		MessageBeep(MB_ICONEXCLAMATION);
 	}
@@ -1133,5 +1139,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.97 2005/01/06 20:21:09 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.98 2005/01/12 01:16:48 arnetheduck Exp $
  */

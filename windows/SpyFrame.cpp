@@ -222,12 +222,13 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 		(*f) += (float)perSecond[i];
 	}
 	(*f) /= AVG_TIME;
-	
-	perSecond[++cur] = 0;
+
+	cur = (cur + 1) % AVG_TIME;
+	perSecond[cur] = 0;
 	PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
 }
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.30 2005/01/05 19:30:19 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.31 2005/01/12 01:16:48 arnetheduck Exp $
  */
