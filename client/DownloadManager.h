@@ -84,6 +84,8 @@ public:
 	}
 	void download(const string& aFile, LONGLONG aSize, User* aUser, const string& aDestination, bool aResume = true);
 	
+	void removeDownload(Download* aDownload);
+
 	static DownloadManager* getInstance() {
 		dcassert(instance);
 		return instance;
@@ -143,7 +145,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		dcdebug("DownloadManager::fireAdded %p\n", aPtr);
+		//dcdebug("DownloadManager::fireAdded %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadAdded(aPtr);
 		}
@@ -152,7 +154,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		dcdebug("DownloadManager::fireComplete %p\n", aPtr);
+		//dcdebug("DownloadManager::fireComplete %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadComplete(aPtr);
 		}
@@ -161,7 +163,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		dcdebug("DownloadManager:.fireConnecting %p\n", aPtr);
+		//dcdebug("DownloadManager:.fireConnecting %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadConnecting(aPtr);
 		}
@@ -170,7 +172,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		dcdebug("DownloadManager::fireFailed %p\n", aPtr);
+		//dcdebug("DownloadManager::fireFailed %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadFailed(aPtr, aReason);
 		}
@@ -179,7 +181,7 @@ private:
 		listenerCS.enter();
 		DownloadManagerListener::List tmp = listeners;
 		listenerCS.leave();
-		dcdebug("DownloadManager::fireStarting %p\n", aPtr);
+		//dcdebug("DownloadManager::fireStarting %p\n", aPtr);
 		for(DownloadManagerListener::Iter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onDownloadStarting(aPtr);
 		}
@@ -205,9 +207,13 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.9 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.10 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.10  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.9  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

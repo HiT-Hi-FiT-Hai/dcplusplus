@@ -41,7 +41,6 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 
 	if(!bs->isConnected()) {
 		bs->fireError("Not connected");
-		bs->writerThread = NULL;
 		return 0x11;
 
 	}
@@ -50,7 +49,6 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 		if(ReadFile(file, buf, 4096, &len, NULL)) {
 			if(len == 0) {
 				bs->fireTransmitDone();
-				bs->writerThread = NULL;
 				return 0x10;
 			}
 			try {
@@ -59,19 +57,16 @@ DWORD WINAPI BufferedSocket::writer(void* p) {
 			} catch(SocketException e) {
 				dcdebug("BufferedSocket::Writer caught: %s\n", e.getError().c_str());
 				bs->fireError(e.getError());
-				bs->writerThread = NULL;
 				return 0x12;
 			}
 		} else {
 			bs->fireError("Error reading file");
-			bs->writerThread = NULL;
 			return 0x13;
 		}
 	}
 
 	// Hm, to fire or not to fire, that is the question...
 //	fireError("File not finished");
-	bs->writerThread = NULL;
 	return 0x14;
 	
 }
@@ -95,7 +90,6 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				// Either timeout or window stopped...don't care which really...
 				bs->disconnect();
 				bs->fireError("Connection Timeout.");
-				bs->readerThread = NULL;
 				return 0x01;
 			}
 				
@@ -107,7 +101,6 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 		dcdebug("BufferedSocket::Reader caught: %s\n", e.getError().c_str());
 		bs->disconnect();
 		bs->fireError(e.getError());
-		bs->readerThread = NULL;
 		return 0x02;
 	}
 
@@ -125,7 +118,6 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 				// This socket has been closed...
 				bs->disconnect();
 				bs->fireError("Disconnected.");
-				bs->readerThread = NULL;
 				return 0x03;
 			}
 			int bufpos = 0;
@@ -182,15 +174,18 @@ DWORD WINAPI BufferedSocket::reader(void* p) {
 			return 0x04;
 		}
 	}
-	bs->readerThread = NULL;
 	return 0;
 }
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.13 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.14 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.cpp,v $
+ * Revision 1.14  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.13  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

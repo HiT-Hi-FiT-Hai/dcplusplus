@@ -38,7 +38,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 	hEvent[1] = hm->downloadEvent;
 	if(WaitForMultipleObjects(2, hEvent, FALSE, INFINITE)==WAIT_OBJECT_0) {
 		ATLTRACE("Hub Lister Thread ended");
-		hm->listerThread = NULL;
 		return 0;
 	}
 	
@@ -53,7 +52,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 	for(HubManager::HubEntry::Iter i = hm->publicHubs.begin(); i != hm->publicHubs.end(); ++i) {
 		if(WaitForSingleObject(hEvent[0], 0)!=WAIT_TIMEOUT) {
 			ATLTRACE("Hub Lister Thread ended");
-			hm->listerThread = NULL;
 			hm->publicCS.leave();
 			hm->fireFinished();
 			return 0;
@@ -63,7 +61,6 @@ DWORD WINAPI HubManager::lister(void* p) {
 	hm->fireFinished();
 	
 	hm->publicCS.leave();
-	hm->listerThread = NULL;
 	return 0;
 }
 
@@ -101,9 +98,13 @@ void HubManager::onHttpError(HttpConnection* aConn, const string& aError) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.4 2001/12/07 20:03:07 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.5 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.5  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.4  2001/12/07 20:03:07  arnetheduck
  * More work done towards application stability
  *

@@ -100,6 +100,36 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, User* aUser,
 	}
 }
 
+void DownloadManager::removeDownload(Download* aDownload) {
+	cs.enter();
+	// First, we search the queue
+	for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+		if(*i == aDownload) {
+			// Good! It's in the queue, we can simply remove it...
+			queue.erase(i);
+			delete aDownload;
+			cs.leave();
+			return;
+		}
+	}
+
+	// Check the running downloads...
+	for(Download::MapIter j = running.begin(); j != running.end(); ++j) {
+		if(j->second == aDownload) {
+			// This is worse, we have to abort the download...
+			UserConnection* conn = j->first;
+			running.erase(j);
+			removeConnection(conn);
+			delete aDownload;
+			cs.leave();
+			return;
+		}
+	}
+
+	// Not found...
+	cs.leave();
+
+}
 void DownloadManager::removeConnection(UserConnection::Ptr aConn) {
 	cs.enter();
 	for(UserConnection::Iter i = connections.begin(); i != connections.end(); ++i) {
@@ -274,9 +304,13 @@ void DownloadManager::onError(UserConnection* aSource, const string& aError) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.9 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.10 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.10  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.9  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

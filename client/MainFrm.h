@@ -100,6 +100,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
+		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
@@ -118,6 +119,20 @@ public:
 	}
 	
 	static DWORD WINAPI stopper(void* p);
+
+	LRESULT onKeyDownTransfers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+
+		LVITEM item;
+		item.mask = LVIF_PARAM;
+
+		if(kd->wVKey == VK_DELETE && ctrlTransfers.GetSelectedItem(&item)) {
+			DownloadManager::getInstance()->removeDownload((Download*)item.lParam);
+			ctrlTransfers.DeleteItem(item.iItem);
+		}
+		return 0;
+	}
+		
 
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		DWORD id;
@@ -224,9 +239,13 @@ protected:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.10 2001/12/08 20:59:26 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.11  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.10  2001/12/08 20:59:26  arnetheduck
  * Fixing bugs...
  *

@@ -120,6 +120,15 @@ public:
 				uploadCS.leave();
 				return;
 			}
+			// We only give out one connection / user...
+			for(UserConnection::Iter k = connections.begin(); k != connections.end(); ++k) {
+				if(aSource != *k && aSource->getUser() == (*k)->getUser()) {
+					aSource->maxedOut();
+					removeConnection(aSource);
+					uploadCS.leave();
+					return;					
+				}
+			}
 			string file = ShareManager::getInstance()->translateFileName(aFile);
 			Upload::MapIter i = uploads.find(aSource);
 			if(i != uploads.end()) {
@@ -288,9 +297,13 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.13 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.14 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.14  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.13  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

@@ -143,9 +143,9 @@ private:
 			SetEvent(writerEvent);
 			
 			if(WaitForSingleObject(writerThread, 1000) == WAIT_TIMEOUT) {
-				dcassert(0);
+//				dcassert(0);
 			}
-			
+			CloseHandle(writerThread);
 			writerThread = NULL;
 		}
 
@@ -163,7 +163,7 @@ private:
 			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
 				dcassert(0);
 			}
-			
+			CloseHandle(readerThread);			
 			readerThread = NULL;
 		}
 		if(readerEvent != NULL) {
@@ -242,9 +242,13 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.10 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.11  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.10  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

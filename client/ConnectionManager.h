@@ -113,7 +113,8 @@ private:
 	UserConnection* getConnection() {
 		UserConnection* uc;
 		cs.enter();
-		if(pool.size() < 2) {
+		// We want to keep a few connections in the pool, so that they have time to stop...
+		if(pool.size() <= 5) {
 			uc = new UserConnection();
 			uc->addListener(this);
 		} else {
@@ -176,9 +177,13 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.10 2001/12/10 10:48:40 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.11 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.11  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.10  2001/12/10 10:48:40  arnetheduck
  * Ahh, finally found one bug that's been annoying me for days...=) the connections
  * in the pool were not reset correctly before being put back for later use...

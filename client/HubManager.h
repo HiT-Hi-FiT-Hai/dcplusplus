@@ -151,7 +151,7 @@ private:
 			if(WaitForSingleObject(listerThread, 2000) == WAIT_TIMEOUT) {
 				MessageBox(NULL, _T("Unable to stop lister thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
-			
+			CloseHandle(listerThread);
 			listerThread = NULL;
 		}
 		if(listerEvent) {
@@ -204,9 +204,13 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.6 2001/12/07 20:03:10 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.7 2001/12/11 01:10:29 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.7  2001/12/11 01:10:29  arnetheduck
+ * More bugfixes...I really have to change the bufferedsocket so that it only
+ * uses one thread...or maybe even multiple sockets/thread...
+ *
  * Revision 1.6  2001/12/07 20:03:10  arnetheduck
  * More work done towards application stability
  *
