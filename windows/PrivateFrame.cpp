@@ -200,7 +200,7 @@ void PrivateFrame::onEnter()
 				UploadManager::getInstance()->reserveSlot(getUser());
 				addClientLine(STRING(SLOT_GRANTED));
 			} else if(stricmp(s.c_str(), "close") == 0) {
-				SendMessage(WM_CLOSE);
+				PostMessage(WM_CLOSE);
 			} else if(stricmp(s.c_str(), "help") == 0) {
 				addLine("/refresh, /slots #, /search <string>, /clear, /away <msg>, /back, /grant, /close, /help");
 			}
@@ -270,7 +270,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.7 2002/05/18 11:20:37 arnetheduck Exp $
  */
 
 

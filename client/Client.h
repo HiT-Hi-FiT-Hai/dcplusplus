@@ -127,12 +127,12 @@ public:
 	void connectToMe(const User::Ptr& aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void connectToMe(User* aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + SETTING(SERVER) + ":" + Util::toString(SETTING(PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
 		checkstate(); 
@@ -344,6 +344,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.53 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: Client.h,v 1.54 2002/05/18 11:20:36 arnetheduck Exp $
  */
 

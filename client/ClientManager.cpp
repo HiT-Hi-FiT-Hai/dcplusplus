@@ -83,7 +83,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	
 	bool search = false;
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		if(aSeeker.find(SETTING(SERVER)) == string::npos) {
+		if(aSeeker.find(Socket::resolve(SETTING(SERVER))) == string::npos) {
 			search = true;
 		}
 	} else {
@@ -257,6 +257,6 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.23 2002/05/09 15:26:46 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.24 2002/05/18 11:20:36 arnetheduck Exp $
  */
 

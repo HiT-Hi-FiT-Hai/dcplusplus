@@ -71,7 +71,7 @@ public:
 		showUIContainer("BUTTON", this, SHOWUI_MESSAGE_MAP),
 		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), showUI(true)	
+		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), targetFileCount(0), showUI(true)	
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -203,6 +203,7 @@ private:
 	string initialString;
 	LONGLONG initialSize;
 	SearchManager::SizeModes initialMode;
+	int targetFileCount;
 
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
@@ -275,6 +276,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.7 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.8 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

@@ -34,7 +34,6 @@ static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, Resourc
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-
 	// Only one of this window please...
 	dcassert(frame == NULL);
 	frame = this;
@@ -200,6 +199,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file UsersFrame.cpp
- * $Id: UsersFrame.cpp,v 1.4 2002/04/22 15:50:51 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.5 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

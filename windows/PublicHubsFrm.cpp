@@ -37,7 +37,6 @@ ResourceManager::USERS, ResourceManager::HUB_ADDRESS };
 
 LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-
 	// Only one of this window please...
 	dcassert(frame == NULL);
 	frame = this;
@@ -130,17 +129,17 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlFilterDesc.SetWindowText(CSTRING(FILTER));
 	ctrlFilterDesc.SetFont(ctrlHubs.GetFont());
 
+	HubManager::getInstance()->addListener(this);
+
 	if(HubManager::getInstance()->isDownloading()) 
 		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
+
+	hubs = HubManager::getInstance()->getPublicHubs();
+	updateList();
 	
 	hubsMenu.CreatePopupMenu();
 	hubsMenu.AppendMenu(MF_STRING, IDC_CONNECT, CSTRING(CONNECT));
 	hubsMenu.AppendMenu(MF_STRING, IDC_ADD, CSTRING(ADD_TO_FAVORITES));
-	
-	HubManager::getInstance()->addListener(this);
-
-	hubs = HubManager::getInstance()->getPublicHubs();
-	updateList();
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -172,7 +171,6 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	users = 0;
 	visibleHubs = 0;
 	ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
-	HubManager::getInstance()->addListener(this);
 	HubManager::getInstance()->refresh();
 
 	return 0;
@@ -204,7 +202,6 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 				frm->setTab(getTab());
 				frm->CreateEx(m_hWndMDIClient);
 			}
-			
 		}
 	}
 
@@ -227,7 +224,6 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 		e.setServer(buf);
 		HubManager::getInstance()->addFavorite(e);
-		
 	}
 	return 0;
 }
@@ -316,7 +312,6 @@ void PublicHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	rc.top -= 24;
 	rc.bottom -= 24;
 	ctrlRefresh.MoveWindow(rc);
-	
 }
 
 bool PublicHubsFrame::checkNick() {
@@ -415,6 +410,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.4 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.5 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

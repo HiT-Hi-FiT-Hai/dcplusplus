@@ -159,10 +159,10 @@
 				RelativePath=".\res\DCPlusPlus.Manifest">
 			</File>
 			<File
-				RelativePath=".\res\DCPlusPlus.ico">
+				RelativePath=".\client\res\DCPlusPlus.ico">
 			</File>
 			<File
-				RelativePath=".\client\res\DCPlusPlus.ico">
+				RelativePath=".\res\DCPlusPlus.ico">
 			</File>
 			<File
 				RelativePath=".\DCPlusPlus.rc">
@@ -211,6 +211,9 @@
 			</File>
 			<File
 				RelativePath=".\res\notepad.ico">
+			</File>
+			<File
+				RelativePath="res\queue.ico">
 			</File>
 			<File
 				RelativePath=".\res\toolbar.bmp">

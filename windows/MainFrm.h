@@ -40,7 +40,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private ConnectionManagerListener
 {
 public:
-	MainFrame() : trayMessage(0), trayIcon(false), lastUpload(-1), lastUpdate(0), stopperThread(NULL), c(NULL) { 
+	MainFrame() : trayMessage(0), trayIcon(false), lastUpload(-1), lastUpdate(0), oldshutdown(false), stopperThread(NULL), c(NULL) { 
 		c = new HttpConnection();
 	};
 	virtual ~MainFrame();
@@ -315,6 +315,7 @@ private:
 	bool trayIcon;
 	u_int32_t lastMove;
 	u_int32_t lastUpdate;
+	bool oldshutdown;
 
 	int lastUpload;
 	static int columnIndexes[COLUMN_LAST];
@@ -442,7 +443,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.7 2002/05/18 11:20:37 arnetheduck Exp $
  */
 
  

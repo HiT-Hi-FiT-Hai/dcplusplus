@@ -37,7 +37,6 @@ int SearchFrame::columnSizes[] = { 100, 200, 50, 80, 100, 40, 70, 150 };
 static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::FILE, ResourceManager::TYPE, ResourceManager::SIZE, 
 	ResourceManager::PATH, ResourceManager::SLOTS, ResourceManager::CONNECTION, ResourceManager::HUB };
 
-
 LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	HFONT const uiFont = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
@@ -74,8 +73,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlResults.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
-	}
-	else {
+	} else {
 		ctrlResults.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
 
@@ -251,26 +249,6 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
-LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	if(ctrlResults.GetSelectedCount() == 1) {
-		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
-		dcassert(i != -1);
-		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
-		dcassert((wID - IDC_DOWNLOAD_TARGET) <	(WORD)targets.size());
-		try {
-			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
-		} catch(QueueException e) {
-			ctrlStatus.SetText(1, e.getError().c_str());
-		} catch(FileException e) {
-			//..
-		}
-	} else if(ctrlResults.GetSelectedCount() > 1) {
-		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)lastDirs.size());
-		downloadSelected(lastDirs[wID-IDC_DOWNLOAD_TARGET]);
-	}
-	return 0;
-}
-
 void SearchFrame::onEnter() {
 	char* message;
 	
@@ -378,72 +356,6 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 	}
 	l->push_back(aResult->getHubName());
 	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
-}
-
-LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-	RECT rc;                    // client area of window 
-	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	
-	// Get the bounding rectangle of the client area. 
-	ctrlResults.GetClientRect(&rc);
-	ctrlResults.ScreenToClient(&pt); 
-	
-	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
-	{
-		int n = 0;
-
-		ctrlResults.ClientToScreen(&pt);
-
-		while(targetMenu.GetMenuItemCount() > 0) {
-			targetMenu.DeleteMenu(0, MF_BYPOSITION);
-		}
-		
-		if(ctrlResults.GetSelectedCount() == 1) {
-			int pos = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
-			dcassert(pos != -1);
-			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
-
-			
-			targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize());
-			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
-				n++;
-			}
-
-			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
-
-			if(sr->getUser() && sr->getUser()->isClientOp()) {
-				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			} else {
-				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			}
-		} else {
-			
-			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
-				n++;
-			}
-			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
-
-			int pos = -1;
-			bool op = true;
-			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
-				SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(pos);
-				if(!sr->getUser() || !sr->getUser()->isClientOp()) {
-					op = false;
-					break;
-				}
-			}
-			if(op)
-				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			else
-				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-		}
-		
-		return TRUE; 
-	}
-	
-	return FALSE; 
 }
 
 LRESULT SearchFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
@@ -723,7 +635,6 @@ LRESULT SearchFrame::onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 	return 0;
 }
 
-
 LRESULT SearchFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 	switch(wParam) {
 	case VK_TAB:
@@ -773,7 +684,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 	// Check previous search results for dupes
 	for(int i = 0, j = ctrlResults.GetItemCount(); i < j; ++i) {
 		SearchResult* sr2 = (SearchResult*)ctrlResults.GetItemData(i);
-		if((sr->getUser() == sr2->getUser()) && (sr->getFile() == sr2->getFile())) {
+		if((sr->getUser()->getNick() == sr2->getUser()->getNick()) && (sr->getFile() == sr2->getFile())) {
 			delete (StringList*)wParam;
 			delete sr;
 			return 0;
@@ -799,8 +710,141 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 	return 0;
 }
 
+LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlResults.GetClientRect(&rc);
+	ctrlResults.ScreenToClient(&pt); 
+	int64_t cmpSize;
+	
+	//Reset counter
+	targetFileCount = 0;
+	
+	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
+	{
+		int n = 0;
+
+		ctrlResults.ClientToScreen(&pt);
+
+		while(targetMenu.GetMenuItemCount() > 0) {
+			targetMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+		
+		if(ctrlResults.GetSelectedCount() == 1) {
+			int pos = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+			dcassert(pos != -1);
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
+
+			targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize());
+			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				n++;
+			}
+
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
+
+			if(sr->getUser() && sr->getUser()->isClientOp()) {
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			} else {
+				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			}
+		} else if (ctrlResults.GetSelectedCount() > 0) {
+			// <Change>
+			cmpSize = 0;
+			int pos = -1;
+			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
+     			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
+				if (cmpSize == 0) {
+					cmpSize = sr->getSize();
+				} else if(cmpSize != sr->getSize()) {
+					cmpSize = 0;
+					break;
+				}
+			}
+
+			if(cmpSize != 0) {
+				// All selected files are same size, see if we have a match in queue
+				targets = QueueManager::getInstance()->getTargetsBySize(cmpSize);
+
+				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+					n++;
+				}
+				targetFileCount = n;
+
+				if(targetFileCount > 0) {
+					targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+				}
+			}
+
+			// Keep on counting on recent dirs
+
+			//</Change>
+			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				n++;
+			}
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
+
+			pos = -1;
+			bool op = true;
+			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
+				SearchResult* sr = (SearchResult*) ctrlResults.GetItemData(pos);
+				if(!sr->getUser() || !sr->getUser()->isClientOp()) {
+					op = false;
+					break;
+				}
+			}
+			if(op)
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			else
+				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+
+		}
+		return TRUE; 
+	}
+	
+	return FALSE; 
+}
+
+LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		dcassert(i != -1);
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
+		try {
+			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+		} catch(QueueException e) {
+			ctrlStatus.SetText(1, e.getError().c_str());
+		} catch(FileException e) {
+			//..
+		}
+	} else if(ctrlResults.GetSelectedCount() > 1) {
+		if((wID-IDC_DOWNLOAD_TARGET) > targetFileCount-1) {
+			//Original Handler
+			downloadSelected(lastDirs[wID-(IDC_DOWNLOAD_TARGET+targetFileCount)]);
+		} else {
+			//Add all files as alternates to selected file
+			int pos = -1;
+			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
+     			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
+				dcassert((wID - IDC_DOWNLOAD_TARGET) <	(WORD)targets.size());
+				try {				
+					QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+				} catch(QueueException e) {
+					ctrlStatus.SetText(1, e.getError().c_str());
+				} catch(FileException e) {
+					//..
+				}
+			}
+		} 
+	}
+	return 0;
+}
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
  */
-

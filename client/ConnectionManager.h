@@ -92,12 +92,25 @@ public:
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
 	
-	void disconnectAll() {
+	void shutdown() {
+		shuttingDown = true;
 		socket.removeListener(this);
 		socket.disconnect();
-		Lock l(cs);
-		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-			(*j)->disconnect();
+		{
+			Lock l(cs);
+			for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+				(*j)->disconnect();
+			}
+		}
+		// Wait until all connections have died out...
+		while(true) {
+			{
+				Lock l(cs);
+				if(userConnections.empty()) {
+					break;
+				}
+			}
+			Thread::sleep(50);
 		}
 	}		
 	
@@ -123,8 +136,10 @@ private:
 	ServerSocket socket;
 	StringList features;
 
+	bool shuttingDown;
+
 	friend class Singleton<ConnectionManager>;
-	ConnectionManager() {
+	ConnectionManager() : shuttingDown(false) {
 		TimerManager::getInstance()->addListener(this);
 		socket.addListener(this);
 
@@ -240,5 +255,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.37 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.38 2002/05/18 11:20:36 arnetheduck Exp $
  */

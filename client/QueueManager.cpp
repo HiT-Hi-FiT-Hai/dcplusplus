@@ -152,11 +152,14 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 	{
 		Lock l(cs);
-		if(!q->isSource(aUser)) {
-			s = q->addSource(aUser, aFile);
-		} else {
-			return;
+		for(QueueItem::Source::Iter i = q->getSources().begin(); i != q->getSources().end(); ++i) {
+			if((*i)->getUser()->getNick() == aUser->getNick() && (*i)->getPath() == aFile) {
+				return;
+			}
 		}
+
+		s = q->addSource(aUser, aFile);
+
 		if(newItem) {
             queue.insert(make_pair(q->getTarget(), q));
 		}
@@ -468,7 +471,7 @@ QueueItem* QueueManager::findByTarget(const string& aTarget) {
 		return i->second;
 
 	// Then case-insensitive...
-	for(QueueItem::StringIter i = queue.begin(); i != queue.end(); ++i) {
+	for(i = queue.begin(); i != queue.end(); ++i) {
 		if(stricmp(i->second->getTarget().c_str(), aTarget.c_str()) == 0)
 			return i->second;
 	}
@@ -532,7 +535,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.25 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.26 2002/05/18 11:20:37 arnetheduck Exp $
  */
 
 

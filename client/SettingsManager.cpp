@@ -60,7 +60,11 @@ SettingsManager::SettingsManager()
 		intDefaults[j] = 0;
 		intSettings[j] = 0;
 	}
-
+	for(int k=0; j<INT64_LAST-INT64_FIRST; j++) {
+		int64Defaults[j] = 0;
+		int64Settings[j] = 0;
+	}
+	
 	setDefault(SLOTS, 1);
 	setDefault(SERVER, Util::getLocalIp());
 	setDefault(PORT, 1412);
@@ -227,6 +231,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.38 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.39 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

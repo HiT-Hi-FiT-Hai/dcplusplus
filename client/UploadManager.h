@@ -75,7 +75,7 @@ public:
 		int avg = 0;
 		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
 			Upload* u = *i;
-			avg += (int)u->getAverageSpeed();
+			avg += (int)u->getRunningAverage();
 		}
 		return avg;
 	}
@@ -199,5 +199,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.45 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.46 2002/05/18 11:20:37 arnetheduck Exp $
  */

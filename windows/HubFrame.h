@@ -326,7 +326,7 @@ private:
 		case ClientListener::CONNECTED: speak(ADD_STATUS_LINE, STRING(CONNECTED)); break;
 		case ClientListener::BAD_PASSWORD: client->setPassword(Util::emptyString); break;
 		case ClientListener::GET_PASSWORD: speak(GET_PASSWORD); break;
-		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName()); break;
+		case ClientListener::HUB_NAME: speak(SET_WINDOW_TITLE, client->getName() + " (" + client->getServer() + ")"); break;
 		case ClientListener::VALIDATE_DENIED:
 			client->removeListener(this);
 			client->disconnect();
@@ -397,6 +397,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

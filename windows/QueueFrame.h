@@ -55,7 +55,7 @@ public:
 
 	static QueueFrame* frame;
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), dirty(false) { 
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), dirty(false), usingDirMenu(false) { 
 		QueueManager::getInstance()->addListener(this);
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
@@ -84,7 +84,7 @@ public:
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemChanged)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
-		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGH, onPriority)
+		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGHEST, onPriority)
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
@@ -107,7 +107,11 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		removeSelected();
+		if(usingDirMenu) {
+			removeSelectedDir();
+		} else {
+			removeSelected();
+		}
 		return 0;
 	}
 
@@ -124,6 +128,20 @@ public:
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			QueueManager::getInstance()->remove(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget());
+		}
+	}
+
+	void removeSelectedDir() {
+		if(ctrlDirectories.GetSelectedCount() != 1) {
+			return;
+		}
+		int n = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED);
+		char* buf = new char[MAX_PATH];
+		ctrlDirectories.GetItemText(n, 0, buf, MAX_PATH-1);
+		DirectoryPair dp = directories.equal_range(buf);
+		delete buf;
+		for(DirectoryIter i = dp.first; i != dp.second; ++i) {
+			QueueManager::getInstance()->remove(i->second->getTarget());
 		}
 	}
 	
@@ -186,7 +204,9 @@ private:
 	CMenu removeMenu;
 	CMenu pmMenu;
 	CMenu priorityMenu;
-	
+	CMenu dirMenu;
+	bool usingDirMenu;
+
 	bool dirty;
 
 	int menuItems;
@@ -198,6 +218,7 @@ private:
 	
 	typedef HASH_MULTIMAP<string, QueueItem*> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
+	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
 	string curDir;
 	
@@ -229,7 +250,7 @@ private:
 		if( (j = aTarget.rfind('\\', i-1)) == string::npos) {
 			return aTarget.substr(0, i+1);
 		}
-		if( ((j - i) > 6) || (k = aTarget.rfind('\\', j-1)) == string::npos) {
+		if( ((k = aTarget.rfind('\\', j-1)) == string::npos) || ((i-j) > 3)) {
 			return aTarget.substr(j+1, i-j);
 		}
 		if(k > 3)
@@ -267,6 +288,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.6 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.7 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

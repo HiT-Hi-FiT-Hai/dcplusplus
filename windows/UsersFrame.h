@@ -78,7 +78,7 @@ public:
 		ctrlUsers.GetClientRect(&rc);
 		ctrlUsers.ScreenToClient(&pt); 
 		
-		if (PtInRect(&rc, pt)) 
+		if (ctrlUsers.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
 		{ 
 			ctrlUsers.ClientToScreen(&pt);
 			usersMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -104,8 +104,7 @@ public:
 		return 0;
 	}
 	
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
+	void UpdateLayout(BOOL bResizeBars = TRUE) {
 		RECT rect;
 		GetClientRect(&rect);
 		// position bars and offset their dimensions
@@ -183,6 +182,6 @@ private:
 
 /**
  * @file UsersFrame.h
- * $Id: UsersFrame.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.3 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

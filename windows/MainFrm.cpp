@@ -55,8 +55,6 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 	MainFrame* mf = (MainFrame*)p;
 	HWND wnd, wnd2 = NULL;
 
-	ConnectionManager::getInstance()->disconnectAll();
-	
 	while( (wnd=::GetWindow(mf->m_hWndClient, GW_CHILD)) != NULL) {
 		if(wnd == wnd2) 
 			Sleep(100);
@@ -280,7 +278,7 @@ HWND MainFrame::createToolbar() {
 	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
 	ctrl.SetImageList(largeImages);
 	
-	TBBUTTON tb[7];
+	TBBUTTON tb[8];
 	memset(tb, 0, sizeof(tb));
 	int n = 0;
 	tb[n].iBitmap = n;
@@ -308,6 +306,12 @@ HWND MainFrame::createToolbar() {
 
 	n++;
 	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_QUEUE;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
 	tb[n].idCommand = ID_FILE_SEARCH;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
@@ -323,15 +327,13 @@ HWND MainFrame::createToolbar() {
 	tb[n].idCommand = IDC_NOTEPAD;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
-	
-	
+		
 	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(7, tb);
+	ctrl.AddButtons(8, tb);
 	
 	ctrl.AutoSize();
 
 	return ctrl.m_hWnd;
-	
 }
 
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
@@ -390,6 +392,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
+	m_CmdBar.m_arrCommand.Add(IDC_QUEUE);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
 	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
@@ -677,6 +680,7 @@ void MainFrame::onHttpComplete(HttpConnection* /*aConn*/)  {
 						xml.resetCurrentChild();
 						if(xml.findChild("URL")) {
 							MessageBox(("Your version of DC++ is very old and will be shut down. Please get a new one at \r\n" + xml.getChildData()).c_str());
+							oldshutdown = true;
 							PostMessage(WM_CLOSE);
 						}
 					}
@@ -793,7 +797,7 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		stopperThread = NULL;
 		bHandled = FALSE;
 	} else {
-		if( (!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), "", MB_YESNO) == IDYES) ) {
+		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), "", MB_YESNO) == IDYES) ) {
 			string tmp1;
 			string tmp2;
 
@@ -938,6 +942,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.9 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.10 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

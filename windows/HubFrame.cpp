@@ -270,7 +270,7 @@ void HubFrame::onEnter() {
 					addClientLine(STRING(JOIN_SHOWING_OFF));
 				}
 			} else if(stricmp(s.c_str(), "close") == 0) {
-				SendMessage(WM_CLOSE);
+				PostMessage(WM_CLOSE);
 			} else if(stricmp(s.c_str(), "help") == 0) {
 				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help");
 			}
@@ -679,6 +679,6 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.7 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.8 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

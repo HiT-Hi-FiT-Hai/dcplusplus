@@ -130,7 +130,6 @@ void Socket::connect(const string& aip, short port) throw(SocketException) {
             throw SocketException(STRING(UNKNOWN_ADDRESS));
         }
         serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
-	
     }
 
 	setIp(inet_ntoa(serv_addr.sin_addr));
@@ -286,6 +285,6 @@ bool Socket::waitForConnect(u_int32_t millis) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.37 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.38 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

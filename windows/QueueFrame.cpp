@@ -116,7 +116,8 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	removeMenu.CreatePopupMenu();
 	pmMenu.CreatePopupMenu();
 	priorityMenu.CreatePopupMenu();
-	
+	dirMenu.CreatePopupMenu();
+
 	transferMenu.AppendMenu(MF_STRING, IDC_SEARCH_ALTERNATES, CSTRING(SEARCH_FOR_ALTERNATES));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
 	transferMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)browseMenu, CSTRING(GET_FILE_LIST));
@@ -131,6 +132,10 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_NORMAL, CSTRING(NORMAL));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGH, CSTRING(HIGH));
 	priorityMenu.AppendMenu(MF_STRING, IDC_PRIORITY_HIGHEST, CSTRING(HIGHEST));
+
+	dirMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)priorityMenu, CSTRING(SET_PRIORITY));
+	dirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
+	dirMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	SetWindowText(CSTRING(DOWNLOAD_QUEUE));
 
@@ -384,8 +389,8 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	// Get the bounding rectangle of the client area. 
 	ctrlQueue.GetClientRect(&rc);
 	ctrlQueue.ScreenToClient(&pt); 
-	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) 
-	{ 
+	if (PtInRect(&rc, pt) && ctrlQueue.GetSelectedCount() > 0) { 
+		usingDirMenu = false;
 		CMenuItemInfo mi;
 		
 		while(browseMenu.GetMenuItemCount() > 0) {
@@ -432,6 +437,20 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 		return TRUE; 
 	}
+
+	ctrlQueue.ClientToScreen(&pt);
+
+	ctrlDirectories.GetClientRect(&rc);
+	ctrlDirectories.ScreenToClient(&pt);
+
+	if (PtInRect(&rc, pt) && ctrlDirectories.GetSelectedCount() == 1) { 
+		usingDirMenu = true;
+		ctrlDirectories.ClientToScreen(&pt);
+		dirMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	
+		return TRUE;
+	}
+
 	return FALSE; 
 }
 
@@ -525,21 +544,38 @@ LRESULT QueueFrame::onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 }
 	
 LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	int i = -1;
-	while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		QueueItem::Priority p;
-		
-		switch(wID) {
+	QueueItem::Priority p;
+
+	switch(wID) {
 		case IDC_PRIORITY_PAUSED: p = QueueItem::PAUSED; break;
 		case IDC_PRIORITY_LOWEST: p = QueueItem::LOWEST; break;
 		case IDC_PRIORITY_LOW: p = QueueItem::LOW; break;
 		case IDC_PRIORITY_NORMAL: p = QueueItem::NORMAL; break;
 		case IDC_PRIORITY_HIGH: p = QueueItem::HIGH; break;
 		case IDC_PRIORITY_HIGHEST: p = QueueItem::HIGHEST; break;
-		default: p = QueueItem::NORMAL; break;
-		}
-		QueueManager::getInstance()->setPriority(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget(), p);
+		default: p = QueueItem::DEFAULT; break;
 	}
+
+	if(usingDirMenu) {
+		if(ctrlDirectories.GetSelectedCount() != 1) {
+			return 0;
+		}
+		int n = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED);
+		char* buf = new char[MAX_PATH];
+		ctrlDirectories.GetItemText(n, 0, buf, MAX_PATH-1);
+		DirectoryPair dp = directories.equal_range(buf);
+		delete buf;
+
+		for(DirectoryIter i = dp.first; i != dp.second; ++i) {
+			QueueManager::getInstance()->setPriority(i->second->getTarget(), p);
+		}
+	} else {
+		int i = -1;
+		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			QueueManager::getInstance()->setPriority(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget(), p);
+		}
+	}
+
 	return 0;
 }
 
@@ -632,7 +668,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.8 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
  */
 
 

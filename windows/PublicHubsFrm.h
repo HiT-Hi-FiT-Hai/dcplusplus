@@ -186,6 +186,5 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.4 2002/05/18 11:20:37 arnetheduck Exp $
  */
-

@@ -4,7 +4,8 @@ How to compile in 4 easy steps:
 2) Make sure you have stlport 4.5.3 installed and that it's included _before_ the standard vc directories
 3) Make sure you have a fairly recent platform sdk (I'm currently using the November 2001 release)
    The sdk is freely available from ms: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
-   Make sure that this sdk is include _before_ the standard vc directories.
+   You need the core sdk at least (not the 64-bit edition...)
+   Make sure that this sdk is included _before_ the standard vc directories.
 4) Open the project workspace and press your build button.
 
 Note; you'll probably get a tonne of warnings, ignore those, it's a bug in the compiler...

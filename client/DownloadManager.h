@@ -121,7 +121,7 @@ public:
 		int avg = 0;
 		for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 			Download* d = *i;
-			avg += (int)d->getAverageSpeed();
+			avg += (int)d->getRunningAverage();
 		}
 		return avg;
 	}
@@ -207,5 +207,5 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.41 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.42 2002/05/18 11:20:36 arnetheduck Exp $
  */

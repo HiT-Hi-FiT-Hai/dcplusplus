@@ -277,6 +277,9 @@ void ConnectionManager::onIncomingConnection() throw() {
 }
 
 void ConnectionManager::connect(const string& aServer, short aPort, const string& aNick) {
+	if(shuttingDown)
+		return;
+
 	UserConnection* c = getConnection();
 	c->setNick(aNick);
 	c->setState(UserConnection::STATE_CONNECT);
@@ -495,5 +498,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.44 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.45 2002/05/18 11:20:36 arnetheduck Exp $
  */

@@ -158,6 +158,10 @@ SOURCE=.\res\PublicHubs.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\Queue.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\Search.ico
 # End Source File
 # Begin Source File

@@ -204,6 +204,28 @@ public:
 		}
 		return Util::emptyString;
 	}
+
+	static string resolve(const string& aDns) {
+		sockaddr_in sock_addr;
+
+		memset(&sock_addr, 0, sizeof(sock_addr));
+		sock_addr.sin_port = 0;
+		sock_addr.sin_family = AF_INET;
+		sock_addr.sin_addr.s_addr = inet_addr(aDns.c_str());
+	
+		if (sock_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
+			hostent* host;
+			host = gethostbyname(aDns.c_str());
+			if (host == NULL) {
+				return Util::emptyString;
+			}
+			sock_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+			return inet_ntoa(sock_addr.sin_addr);
+		} else {
+			return aDns;
+		}
+	}
+
 	static void resetStats() { stats.up = stats.down = 0; };
 	static u_int32_t getDown() { return stats.down; };
 	static u_int32_t getUp() { return stats.up; };
@@ -235,6 +257,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.34 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: Socket.h,v 1.35 2002/05/18 11:20:37 arnetheduck Exp $
  */
 

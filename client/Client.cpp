@@ -110,14 +110,15 @@ void Client::onLine(const string& aLine) throw() {
 			seekers.push_back(make_pair(seeker, tick));
 
 			// First, check if it's a flooder
-			for(FloodIter i = flooders.begin(); i != flooders.end(); ++i) {
+			FloodIter i;
+			for(i = flooders.begin(); i != flooders.end(); ++i) {
 				if(i->first == seeker) {
 					return;
 				}
 			}
 
 			int count = 0;
-			for(FloodIter i = seekers.begin(); i != seekers.end(); ++i) {
+			for(i = seekers.begin(); i != seekers.end(); ++i) {
 				if(i->first == seeker)
 					count++;
 
@@ -449,8 +450,9 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 		tmp[i] = '$';
 	}
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		buf = new char[SETTING(SERVER).length() + aString.length() + 64];
-		sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", SETTING(SERVER).c_str(), SETTING(PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		string x = Socket::resolve(SETTING(SERVER));
+		buf = new char[x.length() + aString.length() + 64];
+		sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getNick().length() + aString.length() + 64];
 		sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
@@ -461,6 +463,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.43 2002/05/12 21:54:07 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.44 2002/05/18 11:20:36 arnetheduck Exp $
  */
 
