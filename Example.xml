@@ -161,7 +161,6 @@
 		<String Name="MagnetDlgTextGood">DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?</String>
 		<String Name="MagnetDlgTitle">MAGNET Link detected</String>
 		<String Name="MagnetHandlerDesc">Download files from the Direct Connect network</String>
-		<String Name="MagnetHandlerNotFound">Magnet-Handler was not detected.  Please install it from: http://sf.net/projects/magnethandler/</String>
 		<String Name="MagnetHandlerRoot">DC++</String>
 		<String Name="MagnetShellDesc">URL:MAGNET URI</String>
 		<String Name="ManualAddress">Manual connect address</String>

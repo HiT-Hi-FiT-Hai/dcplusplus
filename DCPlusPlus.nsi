@@ -48,6 +48,7 @@ no_backup:
   File "ChangeLog.txt"
   File "Example.xml"
   File "License.txt"
+  File "Magnet.exe"
   ; Write the installation path into the registry
   WriteRegStr HKLM SOFTWARE\DC++ "Install_Dir" "$INSTDIR"
   ; Write the uninstall keys for Windows
@@ -94,6 +95,7 @@ Section "un.Uninstall"
   Delete "$INSTDIR\ChangeLog.txt"
   Delete "$INSTDIR\ReadMe.txt"
   Delete "$INSTDIR\Example.xml"
+  Delete "$INSTDIR\Magnet.exe"
   Delete "$INSTDIR\GeoIPCountryWhois.csv"
 
   ; Remove registry entries

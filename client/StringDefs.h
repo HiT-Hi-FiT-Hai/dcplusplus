@@ -165,7 +165,6 @@ enum Strings { // @DontAdd
 	MAGNET_DLG_TEXT_GOOD, // "DC++ has detected a MAGNET link with a file hash that can be searched for on the Direct Connect network.  What would you like to do?"
 	MAGNET_DLG_TITLE, // "MAGNET Link detected"
 	MAGNET_HANDLER_DESC, // "Download files from the Direct Connect network"
-	MAGNET_HANDLER_NOT_FOUND, // "Magnet-Handler was not detected.  Please install it from: http://sf.net/projects/magnethandler/"
 	MAGNET_HANDLER_ROOT, // "DC++"
 	MAGNET_SHELL_DESC, // "URL:MAGNET URI"
 	MANUAL_ADDRESS, // "Manual connect address"

@@ -19,6 +19,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+Magnet.exe is licensed under the Apache License.
+Full license text: http://www.apache.org/licenses/LICENSE-2.0
+Project Home Page: http://sourceforge.net/projects/magnethandler
+
 --------------------------------------------------
 
 This Readme will give you a quick startup guide and explain some features
@@ -273,10 +278,10 @@ suggesting and testing of the enhanced auto search in the first place.
 ------------------------
   * Homepage                  @ http://dcplusplus.sourceforge.net
   * Forum                     @ http://dcplusplus.sourceforge.net/forum
-  * Report bugs               @ http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse
-  * Request features          @ http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse
-  * Download language files   @ http://dcplusplus.sourceforge.net/index.php?page=download
-  * Get newest version        @ http://dcplusplus.sourceforge.net/index.php?page=download
+  * Report bugs               @ http://dcplusplus.sourceforge.net/bugs
+  * Request features          @ http://dcplusplus.sourceforge.net/bugs
+  * Download language files   @ http://sourceforge.net/tracker/?atid=460289&group_id=40287&func=browse
+  * Get newest version        @ http://dcplusplus.sourceforge.net/index.php?t=2&s=1
   * Typos and errors in readme go to Fireball@enLightning.de
 
 11 Have fun

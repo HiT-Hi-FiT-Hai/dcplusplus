@@ -201,7 +201,7 @@ public:
 				// Bingo, this was clicked
 				HWND hWnd = GetParent();
 				if(hWnd) {
-					if(wParam & MK_SHIFT) 
+					if(wParam & MK_SHIFT)
 						::SendMessage(t->hWnd, WM_CLOSE, 0, 0);
 					else 
 						moving = t;
@@ -213,28 +213,30 @@ public:
 	}
 
 	LRESULT onLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		int xPos = GET_X_LPARAM(lParam); 
-		int yPos = GET_Y_LPARAM(lParam); 
-		int row = getRows() - ((yPos / getTabHeight()) + 1);
+		if (moving) {
+			int xPos = GET_X_LPARAM(lParam); 
+			int yPos = GET_Y_LPARAM(lParam); 
+			int row = getRows() - ((yPos / getTabHeight()) + 1);
 
-		for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
-			TabInfo* t = *i;
-			if((row == t->row) && (xPos >= t->xpos) && (xPos < (t->xpos + t->getWidth())) ) {
-				// Bingo, this was clicked
-				HWND hWnd = GetParent();
-				if(hWnd) {
-					if(t == moving) 
-						::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
-					else{
-						//check if the pointer is on the left or right half of the tab
-						//to determine where to insert the tab
-						moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
+			for(TabInfo::ListIter i = tabs.begin(); i != tabs.end(); ++i) {
+				TabInfo* t = *i;
+				if((row == t->row) && (xPos >= t->xpos) && (xPos < (t->xpos + t->getWidth())) ) {
+					// Bingo, this was clicked
+					HWND hWnd = GetParent();
+					if(hWnd) {
+						if(t == moving) 
+							::SendMessage(hWnd, FTM_SELECTED, (WPARAM)t->hWnd, 0);
+						else{
+							//check if the pointer is on the left or right half of the tab
+							//to determine where to insert the tab
+							moveTabs(t, xPos > (t->xpos + (t->getWidth()/2)));
+						}
 					}
+					break;
 				}
-				break;
 			}
+			moving = NULL;
 		}
-
 		return 0;
 	}
 
@@ -633,7 +635,7 @@ public:
 
  	typedef MDITabChildWindowImpl<T, C, TBase, TWinTraits> thisClass;
 	typedef CMDIChildWindowImpl<T, TBase, TWinTraits> baseClass;
-	BEGIN_MSG_MAP(thisClass>)
+	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
 		MESSAGE_HANDLER(WM_SYSCOMMAND, onSysCommand)
 		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
@@ -810,5 +812,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.30 2004/07/26 20:01:22 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.31 2004/08/07 09:36:05 arnetheduck Exp $
  */

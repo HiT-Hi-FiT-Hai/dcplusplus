@@ -613,12 +613,6 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 }
 
  void WinUtil::registerMagnetHandler() {
-	// @ = DC++
-	// Description = Download files from the Direct Connect network
-	// DefaultIcon = \"getAppName()\"
-	// ShellExecute = \"getAppName()\" "%URL"
-	//  Type\urn:bitprint = DWORD:0000
-	//  Type\urn:tree:tiger = DWORD:0000
 	HKEY hk;
 	char buf[512];
 	string openCmd, magnetLoc, magnetExe;
@@ -649,7 +643,6 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 		magnetExe = Util::getAppPath() + "magnet.exe";
 		if(File::getSize(magnetExe) == -1) {
 			// gracefully fall back to registering DC++ to handle magnets
-			LogManager::getInstance()->message(STRING(MAGNET_HANDLER_NOT_FOUND));
 			magnetExe = Util::getAppName();
 			haveMagnet = false;
 		} else {
@@ -690,12 +683,16 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 	::RegSetValueEx(hk, "DefaultIcon", NULL, REG_SZ, (LPBYTE)app.c_str(), app.length()+1);
 	::RegCloseKey(hk);
 
-	// these two types contain a tth root, and are in common use.  Shareaza's source has a couple more
-	// but I have never actually seen them.  thus, they don't exist.  -GargoyleMT
+	// These two types contain a tth root, and are in common use.  The other two are variations picked up
+	// from Shareaza's source, which come second hand from Gordon Mohr.  -GargoyleMT
+	// Reference: http://forums.shareaza.com/showthread.php?threadid=23731
+	// Note: the three part hash types require magnethandler >= 1.0.0.3
 	DWORD nothing = 0;
 	::RegCreateKey(HKEY_LOCAL_MACHINE, "SOFTWARE\\Magnet\\Handlers\\DC++\\Type", &hk);
-	::RegSetValueEx(hk, "urn:tree:tiger", NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegSetValueEx(hk, "urn:bitprint", NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
+	::RegSetValueEx(hk, "urn:tree:tiger", NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
+	::RegSetValueEx(hk, "urn:tree:tiger/", NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
+	::RegSetValueEx(hk, "urn:tree:tiger/1024", NULL, REG_DWORD, (LPBYTE)&nothing, sizeof(nothing));
 	::RegCloseKey(hk);
 }
 
@@ -804,6 +801,10 @@ void WinUtil::parseMagnetUri(const string& aUrl, bool /*aOverride*/) {
 				hashes[type] = param.substr(46);
 			} else if(param.length() == 54 && Util::strnicmp(param.c_str(), "urn:tree:tiger:", 15) == 0) {
 				hashes[type] = param.substr(15);
+			} else if(param.length() == 55 && Util::strnicmp(param.c_str(), "urn:tree:tiger/:", 16) == 0) {
+				hashes[type] = param.substr(16);
+			} else if(param.length() == 59 && Util::strnicmp(param.c_str(), "urn:tree:tiger/1024:", 20) == 0) {
+				hashes[type] = param.substr(20);
 			} else if(type.length() == 2 && Util::strnicmp(type.c_str(), "dn", 2) == 0) {
 				fname = param;
 			}
@@ -884,5 +885,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.49 2004/08/02 15:29:19 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.50 2004/08/07 09:36:05 arnetheduck Exp $
  */

@@ -48,7 +48,9 @@
 * Allowed sharing of network folders (thanks garg)
 * Added option to automatically add finished files to share without refresh (thanks farcry)
 * Fixed a few closing window crashes (thanks farcry)
-
+* Fixed a tab moving issue (thanks farcry)
+* Sources with rollback errors are now automatically removed (thanks garg)
+* Fixed compile.txt and readme.txt (thanks garg)
 
  -- 0.403 2004-06-27 --
 * Fixed 100% cpu / crash bug

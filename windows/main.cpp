@@ -284,7 +284,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		HWND hOther = NULL;
 		EnumWindows(searchOtherInstance, (LPARAM)&hOther);
 
+#ifndef _DEBUG
 		if( hOther != NULL ) {
+#else
+		if( hOther != NULL && strlen(lpstrCmdLine) > 0 ) {
+#endif
 			// pop up
 			::SetForegroundWindow(hOther);
 
@@ -346,5 +350,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.26 2004/08/02 14:20:17 arnetheduck Exp $
+ * $Id: main.cpp,v 1.27 2004/08/07 09:36:05 arnetheduck Exp $
  */
