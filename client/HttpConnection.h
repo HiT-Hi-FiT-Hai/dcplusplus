@@ -67,7 +67,7 @@ private:
 	string file;
 	string server;
 	bool ok;
-	short port;
+	u_int16_t port;
 	int64_t size;
 	bool moved302;
 
@@ -89,6 +89,6 @@ private:
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.22 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.23 2005/01/01 18:09:54 arnetheduck Exp $
  */
 

@@ -39,8 +39,8 @@ const string SettingsManager::settingTags[] =
 	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
-	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", "LogFormatSystem", 
-	"LogFormatStatus",
+	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
+	"LogFormatSystem", "LogFormatStatus",
 	"SENTRY", 
 	// Ints
 	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch",
@@ -59,7 +59,7 @@ const string SettingsManager::settingTags[] =
 	"GetUserCountry", "FavShowJoins", "LogStatusMessages", "ShowStatusbar",
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
-	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", 
+	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -187,6 +187,7 @@ SettingsManager::SettingsManager()
 	setDefault(SETTINGS_OPEN_NEW_WINDOW, false);
 	setDefault(SEARCH_ONLY_TTH, false);
 	setDefault(SHOW_LAST_LINES_LOG, 0);
+	setDefault(CONFIRM_ITEM_REMOVAL, 0);
 
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -338,6 +339,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.103 2004/12/29 19:52:34 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.104 2005/01/01 18:09:54 arnetheduck Exp $
  */
 

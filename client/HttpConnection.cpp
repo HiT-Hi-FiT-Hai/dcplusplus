@@ -79,7 +79,8 @@ void HttpConnection::on(BufferedSocketListener::Connected) throw() {
 	string sRemoteServer = server; 
 	if(!SETTING(HTTP_PROXY).empty()) 
 	{ 
-		string tfile;short tport; 
+		string tfile;
+		u_int16_t tport; 
 		Util::decodeUrl(file, sRemoteServer, tport, tfile); 
 	} 
 	socket->write("Host: " + sRemoteServer + "\r\n"); 
@@ -157,6 +158,6 @@ void HttpConnection::on(BufferedSocketListener::Data, u_int8_t* aBuf, size_t aLe
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.27 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.28 2005/01/01 18:09:54 arnetheduck Exp $
  */
 

@@ -403,7 +403,8 @@ private:
 	}
 
 	void removeSelected() {
-		ctrlQueue.forEachSelected(&QueueItemInfo::remove);
+		if(!BOOLSETTING(CONFIRM_ITEM_REMOVAL) || MessageBox(CTSTRING(REALLY_REMOVE), _T("Really remove?"), MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
+			ctrlQueue.forEachSelected(&QueueItemInfo::remove);
 	}
 	
 	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };
@@ -426,5 +427,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.46 2004/12/28 17:34:40 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.47 2005/01/01 18:09:48 arnetheduck Exp $
  */

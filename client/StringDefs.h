@@ -359,6 +359,7 @@ enum Strings { // @DontAdd
 	SETTINGS_CONFIGURE_HUB_LISTS, // "Configure Public Hub Lists"
 	SETTINGS_CONFIRM_EXIT, // "Confirm application exit"
 	SETTINGS_CONFIRM_HUB_REMOVAL, // "Confirm favorite hub removal"
+	SETTINGS_CONFIRM_ITEM_REMOVAL, // "Confirm item removal in download queue"
 	SETTINGS_CONNECTION_SETTINGS, // "Connection Settings (see the help file if unsure)"
 	SETTINGS_CONNECTION_TYPE, // "Connection Type"
 	SETTINGS_DEFAULT_AWAY_MSG, // "Default away message"

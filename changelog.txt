@@ -25,6 +25,8 @@
 * Added "restore all" to undo "minimize all" (thanks guitarm)
 * Added optional pm history (thanks trem and ullner)
 * Better log file managment (thanks trem)
+* Fixed a queue count issue on removal (thanks ullner)
+* Fixed a queue move issue (thanks paka)
 
 -- 0.668 2004-11-30 --
 * [bug 311] Fixed crash on open own filelist (thanks sulan)

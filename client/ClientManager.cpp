@@ -115,7 +115,7 @@ void ClientManager::on(NmdcSearch, Client* aClient, const string& aSeeker, int a
 		} else {
 			try {
 				string ip, file;
-				short port = 0;
+				u_int16_t port = 0;
 				Util::decodeUrl(aSeeker, ip, port, file);
 				ip = Socket::resolve(ip);
 				if(port == 0) port = 412;
@@ -352,5 +352,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.64 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.65 2005/01/01 18:09:54 arnetheduck Exp $
  */

@@ -45,7 +45,7 @@ faq_slowdownload.html
 
 [ALIAS]
 IDC_HELP_CHANGELOG=changelog.html
-IDD_ADVANCED2PAGE=settings_logs.html
+IDD_LOGPAGE=settings_logs.html
 IDD_ADVANCEDPAGE=settings_advanced.html
 IDD_APPEARANCEPAGE=settings_appearance.html
 IDD_APPEARANCE2PAGE=settings_colors_and_sounds.html

@@ -181,7 +181,7 @@ private:
 
 	string address;
 	string addressPort;
-	short port;
+	u_int16_t port;
 
 	CountType countType;
 
@@ -195,5 +195,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.94 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: Client.h,v 1.95 2005/01/01 18:09:54 arnetheduck Exp $
  */

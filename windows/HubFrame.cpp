@@ -958,7 +958,7 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	
 	if(!redirect.empty()) {
 		string s, f;
-		short p = 411;
+		u_int16_t p = 411;
 		Util::decodeUrl(Text::fromT(redirect), s, p, f);
 		if(ClientManager::getInstance()->isConnected(s, p)) {
 			addClientLine(TSTRING(REDIRECT_ALREADY_CONNECTED));
@@ -1081,7 +1081,7 @@ void HubFrame::on(UserRemoved, Client*, const User::Ptr& user) throw() {
 
 void HubFrame::on(Redirect, Client*, const string& line) throw() { 
 	string s, f;
-	short p = 411;
+	u_int16_t p = 411;
 	Util::decodeUrl(line, s, p, f);
 	if(ClientManager::getInstance()->isConnected(s, p)) {
 		speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
@@ -1131,5 +1131,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.93 2004/12/29 19:52:36 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.94 2005/01/01 18:09:48 arnetheduck Exp $
  */

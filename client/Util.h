@@ -279,7 +279,7 @@ public:
 		return (j != wstring::npos) ? path.substr(j+1, i-j-1) : path;
 	}
 
-	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
+	static void decodeUrl(const string& aUrl, string& aServer, u_int16_t& aPort, string& aFile);
 	static string validateFileName(string aFile);
 	
 	static string formatBytes(const string& aString) {
@@ -594,5 +594,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.114 2004/12/29 20:00:02 arnetheduck Exp $
+ * $Id: Util.h,v 1.115 2005/01/01 18:09:53 arnetheduck Exp $
  */

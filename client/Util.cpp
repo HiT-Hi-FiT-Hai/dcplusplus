@@ -281,7 +281,7 @@ string Util::getShortTimeString() {
  * http:// -> port 80
  * dchub:// -> port 411
  */
-void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& aFile) {
+void Util::decodeUrl(const string& url, string& aServer, u_int16_t& aPort, string& aFile) {
 	// First, check for a protocol: xxxx://
 	string::size_type i = 0, j, k;
 	
@@ -889,6 +889,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.78 2004/12/17 15:11:52 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.79 2005/01/01 18:09:54 arnetheduck Exp $
  */
 

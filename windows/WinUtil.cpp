@@ -861,7 +861,7 @@ void WinUtil::openLink(const tstring& url) {
 
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
-	short port = 411;
+	u_int16_t port = 411;
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
 		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
@@ -879,7 +879,7 @@ void WinUtil::parseDchubUrl(const tstring& aUrl) {
 
 void WinUtil::parseADChubUrl(const tstring& aUrl) {
 	string server, file;
-	short port = -1; //make sure we get a port since adc doesn't have a standard one
+	u_int16_t port = 0; //make sure we get a port since adc doesn't have a standard one
 	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty() && port > 0) {
 		HubFrame::openWindow(Text::toT("adc://" + server + ":" + Util::toString(port)));
@@ -1044,5 +1044,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.72 2004/12/28 17:34:40 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.73 2005/01/01 18:09:48 arnetheduck Exp $
  */
