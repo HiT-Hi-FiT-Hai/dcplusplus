@@ -53,7 +53,7 @@ public:
 	 * @param aName Virtual name
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
-	void removeDirectory(const string& aName);	
+	void removeDirectory(const string& aName, bool duringRefresh = false);	
 	string translateFileName(const string& aFile, bool adc) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { xmlDirty = nmdcDirty = true; };
@@ -283,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.57 2004/09/21 08:19:55 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.58 2004/10/01 22:45:03 arnetheduck Exp $
  */
 

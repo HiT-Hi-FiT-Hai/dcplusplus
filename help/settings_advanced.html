@@ -27,7 +27,7 @@ right of the tab control. (default: 2)</dd>
 <h2>Boolean Options</h2>
 <div style="margin-left: 40px;">
 <dl>
-  <dt>Auto-away on Minimize</dt>
+  <dt><a name="#autoaway"></a>Auto-away on Minimize</dt>
   <dd>Switch to away mode whenever the client is minimized (and to back
 whenever restored).</dd>
   <dt>Automatically Follow Redirects</dt>
@@ -122,7 +122,7 @@ being out of date, but for users on slow connections, keeping file
 lists can save time. <em>Since the file list isn't curent, don't be
 surprised if the files you enqueue to download have been removed by the
 user, or moved.</em></dd>
-  <dt>Automatically Disconnect Users Who Leave the Hub</dt>
+  <dt><a name="#disconnect"></a>Automatically Disconnect Users Who Leave the Hub</dt>
   <dd>The Direct Connect spirit is all about sharing. You are only
 sharing when you are connected to one or more hubs. In the past, users
 of questionable integrity and spirit logged onto a hub, selected a
@@ -135,7 +135,7 @@ might have opened up another slot for another user in the mean time.
 This could cause a situation where you have way more upload slots in
 use than you selected in the settings. Also, if you quit the hub,
 people downloading from you will not be disconnected.</em></dd>
-  <dt>Show Progress Bars for Transfers</dt>
+  <dt><a name="#progressbar"></a>Show Progress Bars for Transfers</dt>
   <dd>Enable this if you have CPU cycles to spare, and you will get
 colored progress bars in the Transfer View.</dd>
   <dt>Enable Automatic SFV Checking</dt>
@@ -152,7 +152,7 @@ with your current share. <span style="font-style: italic;">Disabling
 this option is really only needed for really large shares where
 refreshing takes so much time that the client is unusable in the mean
 time.</span></dd>
-  <dt>Use AntiFragmentation Method for Downloads</dt>
+  <dt><a id="antifrag" name="antifrag">Use AntiFragmentation Method for Downloads</a></dt>
   <dd>This option will try to reserve the full space needed for a file
 when starting the download. This should reduce the fragmentation of
 files on your hard drive. (Fragmentation is bad because reading files
@@ -207,7 +207,7 @@ you're downloading.<span style="font-style: italic;">Enable if unsure.
 The drawbacks are that it might add slower sources, possibly increasing
 the time needed to complete a download, and that you'll download a lot
 of file lists.</span></dd>
-  <dt>Log Filelist transfers</dt>
+  <dt><a name="#filelist"></a>Log Filelist transfers</dt>
   <dd>Add successful file lists transfers&nbsp;to your upload and
 download logs. Otherwise only transferred files are logged. <em>Enabled
 by default.</em></dd>

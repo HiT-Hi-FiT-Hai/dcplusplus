@@ -323,7 +323,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	}
 }
 
-void ShareManager::removeDirectory(const string& aDirectory) {
+void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh) {
 	WLock l(cs);
 
 	string d(aDirectory);
@@ -344,7 +344,8 @@ void ShareManager::removeDirectory(const string& aDirectory) {
 		}
 	}
 
-	HashManager::getInstance()->stopHashing(d);
+	if(!duringRefresh)
+		HashManager::getInstance()->stopHashing(d);
 
 	setDirty();
 }
@@ -606,7 +607,7 @@ int ShareManager::run() {
 				WLock l(cs);
 				StringPairList dirs = virtualMap;
 				for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
-					removeDirectory(i->second);
+					removeDirectory(i->second, true);
 				}
 				bloom.clear();
 
@@ -1252,6 +1253,7 @@ void ShareManager::on(HashManagerListener::TTHDone, const string& fname, TTHValu
 			Directory::File::Iter it = d->files.insert(Directory::File(name, size, d, root)).first;
 			addFile(d, it);
 		}
+		setDirty();
 	}
 }
 
@@ -1268,6 +1270,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.104 2004/09/26 18:54:08 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.105 2004/10/01 22:45:03 arnetheduck Exp $
  */
 

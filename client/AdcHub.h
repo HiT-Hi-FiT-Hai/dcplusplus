@@ -29,6 +29,7 @@ class AdcHub : public Client, CommandHandler<AdcHub> {
 public:
 
 	virtual void connect(const User* user);
+	virtual void disconnect();
 	
 	virtual void hubMessage(const string& aMessage);
 	virtual void privateMessage(const User* user, const string& aMessage);
@@ -64,6 +65,13 @@ public:
 private:
 	friend class ClientManager;
 
+	enum States {
+		STATE_PROTOCOL,
+		STATE_IDENTIFY,
+		STATE_VERIFY,
+		STATE_NORMAL
+	} state;
+
 	AdcHub(const string& aHubURL);
 
 	AdcHub(const AdcHub&);
@@ -86,5 +94,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.11 2004/09/27 16:58:29 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.12 2004/10/01 22:45:03 arnetheduck Exp $
  */

@@ -1,4 +1,9 @@
-﻿-- 0.4033 --
+﻿-- 0.4034 --
+* Help file additions (thanks naga & ullner)
+* Fixed a few issues with files not being hashed correctly (thanks garg)
+* More ADC fixes (thanks sed)
+
+-- 0.4033 2004-09-27 --
 *** WARNING *** 
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version
