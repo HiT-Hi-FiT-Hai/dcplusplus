@@ -40,6 +40,7 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 			throw ShareException("File Not Available");
 		
 		string aDir = aFile.substr(0, i);
+
 		StringMapIter j = dirs.find(aDir);
 		if(j == dirs.end()) {
 			throw ShareException("File Not Available");
@@ -53,6 +54,10 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 		if(Util::findSubString(aFile, "DCPlusPlus.xml") != string::npos) {
 			throw ShareException("Don't think so");
 		}
+
+		if(!checkFile(j->second, aFile.substr(i + 1))) {
+			throw ShareException("File Not Available");
+		}
 		
 		return j->second + aFile.substr(i);
 	}
@@ -60,6 +65,34 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	throw ShareException("File Not Available");
 }
 
+bool ShareManager::checkFile(const string& dir, const string& aFile) {
+	Lock l(cs);
+
+	string::size_type i = 0;
+
+	Directory::MapIter mi = directories.find(dir);
+	if(mi == directories.end())
+		return false;
+	Directory* d = mi->second;
+	string aDir;
+
+	int j = 0;
+	while( (i = aFile.find('\\', j)) != string::npos) {
+		aDir = aFile.substr(j, i-j);
+		j = i + 1;
+		mi = d->directories.find(aDir);
+		if(mi == d->directories.end())
+			return false;
+		d = mi->second;
+
+		j = i + 1;
+	}
+	aDir = aFile.substr(j);
+	if(d->files.find(aDir) == d->files.end())
+		return false;
+
+	return true;
+}
 void ShareManager::load(SimpleXML* aXml) {
 	Lock l(cs);
 
@@ -332,9 +365,12 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.21 2002/01/26 16:34:01 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.22 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.cpp,v $
+ * Revision 1.22  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.21  2002/01/26 16:34:01  arnetheduck
  * Colors dialog added, as well as some other options
  *

@@ -50,6 +50,7 @@ IDB_FOLDERS             BITMAP  DISCARDABLE     "res\\folders.bmp"
 IDB_ARROWS              BITMAP  DISCARDABLE     "res\\arrows.bmp"
 IDB_USERS               BITMAP  DISCARDABLE     "res\\users.bmp"
 IDB_TOOLBAR             BITMAP  DISCARDABLE     "res\\toolbar.bmp"
+IDB_TOOLBAR20           BITMAP  DISCARDABLE     "res\\toolbar20.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -314,6 +315,7 @@ IDR_FAVORITES           ICON    DISCARDABLE     "res\\Favorites.ico"
 IDR_PRIVATE             ICON    DISCARDABLE     "res\\User.ico"
 IDR_DIRECTORY           ICON    DISCARDABLE     "res\\Directory.ico"
 IDR_HUB                 ICON    DISCARDABLE     "res\\Hub.ico"
+IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -428,8 +430,8 @@ STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Appearance"
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "Select window color",IDC_SELWINCOLOR,17,17,68,14
-    PUSHBUTTON      "Select text color",IDC_SELTEXTCOLOR,16,35,68,14
+    PUSHBUTTON      "Select window color",IDC_SELWINCOLOR,16,17,68,14
+    PUSHBUTTON      "Select text style",IDC_SELTEXT,16,35,68,14
     GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
     LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
                     SS_SUNKEN | WS_BORDER | NOT WS_GROUP
@@ -660,6 +662,11 @@ BEGIN
     IDR_SEARCH              "Search"
     IDR_FAVORITES           "Favorites"
     IDR_NOTEPAD             "Notepad"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDC_NOTEPAD             "Open a notepad window where you can save short messages\nNotepad"
 END
 
 #endif    // English (U.S.) resources

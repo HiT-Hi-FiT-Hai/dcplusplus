@@ -64,6 +64,8 @@ public:
 		MESSAGE_HANDLER(WM_ENTER, onEnter)
 		MESSAGE_HANDLER(WM_TAB, onTab)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		NOTIFY_HANDLER(IDC_RESULTS, NM_DBLCLK, onDoubleClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
@@ -91,6 +93,18 @@ public:
 			return 1;
 		}
 	}
+
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlSearch.m_hWnd || hWnd == ctrlSize.m_hWnd || hWnd == ctrlSizeMode.m_hWnd || hWnd == ctrlMode.m_hWnd) {
+			::SetBkColor(hDC, Util::bgColor);
+			::SetTextColor(hDC, Util::textColor);
+			return (LRESULT)Util::bgBrush;
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
 
 	LRESULT onColumnClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
@@ -355,9 +369,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.23 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.24 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.24  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.23  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

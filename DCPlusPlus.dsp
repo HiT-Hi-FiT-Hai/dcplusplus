@@ -544,6 +544,10 @@ SOURCE=.\res\mdichild.bmp
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\notepad.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\PublicHubs.ico
 # End Source File
 # Begin Source File
@@ -553,6 +557,10 @@ SOURCE=.\res\Search.ico
 # Begin Source File
 
 SOURCE=.\res\toolbar.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\toolbar20.bmp
 # End Source File
 # Begin Source File
 

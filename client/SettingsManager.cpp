@@ -24,6 +24,7 @@
 #include "DownloadManager.h"
 #include "HubManager.h"
 #include "NotepadFrame.h"
+#include "Util.h"
 
 SettingsManager* SettingsManager::instance = 0;
 
@@ -31,7 +32,7 @@ char const* SettingsManager::settingTags[] =
 {
 	// Strings
 	"Connection", "Description", "DownloadDirectory", "EMail", "Nick", "Server",
-	"ClientVersion", "SENTRY", 
+	"ClientVersion", "Font", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
 	"BackgroundColor", "TextColor", "ShareHidden",
@@ -63,6 +64,9 @@ SettingsManager::SettingsManager()
 	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	setDefault(SHARE_HIDDEN, false);
 
+	LOGFONT lf;
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
+	setDefault(TEXT_FONT, Util::encodeFont(lf));			
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -197,9 +201,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.11 2002/01/26 16:34:01 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.12 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.12  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.11  2002/01/26 16:34:01  arnetheduck
  * Colors dialog added, as well as some other options
  *

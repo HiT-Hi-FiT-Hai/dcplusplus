@@ -31,12 +31,12 @@ public:
 	BEGIN_MSG_MAP(PropPage1)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
-		COMMAND_HANDLER(IDC_SELTEXTCOLOR, BN_CLICKED, onClickedColor)
+		COMMAND_HANDLER(IDC_SELTEXT, BN_CLICKED, onClickedText)
 		COMMAND_HANDLER(IDC_SELWINCOLOR, BN_CLICKED, onClickedBackground)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
-	LRESULT onClickedColor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onCtlColor(UINT, WPARAM, LPARAM, BOOL&);
 
@@ -45,19 +45,27 @@ public:
 	virtual void write();
 
 protected:
+	string EncodeFont(LOGFONT const& font);
+	void DecodeFont(string setting, LOGFONT &dest);
+
 	static Item items[];
 	CStatic ctrlExample;
 	COLORREF fg, bg;
 	HBRUSH bgbrush;
+	HFONT fontObj;
+	LOGFONT font;
 };
 
 #endif //APPEARANCEPAGE_H
 
 /**
  * @file AppearancePage.h
- * $Id: AppearancePage.h,v 1.1 2002/01/26 16:34:00 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.h,v $
+ * Revision 1.2  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.1  2002/01/26 16:34:00  arnetheduck
  * Colors dialog added, as well as some other options
  *

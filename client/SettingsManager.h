@@ -33,7 +33,7 @@ public:
 
 	enum StrSetting { STR_FIRST,
 		CONNECTION = STR_FIRST, DESCRIPTION, DOWNLOAD_DIRECTORY, EMAIL, NICK, SERVER,
-		CLIENTVERSION, STR_LAST };
+		CLIENTVERSION, TEXT_FONT, STR_LAST };
 
 	enum IntSetting { INT_FIRST = STR_LAST + 1,
 		CONNECTION_TYPE = INT_FIRST, PORT, SLOTS, ROLLBACK, AUTO_FOLLOW, CLEAR_SEARCH, FULL_ROW_SELECT,
@@ -164,9 +164,12 @@ __inline int Setting(SettingsManager::IntSetting key, bool useDefault = true) {
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.8 2002/01/26 16:34:01 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.9 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.h,v $
+ * Revision 1.9  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.8  2002/01/26 16:34:01  arnetheduck
  * Colors dialog added, as well as some other options
  *

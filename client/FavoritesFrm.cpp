@@ -42,11 +42,15 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_HUBLIST);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
+	} else {
+		ctrlHubs.SetExtendedListViewStyle(LVS_EX_CHECKBOXES);
 	}
 	
-	ctrlHubs.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_CHECKBOXES);
-
+	ctrlHubs.SetBkColor(Util::bgColor);
+	ctrlHubs.SetTextBkColor(Util::bgColor);
+	ctrlHubs.SetTextColor(Util::textColor);
+	
 	ctrlHubs.InsertColumn(COLUMN_NAME, _T("Auto Connect / Name"), LVCFMT_LEFT, 200, COLUMN_NAME);
 	ctrlHubs.InsertColumn(COLUMN_DESCRIPTION, _T("Description"), LVCFMT_LEFT, 290, COLUMN_DESCRIPTION);
 	ctrlHubs.InsertColumn(COLUMN_NICK, _T("Nick"), LVCFMT_LEFT, 125, COLUMN_NICK);
@@ -165,9 +169,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.3 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.4 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.4  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.3  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

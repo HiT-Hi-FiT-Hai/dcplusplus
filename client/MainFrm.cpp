@@ -345,9 +345,9 @@ HWND MainFrame::createToolbar() {
 	
 	CToolBarCtrl ctrl;
 	ctrl.Create(m_hWnd, NULL, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS, 0, ATL_IDW_TOOLBAR);
-	ctrl.SetImageList(images);
+	ctrl.SetImageList(largeImages);
 	
-	TBBUTTON tb[6];
+	TBBUTTON tb[7];
 	memset(tb, 0, sizeof(tb));
 	int n = 0;
 	tb[n].iBitmap = n;
@@ -384,8 +384,16 @@ HWND MainFrame::createToolbar() {
 	tb[n].idCommand = ID_FILE_SETTINGS;
 	tb[n].fsState = TBSTATE_ENABLED;
 	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+
+	n++;
+	tb[n].iBitmap = n;
+	tb[n].idCommand = IDC_NOTEPAD;
+	tb[n].fsState = TBSTATE_ENABLED;
+	tb[n].fsStyle = TBSTYLE_BUTTON | TBSTYLE_AUTOSIZE;
+	
+	
 	ctrl.SetButtonStructSize();
-	ctrl.AddButtons(6, tb);
+	ctrl.AddButtons(7, tb);
 	
 	ctrl.AutoSize();
 
@@ -394,7 +402,35 @@ HWND MainFrame::createToolbar() {
 }
 
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		
+
+	SettingsManager::newInstance();
+	ShareManager::newInstance();
+	TimerManager::newInstance();
+	CryptoManager::newInstance();
+	SearchManager::newInstance();
+	ClientManager::newInstance();
+	ConnectionManager::newInstance();
+	DownloadManager::newInstance();
+	UploadManager::newInstance();
+	HubManager::newInstance();
+	
+	TimerManager::getInstance()->addListener(this);
+	DownloadManager::getInstance()->addListener(this);
+	UploadManager::getInstance()->addListener(this);
+	
+	SettingsManager::getInstance()->load();	
+	
+	ShareManager::getInstance()->refresh();
+	HubManager::getInstance()->refresh();
+	
+	Util::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
+	Util::textColor = SETTING(TEXT_COLOR);
+	Util::bgColor = SETTING(BACKGROUND_COLOR);
+	
+	LOGFONT lf;
+	Util::decodeFont(SETTING(TEXT_FONT), lf);
+	Util::font = ::CreateFontIndirect(&lf);
+	
 	// Set window name
 	SetWindowText(APPNAME " " VERSIONSTRING);
 
@@ -405,13 +441,16 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	m_CmdBar.AttachMenu(GetMenu());
 	// load command bar images
 	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
+	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	m_CmdBar.m_hImageList = images;
+	
 	m_CmdBar.m_arrCommand.Add(ID_FILE_CONNECT);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_RECONNECT);
 	m_CmdBar.m_arrCommand.Add(IDC_FOLLOW);
 	m_CmdBar.m_arrCommand.Add(IDC_FAVORITES);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SEARCH);
 	m_CmdBar.m_arrCommand.Add(ID_FILE_SETTINGS);
+	m_CmdBar.m_arrCommand.Add(IDC_NOTEPAD);
 	
 	// remove old menu
 	SetMenu(NULL);
@@ -438,6 +477,10 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlTransfers.InsertColumn(1, "Status", LVCFMT_LEFT, 300, 1);
 	ctrlTransfers.InsertColumn(2, "Size", LVCFMT_RIGHT, 100, 2);
 	ctrlTransfers.InsertColumn(3, "User", LVCFMT_LEFT, 200, 3);
+
+	ctrlTransfers.SetBkColor(Util::bgColor);
+	ctrlTransfers.SetTextBkColor(Util::bgColor);
+	ctrlTransfers.SetTextColor(Util::textColor);
 	
 	ctrlTransfers.SetImageList(arrows, LVSIL_SMALL);
 	
@@ -457,25 +500,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddMessageFilter(this);
 	pLoop->AddIdleHandler(this);
 
-	SettingsManager::newInstance();
-	ShareManager::newInstance();
-	TimerManager::newInstance();
-	CryptoManager::newInstance();
-	SearchManager::newInstance();
-	ClientManager::newInstance();
-	ConnectionManager::newInstance();
-	DownloadManager::newInstance();
-	UploadManager::newInstance();
-	HubManager::newInstance();
-
-	TimerManager::getInstance()->addListener(this);
-	DownloadManager::getInstance()->addListener(this);
-	UploadManager::getInstance()->addListener(this);
-
-	SettingsManager::getInstance()->load();	
-
-	ShareManager::getInstance()->refresh();
-	HubManager::getInstance()->refresh();
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
@@ -955,9 +979,12 @@ LRESULT MainFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.51 2002/01/26 14:59:22 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.52 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.52  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.51  2002/01/26 14:59:22  arnetheduck
  * Fixed disconnect crash
  *

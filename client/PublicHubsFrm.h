@@ -61,6 +61,8 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		COMMAND_HANDLER(IDC_ADD, BN_CLICKED, onAdd)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, onClickedRefresh)
 		COMMAND_HANDLER(IDC_CONNECT, BN_CLICKED, onClickedConnect)
@@ -71,7 +73,18 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
 	END_MSG_MAP()
 		
-
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlHub.m_hWnd) {
+			::SetBkColor(hDC, Util::bgColor);
+			::SetTextColor(hDC, Util::textColor);
+			return (LRESULT)Util::bgBrush;
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
+	
 	bool checkNick() {
 		if(SETTING(NICK).empty()) {
 			MessageBox("Please enter a nickname in the settings dialog!");
@@ -301,9 +314,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.14 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.15 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.15  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.14  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -48,6 +48,10 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlHubs.InsertColumn(2, _T("Users"), LVCFMT_RIGHT, 50, 2);
 	ctrlHubs.InsertColumn(3, _T("Server"), LVCFMT_LEFT, 100, 3);
 	
+	ctrlHubs.SetBkColor(Util::bgColor);
+	ctrlHubs.SetTextBkColor(Util::bgColor);
+	ctrlHubs.SetTextColor(Util::textColor);
+	
 	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
 
 	ctrlHub.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
@@ -135,17 +139,6 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 		return 0;
 
 	char buf[256];
-	
-	int i = -1;
-	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
-		string tmp = buf;
-		if(!ClientManager::getInstance()->isConnected(tmp)) {
-			HubFrame* frm = new HubFrame(buf);
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
-	}
 
 	if(ctrlHub.GetWindowTextLength() > 0) {
 		ctrlHub.GetWindowText(buf, 256);
@@ -157,7 +150,19 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 			frm->CreateEx(m_hWndMDIClient);
 		}
 		
+	} else {
+		int i = -1;
+		while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
+			string tmp = buf;
+			if(!ClientManager::getInstance()->isConnected(tmp)) {
+				HubFrame* frm = new HubFrame(buf);
+				frm->setTab(getTab());
+				frm->CreateEx(m_hWndMDIClient);
+			}
+		}
 	}
+
 	return 0;
 }
 
@@ -208,9 +213,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.15 2002/01/26 12:38:50 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.16 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.16  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.15  2002/01/26 12:38:50  arnetheduck
  * Added some user options
  *

@@ -77,6 +77,10 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlResults.InsertColumn(COLUMN_CONNECTION, _T("Connection"), LVCFMT_LEFT, 70, COLUMN_CONNECTION);
 	ctrlResults.InsertColumn(COLUMN_HUB, _T("Hub"), LVCFMT_LEFT, 150, COLUMN_HUB);
 
+	ctrlResults.SetBkColor(Util::bgColor);
+	ctrlResults.SetTextBkColor(Util::bgColor);
+	ctrlResults.SetTextColor(Util::textColor);
+	
 	SetWindowText("Search");
 
 	targetMenu.CreatePopupMenu();
@@ -376,9 +380,12 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.21 2002/01/26 14:59:23 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.22 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.22  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.21  2002/01/26 14:59:23  arnetheduck
  * Fixed disconnect crash
  *

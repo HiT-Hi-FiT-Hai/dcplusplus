@@ -20,8 +20,13 @@
 #include "DCPlusPlus.h"
 
 #include "Util.h"
+#include "StringTokenizer.h"
 
 string Util::emptyString;
+HBRUSH Util::bgBrush = NULL;
+COLORREF Util::textColor = 0;
+COLORREF Util::bgColor = 0;
+HFONT Util::font;
 
 /**
  * Decodes a URL the best it can...
@@ -67,13 +72,35 @@ void Util::decodeUrl(const string& aUrl, string& aServer, short& aPort, string& 
 	aServer = url;
 }
 
+void Util::decodeFont(const string& setting, LOGFONT &dest) {
+	StringTokenizer st(setting, ',');
+	StringList &sl = st.getTokens();
+	
+	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(dest), &dest);
+	string face;
+	if(sl.size() == 4)
+	{
+		face = sl[0];
+		dest.lfHeight = Util::toInt(sl[1]);
+		dest.lfWeight = Util::toInt(sl[2]);
+		dest.lfItalic = Util::toInt(sl[3]);
+	}
+
+	if(!face.empty()) {
+		::ZeroMemory(dest.lfFaceName, LF_FACESIZE);
+		strcpy(dest.lfFaceName, face.c_str());
+	}
+}
 
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.5 2002/01/26 16:34:01 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.6 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: Util.cpp,v $
+ * Revision 1.6  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.5  2002/01/26 16:34:01  arnetheduck
  * Colors dialog added, as well as some other options
  *

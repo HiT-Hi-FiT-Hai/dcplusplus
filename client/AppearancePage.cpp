@@ -20,6 +20,7 @@
 #include "dcplusplus.h"
 #include "AppearancePage.h"
 #include "SettingsManager.h"
+#include "StringTokenizer.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,6 +39,7 @@ AppearancePage::AppearancePage(SettingsManager *s) : PropPage(s)
 AppearancePage::~AppearancePage()
 {
 	::DeleteObject(bgbrush);
+	::DeleteObject(fontObj);
 }
 
 LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -45,11 +47,13 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	ctrlExample.Attach(GetDlgItem(IDC_COLOREXAMPLE));
 
 	PropPage::read((HWND)*this, items);
+	Util::decodeFont(SETTING(TEXT_FONT), font);
 
 	// Do specialized reading here
 	fg = SETTING(TEXT_COLOR);
 	bg = SETTING(BACKGROUND_COLOR);
 	bgbrush = ::CreateSolidBrush(bg);
+	fontObj = ::CreateFontIndirect(&font);
 	return TRUE;
 }
 
@@ -59,27 +63,36 @@ void AppearancePage::write()
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
-}
 
-LRESULT AppearancePage::onClickedColor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-	CColorDialog d(SETTING(TEXT_COLOR));
-	if(d.DoModal() == IDOK)
-	{
-		fg = d.GetColor();
-		ctrlExample.Invalidate();
-	}
-	return TRUE;
+	string f = Util::encodeFont(font);
+	settings->set(SettingsManager::TEXT_FONT, f);
 }
 
 LRESULT AppearancePage::onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-	CColorDialog d(SETTING(BACKGROUND_COLOR));
+	CColorDialog d(SETTING(BACKGROUND_COLOR), 0, *this);
 	if(d.DoModal() == IDOK)
 	{
 		::DeleteObject(bgbrush);
 		bg = d.GetColor();
 		bgbrush = CreateSolidBrush(bg);
+		ctrlExample.Invalidate();
+	}
+	return TRUE;
+}
+
+
+LRESULT AppearancePage::onClickedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	LOGFONT tmp = font;
+	CFontDialog d(&tmp, CF_EFFECTS | CF_SCREENFONTS, NULL, *this);
+	d.m_cf.rgbColors = fg;
+	if(d.DoModal() == IDOK)
+	{
+		font = tmp;
+		fg = d.GetColor();
+		::DeleteObject(fontObj);
+		fontObj = ::CreateFontIndirect(&font);
 		ctrlExample.Invalidate();
 	}
 	return TRUE;
@@ -94,6 +107,7 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 		HDC hdc = (HDC)wParam;
 		::SetBkMode(hdc, TRANSPARENT);
 		::SetTextColor(hdc, fg);
+		::SelectObject(hdc, fontObj);
 		return (LRESULT)bgbrush;
 	}
 	else
@@ -102,9 +116,12 @@ LRESULT AppearancePage::onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 
 /**
  * @file AppearancePage.cpp
- * $Id: AppearancePage.cpp,v 1.1 2002/01/26 16:34:00 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: AppearancePage.cpp,v $
+ * Revision 1.2  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.1  2002/01/26 16:34:00  arnetheduck
  * Colors dialog added, as well as some other options
  *

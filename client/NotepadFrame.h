@@ -46,9 +46,24 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<NotepadFrame>)
 	END_MSG_MAP()
 
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+		HWND hWnd = (HWND)lParam;
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlPad.m_hWnd) {
+			::SetBkColor(hDC, Util::bgColor);
+			::SetTextColor(hDC, Util::textColor);
+			return (LRESULT)Util::bgBrush;
+		}
+		bHandled = FALSE;
+		return FALSE;
+	};
+	
+	
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		RECT rect;
@@ -135,9 +150,12 @@ private:
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.1 2002/01/23 08:45:37 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: NotepadFrame.h,v $
+ * Revision 1.2  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.1  2002/01/23 08:45:37  arnetheduck
  * New files for the notepad
  *

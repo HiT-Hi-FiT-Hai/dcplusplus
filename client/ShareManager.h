@@ -170,6 +170,7 @@ private:
 	HANDLE refreshThread;
 
 	StringList files;
+	bool checkFile(const string& aDir, const string& aFile);
 
 	static DWORD WINAPI refresher(void* p);
 	Directory::Map directories;
@@ -181,9 +182,12 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.15 2002/01/26 14:59:24 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.16 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: ShareManager.h,v $
+ * Revision 1.16  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.15  2002/01/26 14:59:24  arnetheduck
  * Fixed disconnect crash
  *

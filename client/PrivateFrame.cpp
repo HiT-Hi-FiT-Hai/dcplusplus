@@ -37,12 +37,12 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
+	ctrlClient.SetFont(Util::font);
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
-	ctrlClient.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	if(user->isOnline()) {
 		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
@@ -118,9 +118,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.12 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.13 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.13  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.12  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

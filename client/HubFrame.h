@@ -84,6 +84,7 @@ public:
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		COMMAND_ID_HANDLER(ID_FILE_RECONNECT, OnFileReconnect)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
@@ -105,12 +106,17 @@ public:
 		
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
-		if(hWnd == ctrlClient.m_hWnd) {
-			return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd) {
+			::SetBkColor(hDC, Util::bgColor);
+			::SetTextColor(hDC, Util::textColor);
+			return (LRESULT)Util::bgBrush;
+			
+		} else {
+			return 0;
 		}
-		bHandled = FALSE;
-		return FALSE;
-	};
+		
+	}
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -445,7 +451,8 @@ private:
 	}
 	
 	void updateStatusBar() {
-		PostMessage(WM_SPEAKER, STATS);
+		if(m_hWnd)
+			PostMessage(WM_SPEAKER, STATS);
 	}
 
 	Client::Ptr client;
@@ -467,9 +474,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.43 2002/01/26 16:34:00 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.44 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.44  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.43  2002/01/26 16:34:00  arnetheduck
  * Colors dialog added, as well as some other options
  *

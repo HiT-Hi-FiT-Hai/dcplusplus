@@ -138,7 +138,26 @@ class Util
 {
 public:
 	static string emptyString;
+	static HBRUSH bgBrush;
+	static COLORREF textColor;
+	static COLORREF bgColor;
+	static HFONT font;
+	
+	static void decodeFont(const string& setting, LOGFONT &dest);
 
+	static string encodeFont(LOGFONT const& font)
+	{
+		string res(font.lfFaceName);
+		res += ',';
+		res += Util::toString(font.lfHeight);
+		res += ',';
+		res += Util::toString(font.lfWeight);
+		res += ',';
+		res += Util::toString(font.lfItalic);
+		return res;
+	}
+	
+	
 	static bool browseSaveFile(string& target, HWND owner = NULL) {
 		char buf[MAX_PATH];
 		OPENFILENAME ofn;       // common dialog box structure
@@ -406,9 +425,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.23 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: Util.h,v 1.24 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.24  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.23  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *

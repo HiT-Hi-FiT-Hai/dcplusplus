@@ -38,7 +38,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 
 	ctrlClient.FmtLines(TRUE);
 	ctrlClient.LimitText(0);
-	
+	ctrlClient.SetFont(Util::font);
+
 	ctrlMessage.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		ES_AUTOHSCROLL | ES_MULTILINE, WS_EX_CLIENTEDGE);
 	
@@ -51,7 +52,6 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	}
 	
-	ctrlClient.SetFont(ctrlUsers.GetFont());
 	ctrlMessage.SetFont(ctrlUsers.GetFont());
 
 	SetSplitterPanes(ctrlClient.m_hWnd, ctrlUsers.m_hWnd, false);
@@ -64,6 +64,10 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlUsers.InsertColumn(COLUMN_CONNECTION, _T("Connection"), LVCFMT_LEFT, 75, COLUMN_CONNECTION);
 	ctrlUsers.InsertColumn(COLUMN_EMAIL, _T("E-Mail"), LVCFMT_LEFT, 100, COLUMN_EMAIL);
 
+	ctrlUsers.SetBkColor(Util::bgColor);
+	ctrlUsers.SetTextBkColor(Util::bgColor);
+	ctrlUsers.SetTextColor(Util::textColor);
+	
 	userMenu.CreatePopupMenu();
 	opMenu.CreatePopupMenu();
 	
@@ -447,9 +451,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.28 2002/01/26 14:59:22 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.29 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.29  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.28  2002/01/26 14:59:22  arnetheduck
  * Fixed disconnect crash
  *

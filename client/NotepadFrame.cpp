@@ -35,7 +35,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
-	ctrlPad.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
+	ctrlPad.SetFont(Util::font);
 	ctrlPad.SetWindowText(text.c_str());
 
 	bHandled = FALSE;
@@ -60,9 +60,12 @@ void NotepadFrame::save(SimpleXML* aXml) {
 }
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.1 2002/01/23 08:45:37 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: NotepadFrame.cpp,v $
+ * Revision 1.2  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.1  2002/01/23 08:45:37  arnetheduck
  * New files for the notepad
  *

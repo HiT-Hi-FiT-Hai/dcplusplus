@@ -49,6 +49,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
@@ -57,8 +58,11 @@ public:
 
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
-		if(hWnd == ctrlClient.m_hWnd) {
-			return (LRESULT)GetSysColorBrush(COLOR_WINDOW);
+		HDC hDC = (HDC)wParam;
+		if(hWnd == ctrlClient.m_hWnd || hWnd == ctrlMessage.m_hWnd) {
+			::SetBkColor(hDC, Util::bgColor);
+			::SetTextColor(hDC, Util::textColor);
+			return (LRESULT)Util::bgBrush;
 		}
 		bHandled = FALSE;
 		return FALSE;
@@ -172,9 +176,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.8 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.9 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.9  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.8  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...

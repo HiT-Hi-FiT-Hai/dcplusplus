@@ -173,7 +173,7 @@ public:
 				UploadManager::getInstance()->removeUpload((Upload*)item.lParam);
 		}
 	}
-
+	
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		DWORD id;
@@ -327,6 +327,7 @@ private:
 	HttpConnection c;
 	string versionInfo;
 	CImageList images;
+	CImageList largeImages;
 	StringList searchFilter;
 	
 	CMenu transferMenu;
@@ -440,9 +441,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.35 2002/01/26 12:06:40 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.36 2002/01/26 21:09:51 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.36  2002/01/26 21:09:51  arnetheduck
+ * Release 0.14
+ *
  * Revision 1.35  2002/01/26 12:06:40  arnetheduck
  * Småsaker
  *
