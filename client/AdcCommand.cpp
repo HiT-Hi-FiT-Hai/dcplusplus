@@ -71,7 +71,7 @@ void Command::parse(const string& aLine, bool nmdc /* = false */) {
 		i++;
 	}
 	if(!cur.empty()) {
-		if(!fromSet) {
+		if(!nmdc && !fromSet) {
 			to = CID(cur);
 			fromSet = true;
 		} else if(type == TYPE_DIRECT && !toSet) {
@@ -139,5 +139,5 @@ bool Command::hasFlag(const char* name, size_t start) const {
 
 /**
  * @file
- * $Id: AdcCommand.cpp,v 1.5 2004/11/26 13:48:54 arnetheduck Exp $
+ * $Id: AdcCommand.cpp,v 1.6 2004/11/26 15:19:23 arnetheduck Exp $
  */
