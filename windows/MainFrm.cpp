@@ -1020,9 +1020,9 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
 		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" + 
-			Util::toString(DownloadManager::getInstance()->getDownloads()) + ")\r\nU: " +
+			Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")\r\nU: " +
 			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" + 
-			Util::toString(UploadManager::getInstance()->getUploads()) + ")").c_str(), 64);
+			Util::toString(UploadManager::getInstance()->getUploadCount()) + ")").c_str(), 64);
 		
 		::Shell_NotifyIcon(NIM_MODIFY, &nid);
 		lastMove = GET_TICK();
@@ -1111,11 +1111,11 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 	TStringList* str = new TStringList();
 	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
 	str->push_back(Text::toT("H: " + Client::getCounts()));
-	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS))));
+	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS))));
 	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
 	str->push_back(Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
-	str->push_back(Text::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")"));
-	str->push_back(Text::toT("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")"));
+	str->push_back(Text::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloadCount()) + ")"));
+	str->push_back(Text::toT("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploadCount()) + ")"));
 	PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
@@ -1146,5 +1146,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.71 2004/10/31 22:33:26 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.72 2004/11/06 12:14:00 arnetheduck Exp $
  */

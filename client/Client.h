@@ -88,7 +88,7 @@ public:
 	virtual void sendUserCmd(const string& aUserCmd) = 0;
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) = 0;
 	virtual void password(const string& pwd) = 0;
-	virtual void info() = 0;
+	virtual void info(bool alwaysSend) = 0;
     
 	virtual size_t getUserCount() const = 0;
 	virtual int64_t getAvailable() const = 0;
@@ -195,5 +195,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.91 2004/10/24 11:25:40 arnetheduck Exp $
+ * $Id: Client.h,v 1.92 2004/11/06 12:13:59 arnetheduck Exp $
  */

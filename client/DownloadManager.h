@@ -65,12 +65,10 @@ public:
 	virtual ~Download() { }
 
 	/**
-	 * Gets the target filename for this download without the path element.
-	 *
 	 * @remarks This function is only used from DownloadManager but its
 	 * functionality could be useful in TransferView.
 	 *
-	 * @return Filename without path element.
+	 * @return Target filename without path.
 	 */
 	string getTargetFileName() {
 		string::size_type i = getTarget().rfind('\\');
@@ -81,24 +79,18 @@ public:
 		}
 	};
 
-	/**
-	 * Used internally by client.
-	 */
+	/** @internal */
 	string getDownloadTarget() {
 		const string& tgt = (getTempTarget().empty() ? getTarget() : getTempTarget());
 		return isSet(FLAG_ANTI_FRAG) ? tgt + ANTI_FRAG_EXT : tgt;			
 	}
 
-	/**
-	 * Used internally by client.
-	 */
+	/** @internal */
 	TigerTree& getTigerTree() {
 		return tt;
 	}
 
-	/**
-	 * Used internally by client.
-	 */
+	/** @internal */
 	Command getCommand(bool zlib, bool tthf);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
@@ -180,25 +172,20 @@ class DownloadManager : public Speaker<DownloadManagerListener>,
 {
 public:
 
-	/**
-	 * Used internally by client.
-	 */
+	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		checkDownloads(conn);
 	}
 
-	/**
-	 * Used internally by client.
-	 */
+	/** @internal */
 	void abortDownload(const string& aTarget);
 
 	/**
-	 * Get average download speed.
 	 * @remarks This is only used in the tray icons. In MainFrame this is
 	 * calculated instead so there seems to be a little duplication of code.
 	 *
-	 * @return Bytes/s
+	 * @return Agerage download speed in Bytes/s
 	 */
 	int getAverageSpeed() {
 		Lock l(cs);
@@ -210,14 +197,8 @@ public:
 		return avg;
 	}
 
-	/**
-	 * Get the count of active downloads.
-	 * @remarks Function should be renamed because it sounds like it returns a
-	 * list with downloads.
-	 *
-	 * @return Number of active downloads.
-	 */ 
-	size_t getDownloads() {
+	/** @return Number of downloads. */ 
+	size_t getDownloadCount() {
 		Lock l(cs);
 		return downloads.size();
 	}
@@ -288,5 +269,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.71 2004/11/02 10:43:08 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.72 2004/11/06 12:13:59 arnetheduck Exp $
  */

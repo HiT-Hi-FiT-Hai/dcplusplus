@@ -467,6 +467,9 @@
 				RelativePath=".\windows\PublicHubsFrm.h">
 			</File>
 			<File
+				RelativePath=".\windows\PublicHubsListDlg.h">
+			</File>
+			<File
 				RelativePath=".\windows\QueueFrame.h">
 			</File>
 			<File

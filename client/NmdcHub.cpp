@@ -476,7 +476,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 
 				version();
 				getNickList();
-				myInfo();
+				myInfo(true);
 			}
 
 			Speaker<NmdcHubListener>::fire(NmdcHubListener::Hello(), this, u);
@@ -560,7 +560,7 @@ void NmdcHub::onLine(const string& aLine) throw() {
 			updateCounts(false);
 			// Special...to avoid op's complaining that their count is not correctly
 			// updated when they log in (they'll be counted as registered first...)
-			myInfo();
+			myInfo(true);
 		}
 	} else if(cmd == "$To:") {
 		string::size_type i = param.find("From:");
@@ -600,7 +600,7 @@ string NmdcHub::getHubURL() {
 	return getAddressPort();
 }
 
-void NmdcHub::myInfo() {
+void NmdcHub::myInfo(bool alwaysSend) {
 	checkstate();
 	
 	dcdebug("MyInfo %s...\n", getNick().c_str());
@@ -633,10 +633,10 @@ void NmdcHub::myInfo() {
 		tmp1 + VERSIONSTRING + tmp2 + modeChar + tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(CONNECTION) + "\x01$" + toNmdc(Util::validateMessage(SETTING(EMAIL), false)) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|";
-	if(minf != lastMyInfo) {
+	if(alwaysSend || minf != lastMyInfo) {
 		int64_t ssize = ShareManager::getInstance()->getShareSize();
 
-		if(lastSize != ssize && lastUpdate + 15*60*1000 > GET_TICK()) {
+		if((!alwaysSend) && (lastSize != ssize && lastUpdate + 15*60*1000 > GET_TICK())) {
 			return;
 		}
 		send(minf);
@@ -718,6 +718,6 @@ void NmdcHub::on(BufferedSocketListener::Failed, const string& aLine) throw() {
 
 /**
  * @file
- * $Id: NmdcHub.cpp,v 1.19 2004/11/03 19:26:11 arnetheduck Exp $
+ * $Id: NmdcHub.cpp,v 1.20 2004/11/06 12:13:59 arnetheduck Exp $
  */
 

@@ -40,6 +40,7 @@ public:
 		MESSAGE_HANDLER(WM_HELP, onHelp)
 		COMMAND_ID_HANDLER(IDC_BROWSEDIR, onClickedBrowseDir)
 		COMMAND_ID_HANDLER(IDC_BROWSETEMPDIR, onClickedBrowseTempDir)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_LIST_CONFIG, onClickedListConfigure)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
@@ -47,6 +48,7 @@ public:
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedListConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
@@ -62,5 +64,5 @@ protected:
 
 /**
  * @file
- * $Id: DownloadPage.h,v 1.11 2004/09/27 12:02:42 arnetheduck Exp $
+ * $Id: DownloadPage.h,v 1.12 2004/11/06 12:14:00 arnetheduck Exp $
  */

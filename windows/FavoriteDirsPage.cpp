@@ -14,6 +14,7 @@ PropPage::TextItem FavoriteDirsPage::texts[] = {
 	{ IDC_SETTINGS_FAVORITE_DIRECTORIES, ResourceManager::SETTINGS_FAVORITE_DIRS },
 	{ IDC_REMOVE, ResourceManager::REMOVE },
 	{ IDC_ADD, ResourceManager::SETTINGS_ADD_FOLDER },
+	{ IDC_RENAME, ResourceManager::SETTINGS_RENAME_FOLDER },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -26,11 +27,11 @@ LRESULT FavoriteDirsPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	// Prepare shared dir list
 	ctrlDirectories.InsertColumn(0, CTSTRING(FAVORITE_DIR_NAME), LVCFMT_LEFT, 80, 0);
 	ctrlDirectories.InsertColumn(1, CTSTRING(DIRECTORY), LVCFMT_LEFT, 197, 1);
-	TStringPairList directories = HubManager::getInstance()->getFavoriteDirs();
-	for(TStringPairIter j = directories.begin(); j != directories.end(); j++)
+	StringPairList directories = HubManager::getInstance()->getFavoriteDirs();
+	for(StringPairIter j = directories.begin(); j != directories.end(); j++)
 	{
-		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), j->second);
-		ctrlDirectories.SetItemText(i, 1, j->first.c_str());
+		int i = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), Text::toT(j->second));
+		ctrlDirectories.SetItemText(i, 1, Text::toT(j->first).c_str());
 	}
 	
 	return TRUE;
@@ -65,6 +66,7 @@ LRESULT FavoriteDirsPage::onItemchangedDirectories(int /*idCtrl*/, LPNMHDR pnmh,
 {
 	NM_LISTVIEW* lv = (NM_LISTVIEW*) pnmh;
 	::EnableWindow(GetDlgItem(IDC_REMOVE), (lv->uNewState & LVIS_FOCUSED));
+	::EnableWindow(GetDlgItem(IDC_RENAME), (lv->uNewState & LVIS_FOCUSED));
 	return 0;		
 }
 
@@ -92,10 +94,41 @@ LRESULT FavoriteDirsPage::onClickedRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		item.iItem = i;
 		item.iSubItem = 1;
 		ctrlDirectories.GetItem(&item);
-		if(HubManager::getInstance()->removeFavoriteDir(tstring(buf)))
+		if(HubManager::getInstance()->removeFavoriteDir(Text::fromT(buf)))
 			ctrlDirectories.DeleteItem(i);
 	}
-	
+
+	return 0;
+}
+
+LRESULT FavoriteDirsPage::onClickedRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	TCHAR buf[MAX_PATH];
+	LVITEM item;
+	::ZeroMemory(&item, sizeof(item));
+	item.mask = LVIF_TEXT;
+	item.cchTextMax = sizeof(buf);
+	item.pszText = buf;
+
+	int i = -1;
+	while((i = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED)) != -1) {
+		item.iItem = i;
+		item.iSubItem = 0;
+		ctrlDirectories.GetItem(&item);
+
+		LineDlg virt;
+		virt.title = TSTRING(FAVORITE_DIR_NAME);
+		virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
+		virt.line = tstring(buf);
+		if(virt.DoModal(m_hWnd) == IDOK) {
+			if (HubManager::getInstance()->renameFavoriteDir(Text::fromT(buf), Text::fromT(virt.line))) {
+				ctrlDirectories.SetItemText(i, 0, virt.line.c_str());
+				return 0;
+			} else {
+				MessageBox(CTSTRING(DIRECTORY_ADD_ERROR));
+			}
+		}
+	}
 	return 0;
 }
 
@@ -119,7 +152,7 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 	virt.description = TSTRING(FAVORITE_DIR_NAME_LONG);
 	virt.line = Util::getLastDir(path);
 	if(virt.DoModal(m_hWnd) == IDOK) {
-		if (HubManager::getInstance()->addFavoriteDir(path, virt.line)) {
+		if (HubManager::getInstance()->addFavoriteDir(Text::fromT(path), Text::fromT(virt.line))) {
 			int j = ctrlDirectories.insert(ctrlDirectories.GetItemCount(), virt.line );
 			ctrlDirectories.SetItemText(j, 1, path.c_str());
 		} else {

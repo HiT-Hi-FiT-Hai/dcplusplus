@@ -45,6 +45,7 @@
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Compressed">Compressed</String>
 		<String Name="CompressionError">Error during compression</String>
+		<String Name="Configure">&amp;Configure</String>
 		<String Name="Connect">&amp;Connect</String>
 		<String Name="Connected">Connected</String>
 		<String Name="Connecting">Connecting...</String>
@@ -55,6 +56,7 @@
 		<String Name="ConnectionRefused">Connection refused by target machine</String>
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
+		<String Name="ConfiguredHubLists">Configured Public Hub Lists</String>
 		<String Name="CopyHub">Copy address to clipboard</String>
 		<String Name="CopyMagnet">Copy magnet link to clipboard</String>
 		<String Name="CopyNick">Copy nick to clipboard</String>
@@ -187,7 +189,6 @@
 		<String Name="MagnetHandlerDesc">Download files from the Direct Connect network</String>
 		<String Name="MagnetHandlerRoot">DC++</String>
 		<String Name="MagnetShellDesc">URL:MAGNET URI</String>
-		<String Name="ManualAddress">Manual connect address</String>
 		<String Name="MatchQueue">Match queue</String>
 		<String Name="MatchedFiles">Matched %d file(s)</String>
 		<String Name="MaxHubs">Max Hubs</String>
@@ -343,9 +344,10 @@
 		<String Name="SettingsColors">Colors</String>
 		<String Name="SettingsCommand">Command</String>
 		<String Name="SettingsCompressTransfers">Enable safe and compressed transfers</String>
+		<String Name="SettingsConfigureHubLists">Configure Public Hub Lists</String>
 		<String Name="SettingsConfirmExit">Confirm application exit</String>
 		<String Name="SettingsConfirmHubRemoval">Confirm favorite hub removal</String>
-		<String Name="SettingsConnectionSettings">Connection Settings (see the readme / newbie help if unsure)</String>
+		<String Name="SettingsConnectionSettings">Connection Settings (see the help file if unsure)</String>
 		<String Name="SettingsConnectionType">Connection Type</String>
 		<String Name="SettingsDefaultAwayMsg">Default away message</String>
 		<String Name="SettingsDirectories">Directories</String>
@@ -405,6 +407,7 @@
 		<String Name="SettingsPublicHubListHttpProxy">HTTP Proxy (for hublist only)</String>
 		<String Name="SettingsPublicHubListUrl">Public Hubs list URL</String>
 		<String Name="SettingsQueueDirty">Set Download Queue tab bold when contents change</String>
+		<String Name="SettingsRenameFolder">Rename</String>
 		<String Name="SettingsRequiresRestart">Note; most of these options require that you restart DC++</String>
 		<String Name="SettingsRollback">Rollback</String>
 		<String Name="SettingsSelectTextFace">Select &amp;text style</String>

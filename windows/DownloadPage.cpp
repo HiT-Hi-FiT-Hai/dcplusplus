@@ -22,6 +22,7 @@
 
 #include "DownloadPage.h"
 #include "WinUtil.h"
+#include "PublicHubsListDlg.h"
 
 #include "../client/SettingsManager.h"
 
@@ -36,8 +37,8 @@ PropPage::TextItem DownloadPage::texts[] = {
 	{ IDC_SETTINGS_DOWNLOADS_SPEED_PAUSE, ResourceManager::SETTINGS_DOWNLOADS_SPEED_PAUSE },
 	{ IDC_SETTINGS_SPEEDS_NOT_ACCURATE, ResourceManager::SETTINGS_SPEEDS_NOT_ACCURATE },
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST, ResourceManager::SETTINGS_PUBLIC_HUB_LIST },
-	{ IDC_SETTINGS_PUBLIC_HUB_LIST_URL, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_URL },
 	{ IDC_SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY, ResourceManager::SETTINGS_PUBLIC_HUB_LIST_HTTP_PROXY },
+	{ IDC_SETTINGS_LIST_CONFIG, ResourceManager::SETTINGS_CONFIGURE_HUB_LISTS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -47,7 +48,6 @@ PropPage::Item DownloadPage::items[] = {
 	{ IDC_DOWNLOADS, SettingsManager::DOWNLOAD_SLOTS, PropPage::T_INT },
 	{ IDC_MAXSPEED, SettingsManager::MAX_DOWNLOAD_SPEED, PropPage::T_INT },
 	{ IDC_PROXY, SettingsManager::HTTP_PROXY, PropPage::T_STR },
-	{ IDC_PUBLIC_HUBS, SettingsManager::HUBLIST_SERVERS, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -110,6 +110,12 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 	return 0;
 }
 
+LRESULT DownloadPage::onClickedListConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	CPublicHubListDlg dlg;
+	dlg.DoModal(m_hWnd);
+	return 0;
+}
+
 LRESULT DownloadPage::onHelpInfo(LPNMHDR /*pnmh*/) {
 	HtmlHelp(m_hWnd, WinUtil::getHelpFile().c_str(), HH_HELP_CONTEXT, IDD_DOWNLOADPAGE);
 	return 0;
@@ -122,5 +128,5 @@ LRESULT DownloadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: DownloadPage.cpp,v 1.13 2004/09/27 12:02:42 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.14 2004/11/06 12:14:00 arnetheduck Exp $
  */

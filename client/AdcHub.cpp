@@ -178,7 +178,7 @@ void AdcHub::handle(Command::SUP, Command& c) throw() {
 		return;
 	}
 	state = STATE_IDENTIFY;
-	info();
+	info(true);
 }
 
 void AdcHub::handle(Command::MSG, Command& c) throw() {
@@ -315,7 +315,7 @@ void AdcHub::password(const string& pwd) {
 	}
 }
 
-void AdcHub::info() {
+void AdcHub::info(bool /*alwaysSend*/) {
 	if(state != STATE_IDENTIFY && state != STATE_NORMAL)
 		return;
 	if(!getMe())
@@ -395,5 +395,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.22 2004/10/25 14:42:09 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.23 2004/11/06 12:13:59 arnetheduck Exp $
  */

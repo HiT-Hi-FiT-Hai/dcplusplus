@@ -499,9 +499,9 @@ LRESULT SearchFrame::onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD wID, HWND
 	dcassert(wID >= IDC_DOWNLOAD_FAVORITE_DIRS);
 	size_t newId = (size_t)wID - IDC_DOWNLOAD_FAVORITE_DIRS;
 
-	TStringPairList spl = HubManager::getInstance()->getFavoriteDirs();
+	StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
 	if(newId < spl.size()) {
-		ctrlResults.forEachSelectedT(SearchInfo::Download(spl[newId].first));
+		ctrlResults.forEachSelectedT(SearchInfo::Download(Text::toT(spl[newId].first)));
 	} else {
 		dcassert((newId - spl.size()) < targets.size());
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(Text::toT(targets[newId - spl.size()])));
@@ -510,9 +510,9 @@ LRESULT SearchFrame::onDownloadFavoriteDirs(WORD /*wNotifyCode*/, WORD wID, HWND
 }
 
 LRESULT SearchFrame::onDownloadWholeFavoriteDirs(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	TStringPairList spl = HubManager::getInstance()->getFavoriteDirs();
+	StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
 	dcassert((wID-IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS) < (int)spl.size());
-	ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(spl[wID-IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS].first));
+	ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(Text::toT(spl[wID-IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS].first)));
 	return 0;
 }
 
@@ -857,10 +857,10 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		int n = 0;
 		
 		//Append favorite download dirs
-		TStringPairList spl = HubManager::getInstance()->getFavoriteDirs();
+		StringPairList spl = HubManager::getInstance()->getFavoriteDirs();
 		if (spl.size() > 0) {
-			for(TStringPairIter i = spl.begin(); i != spl.end(); i++) {
-				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_FAVORITE_DIRS + n, i->second.c_str());
+			for(StringPairIter i = spl.begin(); i != spl.end(); i++) {
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
 				n++;
 			}
 			targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -898,8 +898,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		n = 0;
 		//Append favorite download dirs
 		if (spl.size() > 0) {
-			for(TStringPairIter i = spl.begin(); i != spl.end(); ++i) {
-				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, i->second.c_str());
+			for(StringPairIter i = spl.begin(); i != spl.end(); ++i) {
+				targetDirMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS + n, Text::toT(i->second).c_str());
 				n++;
 			}
 			targetDirMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
@@ -1024,5 +1024,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.71 2004/11/02 11:03:05 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.72 2004/11/06 12:14:00 arnetheduck Exp $
  */

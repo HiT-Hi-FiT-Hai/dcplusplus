@@ -73,7 +73,15 @@ class UploadManager : private ClientManagerListener, private UserConnectionListe
 {
 public:
 	
-	size_t getUploads() { Lock l(cs); return uploads.size(); };
+	/** @return Number of uploads. */ 
+	size_t getUploadCount() { Lock l(cs); return uploads.size(); };
+
+	/**
+	 * @remarks This is only used in the tray icons. Could be used in
+	 * MainFrame too.
+	 *
+	 * @return Agerage download speed in Bytes/s
+	 */
 	int getAverageSpeed() {
 		Lock l(cs);
 		int avg = 0;
@@ -84,8 +92,16 @@ public:
 		return avg;
 	}
 	
-	int getRunning() { return running; };
+	/**
+	 * @remarks This is defined with GETSET below.
+	 * @return Number of running uploads.
+	 */
+//	int getRunning() { return running; };
+
+	/** @return Number of free slots. */
 	int getFreeSlots() { return max((SETTING(SLOTS) - running), 0); }
+	
+	/** @internal */
 	bool getAutoSlot() {
 		if(SETTING(MIN_UPLOAD_SPEED) == 0)
 			return false;
@@ -93,13 +109,17 @@ public:
 			return false;
 		return (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed();
 	}
+
+	/** @internal */
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
 	
+	/** @param aUser Reserve an upload slot for this user. */
 	void reserveSlot(const User::Ptr& aUser) {
 		Lock l(cs);
 		reservedSlots[aUser] = GET_TICK();
 	}
 
+	/** @internal */
 	void addConnection(UserConnection::Ptr conn) {
 		conn->addListener(this);
 		conn->setState(UserConnection::STATE_GET);
@@ -157,5 +177,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.69 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.70 2004/11/06 12:13:59 arnetheduck Exp $
  */

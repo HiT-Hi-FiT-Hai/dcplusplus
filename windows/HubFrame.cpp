@@ -1004,7 +1004,7 @@ void HubFrame::addClientLine(const tstring& aLine, bool inChat /* = true */) {
 	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
 		addLine(_T("*** ") + aLine);
 	}
-	if(BOOLSETTING(LOG_STATUS_MESSAGES) && inChat /*&& BOOLSETTING(FILTER_MESSAGES)*/) {
+	if(BOOLSETTING(LOG_STATUS_MESSAGES)) {
 		LOGDT(client->getAddressPort() + "_Status", Text::fromT(aLine));
 	}
 }
@@ -1108,5 +1108,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.83 2004/10/31 22:33:25 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.84 2004/11/06 12:14:00 arnetheduck Exp $
  */

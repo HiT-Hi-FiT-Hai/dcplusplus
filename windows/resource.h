@@ -45,7 +45,8 @@
 #define IDR_NET_STATS                   237
 #define IDD_MAGNET                      238
 #define IDD_HASH_PROGRESS               239
-#define IDD_FAVORITE_DIRSPAGE					240
+#define IDD_FAVORITE_DIRSPAGE           240
+#define IDD_HUB_LIST                    241
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -95,7 +96,7 @@
 #define IDC_BUFFERSIZE                  1046
 #define IDC_LANGUAGE                    1047
 #define IDC_BROWSE                      1048
-#define IDC_PUBLIC_HUBS                 1049
+#define IDC_SETTINGS_LIST_CONFIG        1049
 #define IDC_THANKS                      1050
 #define IDC_DOWNLOADS                   1051
 #define IDC_SLOTSSPIN                   1052
@@ -298,8 +299,18 @@
 #define IDC_FH_PASSWORD                 1249
 #define IDC_FH_USER_DESC                1250
 #define IDC_USER_CMD_OPEN_HELP          1251
-#define IDC_SETTINGS_FAVORITE_DIRECTORIES	1252
-#define IDC_FAVORITE_DIRECTORIES			1253
+#define IDC_SETTINGS_FAVORITE_DIRECTORIES 1252
+#define IDC_FAVORITE_DIRECTORIES        1253
+#define IDC_PUB_LIST_CONFIG             1254
+#define IDC_PUB_LIST_DROPDOWN           1255
+#define IDC_LIST_ADD                    1256
+#define IDC_LIST_EDIT                   1257
+#define IDC_LIST_UP                     1258
+#define IDC_LIST_DOWN                   1259
+#define IDC_LIST_REMOVE                 1260
+#define IDC_LIST_DESC                   1261
+#define IDC_LIST_LIST                   1262
+#define IDC_RENAME						1263
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -316,8 +327,8 @@
 #define IDC_PRIORITY_HIGHEST            7005
 #define IDC_DOWNLOAD_WHOLE_TARGET       7500
 #define IDC_REMOVE_SOURCES              8000
-#define IDC_DOWNLOAD_FAVORITE_DIRS				8500
-#define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS		9000
+#define IDC_DOWNLOAD_FAVORITE_DIRS      8500
+#define IDC_DOWNLOAD_WHOLE_FAVORITE_DIRS 9000
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -336,9 +347,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        240
+#define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1252
+#define _APS_NEXT_CONTROL_VALUE         1264
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

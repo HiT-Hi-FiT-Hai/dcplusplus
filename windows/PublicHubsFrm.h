@@ -31,14 +31,12 @@
 
 #include "WinUtil.h"
 
-#define SERVER_MESSAGE_MAP 7
 #define FILTER_MESSAGE_MAP 8
 class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, public StaticFrame<PublicHubsFrame, ResourceManager::PUBLIC_HUBS>, 
 	private HubManagerListener
 {
 public:
 	PublicHubsFrame() : users(0), hubs(0), closed(false), filter(""),
-		ctrlHubContainer(WC_EDIT, this, SERVER_MESSAGE_MAP), 
 		filterContainer(WC_EDIT, this, FILTER_MESSAGE_MAP) {
 	};
 
@@ -63,19 +61,17 @@ public:
 		COMMAND_ID_HANDLER(IDC_FILTER_FOCUS, onFilterFocus)
 		COMMAND_ID_HANDLER(IDC_ADD, onAdd)
 		COMMAND_ID_HANDLER(IDC_REFRESH, onClickedRefresh)
-		COMMAND_ID_HANDLER(IDC_CONNECT, onClickedConnect)
+		COMMAND_ID_HANDLER(IDC_PUB_LIST_CONFIG, onClickedConfigure)
 		COMMAND_ID_HANDLER(IDC_COPY_HUB, onCopyHub);
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_RETURN, onEnter)
 		NOTIFY_HANDLER(IDC_HUBLIST, NM_DBLCLK, onDoubleClickHublist)
+		COMMAND_HANDLER(IDC_PUB_LIST_DROPDOWN, CBN_SELCHANGE, onListSelChanged)
 		CHAIN_MSG_MAP(baseClass)
-	ALT_MSG_MAP(SERVER_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_CHAR, onChar)
 	ALT_MSG_MAP(FILTER_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onFilterChar)
 	END_MSG_MAP()
 		
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onFilterChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -83,11 +79,12 @@ public:
 	LRESULT onFilterFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	LRESULT onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onClickedConfigure(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onListSelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -96,7 +93,7 @@ public:
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
-		if(hWnd == ctrlHub.m_hWnd || hWnd == ctrlFilter.m_hWnd) {
+		if(hWnd == ctrlPubLists.m_hWnd || hWnd == ctrlFilter.m_hWnd) {
 			::SetBkColor(hDC, WinUtil::bgColor);
 			::SetTextColor(hDC, WinUtil::textColor);
 			return (LRESULT)WinUtil::bgBrush;
@@ -137,16 +134,15 @@ private:
 	int visibleHubs;
 	int users;
 	CStatusBarCtrl ctrlStatus;
-	CButton ctrlConnect;
+	CButton ctrlConfigure;
 	CButton ctrlRefresh;
-	CButton ctrlAddress;
+	CButton ctrlLists;
 	CButton ctrlFilterDesc;
 	CEdit ctrlFilter;
 	CMenu hubsMenu;
 	
-	CContainedWindow ctrlHubContainer;
 	CContainedWindow filterContainer;	
-	CEdit ctrlHub;
+	CComboBox ctrlPubLists;
 	ExListViewCtrl ctrlHubs;
 
 	HubEntry::List hubs;
@@ -167,11 +163,12 @@ private:
 	
 	void updateStatus();
 	void updateList();
+	void updateDropDown();
 };
 
 #endif // !defined(AFX_PUBLICHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.26 2004/10/29 15:53:40 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.27 2004/11/06 12:14:00 arnetheduck Exp $
  */

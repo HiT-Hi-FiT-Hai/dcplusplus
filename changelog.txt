@@ -1,4 +1,10 @@
-﻿-- 0.666 2004-11-03 --
+﻿-- 0.667 --
+* Improved multiple hublist support (thanks garg)
+* Fixed some favdirs issues (thanks naga)
+* Fixed a status logging issue (thanks naga)
+* Fixed annoying login issue
+
+-- 0.666 2004-11-03 --
 * [bug 173] Fixed copy nick to clipboard (thanks trem)
 * Removed some old code (thanks garg)
 * Added tth to log codes (thanks garg)

@@ -38,7 +38,7 @@ public:
 	virtual void sendUserCmd(const string& aUserCmd) { send(aUserCmd); }
 	virtual void search(int aSizeMode, int64_t aSize, int aFileType, const string& aString);
 	virtual void password(const string& pwd);
-	virtual void info();
+	virtual void info(bool alwaysSend);
 	virtual string checkNick(const string& nick);
 	virtual string getHubURL();
 
@@ -96,5 +96,5 @@ private:
 
 /**
  * @file
- * $Id: AdcHub.h,v 1.16 2004/10/24 11:25:40 arnetheduck Exp $
+ * $Id: AdcHub.h,v 1.17 2004/11/06 12:13:59 arnetheduck Exp $
  */

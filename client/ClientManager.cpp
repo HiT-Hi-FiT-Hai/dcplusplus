@@ -74,7 +74,7 @@ void ClientManager::infoUpdated() {
 	Lock l(cs);
 	for(Client::Iter i = clients.begin(); i != clients.end(); ++i) {
 		if((*i)->isConnected()) {
-			(*i)->info();
+			(*i)->info(false);
 		}
 	}
 }
@@ -307,7 +307,7 @@ void ClientManager::on(TimerManagerListener::Minute, u_int32_t /* aTick */) thro
 	}
 
 	for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-		(*j)->info();
+		(*j)->info(false);
 	}
 }
 
@@ -328,5 +328,5 @@ void ClientManager::on(UserCommand, Client* client, int aType, int ctx, const st
 
 /**
  * @file
- * $Id: ClientManager.cpp,v 1.62 2004/09/06 12:32:41 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.63 2004/11/06 12:13:59 arnetheduck Exp $
  */
