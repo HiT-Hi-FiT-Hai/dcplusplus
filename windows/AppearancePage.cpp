@@ -39,6 +39,7 @@ PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_COLOREXAMPLE, ResourceManager::SETTINGS_EXAMPLE_TEXT },
 	{ IDC_SETTINGS_APPEARANCE_OPTIONS, ResourceManager::SETTINGS_OPTIONS },
 	{ IDC_SETTINGS_DEFAULT_AWAY_MSG, ResourceManager::SETTINGS_DEFAULT_AWAY_MSG },
+	{ IDC_SETTINGS_TIME_STAMPS_SET, ResourceManager::SETTINGS_TIME_STAMPS_SET },
 	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
 	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
@@ -50,6 +51,7 @@ PropPage::TextItem AppearancePage::texts[] = {
 
 PropPage::Item AppearancePage::items[] = {
 	{ IDC_DEFAULT_AWAY_MESSAGE, SettingsManager::DEFAULT_AWAY_MESSAGE, PropPage::T_STR },
+	{ IDC_TIME_STAMPS_SET, SettingsManager::TIME_STAMPS_SET, PropPage::T_STR },
 	{ IDC_LANGUAGE, SettingsManager::LANGUAGE_FILE, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
@@ -195,5 +197,5 @@ LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.16 2004/07/26 20:01:21 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.17 2004/08/07 14:38:58 arnetheduck Exp $
  */

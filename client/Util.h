@@ -241,14 +241,18 @@ public:
 		return formatBytes(toInt64(aString));
 	}
 
+	static string getTimeStamps();
+	
+	static void setTimeStamps(const string& sTs) { setTs = sTs; };
+
 	static string getShortTimeString() {
-		char buf[8];
+		char buf[255];
 		time_t _tt = time(NULL);
 		tm* _tm = localtime(&_tt);
 		if(_tm == NULL) {
 			strcpy(buf, "xx:xx");
 		} else {
-			strftime(buf, 8, "%H:%M", _tm);
+			strftime(buf, 254, getTimeStamps().c_str(), _tm);
 		}
 		return buf;
 	}
@@ -533,6 +537,7 @@ public:
 private:
 	static bool away;
 	static string awayMsg;
+	static string setTs;
 	static time_t awayTime;
 	static char upper[];
 	static char lower[];
@@ -589,5 +594,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.90 2004/08/04 09:35:03 arnetheduck Exp $
+ * $Id: Util.h,v 1.91 2004/08/07 14:38:58 arnetheduck Exp $
  */

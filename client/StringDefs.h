@@ -389,6 +389,7 @@ enum Strings { // @DontAdd
 	SETTINGS_TAB_COMPLETION, // "Tab completion of nicks in chat"
 	SETTINGS_TAB_DIRTY, // "Set hub/PM tab bold when contents change"
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
+	SETTINGS_TIME_STAMPS_SET, // "Set timestamps"
 	SETTINGS_UNFINISHED_DOWNLOAD_DIRECTORY, // "Unfinished downloads directory (empty = download directly to target)"
 	SETTINGS_UPLOADS, // "Sharing"
 	SETTINGS_UPLOADS_MIN_SPEED, // "Automatically open an extra slot if speed is below (0 = disable)"

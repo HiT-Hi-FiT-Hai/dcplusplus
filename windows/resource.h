@@ -267,6 +267,8 @@
 #define IDC_MAGNET_DISP_NAME            1238
 #define IDC_MAGNET_DISP_HASH            1239
 #define IDC_MAGNET_TEXT                 1240
+#define IDC_SETTINGS_TIME_STAMPS_SET	1241
+#define IDC_TIME_STAMPS_SET				1242
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000

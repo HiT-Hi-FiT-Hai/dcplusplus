@@ -45,6 +45,7 @@ string Util::emptyString;
 
 bool Util::away = false;
 string Util::awayMsg;
+string Util::setTs;
 time_t Util::awayTime;
 char Util::upper[256];
 char Util::lower[256];
@@ -259,7 +260,9 @@ void Util::decodeUrl(const string& url, string& aServer, short& aPort, string& a
 string Util::getAwayMessage() { 
 	return (formatTime(awayMsg.empty() ? SETTING(DEFAULT_AWAY_MESSAGE) : awayMsg, awayTime)) + " <DC++ v" VERSIONSTRING ">";
 }
-
+string Util::getTimeStamps() {
+	return SETTING(TIME_STAMPS_SET);
+}
 string Util::formatBytes(int64_t aBytes) {
 	char buf[64];
 	if(aBytes < 1024) {
@@ -725,6 +728,6 @@ string Util::getIpCountry (string IP) {
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.57 2004/08/02 14:20:16 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.58 2004/08/07 14:38:58 arnetheduck Exp $
  */
 

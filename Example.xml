@@ -385,6 +385,7 @@
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTabDirty">Set hub/PM tab bold when contents change</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
+		<String Name="SettingsTimeStampsSet">Set timestamps</String>
 		<String Name="SettingsUnfinishedDownloadDirectory">Unfinished downloads directory (empty = download directly to target)</String>
 		<String Name="SettingsUploads">Sharing</String>
 		<String Name="SettingsUploadsMinSpeed">Automatically open an extra slot if speed is below (0 = disable)</String>
