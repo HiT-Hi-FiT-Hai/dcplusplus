@@ -38,7 +38,7 @@ public:
 		GETSETREF(string, name, Name);
 	};
 
-	class File : public Name {
+	class File : public Name, public FastAlloc<File> {
 	public:
 		typedef File* Ptr;
 		struct FileSort {
@@ -56,7 +56,7 @@ public:
 		GETSET(bool, adls, Adls);
 	};
 
-	class Directory : public Name {
+	class Directory : public Name, public FastAlloc<Directory> {
 	public:
 		typedef Directory* Ptr;
 		struct DirSort {
@@ -139,5 +139,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.19 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.20 2003/12/17 13:53:07 arnetheduck Exp $
  */

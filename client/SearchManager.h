@@ -35,7 +35,7 @@
 
 class SearchManager;
 
-class SearchResult {
+class SearchResult : public FastAlloc<SearchResult> {
 public:	
 
 	enum Types {
@@ -53,19 +53,19 @@ public:
 	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), 
 		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), ref(1) { }
 
-	string getFileName();
-	string toSR();
+	string getFileName() const;
+	string toSR() const;
 
 	User::Ptr& getUser() { return user; }
-	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
+	string getSlotString() const { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); }
 
-	const string& getFile() { return file; }
-	const string& getHubIpPort() { return hubIpPort; }
-	const string& getHubName() { return hubName; }
-	int64_t getSize() { return size; }
-	Types getType() { return type; }
-	int getSlots() { return slots; }
-	int getFreeSlots() { return freeSlots; }
+	const string& getFile() const { return file; }
+	const string& getHubIpPort() const { return hubIpPort; }
+	const string& getHubName() const { return hubName; }
+	int64_t getSize() const { return size; }
+	Types getType() const { return type; }
+	int getSlots() const { return slots; }
+	int getFreeSlots() const { return freeSlots; }
 
 	void incRef() { Thread::safeInc(&ref); }
 	void decRef() { 
@@ -172,5 +172,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.29 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.30 2003/12/17 13:53:07 arnetheduck Exp $
  */

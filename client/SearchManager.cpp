@@ -25,7 +25,7 @@
 
 SearchManager* Singleton<SearchManager>::instance = NULL;
 
-string SearchResult::toSR() {
+string SearchResult::toSR() const {
 	// File:		"$SR %s %s%c%s %d/%d%c%s (%s)|"
 	// Directory:	"$SR %s %s %d/%d%c%s (%s)|"
 	string tmp;
@@ -60,7 +60,7 @@ void SearchManager::search(Client::List& who, const string& aName, int64_t aSize
 	ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
 }
 
-string SearchResult::getFileName() { 
+string SearchResult::getFileName() const { 
 	if(getType() == TYPE_FILE) 
 		return Util::getFileName(getFile()); 
 
@@ -206,6 +206,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.30 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.31 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

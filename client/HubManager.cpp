@@ -77,7 +77,7 @@ void HubManager::save() {
 
 	Lock l(cs);
 	try {
-		SimpleXML xml(8);
+		SimpleXML xml;
 
 		xml.addTag("Favorites");
 		xml.stepIn();
@@ -150,7 +150,7 @@ void HubManager::load() {
 		STRING(REDIRECT_USER), redirstr, "op");
 
 	try {
-		SimpleXML xml(8);
+		SimpleXML xml;
 		xml.fromXML(File(Util::getAppPath() + FAVORITES_FILE, File::READ, File::OPEN).read());
 		
 		if(xml.findChild("Favorites")) {
@@ -339,5 +339,5 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) t
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.41 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.42 2003/12/17 13:53:07 arnetheduck Exp $
  */

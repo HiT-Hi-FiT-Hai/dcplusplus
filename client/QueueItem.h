@@ -28,7 +28,7 @@ class Download;
 
 #include "User.h"
 
-class QueueItem : public Flags {
+class QueueItem : public Flags, public FastAlloc<QueueItem> {
 public:
 	typedef QueueItem* Ptr;
 	// Strange, the vc7 optimizer won't take a deque here...
@@ -81,7 +81,7 @@ public:
 		FLAG_MATCH_QUEUE = 0x80
 	};
 
-	class Source : public Flags {
+	class Source : public Flags, public FastAlloc<Source> {
 	public:
 		typedef Source* Ptr;
 		typedef vector<Ptr> List;
@@ -237,5 +237,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.3 2003/12/14 20:41:38 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.4 2003/12/17 13:53:07 arnetheduck Exp $
 */

@@ -30,6 +30,40 @@
 #include <stdlib.h>
 #endif
 
+#ifdef HAS_STLPORT
+struct FastAllocBase {
+	/** This one should allocate one byte at a time. */
+	static allocator<char> alloc;
+};
+
+/** 
+ * Fast new/delete replacements that use the node allocator from STLPort to 
+ * alloc/dealloc memory. Only makes sense if STLPort is used...
+ */
+template<class T>
+struct FastAlloc : private FastAllocBase {
+	// Custom new & delete that (hopefully) use the node allocator
+	static void* operator new(size_t s) {
+		dcassert(sizeof(T) <= _MAX_BYTES);	// This should really be a boost type static assert
+		if(s != sizeof(T))
+			return ::operator new(s);
+		return alloc.allocate(s);
+	}
+	static void operator delete(void* m, size_t s) {
+		if (s != sizeof(T)) {
+			::operator delete(m);
+		} else {
+			alloc.deallocate((char*)m, s);
+		}
+	}
+};
+#else
+template<class T>
+struct FastAlloc {
+	// Empty
+};
+#endif
+
 /** Evaluates op(pair<T1, T2>.first, compareTo) */
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
@@ -520,5 +554,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.73 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: Util.h,v 1.74 2003/12/17 13:53:07 arnetheduck Exp $
  */

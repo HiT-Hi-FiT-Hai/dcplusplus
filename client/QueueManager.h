@@ -67,6 +67,7 @@ private:
 };
 
 class ConnectionQueueItem;
+class QueueLoader;
 
 class QueueManager : public Singleton<QueueManager>, public Speaker<QueueManagerListener>, private TimerManagerListener, 
 	private SearchManagerListener, private ClientManagerListener
@@ -186,6 +187,7 @@ private:
 		QueueItem::UserMap running;
 	};
 
+	friend class QueueLoader;
 	friend class Singleton<QueueManager>;
 	
 	QueueManager();
@@ -210,7 +212,7 @@ private:
 	static string getTempName(const string& aFileName);
 
 	/** Sanity check for the target filename */
-	string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
+	static string checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException);
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad) throw(QueueException, FileException);
 
@@ -241,6 +243,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.50 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.51 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

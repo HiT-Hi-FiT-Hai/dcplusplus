@@ -189,7 +189,7 @@ private:
 	class QueueItemInfo;
 	friend class QueueItemInfo;
 	
-	class QueueItemInfo : public QueueItem {
+	class QueueItemInfo : public FastAlloc<QueueItemInfo> {
 	public:
 		enum {
 			MASK_TARGET = 1 << COLUMN_TARGET,
@@ -204,15 +204,16 @@ private:
 			MASK_ADDED = 1 << COLUMN_ADDED
 		};
 
-		QueueItemInfo(const QueueItem& aQi) : QueueItem(aQi), updateMask((u_int32_t)-1) { 
+		QueueItemInfo(const QueueItem& aQi) : qi(new QueueItem(aQi)), updateMask((u_int32_t)-1) { 
 			update(); 
 		};
+		~QueueItemInfo() { delete qi; };
 
 		string columns[COLUMN_LAST];
 		u_int32_t updateMask;
 		void update();
 
-		void remove() { QueueManager::getInstance()->remove(getTarget()); }
+		void remove() { QueueManager::getInstance()->remove(qi->getTarget()); }
 
 		// TypedListViewCtrl functions
 		const string& getText(int col) const {
@@ -220,14 +221,23 @@ private:
 		}
 		static int compareItems(QueueItemInfo* a, QueueItemInfo* b, int col) {
 			switch(col) {
-				case COLUMN_SIZE: return compare(a->getSize(), b->getSize());
-				case COLUMN_PRIORITY: return compare((int)a->getPriority(), (int)b->getPriority());
-				case COLUMN_DOWNLOADED: return compare(a->getDownloadedBytes(), b->getDownloadedBytes());
+				case COLUMN_SIZE: return compare(a->qi->getSize(), b->qi->getSize());
+				case COLUMN_PRIORITY: return compare((int)a->qi->getPriority(), (int)b->qi->getPriority());
+				case COLUMN_DOWNLOADED: return compare(a->qi->getDownloadedBytes(), b->qi->getDownloadedBytes());
 				default: return Util::stricmp(a->columns[col], b->columns[col]);
 			}
 		}
 
-		const string& getPath() const { return columns[COLUMN_PATH]; };
+		const string& getPath() const { return columns[COLUMN_PATH]; }
+		const string& getTargetFileName() const { return columns[COLUMN_PATH]; }
+		const string& getTarget() const { return qi->getTarget(); }
+		int64_t getSize() const { return qi->getSize(); }
+		const string& getSearchString() const { return qi->getSearchString(); }
+
+		QueueItem* qi;
+	private:
+		QueueItemInfo(const QueueItemInfo&);
+		QueueItemInfo& operator=(const QueueItemInfo&);
 	};
 
 	typedef pair<Tasks, void*> Task;
@@ -362,5 +372,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.30 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.31 2003/12/17 13:53:07 arnetheduck Exp $
  */

@@ -67,9 +67,7 @@ void UserConnection::onLine(const string& aLine) throw () {
 		param = aLine.substr(x+1);
 	}
 	
-	if(aLine.length() == 0) {
-		// Do nothing
-	} else if(cmd == "$MyNick") {
+	if(cmd == "$MyNick") {
 		if(!param.empty())
 			fire(UserConnectionListener::MY_NICK, this, param);
 	} else if(cmd == "$Direction") {
@@ -98,6 +96,10 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(i == string::npos)
 			return;
 		int64_t start = Util::toInt64(param.substr(0, i));
+		if(start < 0) {
+			disconnect();
+			return;
+		}
 		i++;
 		string::size_type j = param.find(' ', i);
 		if(j == string::npos)
@@ -197,5 +199,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.33 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.34 2003/12/17 13:53:07 arnetheduck Exp $
  */

@@ -195,7 +195,7 @@ private:
 		COLUMN_LAST
 	};
 	
-	class UserInfo : public UserInfoBase {
+	class UserInfo : public UserInfoBase, public FastAlloc<UserInfo> {
 	public:
 		UserInfo(const User::Ptr& u) : UserInfoBase(u) { update(); };
 
@@ -380,6 +380,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.36 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.37 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

@@ -204,7 +204,7 @@ private:
 	void updateStatus();
 	void GoToDirectory(HTREEITEM hItem, StringList::iterator& iPath, const StringList::iterator& iPathEnd);
 
-	class ItemInfo {
+	class ItemInfo : public FastAlloc<ItemInfo> {
 	public:
 		enum ItemType {
 			FILE,
@@ -256,5 +256,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.23 2003/11/12 21:45:00 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.24 2003/12/17 13:53:07 arnetheduck Exp $
  */

@@ -5,6 +5,7 @@
 * Upgraded to WTL 7.1, should fix a few UI issues
 * Fixed brightness of compressed transfer progress bars
 * Fixed a crash with badly formatted compressed transfer requests
+* Some work on memory managment, dramatically improving DC++'s behaviour with large queues / shares
 
 
  -- 0.305 2003-12-04 --

@@ -33,6 +33,10 @@
 #include <ctype.h>
 #endif
 
+#ifdef HAS_STLPORT
+allocator<char> FastAllocBase::alloc;
+#endif
+
 string Util::emptyString;
 
 bool Util::away = false;
@@ -410,7 +414,7 @@ string Util::formatTime(const string &msg, const time_t t) {
 			buf = new char[bufsize];
 		}
 
-		string result(buf);
+		return string(buf);
 	}
 	return Util::emptyString;
 }
@@ -550,6 +554,6 @@ string Util::getOsVersion() {
 
 /**
  * @file
- * $Id: Util.cpp,v 1.39 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.40 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

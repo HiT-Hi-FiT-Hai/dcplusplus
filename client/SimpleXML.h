@@ -30,14 +30,44 @@
 STANDARD_EXCEPTION(SimpleXMLException);
 
 /**
+ * This class reads an XML and calls a callback for each
+ * element encountered. T is a functor with two overloads,
+ * void operator()(const string& name, StringPairList& attribs, bool simple)
+ * void operator()(const string& data);
+ * The first will be called on every tag encountered, the second when exiting
+ * from a non-simple tag.
+ * It is in now way a full XML parser.
+ */
+class SimpleXMLReader {
+public:
+	struct CallBack {
+		virtual void startTag(const string& name, StringPairList& attribs, bool simple) = 0;
+		virtual void endTag(const string& name, const string& data) = 0;
+	};
+	SimpleXMLReader(CallBack* callback) : cb(callback) { }
+
+	string::size_type fromXML(const string& n, const string& tmp, string::size_type start = 0, bool inTag = false) throw(SimpleXMLException);
+private:
+	StringPairList attribs;
+	string data;
+
+	CallBack* cb;
+
+	string::size_type loadAttribs(const string& name, const string& tmp, string::size_type start) throw(SimpleXMLException);
+
+};
+
+/**
  * A simple XML class that loads an XML-ish structure into an internal tree
  * and allows easy access to each element through a "current location".
  */
 class SimpleXML  
 {
 public:
-	SimpleXML(int numAttribs = 0) : found(false), attribs(numAttribs) { root = current = new Tag("BOGUSROOT", Util::emptyString, NULL); };
-	~SimpleXML() { delete root; }
+	SimpleXML() : root("BOGUSROOT", Util::emptyString, NULL), current(&root), found(false) { 
+		resetCurrentChild();
+	};
+	~SimpleXML() { }
 	
 	void addTag(const string& aName, const string& aData = Util::emptyString) throw(SimpleXMLException);
 	void addTag(const string& aName, int aData) throw(SimpleXMLException) {
@@ -79,7 +109,7 @@ public:
 	}
 
 	void stepOut() throw(SimpleXMLException) {
-		if(current == root)
+		if(current == &root)
 			throw SimpleXMLException("Already at lowest level");
 
 		dcassert(current->parent != NULL);
@@ -124,8 +154,8 @@ public:
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
-	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML(0) : Util::emptyString; };
-	void toXML(File* f) throw(FileException) { if(!root->children.empty()) root->children[0]->toXML(0, f); };
+	string toXML() { return (!root.children.empty()) ? root.children[0]->toXML(0) : Util::emptyString; };
+	void toXML(File* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
 	static void escape(string& aString, bool aAttrib, bool aLoading = false);
 	/** 
@@ -142,9 +172,6 @@ private:
 		typedef Tag* Ptr;
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
-		typedef pair<string,string> StringPair;
-		typedef vector<StringPair> AttribMap;
-		typedef AttribMap::iterator AttribIter;
 
 		/**
 		 * A simple list of children. To find a tag, one must search the entire list.
@@ -156,7 +183,7 @@ private:
 		 * we use a vector instead of a (hash)map to save a few bytes of memory and unnecessary
 		 * calls to the memory allocator...)
 		 */
-		AttribMap attribs;
+		StringPairList attribs;
 		
 		/** Tag name */
 		string name;
@@ -167,21 +194,19 @@ private:
 		/** Parent tag, for easy traversal */
 		Ptr parent;
 
-		Tag(const string& aName, const string& aData, Ptr aParent, int numAttribs = 0) : name(aName), data(aData), parent(aParent) { 
-			if(numAttribs > 0) 
-				attribs.reserve(numAttribs);
+		Tag(const string& aName, const StringPairList& a, Ptr aParent) : attribs(a), name(aName), data(), parent(aParent) { 
+		};
+
+		Tag(const string& aName, const string& d, Ptr aParent) : name(aName), data(d), parent(aParent) { 
 		};
 		
 		const string& getAttrib(const string& aName, const string& aDefault = Util::emptyString) {
-			AttribIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
+			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
 			return (i == attribs.end()) ? aDefault : i->second; 
 		}
 		string toXML(int indent);
 		void toXML(int indent, File* f);
 		
-		string::size_type fromXML(const string& tmp, string::size_type start, int aa, bool isRoot = false) throw(SimpleXMLException);
-		string::size_type loadAttribs(const string& tmp, string::size_type start) throw(SimpleXMLException);
-
 		void appendAttribString(string& tmp);
 		/** Delete all children! */
 		~Tag() {
@@ -189,16 +214,35 @@ private:
 				delete *i;
 			}
 		}
+
 	private:
 		Tag(const Tag&);
 		Tag& operator=(Tag&);
 	};
 
+	class TagReader : public SimpleXMLReader::CallBack {
+	public:
+		TagReader(Tag* root) : cur(root) { };
+		virtual void startTag(const string& name, StringPairList& attribs, bool simple) {
+			cur->children.push_back(new Tag(name, attribs, cur));
+			if(!simple)
+				cur = cur->children.back();
+		}
+		virtual void endTag(const string&, const string& d) {
+			cur->data = d;
+			if(cur->parent == NULL)
+				throw SimpleXMLException("Invalid end tag");
+			cur = cur->parent;
+		}
+
+		Tag* cur;
+	};
+
 	SimpleXML(const SimpleXML&);
 	SimpleXML& operator=(const SimpleXML&);
 
-	/** Bogus root tag, should be only one child! */
-	Tag::Ptr root;
+	/** Bogus root tag, should have only one child! */
+	Tag root;
 
 	/** Current position */
 	Tag::Ptr current;
@@ -211,13 +255,12 @@ private:
 	}
 
 	bool found;
-	int attribs;
 };
 
 #endif // !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.24 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.25 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

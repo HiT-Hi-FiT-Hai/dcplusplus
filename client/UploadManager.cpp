@@ -187,7 +187,7 @@ void UploadManager::onGetZBlock(UserConnection* aSource, const string& aFile, in
 		if(prepareFile(aSource, aFile, aResume)) {
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
-			if(u->getFile()->getPos() + aBytes >= u->getFile()->getSize()) {
+			if(u->getFile()->getPos() + aBytes > u->getFile()->getSize()) {
 				// Can't do...
 				aSource->disconnect();
 				return;
@@ -385,5 +385,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.47 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.48 2003/12/17 13:53:07 arnetheduck Exp $
  */

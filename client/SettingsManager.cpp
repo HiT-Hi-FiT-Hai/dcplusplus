@@ -177,7 +177,7 @@ void SettingsManager::load(string const& aFileName)
 	}
 
 	try {
-		SimpleXML xml(1);
+		SimpleXML xml;
 		xml.fromXML(xmltext);
 		
 		xml.resetCurrentChild();
@@ -287,6 +287,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.61 2003/12/03 22:48:02 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.62 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

@@ -70,7 +70,7 @@ void SimpleXML::escape(string& aString, bool aAttrib, bool aLoading /* = false *
 }
 
 void SimpleXML::Tag::appendAttribString(string& tmp) {
-	for(AttribIter i = attribs.begin(); i!= attribs.end(); ++i) {
+	for(StringPairIter i = attribs.begin(); i!= attribs.end(); ++i) {
 		tmp.append(i->first);
 		tmp.append("=\"", 2);
 		if(needsEscape(i->second, true)) {
@@ -190,7 +190,7 @@ bool SimpleXML::findChild(const string& aName) throw() {
 	return false;
 }
 
-string::size_type SimpleXML::Tag::loadAttribs(const string& tmp, string::size_type start) throw(SimpleXMLException) {
+string::size_type SimpleXMLReader::loadAttribs(const string& name, const string& tmp, string::size_type start) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
 	for(;;) {
@@ -208,7 +208,7 @@ string::size_type SimpleXML::Tag::loadAttribs(const string& tmp, string::size_ty
 		}
 		// Ok, we have an attribute...
 		attribs.push_back(make_pair(tmp.substr(i, j-i), tmp.substr(x, y-x)));
-		escape(attribs.back().second, true, true);
+		SimpleXML::escape(attribs.back().second, true, true);
 
 		i = tmp.find_first_not_of(' ', y + 1);
 		if(tmp[i] == '/' || tmp[i] == '>')
@@ -216,7 +216,7 @@ string::size_type SimpleXML::Tag::loadAttribs(const string& tmp, string::size_ty
 	}
 }
 
-string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type start, int aa, bool isRoot /* = false */) throw(SimpleXMLException) {
+string::size_type SimpleXMLReader::fromXML(const string& n, const string& tmp, string::size_type start, bool inTag) throw(SimpleXMLException) {
 	string::size_type i = start;
 	string::size_type j;
 
@@ -226,19 +226,16 @@ string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type s
 	for(;;) {
 		j = tmp.find('<', i);
 		if(j == string::npos) {
-			if(isRoot) {
-				throw SimpleXMLException("Invalid XML file, missing root tag");
-			} else {
-				throw SimpleXMLException("Missing end tag in " + name);
+			if(inTag) {
+				throw SimpleXMLException("Missing end tag in " + n);
 			}
+			return tmp.size();
 		}
 
 		// Check that we have at least 3 more characters as the shortest valid xml tag is <a/>...
 		if((j + 3) > tmp.size()) {
-			throw SimpleXMLException("Missing end tag in " + name);
+			throw SimpleXMLException("Missing end tag in " + n);
 		}
-
-		Ptr child = NULL;
 
 		i = j + 1;
 
@@ -246,7 +243,7 @@ string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type s
 			// <? processing instruction ?>, ignore...
 			i = tmp.find("?>", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing '?>' in " + name);
+				throw SimpleXMLException("Missing '?>' in " + n);
 			}
 			i += 2;
 			continue;
@@ -256,7 +253,7 @@ string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type s
 			// <!-- comment -->, ignore...
 			i = tmp.find("-->", i);
 			if(i == string::npos) {
-				throw SimpleXMLException("Missing '-->' in " + name);
+				throw SimpleXMLException("Missing '-->' in " + n);
 			}
 			continue;
 		}
@@ -264,56 +261,53 @@ string::size_type SimpleXML::Tag::fromXML(const string& tmp, string::size_type s
 		// Check if we reached the end tag
 		if(tmp[i] == '/') {
 			i++;
-			if( (tmp.compare(i, name.length(), name) == 0) && 
-				(tmp[i + name.length()] == '>') )
+			if( (tmp.compare(i, n.length(), n) == 0) && 
+				(tmp[i + n.length()] == '>') )
 			{
 				if(!hasChildren) {
 					data = tmp.substr(start, i - start - 2);
-					escape(data, false, true);
+					SimpleXML::escape(data, false, true);
+				} else {
+					data.clear();
 				}
-				return i + name.length() + 1;
+				return i + n.length() + 1;
 			} else {
-				throw SimpleXMLException("Missing end tag in " + name);
+				throw SimpleXMLException("Missing end tag in " + n);
 			}
 		}
 
 		// Alright, we have a real tag for sure...now get the name of it.
 		j = tmp.find_first_of(" />", i);
 		if(j == string::npos) {
-			throw SimpleXMLException("Missing '>' in " + name);
+			throw SimpleXMLException("Missing '>' in " + n);
 		}
-		
-		child = new Tag(tmp.substr(i, j-i), Util::emptyString, this, aa);
-		// Put it here immideately to avoid mem leaks
-		children.push_back(child);
 
+		string name = tmp.substr(i, j-i);
+		hasChildren = true;
 		if(tmp[j] == ' ')
 			j = tmp.find_first_not_of(' ', j+1);
 		
 		if(j == string::npos) {
 			throw SimpleXMLException("Missing '>' in " + name);
 		}
-		
+
+		attribs.clear();
 		if(tmp[j] != '/' && tmp[j] != '>') {
 			// We have attribs...
-			j = child->loadAttribs(tmp, j);
+			j = loadAttribs(name, tmp, j);
 		}
 
 		if(tmp[j] == '>') {
 			// This is a real tag with data etc...
-			hasChildren = true;
-			j = child->fromXML(tmp, j+1, aa);
+			cb->startTag(name, attribs, false);
+			j = fromXML(name, tmp, j+1, true);
+			cb->endTag(name, data);
 		} else {
 			// A simple tag (<xxx/>
+			cb->startTag(name, attribs, true);
 			j++;
 		}
 		i = j;
-		if(isRoot) {
-			if(tmp.find('<', i) != string::npos) {
-				throw SimpleXMLException("Invalid XML file, multiple root tags");
-			}
-			return tmp.length();
-		}
 	}	
 }
 
@@ -322,21 +316,16 @@ void SimpleXML::addTag(const string& aName, const string& aData /* = "" */) thro
 		throw SimpleXMLException("Empty tag names not allowed");
 	}
 
-	if(current == root) {
-		if(current->children.empty()) {
-			current->children.push_back(new Tag(aName, aData, root, attribs));
-			currentChild = current->children.begin();
-		} else {
-			throw SimpleXMLException("Only one root tag allowed");
-		}
+	if(current == &root && !current->children.empty()) {
+		throw SimpleXMLException("Only one root tag allowed");
 	} else {
-		current->children.push_back(new Tag(aName, aData, current, attribs));
+		current->children.push_back(new Tag(aName, aData, current));
 		currentChild = current->children.end() - 1;
 	}
 }
 
 void SimpleXML::addAttrib(const string& aName, const string& aData) throw(SimpleXMLException) {
-	if(current==root)
+	if(current == &root)
 		throw SimpleXMLException("No tag is currently selected");
 
 	current->attribs.push_back(make_pair(aName, aData));
@@ -349,23 +338,24 @@ void SimpleXML::addChildAttrib(const string& aName, const string& aData) throw(S
 }
 
 void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
-	if(root) {
-		delete root;
+	if(!root.children.empty()) {
+		delete root.children[0];
+		root.children.clear();
 	}
-	root = new Tag("BOGUSROOT", Util::emptyString, NULL, 0);
 
-	root->fromXML(aXML, 0, attribs, true);
+	TagReader t(&root);
+	SimpleXMLReader(&t).fromXML(Util::emptyString, aXML);
 	
-	if(root->children.size() != 1) {
+	if(root.children.size() != 1) {
 		throw SimpleXMLException("Invalid XML file, missing or multiple root tags");
 	}
 	
-	current = root;
+	current = &root;
 	resetCurrentChild();
 }
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.21 2003/11/21 01:56:59 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.22 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

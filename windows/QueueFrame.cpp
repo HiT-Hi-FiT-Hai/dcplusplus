@@ -25,7 +25,6 @@
 #include "PrivateFrame.h"
 #include "LineDlg.h"
 
-#include "../client/SimpleXML.h"
 #include "../client/StringTokenizer.h"
 #include "../client/ShareManager.h"
 
@@ -148,14 +147,14 @@ void QueueFrame::QueueItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_TARGET) {
-        columns[COLUMN_TARGET] = getTargetFileName();
+        columns[COLUMN_TARGET] = qi->getTargetFileName();
 	}
 	int online = 0;
 	if(colMask & MASK_USERS || colMask & MASK_STATUS) {
 		string tmp;
 
 		QueueItem::Source::Iter j;
-		for(j = getSources().begin(); j != getSources().end(); ++j) {
+		for(j = qi->getSources().begin(); j != qi->getSources().end(); ++j) {
 			if(tmp.size() > 0)
 				tmp += ", ";
 
@@ -168,47 +167,47 @@ void QueueFrame::QueueItemInfo::update() {
 		columns[COLUMN_USERS] = tmp.empty() ? STRING(NO_USERS) : tmp;
 	}
 	if(colMask & MASK_STATUS) {
-		if(getStatus() == QueueItem::STATUS_WAITING) {
+		if(qi->getStatus() == QueueItem::STATUS_WAITING) {
 
 			char buf[64];
 			if(online > 0) {
-				if(getSources().size() == 1) {
+				if(qi->getSources().size() == 1) {
 					columns[COLUMN_STATUS] = STRING(WAITING_USER_ONLINE);
 				} else {
-					sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, getSources().size());
+					sprintf(buf, CSTRING(WAITING_USERS_ONLINE), online, qi->getSources().size());
 					columns[COLUMN_STATUS] = buf;
 				}
 			} else {
-				if(getSources().size() == 0) {
+				if(qi->getSources().size() == 0) {
 					columns[COLUMN_STATUS] = STRING(NO_USERS_TO_DOWNLOAD_FROM);
-				} else if(getSources().size() == 1) {
+				} else if(qi->getSources().size() == 1) {
 					columns[COLUMN_STATUS] = STRING(USER_OFFLINE);
-				} else if(getSources().size() == 2) {
+				} else if(qi->getSources().size() == 2) {
 					columns[COLUMN_STATUS] = STRING(BOTH_USERS_OFFLINE);
-				} else if(getSources().size() == 3) {
+				} else if(qi->getSources().size() == 3) {
 					columns[COLUMN_STATUS] = STRING(ALL_3_USERS_OFFLINE);
-				} else if(getSources().size() == 4) {
+				} else if(qi->getSources().size() == 4) {
 					columns[COLUMN_STATUS] = STRING(ALL_4_USERS_OFFLINE);
 				} else {
-					sprintf(buf, CSTRING(ALL_USERS_OFFLINE), getSources().size());
+					sprintf(buf, CSTRING(ALL_USERS_OFFLINE), qi->getSources().size());
 					columns[COLUMN_STATUS] = buf;
 				}
 			}
-		} else if(getStatus() == QueueItem::STATUS_RUNNING) {
+		} else if(qi->getStatus() == QueueItem::STATUS_RUNNING) {
 			columns[COLUMN_STATUS] = STRING(RUNNING);
 		} 
 	}
 	if(colMask & MASK_SIZE) {
-		columns[COLUMN_SIZE] = (getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(getSize());
+		columns[COLUMN_SIZE] = (qi->getSize() == -1) ? STRING(UNKNOWN) : Util::formatBytes(qi->getSize());
 	}
 	if(colMask & MASK_DOWNLOADED) {
-		if(getSize() > 0)
-			columns[COLUMN_DOWNLOADED] = Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)";
+		if(qi->getSize() > 0)
+			columns[COLUMN_DOWNLOADED] = Util::formatBytes(qi->getDownloadedBytes()) + " (" + Util::toString((double)qi->getDownloadedBytes()*100.0/(double)qi->getSize()) + "%)";
 		else
 			columns[COLUMN_DOWNLOADED].clear();
 	}
 	if(colMask & MASK_PRIORITY) {
-		switch(getPriority()) {
+		switch(qi->getPriority()) {
 		case QueueItem::PAUSED: columns[COLUMN_PRIORITY] = STRING(PAUSED); break;
 		case QueueItem::LOWEST: columns[COLUMN_PRIORITY] = STRING(LOWEST); break;
 		case QueueItem::LOW: columns[COLUMN_PRIORITY] = STRING(LOW); break;
@@ -220,13 +219,13 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 
 	if(colMask & MASK_PATH) {
-		columns[COLUMN_PATH] = Util::getFilePath(getTarget());
+		columns[COLUMN_PATH] = Util::getFilePath(qi->getTarget());
 	}
 
 	if(colMask & MASK_ERRORS) {
 		string tmp;
 		QueueItem::Source::Iter j;
-		for(j = getBadSources().begin(); j != getBadSources().end(); ++j) {
+		for(j = qi->getBadSources().begin(); j != qi->getBadSources().end(); ++j) {
 			QueueItem::Source::Ptr sr = *j;
 			if(!sr->isSet(QueueItem::Source::FLAG_REMOVED)) {
 				if(tmp.size() > 0)
@@ -249,11 +248,11 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 	
 	if(colMask & MASK_SEARCHSTRING) {
-		columns[COLUMN_SEARCHSTRING] = getSearchString();
+		columns[COLUMN_SEARCHSTRING] = qi->getSearchString();
 	}
 
 	if(colMask & MASK_ADDED) {
-		columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
+		columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", qi->getAdded());
 	}
 }
 
@@ -269,8 +268,8 @@ void QueueFrame::onQueueAdded(QueueItem* aQI) {
 }
 
 void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
-	if(!ii->isSet(QueueItem::FLAG_USER_LIST)) {
-		queueSize+=ii->getSize();
+	if(!ii->qi->isSet(QueueItem::FLAG_USER_LIST)) {
+		queueSize+=ii->qi->getSize();
 	}
 	queueItems++;
 	dirty = true;
@@ -281,14 +280,14 @@ void QueueFrame::addQueueItem(QueueItemInfo* ii, bool noSort) {
 	directories.insert(make_pair(dir, ii));
 	
 	if(updateDir) {
-		addDirectory(dir, ii->isSet(QueueItem::FLAG_USER_LIST));
+		addDirectory(dir, ii->qi->isSet(QueueItem::FLAG_USER_LIST));
 	} 
 	if(!showTree || isCurDir(dir)) {
 		ii->update();
 		if(noSort)
-			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->getTarget()));
+			ctrlQueue.insertItem(ctrlQueue.GetItemCount(), ii, WinUtil::getIconIndex(ii->qi->getTarget()));
 		else
-			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(ii->getTarget()));
+			ctrlQueue.insertItem(ii, WinUtil::getIconIndex(ii->qi->getTarget()));
 	}
 }
 
@@ -547,37 +546,37 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		dcassert(queue.find(aQI) != queue.end());
 		ii = queue[aQI];
 
-		ii->setPriority(aQI->getPriority());
-		ii->setStatus(aQI->getStatus());
-		ii->setDownloadedBytes(aQI->getDownloadedBytes());
+		ii->qi->setPriority(aQI->getPriority());
+		ii->qi->setStatus(aQI->getStatus());
+		ii->qi->setDownloadedBytes(aQI->getDownloadedBytes());
 
 		{
-			for(QueueItem::Source::Iter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
+			for(QueueItem::Source::Iter i = ii->qi->getSources().begin(); i != ii->qi->getSources().end(); ) {
 				if(!aQI->isSource((*i)->getUser())) {
 					delete *i;
-					i = ii->getSources().erase(i);
+					i = ii->qi->getSources().erase(i);
 				} else {
 					++i;
 				}
 			}
 			for(QueueItem::Source::Iter j = aQI->getSources().begin(); j != aQI->getSources().end(); ++j) {
-				if(!ii->isSource((*j)->getUser())) {
-					ii->getSources().push_back(new QueueItem::Source(*(*j)));
+				if(!ii->qi->isSource((*j)->getUser())) {
+					ii->qi->getSources().push_back(new QueueItem::Source(*(*j)));
 				}
 			}
 		}
 		{
-			for(QueueItem::Source::Iter i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ) {
+			for(QueueItem::Source::Iter i = ii->qi->getBadSources().begin(); i != ii->qi->getBadSources().end(); ) {
 				if(!aQI->isBadSource((*i)->getUser())) {
 					delete *i;
-					i = ii->getBadSources().erase(i);
+					i = ii->qi->getBadSources().erase(i);
 				} else {
 					++i;
 				}
 			}
 			for(QueueItem::Source::Iter j = aQI->getBadSources().begin(); j != aQI->getBadSources().end(); ++j) {
-				if(!ii->isBadSource((*j)->getUser())) {
-					ii->getBadSources().push_back(new QueueItem::Source(*(*j)));
+				if(!ii->qi->isBadSource((*j)->getUser())) {
+					ii->qi->getBadSources().push_back(new QueueItem::Source(*(*j)));
 				}
 			}
 		}
@@ -594,7 +593,7 @@ void QueueFrame::onQueueSearchStringUpdated(QueueItem* aQI) {
 		QueueIter i = queue.find(aQI);
 		dcassert(i != queue.end());
 		ii = i->second;
-		ii->setSearchString(aQI->getSearchString());
+		ii->qi->setSearchString(aQI->getSearchString());
 		ii->updateMask |= QueueItemInfo::MASK_SEARCHSTRING;
 	}
 
@@ -628,7 +627,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			dcassert(j != i.second);
 			directories.erase(j);
 			if(directories.count(ii->getPath()) == 0) {
-				removeDirectory(ii->getPath(), ii->isSet(QueueItem::FLAG_USER_LIST));
+				removeDirectory(ii->getPath(), ii->qi->isSet(QueueItem::FLAG_USER_LIST));
 				if(isCurDir(ii->getPath()))
 					curDir = Util::emptyString;
 			}
@@ -715,7 +714,7 @@ void QueueFrame::moveDir(HTREEITEM ht, const string& target) {
 	DirectoryPair p = directories.equal_range(*s);
 	
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
-		QueueItem* qi = i->second;
+		QueueItemInfo* qi = i->second;
 		QueueManager::getInstance()->move(qi->getTarget(), target + qi->getTargetFileName());
 	}			
 }
@@ -855,7 +854,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			QueueItemInfo* ii = ctrlQueue.getItemData(ctrlQueue.GetNextItem(-1, LVNI_SELECTED));
 			menuItems = 0;
 			QueueItem::Source::Iter i;
-			for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
+			for(i = ii->qi->getSources().begin(); i != ii->qi->getSources().end(); ++i) {
 
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
@@ -872,7 +871,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 				menuItems++;
 			}
 			readdItems = 0;
-			for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
+			for(i = ii->qi->getBadSources().begin(); i != ii->qi->getBadSources().end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPSTR)(*i)->getUser()->getNick().c_str();
@@ -1269,7 +1268,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.40 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.41 2003/12/17 13:53:07 arnetheduck Exp $
  */
 
 

@@ -83,6 +83,10 @@ typedef vector<string> StringList;
 typedef StringList::iterator StringIter;
 typedef StringList::const_iterator StringIterC;
 
+typedef pair<string, string> StringPair;
+typedef vector<StringPair> StringPairList;
+typedef StringPairList::iterator StringPairIter;
+
 typedef HASH_MAP<string, string> StringMap;
 typedef StringMap::iterator StringMapIter;
 
@@ -98,6 +102,6 @@ extern void shutdown();
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.34 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.35 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

@@ -95,7 +95,7 @@ public:
 	GETSET(string, listFile, ListFile);
 	GETSET(string, bzListFile, BZListFile);
 private:
-	class Directory {
+	class Directory : public FastAlloc<Directory> {
 	public:
 		typedef Directory* Ptr;
 		typedef HASH_MAP<string, Ptr> Map;
@@ -219,6 +219,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.39 2003/11/24 18:46:30 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.40 2003/12/17 13:53:07 arnetheduck Exp $
  */
 

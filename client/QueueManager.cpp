@@ -1011,105 +1011,116 @@ void QueueManager::saveQueue() throw() {
 	}
 }
 
+class QueueLoader : public SimpleXMLReader::CallBack {
+public:
+	QueueLoader() : cur(NULL), inDownloads(false) { };
+	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
+	virtual void endTag(const string& name, const string& data);
+private:
+	string target;
+
+	QueueItem* cur;
+	bool inDownloads;
+
+	const string& getAttrib(StringPairList& attribs, const string& name) {
+		StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string, string>(name));
+		return ((i == attribs.end()) ? Util::emptyString : i->second);
+	}
+};
+
 void QueueManager::loadQueue() throw() {
 	try {
-		SimpleXML xml(5);
-		xml.fromXML(File(getQueueFile(), File::READ, File::OPEN).read());
-
-		load(&xml);
+		QueueLoader l;
+		SimpleXMLReader(&l).fromXML(Util::emptyString, File(getQueueFile(), File::READ, File::OPEN).read());
+		dirty = false;
 	} catch(const Exception&) {
 		// ...
 	}
 }
 
-void QueueManager::load(SimpleXML* aXml) {
-	Lock l(cs);
+static const string sDownload = "Download";
+static const string sTempTarget = "TempTarget";
+static const string sTarget = "Target";
+static const string sSize = "Size";
+static const string sDownloaded = "Downloaded";
+static const string sPriority = "Priority";
+static const string sSource = "Source";
+static const string sNick = "Nick";
+static const string sPath = "Path";
+static const string sDirectory = "Directory";
+static const string sSearchString = "SearchString";
+static const string sAdded = "Added";
 
-	aXml->resetCurrentChild();
-	if(aXml->findChild("Downloads")) {
-
-		const string sDownload = "Download";
-		const string sTempTarget = "TempTarget";
-		const string sTarget = "Target";
-		const string sSize = "Size";
-		const string sDownloaded = "Downloaded";
-		const string sPriority = "Priority";
-		const string sSource = "Source";
-		const string sNick = "Nick";
-		const string sPath = "Path";
-		const string sDirectory = "Directory";
-		const string sSearchString = "SearchString";
-		const string sAdded = "Added";
-		string target;
-
-		aXml->stepIn();
-		
-		while(aXml->findChild(sDownload)) {
-			const string& tempTarget = aXml->getChildAttrib(sTempTarget);
-			int64_t size = aXml->getLongLongChildAttrib(sSize);
+void QueueLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
+	QueueManager* qm = QueueManager::getInstance();
+	if(!inDownloads && name == "Downloads") {
+		inDownloads = true;
+	} else if(inDownloads) {
+		if(cur == NULL && name == sDownload) {
+			const string& tempTarget = getAttrib(attribs, sTempTarget);
+			int64_t size = Util::toInt64(getAttrib(attribs, sSize));
 			if(size == 0)
-				continue;
+				return;
 			int flags = QueueItem::FLAG_RESUME;
 
 			try {
-				target = checkTarget(aXml->getChildAttrib(sTarget), size, flags);
+				target = QueueManager::checkTarget(getAttrib(attribs, sTarget), size, flags);
 				if(target.empty())
-					continue;
+					return;
 			} catch(const Exception&) {
-				continue;
+				return;
 			}
-			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
-			int64_t downloaded = aXml->getLongLongChildAttrib(sDownloaded);
-			const string& searchString = aXml->getChildAttrib(sSearchString);
-			u_int32_t added = (u_int32_t)aXml->getIntChildAttrib(sAdded);
+			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority));
+			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded));
+			const string& searchString = getAttrib(attribs, sSearchString);
+			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded));
 			if(added == 0)
 				added = GET_TIME();
-			QueueItem* qi = fileQueue.find(target);
+			QueueItem* qi = qm->fileQueue.find(target);
 			if(qi == NULL) {
-				qi = fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added);
-				fire(QueueManagerListener::ADDED, qi);
+				qi = qm->fileQueue.add(target, size, searchString, flags, p, tempTarget, downloaded, added);
+				qm->fire(QueueManagerListener::ADDED, qi);
 			}
-
-			aXml->stepIn();
-			while(aXml->findChild(sSource)) {
-				const string& nick = aXml->getChildAttrib(sNick);
-				if(nick.empty())
-					continue;
-				const string& path = aXml->getChildAttrib(sPath);
-				if(path.empty())
-					continue;
-				User::Ptr user = ClientManager::getInstance()->getUser(nick);
-				try {
-					if(addSource(qi, path, user, false) && user->isOnline())
-						ConnectionManager::getInstance()->getDownloadConnection(user);
-						
-				} catch(const Exception&) {
-					// ...
-				}
-			} 
-			aXml->stepOut();
-		}
-		aXml->resetCurrentChild();
-		while(aXml->findChild(sDirectory)) {
-			const string& name = aXml->getChildAttrib(sSource);
-			if(name.empty())
-				continue;
-			const string& targetd = aXml->getChildAttrib(sTarget);
-			if(targetd.empty())
-				continue;
-			const string& nick = aXml->getChildAttrib(sNick);
+			if(!simple)
+				cur = qi;
+		} else if(cur != NULL && name == sSource) {
+			const string& nick = getAttrib(attribs, sNick);
 			if(nick.empty())
-				continue;
-			QueueItem::Priority p = (QueueItem::Priority)aXml->getIntChildAttrib(sPriority);
-			
-			addDirectory(name, ClientManager::getInstance()->getUser(nick), targetd, p);
+				return;
+			const string& path = getAttrib(attribs, sPath);
+			if(path.empty())
+				return;
+			User::Ptr user = ClientManager::getInstance()->getUser(nick);
+			try {
+				if(qm->addSource(cur, path, user, false) && user->isOnline())
+					ConnectionManager::getInstance()->getDownloadConnection(user);
+			} catch(const Exception&) {
+				return;
+			}
+		} else if(cur == NULL && name == sDirectory) {
+			const string& source = getAttrib(attribs, sSource);
+			if(source.empty())
+				return;
+			const string& targetd = getAttrib(attribs, sTarget);
+			if(targetd.empty())
+				return;
+			const string& nick = getAttrib(attribs, sNick);
+			if(nick.empty())
+				return;
+			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority));
+
+			qm->addDirectory(source, ClientManager::getInstance()->getUser(nick), targetd, p);
 		}
-
-		aXml->stepOut();
 	}
+}
 
-	// We don't need to save the queue when we've just loaded it...
-	dirty = false;
+void QueueLoader::endTag(const string& name, const string&) {
+	if(inDownloads) {
+		if(name == sDownload)
+			cur = NULL;
+		else if(name == "Downloads")
+			inDownloads = false;
+	}
 }
 
 void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
@@ -1259,5 +1270,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.65 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.66 2003/12/17 13:53:07 arnetheduck Exp $
  */
