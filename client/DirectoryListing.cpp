@@ -250,14 +250,14 @@ static inline const string& escaper(const string& n, string& tmp, bool utf8) {
 	return utf8 ? n : (tmp.clear(), Text::acpToUtf8(n, tmp));
 }
 
-void DirectoryListing::download(Directory* aDir, const string& aTarget) {
+void DirectoryListing::download(Directory* aDir, const string& aTarget, bool highPrio) {
 	string tmp;
 	string target = (aDir == getRoot()) ? aTarget : aTarget + escaper(aDir->getName(), tmp, getUtf8()) + '\\';
 	// First, recurse over the directories
 	Directory::List& lst = aDir->directories;
 	sort(lst.begin(), lst.end(), Directory::DirSort());
 	for(Directory::Iter j = lst.begin(); j != lst.end(); ++j) {
-		download(*j, target);
+		download(*j, target, highPrio);
 	}
 	// Then add the files
 	File::List& l = aDir->files;
@@ -265,7 +265,7 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget) {
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
-			download(file, target + escaper(file->getName(), tmp, getUtf8()));
+			download(file, target + escaper(file->getName(), tmp, getUtf8()), false, highPrio);
 		} catch(const QueueException&) {
 			// Catch it here to allow parts of directories to be added...
 		} catch(const FileException&) {
@@ -274,24 +274,24 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget) {
 	}
 }
 
-void DirectoryListing::download(const string& aDir, const string& aTarget) {
+void DirectoryListing::download(const string& aDir, const string& aTarget, bool highPrio) {
 	dcassert(aDir.size() > 2);
 	dcassert(aDir[aDir.size() - 1] == '\\');
 	Directory* d = find(aDir, getRoot());
 	if(d != NULL)
-		download(d, aTarget);
+		download(d, aTarget, highPrio);
 }
 
-void DirectoryListing::download(File* aFile, const string& aTarget, bool view /* = false */) {
+void DirectoryListing::download(File* aFile, const string& aTarget, bool view, bool highPrio) {
 	int flags = (getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0) |
 		(view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 
 	if(getUtf8()) {
 		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), flags);
+			aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 	} else {
 		QueueManager::getInstance()->add(Text::acpToUtf8(getPath(aFile) + aFile->getName()), aFile->getSize(), user, aTarget, 
-			aFile->getTTH(), flags);
+			aFile->getTTH(), flags, highPrio || view ? QueueItem::HIGHEST : QueueItem::DEFAULT);
 	}
 }
 
@@ -330,5 +330,5 @@ size_t DirectoryListing::Directory::getTotalFileCount(bool adl) {
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.36 2004/09/24 20:48:27 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.37 2004/09/25 21:56:05 arnetheduck Exp $
  */

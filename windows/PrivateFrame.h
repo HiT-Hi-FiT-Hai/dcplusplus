@@ -75,6 +75,7 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -84,6 +85,7 @@ public:
 	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	void addLine(const tstring& aLine);
 	void onEnter();
@@ -147,7 +149,8 @@ public:
 private:
 	PrivateFrame(const User::Ptr& aUser) : user(aUser), 
 		created(false), closed(false), 
-		ctrlMessageContainer(_T("edit"), this, PM_MESSAGE_MAP) {
+		ctrlMessageContainer(_T("edit"), this, PM_MESSAGE_MAP),
+		ctrlClientContainer(_T("edit"), this, PM_MESSAGE_MAP) {
 	}
 	
 	~PrivateFrame() {
@@ -168,6 +171,7 @@ private:
 
 	User::Ptr user;
 	CContainedWindow ctrlMessageContainer;
+	CContainedWindow ctrlClientContainer;
 
 	bool closed;
 
@@ -196,6 +200,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.22 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.23 2004/09/25 21:56:05 arnetheduck Exp $
  */
 

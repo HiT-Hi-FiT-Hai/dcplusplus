@@ -26,12 +26,15 @@
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
+#define NOTEPAD_MESSAGE_MAP 13
+
 class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, public StaticFrame<NotepadFrame, ResourceManager::NOTEPAD>
 {
 public:
 	DECLARE_FRAME_WND_CLASS_EX(_T("NotepadFrame"), IDR_NOTEPAD, 0, COLOR_3DFACE);
 
-	NotepadFrame() : dirty(false) { }
+	NotepadFrame() : dirty(false),
+		ctrlClientContainer(_T("edit"), this, NOTEPAD_MESSAGE_MAP) { }
 	~NotepadFrame() { }
 	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
@@ -46,10 +49,13 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		CHAIN_MSG_MAP(baseClass)
+	ALT_MSG_MAP(NOTEPAD_MESSAGE_MAP)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -74,12 +80,13 @@ private:
 	
 	bool dirty;
 	CEdit ctrlPad;
+	CContainedWindow ctrlClientContainer;
 };
 
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file
- * $Id: NotepadFrame.h,v 1.11 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.12 2004/09/25 21:56:05 arnetheduck Exp $
  */
 

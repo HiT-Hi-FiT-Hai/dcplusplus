@@ -249,7 +249,8 @@ public:
 	static void registerMagnetHandler();
 	static void parseDchubUrl(const tstring& /*aUrl*/);
 	static void parseMagnetUri(const tstring& /*aUrl*/, bool aOverride = false);
-
+	static void parseDBLClick(const tstring& /*aString*/, string::size_type start, string::size_type end, bool bHandled = false /*false*/);
+	static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x);
 	static void openLink(const tstring& url);
 	static void openFile(const tstring& file) {
 		::ShellExecute(NULL, NULL, file.c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -289,5 +290,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.33 2004/09/24 20:48:28 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.34 2004/09/25 21:56:05 arnetheduck Exp $
  */

@@ -818,7 +818,7 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 
 			for(DirectoryItem::Iter i = dl.begin(); i != dl.end(); ++i) {
 				DirectoryItem* di = *i;
-				dirList.download(di->getName(), di->getTarget());
+				dirList.download(di->getName(), di->getTarget(), false);
 				delete di;
 			}
 		}
@@ -1251,5 +1251,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.103 2004/09/25 20:40:40 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.104 2004/09/25 21:56:05 arnetheduck Exp $
  */

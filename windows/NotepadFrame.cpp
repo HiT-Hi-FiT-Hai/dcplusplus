@@ -48,7 +48,8 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
-	
+	ctrlClientContainer.SubclassWindow(ctrlPad.m_hWnd);
+
 	bHandled = FALSE;
 	return 1;
 }
@@ -85,9 +86,26 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 	
 }
 
+LRESULT NotepadFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	HWND focus = GetFocus();
+	bHandled = false;
+	if(focus == ctrlPad.m_hWnd) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		tstring x;
+		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlPad, x);
+		string::size_type end = x.find(_T(" "), start);
+
+		if(end == string::npos)
+			end = x.length();
+		
+		WinUtil::parseDBLClick(x, start, end);
+	}
+	return 0;
+}
+
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.17 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.18 2004/09/25 21:56:05 arnetheduck Exp $
  */
 
 

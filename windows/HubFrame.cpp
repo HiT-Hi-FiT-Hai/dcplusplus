@@ -502,6 +502,7 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 		return 0;
 	} else {
 		SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, ctrlShowUsers.GetCheck() == BST_CHECKED);
+		HubManager::getInstance()->removeUserCommand(Text::fromT(server));
 
 		userMap.clear();
 
@@ -540,58 +541,20 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	}
 }
 
-static int textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
-	
-	int i = ctrl.CharFromPos(p);
-	int line = ctrl.LineFromChar(i);
-	int c = LOWORD(i) - ctrl.LineIndex(line);
-	int len = ctrl.LineLength(i) + 1;
-	if(len < 3) {
-		return 0;
-	}
-
-	TCHAR* buf = new TCHAR[len];
-	ctrl.GetLine(line, buf, len);
-	x = tstring(buf, len-1);
-	delete[] buf;
-
-	string::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
-	if(start == string::npos)
-		start = 0;
-	else
-		start++;
-
-	return start;
-}
-
 LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 	HWND focus = GetFocus();
 	bHandled = false;
 	if(focus == ctrlClient.m_hWnd) {
 		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 		tstring x;
-		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
+		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
 		string::size_type end = x.find(_T(" "), start);
 
 		if(end == string::npos)
 			end = x.length();
 		
-		if( (Util::strnicmp(x.c_str() + start, _T("http://"), 7) == 0) || 
-			(Util::strnicmp(x.c_str() + start, _T("www."), 4) == 0) ||
-			(Util::strnicmp(x.c_str() + start, _T("ftp://"), 6) == 0) ||
- 			(Util::strnicmp(x.c_str() + start, _T("irc://"), 6) == 0) ||
-			(Util::strnicmp(x.c_str() + start, _T("https://"), 8) == 0) )	{
-
-			bHandled = true;
-			WinUtil::openLink(x.substr(start, end-start));
-		} else if(Util::strnicmp(x.c_str() + start, _T("dchub://"), 8) == 0) {
-			bHandled = true;
-			WinUtil::parseDchubUrl(x.substr(start, end-start));
-		} else if(Util::strnicmp(x.c_str() + start, _T("magnet:?"), 8) == 0) {
-			bHandled = true;
-			WinUtil::parseMagnetUri(x.substr(start, end-start));
-		}
-		else {
+		WinUtil::parseDBLClick(x, start, end);
+		if (!bHandled) {
 			string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 
 			if(end == string::npos) // get EOL as well
@@ -686,7 +649,7 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	if (PtInRect(&rc, pt)) {
 		tstring x;
 		ctrlClient.ScreenToClient(&pt);
-		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
+		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
 
 		string::size_type end = x.find_first_of(_T(" >\t"), start+1);
 		if(end == string::npos) // get EOL as well
@@ -1144,5 +1107,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.74 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.75 2004/09/25 21:56:05 arnetheduck Exp $
  */

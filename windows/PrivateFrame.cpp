@@ -22,6 +22,7 @@
 
 #include "PrivateFrame.h"
 #include "SearchFrm.h"
+#include "WinUtil.h"
 
 #include "../client/Client.h"
 #include "../client/ClientManager.h"
@@ -50,7 +51,8 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL, WS_EX_CLIENTEDGE);
 	
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
-	
+	ctrlClientContainer.SubclassWindow(ctrlClient.m_hWnd);
+
 	ctrlMessage.SetFont(WinUtil::font);
 
 	tabMenu.CreatePopupMenu();
@@ -337,9 +339,26 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
+LRESULT PrivateFrame::onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	HWND focus = GetFocus();
+	bHandled = false;
+	if(focus == ctrlClient.m_hWnd) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		tstring x;
+		string::size_type start = (string::size_type)WinUtil::textUnderCursor(pt, ctrlClient, x);
+		string::size_type end = x.find(_T(" "), start);
+
+		if(end == string::npos)
+			end = x.length();
+		
+		WinUtil::parseDBLClick(x, start, end);
+	}
+	return 0;
+}
+
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.32 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.33 2004/09/25 21:56:05 arnetheduck Exp $
  */
 
 

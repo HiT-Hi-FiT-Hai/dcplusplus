@@ -855,6 +855,50 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 	}
 }
 
+int WinUtil::textUnderCursor(POINT p, CEdit& ctrl, tstring& x) {
+	
+	int i = ctrl.CharFromPos(p);
+	int line = ctrl.LineFromChar(i);
+	int c = LOWORD(i) - ctrl.LineIndex(line);
+	int len = ctrl.LineLength(i) + 1;
+	if(len < 3) {
+		return 0;
+	}
+
+	TCHAR* buf = new TCHAR[len];
+	ctrl.GetLine(line, buf, len);
+	x = tstring(buf, len-1);
+	delete[] buf;
+
+	string::size_type start = x.find_last_of(_T(" <\t\r\n"), c);
+	if(start == string::npos)
+		start = 0;
+	else
+		start++;
+
+	return start;
+}
+
+void WinUtil::parseDBLClick(const tstring& aString, string::size_type start, string::size_type end, bool bHandled /*false*/) {
+	if (!bHandled) { /* Make sure it's not handled */
+		if( (Util::strnicmp(aString.c_str() + start, _T("http://"), 7) == 0) || 
+			(Util::strnicmp(aString.c_str() + start, _T("www."), 4) == 0) ||
+			(Util::strnicmp(aString.c_str() + start, _T("ftp://"), 6) == 0) ||
+			(Util::strnicmp(aString.c_str() + start, _T("irc://"), 6) == 0) ||
+			(Util::strnicmp(aString.c_str() + start, _T("https://"), 8) == 0) )	{
+
+				bHandled = true;
+				openLink(aString.substr(start, end-start));
+			} else if(Util::strnicmp(aString.c_str() + start, _T("dchub://"), 8) == 0) {
+				bHandled = true;
+				parseDchubUrl(aString.substr(start, end-start));
+			} else if(Util::strnicmp(aString.c_str() + start, _T("magnet:?"), 8) == 0) {
+				bHandled = true;
+				parseMagnetUri(aString.substr(start, end-start));
+			}
+	}
+}
+
 void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting order, 
 							  SettingsManager::StrSetting widths, int n, 
 							  int* indexes, int* sizes) throw() {
@@ -900,5 +944,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.58 2004/09/24 20:48:28 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.59 2004/09/25 21:56:05 arnetheduck Exp $
  */

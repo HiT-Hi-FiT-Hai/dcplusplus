@@ -135,9 +135,9 @@ public:
 	void load(const string& i, bool doAdl);
 	void loadXML(const string& xml, bool doAdl);
 
-	void download(const string& aDir, const string& aTarget);
-	void download(Directory* aDir, const string& aTarget);
-	void download(File* aFile, const string& aTarget, bool view = false);
+	void download(const string& aDir, const string& aTarget, bool highPrio);
+	void download(Directory* aDir, const string& aTarget, bool highPrio);
+	void download(File* aFile, const string& aTarget, bool view, bool highPrio);
 	
 	string getPath(Directory* d);
 	string getPath(File* f) { return getPath(f->getParent()); };
@@ -169,5 +169,5 @@ inline bool operator==(DirectoryListing::File::Ptr a, const string& b) { return 
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.30 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.31 2004/09/25 21:56:05 arnetheduck Exp $
  */

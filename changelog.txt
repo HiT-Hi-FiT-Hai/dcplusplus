@@ -2,13 +2,9 @@
 *** WARNING *** 
 This update will change all your config files and queues, and it is 
 very probable that you won't be able to revert back to an older version
-<<<<<<< changelog.txt
-once the update has been done!!! Keep a backup handy!!!
-=======
 once the update has been done!!!
 Also, finish your queue file before upgrading if you care for your
 international filenames in it - they will not be correctly converted.
->>>>>>> 1.183
 *** WARNING ***
 
 * Fixed a rare download crash (thanks farcry)
@@ -43,8 +39,11 @@ international filenames in it - they will not be correctly converted.
 * Some memory savings for people with large queues
 * Fixed a bug with autosearch repeating the same search needlessly (this should result in fewer
   autosearches, good for the hubs)
+* Files scheduled for viewing are always set to highest prio
 * Added rudimentary automake and autoconf support for the client part, perhaps this will encourage someone
   to finish a nice linux port
+* Fixed dupe usercommands on reconnect (thanks sed)
+* Links now clickable in PM's as well (thanks torgny nyblom)
 
  -- 0.4032 2004-08-08 --
 * Fixed issue with autosearch not getting filelists
