@@ -192,7 +192,7 @@ string ResourceManager::strings[] = {
 "About DC++...", 
 "Change Log", 
 "DC++ discussion forum", 
-"Donate ï¿½ï¿½ï¿½/$$$ (paypal)", 
+"Donate €€€/$$$ (paypal)", 
 "Downloads", 
 "Translations", 
 "Frequently asked questions", 

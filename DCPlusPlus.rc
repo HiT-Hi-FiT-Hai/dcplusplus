@@ -271,7 +271,7 @@ BEGIN
     GROUPBOX        "Colors",IDC_SETTINGS_COLORS,7,7,261,50
     PUSHBUTTON      "Select &window color",IDC_SELWINCOLOR,16,17,82,14
     PUSHBUTTON      "Select &text style",IDC_SELTEXT,16,35,82,14
-    LTEXT           "Donate $$$:s! (well, ï¿½ï¿½ï¿½ preferably =) (see help menu)",
+    LTEXT           "Donate €€€:s! (ok, $$$ is fine too =) (see help menu)",
                     IDC_COLOREXAMPLE,107,17,91,32,SS_NOPREFIX | SS_SUNKEN | 
                     WS_BORDER | NOT WS_GROUP
     GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,57,261,75

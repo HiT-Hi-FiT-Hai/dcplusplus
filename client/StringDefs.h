@@ -195,7 +195,7 @@ enum Strings { // @DontAdd
 	MENU_ABOUT, // "About DC++..."
 	MENU_CHANGELOG, // "Change Log"
 	MENU_DISCUSS, // "DC++ discussion forum"
-	MENU_DONATE, // "Donate ï¿½ï¿½ï¿½/$$$ (paypal)"
+	MENU_DONATE, // "Donate €€€/$$$ (paypal)"
 	MENU_HELP_DOWNLOADS, // "Downloads"
 	MENU_HELP_TRANSLATIONS, // "Translations"
 	MENU_FAQ, // "Frequently asked questions"
