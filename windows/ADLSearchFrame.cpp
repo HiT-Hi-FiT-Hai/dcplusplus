@@ -136,14 +136,14 @@ LRESULT ADLSearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 }
 
 // Close window
-LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) 
+LRESULT ADLSearchFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) 
 {
 	ADLSearchManager::getInstance()->Save();
 
 	WinUtil::saveHeaderOrder(ctrlList, SettingsManager::ADLSEARCHFRAME_ORDER, 
 		SettingsManager::ADLSEARCHFRAME_WIDTHS, COLUMN_LAST, columnIndexes, columnSizes);
 
-	MDIDestroy(m_hWnd);
+	bHandled = FALSE;
 	return 0;
 }
 
@@ -595,5 +595,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.9 2003/10/08 21:55:09 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.10 2004/02/23 17:42:17 arnetheduck Exp $
  */

@@ -111,6 +111,8 @@ void startup(void (*f)(void*, const string&), void* p) {
 		}
 	}
 
+	if(f != NULL)
+		(*f)(p, STRING(HASH_DATABASE));
 	HashManager::getInstance()->startup();
 	if(f != NULL)
 		(*f)(p, STRING(SHARED_FILES));
@@ -148,6 +150,6 @@ void shutdown() {
 
 /**
  * @file
- * $Id: DCPlusPlus.cpp,v 1.29 2004/01/30 14:12:59 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.30 2004/02/23 17:42:16 arnetheduck Exp $
  */
 

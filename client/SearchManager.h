@@ -31,6 +31,7 @@
 #include "Client.h"
 #include "Singleton.h"
 #include "FastAlloc.h"
+#include "MerkleTree.h"
 
 #include "SearchManagerListener.h"
 
@@ -51,8 +52,9 @@ public:
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
 		const string& aHubIpPort) :
-	file(aFile), hubName(aHubName), hubIpPort(aHubIpPort), user(aUser), 
-		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), ref(1) { }
+	file(aFile), hubName(isTTH(aHubName) ? Util::emptyString : aHubName), hubIpPort(aHubIpPort), user(aUser), 
+		size(aSize), type(aType), slots(aSlots), freeSlots(aFreeSlots), 
+		tth(isTTH(aHubName) ? new TTHValue(aHubName.substr(4)) : NULL), ref(1) { }
 
 	string getFileName() const;
 	string toSR() const;
@@ -67,6 +69,7 @@ public:
 	Types getType() const { return type; }
 	int getSlots() const { return slots; }
 	int getFreeSlots() const { return freeSlots; }
+	TTHValue* getTTH() const { return tth; }
 
 	void incRef() { Thread::safeInc(&ref); }
 	void decRef() { 
@@ -77,12 +80,10 @@ public:
 private:
 	friend class SearchManager;
 
-	SearchResult() : size(0), type(TYPE_FILE), slots(0), freeSlots(0), ref(1) { }
-	~SearchResult() { };
+	SearchResult();
+	~SearchResult() { delete tth; };
 
-	SearchResult(const SearchResult& rhs) : 
-	   file(rhs.file), hubName(rhs.hubName), hubIpPort(rhs.hubIpPort), 
-		   user(rhs.user), size(rhs.size), type(rhs.type), slots(rhs.slots), freeSlots(rhs.freeSlots), ref(1) { }
+	SearchResult(const SearchResult& rhs);
 
 	string file;
 	string hubName;
@@ -92,8 +93,13 @@ private:
 	Types type;
 	int slots;
 	int freeSlots;
+	TTHValue* tth;
 
 	long ref;
+
+	bool isTTH(const string& str) const {
+		return str.compare(0, 4, "TTH:") == 0;
+	}
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
@@ -161,5 +167,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.32 2004/01/28 19:37:54 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.33 2004/02/23 17:42:17 arnetheduck Exp $
  */

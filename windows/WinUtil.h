@@ -196,6 +196,8 @@ public:
 		return tm.tmHeight;
 	}
 
+	static void setClipboard(const string& str);
+
 	static void addLastDir(const string& dir) {
 		if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
 			return;
@@ -247,5 +249,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.23 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.24 2004/02/23 17:42:17 arnetheduck Exp $
  */

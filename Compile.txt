@@ -1,6 +1,6 @@
 How to compile in 4 easy steps:
 
-1) Make sure you've downloaded the WTL 7.0 Package and have all the files in it in your include path.
+1) Make sure you've downloaded the WTL 7.1 Package and have all the files in it in your include path.
    You can find it on the dc++ sourceforge site. Mind the version.
 
 2) Make sure you have stlport installed and that it's included _before_ the standard vc directories
@@ -48,4 +48,4 @@ update it, so check the source code distribution of the latest release as well..
 information about diff and patch by googling for it. I like unified format (diff -uNr). 
 By submitting a patch, you agree to that I get copyright of it. This to avoid stupid situations later on where
 the copyright is split out over a million people, each of which could stop further distribution of DC++. If you don't
-like this, start your own distribtution, if you're lucky it might become more popular than the original =).
+like this, start your own distribution, if you're lucky it might become more popular than the original =).

@@ -27,6 +27,7 @@
 #include "Singleton.h"
 
 #include "ClientManagerListener.h"
+#include "File.h"
 
 class Upload : public Transfer, public Flags {
 public:
@@ -40,13 +41,16 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	Upload() { };
-	virtual ~Upload() { };
+	Upload() : file(NULL) { };
+	virtual ~Upload() { 
+		delete file;
+	};
 	
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
 	GETSETREF(string, fileName, FileName);
 	GETSETREF(string, localFileName, LocalFileName);
+	GETSET(InputStream*, file, File);
 };
 
 class UploadManagerListener {
@@ -117,11 +121,6 @@ private:
 		Lock l(cs);
 		dcassert(find(uploads.begin(), uploads.end(), aUpload) != uploads.end());
 		uploads.erase(find(uploads.begin(), uploads.end(), aUpload));
-
-		if(aUpload->getFile()) {
-			delete aUpload->getFile();
-			aUpload->setFile(NULL);
-		}
 		aUpload->setUserConnection(NULL);
 		delete aUpload;
 	}
@@ -155,5 +154,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.58 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.59 2004/02/23 17:42:17 arnetheduck Exp $
  */

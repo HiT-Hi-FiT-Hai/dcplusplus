@@ -206,7 +206,7 @@ public:
 	GETSET(Source*, current, Current);
 	GETSET(Download*, currentDownload, CurrentDownload);
 	GETSET(u_int32_t, added, Added);
-	GETSET(TTHValue*, tthRoot, TTHRoot);
+	GETSET(TTHValue*, tthRoot, TTH);
 private:
 	friend class QueueManager;
 	Source::List sources;
@@ -258,5 +258,5 @@ private:
 
 /**
 * @file
-* $Id: QueueItem.h,v 1.6 2004/02/16 13:21:40 arnetheduck Exp $
+* $Id: QueueItem.h,v 1.7 2004/02/23 17:42:17 arnetheduck Exp $
 */

@@ -28,9 +28,9 @@
 #define HASH_FILE_VERSION_STRING "1"
 static const u_int32_t HASH_FILE_VERSION=1;
 
-TTHValue* HashManager::getTTHRoot(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
+TTHValue* HashManager::getTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
-	TTHValue* root = store.getTTHRoot(aFileName, aSize, aTimeStamp);
+	TTHValue* root = store.getTTH(aFileName, aSize, aTimeStamp);
 	if(root == NULL && BOOLSETTING(HASH_FILES)) {
 		hasher.hashFile(aFileName);
 	}
@@ -41,8 +41,8 @@ void HashManager::hashDone(const string& aFileName, TigerTree& tth) {
 	TTHValue* root = NULL;
 	{
 		Lock l(cs);
-		store.addFile(aFileName, tth);
-		root = store.getTTHRoot(aFileName, tth.getFileSize(), tth.getTimeStamp());
+		store.addFile(aFileName, tth, true);
+		root = store.getTTH(aFileName, tth.getFileSize(), tth.getTimeStamp());
 	}
 
 	if(root != NULL) {
@@ -51,40 +51,89 @@ void HashManager::hashDone(const string& aFileName, TigerTree& tth) {
 	LogManager::getInstance()->message(STRING(HASHING_FINISHED) + aFileName);
 }
 
-void HashManager::HashStore::addFile(const string& aFileName, TigerTree& tth) {
+void HashManager::HashStore::addFile(const string& aFileName, TigerTree& tth, bool aUsed) {
 	TTHIter i = indexTTH.find(aFileName);
 	if(i == indexTTH.end()) {
 		try {
-			File f(dataFile, File::RW, File::OPEN);
-			f.setPos(0);
-			int64_t pos = 0;
-			if(f.read(&pos, sizeof(pos)) != sizeof(pos))
+			int64_t pos = addLeaves(tth.getLeaves());
+			if(pos == 0)
 				return;
-
-			// Check if we should grow the file, we grow by a meg at a time...
-			int64_t datsz = f.getSize();
-			if((pos + tth.getLeaves().size() * TTHValue::SIZE) >= datsz) {
-				f.setPos(datsz + 1024*1024);
-				f.setEOF();
-			}
-			f.setPos(pos);
-			dcassert(tth.getLeaves().size() > 0);
-			f.write(tth.getLeaves()[0].data, (tth.getLeaves().size() * TTHValue::SIZE));
-			int64_t p2 = f.getPos();
-			f.setPos(0);
-			f.write(&p2, sizeof(p2));
-			indexTTH.insert(make_pair(aFileName, new FileInfo(tth.getRoot(), tth.getFileSize(), pos, tth.getBlockSize(), tth.getTimeStamp())));
+			indexTTH.insert(make_pair(aFileName, new FileInfo(tth.getRoot(), tth.getFileSize(), pos, tth.getBlockSize(), tth.getTimeStamp(), aUsed)));
 			dirty = true;
 		} catch(const FileException&) {
 			// Oops, lost it...
 		}
-
 	} else {
-		i->second->setRoot(tth.getRoot());
-		i->second->setBlockSize(tth.getBlockSize());
-		i->second->setSize(tth.getFileSize());
+		try {
+			i->second->setRoot(tth.getRoot());
+			i->second->setBlockSize(tth.getBlockSize());
+			i->second->setSize(tth.getFileSize());
+			i->second->setIndex(addLeaves(tth.getLeaves()));
+		} catch(const FileException&) {
+			i->second->setIndex(0);
+		}
 		dirty = true;
 	}
+}
+
+int64_t HashManager::HashStore::addLeaves(TigerTree::MerkleList& leaves) {
+	File f(dataFile, File::RW, File::OPEN);
+	f.setPos(0);
+	int64_t pos = 0;
+	size_t n = sizeof(pos);
+	if(f.read(&pos, n) != sizeof(pos))
+		return 0;
+
+	// Check if we should grow the file, we grow by a meg at a time...
+	int64_t datsz = f.getSize();
+	if((pos + leaves.size() * TTHValue::SIZE) >= datsz) {
+		f.setPos(datsz + 1024*1024);
+		f.setEOF();
+	}
+	f.setPos(pos);
+	dcassert(leaves.size() > 0);
+	f.write(leaves[0].data, (leaves.size() * TTHValue::SIZE));
+	int64_t p2 = f.getPos();
+	f.setPos(0);
+	f.write(&p2, sizeof(p2));
+	return pos;
+}
+
+void HashManager::HashStore::rebuild() {
+	int64_t maxPos = sizeof(maxPos);
+	try {
+		File f(dataFile, File::RW, File::OPEN);
+		size_t len =(size_t) (f.getSize() - 8);
+		AutoArray<u_int8_t> buf(len);
+		f.read((u_int8_t*)buf, len);
+		f.setPos(0);
+		f.write(&maxPos, sizeof(maxPos));
+		f.close();
+		size_t dataLen = 0;
+		for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
+			FileInfo* fi = i->second;
+			dataLen = TTHValue::SIZE * TigerTree::calcBlocks(fi->getSize(), fi->getBlockSize());
+			if(fi->getUsed() && fi->getIndex() + dataLen < len) {
+				TigerTree tt(fi->getSize(), fi->getTimeStamp(), fi->getBlockSize(), buf + fi->getIndex());
+				if(tt.getRoot() == fi->getRoot()) {
+					maxPos = addLeaves(tt.getLeaves());
+					fi->setIndex(maxPos);
+				} else {
+					fi->setIndex(0);
+				}
+			} else {
+				fi->setIndex(0);
+			}
+		}
+		maxPos += dataLen;
+		// Truncate file down to closest mb boundrary
+		maxPos = ((maxPos + 1024*1024 - 1) / (1024*1024)) * 1024*1024;
+		File f2(dataFile, File::WRITE, File::OPEN);
+		f2.setPos(maxPos);
+		f2.setEOF();
+	} catch(const FileException&) {
+	}
+	dirty = true;
 }
 
 static const string& escaper(const string& n, string& tmp) {
@@ -98,12 +147,17 @@ static const string& escaper(const string& n, string& tmp) {
 void HashManager::HashStore::save() {
 	if(dirty) {
 		try {
-			BufferedFile f(indexFile + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+			File ff(indexFile + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+			BufferedOutputStream<false> f(&ff);
+
 			string tmp;
 
 			f.write(SimpleXML::w1252Header);
 			f.write(LITERAL("<HashStore version=\"" HASH_FILE_VERSION_STRING "\">"));
 			for(TTHIter i = indexTTH.begin(); i != indexTTH.end(); ++i) {
+				if(i->second->getIndex() == 0)
+					continue;
+
 				f.write(LITERAL("\t<File Name=\""));
 				f.write(CHECKESCAPE(i->first));
 				f.write(LITERAL("\" Size=\""));
@@ -119,8 +173,8 @@ void HashManager::HashStore::save() {
 				f.write(LITERAL("</Hash></File>\r\n"));
 			}
 			f.write(LITERAL("</HashStore>"));
-			f.flushBuffers();
-			f.close();
+			f.flush();
+			ff.close();
 			File::deleteFile(indexFile);
 			File::renameFile(indexFile + ".tmp", indexFile);
 
@@ -185,7 +239,7 @@ void HashLoader::endTag(const string& name, const string& data) {
 		// Check if it exists...
 		if((type == sTTH) && (blockSize >= 1024) && (index >= 8)) {
 			/** @todo Verify root against data file */
-			store.indexTTH.insert(make_pair(file, new HashManager::HashStore::FileInfo(TTHValue(data), size, index, blockSize, timeStamp)));
+			store.indexTTH.insert(make_pair(file, new HashManager::HashStore::FileInfo(TTHValue(data), size, index, blockSize, timeStamp, false)));
 		}
 	} else if(name == sFile) {
 		file.clear();
@@ -278,17 +332,21 @@ int HashManager::Hasher::run() {
 				File f(fname, File::READ, File::OPEN);
 				size_t bs = max(TigerTree::calcBlockSize(f.getSize(), 10), (size_t)MIN_BLOCK_SIZE);
 				TigerTree tth(bs, f.getLastModified());
-				u_int32_t n = 0;
+				size_t n = 0;
 				do {
 #ifdef _WIN32
 					if(fastFile) {
-						if(!::ReadFile(h, buf, BUF_SIZE, &n, NULL)) {
+						if(!::ReadFile(h, buf, BUF_SIZE, (DWORD*)&n, NULL)) {
 							fastFile = false;
 							n = 0;
 						}
-					} else 
+					} else {
 #endif
-					n = f.read(buf, BUF_SIZE);
+					size_t bufSize = BUF_SIZE;
+					n = f.read(buf, bufSize);
+#ifdef _WIN32
+					}
+#endif
 					tth.update(buf, n);
 				} while (n > 0 && !stop);
 #ifdef _WIN32
@@ -313,5 +371,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.7 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.8 2004/02/23 17:42:17 arnetheduck Exp $
  */

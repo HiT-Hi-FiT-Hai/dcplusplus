@@ -109,6 +109,8 @@ enum Strings { // @DontAdd
 	GET_FILE_LIST, // "Get file list"
 	GO_TO_DIRECTORY, // "Go to directory"
 	GRANT_EXTRA_SLOT, // "Grant extra slot"
+	HASH_DATABASE, // "Hash database"
+	HASH_REBUILT, // "Hash database rebuilt"
 	HASHING_FINISHED, // "Finished hashing "
 	HIGH, // "High"
 	HIGHEST, // "Highest"

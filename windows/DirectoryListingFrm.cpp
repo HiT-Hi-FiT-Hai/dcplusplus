@@ -76,7 +76,7 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlList.InsertColumn(COLUMN_SIZE, CSTRING(SIZE), LVCFMT_RIGHT, 100, COLUMN_SIZE);
 	ctrlList.InsertColumn(COLUMN_TTH, CSTRING(TTH_ROOT), LVCFMT_LEFT, 200, COLUMN_TTH);
 
-	ctrlList.setSort(COLUMN_FILENAME, ExListViewCtrl::SORT_FUNC, true, sortFile);
+	ctrlList.setSortColumn(COLUMN_FILENAME);
 	
 	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
@@ -162,27 +162,9 @@ void DirectoryListingFrame::updateStatus() {
 		int cnt = ctrlList.GetSelectedCount();
 		int64_t total = 0;
 		if(cnt == 0) {
-			cnt = ctrlList.GetItemCount();
-			for(int i = 0; i < cnt; ++i) {
-				ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
-				if(ii->type == ItemInfo::FILE) {
-					total += ii->file->getSize();
-				} else {
-					dcassert(ii->type == ItemInfo::DIRECTORY);
-					total += ii->dir->getTotalSize();
-				}
-			}
+			total = ctrlList.forEachT(ItemInfo::TotalSize()).total;
 		} else {
-			int i = -1;
-			while((i = ctrlList.GetNextItem(i, LVNI_SELECTED)) != -1) {
-				ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(i);
-				if(ii->type == ItemInfo::FILE) {
-					total += ii->file->getSize();
-				} else {
-					dcassert(ii->type == ItemInfo::DIRECTORY);
-					total += ii->dir->getTotalSize();
-				}
-			}
+			total = ctrlList.forEachSelectedT(ItemInfo::TotalSize()).total;
 		}
 
 		string tmp1 = STRING(ITEMS) + ": " + Util::toString(cnt);
@@ -218,43 +200,21 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 }
 
 
-static const string& escaper(const string& s, string& tmp, bool utf8) {
-	if(utf8 && Util::needsAcp(s)) {
-		tmp = s;
-		return Util::toAcp(tmp);
-	}
-	return s;
-}
 void DirectoryListingFrame::changeDir(DirectoryListing::Directory* d, BOOL enableRedraw)
 {
 	ctrlList.SetRedraw(FALSE);
 	updating = true;
 	clearList();
-	string tmp;
 
 	for(DirectoryListing::Directory::Iter i = d->directories.begin(); i != d->directories.end(); ++i) {
-		DirectoryListing::Directory* d = *i;
-		StringList l;
-		l.push_back(escaper(d->getName(), tmp, dl->getUtf8()));
-		l.push_back(Util::emptyString);
-		l.push_back(Util::formatBytes(d->getTotalSize()));
-		ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getDirIconIndex(), (LPARAM)new ItemInfo(d));
+		ctrlList.insertItem(ctrlList.GetItemCount(), new ItemInfo(*i, dl->getUtf8()), WinUtil::getDirIconIndex());
 	}
 	for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
-		string::size_type k = (*j)->getName().rfind('.');
-		string suffix = (k != string::npos) ? (*j)->getName().substr(k + 1) : Util::emptyString;
-		StringList l;
-		const string& n = escaper((*j)->getName(), tmp, dl->getUtf8());
-		l.push_back(n);
-		l.push_back(suffix);
-		l.push_back(Util::formatBytes((*j)->getSize()));
-		if((*j)->getTTHRoot() != NULL)
-			l.push_back((*j)->getTTHRoot()->toBase32());
-
-		ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getIconIndex(n), (LPARAM)new ItemInfo(*j));
+		ItemInfo* ii = new ItemInfo(*j, dl->getUtf8());
+		ctrlList.insertItem(ctrlList.GetItemCount(), ii, WinUtil::getIconIndex(ii->getText(COLUMN_FILENAME)));
 	}
-	ctrlList.SetRedraw(enableRedraw);
 	ctrlList.resort();
+	ctrlList.SetRedraw(enableRedraw);
 	updating = false;
 	updateStatus();
 }
@@ -268,8 +228,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 
 		if(ii->type == ItemInfo::FILE) {
 			try {
-				string tmp;
-				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + escaper(ii->file->getName(), tmp, dl->getUtf8()));
+				dl->download(ii->file, SETTING(DOWNLOAD_DIRECTORY) + ii->getText(COLUMN_FILENAME));
 			} catch(const Exception& e) {
 				ctrlStatus.SetText(0, e.getError().c_str());
 			}
@@ -330,8 +289,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget, bool view /* = f
 				if(view) {
 					File::deleteFile(target + Util::validateFileName(ii->file->getName()));
 				}
-				string tmp;
-				dl->download(ii->file, target + escaper(ii->file->getName(), tmp, dl->getUtf8()), view);
+				dl->download(ii->file, target + ii->getText(COLUMN_FILENAME), view);
 			} else if(!view) {
 				dl->download(ii->dir, target);
 			} 
@@ -352,8 +310,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 		try {
 			if(ii->type == ItemInfo::FILE) {
-				string tmp;
-				string target = escaper(ii->file->getName(), tmp, dl->getUtf8());
+				string target = SETTING(DOWNLOAD_DIRECTORY) + ii->getText(COLUMN_FILENAME);
 				if(WinUtil::browseFile(target, m_hWnd)) {
 					WinUtil::addLastDir(Util::getFilePath(target));
 					dl->download(ii->file, target);
@@ -383,6 +340,14 @@ LRESULT DirectoryListingFrame::onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
+LRESULT DirectoryListingFrame::onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	ItemInfo* ii = ctrlList.getSelectedItem();
+	if(ii != NULL)
+		WinUtil::setClipboard(ii->getText(COLUMN_TTH));
+
+	return 0;
+}
+
 LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int x = QueueManager::getInstance()->matchListing(dl);
 	char* buf = new char[STRING(MATCHED_FILES).length() + 32];
@@ -392,27 +357,21 @@ LRESULT DirectoryListingFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	return 0;
 }
 
-LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) 
-{
+LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	if(ctrlList.GetSelectedCount() != 1) 
 		return 0;
 
 	string fullPath;
 	ItemInfo* ii = (ItemInfo*)ctrlList.GetItemData(ctrlList.GetNextItem(-1, LVNI_SELECTED));
-	if(ii->type == ItemInfo::FILE) 
-	{
+	if(ii->type == ItemInfo::FILE) {
 		if(!ii->file->getAdls())
 			return 0;
 		DirectoryListing::Directory* pd = ii->file->getParent();
-		while(pd != NULL && pd != dl->getRoot())
-		{
+		while(pd != NULL && pd != dl->getRoot()) {
 			fullPath = (string)"\\" + pd->getName() + fullPath;
 			pd = pd->getParent();
 		}
-	}
-	else
-	if(ii->type == ItemInfo::DIRECTORY) 
-	{
+	} else if(ii->type == ItemInfo::DIRECTORY) {
 		if(!(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()))
 			return 0;
 		fullPath = ((DirectoryListing::AdlDirectory*)ii->dir)->getFullPath();
@@ -420,8 +379,7 @@ LRESULT DirectoryListingFrame::onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*
 
 	// Break full path
 	StringList brokenPath;
-	while(1)
-	{
+	while(1) {
 		if(fullPath.size() == 0 || fullPath[0] != '\\') 
 			break;
 		fullPath.erase(0, 1);
@@ -451,15 +409,12 @@ void DirectoryListingFrame::GoToDirectory(
 	// Check on tree children
 	HTREEITEM hChild = ctrlTree.GetChildItem(hItem);
 	char itemText[256];
-	while(hChild != NULL)
-	{
+	while(hChild != NULL) {
 		if(!ctrlTree.GetItemText(hChild, itemText, 255))
 			return; // unexpected
-		if(Util::stricmp(*iPath, (string)itemText) == 0)
-		{
+		if(Util::stricmp(*iPath, (string)itemText) == 0) {
 			++iPath;
-			if(iPath == iPathEnd)
-			{
+			if(iPath == iPathEnd) {
 				ctrlTree.SelectItem(hChild);
 				ctrlTree.EnsureVisible(hChild);
 				return;
@@ -501,8 +456,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 				}
 			}
-			if(ii->file->getAdls())
-			{
+			if(ii->file->getAdls())	{
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
 			}
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -514,8 +468,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + (n++), i->c_str());
 				}
 			}
-			if(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot())
-			{
+			if(ii->dir->getAdls() && ii->dir->getParent() != dl->getRoot()) {
 				fileMenu.AppendMenu(MF_STRING, IDC_GO_TO_DIRECTORY, CSTRING(GO_TO_DIRECTORY));
 			}
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -529,8 +482,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		ctrlTree.GetClientRect(&rc);
 		ctrlTree.ScreenToClient(&pt); 
 		
-		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) 
-		{ 
+		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) { 
 			// Strange, windows doesn't change the selection on right-click... (!)
 			UINT a = 0;
 			HTREEITEM ht = ctrlTree.HitTest(pt, &a);
@@ -639,63 +591,6 @@ LRESULT DirectoryListingFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	return 0;
 }
 
-int DirectoryListingFrame::sortFile(LPARAM a, LPARAM b) {
-	ItemInfo* c = (ItemInfo*)a;
-	ItemInfo* d = (ItemInfo*)b;
-	
-	if(c->type == ItemInfo::DIRECTORY) {
-		if(d->type == ItemInfo::FILE) {
-			return -1;
-		}
-		return Util::stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
-	} else {
-		if(d->type == ItemInfo::DIRECTORY) {
-			return 1;
-		}
-		return Util::stricmp(c->file->getName().c_str(), d->file->getName().c_str());
-	}
-}
-
-int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
-	ItemInfo* c = (ItemInfo*)a;
-	ItemInfo* d = (ItemInfo*)b;
-	
-	if(c->type == ItemInfo::DIRECTORY) {
-		if(d->type == ItemInfo::FILE) {
-			return -1;
-		}
-		return Util::stricmp(c->dir->getName().c_str(), d->dir->getName().c_str());
-	} else {
-		if(d->type == ItemInfo::DIRECTORY) {
-			return 1;
-		}
-
-		string::size_type k = c->file->getName().rfind('.');
-		string suffix1 = (k != string::npos) ? c->file->getName().substr(k + 1) : Util::emptyString;
-		k = d->file->getName().rfind('.');
-		string suffix2 = (k != string::npos) ? d->file->getName().substr(k + 1) : Util::emptyString;
-		
-		return Util::stricmp(suffix1.c_str(), suffix2.c_str());
-	}
-}
-
-int DirectoryListingFrame::sortSize(LPARAM a, LPARAM b) {
-	ItemInfo* c = (ItemInfo*)a;
-	ItemInfo* d = (ItemInfo*)b;
-
-	if(c->type == ItemInfo::DIRECTORY) {
-		if(d->type == ItemInfo::FILE) {
-			return -1;
-		}
-		return compare(c->dir->getTotalSize(), d->dir->getTotalSize());
-	} else {
-		if(d->type == ItemInfo::DIRECTORY) {
-			return 1;
-		}
-		return compare(c->file->getSize(), d->file->getSize());
-	}
-}
-
 void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	RECT rect;
 	GetClientRect(&rect);
@@ -785,8 +680,7 @@ HTREEITEM DirectoryListingFrame::findFile(const StringSearch& str, HTREEITEM roo
 
 void DirectoryListingFrame::findFile(bool findNext)
 {
-	if(!findNext)
-	{
+	if(!findNext) {
 		// Prompt for substring to find
 		LineDlg dlg;
 		dlg.title = STRING(SEARCH_FOR_FILE);
@@ -798,9 +692,9 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 		findStr = dlg.line;
 		skipHits = 0;
-	}
-	else
+	} else {
 		skipHits++;
+	}
 
 	if(findStr.empty())
 		return;
@@ -811,57 +705,47 @@ void DirectoryListingFrame::findFile(bool findNext)
 	HTREEITEM const foundDir = findFile(StringSearch(findStr), ctrlTree.GetRootItem(), foundFile, skipHitsTmp);
 	ctrlTree.SetRedraw(TRUE);
 
-	if(foundDir)
-	{
+	if(foundDir) {
 		// Highlight the directory tree and list if the parent dir/a matched dir was found
-		if(foundFile >= 0)
-		{
+		if(foundFile >= 0) {
 			// SelectItem won't update the list if SetRedraw was set to FALSE and then
 			// to TRUE and the item selected is the same as the last one... workaround:
 			if(oldDir == foundDir)
 				ctrlTree.SelectItem(NULL);
 
 			ctrlTree.SelectItem(foundDir);
-		}
-		else
-		{
+		} else {
 			// Got a dir; select its parent directory in the tree if there is one
 			HTREEITEM parentItem = ctrlTree.GetParentItem(foundDir);
-			if(parentItem)
-			{
+			if(parentItem) {
 				// Go to parent file list
 				ctrlTree.SelectItem(parentItem);
 
 				// Locate the dir in the file list
 				DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(foundDir);
-				foundFile = ctrlList.find(dir->getName(), -1, true);
-			}
-			else
-			{
+				
+				foundFile = ctrlList.findItem(dir->getName(), -1, false);
+			} else {
 				// If no parent exists, just the dir tree item and skip the list highlighting
 				ctrlTree.SelectItem(foundDir);
 			}
 		}
 
 		// Remove prev. selection from file list
-		if(ctrlList.GetSelectedCount() > 0)
-		{
+		if(ctrlList.GetSelectedCount() > 0) {
 			for(int i=0; i<ctrlList.GetItemCount(); i++)
 				ctrlList.SetItemState(i, 0, LVIS_SELECTED);
 		}
 
 		// Highlight and focus the dir/file if possible
-		if(foundFile >= 0)
-		{
+		if(foundFile >= 0) {
 			ctrlList.SetFocus();
 			ctrlList.EnsureVisible(foundFile, FALSE);
 			ctrlList.SetItemState(foundFile, LVIS_SELECTED | LVIS_FOCUSED, (UINT)-1);
-		}
-		else
+		} else {
 			ctrlTree.SetFocus();
-	}
-	else
-	{
+		}
+	} else {
 		ctrlTree.SelectItem(oldDir);
 		MessageBox(CSTRING(NO_MATCHES), CSTRING(SEARCH_FOR_FILE));
 	}
@@ -869,5 +753,5 @@ void DirectoryListingFrame::findFile(bool findNext)
 
 /**
  * @file
- * $Id: DirectoryListingFrm.cpp,v 1.26 2004/02/16 13:21:41 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.27 2004/02/23 17:42:17 arnetheduck Exp $
  */

@@ -262,28 +262,7 @@ LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		if(!nicks.empty()) {
 			// remove last space
 			nicks.erase(nicks.length() - 1);
-
-			if(!OpenClipboard()) {
-				return 0;
-			}
-
-			EmptyClipboard();
-			
-			// Allocate a global memory object for the text. 
-			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (nicks.size() + 1)); 
-			if (hglbCopy == NULL) { 
-				CloseClipboard(); 
-				return FALSE; 
-			} 
-			
-			// Lock the handle and copy the text to the buffer. 
-			char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
-			memcpy(lptstrCopy, nicks.c_str(), nicks.length() + 1);
-			GlobalUnlock(hglbCopy); 
-			
-			// Place the handle on the clipboard. 
-			SetClipboardData(CF_TEXT, hglbCopy); 
-			CloseClipboard();
+			WinUtil::setClipboard(nicks);
 		}
 	}
 	return 0;
@@ -1109,5 +1088,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.47 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.48 2004/02/23 17:42:17 arnetheduck Exp $
  */

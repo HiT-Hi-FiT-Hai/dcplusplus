@@ -256,7 +256,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 				continue;
 			if(name.find('$') != string::npos)
 				continue;
-			if(!BOOLSETTING(SHARE_HIDDEN) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+			if(!BOOLSETTING(SHARE_HIDDEN) && ((data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) || (name[0] == '.')) )
 				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 				string newName = aName + PATH_SEPARATOR + name;
@@ -272,7 +272,7 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 					dir->addSearchType(getMask(name));
 					dir->addType(getType(name));
 					int64_t size = (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
-					TTHValue* root = HashManager::getInstance()->getTTHRoot(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
+					TTHValue* root = HashManager::getInstance()->getTTH(aName + PATH_SEPARATOR + name, size, File::convertTime(&data.ftLastWriteTime));
 					lastFileIter = dir->files.insert(lastFileIter, Directory::File(name, size, dir, root));
 
 					if(root != NULL)
@@ -395,8 +395,7 @@ int ShareManager::run() {
 
 			string newXmlName = Util::getAppPath() + "files" + Util::toString(listN) + ".xml.bz2";
 			{
-
-				FilteredFileWriter<BZFilter> newXmlFile(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE);
+				FilteredOutputStream<BZFilter, true> newXmlFile(new File(newXmlName, File::WRITE, File::TRUNCATE | File::CREATE));
 				newXmlFile.write(SimpleXML::utf8Header);
 				newXmlFile.write("<FileListing Version=\"1\" Generator=\"" APPNAME " " VERSIONSTRING "\">\r\n");
 
@@ -404,6 +403,7 @@ int ShareManager::run() {
 					i->second->toString(tmp, &newXmlFile, dupes, indent);
 				}
 				newXmlFile.write("</FileListing>");
+				newXmlFile.flush();
 			}
 
 			if(xFile != NULL) {
@@ -417,7 +417,11 @@ int ShareManager::run() {
 
 			string newBZName = Util::getAppPath() + "MyList" + Util::toString(listN) + ".bz2";
 
-			FilteredFileWriter<BZFilter>(newBZName, File::WRITE, File::TRUNCATE | File::CREATE).write(tmp);
+			{
+				FilteredOutputStream<BZFilter, true> f(new File(newBZName, File::WRITE, File::TRUNCATE | File::CREATE));
+				f.write(tmp);
+				f.flush();
+			}
 
 			if(bFile != NULL) {
 				delete bFile;
@@ -462,7 +466,7 @@ static const string& escaper(const string& n, string& tmp) {
 }
 
 #define LITERAL(n) n, sizeof(n)-1
-void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, DupeMap& dupes, string& indent) {
+void ShareManager::Directory::toString(string& tmp, OutputStream* xmlFile, DupeMap& dupes, string& indent) {
 	string tmp2;
 
 	tmp.append(indent);
@@ -514,7 +518,7 @@ void ShareManager::Directory::toString(string& tmp, ::File* xmlFile, DupeMap& du
 			xmlFile->write(LITERAL("\" Size=\""));
 			xmlFile->write(Util::toString(j->getSize()));
 			if(j->getTTH()) {
-				xmlFile->write(LITERAL("\" TTHRoot=\""));
+				xmlFile->write(LITERAL("\" TTH=\""));
 				xmlFile->write(j->getTTH()->toBase32());
 			}
 			xmlFile->write(LITERAL("\"/>\r\n"));
@@ -867,6 +871,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.76 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.77 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

@@ -207,6 +207,7 @@ private:
 		COLUMN_CONNECTION,
 		COLUMN_HUB,
 		COLUMN_EXACT_SIZE,
+		COLUMN_TTH,
 		COLUMN_LAST
 	};
 
@@ -258,6 +259,7 @@ private:
 				case COLUMN_CONNECTION: return sr->getUser()->getConnection();
 				case COLUMN_HUB: return sr->getHubName();
 				case COLUMN_EXACT_SIZE: return exactSize;
+				case COLUMN_TTH: return tth;
 				default: return Util::emptyString;
 			}
 		}
@@ -282,6 +284,7 @@ private:
 				case COLUMN_CONNECTION: return Util::stricmp(a->sr->getUser()->getConnection(), b->sr->getUser()->getConnection());
 				case COLUMN_HUB: return Util::stricmp(a->sr->getHubName(), b->sr->getHubName());
 				case COLUMN_EXACT_SIZE: return compare(a->sr->getSize(), b->sr->getSize());
+				case COLUMN_TTH: return Util::stricmp(a->getTTH(), b->getTTH());
 				default: return 0;
 			}
 		}
@@ -306,6 +309,8 @@ private:
 				type = STRING(DIRECTORY);
 			}
 			slots = sr->getSlotString();
+			if(sr->getTTH() != NULL)
+				setTTH(sr->getTTH()->toBase32());
 		}
 
 		GETSETREF(string, fileName, FileName);
@@ -314,6 +319,7 @@ private:
 		GETSETREF(string, size, Size);
 		GETSETREF(string, slots, Slots);
 		GETSETREF(string, exactSize, ExactSize);
+		GETSETREF(string, tth, TTH);
 	};
 
 	struct HubInfo {
@@ -477,6 +483,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.31 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.32 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

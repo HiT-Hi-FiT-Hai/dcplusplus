@@ -28,9 +28,8 @@
 #include "Thread.h"
 #include "Speaker.h"
 #include "ZUtils.h"
-#include "FilteredFile.h"
 
-class File;
+class InputStream;
 
 class BufferedSocketListener {
 public:
@@ -135,18 +134,16 @@ public:
 	/**
 	 * Send the file f over this socket.
 	 */
-	void transmitFile(File* f, int64_t s, bool docomp = false) throw() {
+	void transmitFile(InputStream* f) throw() {
 		Lock l(cs);
 		file = f;
-		size = s;
-		compress = docomp;
 		addTask(SEND_FILE);
 	}
 
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(64*1024), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
+		dataBytes(0), inbufSize(64*1024), curBuf(0), file(NULL) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -177,7 +174,6 @@ private:
 
 	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
-
 	CriticalSection cs;
 
 	Semaphore taskSem;
@@ -196,10 +192,7 @@ private:
 	int outbufPos[BUFFERS];
 	int curBuf;
 
-	FilteredReader<ZFilter>* comp;
-	bool compress;
-	File* file;
-	int64_t size;
+	InputStream* file;
 
 	virtual void create(int) throw(SocketException) { dcassert(0); }; // Sockets are created implicitly
 	virtual void bind(short) throw(SocketException) { dcassert(0); }; // Binding / UDP not supported...
@@ -236,5 +229,5 @@ private:
 
 /**
  * @file
- * $Id: BufferedSocket.h,v 1.55 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.56 2004/02/23 17:42:16 arnetheduck Exp $
  */

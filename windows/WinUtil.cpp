@@ -34,6 +34,7 @@
 #include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/UploadManager.h"
+#include "../client/HashManager.h"
 
 WinUtil::ImageMap WinUtil::fileIndexes;
 int WinUtil::fileImageCount;
@@ -381,6 +382,29 @@ bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* =
 	return false;
 }
 
+void WinUtil::setClipboard(const string& str) {
+	if(!::OpenClipboard(mainWnd)) {
+		return;
+	}
+
+	EmptyClipboard();
+
+	// Allocate a global memory object for the text. 
+	HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (str.size() + 1)); 
+	if (hglbCopy == NULL) { 
+		CloseClipboard(); 
+		return; 
+	} 
+
+	// Lock the handle and copy the text to the buffer. 
+	char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
+	memcpy(lptstrCopy, str.c_str(), str.length() + 1);
+	GlobalUnlock(hglbCopy); 
+
+	// Place the handle on the clipboard. 
+	SetClipboardData(CF_TEXT, hglbCopy); 
+	CloseClipboard();
+}
 
 void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) throw() {
 	StringTokenizer t(tokens, ',');
@@ -436,12 +460,14 @@ char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LIN
 "\r\n-- I can share huge amounts of files, can you?\r\n" LINE2,
 "\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n" LINE2,
 "\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n" LINE2,
-"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2
+"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2,
+"\r\n-- My client supports TTH hashes, does yours?\r\n" LINE2,
+"\r\n-- My client supports XML file lists, does yours?\r\n" LINE2
 };
 
-#define MSGS 14
+#define MSGS 16
 
-string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>";
+string WinUtil::commands = "/refresh, /slots #, /search <string>, /dc++, /away <msg>, /back, /g <searchstring>, /imdb <imdbquery>, /rebuild";
 
 bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& status) {
 	string::size_type i = cmd.find(' ');
@@ -501,6 +527,9 @@ bool WinUtil::checkCommand(string& cmd, string& param, string& message, string& 
 		} else {
 			WinUtil::openLink("http://www.imdb.com/find?q="+param);
 		}
+	} else if(Util::stricmp(cmd.c_str(), "rebuild") == 0) {
+		HashManager::getInstance()->rebuild();
+		status = STRING(HASH_REBUILT);
 	} else {
 		return false;
 	}
@@ -529,8 +558,22 @@ void WinUtil::openLink(const string& url) {
 					end = cmd.length();
 
 				cmd = cmd.substr(start, end-start);
-
-				if((int)::ShellExecute(NULL, NULL, cmd.c_str(), url.c_str(), NULL, SW_SHOWNORMAL) > 32) {
+				
+				STARTUPINFO si = { sizeof(si), 0 };
+				PROCESS_INFORMATION pi = { 0 };
+				AutoArray<char> buf(cmd.length() + url.length() + 4);
+				size_t pos = 0;
+				buf[pos++] = '"';
+				strcpy(buf + pos, cmd.c_str());
+				pos += cmd.size();
+				buf[pos++] = '"';
+				buf[pos++] = ' ';
+				strcpy(buf + pos, url.c_str());
+				pos += url.length();
+				buf[pos++] = 0;
+				if(::CreateProcess(NULL, buf, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+					::CloseHandle(pi.hThread);
+					::CloseHandle(pi.hProcess);
 					return;
 				}
 			}
@@ -587,5 +630,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.35 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.36 2004/02/23 17:42:17 arnetheduck Exp $
  */

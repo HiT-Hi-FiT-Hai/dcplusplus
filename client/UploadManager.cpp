@@ -25,6 +25,8 @@
 #include "LogManager.h"
 #include "ShareManager.h"
 #include "ClientManager.h"
+#include "FilteredFile.h"
+#include "ZUtils.h"
 
 static const string UPLOAD_AREA = "Uploads";
 
@@ -133,7 +135,8 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, in
 	u->setUserConnection(aSource);
 	u->setFile(f);
 	u->setSize(f->getSize());
-	u->setPos(aResume, true);
+	f->setPos(aResume);
+	u->setPos(aResume);
 	u->setFileName(aFile);
 	u->setLocalFileName(file);
 
@@ -186,21 +189,23 @@ void UploadManager::onGetBlock(UserConnection* aSource, const string& aFile, int
 			Upload* u = aSource->getUpload();
 			dcassert(u != NULL);
 			if(aBytes == -1)
-				aBytes = aResume - u->getFile()->getSize();
+				aBytes = aResume - u->getSize();
 
-			if(aBytes < 0 || u->getFile()->getPos() + aBytes > u->getFile()->getSize()) {
+			if(aBytes < 0 || (u->getPos() + aBytes) > u->getSize()) {
 				// Can't do...
 				aSource->disconnect();
 				return;
 			}
 
 			u->setStart(GET_TICK());
-			if(z)
+			if(z) {
+				u->setFile(new FilteredInputStream<ZFilter, true>(u->getFile()));
 				u->setFlag(Upload::FLAG_ZUPLOAD);
+			}
 
 			aSource->sending(aBytes);
 			aSource->setState(UserConnection::STATE_DONE);
-			aSource->transmitFile(u->getFile(), aBytes, true);
+			aSource->transmitFile(u->getFile());
 			fire(UploadManagerListener::STARTING, u);
 		}
 	}
@@ -217,7 +222,7 @@ void UploadManager::onSend(UserConnection* aSource) {
 
 	u->setStart(GET_TICK());
 	aSource->setState(UserConnection::STATE_DONE);
-	aSource->transmitFile(u->getFile(), u->getSize() - u->getPos());
+	aSource->transmitFile(u->getFile());
 	fire(UploadManagerListener::STARTING, u);
 }
 
@@ -390,5 +395,5 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.51 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.52 2004/02/23 17:42:17 arnetheduck Exp $
  */

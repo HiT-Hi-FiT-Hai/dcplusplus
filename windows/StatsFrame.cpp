@@ -37,10 +37,11 @@ LRESULT StatsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	return 1;
 }
 
-LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT StatsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	if(timerId != 0)
 		KillTimer(timerId);
-	MDIDestroy(m_hWnd);
+	
+	bHandled = FALSE;
 	return 0;
 }
 
@@ -213,5 +214,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.4 2003/11/06 18:54:39 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.5 2004/02/23 17:42:17 arnetheduck Exp $
  */

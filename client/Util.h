@@ -107,8 +107,6 @@ private:
 class Util  
 {
 public:
-	static u_int32_t crcTable[];
-
 	static string emptyString;
 
 	static void initialize();
@@ -535,5 +533,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.79 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: Util.h,v 1.80 2004/02/23 17:42:17 arnetheduck Exp $
  */

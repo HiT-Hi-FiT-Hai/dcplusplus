@@ -1,9 +1,10 @@
  -- 0.307 --
+* Experimental release, lots and lots of core code has changed => high fatal bug probability.
 * Fixed full name being displayed in user commands with submenus
-* Bloom filters dramatically improve cpu efficiency (if you have a large share)
+* Bloom filters dramatically improve cpu efficiency on incoming searches (if you have a large share)
 * Auto match results shown in status bar
 * Added option to match autosearch filenames exactly to further avoid the wrong file being downloaded (default on)
-* End of zlib transfer test period ($GetTestZBlock -> $GetZBlock)
+* End of zlib transfer test period, semantics slightly changed ($GetTestZBlock -> $GetZBlock, $Sending changed)
 * Speed increase when loading shares with many files of the same size (thanks farcry)
 * Added file hashing, turn it off in advanced settings (experimental)
 * Merkle trees and tiger hashing added for TTH hash support
@@ -15,7 +16,13 @@
   instead...)
 * XML File lists that contain hashes if available, and support full utf-8 names (correct viewing is not guaranteed,
   but download should work)
-
+* Upgraded to zlib 1.2.1 (thanks garg)
+* Extra column for hub in transfer list (thanks torgny nyblom)
+* Files starting with a '.' are no longer shared if hidden files are not shared (...unix...)
+* Fixed a minor memory leak when an invalid search result is returned (exploitable minor security issue)
+* Slight speedup of file list loading
+* File IO rewritten (major change)
+* Rollback no longer depends on buffer size
 
  -- 0.306 2004-01-09 --
 * Fixed an issue with UNC paths (those starting with "\\")

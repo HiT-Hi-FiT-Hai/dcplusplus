@@ -89,53 +89,12 @@ void SimpleXML::Tag::appendAttribString(string& tmp) {
 	tmp.erase(tmp.size()-1);
 }
 
-string SimpleXML::Tag::toXML(int indent) {
-	if(children.empty() && data.empty()) {
-		string tmp;
-		tmp.reserve(indent + name.length() + 30);
-		tmp.append(indent, '\t');
-		tmp.append(1, '<');
-		tmp.append(name);
-		tmp.append(1, ' ');
-		appendAttribString(tmp);
-		tmp.append("/>\r\n", 4);
-		return tmp;
-	} else {
-		string tmp;
-		tmp.append(indent, '\t');
-		tmp.append(1, '<');
-		tmp.append(name);
-		tmp.append(1, ' ');
-		appendAttribString(tmp);
-		if(children.empty()) {
-			tmp.append(1, '>');
-			if(needsEscape(data, false)) {
-				string tmp2(data);
-				escape(tmp2, false);
-				tmp.append(tmp2);
-			} else {
-				tmp.append(data);
-			}
-		} else {
-			tmp.append(">\r\n", 3);
-			for(Iter i = children.begin(); i!=children.end(); ++i) {
-				tmp.append((*i)->toXML(indent + 1));
-			}
-			tmp.append(indent, '\t');
-		}
-		tmp.append("</", 2);
-		tmp.append(name);
-		tmp.append(">\r\n", 3);
-		return tmp;
-	}
-}
-
 /**
  * The same as the version above, but writes to a file instead...yes, this could be made
  * with streams and only one code set but streams are slow...the file f should be a buffered
  * file, otherwise things will be very slow (I assume write is not expensive and call it a lot
  */
-void SimpleXML::Tag::toXML(int indent, File* f) {
+void SimpleXML::Tag::toXML(int indent, OutputStream* f) {
 	if(children.empty() && data.empty()) {
 		string tmp;
 		tmp.reserve(indent + name.length() + 30);
@@ -359,6 +318,6 @@ void SimpleXML::fromXML(const string& aXML) throw(SimpleXMLException) {
 
 /**
  * @file
- * $Id: SimpleXML.cpp,v 1.25 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: SimpleXML.cpp,v 1.26 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

@@ -284,7 +284,7 @@ public:
 			} else if(Util::stricmp(id->dir->getName(), szDiscard) == 0) {
 				delete (id->dir);
 			} else {
-				root->directories.insert(id->dir);
+				root->directories.push_back(id->dir);
 			}
 		}
 	}
@@ -294,5 +294,5 @@ public:
 
 /**
  * @file
- * $Id: ADLSearch.h,v 1.11 2004/01/04 16:34:37 arnetheduck Exp $
+ * $Id: ADLSearch.h,v 1.12 2004/02/23 17:42:16 arnetheduck Exp $
  */

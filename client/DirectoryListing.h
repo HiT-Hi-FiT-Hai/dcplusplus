@@ -35,15 +35,7 @@ class DirectoryListing
 public:
 	class Directory;
 
-	/** Auxiliary class to ease searching in File::List and Directory::List */
-	struct Name {
-		Name(const string& aName) : name(aName) { };
-		virtual ~Name() { };
-
-		GETSETREF(string, name, Name);
-	};
-
-	class File : public Name, public FastAlloc<File> {
+	class File : public FastAlloc<File> {
 	public:
 		typedef File* Ptr;
 		struct FileSort {
@@ -51,13 +43,13 @@ public:
 				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
 			}
 		};
-		typedef set<Ptr, FileSort> List;
+		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
-		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTHRoot) throw() : 
-			Name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTHRoot)) { };
+		File(Directory* aDir, const string& aName, int64_t aSize, const string& aTTH) throw() : 
+			name(aName), size(aSize), parent(aDir), tthRoot(new TTHValue(aTTH)) { };
 		File(Directory* aDir, const string& aName, int64_t aSize) throw() : 
-			Name(aName), size(aSize), parent(aDir), tthRoot(NULL) { };
+			name(aName), size(aSize), parent(aDir), tthRoot(NULL) { };
 			~File() {
 				delete tthRoot;
 			}
@@ -66,12 +58,13 @@ public:
 			return getParent()->getAdls();
 		}
 
+		GETSETREF(string, name, Name);
 		GETSET(int64_t, size, Size);
 		GETSET(Directory*, parent, Parent);
-		GETSET(TTHValue*, tthRoot, TTHRoot);
+		GETSET(TTHValue*, tthRoot, TTH);
 	};
 
-	class Directory : public Name, public FastAlloc<Directory> {
+	class Directory : public FastAlloc<Directory> {
 	public:
 		typedef Directory* Ptr;
 		struct DirSort {
@@ -79,14 +72,14 @@ public:
 				return Util::stricmp(a->getName().c_str(), b->getName().c_str()) == -1;
 			}
 		};
-		typedef set<Ptr, DirSort> List;
+		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 		
 		List directories;
 		File::List files;
 		
 		Directory(Directory* aParent = NULL, const string& aName = Util::emptyString, bool _adls = false) 
-			: Name(aName), parent(aParent), adls(_adls) { };
+			: name(aName), parent(aParent), adls(_adls) { };
 		
 		virtual ~Directory() {
 			for_each(directories.begin(), directories.end(), DeleteFunction<Directory*>());
@@ -105,13 +98,16 @@ public:
 			}
 			return x;
 		}
-		
+
+		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 		GETSET(bool, adls, Adls);
+
 	private:
 		Directory(const Directory&);
 		Directory& operator=(const Directory&);
 	};
+
 	class AdlDirectory : public Directory {
 	public:
 		AdlDirectory(const string& aFullPath, Directory* aParent, const string& aName) : Directory(aParent, aName, true), fullPath(aFullPath) { };
@@ -158,9 +154,11 @@ private:
 		
 };
 
+inline bool operator==(DirectoryListing::Directory::Ptr a, const string& b) { return Util::stricmp(a->getName(), b) == 0; }
+
 #endif // !defined(AFX_DIRECTORYLISTING_H__D2AF61C5_DEDE_42E0_8257_71D5AB567D39__INCLUDED_)
 
 /**
  * @file
- * $Id: DirectoryListing.h,v 1.22 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.23 2004/02/23 17:42:16 arnetheduck Exp $
  */

@@ -416,8 +416,12 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 			if(q->getSize() != aSize) {
 				throw QueueException(STRING(FILE_WITH_DIFFERENT_SIZE));
 			}
-			if(root != NULL && q->getTTHRoot() != NULL && !(*root == *q->getTTHRoot())) {
-				throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+			if(root != NULL) {
+				if(q->getTTH() == NULL) {
+					q->setTTH(new TTHValue(*root));
+				} else if(!(*root == *q->getTTH())) {
+					throw QueueException(STRING(FILE_WITH_DIFFERENT_TTH));
+				}
 			}
 			q->setFlag(aFlags);
 			
@@ -961,8 +965,9 @@ void QueueManager::saveQueue() throw() {
 		
 #define STRINGLEN(n) n, sizeof(n)-1
 #define CHECKESCAPE(n) SimpleXML::needsEscape(n, true) ? escaper(n, tmp) : n
-		
-		BufferedFile f(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE, false, 256);
+		File ff(getQueueFile() + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
+
 		f.write(SimpleXML::w1252Header);
 		f.write(STRINGLEN("<Downloads>\r\n"));
 		string tmp;
@@ -985,9 +990,9 @@ void QueueManager::saveQueue() throw() {
 					f.write(STRINGLEN("\" Downloaded=\""));
 					f.write(Util::toString(d->getDownloadedBytes()));
 				}
-				if(d->getTTHRoot() != NULL) {
-					f.write(STRINGLEN("\" TTHRoot=\""));
-					f.write(d->getTTHRoot()->toBase32());
+				if(d->getTTH() != NULL) {
+					f.write(STRINGLEN("\" TTH=\""));
+					f.write(d->getTTH()->toBase32());
 				}
 				f.write(STRINGLEN("\" Added=\""));
 				f.write(Util::toString(d->getAdded()));
@@ -1022,16 +1027,17 @@ void QueueManager::saveQueue() throw() {
 		}
 		
 		f.write("</Downloads>\r\n");
-		f.flushBuffers();
-		f.close();
+		f.flush();
+		ff.close();
 		File::deleteFile(getQueueFile());
 		File::renameFile(getQueueFile() + ".tmp", getQueueFile());
 
 		dirty = false;
-		lastSave = GET_TICK();
 	} catch(const FileException&) {
 		// ...
 	}
+	// Put this here to avoid very many saves tries when disk is full...
+	lastSave = GET_TICK();
 }
 
 class QueueLoader : public SimpleXMLReader::CallBack {
@@ -1070,7 +1076,7 @@ static const string sDirectory = "Directory";
 static const string sSearchString = "SearchString";
 static const string sAdded = "Added";
 static const string sUtf8 = "Utf8";
-static const string sTTHRoot = "TTHRoot";
+static const string sTTH = "TTH";
 
 void QueueLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	QueueManager* qm = QueueManager::getInstance();
@@ -1095,7 +1101,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			int64_t downloaded = Util::toInt64(getAttrib(attribs, sDownloaded));
 			const string& searchString = getAttrib(attribs, sSearchString);
 			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded));
-			const string& tthRoot = getAttrib(attribs, sTTHRoot);
+			const string& tthRoot = getAttrib(attribs, sTTH);
 
 			if(added == 0)
 				added = GET_TIME();
@@ -1156,7 +1162,7 @@ void QueueLoader::endTag(const string& name, const string&) {
 void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 	File f(aFile, File::READ, File::OPEN);
 	
-	u_int32_t size = (u_int32_t)f.getSize();
+	size_t size = (size_t)f.getSize();
 	
 	string tmp;
 	if(size > 16) {
@@ -1304,5 +1310,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.74 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.75 2004/02/23 17:42:17 arnetheduck Exp $
  */

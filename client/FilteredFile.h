@@ -23,39 +23,71 @@
 
 #include "File.h"
 
-/**
- * A filter that provides simple read / write buffering.
- */
-struct BufferFilter {
-	bool operator()(const void* in, size_t& inlen, void* out, size_t& outlen) {
-		inlen = outlen = min(inlen, outlen);
-		memcpy(out, in, outlen);
-		return false;
+template<class Filter, bool managed>
+class CalcOutputStream : public OutputStream {
+public:
+	using OutputStream::write;
+
+	CalcOutputStream(OutputStream* aStream) : s(aStream) { }
+	virtual ~CalcOutputStream() { if(managed) delete s; }
+
+	size_t flush() throw(Exception) {
+		return s->flush();
 	}
+
+	size_t write(const void* buf, size_t len) throw(Exception) {
+		filter(buf, len);
+		return s->write(buf, len);
+	}
+
+
+	const Filter& getFilter() const { return filter; }
+private:
+	OutputStream* s;
+	Filter filter;
 };
 
-template<class Filter>
-class FilteredWriter {
+template<class Filter, bool managed> 
+class CalcInputStream : public InputStream {
 public:
-	FilteredWriter(File* aFile) : f(aFile), pos(0) { }
-	FilteredWriter(File* aFile, const Filter& aFilter) : f(aFile), filter(aFilter), pos(0) { };
-	~FilteredWriter() { }
+	CalcInputStream(InputStream* aStream) : s(aStream) { }
+	virtual ~CalcInputStream() { if(managed) delete s; }
 
-	u_int32_t flush() throw(Exception) {
-		u_int32_t written = 0;
+	size_t read(void* buf, size_t& len) throw(Exception) {
+		size_t x = s->read(buf, len);
+		filter(buf, x);
+		return x;
+	}
+
+	const Filter& getFilter() const { return filter; }
+private:
+	InputStream* s;
+	Filter filter;
+};
+
+template<class Filter, bool manage>
+class FilteredOutputStream : public OutputStream {
+public:
+	using OutputStream::write;
+
+	FilteredOutputStream(OutputStream* aFile) : f(aFile), pos(0) { }
+	~FilteredOutputStream() { if(manage) delete f; }
+
+	size_t flush() throw(Exception) {
+		size_t written = 0;
 
 		for(;;) {
 			size_t n = BUF_SIZE - pos;
 			size_t zero = 0;
             bool more = filter(NULL, zero, buf + pos, n);
 
-			written += f->File::write(buf, pos + n);
+			written += f->write(buf, pos + n);
 			pos = 0;
 
 			if(!more)
 				break;
 		}
-		return written;
+		return written + f->flush();
 	}
 
 	/**
@@ -64,9 +96,9 @@ public:
 	 * @param len Length of data
 	 * @return Length of data actually written to disk (all data is always consumed)
 	 */
-	u_int32_t write(const void* wbuf, u_int32_t len) throw(FileException) {
+	size_t write(const void* wbuf, size_t len) throw(Exception) {
 		u_int8_t* wb = (u_int8_t*)wbuf;
-		u_int32_t written = 0;
+		size_t written = 0;
 		while(len > 0) {
 			size_t n = BUF_SIZE - pos;
 			size_t m = len;
@@ -77,7 +109,8 @@ public:
 			len -= m;
 
 			if(pos == BUF_SIZE) {
-				written += f->File::write(buf, pos);
+				written += f->write(buf, pos);
+				pos = 0;
 			}
 		}
 		return written;
@@ -86,116 +119,61 @@ public:
 private:
 	enum { BUF_SIZE = 64*1024 };
 
-	File* f;
+	OutputStream* f;
 	Filter filter;
 
 	u_int8_t buf[BUF_SIZE];
 	u_int32_t pos;
 };
 
-template<class Filter>
-class FilteredReader {
+template<class Filter, bool managed>
+class FilteredInputStream : public InputStream {
 public:
-	FilteredReader(File* aFile, int64_t maxBytes = -1) : f(aFile), left(maxBytes), pos(0), valid(0), more(true) { }
-	FilteredReader(File* aFile, const Filter& aFilter) : f(aFile), filter(aFilter), pos(0), valid(0), more(true) { };
-	~FilteredReader() { }
+	FilteredInputStream(InputStream* aFile) : f(aFile), pos(0), valid(0), more(true) { }
+	virtual ~FilteredInputStream() { if(managed) delete f; }
 
 	/**
 	* Read data through filter, keep calling until len returns 0.
 	* @param rbuf Data buffer
-	* @param len Buffer size on entry, length of data in buffer on exit
-	* @return Bytes actually read from disk
+	* @param len Buffer size on entry, bytes actually read on exit
+	* @return Length of data in buffer
 	*/
-	u_int32_t read(void* rbuf, u_int32_t& len) throw(FileException) {
+	size_t read(void* rbuf, size_t& len) throw(Exception) {
 		u_int8_t* rb = (u_int8_t*)rbuf;
 
-		u_int32_t rpos = 0;
-		u_int32_t r = 0;
-		while(more && rpos < len) {
-			if(valid == 0 && left != 0) {
-				if(left == -1)
-					valid = f->File::read(buf, BUF_SIZE);
-				else {
-					valid = f->File::read(buf, (size_t)min(left, (int64_t)BUF_SIZE));
-					left -= valid;
-				}
-				r += valid;
+		size_t totalRead = 0;
+		size_t totalProduced = 0;
+
+		while(more && totalProduced < len) {
+			size_t curRead = BUF_SIZE;
+			if(valid == 0) {
+				valid = f->read(buf, curRead);
+				totalRead += curRead;
 			}
-			size_t n = len - rpos;
+
+			size_t n = len - totalProduced;
 			size_t m = valid - pos;
-			more = filter(buf + pos, m, rb + rpos, n);
+			more = filter(buf + pos, m, rb, n);
 			pos += m;
 			if(pos == valid) {
 				valid = pos = 0;
 			}
-			rpos += n;
+			totalProduced += n;
+			rb += n;
 		}
-		len = rpos;
-		return r;
+		len = totalRead;
+		return totalProduced;
 	}
 
 private:
 	enum { BUF_SIZE = 64*1024 };
 
-	File* f;
+	InputStream* f;
 	Filter filter;
-	int64_t left;
 	u_int8_t buf[BUF_SIZE];
-	u_int32_t pos;
-	u_int32_t valid;
+	size_t pos;
+	size_t valid;
 	bool more;
-};
-
-/**
- * FilteredFileWriter passes data through a filter before writing it out to disc.
- * Note that after write() has been called, all file functions (seek etc) become
- * invalid with unspecified behaviour following. This class uses semantics similar
- * to File, to ease usage when filter details are not needed.
- */
-template<class Filter>
-class FilteredFileWriter : public File {
-public:
-	FilteredFileWriter(const string& aFileName, int access, int mode, bool aCalcCRC = false) :
-		File(aFileName, access, mode, aCalcCRC), filter(this) 
-	{
-	}
-
-	~FilteredFileWriter() throw(FileException) { filter.flush(); };
-	
-	virtual void close() throw(FileException) {
-		filter.flush();
-		File::close();
-	}
-	
-	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
-		filter.write(buf, len);
-		return len;
-	}
-	u_int32_t write(const string& aString) throw(FileException) { return write((void*)aString.data(), aString.size()); };
-
-private:
-	FilteredWriter<Filter> filter;
-};
-
-/**
- * Reader, keep in mind that depending on the filter, only read(void*, u_int32_t)
- * will work as expected.
- */
-template<class Filter>
-class FilteredFileReader : public File {
-public:
-	FilteredFileReader(const string& aFileName, int access, int mode, bool aCalcCRC = false) :
-		File(aFileName, access, mode, aCalcCRC), filter(this) 
-	{
-
-	}
-
-	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
-		filter.read(buf, len);
-		return len;
-	}
-private:
-	FilteredReader<Filter> filter;
 };
 
 #endif // _FILTERED_FILE

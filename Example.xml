@@ -105,6 +105,8 @@
 		<String Name="GetFileList">Get file list</String>
 		<String Name="GoToDirectory">Go to directory</String>
 		<String Name="GrantExtraSlot">Grant extra slot</String>
+		<String Name="HashDatabase">Hash database</String>
+		<String Name="HashRebuilt">Hash database rebuilt</String>
 		<String Name="HashingFinished">Finished hashing </String>
 		<String Name="High">High</String>
 		<String Name="Highest">Highest</String>

@@ -37,8 +37,6 @@ public:
 	typedef ListViewArrows<thisClass> arrowBase;
 
 	BEGIN_MSG_MAP(thisClass)
-//		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_GETDISPINFO, onGetDispInfo)
-//		REFLECTED_NOTIFY_HANDLER(ctrlId, LVN_COLUMNCLICK, onColumnClick)
 		CHAIN_MSG_MAP(arrowBase)
 	END_MSG_MAP();
 
@@ -80,12 +78,14 @@ public:
 			LPSTR_TEXTCALLBACK, 0, 0, image, (LPARAM)item);
 	}
 	T* getItemData(int iItem) { return (T*)GetItemData(iItem); }
+	T* getSelectedItem() { return (GetSelectedCount() > 0 ? getItemData(GetNextItem(-1, LVNI_SELECTED)) : NULL); }
+
 	int findItem(T* item) { 
 		LVFINDINFO fi = { LVFI_PARAM, NULL, (LPARAM)item };
 		return FindItem(&fi, -1);
 	}
-	int findItem(const string& b, int start = -1) {
-		LVFINDINFO fi = { LVFI_STRING, b.c_str() };
+	int findItem(const string& b, int start = -1, bool aPartial = false) {
+		LVFINDINFO fi = { aPartial ? LVFI_PARTIAL : LVFI_STRING, b.c_str() };
 		return FindItem(&fi, start);
 	}
 
@@ -182,5 +182,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.8 2003/11/27 10:33:15 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.9 2004/02/23 17:42:17 arnetheduck Exp $
 */

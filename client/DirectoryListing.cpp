@@ -37,18 +37,20 @@ void DirectoryListing::loadFile(const string& name) {
 	// For now, we detect type by ending...
 	string ext = Util::getFileExt(name);
 	if(Util::stricmp(ext, ".DcLst") == 0) {
-		int64_t len = ::File::getSize(name) + 1;
+		size_t len = (size_t)::File::getSize(name);
 		AutoArray<u_int8_t> buf(len);
 		::File(name, ::File::READ, ::File::OPEN).read(buf, len);
 		CryptoManager::getInstance()->decodeHuffman(buf, txt);
 		load(txt);
 	} else if(Util::stricmp(ext, ".bz2") == 0) {
-		FilteredFileReader<UnBZFilter> f(name, ::File::READ, ::File::OPEN);
-		const int BUF_SIZE = 64*1024;
+		::File ff(name, ::File::READ, ::File::OPEN);
+		FilteredInputStream<UnBZFilter, false> f(&ff);
+		const size_t BUF_SIZE = 64*1024;
 		char buf[BUF_SIZE];
 		u_int32_t len;
 		for(;;) {
-			len = f.read(buf, BUF_SIZE);
+			size_t n = BUF_SIZE;
+			len = f.read(buf, n);
 			txt.append(buf, len);
 			if(len < BUF_SIZE)
 				break;
@@ -82,8 +84,6 @@ void DirectoryListing::load(const string& in) {
 	Directory* cur = root;
 	string fullPath;
 	
-	File::Iter lastFileIter = cur->files.begin();
-
 	for(StringIter i = tokens.begin(); i != tokens.end(); ++i) 
 	{
 		string& tok = *i;
@@ -102,28 +102,28 @@ void DirectoryListing::load(const string& in) {
 				fullPath.erase(fullPath.begin() + l, fullPath.end());
 			}
 			pADLSearch->StepUpDirectory(destDirs);
-
-			lastFileIter = cur->files.begin();
 		}
 
 		string::size_type k = tok.find('|', j);
 		if(k != string::npos) {
 			// this must be a file...
-			lastFileIter = cur->files.insert(lastFileIter, new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
+			cur->files.push_back(new File(cur, tok.substr(j, k-j), Util::toInt64(tok.substr(k+1))));
 
 			// ADLSearch
-			pADLSearch->MatchesFile(destDirs, *lastFileIter, fullPath);
+			pADLSearch->MatchesFile(destDirs, cur->files.back(), fullPath);
 		} else {
 			// A directory
-			Directory* d = new Directory(cur, tok.substr(j, tok.length()-j-1));
-			Directory::Iter di = cur->directories.find(d);
+			string name = tok.substr(j, tok.length()-j-1);
+			Directory* d = NULL;
+
+			Directory::Iter di = ::find(cur->directories.begin(), cur->directories.end(), name);
 			if(di != cur->directories.end()) {
-				delete d;
 				d = *di;
+			} else {
+				d = new Directory(cur, name);
 			}
-			cur->directories.insert(d);
+			cur->directories.push_back(d);
 			cur = d;
-			lastFileIter = cur->files.begin();
 
 			indent++;
 			fullPath += "\\" + d->getName();
@@ -174,7 +174,7 @@ static const string sDirectory = "Directory";
 static const string sFile = "File";
 static const string sName = "Name";
 static const string sSize = "Size";
-static const string sTTHRoot = "TTHRoot";
+static const string sTTH = "TTH";
 
 void ListLoader::startTag(const string& name, StringPairList& attribs, bool simple) {
 	if(inListing) {
@@ -185,24 +185,17 @@ void ListLoader::startTag(const string& name, StringPairList& attribs, bool simp
 			const string& s = getAttrib(attribs, sSize);
 			if(s.empty())
 				return;
-			const string& h = getAttrib(attribs, sTTHRoot);
+			const string& h = getAttrib(attribs, sTTH);
 			DirectoryListing::File* f = h.empty() ? new DirectoryListing::File(cur, n, Util::toInt64(s)) : new DirectoryListing::File(cur, n, Util::toInt64(s), h);
-			lastFileIter = cur->files.insert(lastFileIter, f);
+			cur->files.push_back(f);
 			ADLSearchManager::getInstance()->MatchesFile(destDirs, f, fullPath);
 		} else if(name == sDirectory) {
 			const string& n = getAttrib(attribs, sName);
 			if(n.empty())
 				return;
 			DirectoryListing::Directory* d = new DirectoryListing::Directory(cur, n);
-			DirectoryListing::Directory::Iter di = cur->directories.find(d);
-			if(di != cur->directories.end()) {
-				delete d;
-				d = *di;
-			}
-			cur->directories.insert(d);
+			cur->directories.push_back(d);
 			cur = d;
-			lastFileIter = cur->files.begin();
-
 			fullPath += '\\';
 			fullPath += d->getName();
 
@@ -255,10 +248,14 @@ void DirectoryListing::download(Directory* aDir, const string& aTarget) {
 	string tmp;
 	string target = (aDir == getRoot()) ? aTarget : aTarget + escaper(aDir->getName(), tmp, getUtf8()) + '\\';
 	// First, recurse over the directories
-	for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
+	Directory::List& lst = aDir->directories;
+	sort(lst.begin(), lst.end(), Directory::DirSort());
+	for(Directory::Iter j = lst.begin(); j != lst.end(); ++j) {
 		download(*j, target);
 	}
 	// Then add the files
+	File::List& l = aDir->files;
+	sort(l.begin(), l.end(), File::FileSort());
 	for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
 		File* file = *i;
 		try {
@@ -282,8 +279,9 @@ void DirectoryListing::download(const string& aDir, const string& aTarget) {
 DirectoryListing::Directory* DirectoryListing::find(const string& aName, Directory* current) {
 	string::size_type end = aName.find('\\');
 	dcassert(end != string::npos);
-	Name n(aName.substr(0, end));
-	Directory::Iter i = current->directories.find((Directory*)&n);
+	string name = aName.substr(0, end);
+
+	Directory::Iter i = ::find(current->directories.begin(), current->directories.end(), name);
 	if(i != current->directories.end()) {
 		if(end == (aName.size() - 1))
 			return *i;
@@ -316,10 +314,10 @@ void DirectoryListing::download(File* aFile, const string& aTarget, bool view /*
 	int flags = getUtf8() ? QueueItem::FLAG_SOURCE_UTF8 : 0;
 	flags |= (view ? (QueueItem::FLAG_TEXT | QueueItem::FLAG_CLIENT_VIEW) : QueueItem::FLAG_RESUME);
 	QueueManager::getInstance()->add(getPath(aFile) + escaper(aFile->getName(), tmp, getUtf8()), aFile->getSize(), user, aTarget, 
-		aFile->getTTHRoot(), Util::emptyString, flags);
+		aFile->getTTH(), Util::emptyString, flags);
 }
 
 /**
  * @file
- * $Id: DirectoryListing.cpp,v 1.24 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: DirectoryListing.cpp,v 1.25 2004/02/23 17:42:16 arnetheduck Exp $
  */

@@ -130,8 +130,6 @@ int SearchManager::run() {
 void SearchManager::onData(const u_int8_t* buf, int aLen) {
 	string x((char*)buf, aLen);
 	if(x.find("$SR") != string::npos) {
-		SearchResult* sr = new SearchResult();
-
 		string::size_type i, j;
 		// Directories: $SR <nick><0x20><directory><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
 		// Files:       $SR <nick><0x20><filename><0x05><filesize><0x20><free slots>/<total slots><0x05><Hubname><0x20>(<Hubip:port>)
@@ -144,11 +142,15 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 		// A file has 2 0x05, a directory only one
 		size_t cnt = count(x.begin() + j, x.end(), 0x05);
-	
+		
+		SearchResult::Types type = SearchResult::TYPE_FILE;
+		string file;
+		int64_t size = 0;
+
 		if(cnt == 1) {
 			// We have a directory...find the first space beyond the first 0x05 from the back 
 			// (dirs might contain spaces as well...clever protocol, eh?)
-			sr->type = SearchResult::TYPE_DIRECTORY;
+			type = SearchResult::TYPE_DIRECTORY;
 			// Get past the hubname that might contain spaces
 			if((j = x.rfind(0x05)) == string::npos) {
 				return;
@@ -160,43 +162,43 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 			if(j < i + 1) {
 				return;
 			}
-			sr->file = x.substr(i, j-i) + '\\';
+			file = x.substr(i, j-i) + '\\';
 		} else if(cnt == 2) {
-			sr->type = SearchResult::TYPE_FILE;
-
 			if( (j = x.find((char)5, i)) == string::npos) {
 				return;
 			}
-			sr->file = x.substr(i, j-i);
+			file = x.substr(i, j-i);
 			i = j + 1;
 			if( (j = x.find(' ', i)) == string::npos) {
 				return;
 			}
-			sr->size = Util::toInt64(x.substr(i, j-i));
+			size = Util::toInt64(x.substr(i, j-i));
 		}
 		i = j + 1;
 		
 		if( (j = x.find('/', i)) == string::npos) {
 			return;
 		}
-		sr->freeSlots = Util::toInt(x.substr(i, j-i));
+		int freeSlots = Util::toInt(x.substr(i, j-i));
 		i = j + 1;
 		if( (j = x.find((char)5, i)) == string::npos) {
 			return;
 		}
-		sr->slots = Util::toInt(x.substr(i, j-i));
+		int slots = Util::toInt(x.substr(i, j-i));
 		i = j + 1;
 		if( (j = x.rfind(" (")) == string::npos) {
 			return;
 		}
-		sr->hubName = x.substr(i, j-i);
+		string hubName = x.substr(i, j-i);
 		i = j + 2;
 		if( (j = x.rfind(')')) == string::npos) {
 			return;
 		}
-		sr->hubIpPort = (x.substr(i, j-i));
-		sr->user = ClientManager::getInstance()->getUser(nick, sr->getHubIpPort());
+		string hubIpPort = x.substr(i, j-i);
+		User::Ptr user = ClientManager::getInstance()->getUser(nick, hubIpPort);
 
+		SearchResult* sr = new SearchResult(user, type, slots, freeSlots, size,
+			file, hubName, hubIpPort);
 		fire(SearchManagerListener::SEARCH_RESULT, sr);
 		sr->decRef();
 	}
@@ -220,6 +222,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.33 2004/01/30 17:05:56 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.34 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

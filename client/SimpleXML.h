@@ -160,8 +160,8 @@ public:
 	}
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
-	string toXML() { return (!root.children.empty()) ? root.children[0]->toXML(0) : Util::emptyString; };
-	void toXML(File* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
+	string toXML() { StringOutputStream os; toXML(&os); return os.getString(); };
+	void toXML(OutputStream* f) throw(FileException) { if(!root.children.empty()) root.children[0]->toXML(0, f); };
 	
 	static string& escape(string& aString, bool aAttrib, bool aLoading = false);
 	/** 
@@ -212,8 +212,7 @@ private:
 			StringPairIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
 			return (i == attribs.end()) ? aDefault : i->second; 
 		}
-		string toXML(int indent);
-		void toXML(int indent, File* f);
+		void toXML(int indent, OutputStream* f);
 		
 		void appendAttribString(string& tmp);
 		/** Delete all children! */
@@ -270,6 +269,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.29 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.30 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

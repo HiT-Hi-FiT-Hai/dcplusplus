@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "SettingsManager.h"
+#include "ResourceManager.h"
 
 #include "SimpleXML.h"
 #include "Util.h"
@@ -276,10 +277,12 @@ void SettingsManager::save(string const& aFileName) {
 	fire(SettingsManagerListener::SAVE, &xml);
 
 	try {
-		BufferedFile f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		File ff(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedOutputStream<false> f(&ff);
 		f.write(SimpleXML::w1252Header);
 		xml.toXML(&f);
-		f.close();
+		f.flush();
+		ff.close();
 		File::deleteFile(aFileName);
 		File::renameFile(aFileName + ".tmp", aFileName);
 	} catch(const FileException&) {
@@ -289,6 +292,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.67 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.68 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

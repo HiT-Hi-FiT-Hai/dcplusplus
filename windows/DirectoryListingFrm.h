@@ -27,7 +27,7 @@
 #include "../client/FastAlloc.h"
 
 #include "FlatTabCtrl.h"
-#include "ExListViewCtrl.h"
+#include "TypedListViewCtrl.h"
 #include "WinUtil.h"
 
 #include "../client/DirectoryListing.h"
@@ -62,23 +62,25 @@ public:
 	}
 
 	BEGIN_MSG_MAP(DirectoryListingFrame)
-		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
-		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
-		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
+		NOTIFY_HANDLER(IDC_FILES, LVN_GETDISPINFO, ctrlList.onGetDispInfo)
+		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, ctrlList.onColumnClick)
 		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_FILES, NM_DBLCLK, onDoubleClickFiles)
 		NOTIFY_HANDLER(IDC_FILES, LVN_ITEMCHANGED, onItemChanged)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_KEYDOWN, onKeyDownDirs)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onSelChangedDirectories)
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_GO_TO_DIRECTORY, onGoToDirectory)
 		COMMAND_ID_HANDLER(IDC_VIEW_AS_TEXT, onViewAsText)
+		COMMAND_ID_HANDLER(IDC_COPY_TTH, onCopyTTH)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
 		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		CHAIN_MSG_MAP(baseClass)
@@ -95,6 +97,7 @@ public:
 	LRESULT onDownloadDirTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCopyTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGoToDirectory(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTargetDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -103,9 +106,6 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	
 	void downloadList(const string& aTarget, bool view = false);
-	static int sortFile(LPARAM a, LPARAM b);
-	static int sortSize(LPARAM a, LPARAM b);
-	static int sortType(LPARAM a, LPARAM b);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void findFile(bool findNext);
@@ -120,10 +120,10 @@ public:
 		return 0;
 	}
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlList.SetRedraw(FALSE);
 		clearList();
-		MDIDestroy(m_hWnd);
+		bHandled = FALSE;
 		return 0;
 	}
 	
@@ -138,26 +138,6 @@ public:
 		return 1;
 	}
 
-	LRESULT onColumnClickFiles(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		
-		if(l->iSubItem == ctrlList.getSortColumn()) {
-			if (!ctrlList.isAscending())
-				ctrlList.setSort(-1, ctrlList.getSortType());
-			else
-				ctrlList.setSortDirection(false);
-		} else {
-			if(l->iSubItem == COLUMN_FILENAME) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortFile);
-			} else if(l->iSubItem == COLUMN_SIZE) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-			} else if(l->iSubItem == COLUMN_TYPE) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortType);
-			}
-		}
-		return 0;
-	}
-	
 	void clearList() {
 		int j = ctrlList.GetItemCount();
 		for(int i = 0; i < j; i++) {
@@ -219,8 +199,47 @@ private:
 			DirectoryListing::Directory* dir;
 		};
 
-		ItemInfo(DirectoryListing::File* f) : type(FILE), file(f) { };
-		ItemInfo(DirectoryListing::Directory* d) : type(DIRECTORY), dir(d) { };
+		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) { 
+			columns[COLUMN_FILENAME] = f->getName();
+			if(utf8)
+				Util::toAcp(columns[COLUMN_FILENAME]);
+			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
+			columns[COLUMN_SIZE] = Util::formatBytes(f->getSize());
+			if(f->getTTH() != NULL)
+                columns[COLUMN_TTH] = f->getTTH()->toBase32();
+		};
+		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
+			columns[COLUMN_FILENAME] = d->getName();
+			if(utf8)
+				Util::toAcp(columns[COLUMN_FILENAME]);
+			columns[COLUMN_SIZE] = Util::formatBytes(d->getTotalSize());
+		};
+
+		const string& getText(int col) {
+			return columns[col];
+		}
+		
+		struct TotalSize {
+			TotalSize() : total(0) { }
+			void operator()(ItemInfo* a) { total += a->type == DIRECTORY ? a->dir->getTotalSize() : a->file->getSize(); }
+			int64_t total;
+		};
+
+		static int compareItems(ItemInfo* a, ItemInfo* b, int col) {
+			if(a->type == DIRECTORY) {
+				return (b->type == DIRECTORY ? Util::stricmp(a->columns[COLUMN_FILENAME], b->columns[COLUMN_FILENAME]) : -1);
+			} else if(b->type == DIRECTORY) {
+				return 1;
+			} else {
+				switch(col) {
+				case COLUMN_SIZE: return compare(a->file->getSize(), b->file->getSize());
+				default: return Util::stricmp(a->columns[col], b->columns[col]);
+				}
+			}
+		}
+
+	private:
+		string columns[COLUMN_LAST];
 	};
 	
 	CMenu targetMenu;
@@ -232,7 +251,7 @@ private:
 	StringList targets;
 	
 	CTreeViewCtrl ctrlTree;
-	ExListViewCtrl ctrlList;
+	TypedListViewCtrl<ItemInfo, IDC_FILES> ctrlList;
 	CStatusBarCtrl ctrlStatus;
 	HTREEITEM treeRoot;
 	
@@ -261,5 +280,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.27 2004/02/16 13:21:41 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.28 2004/02/23 17:42:17 arnetheduck Exp $
  */

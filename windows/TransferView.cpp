@@ -20,16 +20,17 @@
 #include "../client/DCPlusPlus.h"
 #include "Resource.h"
 
+#include "../client/ResourceManager.h"
 #include "../client/QueueManager.h"
 #include "../client/ConnectionManager.h"
 
 #include "WinUtil.h"
 #include "TransferView.h"
 
-int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
-int TransferView::columnSizes[] = { 150, 250, 75, 75, 175, 100, 200, 75 };
+int TransferView::columnIndexes[] = { COLUMN_USER, COLUMN_HUB, COLUMN_STATUS, COLUMN_TIMELEFT, COLUMN_SPEED, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH, COLUMN_RATIO };
+int TransferView::columnSizes[] = { 150, 100, 250, 75, 75, 175, 100, 200, 75 };
 
-static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::STATUS,
+static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::HUB, ResourceManager::STATUS,
 ResourceManager::TIME_LEFT, ResourceManager::SPEED, ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH,
 ResourceManager::RATIO};
 
@@ -276,7 +277,10 @@ void TransferView::ItemInfo::update() {
 	updateMask = 0;
 
 	if(colMask & MASK_USER) {
-		columns[COLUMN_USER] = user->getFullNick();
+		columns[COLUMN_USER] = user->getNick();
+	}
+	if(colMask & MASK_HUB) {
+		columns[COLUMN_HUB] = user->getClientName();
 	}
 	if(colMask & MASK_STATUS) {
 		columns[COLUMN_STATUS] = statusString;
@@ -563,5 +567,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.21 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.22 2004/02/23 17:42:17 arnetheduck Exp $
  */

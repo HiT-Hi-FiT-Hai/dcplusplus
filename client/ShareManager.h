@@ -41,6 +41,7 @@ STANDARD_EXCEPTION(ShareException);
 class SimpleXML;
 class Client;
 class File;
+class OutputStream;
 
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
 	private HashManagerListener
@@ -191,7 +192,7 @@ private:
 
 		void search(SearchResult::List& aResults, StringSearch::List& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults, u_int32_t mask);
 		
-		void toString(string& tmp, ::File* xmlFile, DupeMap& dupes, string& indent);
+		void toString(string& tmp, OutputStream* xmlFile, DupeMap& dupes, string& indent);
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);
@@ -269,6 +270,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.43 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.44 2004/02/23 17:42:17 arnetheduck Exp $
  */
 

@@ -123,7 +123,7 @@ Feature: XmlBZList
 Usage: Supporing this means supporting utf-8 XML file lists with the 
 following general structure:
 
-<FileList Version="1" Generator="your DC name and version">
+<FileList Version="1" Generator="dc client name and version">
  <Directory Name="xxx">
   <Directory Name="yyy">
    <File Name="zzz" Size="1"/>
@@ -131,8 +131,11 @@ following general structure:
  </Directory>
 </FileList>
 
+In each directory, including the root, the name of the entity must be
+case-insensitive unique in that level of the hierarchy. 
+
 Other fields may be added as necessary. DC++ for instance adds the
-TTHRoot attribute to each file it knows the TTH root of in base32 encoding.
+TTH attribute to each file it knows the TTH root of in base32 encoding.
 
 The file list is available as "files.xml.bz2" (vs MyList.DcLst), and is
 compressed using bzip2.
@@ -146,9 +149,14 @@ $UGetZBlock must only be supported if $GetZBlock is supported, $UGetBlock
 always.
 
 $UGetBlock follows $UGetZBlock semantics, but without compressing 
-the data. It is allowed to set <numbytes> to -1, in which case the whole
-file will be sent, and $Sending will get a parameter, <bytes> that specify
-how many bytes of the file will be sent.
+the data. The <bytes> parameter of $Sending specifies how many bytes
+will be sent.
+
+Don't touch Version. Add your own, with a different name, if you feel 
+compelled.
+
+Don't trust Generator to determine features of the file list. It's there
+mainly for debugging and informative purposes.
 
 --------------------------------------------------------------------
 

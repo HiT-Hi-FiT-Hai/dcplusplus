@@ -28,13 +28,15 @@
 #include "LogManager.h"
 #include "SFVReader.h"
 #include "User.h"
+#include "File.h"
+#include "FilteredFile.h"
 
 static const string DOWNLOAD_AREA = "Downloads";
 const string Download::ANTI_FRAG_EXT = ".antifrag";
 
 Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
-	target(qi->getTarget()), tempTarget(qi->getTempTarget()), 
-	comp(NULL), bytesLeft(0), rollbackBuffer(NULL), rollbackSize(0) { 
+	target(qi->getTarget()), tempTarget(qi->getTempTarget()), file(NULL),
+	crcCalc(NULL), bytesLeft(0) { 
 	
 	setSize(qi->getSize());
 	if(qi->isSet(QueueItem::FLAG_USER_LIST))
@@ -139,13 +141,10 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			}
 			
 			int rollback = SETTING(ROLLBACK);
-			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
-			
-			if((rollback + cutoff) > start) {
+			if(rollback > start) {
 				d->setPos(0);
 			} else {
-				d->setPos(start - rollback - cutoff);
-				d->setRollbackBuffer(rollback);
+				d->setPos(start - rollback);
 				d->setFlag(Download::FLAG_ROLLBACK);
 			}
 		} else {
@@ -202,6 +201,44 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	}
 }
 
+template<bool managed>
+class RollbackOutputStream : public OutputStream {
+public:
+	RollbackOutputStream(File* f, OutputStream* aStream, size_t bytes) : s(aStream), pos(0), bufSize(bytes), buf(new u_int8_t[bytes]) {
+		size_t n = bytes;
+		f->read(buf, n);
+		f->movePos(-((int64_t)bytes));
+	}
+	virtual ~RollbackOutputStream() { if(managed) delete s; };
+
+	virtual size_t flush() throw(FileException) {
+		return s->flush();
+	}
+
+	virtual size_t write(const void* b, size_t len) throw(FileException) {
+		u_int8_t* wb = (u_int8_t*)b;
+		if(buf != NULL) {
+			size_t n = len < bufSize ? bufSize - len : bufSize;
+
+			if(memcmp(buf + pos, wb, n) != 0) {
+				throw FileException(STRING(ROLLBACK_INCONSISTENCY));
+			}
+			pos += n;
+			if(pos == bufSize) {
+				delete buf;
+				buf = NULL;
+			}
+		}
+		return s->write(wb, len);
+	}
+
+private:
+	OutputStream* s;
+	size_t pos;
+	size_t bufSize;
+	u_int8_t* buf;
+};
+
 bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = -1 */) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
@@ -230,25 +267,18 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 			target += ".DcLst";
 		}
 	}
+
 	File* file = NULL;
 	try {
 		// Let's check if we can find this file in a any .SFV...
 		int trunc = d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE;
-		bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
-		
+		file = new File(target, File::RW, File::OPEN | File::CREATE | trunc);
 		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
-			file = new SizedFile(d->getSize(), target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);
-		} else {
-			file = new BufferedFile(target, File::RW, File::OPEN | File::CREATE | trunc, sfvcheck);			
+			file->setSize(d->getSize());
 		}
-
 		file->setPos(d->getPos());
-
-		if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-			d->setComp(new UnZFilter);
-		}
-
 	} catch(const FileException& e) {
+		delete file;
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
@@ -263,148 +293,58 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 		return false;
 	}
 
-	dcassert(d->getPos() != -1);
 	d->setFile(file);
 
-	{
-		d->setStart(GET_TICK());
-		aSource->setState(UserConnection::STATE_DONE);
-		
-		fire(DownloadManagerListener::STARTING, d);
+	if(d->isSet(Download::FLAG_ROLLBACK)) {
+		d->setFile(new RollbackOutputStream<true>(file, d->getFile(), SETTING(ROLLBACK)));
 	}
+
+	bool sfvcheck = BOOLSETTING(SFV_CHECK) && (d->getPos() == 0) && (SFVReader(d->getTarget()).hasCRC());
+
+	if(sfvcheck) {
+		d->setFlag(Download::FLAG_CALC_CRC32);
+		Download::CrcOS* crc = new Download::CrcOS(d->getFile());
+		d->setCrcCalc(crc);
+		d->setFile(crc);
+	}
+
+	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+		d->setFile(new FilteredOutputStream<UnZFilter, true>(d->getFile()));
+	}
+	dcassert(d->getPos() != -1);
+	d->setStart(GET_TICK());
+	aSource->setState(UserConnection::STATE_DONE);
+	
+	fire(DownloadManagerListener::STARTING, d);
 	
 	return true;
 }	
-
-bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen) throw(FileException) {
-	dcassert(d->getRollbackBuffer());
-	
-	if(d->getTotal() + aLen >= d->getRollbackSize()) {
-		AutoArray<u_int8_t> buf(d->getRollbackSize());
-		int len = d->getRollbackSize() - (int)d->getTotal();
-		dcassert(len > 0);
-		dcassert(len <= d->getRollbackSize());
-		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, len);
-		
-		d->getFile()->read((u_int8_t*)buf, d->getRollbackSize());
-		
-		int cmp = memcmp(d->getRollbackBuffer(), buf, d->getRollbackSize());
-		
-		d->unsetFlag(Download::FLAG_ROLLBACK);
-		d->setRollbackBuffer(0);
-		
-		if(cmp != 0) {
-			return false;
-		}
-		if(!d->isSet(Download::FLAG_ANTI_FRAG))
-			d->getFile()->setEOF();
-		// Write the rest...the file pointer should have been moved to the correct position by now...
-		d->getFile()->write(aData+len, aLen - len);
-	} else {
-		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, aLen);
-	}
-	
-	return true;
-}
-
-static const size_t BUF_SIZE = 64*1024;
 
 void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
-		// Oops, this is a bit more work...
-		dcassert(d->getComp() != NULL);
-		dcassert(d->bytesLeft > 0);
-		int l = aLen;
-		const u_int8_t* data = aData;
-		u_int8_t buf[BUF_SIZE];
-
-		while(l > 0) {
-			try {
-				size_t out = BUF_SIZE;
-				size_t m = l;
-				(*d->getComp())(data, m, buf, out);
-				data += m;
-				l -= m;
-
-				if(!handleData(aSource, buf, out))
-					break;
-
-				d->bytesLeft -= out;
-				d->addActual(m);
-				if(d->bytesLeft == 0) {
-					aSource->setLineMode();
-					handleEndData(aSource);
-					if(l != 0) {
-						// Uhm, this client must be sending junk data after the compressed block...
-						aSource->disconnect();
-					}
-					return;
-				}
-			} catch(const Exception&) {
-				// Oops, decompression error...could happen for many reasons
-				// but the most probable is that we received bad data...
-				// We remove whatever we managed to download in this session
-				// as it might be bad all of it...
-				try {
-					d->getFile()->movePos(-d->getTotal());
-					d->setPos(d->getFile()->getPos());
-
-					if(!d->isSet(Download::FLAG_ANTI_FRAG))
-						d->getFile()->setEOF();
-				} catch(const FileException&) {
-					// Ignore...
-				}
-
-				fire(DownloadManagerListener::FAILED, d, STRING(DECOMPRESSION_ERROR));
-
-				aSource->setDownload(NULL);
-				removeDownload(d);
-				removeConnection(aSource);
-				return;
-			}
-		}
-	} else {
-		if(handleData(aSource, aData, aLen))
-			d->addActual(aLen);
-	}
-}
-
-bool DownloadManager::handleData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
-	dcassert(aSource->getState() == UserConnection::STATE_DONE);
-
-	Download* d = aSource->getDownload();
-	dcassert(d != NULL);
-
 	try {
-		if(d->isSet(Download::FLAG_ROLLBACK)) {
-			if(!checkRollback(d, aData, aLen)) {
-				fire(DownloadManagerListener::FAILED, d, STRING(ROLLBACK_INCONSISTENCY));
-				
-				string target = d->getTarget();
-				
-				aSource->setDownload(NULL);
-				removeDownload(d);				
-
-				QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
-				removeConnection(aSource);
-				return false;
-			} 
-		} else {
-			d->getFile()->write(aData, aLen);
+		d->addPos(d->getFile()->write(aData, aLen));
+		d->addActual(aLen);
+		if(d->getPos() == d->getSize()) {
+			handleEndData(aSource);
 		}
-		d->addPos(aLen);
 	} catch(const FileException& e) {
 		fire(DownloadManagerListener::FAILED, d, e.getError());
-		
+
+		d->setPos(d->getPos() - d->getTotal());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
-		return false;
+	} catch(const Exception& e) {
+		fire(DownloadManagerListener::FAILED, d, e.getError());
+		// Nuke the bytes we have written, this is probably a compression error
+		d->setPos(d->getPos() - d->getTotal());
+		aSource->setDownload(NULL);
+		removeDownload(d);
+		removeConnection(aSource);
 	}
-	return true;
 }
 
 void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
@@ -418,9 +358,17 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
+	u_int32_t crc = 0;
+	bool hasCrc = (d->getCrcCalc() != NULL);
+
 	// First, finish writing the file (flushing the buffers and closing the file...)
 	try {
-		d->getFile()->close();
+		d->getFile()->flush();
+		if(hasCrc)
+			crc = d->getCrcCalc()->getFilter().getValue();
+		delete d->getFile();
+		d->setFile(NULL);
+		d->setCrcCalc(NULL);
 
 		// Check if we're anti-fragging...
 		if(d->isSet(Download::FLAG_ANTI_FRAG)) {
@@ -447,27 +395,27 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 	dcdebug("Download finished: %s, size " I64_FMT ", downloaded " I64_FMT "\n", d->getTarget().c_str(), d->getSize(), d->getTotal());
 
 	// Check if we have some crc:s...
-	dcassert(d->getFile() != NULL);
-
 	if(BOOLSETTING(SFV_CHECK)) {
-		d->getFile()->close();
 		SFVReader sfv(d->getTarget());
 		if(sfv.hasCRC()) {
 			bool crcMatch;
 			string tgt = d->getDownloadTarget();
-			if(d->getFile()->hasCRC32()) {
-				crcMatch = (d->getFile()->getCRC32() == sfv.getCRC());
+			if(hasCrc) {
+				crcMatch = (crc == sfv.getCRC());
 			} else {
 				// More complicated, we have to reread the file
 				try {
 					
-					File f(tgt, File::READ, File::OPEN, true);
-					const u_int32_t BUF_SIZE = 16 * 65536;
+					File ff(tgt, File::READ, File::OPEN);
+					CalcInputStream<CRC32Filter, false> f(&ff);
+
+					const size_t BUF_SIZE = 16 * 65536;
 					AutoArray<u_int8_t> b(BUF_SIZE);
-					while(f.read((u_int8_t*)b, BUF_SIZE) > 0)
+					size_t n = BUF_SIZE;
+					while(f.read((u_int8_t*)b, n) > 0)
 						;		// Keep on looping...
 
-					crcMatch = (f.getCRC32() == sfv.getCRC());
+					crcMatch = (f.getFilter().getValue() == sfv.getCRC());
 				} catch (FileException&) {
 					// Nope; read failed...
 					goto noCRC;
@@ -495,9 +443,6 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		}
 	}
 noCRC:
-	delete d->getFile();
-	d->setFile(NULL);
-	
 	if(BOOLSETTING(LOG_DOWNLOADS) && (BOOLSETTING(LOG_FILELIST_TRANSFERS) || !d->isSet(Download::FLAG_USER_LIST))) {
 		StringMap params;
 		params["target"] = d->getTarget();
@@ -577,24 +522,19 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 	if(d->getFile()) {
 		try {
+			d->getFile()->flush();
+			delete d->getFile();
+			d->setFile(NULL);
+			d->setCrcCalc(NULL);
+
 			if(d->isSet(Download::FLAG_ANTI_FRAG)) {
 				// Ok, set the pos to whereever it was last writing and hope for the best...
-				d->getFile()->close();
 				d->unsetFlag(Download::FLAG_ANTI_FRAG);
-			} else {
-				d->getFile()->close();
-			}
-			delete d->getFile();
+			} 
 		} catch(const FileException&) {
 			finished = false;
 		}
 
-		d->setFile(NULL);
-	}
-
-	if(d->getComp()) {
-		delete d->getComp();
-		d->setComp(NULL);
 	}
 
 	{
@@ -638,6 +578,7 @@ void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
 	if(d->getFile()) {
 		delete d->getFile();
 		d->setFile(NULL);
+		d->setCrcCalc(NULL);
 	}
 
 	fire(DownloadManagerListener::FAILED, d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
@@ -701,5 +642,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.91 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.92 2004/02/23 17:42:16 arnetheduck Exp $
  */

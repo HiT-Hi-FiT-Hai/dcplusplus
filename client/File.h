@@ -24,7 +24,6 @@
 #endif // _MSC_VER > 1000
 
 #include "SettingsManager.h"
-#include "ResourceManager.h"
 
 #include "Exception.h"
 #include "Util.h"
@@ -36,17 +35,52 @@
 
 STANDARD_EXCEPTION(FileException);
 
-class CRC32 {
+#ifdef _WIN32
+#include "../zlib/zlib.h"
+#else
+#include <zlib.h>
+#endif
+
+/**
+ * A naive output stream. We don't use the stl ones to avoid compiling STLPort,
+ * besides this is a lot more lightweight (and less flexible)...
+ */
+class OutputStream {
 public:
-	CRC32() : value(0xffffffffL) { };
-	void update(u_int8_t b) { value = (value >> 8) ^ Util::crcTable[(value & 0xff) ^ b]; };
-	u_int32_t getValue() const { return ~(value); };
-private:
-	u_int32_t value;
+	virtual ~OutputStream() { }
+	
+	/**
+	 * @return The actual number of bytes written. len bytes will always be
+	 *         consumed, but fewer or more bytes may actually be written,
+	 *         for example if the stream is being compressed or buffered.
+	 */
+	virtual size_t write(const void* buf, size_t len) throw(Exception) = 0;
+	/**
+	 * This must be called before destroying the object to make sure all data
+	 * is properly written (we don't want destructors that throw exceptions
+	 * and the last flush might actually throw). Note that some implementations
+	 * might not need it...
+	 */
+	virtual size_t flush() throw(Exception) = 0;
+
+	size_t write(const string& str) throw(Exception) { return write(str.c_str(), str.size()); };
 };
 
-class File  
-{
+class InputStream {
+public:
+	virtual ~InputStream() { }
+	/**
+	 * Call this function until it returns 0 to get all bytes.
+	 * @return The number of bytes read. len reflects the number of bytes
+	 *		   actually read from the stream source in this call.
+	 */
+	virtual size_t read(void* buf, size_t& len) throw(Exception) = 0;
+};
+
+class IOStream : public InputStream, public OutputStream {
+};
+
+class File : public IOStream {
 public:
 	enum {
 		READ = 0x01,
@@ -61,7 +95,7 @@ public:
 	};
 
 #ifdef _WIN32
-	File(const string& aFileName, int access, int mode, bool aCalcCRC = false) throw(FileException) : calcCRC(aCalcCRC) {
+	File(const string& aFileName, int access, int mode) throw(FileException) {
 		dcassert(access == WRITE || access == READ || access == (READ | WRITE));
 
 		int m = 0;
@@ -130,6 +164,13 @@ public:
 		return (int64_t)l | ((int64_t)x)<<32;
 	}
 
+	virtual void setSize(int64_t newSize) throw(FileException) {
+		int64_t pos = getPos();
+		setPos(newSize);
+		setEOF();
+		setPos(pos);
+	}
+
 	virtual int64_t getPos() throw() {
 		LONG x = 0;
 		DWORD l = ::SetFilePointer(h, 0, &x, FILE_CURRENT);
@@ -151,32 +192,21 @@ public:
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
 	}
 	
-	virtual u_int32_t read(void* buf, u_int32_t len) throw(FileException) {
+	virtual size_t read(void* buf, size_t& len) throw(Exception) {
 		DWORD x;
 		if(!::ReadFile(h, buf, len, &x, NULL)) {
 			throw(FileException(Util::translateError(GetLastError())));
 		}
-		if(calcCRC) {
-			for(DWORD i = 0; i < x; ++i) {
-				crc32.update(((u_int8_t*)buf)[i]);
-			}
-		}
+		len = x;
 		return x;
 	}
 
-	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
+	virtual size_t write(const void* buf, size_t len) throw(Exception) {
 		DWORD x;
 		if(!::WriteFile(h, buf, len, &x, NULL)) {
 			throw FileException(Util::translateError(GetLastError()));
 		}
-		if(x < len) {
-			throw FileException(STRING(DISC_FULL));
-		}
-		if(calcCRC) {
-			for(DWORD i = 0; i < x; ++i) {
-				crc32.update(((u_int8_t*)buf)[i]);
-			}
-		}
+		dcassert(x == len);
 		return x;
 	}
 	virtual void setEOF() throw(FileException) {
@@ -186,8 +216,10 @@ public:
 		}
 	}
 
-	virtual void flushBuffers() {
-		FlushFileBuffers(h);
+	virtual size_t flush() throw(Exception) {
+		if(!FlushFileBuffers(h))
+			throw FileException(Util::translateError(GetLastError()));
+		return 0;
 	}
 
 	static void deleteFile(const string& aFileName) throw() { ::DeleteFile(aFileName.c_str()); };
@@ -318,9 +350,9 @@ public:
 		File::close();
 	}
 
-	string read(u_int32_t len) throw(FileException) {
+	string read(size_t len) throw(FileException) {
 		string s(len, 0);
-		u_int32_t x = read(&s[0], len);
+		size_t x = read(&s[0], len);
 		if(x != len)
 			s.resize(x);
 		return s;
@@ -336,118 +368,95 @@ public:
 
 	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
 
-	bool hasCRC32() const { return calcCRC; };
-	u_int32_t getCRC32() const { return crc32.getValue(); };
-
 protected:
 #ifdef _WIN32
 	HANDLE h;
 #else
 	int h;
 #endif
-	CRC32 crc32;
-	bool calcCRC;
-
 private:
 	File(const File&);
 	File& operator=(const File&);
 };
 
-class BufferedFile : public File {
+template<bool managed>
+class LimitedInputStream : public InputStream {
 public:
-	BufferedFile(const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
-		File(aFileName, access, mode, aCrc32), buf(NULL), pos(0), size(bufSize*1024) {
-		
-		buf = new u_int8_t[size];
+	LimitedInputStream(InputStream* s, int aMaxBytes) : maxBytes(aMaxBytes) {
 	}
-	
-	virtual ~BufferedFile() throw(FileException) {
-		flush();
-		delete[] buf;
+	virtual ~LimitedInputStream() { if(managed) delete s; }
+
+	size_t read(void* buf, size_t& len) throw(FileException) {
+		dcassert(maxBytes >= 0);
+		len = (size_t)min(maxBytes, (int64_t)len);
+		if(len == 0)
+			return 0;
+		size_t x = s->read(buf, len);
+		maxBytes -= x;
+		return x;
 	}
-
-	void flush() throw(FileException) {
-		if(pos > 0) {
-			try {
-				File::write(buf, (u_int32_t)pos);
-			} catch(...) {
-				pos = 0;
-				throw;
-			}
-			pos = 0;
-		}
-	}
-
-	virtual u_int32_t write(const void* aBuf, u_int32_t len) throw(FileException) {
-		if( (size == 0) || ((pos == 0) && (len > size)) ) {
-			return File::write(aBuf, len);
-		}
-
-		size_t pos2 = 0;
-		while(pos2 < len) {
-			size_t i = min(size-pos, (size_t)(len - pos2));
-			
-			memcpy(buf+pos, ((char*)aBuf)+pos2, i);
-			pos += i;
-			pos2 += (u_int32_t)i;
-			dcassert(pos <= size);
-			dcassert(pos2 <= len);
-
-			if(pos == size)
-				flush();
-		}
-		return len;
-	}
-
-	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
-	
-	virtual void close() throw(FileException) { if(isOpen()) { flush(); File::close(); } };
-	virtual int64_t getSize() throw(FileException) { flush(); return File::getSize(); };
-	virtual int64_t getPos() throw(FileException) { flush(); return File::getPos(); };
-	virtual void setPos(int64_t aPos) throw(FileException) { flush(); File::setPos(aPos); };
-	virtual void setEndPos(int64_t aPos) throw(FileException) { flush(); File::setEndPos(aPos); };
-	virtual void movePos(int64_t aPos) throw(FileException) { flush(); File::movePos(aPos); };
-	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
-	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
-	virtual void flushBuffers() { flush(); File::flushBuffers(); }
 
 private:
-	u_int8_t* buf;
-	size_t pos;
-	size_t size;
-
-	BufferedFile(const BufferedFile&);
-	BufferedFile& operator=(const BufferedFile&);
+	int64_t maxBytes;
 };
 
-class SizedFile : public BufferedFile {
+template<bool managed>
+class BufferedOutputStream : public OutputStream {
 public:
-	SizedFile(int64_t aExpectedSize, const string& aFileName, int access, int mode, bool aCrc32 = false, int bufSize = SETTING(BUFFER_SIZE)) throw(FileException) : 
-		BufferedFile(aFileName, access, mode, aCrc32, bufSize)
-	{
-		int64_t tmp = getPos();
-		setPos(aExpectedSize);
-		setEOF();
-		setPos(tmp);
+	using OutputStream::write;
+
+	BufferedOutputStream(OutputStream* aStream, size_t aBufSize = SETTING(BUFFER_SIZE) * 1024) : s(aStream), pos(0), bufSize(aBufSize), buf(new u_int8_t[bufSize]) { }
+	virtual ~BufferedOutputStream() { if(managed) delete s; delete buf; }
+
+	virtual size_t flush() throw(Exception) {
+		size_t x = 0;
+		if(pos > 0)
+			x = s->write(buf, pos);
+		return x + s->flush();
 	}
 
-	virtual ~SizedFile() throw(FileException) {
-		close();
-	}
-
-	virtual void close() throw(FileException) {
-		if(isOpen()) {
-			BufferedFile::close();
+	virtual size_t write(const void* wbuf, size_t len) throw(Exception) {
+		u_int8_t* b = (u_int8_t*)wbuf;
+		size_t written = 0;
+		while(len > 0) {
+			if(pos == 0 && len >= bufSize) {
+				return written + s->write(b, len);
+			} else {
+				size_t n = min(bufSize - pos, len);
+				memcpy(buf + pos, b, n);
+				b += n;
+				pos += n;
+				len -= n;
+				if(pos == bufSize) {
+					written += s->write(buf, bufSize);
+					pos = 0;
+				}
+			}
 		}
+		return written;
 	}
 private:
-	SizedFile(const SizedFile&);
-	SizedFile& operator=(const SizedFile&);
+	OutputStream* s;
+	size_t pos;
+	size_t bufSize;
+	u_int8_t* buf;
+};
+
+class StringOutputStream : public OutputStream {
+public:
+	virtual size_t flush() throw(Exception) { return 0; }
+	virtual size_t write(const void* buf, size_t len) throw(Exception) {
+		str.append((char*)buf, len);
+		return len;
+	}
+	const string& getString() { return str; }
+private:
+	string str;
 };
 #endif // !defined(AFX_FILE_H__CB551CD7_189C_4175_922E_8B00B4C8D6F1__INCLUDED_)
 
 /**
  * @file
- * $Id: File.h,v 1.28 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: File.h,v 1.29 2004/02/23 17:42:16 arnetheduck Exp $
  */
 

@@ -177,7 +177,7 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 	for(DestDirList::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {
 		if(id->subdir != NULL) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
-			id->subdir->files.insert(copyFile);
+			id->subdir->files.push_back(copyFile);
 		}
 		id->fileAdded = false;	// Prepare for next stage
 	}
@@ -195,11 +195,11 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 		}
 		if(is->MatchesFile(currentFile->getName(), filePath, currentFile->getSize())) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
-			destDirVector[is->ddIndex].dir->files.insert(copyFile);
+			destDirVector[is->ddIndex].dir->files.push_back(copyFile);
 			destDirVector[is->ddIndex].fileAdded = true;
 
 			if(is->isAutoQueue){
-				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTHRoot(), Util::emptyString, QueueItem::FLAG_RESUME);
+				QueueManager::getInstance()->add(currentFile->getName(), currentFile->getSize(), getUser(), Util::getTempPath() + currentFile->getName(), currentFile->getTTH(), Util::emptyString, QueueItem::FLAG_RESUME);
 			}
 
 			if(breakOnFirst) {
@@ -216,7 +216,7 @@ void ADLSearchManager::MatchesDirectory(DestDirList& destDirVector, DirectoryLis
 		if(id->subdir != NULL) {
 			DirectoryListing::Directory* newDir = 
 				new DirectoryListing::AdlDirectory(fullPath, id->subdir, currentDir->getName());
-			id->subdir->directories.insert(newDir);
+			id->subdir->directories.push_back(newDir);
 			id->subdir = newDir;
 		}
 	}
@@ -234,7 +234,7 @@ void ADLSearchManager::MatchesDirectory(DestDirList& destDirVector, DirectoryLis
 		if(is->MatchesDirectory(currentDir->getName())) {
 			destDirVector[is->ddIndex].subdir = 
 				new DirectoryListing::AdlDirectory(fullPath, destDirVector[is->ddIndex].dir, currentDir->getName());
-			destDirVector[is->ddIndex].dir->directories.insert(destDirVector[is->ddIndex].subdir);
+			destDirVector[is->ddIndex].dir->directories.push_back(destDirVector[is->ddIndex].subdir);
 			if(breakOnFirst) {
 				// Found a match, search no more
 				break;
@@ -287,6 +287,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.11 2004/02/16 13:21:39 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.12 2004/02/23 17:42:16 arnetheduck Exp $
 */
 

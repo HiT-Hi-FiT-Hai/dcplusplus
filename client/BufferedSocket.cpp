@@ -36,8 +36,6 @@ BufferedSocket::~BufferedSocket() {
 	for(int i = 0; i < BUFFERS; i++) {
 		delete[] outbuf[i];
 	}
-	if(comp != NULL)
-		delete comp;
 }
 
 /**
@@ -45,77 +43,28 @@ BufferedSocket::~BufferedSocket() {
  * @return True if file is finished, false if there's more data to send
  */
 bool BufferedSocket::threadSendFile() {
-	u_int32_t len;
 	dcassert(file != NULL);
-
 	try {
-		if(compress) {
-			if(comp == NULL) {
-				comp = new FilteredReader<ZFilter>(file, size);
-			}
-			while(true) {
-				{
-					Lock l(cs);
-					if(!tasks.empty())
-						return false;
-				}
-				
-				if(wait(0, WAIT_READ) & WAIT_READ)
+		for(;;) {
+			{
+				Lock l(cs);
+				if(!tasks.empty())
 					return false;
-
-				u_int32_t s = (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize);
-				u_int32_t initial = s;
-				u_int32_t br = comp->read(inbuf, s);
-				size -= br;
-				dcassert(size >= 0);
-				if(s > 0) {
-					Socket::write((char*) inbuf, s);
-					fire(BufferedSocketListener::BYTES_SENT, br, s);
-				} 
-				if(s < initial) {
-					// Finished!
-					delete comp;
-					comp = NULL;
-					dcassert(size == 0);
-					fire(BufferedSocketListener::TRANSMIT_DONE);
-					return true;
-				} 
 			}
-		} else {
-			while(size > 0) {
-				{
-					Lock l(cs);
-					if(!tasks.empty())
-						return false;
-				}
-
-				if(wait(0, WAIT_READ) & WAIT_READ)
-					return false;
-
-				dcassert(inbufSize >= SMALL_BUFFER_SIZE);
-				u_int32_t s = (u_int32_t)min(size, (int64_t) (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize));
-
-				if( (len = file->read(inbuf, s)) == 0) {
-					// Premature EOF?
-					dcdebug("BufferedSocket::threadSendFile Read returned 0!!!");
-					disconnect();
-					return true;
-				}
-				Socket::write((char*)inbuf, len);
-				fire(BufferedSocketListener::BYTES_SENT, len, len);
-				size -= len;
+			size_t s = (BOOLSETTING(SMALL_SEND_BUFFER) ? SMALL_BUFFER_SIZE : inbufSize);
+			size_t valid = file->read(inbuf, s);
+			if(valid > 0) {
+				Socket::write((char*)inbuf, valid);
+				fire(BufferedSocketListener::BYTES_SENT, valid, s);
+			} else {
+				fire(BufferedSocketListener::TRANSMIT_DONE);
+				return true;
 			}
 		}
 	} catch(const Exception& e) {
-		if(comp) {
-			delete comp;
-			comp = NULL;
-		}
 		fail(e.getError());
 		return true;
 	}
-	fire(BufferedSocketListener::TRANSMIT_DONE);
-	return true;
 }
 
 bool BufferedSocket::fillBuffer(char* buf, int bufLen, u_int32_t timeout /* = 0 */) throw(SocketException) {
@@ -456,5 +405,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.64 2004/02/16 13:21:39 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.65 2004/02/23 17:42:16 arnetheduck Exp $
  */

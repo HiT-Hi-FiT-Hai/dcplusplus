@@ -240,6 +240,7 @@
 #define IDC_OPEN_DOWNLOADS              1213
 #define IDC_SETTINGS_UPLOAD_BAR_COLOR   1214
 #define IDC_SETTINGS_DOWNLOAD_BAR_COLOR 1215
+#define IDC_COPY_TTH					1216
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -275,7 +276,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        238
 #define _APS_NEXT_COMMAND_VALUE         32788
-#define _APS_NEXT_CONTROL_VALUE         1216
+#define _APS_NEXT_CONTROL_VALUE         1217
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

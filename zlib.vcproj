@@ -35,7 +35,7 @@
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
-				WarningLevel="4"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
@@ -138,13 +138,10 @@
 				RelativePath=".\zlib\compress.c">
 			</File>
 			<File
+				RelativePath=".\zlib\crc32.c">
+			</File>
+			<File
 				RelativePath=".\zlib\deflate.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infblock.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infcodes.c">
 			</File>
 			<File
 				RelativePath=".\zlib\inffast.c">
@@ -154,9 +151,6 @@
 			</File>
 			<File
 				RelativePath=".\zlib\inftrees.c">
-			</File>
-			<File
-				RelativePath=".\zlib\infutil.c">
 			</File>
 			<File
 				RelativePath=".\zlib\trees.c">
@@ -172,13 +166,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\zlib\crc32.h">
+			</File>
+			<File
 				RelativePath=".\zlib\deflate.h">
-			</File>
-			<File
-				RelativePath=".\zlib\infblock.h">
-			</File>
-			<File
-				RelativePath=".\zlib\infcodes.h">
 			</File>
 			<File
 				RelativePath=".\zlib\inffast.h">
@@ -187,10 +178,10 @@
 				RelativePath=".\zlib\inffixed.h">
 			</File>
 			<File
-				RelativePath=".\zlib\inftrees.h">
+				RelativePath=".\zlib\inflate.h">
 			</File>
 			<File
-				RelativePath=".\zlib\infutil.h">
+				RelativePath=".\zlib\inftrees.h">
 			</File>
 			<File
 				RelativePath=".\zlib\trees.h">

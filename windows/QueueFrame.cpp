@@ -31,13 +31,13 @@
 #define FILE_LIST_NAME "File Lists"
 
 int QueueFrame::columnIndexes[] = { COLUMN_TARGET, COLUMN_STATUS, COLUMN_SIZE, COLUMN_DOWNLOADED, COLUMN_PRIORITY,
-COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED };
+COLUMN_USERS, COLUMN_PATH, COLUMN_ERRORS, COLUMN_SEARCHSTRING, COLUMN_ADDED, COLUMN_TTH };
 
-int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100 };
+int QueueFrame::columnSizes[] = { 200, 300, 75, 110, 75, 200, 200, 200, 200, 100, 125 };
 
 static ResourceManager::Strings columnNames[] = { ResourceManager::FILENAME, ResourceManager::STATUS, ResourceManager::SIZE, ResourceManager::DOWNLOADED,
 ResourceManager::PRIORITY, ResourceManager::USERS, ResourceManager::PATH, ResourceManager::ERRORS, ResourceManager::SEARCH_STRING,
-ResourceManager::ADDED };
+ResourceManager::ADDED, ResourceManager::TTH_ROOT };
 
 LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -254,6 +254,9 @@ void QueueFrame::QueueItemInfo::update() {
 
 		if(colMask & MASK_ADDED) {
 			display->columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
+		}
+		if(colMask & MASK_TTH && getTTH() != NULL) {
+			display->columns[COLUMN_TTH] = getTTH()->toBase32();
 		}
 	}
 }
@@ -551,6 +554,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 		ii->setPriority(aQI->getPriority());
 		ii->setStatus(aQI->getStatus());
 		ii->setDownloadedBytes(aQI->getDownloadedBytes());
+		ii->setTTH(aQI->getTTH());
 
 		{
 			for(QueueItemInfo::SourceIter i = ii->getSources().begin(); i != ii->getSources().end(); ) {
@@ -580,7 +584,7 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				}
 			}
 		}
-		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED;
+		ii->updateMask |= QueueItemInfo::MASK_PRIORITY | QueueItemInfo::MASK_USERS | QueueItemInfo::MASK_ERRORS | QueueItemInfo::MASK_STATUS | QueueItemInfo::MASK_DOWNLOADED | QueueItemInfo::MASK_TTH;
 	}
 
 	speak(UPDATE_ITEM, ii);
@@ -1282,7 +1286,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.43 2004/01/04 16:34:38 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.44 2004/02/23 17:42:17 arnetheduck Exp $
  */
 
 

@@ -21,15 +21,12 @@
 
 #pragma once
 
-#include "File.h"
+#include "ZUtils.h"
 
 struct CRC32Hash {
-	size_t operator()(const char* c, int n) { 
-		CRC32 crc;
-		for(int i = 0; i < n; ++i)
-			crc.update(c[i]);
-		return crc.getValue();
-	}
+	size_t operator()(const void* buf, size_t len) { f(buf, len); return f.getValue(); }
+private:
+	CRC32Filter f;
 };
 
 template<size_t N, class HashFunc = CRC32Hash>
@@ -90,5 +87,5 @@ private:
 
 /**
  * @file
- * $Id: BloomFilter.h,v 1.3 2004/01/25 15:29:06 arnetheduck Exp $
+ * $Id: BloomFilter.h,v 1.4 2004/02/23 17:42:16 arnetheduck Exp $
  */

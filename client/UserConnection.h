@@ -76,18 +76,12 @@ class ConnectionQueueItem;
 
 class Transfer {
 public:
-	Transfer() : file(NULL), userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
+	Transfer() : userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
 		last(0), total(0), actual(0), pos(-1), size(-1) { };
-	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
+	virtual ~Transfer() { dcassert(userConnection == NULL); };
 	
 	int64_t getPos() { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
-	void setPos(int64_t aPos, bool aUpdate) { 
-		pos = aPos;
-		if(aUpdate) {
-			file->setPos(aPos);
-		}
-	};
 
 	void addPos(int64_t aBytes) { pos += aBytes; total+=aBytes; };
 	void addActual(int64_t aBytes) { actual += aBytes; };
@@ -113,7 +107,6 @@ public:
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
-	GETSET(File*, file, File);
 	GETSET(UserConnection*, userConnection, UserConnection);
 	GETSET(u_int32_t, start, Start);
 	GETSET(u_int32_t, lastTick, LastTick);
@@ -214,8 +207,8 @@ public:
 	}
 	
 	void disconnect() { if(socket) socket->disconnect(); };
-	void transmitFile(File* f, int64_t size, bool comp = false) { 
-		socket->transmitFile(f, size, comp); 
+	void transmitFile(InputStream* f) { 
+		socket->transmitFile(f); 
 	};
 
 	const string& getDirectionString() {
@@ -287,6 +280,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.65 2004/02/16 13:21:40 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.66 2004/02/23 17:42:17 arnetheduck Exp $
  */
 
