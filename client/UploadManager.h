@@ -148,6 +148,7 @@ private:
 		for(Upload::MapIter j = uploads.begin(); j != uploads.end(); ++j) {
 			delete j->second;
 		}
+		uploads.clear();
 		cs.leave();
 
 		removeConnections();
@@ -220,9 +221,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.32 2002/01/22 00:10:37 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.33 2002/01/23 08:45:37 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.33  2002/01/23 08:45:37  arnetheduck
+ * New files for the notepad
+ *
  * Revision 1.32  2002/01/22 00:10:37  arnetheduck
  * Version 0.132, removed extra slots feature for nm dc users...and some bug
  * fixes...
