@@ -556,7 +556,7 @@ cleanup:
 #endif
 
 int HashManager::Hasher::run() {
-	//setThreadPriority(Thread::IDLE);
+	setThreadPriority(Thread::IDLE);
 
 	u_int8_t* buf = NULL;
 	bool virtualBuf = true;
@@ -672,5 +672,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.42 2005/01/13 15:08:00 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.43 2005/01/13 18:10:56 arnetheduck Exp $
  */

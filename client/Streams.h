@@ -126,7 +126,7 @@ public:
 			flush();
 		} catch(const Exception&) {
 		}
-		if(managed) delete s; delete buf; 
+		if(managed) delete s;
 	}
 
 	virtual size_t flush() throw(Exception) {
@@ -184,5 +184,5 @@ private:
 
 /**
 * @file
-* $Id: Streams.h,v 1.1 2005/01/13 15:08:00 arnetheduck Exp $
+* $Id: Streams.h,v 1.2 2005/01/13 18:10:55 arnetheduck Exp $
 */
