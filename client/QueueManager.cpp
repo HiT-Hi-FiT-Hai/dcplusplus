@@ -331,6 +331,9 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 	int64_t sz = 0;
 	bool online = false;
 
+	TTHValue root;
+	bool hasTTH = false;
+
 	{
 		Lock l(cs);
 		QueueItem::UserMap& um = userQueue.getRunning();
@@ -351,12 +354,17 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 
 			QueueItem* qi = fileQueue.findAutoSearch(recent);
 			if(qi != NULL) {
-				fn = qi->getTargetFileName();
-				sz = qi->getSize() - 1;
-				if(qi->getSearchString().empty()) { // BOOLSETTING(AUTO_SEARCH_AUTO_STRING must be set...
-					searchString = SearchManager::getInstance()->clean(qi->getTargetFileName());
+				if(qi->getTTH()) {
+					root = *qi->getTTH();
+					hasTTH = true;
 				} else {
-					searchString = qi->getSearchString();
+					fn = qi->getTargetFileName();
+					sz = qi->getSize() - 1;
+					if(qi->getSearchString().empty()) { // BOOLSETTING(AUTO_SEARCH_AUTO_STRING must be set...
+						searchString = SearchManager::getInstance()->clean(qi->getTargetFileName());
+					} else {
+						searchString = qi->getSearchString();
+					}
 				}
 				online = qi->hasOnlineUsers();
 				recent.push_back(searchString);
@@ -364,7 +372,9 @@ void QueueManager::on(TimerManagerListener::Minute, u_int32_t aTick) throw() {
 		}
 	}
 
-	if(!fn.empty()) {
+	if(hasTTH) {
+		SearchManager::getInstance()->search("TTH:" + root.toBase32(), 0, SearchManager::TYPE_HASH, SearchManager::SIZE_DONTCARE);
+	} else if(!fn.empty()) {
 		SearchManager::getInstance()->search(searchString, sz, ShareManager::getInstance()->getType(fn), SearchManager::SIZE_ATLEAST);
 		nextSearch = aTick + (online ? 2000 : 5000);
 	}
@@ -1265,9 +1275,11 @@ void QueueManager::on(SearchManagerListener::SR, SearchResult* sr) throw() {
 			bool exact = false;
 			QueueItem* qi = *i;
 
-			if(sr->getTTH() && qi->getTTH() && (*sr->getTTH() == *qi->getTTH())) {
-				found = true;
-				exact = true;
+			if(qi->getTTH()) {
+				if(sr->getTTH() && *qi->getTTH() == *sr->getTTH()) {
+					found = true;
+					exact = true;
+				}
 			} else {
 				if(BOOLSETTING(AUTO_SEARCH_EXACT)) {
 					found = (Util::stricmp(qi->getTargetFileName(), fileName) == 0);
@@ -1337,5 +1349,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.83 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.84 2004/04/26 14:05:26 arnetheduck Exp $
  */

@@ -408,6 +408,8 @@ public:
 	virtual size_t flush() throw(Exception) {
 		if(pos > 0)
 			s->write(buf, pos);
+		pos = 0;
+		s->flush();
 		return 0;
 	}
 
@@ -454,6 +456,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.35 2004/04/24 20:56:27 arnetheduck Exp $
+ * $Id: File.h,v 1.36 2004/04/26 14:05:26 arnetheduck Exp $
  */
 

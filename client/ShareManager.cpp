@@ -767,7 +767,6 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 }
 
 void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
-	
 	RLock l(cs);
 	if(aFileType == SearchManager::TYPE_HASH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {
@@ -860,6 +859,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.84 2004/04/18 12:51:14 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.85 2004/04/26 14:05:26 arnetheduck Exp $
  */
 

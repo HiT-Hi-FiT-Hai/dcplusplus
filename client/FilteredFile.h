@@ -112,10 +112,6 @@ public:
 			written += f->write(buf, n);
 
 			if(!more) {
-				// We've reached the end of the stream so we might as well flush any
-				// buffers below to return the correct number of bytes we'll actually
-				// write if there's more buffering being done at lower levels...
-				written += f->flush();
 				if(len > 0) {
 					throw Exception("Garbage data after end of stream");
 				}
