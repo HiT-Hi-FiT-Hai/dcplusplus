@@ -231,8 +231,8 @@ private:
 			MASK_TTH = 1 << COLUMN_TTH
 		};
 
-		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(WinUtil::toT(aQI->getTarget())),
-			path(WinUtil::toT(Util::getFilePath(aQI->getTarget()))),
+		QueueItemInfo(QueueItem* aQI) : Flags(*aQI), target(Text::toT(aQI->getTarget())),
+			path(Text::toT(Util::getFilePath(aQI->getTarget()))),
 			size(aQI->getSize()), downloadedBytes(aQI->getDownloadedBytes()), 
 			added(aQI->getAdded()), tth(aQI->getTTH()), priority(aQI->getPriority()), status(aQI->getStatus()),
 			updateMask((u_int32_t)-1), display(NULL)
@@ -249,7 +249,7 @@ private:
 
 		void update();
 
-		void remove() { QueueManager::getInstance()->remove(WinUtil::fromT(getTarget())); }
+		void remove() { QueueManager::getInstance()->remove(Text::fromT(getTarget())); }
 
 		// TypedListViewCtrl functions
 		const tstring& getText(int col) {
@@ -438,5 +438,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.42 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.43 2004/09/10 14:44:17 arnetheduck Exp $
  */

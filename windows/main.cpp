@@ -197,7 +197,7 @@ static void checkCommonControls() {
 }
 
 void callBack(void* x, const string& a) {
-	::SetWindowText((HWND)x, WinUtil::toT(STRING(LOADING) + "(" + a + ")").c_str());
+	::SetWindowText((HWND)x, Text::toT(STRING(LOADING) + "(" + a + ")").c_str());
 	::RedrawWindow((HWND)x, NULL, NULL, RDW_UPDATENOW);
 }
 
@@ -332,7 +332,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 		}
 		tth.finalize();
 		strcpy(::tth, tth.getRoot().toBase32().c_str());
-		WinUtil::tth = WinUtil::toT(::tth);
+		WinUtil::tth = Text::toT(::tth);
 	} catch(const FileException&) {
 		dcdebug("Failed reading exe\n");
 	}
@@ -350,5 +350,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file
- * $Id: main.cpp,v 1.29 2004/09/06 18:57:26 arnetheduck Exp $
+ * $Id: main.cpp,v 1.30 2004/09/10 14:44:17 arnetheduck Exp $
  */

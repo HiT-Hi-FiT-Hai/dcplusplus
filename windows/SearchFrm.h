@@ -139,7 +139,7 @@ public:
 	}
 	
 	LRESULT onDownload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY))));
+		ctrlResults.forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 		return 0;
 	}
 
@@ -151,7 +151,7 @@ public:
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT onDownloadWhole(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY))));
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 		return 0;
 	}
 	
@@ -305,29 +305,29 @@ private:
 		void update() { 
 			if(sr->getType() == SearchResult::TYPE_FILE) {
 				if(sr->getFile().rfind(_T('\\')) == tstring::npos) {
-					fileName = WinUtil::toT(sr->getFile());
+					fileName = Text::toT(sr->getFile());
 				} else {
-					fileName = WinUtil::toT(Util::getFileName(sr->getFile()));
-					path = WinUtil::toT(Util::getFilePath(sr->getFile()));
+					fileName = Text::toT(Util::getFileName(sr->getFile()));
+					path = Text::toT(Util::getFilePath(sr->getFile()));
 				}
 
-				type = WinUtil::toT(Util::getFileExt(WinUtil::fromT(fileName)));
+				type = Text::toT(Util::getFileExt(Text::fromT(fileName)));
 				if(!type.empty() && type[0] == _T('.'))
 					type.erase(0, 1);
-				size = WinUtil::toT(Util::formatBytes(sr->getSize()));
-				exactSize = WinUtil::toT(Util::formatExactSize(sr->getSize()));
+				size = Text::toT(Util::formatBytes(sr->getSize()));
+				exactSize = Text::toT(Util::formatExactSize(sr->getSize()));
 			} else {
-				fileName = WinUtil::toT(sr->getFileName());
-				path = WinUtil::toT(sr->getFile());
+				fileName = Text::toT(sr->getFileName());
+				path = Text::toT(sr->getFile());
 				type = TSTRING(DIRECTORY);
 			}
-			nick = WinUtil::toT(sr->getUser()->getNick());
-			connection = WinUtil::toT(sr->getUser()->getConnection());
-			hubName = WinUtil::toT(sr->getHubName());
-			slots = WinUtil::toT(sr->getSlotString());
-			ip = WinUtil::toT(sr->getIP());
+			nick = Text::toT(sr->getUser()->getNick());
+			connection = Text::toT(sr->getUser()->getConnection());
+			hubName = Text::toT(sr->getHubName());
+			slots = Text::toT(sr->getSlotString());
+			ip = Text::toT(sr->getIP());
 			if(sr->getTTH() != NULL)
-				setTTH(WinUtil::toT(sr->getTTH()->toBase32()));
+				setTTH(Text::toT(sr->getTTH()->toBase32()));
 		}
 
 		GETSET(tstring, nick, Nick);
@@ -445,7 +445,7 @@ private:
 	LRESULT onItemChangedHub(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
 	void speak(Speakers s, Client* aClient) {
-		HubInfo* hubInfo = new HubInfo(WinUtil::toT(aClient->getIpPort()), WinUtil::toT(aClient->getName()), aClient->getOp());
+		HubInfo* hubInfo = new HubInfo(Text::toT(aClient->getIpPort()), Text::toT(aClient->getName()), aClient->getOp());
 		PostMessage(WM_SPEAKER, WPARAM(s), LPARAM(hubInfo)); 
 	};
 };
@@ -459,6 +459,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.42 2004/09/10 10:04:08 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.43 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

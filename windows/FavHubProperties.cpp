@@ -27,12 +27,12 @@
 
 LRESULT FavHubProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 {
-	SetDlgItemText(IDC_HUBNAME, WinUtil::toT(entry->getName()).c_str());
-	SetDlgItemText(IDC_HUBDESCR, WinUtil::toT(entry->getDescription()).c_str());
-	SetDlgItemText(IDC_HUBADDR, WinUtil::toT(entry->getServer()).c_str());
-	SetDlgItemText(IDC_HUBNICK, WinUtil::toT(entry->getNick(false)).c_str());
-	SetDlgItemText(IDC_HUBPASS, WinUtil::toT(entry->getPassword()).c_str());
-	SetDlgItemText(IDC_HUBUSERDESCR, WinUtil::toT(entry->getUserDescription()).c_str());
+	SetDlgItemText(IDC_HUBNAME, Text::toT(entry->getName()).c_str());
+	SetDlgItemText(IDC_HUBDESCR, Text::toT(entry->getDescription()).c_str());
+	SetDlgItemText(IDC_HUBADDR, Text::toT(entry->getServer()).c_str());
+	SetDlgItemText(IDC_HUBNICK, Text::toT(entry->getNick(false)).c_str());
+	SetDlgItemText(IDC_HUBPASS, Text::toT(entry->getPassword()).c_str());
+	SetDlgItemText(IDC_HUBUSERDESCR, Text::toT(entry->getUserDescription()).c_str());
 
 	CEdit tmp;
 	tmp.Attach(GetDlgItem(IDC_HUBNAME));
@@ -58,17 +58,17 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 	{
 		TCHAR buf[256];
 		GetDlgItemText(IDC_HUBNAME, buf, 256);
-		entry->setName(WinUtil::fromT(buf));
+		entry->setName(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBDESCR, buf, 256);
-		entry->setDescription(WinUtil::fromT(buf));
+		entry->setDescription(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBADDR, buf, 256);
-		entry->setServer(WinUtil::fromT(buf));
+		entry->setServer(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBNICK, buf, 256);
-		entry->setNick(WinUtil::fromT(buf));
+		entry->setNick(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBPASS, buf, 256);
-		entry->setPassword(WinUtil::fromT(buf));
+		entry->setPassword(Text::fromT(buf));
 		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
-		entry->setUserDescription(WinUtil::fromT(buf));
+		entry->setUserDescription(Text::fromT(buf));
 		HubManager::getInstance()->save();
 	}
 	EndDialog(wID);
@@ -111,5 +111,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.8 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.9 2004/09/10 14:44:17 arnetheduck Exp $
  */

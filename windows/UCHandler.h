@@ -50,7 +50,7 @@ public:
 	}
 
 	void prepareMenu(CMenu& menu, int ctx, const tstring& server, bool op) {
-		userCommands = HubManager::getInstance()->getUserCommands(ctx, WinUtil::fromT(server), op);
+		userCommands = HubManager::getInstance()->getUserCommands(ctx, Text::fromT(server), op);
 		int n = 0;
 
 		menuPos = menu.GetMenuItemCount();
@@ -68,7 +68,7 @@ public:
 					}
 				} else if(uc.getType() == UserCommand::TYPE_RAW || uc.getType() == UserCommand::TYPE_RAW_ONCE) {
 					cur = menu.m_hMenu;
-					StringTokenizer<tstring> t(WinUtil::toT(uc.getName()), _T('\\'));
+					StringTokenizer<tstring> t(Text::toT(uc.getName()), _T('\\'));
 					for(TStringIter i = t.getTokens().begin(); i != t.getTokens().end(); ++i) {
 						if(i+1 == t.getTokens().end()) {
 							cur.AppendMenu(MF_STRING, IDC_USER_COMMAND+n, i->c_str());
@@ -115,5 +115,5 @@ private:
 
 /**
 * @file
-* $Id: UCHandler.h,v 1.7 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: UCHandler.h,v 1.8 2004/09/10 14:44:17 arnetheduck Exp $
 */

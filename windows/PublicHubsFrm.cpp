@@ -201,11 +201,11 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 		FavoriteHubEntry e;
 		ctrlHubs.GetItemText(i, COLUMN_NAME, buf, 256);
-		e.setName(WinUtil::fromT(buf));
+		e.setName(Text::fromT(buf));
 		ctrlHubs.GetItemText(i, COLUMN_DESCRIPTION, buf, 256);
-		e.setDescription(WinUtil::fromT(buf));
+		e.setDescription(Text::fromT(buf));
 		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
-		e.setServer(WinUtil::fromT(buf));
+		e.setServer(Text::fromT(buf));
 		HubManager::getInstance()->addFavorite(e);
 	}
 	return 0;
@@ -331,10 +331,10 @@ void PublicHubsFrame::updateList() {
 			filter.match(i->getServer()) ) {
 
 			TStringList l;
-			l.push_back(WinUtil::toT(i->getName()));
-			l.push_back(WinUtil::toT(i->getDescription()));
-			l.push_back(WinUtil::toT(i->getUsers()));
-			l.push_back(WinUtil::toT(i->getServer()));
+			l.push_back(Text::toT(i->getName()));
+			l.push_back(Text::toT(i->getDescription()));
+			l.push_back(Text::toT(i->getUsers()));
+			l.push_back(Text::toT(i->getServer()));
 			ctrlHubs.insert(ctrlHubs.GetItemCount(), l);
 			visibleHubs++;
 			users += Util::toInt(i->getUsers());
@@ -348,8 +348,8 @@ void PublicHubsFrame::updateList() {
 }
 
 void PublicHubsFrame::updateStatus() {
-	ctrlStatus.SetText(1, WinUtil::toT(STRING(HUBS) + ": " + Util::toString(visibleHubs)).c_str());
-	ctrlStatus.SetText(2, WinUtil::toT(STRING(USERS) + ": " + Util::toString(users)).c_str());
+	ctrlStatus.SetText(1, Text::toT(STRING(HUBS) + ": " + Util::toString(visibleHubs)).c_str());
+	ctrlStatus.SetText(2, Text::toT(STRING(USERS) + ": " + Util::toString(users)).c_str());
 }
 
 LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -377,7 +377,7 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 	if(wParam == VK_RETURN) {
 		str = new TCHAR[ctrlFilter.GetWindowTextLength()+1];
 		ctrlFilter.GetWindowText(str, ctrlFilter.GetWindowTextLength()+1);
-		filter = WinUtil::fromT(tstring(str, ctrlFilter.GetWindowTextLength()));
+		filter = Text::fromT(tstring(str, ctrlFilter.GetWindowTextLength()));
 		delete[] str;
 		updateList();
 	} else {
@@ -419,6 +419,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.25 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.26 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

@@ -213,35 +213,7 @@ public:
 		lastDirs.push_back(dir);
 	}
 	
-#ifdef UNICODE
-	static wstring toT(const string& str) {
-		return Util::utf8ToWide(str);
-	}
-	static string fromT(const wstring& str) {
-		return Util::wideToUtf8(str);
-	}
-#else
-	static string toT(const string& str) {
-		string tmp;
-		return Util::toAcp(str, tmp);
-	}
-	static string fromT(const string& str) {
-		string tmp;
-		return Util::toUtf8(str, tmp);
-	}
-#endif
-
-	static tstring encodeFont(LOGFONT const& font)
-	{
-		tstring res(font.lfFaceName);
-		res += L',';
-		res += Util::utf8ToWide(Util::toString(font.lfHeight));
-		res += L',';
-		res += Util::utf8ToWide(Util::toString(font.lfWeight));
-		res += L',';
-		res += Util::utf8ToWide(Util::toString(font.lfItalic));
-		return res;
-	}
+	static tstring encodeFont(LOGFONT const& font);
 	
 	static bool browseFile(tstring& target, HWND owner = NULL, bool save = true, const tstring& initialDir = Util::emptyStringW, const TCHAR* types = NULL, const TCHAR* defExt = NULL);
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
@@ -296,5 +268,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.31 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.32 2004/09/10 14:44:17 arnetheduck Exp $
  */

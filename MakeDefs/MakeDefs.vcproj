@@ -168,6 +168,9 @@
 				RelativePath="..\client\StringTokenizer.cpp">
 			</File>
 			<File
+				RelativePath="..\client\Text.cpp">
+			</File>
+			<File
 				RelativePath="..\client\Util.cpp">
 			</File>
 		</Filter>
@@ -176,6 +179,9 @@
 			Filter="h;hpp;hxx;hm;inl">
 			<File
 				RelativePath=".\StdAfx.h">
+			</File>
+			<File
+				RelativePath="..\client\Text.h">
 			</File>
 		</Filter>
 	</Files>

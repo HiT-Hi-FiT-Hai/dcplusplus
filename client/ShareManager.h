@@ -54,7 +54,7 @@ public:
 	 */
 	void addDirectory(const string& aDirectory, const string & aName) throw(ShareException);
 	void removeDirectory(const string& aName);	
-	string translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException);
+	string translateFileName(const string& aFile, bool adc) throw(ShareException);
 	void refresh(bool dirs = false, bool aUpdate = true, bool block = false) throw(ShareException);
 	void setDirty() { xmlDirty = nmdcDirty = true; };
 
@@ -283,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.55 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.56 2004/09/10 14:44:16 arnetheduck Exp $
  */
 

@@ -98,9 +98,9 @@ void Util::initialize() {
 	}
 
 #ifdef _WIN32
-	wchar_t buf[MAX_PATH+1];
-	GetModuleFileNameW(NULL, buf, MAX_PATH);
-	appPath = Util::wideToUtf8(buf);
+	TCHAR buf[MAX_PATH+1];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	appPath = Text::fromT(buf);
 	appPath.erase(appPath.rfind('\\') + 1);
 #else // _WIN32
 	char* home = getenv("HOME");
@@ -375,54 +375,7 @@ bool Util::isPrivateIp(string const& ip) {
 	return false;
 }
 
-static void cToUtf8(wchar_t c, string& str) {
-	if(c >= 0x0800) {
-		str += (char)(0x80 | 0x40 | 0x20  | (c >> 12));
-		str += (char)(0x80 | ((c >> 6) & 0x3f));
-		str += (char)(0x80 | (c & 0x3f));
-	} else if(c >= 0x0080) {
-		str += (char)(0x80 | 0x40 | (c >> 6));
-		str += (char)(0x80 | (c & 0x3f));
-	} else {
-		str += (char)c;
-	}
-}
 
-static int utf8ToC(const char* str, wchar_t& c) {
-	int l = 0;
-	if(str[0] & 0x80) {
-		if(str[0] & 0x40) {
-			if(str[0] & 0x20) {
-				if(str[1] == 0 || str[2] == 0 ||
-					!((((unsigned char)str[1]) & ~0x3f) == 0x80) ||
-					!((((unsigned char)str[2]) & ~0x3f) == 0x80))
-				{
-					return -1;
-				}
-				c = ((wchar_t)(unsigned char)str[0] & 0xf) << 12 |
-					((wchar_t)(unsigned char)str[1] & 0x3f) << 6 |
-					((wchar_t)(unsigned char)str[2] & 0x3f);
-				l = 3;
-			} else {
-				if(str[1] == 0 ||
-					!((((unsigned char)str[1]) & ~0x3f) == 0x80)) 
-				{
-					return -1;
-				}
-				c = ((wchar_t)(unsigned char)str[0] & 0x1f) << 6 |
-					((wchar_t)(unsigned char)str[1] & 0x3f);
-				l = 2;
-			}
-		} else {
-			return -1;
-		}
-	} else {
-		c = (unsigned char)str[0];
-		l = 1;
-	}
-
-	return l;
-}
 
 typedef const u_int8_t* ccp;
 static wchar_t utf8ToC(ccp& str) {
@@ -516,86 +469,6 @@ string::size_type Util::findSubString(const string& aString, const string& aSubS
 		}
 	}
 	return (string::size_type)string::npos;
-}
-
-
-void Util::wideToUtf8(const wstring& str, string& tgt) {
-	string::size_type n = str.length();
-	for(string::size_type i = 0; i < n; ++i) {
-		cToUtf8(str[i], tgt);
-	}
-}
-
-/**
- * Convert a string in the current locale (whatever that happens to be) to UTF-8.
- */
-string& Util::toUtf8(string& str) {
-	if(str.empty())
-		return str;
-	wstring wtmp(str.length(), 0);
-#ifdef _WIN32
-	int sz = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, str.c_str(), (int)str.length(),
-		&wtmp[0], (int)str.length());
-	if(sz <= 0) {
-		str.clear();
-		return str;
-	}
-#else
-	int sz = mbstowcs(&wtmp[0], str.c_str(), wtmp.length());
-	if(sz <= 0) {
-		str.clear();
-		return str;
-	}
-	if(sz < (int)wtmp.length())
-		sz--;
-#endif
-
-	wtmp.resize(sz);
-	str.clear();
-    wideToUtf8(wtmp, str);
-	return str;
-}
-
-void Util::utf8ToWide(const string& str, wstring& tgt) {
-	tgt.reserve(str.length());
-	for(string::size_type i = 0; i < str.length(); ) {
-		wchar_t c = 0;
-		int x = utf8ToC(str.c_str() + i, c);
-		if(x == -1) {
-			i++;
-		} else {
-			i+=x;
-			tgt += c;
-		}
-	}
-
-}
-
-string& Util::toAcp(string& str) {
-	if(str.empty())
-		return str;
-
-	wstring wtmp;
-	utf8ToWide(str, wtmp);
-
-#ifdef _WIN32
-	int x = WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), (int)wtmp.length(), NULL, 0, NULL, NULL);
-	if(x == 0) {
-		str.clear();
-		return str;
-	}
-	str.resize(x);
-	WideCharToMultiByte(CP_ACP, 0, wtmp.c_str(), (int)wtmp.length(), &str[0], (int)str.size(), NULL, NULL);
-#else
-	size_t x = wcstombs(NULL, wtmp.c_str(), 0);
-	if(x == (size_t)-1) {
-		str.clear();
-		return str;
-	}
-	str.resize(x);
-	wcstombs(&str[0], wtmp.c_str(), str.size());
-#endif
-	return str;
 }
 
 string Util::encodeURI(const string& aString, bool reverse) {
@@ -912,6 +785,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.63 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.64 2004/09/10 14:44:16 arnetheduck Exp $
  */
 

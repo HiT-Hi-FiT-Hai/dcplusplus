@@ -210,12 +210,12 @@ private:
 		}
 
 		void update() { 
-			columns[COLUMN_NICK] = WinUtil::toT(user->getNick());
-			columns[COLUMN_SHARED] = WinUtil::toT(Util::formatBytes(user->getBytesShared()));
-			columns[COLUMN_DESCRIPTION] = WinUtil::toT(user->getUserDescription());
-			columns[COLUMN_TAG] = WinUtil::toT(user->getTag());
-			columns[COLUMN_CONNECTION] = WinUtil::toT(user->getConnection());
-			columns[COLUMN_EMAIL] = WinUtil::toT(user->getEmail());
+			columns[COLUMN_NICK] = Text::toT(user->getNick());
+			columns[COLUMN_SHARED] = Text::toT(Util::formatBytes(user->getBytesShared()));
+			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription());
+			columns[COLUMN_TAG] = Text::toT(user->getTag());
+			columns[COLUMN_CONNECTION] = Text::toT(user->getConnection());
+			columns[COLUMN_EMAIL] = Text::toT(user->getEmail());
 			op = user->isSet(User::OP); 
 		
 		}
@@ -226,7 +226,7 @@ private:
 
 	class PMInfo {
 	public:
-		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(WinUtil::toT(m)) { };
+		PMInfo(const User::Ptr& u, const string& m) : user(u), msg(Text::toT(m)) { };
 		User::Ptr user;
 		tstring msg;
 	};
@@ -238,12 +238,12 @@ private:
 		showUsersContainer(WC_BUTTON, this, EDIT_MESSAGE_MAP),
 		clientContainer(WC_EDIT, this, EDIT_MESSAGE_MAP)
 	{
-		client = ClientManager::getInstance()->getClient(WinUtil::fromT(aServer));
-		client->setNick(aNick.empty() ? SETTING(NICK) : WinUtil::fromT(aNick));
+		client = ClientManager::getInstance()->getClient(Text::fromT(aServer));
+		client->setNick(aNick.empty() ? SETTING(NICK) : Text::fromT(aNick));
 			
 		if (!aDescription.empty())
-			client->setDescription(WinUtil::fromT(aDescription));
-		client->setPassword(WinUtil::fromT(aPassword));
+			client->setDescription(Text::fromT(aDescription));
+		client->setPassword(Text::fromT(aPassword));
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 		timeStamps = BOOLSETTING(TIME_STAMPS);
@@ -371,7 +371,7 @@ private:
 	virtual void on(SearchFlood, Client*, const string&) throw();
 
 	void speak(Speakers s) { PostMessage(WM_SPEAKER, (WPARAM)s); };
-	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(WinUtil::toT(msg))); };
+	void speak(Speakers s, const string& msg) { PostMessage(WM_SPEAKER, (WPARAM)s, (LPARAM)new tstring(Text::toT(msg))); };
 	void speak(Speakers s, const User::Ptr& u) { 
 		Lock l(updateCS);
 		updateList.push_back(make_pair(u, s));
@@ -389,6 +389,6 @@ private:
 
 /**
  * @file
- * $Id: HubFrame.h,v 1.49 2004/09/10 10:04:07 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.50 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

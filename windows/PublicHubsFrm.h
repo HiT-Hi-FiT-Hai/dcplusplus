@@ -170,7 +170,7 @@ private:
 	virtual void on(DownloadFinished, const string& l) throw() { speak(FINISHED, l); }
 
 	void speak(int x, const string& l) {
-		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(WinUtil::toT(l)));
+		PostMessage(WM_SPEAKER, x, (LPARAM)new tstring(Text::toT(l)));
 	}
 	
 	void updateStatus();
@@ -181,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.23 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.24 2004/09/10 14:44:17 arnetheduck Exp $
  */

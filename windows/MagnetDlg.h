@@ -87,7 +87,7 @@ public:
 			//}
 
 			if(IsDlgButtonChecked(IDC_MAGNET_SEARCH)) {
-				TTHValue tmphash(WinUtil::fromT(mHash));
+				TTHValue tmphash(Text::fromT(mHash));
 				WinUtil::searchHash(&tmphash);
 			} //else if(IsDlgButtonChecked(IDC_MAGNET_QUEUE)) {
 				// FIXME: Write this code when the queue is more tth-centric
@@ -121,6 +121,6 @@ private:
 
 /**
 * @file
-* $Id: MagnetDlg.h,v 1.3 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: MagnetDlg.h,v 1.4 2004/09/10 14:44:17 arnetheduck Exp $
 */
 

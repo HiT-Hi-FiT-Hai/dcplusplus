@@ -128,7 +128,7 @@ public:
 		if(!created) {
 			CreateEx(WinUtil::mdiClient);
 		}
-		ctrlStatus.SetText(0, (_T("[") + WinUtil::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
+		ctrlStatus.SetText(0, (_T("[") + Text::toT(Util::getShortTimeString()) + _T("] ") + aLine).c_str());
 		if (BOOLSETTING(TAB_DIRTY)) {
 			setDirty();
 		}
@@ -137,9 +137,9 @@ public:
 	void setUser(const User::Ptr& aUser) { user = aUser; };
 	void sendMessage(const tstring& msg) {
 		if(user && user->isOnline()) {
-			user->privateMessage(WinUtil::fromT(msg));
-			string s = "<" + user->getClientNick() + "> " + WinUtil::fromT(msg);
-			addLine(WinUtil::toT(s));
+			user->privateMessage(Text::fromT(msg));
+			string s = "<" + user->getClientNick() + "> " + Text::fromT(msg);
+			addLine(Text::toT(s));
 		}
 	}
 	
@@ -173,13 +173,13 @@ private:
 
 	void updateTitle() {
 		if(user->isOnline()) {
-			SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
+			SetWindowText(Text::toT(user->getFullNick()).c_str());
 			setTabColor(RGB(0, 255, 255));
 		} else {
 			if(user->getClientName() == STRING(OFFLINE)) {
-				SetWindowText(WinUtil::toT(user->getFullNick()).c_str());
+				SetWindowText(Text::toT(user->getFullNick()).c_str());
 			} else {
-				SetWindowText((WinUtil::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
+				SetWindowText((Text::toT(user->getFullNick()) + _T(" [") + TSTRING(OFFLINE) + _T("]")).c_str());
 			}
 			setTabColor(RGB(255, 0, 0));
 		}
@@ -196,6 +196,6 @@ private:
 
 /**
  * @file
- * $Id: PrivateFrame.h,v 1.21 2004/09/07 01:36:53 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.22 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

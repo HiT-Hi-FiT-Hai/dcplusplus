@@ -133,7 +133,7 @@ public:
 	
 	void setWindowTitle() {
 		if(error.empty())
-			SetWindowText(WinUtil::toT(dl->getUser()->getFullNick()).c_str());
+			SetWindowText(Text::toT(dl->getUser()->getFullNick()).c_str());
 		else
 			SetWindowText(error.c_str());		
 	}
@@ -205,29 +205,25 @@ private:
 
 		ItemInfo(DirectoryListing::File* f, bool utf8) : type(FILE), file(f) { 
 			if(utf8) {
-				columns[COLUMN_FILENAME] = WinUtil::toT(f->getName());
+				columns[COLUMN_FILENAME] = Text::toT(f->getName());
 			} else {
-				string tmp = f->getName();
-				Util::toUtf8(tmp);
-				columns[COLUMN_FILENAME] = WinUtil::toT(tmp);
+				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(f->getName()));
 			}
 			columns[COLUMN_TYPE] = Util::getFileExt(columns[COLUMN_FILENAME]);
 			if(columns[COLUMN_TYPE].size() > 0 && columns[COLUMN_TYPE][0] == '.')
 				columns[COLUMN_TYPE].erase(0, 1);
 
-			columns[COLUMN_SIZE] = WinUtil::toT(Util::formatBytes(f->getSize()));
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(f->getSize()));
 			if(f->getTTH() != NULL)
-				columns[COLUMN_TTH] = WinUtil::toT(f->getTTH()->toBase32());
+				columns[COLUMN_TTH] = Text::toT(f->getTTH()->toBase32());
 		};
 		ItemInfo(DirectoryListing::Directory* d, bool utf8) : type(DIRECTORY), dir(d) { 
 			if(utf8) {
-				columns[COLUMN_FILENAME] = WinUtil::toT(d->getName());
+				columns[COLUMN_FILENAME] = Text::toT(d->getName());
 			} else {
-				string tmp = d->getName();
-				Util::toUtf8(tmp);
-				columns[COLUMN_FILENAME] = WinUtil::toT(tmp);
+				columns[COLUMN_FILENAME] = Text::toT(Text::acpToUtf8(d->getName()));
 			}
-			columns[COLUMN_SIZE] = WinUtil::toT(Util::formatBytes(d->getTotalSize()));
+			columns[COLUMN_SIZE] = Text::toT(Util::formatBytes(d->getTotalSize()));
 		};
 
 		const tstring& getText(int col) {
@@ -302,5 +298,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.40 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.41 2004/09/10 14:44:17 arnetheduck Exp $
  */

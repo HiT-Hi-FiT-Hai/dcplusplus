@@ -78,7 +78,7 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	
 	if(cmd == "$MyNick") {
 		if(!param.empty())
-			fire(UserConnectionListener::MyNick(), this, param);
+			fire(UserConnectionListener::MyNick(), this, Text::acpToUtf8(param));
 	} else if(cmd == "$Direction") {
 		x = param.find(" ");
 		if(x != string::npos) {
@@ -99,9 +99,9 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 	} else if(cmd == "$Get") {
 		x = param.find('$');
 		if(x != string::npos) {
-			fire(UserConnectionListener::Get(), this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
+			fire(UserConnectionListener::Get(), this, Text::acpToUtf8(param.substr(0, x)), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
-	} else if(cmd == "$GetTestZBlock" || cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "$UGetBlock") {
+	} else if(cmd == "$GetZBlock" || cmd == "$UGetZBlock" || cmd == "$UGetBlock") {
 		string::size_type i = param.find(' ');
 		if(i == string::npos)
 			return;
@@ -116,8 +116,8 @@ void UserConnection::on(BufferedSocketListener::Line, const string& aLine) throw
 			return;
 		int64_t bytes = Util::toInt64(param.substr(i, j-i));
 		string name = param.substr(j+1);
-		if(cmd == "$UGetZBlock" || cmd == "$UGetBlock")
-			Util::toAcp(name);
+		if(cmd == "$GetZBlock")
+			name = Text::acpToUtf8(name);
 		if(cmd == "$UGetBlock") {
 			fire(UserConnectionListener::GetBlock(), this, name, start, bytes);
 		} else {
@@ -169,5 +169,5 @@ void UserConnection::on(BufferedSocketListener::Failed, const string& aLine) thr
 
 /**
  * @file
- * $Id: UserConnection.cpp,v 1.45 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.46 2004/09/10 14:44:16 arnetheduck Exp $
  */

@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #endif
 
+#include "Text.h"
+
 /** Evaluates op(pair<T1, T2>.first, compareTo) */
 template<class T1, class T2, class op = equal_to<T1> >
 class CompareFirst {
@@ -116,30 +118,12 @@ public:
 
 	static void initialize();
 
-	static void ensureDirectory(const string& aFile) { ensureDirectory(Util::utf8ToWide(aFile)); }
-	static void ensureDirectory(const wstring& aFile)
-	{
-		string::size_type start = 0;
-
-#ifdef _WIN32
-		while( (start = aFile.find_first_of(L"\\/", start)) != string::npos) {
-			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
-			start++;
-		}
-#else
-		while( (start = aFile.find_first_of(L'/', start)) != string::npos) {
-			mkdir(aFile.substr(0, start+1).c_str(), 0755);
-			start++;
-		}
-#endif
-	}
-	
 	static string getAppPath() { return appPath; }
 	static string getAppName() {
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH+1];
 		DWORD x = GetModuleFileName(NULL, buf, MAX_PATH);
-		return Util::wideToUtf8(wstring(buf, x));
+		return Text::wideToUtf8(wstring(buf, x));
 #else // _WIN32
 		char buf[PATH_MAX + 1];
 		char* path = getenv("_");
@@ -157,7 +141,7 @@ public:
 #ifdef _WIN32
 		TCHAR buf[MAX_PATH + 1];
 		DWORD x = GetTempPath(MAX_PATH, buf);
-		return Util::wideToUtf8(wstring(buf, x));
+		return Text::wideToUtf8(wstring(buf, x));
 #else
 		return "/tmp/";
 #endif
@@ -189,7 +173,7 @@ public:
 			0,
 			NULL 
 			);
-		string tmp = Util::wideToUtf8((LPCTSTR)lpMsgBuf);
+		string tmp = Text::wideToUtf8((LPCTSTR)lpMsgBuf);
 		// Free the buffer.
 		LocalFree( lpMsgBuf );
 		string::size_type i;
@@ -367,48 +351,6 @@ public:
 #endif
 	}
 
-	static bool needsUtf8(const string& str) {
-		for(string::size_type i = 0; i < str.length(); ++i)
-			if(str[i] & 0x80)
-				return true;
-		return false;
-	}
-	static bool needsAcp(const string& str) {
-		return needsUtf8(str);
-	}
-	static const string& toUtf8(const string& str, string& tmp) {
-		if(needsUtf8(str)) {
-			tmp.clear();
-			tmp.append(str);
-			return toUtf8(tmp);
-		}
-		return str;
-	}
-	static string& toUtf8(string& str);
-
-	static wstring utf8ToWide(const string& str) {
-		wstring tmp;
-		utf8ToWide(str, tmp);
-		return tmp;
-	}
-	static void utf8ToWide(const string& str, wstring& tgt);
-
-	static string wideToUtf8(const wstring& str) {
-		string tmp;
-		wideToUtf8(str, tmp);
-		return tmp;
-	}
-	static void wideToUtf8(const wstring& str, string& tgt);
-	static const string& toAcp(const string& str, string& tmp) {
-		if(needsAcp(str)) {
-			tmp.clear();
-			tmp.append(str);
-			return toAcp(tmp);
-		}
-		return str;
-	}
-	static string& toAcp(string& str);
-
 	static string toString(u_int32_t val) {
 		char buf[16];
 		sprintf(buf, "%lu", (unsigned long)val);
@@ -459,7 +401,7 @@ public:
 	/* Utf-8 versions of strnicmp and stricmp, not very fast at the moment */
 	static int stricmp(const char* a, const char* b) {
 		// return ::stricmp(a, b);
-		return stricmp(utf8ToWide(a), utf8ToWide(b));
+		return stricmp(Text::utf8ToWide(a), Text::utf8ToWide(b));
 /*		while(*a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			a++; b++;
 		}
@@ -476,7 +418,7 @@ public:
 		
 	}
 	static int strnicmp(const char* a, const char* b, size_t n) {
-		return stricmp(utf8ToWide(string(a, n)), utf8ToWide(string(b, n)));
+		return stricmp(Text::utf8ToWide(string(a, n)), Text::utf8ToWide(string(b, n)));
 		// return ::strnicmp(a, b, n);
 /*		while(n && *a && (cmpi[(u_int8_t)*a][(u_int8_t)*b] == 0)) {
 			n--; a++; b++;
@@ -494,19 +436,11 @@ public:
 
 	//static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
 	//static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
-	static int stricmp(const string& a, const string& b) { return stricmp(utf8ToWide(a), utf8ToWide(b)); };
-	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(utf8ToWide(a), utf8ToWide(b), n); };
+	static int stricmp(const string& a, const string& b) { return stricmp(Text::utf8ToWide(a), Text::utf8ToWide(b)); };
+	static int strnicmp(const string& a, const string& b, size_t n) { return strnicmp(Text::utf8ToWide(a), Text::utf8ToWide(b), n); };
 	static int stricmp(const wstring& a, const wstring& b) { return stricmp(a.c_str(), b.c_str()); };
 	static int strnicmp(const wstring& a, const wstring& b, size_t n) { return strnicmp(a.c_str(), b.c_str(), n); };
 	
-	static string validateNick(string tmp) {	
-		string::size_type i;
-		while( (i = tmp.find_first_of("|$ ")) != string::npos) {
-			tmp[i]='_';
-		}
-		return tmp;
-	}
-
 	static string validateMessage(string tmp, bool reverse, bool checkNewLines = true);
 
 	static string getOsVersion();
@@ -606,5 +540,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.98 2004/09/10 10:04:01 arnetheduck Exp $
+ * $Id: Util.h,v 1.99 2004/09/10 14:44:16 arnetheduck Exp $
  */

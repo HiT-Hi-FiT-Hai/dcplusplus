@@ -39,7 +39,7 @@ void PropPage::read(HWND page, Item const* items, ListItem* listItems /* = NULL 
 		case T_STR:
 			if(!SettingsManager::getInstance()->isDefault(i->setting)) {
 				::SetDlgItemText(page, i->itemID,
-					WinUtil::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
+					Text::toT(settings->get((SettingsManager::StrSetting)i->setting, useDef)).c_str());
 			}
 			break;
 		case T_INT:
@@ -92,14 +92,14 @@ void PropPage::write(HWND page, Item const* items, ListItem* listItems /* = NULL
 		case T_STR:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::StrSetting)i->setting, WinUtil::fromT(buf));
+				settings->set((SettingsManager::StrSetting)i->setting, Text::fromT(buf));
 
 				break;
 			}
 		case T_INT:
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
-				settings->set((SettingsManager::IntSetting)i->setting, WinUtil::fromT(buf));
+				settings->set((SettingsManager::IntSetting)i->setting, Text::fromT(buf));
 				break;
 			}
 		case T_BOOL:
@@ -138,6 +138,6 @@ void PropPage::translate(HWND page, TextItem* textItems)
 
 /**
  * @file
- * $Id: PropPage.cpp,v 1.9 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.10 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

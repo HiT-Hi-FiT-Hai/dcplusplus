@@ -86,10 +86,10 @@ LRESULT UsersFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		dcassert(i != -1);
 		LineDlg dlg;
 		dlg.description = TSTRING(DESCRIPTION);
-		dlg.title = WinUtil::toT(ui->user->getNick());
-		dlg.line = WinUtil::toT(ui->user->getUserDescription());
+		dlg.title = Text::toT(ui->user->getNick());
+		dlg.line = Text::toT(ui->user->getUserDescription());
 		if(dlg.DoModal(m_hWnd)) {
-			ui->user->setUserDescription(WinUtil::fromT(dlg.line));
+			ui->user->setUserDescription(Text::fromT(dlg.line));
 			ui->update();
 			ctrlUsers.updateItem(i);
 			HubManager::getInstance()->save();
@@ -115,7 +115,7 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
 	int i = -1;
-	while((i = ctrlUsers.findItem(WinUtil::toT(aUser->getNick()), i)) != -1) {
+	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ui->update();
@@ -126,7 +126,7 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
 	int i = -1;
-	while((i = ctrlUsers.findItem(WinUtil::toT(aUser->getNick()), i)) != -1) {
+	while((i = ctrlUsers.findItem(Text::toT(aUser->getNick()), i)) != -1) {
 		UserInfo *ui = ctrlUsers.getItemData(i);
 		if(ui->user == aUser) {
 			ctrlUsers.DeleteItem(i);
@@ -159,6 +159,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.25 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.26 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

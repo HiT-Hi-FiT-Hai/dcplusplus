@@ -105,7 +105,7 @@ ShareManager::Directory::~Directory() {
 }
 
 
-string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8) throw(ShareException) {
+string ShareManager::translateFileName(const string& aFile, bool adc) throw(ShareException) {
 	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
 		generateNmdcList();
@@ -127,11 +127,7 @@ string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8)
 					throw ShareException("File Not Available");
 				}
 			} else if(aFile.compare(0, 1, "/") == 0) {
-				if(!utf8) {
-					file = Util::toUtf8(aFile, file);
-				} else {
-					file = aFile;
-				}
+				file = aFile;
 			} else {
 				throw ShareException("File Not Available");
 			}
@@ -144,9 +140,7 @@ string ShareManager::translateFileName(const string& aFile, bool adc, bool utf8)
 					file[i] = '\\';
 				}
 			}
-			// Ok, we now should have an adc equivalent name
-		} else if(!utf8) {
-			file = Util::toUtf8(aFile, file);
+			// Ok, we now should have an nmdc equivalent name
 		} else {
 			file = aFile;
 		}
@@ -375,9 +369,7 @@ public:
 	FileFindIter() : handle(INVALID_HANDLE_VALUE) { }
 	/** Begin iterator constructor, path in utf-8 */
 	FileFindIter(const string& path) : handle(INVALID_HANDLE_VALUE) { 
-		wstring tmp;
-		Util::utf8ToWide(path, tmp);
-		handle = ::FindFirstFileW(tmp.c_str(), &data);
+		handle = ::FindFirstFile(Text::toT(path).c_str(), &data);
 	}
 
 	~FileFindIter() {
@@ -387,16 +379,16 @@ public:
 	}
 
 	FileFindIter& operator++() {
-		if(!::FindNextFileW(handle, &data)) {
+		if(!::FindNextFile(handle, &data)) {
 			::FindClose(handle);
 			handle = INVALID_HANDLE_VALUE;
 		}
 		return *this;
 	}
 
-	struct DirData : public WIN32_FIND_DATAW {
+	struct DirData : public WIN32_FIND_DATA {
 		string getFileName() {
-			return Util::wideToUtf8(cFileName);
+			return Text::fromT(cFileName);
 		}
 
 		bool isDirectory() {
@@ -678,9 +670,9 @@ static const string& escaper(const string& n, string& tmp) {
 
 #define LITERAL(n) n, sizeof(n)-1
 void ShareManager::Directory::toNmdc(string& nmdc, string& indent, string& tmp2) {
-
+	tmp2.clear();
 	nmdc.append(indent);
-	nmdc.append(Util::toAcp(name, tmp2));
+	nmdc.append(Text::utf8ToAcp(name, tmp2));
 	nmdc.append(LITERAL("\r\n"));
 
 	indent += '\t';
@@ -692,7 +684,8 @@ void ShareManager::Directory::toNmdc(string& nmdc, string& indent, string& tmp2)
 	for(Directory::File::Iter i = files.begin(); i != files.end(); ++i) {
 		const Directory::File& f = *i;
 		nmdc.append(indent);
-		nmdc.append(Util::toAcp(f.getName(), tmp2));
+		tmp2.clear();
+		nmdc.append(Text::utf8ToAcp(f.getName(), tmp2));
 		nmdc.append(LITERAL("|"));
 		nmdc.append(Util::toString(f.getSize()));
 		nmdc.append(LITERAL("\r\n"));
@@ -1171,7 +1164,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 		WLock l(cs);
 		const string& n = d->getTarget();
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); i++) {
-			if(Util::strnicmp(i->first.c_str(), n.c_str(), i->first.size()) == 0 && n[i->first.size()] == PATH_SEPARATOR) {
+			if(Util::strnicmp(i->first, n, i->first.size()) == 0 && n[i->first.size()] == PATH_SEPARATOR) {
 				string s = n.substr(i->first.size()+1);
 				try {
 					// Schedule for hashing, it'll be added automatically later on...
@@ -1222,6 +1215,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.97 2004/09/10 10:04:00 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.98 2004/09/10 14:44:16 arnetheduck Exp $
  */
 

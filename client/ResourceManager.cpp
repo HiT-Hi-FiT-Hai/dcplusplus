@@ -23,6 +23,7 @@
 
 #include "SimpleXML.h"
 #include "File.h"
+#include "Text.h"
 
 wstring ResourceManager::wstrings[ResourceManager::LAST];
 
@@ -60,12 +61,12 @@ void ResourceManager::loadLanguage(const string& aFile) {
 
 void ResourceManager::createWide() {
 	for(int i = 0; i < LAST; ++i) {
-		Util::utf8ToWide(strings[i], wstrings[i]);
+		Text::utf8ToWide(strings[i], wstrings[i]);
 	}
 }
 
 /**
  * @file
- * $Id: ResourceManager.cpp,v 1.9 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: ResourceManager.cpp,v 1.10 2004/09/10 14:44:16 arnetheduck Exp $
  */
 

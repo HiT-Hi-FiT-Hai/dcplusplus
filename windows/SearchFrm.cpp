@@ -201,7 +201,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		ctrlSearchBox.InsertString(0, initialString.c_str());
 		ctrlSearchBox.SetCurSel(0);
 		ctrlMode.SetCurSel(initialMode);
-		ctrlSize.SetWindowText(WinUtil::toT(Util::toString(initialSize)).c_str());
+		ctrlSize.SetWindowText(Text::toT(Util::toString(initialSize)).c_str());
 		ctrlFiletype.SetCurSel(initialType);
 		onEnter();
 	} else {
@@ -221,7 +221,7 @@ void SearchFrame::onEnter() {
 	int n = ctrlHubs.GetItemCount();
 	for(int i = 0; i < n; i++) {
 		if(ctrlHubs.GetCheckState(i)) {
-			clients.push_back(WinUtil::fromT(ctrlHubs.getItemData(i)->ipPort));
+			clients.push_back(Text::fromT(ctrlHubs.getItemData(i)->ipPort));
 		}
 	}
 
@@ -236,7 +236,7 @@ void SearchFrame::onEnter() {
 	ctrlSize.GetWindowText(&size[0], size.size());
 	size.resize(size.size()-1);
 
-	double lsize = Util::toDouble(WinUtil::fromT(size));
+	double lsize = Util::toDouble(Text::fromT(size));
 	switch(ctrlSizeMode.GetCurSel()) {
 	case 1:
 		lsize*=1024.0; break;
@@ -290,7 +290,7 @@ void SearchFrame::onEnter() {
 	if(ftype == SearchManager::TYPE_HASH)
 		s = _T("TTH:") + s;
 
-	SearchManager::getInstance()->search(clients, WinUtil::fromT(s), llsize, 
+	SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
 		(SearchManager::TypeModes)ftype, mode);
 
 }
@@ -307,11 +307,11 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 		if(isHash) {
 			if(aResult->getTTH() == NULL)
 				return;
-			if(Util::stricmp(WinUtil::toT(aResult->getTTH()->toBase32()), search[0]) != 0)
+			if(Util::stricmp(Text::toT(aResult->getTTH()->toBase32()), search[0]) != 0)
 				return;
 		} else {
 			for(TStringIter j = search.begin(); j != search.end(); ++j) {
-				if(Util::findSubString(aResult->getFile(), WinUtil::fromT(*j)) == -1) {
+				if(Util::findSubString(aResult->getFile(), Text::fromT(*j)) == -1) {
 					return;
 				}
 			}
@@ -330,7 +330,7 @@ void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), 
-				Util::getTempPath() + WinUtil::fromT(fileName), sr->getTTH(), Util::emptyString,
+				Util::getTempPath() + Text::fromT(fileName), sr->getTTH(), Util::emptyString,
 				(QueueItem::FLAG_CLIENT_VIEW | QueueItem::FLAG_TEXT));
 		}
 	} catch(const Exception&) {
@@ -341,9 +341,9 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				WinUtil::fromT(tgt + si->fileName), si->sr->getTTH());
+				Text::fromT(tgt + si->fileName), si->sr->getTTH());
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), WinUtil::fromT(tgt));
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt));
 		}
 	} catch(const Exception&) {
 	}
@@ -352,9 +352,9 @@ void SearchFrame::SearchInfo::Download::operator()(SearchInfo* si) {
 void SearchFrame::SearchInfo::DownloadWhole::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
-			QueueManager::getInstance()->addDirectory(WinUtil::fromT(si->path), si->sr->getUser(), WinUtil::fromT(tgt));
+			QueueManager::getInstance()->addDirectory(Text::fromT(si->path), si->sr->getUser(), Text::fromT(tgt));
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), WinUtil::fromT(tgt));
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt));
 		}
 	} catch(const Exception&) {
 	}
@@ -364,9 +364,9 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 	try {
 		if(si->sr->getType() == SearchResult::TYPE_FILE) {
 			QueueManager::getInstance()->add(si->sr->getFile(), si->sr->getSize(), si->sr->getUser(), 
-				WinUtil::fromT(tgt), si->sr->getTTH());
+				Text::fromT(tgt), si->sr->getTTH());
 		} else {
-			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), WinUtil::fromT(tgt));
+			QueueManager::getInstance()->addDirectory(si->sr->getFile(), si->sr->getUser(), Text::fromT(tgt));
 		}
 	} catch(const Exception&) {
 	}
@@ -374,7 +374,7 @@ void SearchFrame::SearchInfo::DownloadTarget::operator()(SearchInfo* si) {
 
 void SearchFrame::SearchInfo::getList() {
 	try {
-		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, WinUtil::fromT(getPath()));
+		QueueManager::getInstance()->addList(sr->getUser(), QueueItem::FLAG_CLIENT_VIEW, Text::fromT(getPath()));
 	} catch(const Exception&) {
 		// Ignore for now...
 	}
@@ -406,8 +406,8 @@ void SearchFrame::SearchInfo::CheckSize::operator()(SearchInfo* si) {
 		size = -1;
 	}
 	if(oneHub && hub.empty()) {
-		hub = WinUtil::toT(si->sr->getUser()->getClientAddressPort());
-	} else if(hub != WinUtil::toT(si->sr->getUser()->getClientAddressPort())) {
+		hub = Text::toT(si->sr->getUser()->getClientAddressPort());
+	} else if(hub != Text::toT(si->sr->getUser()->getClientAddressPort())) {
 		oneHub = false;
 		hub.clear();
 	}
@@ -423,20 +423,20 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SearchResult* sr = si->sr;
 
 		if(sr->getType() == SearchResult::TYPE_FILE) {
-			tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->getFileName();
+			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY)) + si->getFileName();
 			if(WinUtil::browseFile(target, m_hWnd)) {
 				WinUtil::addLastDir(Util::getFilePath(target));
 				ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(target));
 			}
 		} else {
-			tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
+			tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 			if(WinUtil::browseDirectory(target, m_hWnd)) {
 				WinUtil::addLastDir(target);
 				ctrlResults.forEachSelectedT(SearchInfo::Download(target));
 			}
 		}
 	} else {
-		tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
+		tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 		if(WinUtil::browseDirectory(target, m_hWnd)) {
 			WinUtil::addLastDir(target);
 			ctrlResults.forEachSelectedT(SearchInfo::Download(target));
@@ -446,7 +446,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 }
 
 LRESULT SearchFrame::onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	tstring target = WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY));
+	tstring target = Text::toT(SETTING(DOWNLOAD_DIRECTORY));
 	if(WinUtil::browseDirectory(target, m_hWnd)) {
 		WinUtil::addLastDir(target);
 		ctrlResults.forEachSelectedT(SearchInfo::DownloadWhole(target));
@@ -462,7 +462,7 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::lastDirs[newId]));
 	} else {
 		dcassert((newId - WinUtil::lastDirs.size()) < targets.size());
-		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(WinUtil::toT(targets[newId - WinUtil::lastDirs.size()])));
+		ctrlResults.forEachSelectedT(SearchInfo::DownloadTarget(Text::toT(targets[newId - WinUtil::lastDirs.size()])));
 	}
 	return 0;
 }
@@ -474,7 +474,7 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 }
 
 LRESULT SearchFrame::onDoubleClickResults(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-	ctrlResults.forEachSelectedT(SearchInfo::Download(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY))));
+	ctrlResults.forEachSelectedT(SearchInfo::Download(Text::toT(SETTING(DOWNLOAD_DIRECTORY))));
 	return 0;
 }
 
@@ -746,7 +746,7 @@ LRESULT SearchFrame::onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
 		SearchResult* sr = ctrlResults.getItemData(i)->sr;
-		WinUtil::copyMagnet(sr->getTTH(), WinUtil::toT(sr->getFileName()));
+		WinUtil::copyMagnet(sr->getTTH(), Text::toT(sr->getFileName()));
 	}
 	return 0;
 }
@@ -768,7 +768,7 @@ LRESULT SearchFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 				}
 			}
 
-			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(WinUtil::toT(sr->getFile())) : WinUtil::getDirIconIndex();
+			int image = sr->getType() == SearchResult::TYPE_FILE ? WinUtil::getIconIndex(Text::toT(sr->getFile())) : WinUtil::getDirIconIndex();
 			ctrlResults.insertItem(si, image);
 		}
 		break;
@@ -820,15 +820,15 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		if(cs.size != -1) {
 			targets.clear();
 			if(cs.hasTTH) {
-				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(WinUtil::fromT(cs.tth)));
+				QueueManager::getInstance()->getTargetsByRoot(targets, TTHValue(Text::fromT(cs.tth)));
 			} else {
-				QueueManager::getInstance()->getTargetsBySize(targets, cs.size, WinUtil::fromT(cs.ext));
+				QueueManager::getInstance()->getTargetsBySize(targets, cs.size, Text::fromT(cs.ext));
 			}
 
 			if(targets.size() > 0) {
 				targetMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 				for(StringIter i = targets.begin(); i != targets.end(); ++i) {
-					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, WinUtil::toT(*i).c_str());
+					targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, Text::toT(*i).c_str());
 					n++;
 				}
 			}
@@ -881,7 +881,7 @@ void SearchFrame::initHubs() {
 		if (!client->isConnected())
 			continue;
 
-		onHubAdded(new HubInfo(WinUtil::toT(client->getIpPort()), WinUtil::toT(client->getName()), client->getOp()));
+		onHubAdded(new HubInfo(Text::toT(client->getIpPort()), Text::toT(client->getName()), client->getOp()));
 	}
 
 	clientMgr->unlock();
@@ -953,5 +953,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.61 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.62 2004/09/10 14:44:17 arnetheduck Exp $
  */

@@ -46,10 +46,10 @@ LRESULT ADLSProperties::OnInitDialog(UINT, WPARAM, LPARAM, BOOL&)
 		(LPARAM)search->SizeTypeToStringInternational(ADLSearch::SizeGigaBytes).c_str());
 
 	// Load search data
-	SetDlgItemText(IDC_SEARCH_STRING, WinUtil::toT(search->searchString).c_str());
-	SetDlgItemText(IDC_DEST_DIR,      WinUtil::toT(search->destDir).c_str());
-	SetDlgItemText(IDC_MIN_FILE_SIZE, WinUtil::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
-	SetDlgItemText(IDC_MAX_FILE_SIZE, WinUtil::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
+	SetDlgItemText(IDC_SEARCH_STRING, Text::toT(search->searchString).c_str());
+	SetDlgItemText(IDC_DEST_DIR,      Text::toT(search->destDir).c_str());
+	SetDlgItemText(IDC_MIN_FILE_SIZE, Text::toT(search->minFileSize > 0 ? Util::toString(search->minFileSize) : "").c_str());
+	SetDlgItemText(IDC_MAX_FILE_SIZE, Text::toT(search->maxFileSize > 0 ? Util::toString(search->maxFileSize) : "").c_str());
 	::SendMessage(GetDlgItem(IDC_IS_ACTIVE), BM_SETCHECK, search->isActive ? 1 : 0, 0L);
 	::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_SETCURSEL, search->sourceType, 0L);
 	::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_SETCURSEL, search->typeFileSize, 0L);
@@ -70,14 +70,14 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		TCHAR buf[256];
 
 		GetDlgItemText(IDC_SEARCH_STRING, buf, 256);
-		search->searchString = WinUtil::fromT(buf);
+		search->searchString = Text::fromT(buf);
 		GetDlgItemText(IDC_DEST_DIR, buf, 256);
-		search->destDir = WinUtil::fromT(buf);
+		search->destDir = Text::fromT(buf);
 
 		GetDlgItemText(IDC_MIN_FILE_SIZE, buf, 256);
-		search->minFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(WinUtil::fromT(buf)));
+		search->minFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
 		GetDlgItemText(IDC_MAX_FILE_SIZE, buf, 256);
-		search->maxFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(WinUtil::fromT(buf)));
+		search->maxFileSize = (_tcslen(buf) == 0 ? -1 : Util::toInt64(Text::fromT(buf)));
 
 		search->sourceType = (ADLSearch::SourceType)::SendMessage(GetDlgItem(IDC_SOURCE_TYPE), CB_GETCURSEL, 0, 0L);
 		search->typeFileSize = (ADLSearch::SizeType)::SendMessage(GetDlgItem(IDC_SIZE_TYPE), CB_GETCURSEL, 0, 0L);
@@ -91,5 +91,5 @@ LRESULT ADLSProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 
 /**
  * @file
- * $Id: ADLSProperties.cpp,v 1.3 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: ADLSProperties.cpp,v 1.4 2004/09/10 14:44:17 arnetheduck Exp $
  */

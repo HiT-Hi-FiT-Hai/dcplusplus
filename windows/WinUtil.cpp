@@ -279,8 +279,8 @@ void WinUtil::init(HWND hWnd) {
 
 	LOGFONT lf, lf2;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
-	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::fromT(encodeFont(lf)));
-	decodeFont(WinUtil::toT(SETTING(TEXT_FONT)), lf);
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, Text::fromT(encodeFont(lf)));
+	decodeFont(Text::toT(SETTING(TEXT_FONT)), lf);
 	::GetObject((HFONT)GetStockObject(ANSI_FIXED_FONT), sizeof(lf2), &lf2);
 	
 	lf2.lfHeight = lf.lfHeight;
@@ -328,9 +328,9 @@ void WinUtil::decodeFont(const tstring& setting, LOGFONT &dest) {
 	if(sl.size() == 4)
 	{
 		face = sl[0];
-		dest.lfHeight = Util::toInt(WinUtil::fromT(sl[1]));
-		dest.lfWeight = Util::toInt(WinUtil::fromT(sl[2]));
-		dest.lfItalic = (BYTE)Util::toInt(WinUtil::fromT(sl[3]));
+		dest.lfHeight = Util::toInt(Text::fromT(sl[1]));
+		dest.lfWeight = Util::toInt(Text::fromT(sl[2]));
+		dest.lfItalic = (BYTE)Util::toInt(Text::fromT(sl[3]));
 	}
 	
 	if(!face.empty()) {
@@ -350,7 +350,7 @@ int CALLBACK WinUtil::browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LP
 
 bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	BROWSEINFOW bi;
+	BROWSEINFO bi;
 	LPMALLOC ma;
 	
 	ZeroMemory(&bi, sizeof(bi));
@@ -361,9 +361,9 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI;
 	bi.lParam = (LPARAM)target.c_str();
 	bi.lpfn = &browseCallbackProc;
-	LPITEMIDLIST pidl = SHBrowseForFolderW(&bi);
+	LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 	if(pidl != NULL) {
-		SHGetPathFromIDListW(pidl, buf);
+		SHGetPathFromIDList(pidl, buf);
 		target = buf;
 		
 		if(target.size() > 0 && target[target.size()-1] != L'\\')
@@ -380,8 +380,8 @@ bool WinUtil::browseDirectory(tstring& target, HWND owner /* = NULL */) {
 
 bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* = true */, const tstring& initialDir /* = Util::emptyString */, const TCHAR* types /* = NULL */, const TCHAR* defExt /* = NULL */) {
 	TCHAR buf[MAX_PATH];
-	OPENFILENAMEW ofn;       // common dialog box structure
-	target = Util::utf8ToWide(Util::validateFileName(Util::wideToUtf8(target)));
+	OPENFILENAME ofn;       // common dialog box structure
+	target = Text::toT(Util::validateFileName(Text::fromT(target)));
 	_tcscpy(buf, target.c_str());
 	// Initialize OPENFILENAME
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -399,12 +399,25 @@ bool WinUtil::browseFile(tstring& target, HWND owner /* = NULL */, bool save /* 
 	ofn.Flags = (save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST);
 	
 	// Display the Open dialog box. 
-	if ( (save ? GetSaveFileNameW(&ofn) : GetOpenFileNameW(&ofn) ) ==TRUE) {
+	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
 		target = ofn.lpstrFile;
 		return true;
 	}
 	return false;
 }
+
+tstring WinUtil::encodeFont(LOGFONT const& font)
+{
+	tstring res(font.lfFaceName);
+	res += L',';
+	res += Text::toT(Util::toString(font.lfHeight));
+	res += L',';
+	res += Text::toT(Util::toString(font.lfWeight));
+	res += L',';
+	res += Text::toT(Util::toString(font.lfItalic));
+	return res;
+}
+
 
 void WinUtil::setClipboard(const tstring& str) {
 	if(!::OpenClipboard(mainWnd)) {
@@ -455,12 +468,12 @@ bool WinUtil::getUCParams(HWND parent, const UserCommand& uc, StringMap& sm) thr
 		string name = uc.getCommand().substr(i, j-i);
 		if(done.find(name) == done.end()) {
 			LineDlg dlg;
-			dlg.title = WinUtil::toT(uc.getName());
-			dlg.description = WinUtil::toT(name);
-			dlg.line = WinUtil::toT(sm["line:" + name]);
+			dlg.title = Text::toT(uc.getName());
+			dlg.description = Text::toT(name);
+			dlg.line = Text::toT(sm["line:" + name]);
 			if(dlg.DoModal(parent) == IDOK) {
-				sm["line:" + name] = WinUtil::fromT(dlg.line);
-				done[name] = WinUtil::fromT(dlg.line);
+				sm["line:" + name] = Text::fromT(dlg.line);
+				done[name] = Text::fromT(dlg.line);
 			} else {
 				return false;
 			}
@@ -507,10 +520,10 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			ShareManager::getInstance()->setDirty();
 			ShareManager::getInstance()->refresh(true);
 		} catch(const ShareException& e) {
-			status = WinUtil::toT(e.getError());
+			status = Text::toT(e.getError());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("slots"))==0) {
-		int j = Util::toInt(WinUtil::fromT(param));
+		int j = Util::toInt(Text::fromT(param));
 		if(j > 0) {
 			SettingsManager::getInstance()->set(SettingsManager::SLOTS, j);
 			status = TSTRING(SLOTS_SET);
@@ -532,8 +545,8 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 			status = TSTRING(AWAY_MODE_OFF);
 		} else {
 			Util::setAway(true);
-			Util::setAwayMessage(WinUtil::fromT(param));
-			status = TSTRING(AWAY_MODE_ON) + WinUtil::toT(Util::getAwayMessage());
+			Util::setAwayMessage(Text::fromT(param));
+			status = TSTRING(AWAY_MODE_ON) + Text::toT(Util::getAwayMessage());
 		}
 	} else if(Util::stricmp(cmd.c_str(), _T("back")) == 0) {
 		Util::setAway(false);
@@ -566,26 +579,26 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be 
 	// tracked down and the code can be fixed
 	if(aHash != NULL) {
-		openLink(_T("http://bitzi.com/lookup/tree:tiger:") + WinUtil::toT(aHash->toBase32()));
+		openLink(_T("http://bitzi.com/lookup/tree:tiger:") + Text::toT(aHash->toBase32()));
 	}
 }
 
  void WinUtil::copyMagnet(TTHValue* aHash, const tstring& aFile) {
 	if(aHash != NULL && !aFile.empty()) {
-		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + WinUtil::toT(aHash->toBase32()) + _T("&dn=") + WinUtil::toT(Util::encodeURI(WinUtil::fromT(aFile))));
+		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash->toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
 	}
 }
 
  void WinUtil::searchHash(TTHValue* aHash) {
 	 if(aHash != NULL) {
-		 SearchFrame::openWindow(WinUtil::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
+		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_HASH);
 	 }
  }
 
  void WinUtil::registerDchubHandler() {
 	HKEY hk;
 	TCHAR Buf[512];
-	tstring app = _T("\"") + WinUtil::toT(Util::getAppName()) + _T("\" %1");
+	tstring app = _T("\"") + Text::toT(Util::getAppName()) + _T("\" %1");
 	Buf[0] = 0;
 
 	if(::RegOpenKeyEx(HKEY_CLASSES_ROOT, _T("dchub\\Shell\\Open\\Command"), 0, KEY_WRITE | KEY_READ, &hk) == ERROR_SUCCESS) {
@@ -607,7 +620,7 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 		::RegCloseKey(hk);
 
 		::RegCreateKey(HKEY_CLASSES_ROOT, _T("dchub\\DefaultIcon"), &hk);
-		app = WinUtil::toT(Util::getAppName());
+		app = Text::toT(Util::getAppName());
 		::RegSetValueEx(hk, _T(""), 0, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length() + 1));
 		::RegCloseKey(hk);
 	}
@@ -640,11 +653,11 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 		magnetExe = magnetLoc.substr(1, i-1);
 	}
 	// check for the existence of magnet.exe
-	if(File::getSize(WinUtil::fromT(magnetExe)) == -1) {
-		magnetExe = WinUtil::toT(Util::getAppPath() + "magnet.exe");
-		if(File::getSize(WinUtil::fromT(magnetExe)) == -1) {
+	if(File::getSize(Text::fromT(magnetExe)) == -1) {
+		magnetExe = Text::toT(Util::getAppPath() + "magnet.exe");
+		if(File::getSize(Text::fromT(magnetExe)) == -1) {
 			// gracefully fall back to registering DC++ to handle magnets
-			magnetExe = WinUtil::toT(Util::getAppName());
+			magnetExe = Text::toT(Util::getAppName());
 			haveMagnet = false;
 		} else {
 			// set Magnet\Location
@@ -677,10 +690,10 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 	::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_ROOT), sizeof(TCHAR) * (TSTRING(MAGNET_HANDLER_ROOT).size()+1));
 	::RegSetValueEx(hk, _T("Description"), NULL, REG_SZ, (LPBYTE)CTSTRING(MAGNET_HANDLER_DESC), sizeof(TCHAR) * (STRING(MAGNET_HANDLER_DESC).size()+1));
 	// set ShellExecute
-	tstring app = WinUtil::toT("\"" + Util::getAppName() + "\" %URL");
+	tstring app = Text::toT("\"" + Util::getAppName() + "\" %URL");
 	::RegSetValueEx(hk, _T("ShellExecute"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR) * (app.length()+1));
 	// set DefaultIcon
-	app = WinUtil::toT('"' + Util::getAppName() + '"');
+	app = Text::toT('"' + Util::getAppName() + '"');
 	::RegSetValueEx(hk, _T("DefaultIcon"), NULL, REG_SZ, (LPBYTE)app.c_str(), sizeof(TCHAR)*(app.length()+1));
 	::RegCloseKey(hk);
 
@@ -762,9 +775,9 @@ void WinUtil::openLink(const tstring& url) {
 void WinUtil::parseDchubUrl(const tstring& aUrl) {
 	string server, file;
 	short port = 411;
-	Util::decodeUrl(WinUtil::fromT(aUrl), server, port, file);
+	Util::decodeUrl(Text::fromT(aUrl), server, port, file);
 	if(!server.empty()) {
-		HubFrame::openWindow(WinUtil::toT(server + ":" + Util::toString(port)));
+		HubFrame::openWindow(Text::toT(server + ":" + Util::toString(port)));
 	}
 	if(!file.empty()) {
 		try {
@@ -782,7 +795,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 	//  as = acceptable substitute
 	//  dn = display name
 	if (Util::strnicmp(aUrl.c_str(), _T("magnet:?"), 8) == 0) {
-		LogManager::getInstance()->message(STRING(MAGNET_DLG_TITLE) + ": " + WinUtil::fromT(aUrl));
+		LogManager::getInstance()->message(STRING(MAGNET_DLG_TITLE) + ": " + Text::fromT(aUrl));
 		StringTokenizer<tstring> mag(aUrl.substr(8), _T('&'));
 		typedef map<tstring, tstring> MagMap;
 		MagMap hashes;
@@ -791,10 +804,10 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			// break into pairs
 			string::size_type pos = idx->find(_T('='));
 			if(pos != string::npos) {
-				type = WinUtil::toT(Util::toLower(Util::encodeURI(WinUtil::fromT(idx->substr(0, pos)), true)));
-				param = WinUtil::toT(Util::encodeURI(WinUtil::fromT(idx->substr(pos+1)), true));
+				type = Text::toT(Util::toLower(Util::encodeURI(Text::fromT(idx->substr(0, pos)), true)));
+				param = Text::toT(Util::encodeURI(Text::fromT(idx->substr(pos+1)), true));
 			} else {
-				type = WinUtil::toT(Util::encodeURI(WinUtil::fromT(*idx), true));
+				type = Text::toT(Util::encodeURI(Text::fromT(*idx), true));
 				param.clear();
 			}
 			// extract what is of value
@@ -867,13 +880,13 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 int WinUtil::getIconIndex(const tstring& aFileName) {
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
-		string x = Util::toLower(Util::getFileExt(WinUtil::fromT(aFileName)));
+		string x = Util::toLower(Util::getFileExt(Text::fromT(aFileName)));
 		if(!x.empty()) {
 			ImageIter j = fileIndexes.find(x);
 			if(j != fileIndexes.end())
 				return j->second;
 		}
-		tstring fn = WinUtil::toT(Util::toLower(Util::getFileName(WinUtil::fromT(aFileName))));
+		tstring fn = Text::toT(Util::toLower(Util::getFileName(Text::fromT(aFileName))));
 		::SHGetFileInfo(fn.c_str(), FILE_ATTRIBUTE_NORMAL, &fi, sizeof(fi), SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES);
 		fileImages.AddIcon(fi.hIcon);
 		::DestroyIcon(fi.hIcon);
@@ -886,5 +899,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.55 2004/09/10 10:04:08 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.56 2004/09/10 14:44:17 arnetheduck Exp $
  */

@@ -64,13 +64,13 @@ public:
 		ctrl.Detach();
 		SetDlgItemText(IDC_TTH, WinUtil::tth.c_str());
 		SetDlgItemText(IDC_LATEST, CTSTRING(DOWNLOADING));
-		SetDlgItemText(IDC_TOTALS, WinUtil::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
+		SetDlgItemText(IDC_TOTALS, Text::toT("Upload: " + Util::formatBytes(SETTING(TOTAL_UPLOAD)) + ", Download: " + 
 			Util::formatBytes(SETTING(TOTAL_DOWNLOAD))).c_str());
 
 		if(SETTING(TOTAL_DOWNLOAD) > 0) {
 			char buf[64];
 			sprintf(buf, "Ratio (up/down): %.2f", ((double)SETTING(TOTAL_UPLOAD)) / ((double)SETTING(TOTAL_DOWNLOAD)));
-			SetDlgItemText(IDC_RATIO, WinUtil::toT(buf).c_str());
+			SetDlgItemText(IDC_RATIO, Text::toT(buf).c_str());
 		}
 		CenterWindow(GetParent());
 		c.addListener(this);
@@ -106,7 +106,7 @@ private:
 			if(xml.findChild("DCUpdate")) {
 				xml.stepIn();
 				if(xml.findChild("Version")) {
-					tstring* x = new tstring(WinUtil::toT(xml.getChildData()));
+					tstring* x = new tstring(Text::toT(xml.getChildData()));
 					PostMessage(WM_VERSIONDATA, (WPARAM) x);
 				}
 			}
@@ -115,7 +115,7 @@ private:
 	}
 
 	virtual void on(HttpConnectionListener::Failed, HttpConnection* conn, const string& aLine) throw() {
-		tstring* x = new tstring(WinUtil::toT(aLine));
+		tstring* x = new tstring(Text::toT(aLine));
 		PostMessage(WM_VERSIONDATA, (WPARAM) x);
 		conn->removeListener(this);
 	}
@@ -127,6 +127,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.36 2004/09/07 01:36:52 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.37 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

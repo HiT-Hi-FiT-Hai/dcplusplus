@@ -145,7 +145,7 @@ private:
 	class UserInfo : public UserInfoBase {
 	public:
 		UserInfo(const User::Ptr& u) : UserInfoBase(u) { 
-			columns[COLUMN_NICK] = WinUtil::toT(u->getNick());
+			columns[COLUMN_NICK] = Text::toT(u->getNick());
 			update();
 		};
 
@@ -161,12 +161,12 @@ private:
 
 		void update() {
 			columns[COLUMN_STATUS] = user->isOnline() ? TSTRING(ONLINE) : TSTRING(OFFLINE);
-			columns[COLUMN_HUB] = WinUtil::toT(user->getClientName());
+			columns[COLUMN_HUB] = Text::toT(user->getClientName());
 			if(!user->getLastHubAddress().empty()) {
-				columns[COLUMN_HUB] += WinUtil::toT(" (" + user->getLastHubAddress() + ")");
+				columns[COLUMN_HUB] += Text::toT(" (" + user->getLastHubAddress() + ")");
 			}
-			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : WinUtil::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));
-			columns[COLUMN_DESCRIPTION] = WinUtil::toT(user->getUserDescription());
+			columns[COLUMN_SEEN] = user->isOnline() ? Util::emptyStringT : Text::toT(Util::formatTime("%Y-%m-%d %H:%M", user->getFavoriteLastSeen()));
+			columns[COLUMN_DESCRIPTION] = Text::toT(user->getUserDescription());
 		}
 
 		tstring columns[COLUMN_LAST];
@@ -203,6 +203,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.16 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.17 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

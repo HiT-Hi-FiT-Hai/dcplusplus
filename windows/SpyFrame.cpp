@@ -120,7 +120,7 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		if(j == -1) {
 			TStringList a;
 			a.push_back(*x);
-			a.push_back(WinUtil::toT(Util::toString(1)));
+			a.push_back(Text::toT(Util::toString(1)));
 			ctrlSearches.insert(a);
 			if(ctrlSearches.GetItemCount() > 500) {
 				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
@@ -128,19 +128,19 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		} else {
 			TCHAR tmp[32];
 			ctrlSearches.GetItemText(j, COLUMN_COUNT, tmp, 32);
-			ctrlSearches.SetItemText(j, COLUMN_COUNT, WinUtil::toT(Util::toString(Util::toInt(WinUtil::fromT(tmp))+1)).c_str());
+			ctrlSearches.SetItemText(j, COLUMN_COUNT, Text::toT(Util::toString(Util::toInt(Text::fromT(tmp))+1)).c_str());
 			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
 				ctrlSearches.resort();
 		}
 		delete x;
 
-		ctrlStatus.SetText(1, WinUtil::toT(STRING(TOTAL) + Util::toString(total)).c_str());
-		ctrlStatus.SetText(3, WinUtil::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
+		ctrlStatus.SetText(1, Text::toT(STRING(TOTAL) + Util::toString(total)).c_str());
+		ctrlStatus.SetText(3, Text::toT(STRING(HITS) + Util::toString(ShareManager::getInstance()->getHits())).c_str());
 		double ratio = total > 0 ? ((double)ShareManager::getInstance()->getHits()) / (double)total : 0.0;
-		ctrlStatus.SetText(4, WinUtil::toT(STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
+		ctrlStatus.SetText(4, Text::toT(STRING(HIT_RATIO) + Util::toString(ratio)).c_str());
 	} else if(wParam == TICK_AVG) {
 		float* x = (float*)lParam;
-		ctrlStatus.SetText(2, WinUtil::toT(STRING(AVERAGE) + Util::toString(*x)).c_str());
+		ctrlStatus.SetText(2, Text::toT(STRING(AVERAGE) + Util::toString(*x)).c_str());
 		delete x;
 	}
 
@@ -181,7 +181,7 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 };
 
 void SpyFrame::on(ClientManagerListener::IncomingSearch, const string& s) throw() {
-	tstring* x = new tstring(WinUtil::toT(s));
+	tstring* x = new tstring(Text::toT(s));
 	tstring::size_type i = 0;
 	while( (i=x->find(_T('$'))) != string::npos) {
 		(*x)[i] = _T(' ');
@@ -202,5 +202,5 @@ void SpyFrame::on(TimerManagerListener::Second, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.22 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.23 2004/09/10 14:44:17 arnetheduck Exp $
  */

@@ -98,7 +98,7 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const tstring& aMessage) {
 			if(Util::getAway()) {
 				// if no_awaymsg_to_bots is set, and aUser has an empty connection type (i.e. probably is a bot), then don't send
 				if(!(BOOLSETTING(NO_AWAYMSG_TO_BOTS) && aUser->getConnection().empty()))
-					p->sendMessage(WinUtil::toT(Util::getAwayMessage()));
+					p->sendMessage(Text::toT(Util::getAwayMessage()));
 			}
 
 			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
@@ -233,17 +233,17 @@ void PrivateFrame::addLine(const tstring& aLine) {
 
 	if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
 		StringMap params;
-		params["message"] = WinUtil::fromT(aLine);
+		params["message"] = Text::fromT(aLine);
 		LOG(user->getNick(), Util::formatParams(SETTING(LOG_FORMAT_PRIVATE_CHAT), params));
 	}
 
 	if(BOOLSETTING(TIME_STAMPS)) {
-		ctrlClient.AppendText((WinUtil::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
+		ctrlClient.AppendText((Text::toT("\r\n[" + Util::getShortTimeString() + "] ") + aLine).c_str());
 		
 	} else {
 		ctrlClient.AppendText((_T("\r\n") + aLine).c_str());
 	}
-	addClientLine(CTSTRING(LAST_CHANGE) + WinUtil::toT(Util::getTimeString()));
+	addClientLine(CTSTRING(LAST_CHANGE) + Text::toT(Util::getTimeString()));
 
 	if (BOOLSETTING(TAB_DIRTY)) {
 		setDirty();
@@ -252,7 +252,7 @@ void PrivateFrame::addLine(const tstring& aLine) {
 
 LRESULT PrivateFrame::onTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, WinUtil::toT(user->getClientAddressPort()), user->isClientOp());
+	prepareMenu(tabMenu, UserCommand::CONTEXT_CHAT, Text::toT(user->getClientAddressPort()), user->isClientOp());
 	tabMenu.AppendMenu(MF_SEPARATOR);
 	tabMenu.AppendMenu(MF_STRING, IDC_CLOSE_WINDOW, CTSTRING(CLOSE));
 	tabMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_BOTTOMALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -282,7 +282,7 @@ LRESULT PrivateFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_CLIENT_VIEW);
 	} catch(const Exception& e) {
-		addClientLine(WinUtil::toT(e.getError()));
+		addClientLine(Text::toT(e.getError()));
 	}
 	return 0;
 }
@@ -291,7 +291,7 @@ LRESULT PrivateFrame::onMatchQueue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	try {
 		QueueManager::getInstance()->addList(user, QueueItem::FLAG_MATCH_QUEUE);
 	} catch(const Exception& e) {
-		addClientLine(WinUtil::toT(e.getError()));
+		addClientLine(Text::toT(e.getError()));
 	}
 	return 0;
 }
@@ -339,7 +339,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file
- * $Id: PrivateFrame.cpp,v 1.31 2004/09/07 01:36:53 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.32 2004/09/10 14:44:17 arnetheduck Exp $
  */
 
 

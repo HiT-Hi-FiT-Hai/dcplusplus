@@ -276,7 +276,8 @@ QueueManager::QueueManager() : lastSave(0), queueFile(Util::getAppPath() + "Queu
 	TimerManager::getInstance()->addListener(this); 
 	SearchManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
-	Util::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
+
+	File::ensureDirectory(Util::getAppPath() + FILELISTS_DIR);
 };
 
 QueueManager::~QueueManager() { 
@@ -293,19 +294,19 @@ QueueManager::~QueueManager() {
 		WIN32_FIND_DATA data;
 		HANDLE hFind;
 	
-		hFind = FindFirstFile(Util::utf8ToWide(path + "\\*.bz2").c_str(), &data);
+		hFind = FindFirstFile(Text::toT(path + "\\*.bz2").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(path + Util::wideToUtf8(data.cFileName));			
+				File::deleteFile(path + Text::fromT(data.cFileName));			
 			} while(FindNextFile(hFind, &data));
 			
 			FindClose(hFind);
 		}
 		
-		hFind = FindFirstFile(Util::utf8ToWide(path + "\\*.DcLst").c_str(), &data);
+		hFind = FindFirstFile(Text::toT(path + "\\*.DcLst").c_str(), &data);
 		if(hFind != INVALID_HANDLE_VALUE) {
 			do {
-				File::deleteFile(path + Util::wideToUtf8(data.cFileName));			
+				File::deleteFile(path + Text::fromT(data.cFileName));			
 			} while(FindNextFile(hFind, &data));
 			
 			FindClose(hFind);
@@ -587,7 +588,7 @@ static SizeMap sizeMap;
 static string utfTmp;
 
 static const string& utfEscaper(const string& x) {
-	return curDl->getUtf8() ? Util::toAcp(x, utfTmp) : x;
+	return curDl->getUtf8() ? x : utfTmp.clear(), Text::acpToUtf8(x, utfTmp);
 }
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
@@ -1124,8 +1125,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 				const string& tgt = getAttrib(attribs, sTarget, 0);
 				// Old queues saved in ACP...
 				if(queueVersion <= 0.4032) {
-					target = tgt;
-					target = QueueManager::checkTarget(Util::toUtf8(target), size, flags);
+					target = QueueManager::checkTarget(Text::acpToUtf8(tgt), size, flags);
 				} else {
 					target = QueueManager::checkTarget(tgt, size, flags);
 				}
@@ -1137,7 +1137,7 @@ void QueueLoader::startTag(const string& name, StringPairList& attribs, bool sim
 			QueueItem::Priority p = (QueueItem::Priority)Util::toInt(getAttrib(attribs, sPriority, 3));
 			string tempTarget = getAttrib(attribs, sTempTarget, 4);
 			if(queueVersion <= 0.4032) {
-				Util::toUtf8(tempTarget);				
+				tempTarget = Text::acpToUtf8(tempTarget);				
 			}
 			u_int32_t added = (u_int32_t)Util::toInt(getAttrib(attribs, sAdded, 5));
 			const string& tthRoot = getAttrib(attribs, sTTH, 6);
@@ -1274,5 +1274,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.97 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.98 2004/09/10 14:44:16 arnetheduck Exp $
  */

@@ -100,6 +100,8 @@ public:
 	virtual User::NickMap& lockUserList() = 0;
 	virtual void unlockUserList() = 0;
 
+	virtual string checkNick(const string& nick) = 0;
+
 	const string& getAddress() const { return address; }
 	const string& getAddressPort() const { return addressPort; }
 	short getPort() const { return port; }
@@ -189,5 +191,5 @@ private:
 #endif // _CLIENT_H
 /**
  * @file
- * $Id: Client.h,v 1.86 2004/09/09 09:27:35 arnetheduck Exp $
+ * $Id: Client.h,v 1.87 2004/09/10 14:44:16 arnetheduck Exp $
  */

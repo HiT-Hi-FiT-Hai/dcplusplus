@@ -50,14 +50,14 @@ void SFVReader::load(const string& fileName) throw() {
 	string fname = Util::getFileName(fileName);
 
 	WIN32_FIND_DATA fd;
-	HANDLE hf = FindFirstFile(Util::utf8ToWide(path + "*.sfv").c_str(), &fd);
+	HANDLE hf = FindFirstFile(Text::toT(path + "*.sfv").c_str(), &fd);
 	if(hf == INVALID_HANDLE_VALUE) {
 		return;
 	}
 
 	do {
 		try {
-			if(tryFile(path + Util::wideToUtf8(fd.cFileName), fname)) {
+			if(tryFile(path + Text::fromT(fd.cFileName), fname)) {
 				FindClose(hf);
 				return;
 			}
@@ -73,5 +73,5 @@ void SFVReader::load(const string& fileName) throw() {
 
 /**
  * @file
- * $Id: SFVReader.cpp,v 1.5 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: SFVReader.cpp,v 1.6 2004/09/10 14:44:16 arnetheduck Exp $
  */

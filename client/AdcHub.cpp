@@ -107,21 +107,20 @@ void AdcHub::handle(Command::INF, Command& c) throw() {
 		if(i->length() < 2)
 			continue;
 
-		string tmp;
 		if(i->compare(0, 2, "NI") == 0) {
-			u->setNick(Util::toAcp(i->substr(2), tmp));
+			u->setNick(i->substr(2));
 		} else if(i->compare(0, 2, "HU") == 0) {
 			hub = u;
 		} else if(i->compare(0, 2, "DE") == 0) {
-			u->setDescription(Util::toAcp(i->substr(2), tmp));
+			u->setDescription(i->substr(2));
 		} else if(i->compare(0, 2, "I4") == 0) {
-			u->setIp(Util::toAcp(i->substr(2), tmp));
+			u->setIp(i->substr(2));
 		} else if(i->compare(0, 2, "SS") == 0) {
-			u->setBytesShared(Util::toAcp(i->substr(2), tmp));
+			u->setBytesShared(i->substr(2));
 		} else if(i->compare(0, 2, "VE") == 0) {
-			ve = Util::toAcp(i->substr(2), tmp);
+			ve = i->substr(2);
 		} else if(i->compare(0, 2, "EM") == 0) {
-			u->setEmail(Util::toAcp(i->substr(2), tmp));
+			u->setEmail(i->substr(2));
 		} else if(i->compare(0, 2, "OP") == 0) {
 			if(i->length() == 2) {
 				u->unsetFlag(User::OP);
@@ -184,7 +183,7 @@ void AdcHub::handle(Command::MSG, Command& c) throw() {
 	if(!p)
 		return;
 	if(c.getParameters().size() == 2 && c.getParameters()[1] == "PM") { // add PM<group-cid> as well
-		string msg = Util::toAcp(c.getParameters()[0]);
+		const string& msg = c.getParameters()[0];
 		if(c.getFrom() == getMe()->getCID()) {
 			p = ClientManager::getInstance()->getUser(c.getTo(), false);
 			if(!p)
@@ -192,7 +191,7 @@ void AdcHub::handle(Command::MSG, Command& c) throw() {
 		}
 		fire(ClientListener::PrivateMessage(), this, p, msg);
 	} else {
-		string msg = '<' + p->getNick() + "> " + Util::toAcp(c.getParameters()[0]);
+		string msg = '<' + p->getNick() + "> " + c.getParameters()[0];
 		fire(ClientListener::Message(), this, msg);
 	}		
 }
@@ -224,26 +223,26 @@ void AdcHub::connect(const User* user) {
 
 void AdcHub::hubMessage(const string& aMessage) {
 	string strtmp;
-	send("BMSG " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+	send("BMSG " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + "\n"); 
 }
 
 void AdcHub::privateMessage(const User* user, const string& aMessage) { 
 	string strtmp;
-	send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + " PM\n"); 
+	send("DMSG " + user->getCID().toBase32() + " " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + " PM\n"); 
 }
 
 void AdcHub::kick(const User* user, const string& aMessage) { 
 	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " KK KK " + getMe()->getCID().toBase32() + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+	send("HDSC " + user->getCID().toBase32() + " KK KK " + getMe()->getCID().toBase32() + " " + Command::escape(aMessage) + "\n"); 
 }
 void AdcHub::ban(const User* user, const string& aMessage, time_t aSeconds) { 
 	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " BA BA " + getMe()->getCID().toBase32() + " " + Util::toString(aSeconds) + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+	send("HDSC " + user->getCID().toBase32() + " BA BA " + getMe()->getCID().toBase32() + " " + Util::toString(aSeconds) + " " + Command::escape(aMessage) + "\n"); 
 }
 
 void AdcHub::redirect(const User* user, const string& aHub, const string& aMessage) { 
 	string strtmp;
-	send("HDSC " + user->getCID().toBase32() + " RD RD " + getMe()->getCID().toBase32() + " " + aHub + " " + Command::escape(Util::toUtf8(aMessage, strtmp)) + "\n"); 
+	send("HDSC " + user->getCID().toBase32() + " RD RD " + getMe()->getCID().toBase32() + " " + aHub + " " + Command::escape(aMessage) + "\n"); 
 }
 void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& aString) { 
 	string strtmp;
@@ -256,7 +255,7 @@ void AdcHub::search(int aSizeMode, int64_t aSize, int aFileType, const string& a
 	StringTokenizer<string> st(aString, ' ');
 	string tmp;
 	for(StringIter i = st.getTokens().begin(); i != st.getTokens().end(); ++i) {
-		strtmp += "++" + Command::escape(Util::toUtf8(*i, tmp)) + " ";
+		strtmp += "++" + Command::escape(*i) + " ";
 	}
 	strtmp[strtmp.length() - 1] = '\n';
 	send(strtmp);
@@ -267,8 +266,7 @@ void AdcHub::password(const string& pwd) {
 		static const int SALT_SIZE = 192/8;
 		u_int8_t buf[SALT_SIZE];
 		Encoder::fromBase32(salt.c_str(), buf, SALT_SIZE);
-		string tmp;
-		const string& x = Util::toUtf8(pwd, tmp);
+		const string& x = pwd;
 		TigerHash th;
 		th.update(getMe()->getCID().getData(), CID::SIZE);
 		th.update(x.data(), x.length());
@@ -282,11 +280,9 @@ void AdcHub::info() {
 	if(!getMe())
 		return;
 
-	string tmp;
-
 	string minf = "BINF " + getMe()->getCID().toBase32();
-	minf += " NI" + Command::escape(Util::toUtf8(getNick(), tmp)); 
-	minf += " DE" + Command::escape(Util::toUtf8(getDescription(), tmp));
+	minf += " NI" + Command::escape(getNick()); 
+	minf += " DE" + Command::escape(getDescription());
 	minf += " SL" + Util::toString(SETTING(SLOTS));
 	minf += " SS" + ShareManager::getInstance()->getShareSizeString();
 	minf += " HN" + Util::toString(counts.normal);
@@ -303,7 +299,15 @@ void AdcHub::info() {
 		send(minf);
 		lastInfo = minf;
 	}
+}
 
+string AdcHub::checkNick(const string& aNick) {
+	string tmp = aNick;
+	string::size_type i = 0;
+	while( (i = tmp.find_first_of(" ", i)) != string::npos) {
+		tmp[i++]='_';
+	}
+	return tmp;
 }
 
 void AdcHub::on(Connected) throw() { 
@@ -322,5 +326,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.15 2004/09/07 01:36:51 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.16 2004/09/10 14:44:16 arnetheduck Exp $
  */

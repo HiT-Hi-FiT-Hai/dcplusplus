@@ -33,7 +33,7 @@
  */
 class Text {
 public:
-	static const string& acpToUtf8(const string& str, string& tmp) throw();
+	static string& acpToUtf8(const string& str, string& tmp) throw();
 	static string acpToUtf8(const string& str) throw() { 
 		string tmp;
 		return acpToUtf8(str, tmp);
@@ -45,7 +45,7 @@ public:
 		return acpToWide(str, tmp);
 	}
 
-	static const string& utf8ToAcp(const string& str, string& tmp) throw();
+	static string& utf8ToAcp(const string& str, string& tmp) throw();
 	static string utf8ToAcp(const string& str) throw() {
 		string tmp;
 		return utf8ToAcp(str, tmp);
@@ -58,12 +58,12 @@ public:
 	}
 
 	static string& wideToAcp(const wstring& str, string& tmp) throw();
-	static string wideToAcp(const wstring& str) {
+	static string wideToAcp(const wstring& str) throw() {
 		string tmp;
 		return wideToAcp(str, tmp);
 	}
 	static string& wideToUtf8(const wstring& str, string& tmp) throw();
-	static string wideToUtf8(const wstring& str) {
+	static string wideToUtf8(const wstring& str) throw() {
 		string tmp;
 		return wideToUtf8(str, tmp);
 	}
@@ -73,22 +73,22 @@ public:
 	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToWide(str, tmp); }
 
 	static string fromT(const tstring& str) throw() { return wideToUtf8(str); }
-	static string fromT(const tstring& str, string& tmp) { return wideToUtf8(str, tmp); }
+	static string fromT(const tstring& str, string& tmp) throw() { return wideToUtf8(str, tmp); }
 #else
 	static tstring toT(const string& str) throw() { return utf8ToAcp(str); }
-	static const tstring& toT(const string& str, tstring& tmp) { return utf8ToAcp(str); }
+	static tstring& toT(const string& str, tstring& tmp) throw() { return utf8ToAcp(str); }
 
 	static string fromT(const tstring& str) throw() { return acpToUtf8(str); }
-	static const string& fromT(const tstring& str, string& tmp) { return acpToUtf8(str, tmp); }
+	static string& fromT(const tstring& str, string& tmp) throw() { return acpToUtf8(str, tmp); }
 #endif
 
 private:
-};
 
+};
 
 #endif TEXT_H
 
 /**
  * @file
- * $Id: Text.h,v 1.1 2004/09/10 10:04:01 arnetheduck Exp $
+ * $Id: Text.h,v 1.2 2004/09/10 14:44:16 arnetheduck Exp $
  */

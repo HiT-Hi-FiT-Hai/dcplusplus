@@ -82,7 +82,7 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 			string::size_type i = command.find(_T(' '), 5);
 			dcassert(i != string::npos);
 			tstring to = command.substr(5, i-5);
-			tstring cmd = WinUtil::toT(Util::validateMessage(WinUtil::fromT(command.substr(i + 30, command.length()-i-31)), true, false));
+			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(i + 30, command.length()-i-31)), true, false));
 			ctrlPM.SetCheck(BST_CHECKED);
 			ctrlNick.SetWindowText(to.c_str());
 			ctrlCommand.SetWindowText(cmd.c_str());
@@ -90,7 +90,7 @@ In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m
 			command[command.length()-1] == '|') 
 		{
 			// Looks like a chat thing...
-			tstring cmd = WinUtil::toT(Util::validateMessage(WinUtil::fromT(command.substr(12, command.length()-13)), true, false));
+			tstring cmd = Text::toT(Util::validateMessage(Text::fromT(command.substr(12, command.length()-13)), true, false));
 			ctrlChat.SetCheck(BST_CHECKED);
 			ctrlCommand.SetWindowText(cmd.c_str());
 		} else {
@@ -178,5 +178,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.10 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.11 2004/09/10 14:44:17 arnetheduck Exp $
 */

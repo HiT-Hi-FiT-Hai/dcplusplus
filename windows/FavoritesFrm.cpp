@@ -108,19 +108,19 @@ void FavoriteHubsFrame::openSelected() {
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		HubFrame::openWindow(WinUtil::toT(entry->getServer()), WinUtil::toT(entry->getNick()), WinUtil::toT(entry->getPassword()), WinUtil::toT(entry->getUserDescription()));
+		HubFrame::openWindow(Text::toT(entry->getServer()), Text::toT(entry->getNick()), Text::toT(entry->getPassword()), Text::toT(entry->getUserDescription()));
 	}
 	return;
 }
 
 void FavoriteHubsFrame::addEntry(const FavoriteHubEntry* entry, int pos) {
 	TStringList l;
-	l.push_back(WinUtil::toT(entry->getName()));
-	l.push_back(WinUtil::toT(entry->getDescription()));
-	l.push_back(WinUtil::toT(entry->getNick(false)));
+	l.push_back(Text::toT(entry->getName()));
+	l.push_back(Text::toT(entry->getDescription()));
+	l.push_back(Text::toT(entry->getNick(false)));
 	l.push_back(tstring(entry->getPassword().size(), '*'));
-	l.push_back(WinUtil::toT(entry->getServer()));
-	l.push_back(WinUtil::toT(entry->getUserDescription()));
+	l.push_back(Text::toT(entry->getServer()));
+	l.push_back(Text::toT(entry->getUserDescription()));
 	bool b = entry->getConnect();
 	int i = ctrlHubs.insert(pos, l, 0, (LPARAM)entry);
 	ctrlHubs.SetCheckState(i, b);
@@ -134,7 +134,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		HubFrame::openWindow(WinUtil::toT(entry->getServer()), WinUtil::toT(entry->getNick()), WinUtil::toT(entry->getPassword()), WinUtil::toT(entry->getUserDescription()));
+		HubFrame::openWindow(Text::toT(entry->getServer()), Text::toT(entry->getNick()), Text::toT(entry->getPassword()), Text::toT(entry->getUserDescription()));
 	}
 
 	return 0;
@@ -157,12 +157,12 @@ LRESULT FavoriteHubsFrame::onEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		FavHubProperties dlg(e);
 		if(dlg.DoModal(m_hWnd) == IDOK)
 		{
-			ctrlHubs.SetItemText(i, COLUMN_NAME, WinUtil::toT(e->getName()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, WinUtil::toT(e->getDescription()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_SERVER, WinUtil::toT(e->getServer()).c_str());
-			ctrlHubs.SetItemText(i, COLUMN_NICK, WinUtil::toT(e->getNick(false)).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_NAME, Text::toT(e->getName()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_DESCRIPTION, Text::toT(e->getDescription()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_SERVER, Text::toT(e->getServer()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_NICK, Text::toT(e->getNick(false)).c_str());
 			ctrlHubs.SetItemText(i, COLUMN_PASSWORD, tstring(e->getPassword().size(), '*').c_str());
-			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, WinUtil::toT(e->getUserDescription()).c_str());
+			ctrlHubs.SetItemText(i, COLUMN_USERDESCRIPTION, Text::toT(e->getUserDescription()).c_str());
 		}
 	}
 	return 0;
@@ -290,6 +290,6 @@ void FavoriteHubsFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 
 /**
  * @file
- * $Id: FavoritesFrm.cpp,v 1.25 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.26 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

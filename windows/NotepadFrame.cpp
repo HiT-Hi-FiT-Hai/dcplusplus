@@ -46,7 +46,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		}
 	}
 
-	ctrlPad.SetWindowText(WinUtil::toT(tmp).c_str());
+	ctrlPad.SetWindowText(Text::toT(tmp).c_str());
 	ctrlPad.EmptyUndoBuffer();
 	
 	bHandled = FALSE;
@@ -59,7 +59,7 @@ LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		AutoArray<TCHAR> buf(ctrlPad.GetWindowTextLength() + 1);
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
 		try {
-			string tmp(WinUtil::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
+			string tmp(Text::fromT(tstring(buf, ctrlPad.GetWindowTextLength())));
 			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(tmp);
 		} catch(const FileException&) {
 			// Oops...
@@ -87,7 +87,7 @@ void NotepadFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: NotepadFrame.cpp,v 1.16 2004/09/06 12:32:44 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.17 2004/09/10 14:44:17 arnetheduck Exp $
  */
 
 

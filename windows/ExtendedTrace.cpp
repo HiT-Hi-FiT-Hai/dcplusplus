@@ -291,14 +291,14 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 		callStack.AddrStack.Mode   = AddrModeFlat;
 		callStack.AddrFrame.Mode   = AddrModeFlat;
 
-		f.write(WinUtil::fromT(lpszMessage));
+		f.write(Text::fromT(lpszMessage));
 
 		GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 		GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-		f.write(WinUtil::fromT(srcInfo));
+		f.write(Text::fromT(srcInfo));
 		f.write(LIT(": "));
-		f.write(WinUtil::fromT(symInfo));
+		f.write(Text::fromT(symInfo));
 		f.write(LIT("\r\n"));
 
 		// Max 100 stack lines...
@@ -324,9 +324,9 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 			GetFunctionInfoFromAddresses( callStack.AddrPC.Offset, callStack.AddrFrame.Offset, symInfo );
 			GetSourceInfoFromAddress( callStack.AddrPC.Offset, srcInfo );
 
-			f.write(WinUtil::fromT(srcInfo));
+			f.write(Text::fromT(srcInfo));
 			f.write(LIT(": "));
-			f.write(WinUtil::fromT(symInfo));
+			f.write(Text::fromT(symInfo));
 			f.write(LIT("\r\n"));
 
 		}
@@ -338,5 +338,5 @@ void StackTrace( HANDLE hThread, LPCTSTR lpszMessage, File& f, DWORD eip, DWORD 
 
 /**
 * @file
-* $Id: ExtendedTrace.cpp,v 1.10 2004/09/07 01:36:53 arnetheduck Exp $
+* $Id: ExtendedTrace.cpp,v 1.11 2004/09/10 14:44:17 arnetheduck Exp $
 */

@@ -77,7 +77,7 @@ LRESULT UCPage::onAddMenu(WORD , WORD , HWND , BOOL& ) {
 
 	if(dlg.DoModal() == IDOK) {
 		addEntry(HubManager::getInstance()->addUserCommand(dlg.type, dlg.ctx,
-			0, WinUtil::fromT(dlg.name), WinUtil::fromT(dlg.command), WinUtil::fromT(dlg.hub)), ctrlCommands.GetItemCount());
+			0, Text::fromT(dlg.name), Text::fromT(dlg.command), Text::fromT(dlg.hub)), ctrlCommands.GetItemCount());
 	}
 	return 0;
 }
@@ -91,9 +91,9 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 		CommandDlg dlg;
 		dlg.type = uc.getType();
 		dlg.ctx = uc.getCtx();
-		dlg.name = WinUtil::toT(uc.getName());
-		dlg.command = WinUtil::toT(uc.getCommand());
-		dlg.hub = WinUtil::toT(uc.getHub());
+		dlg.name = Text::toT(uc.getName());
+		dlg.command = Text::toT(uc.getCommand());
+		dlg.hub = Text::toT(uc.getHub());
 
 		if(dlg.DoModal() == IDOK) {
 			if(dlg.type == UserCommand::TYPE_SEPARATOR)
@@ -102,9 +102,9 @@ LRESULT UCPage::onChangeMenu(WORD , WORD , HWND , BOOL& ) {
 				ctrlCommands.SetItemText(sel, 0, dlg.name.c_str());
 			ctrlCommands.SetItemText(sel, 1, dlg.command.c_str());
 			ctrlCommands.SetItemText(sel, 2, dlg.hub.c_str());
-			uc.setName(WinUtil::fromT(dlg.name));
-			uc.setCommand(WinUtil::fromT(dlg.command));
-			uc.setHub(WinUtil::fromT(dlg.hub));
+			uc.setName(Text::fromT(dlg.name));
+			uc.setCommand(Text::fromT(dlg.command));
+			uc.setHub(Text::fromT(dlg.hub));
 			uc.setType(dlg.type);
 			uc.setCtx(dlg.ctx);
 			HubManager::getInstance()->updateUserCommand(uc);
@@ -161,9 +161,9 @@ void UCPage::addEntry(const UserCommand& uc, int pos) {
 	if(uc.getType() == UserCommand::TYPE_SEPARATOR)
 		lst.push_back(TSTRING(SEPARATOR));
 	else
-		lst.push_back(WinUtil::toT(uc.getName()));
-	lst.push_back(WinUtil::toT(uc.getCommand()));
-	lst.push_back(WinUtil::toT(uc.getHub()));
+		lst.push_back(Text::toT(uc.getName()));
+	lst.push_back(Text::toT(uc.getCommand()));
+	lst.push_back(Text::toT(uc.getHub()));
 	ctrlCommands.insert(pos, lst, 0, (LPARAM)uc.getId());
 }
 
@@ -174,6 +174,6 @@ void UCPage::write() {
 
 /**
  * @file
- * $Id: UCPage.cpp,v 1.9 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: UCPage.cpp,v 1.10 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

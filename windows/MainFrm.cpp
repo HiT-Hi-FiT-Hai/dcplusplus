@@ -212,7 +212,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
-	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
+	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 
 	startSocket();
 	// we should have decided what ports we are using by now
@@ -443,7 +443,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == VIEW_FILE_AND_DELETE) {
 		tstring* file = (tstring*)lParam;
 		TextFrame::openWindow(*file);
-		File::deleteFile(WinUtil::fromT(*file));
+		File::deleteFile(Text::fromT(*file));
 		delete file;
 	} else if(wParam == STATS) {
 		TStringList& str = *(TStringList*)lParam;
@@ -472,7 +472,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == STATUS_MESSAGE) {
 		tstring* msg = (tstring*)lParam;
 		if(ctrlStatus.IsWindow()) {
-			tstring line = WinUtil::toT("[" + Util::getShortTimeString() + "] ") + *msg;
+			tstring line = Text::toT("[" + Util::getShortTimeString() + "] ") + *msg;
 
 			ctrlStatus.SetText(0, line.c_str());
 			while(lastLinesList.size() + 1 > MAX_CLIENT_LINES)
@@ -504,7 +504,7 @@ void MainFrame::parseCommandLine(const tstring& cmdLine)
 
 LRESULT MainFrame::onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	tstring cmdLine = (LPCTSTR) (((COPYDATASTRUCT *)lParam)->lpData);
-	parseCommandLine(WinUtil::toT(Util::getAppName() + " ") + cmdLine);
+	parseCommandLine(Text::toT(Util::getAppName() + " ") + cmdLine);
 	return true;
 }
 
@@ -596,7 +596,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 		xml.fromXML(versionInfo);
 		xml.stepIn();
 
-		string url = WinUtil::fromT(links.homepage);
+		string url = Text::fromT(links.homepage);
 
 		if(xml.findChild("URL")) {
 			url = xml.getChildData();
@@ -613,11 +613,11 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 					if(xml.findChild("Message")) {
 						if(url.empty()) {
 							const string& msg = xml.getChildData();
-							MessageBox(WinUtil::toT(msg).c_str(), WinUtil::toT(title).c_str(), MB_OK);
+							MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_OK);
 						} else {
 							string msg = xml.getChildData() + "\r\n" + STRING(OPEN_DOWNLOAD_PAGE);
-							if(MessageBox(WinUtil::toT(msg).c_str(), WinUtil::toT(title).c_str(), MB_YESNO) == IDYES) {
-								WinUtil::openLink(WinUtil::toT(url));
+							if(MessageBox(Text::toT(msg).c_str(), Text::toT(title).c_str(), MB_YESNO) == IDYES) {
+								WinUtil::openLink(Text::toT(url));
 							}
 						}
 					}
@@ -627,7 +627,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 				if(xml.findChild("VeryOldVersion")) {
 					if(atof(xml.getChildData().c_str()) >= VERSIONFLOAT) {
 						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(WinUtil::toT(msg + "\r\nPlease get a new one at " + url).c_str());
+						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str());
 						oldshutdown = true;
 						PostMessage(WM_CLOSE);
 					}
@@ -641,7 +641,7 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 					double v = atof(xml.getChildAttrib("Version").c_str());
 					if(v == VERSIONFLOAT) {
 						string msg = xml.getChildAttrib("Message", "Your version of DC++ contains a serious bug that affects all users of the DC network or the security of your computer.");
-						MessageBox(WinUtil::toT(msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
+						MessageBox(Text::toT(msg + "\r\nPlease get a new one at " + url).c_str(), _T("Bad DC++ version"), MB_OK | MB_ICONEXCLAMATION);
 						oldshutdown = true;
 						PostMessage(WM_CLOSE);
 					}
@@ -653,35 +653,35 @@ void MainFrame::on(HttpConnectionListener::Complete, HttpConnection* /*aConn*/, 
 			if(xml.findChild("Links")) {
 				xml.stepIn();
 				if(xml.findChild("Homepage")) {
-					links.homepage = WinUtil::toT(xml.getChildData());
+					links.homepage = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Downloads")) {
-					links.downloads = WinUtil::toT(xml.getChildData());
+					links.downloads = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Translations")) {
-					links.translations = WinUtil::toT(xml.getChildData());
+					links.translations = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Faq")) {
-					links.faq = WinUtil::toT(xml.getChildData());
+					links.faq = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Bugs")) {
-					links.bugs = WinUtil::toT(xml.getChildData());
+					links.bugs = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Features")) {
-					links.features = WinUtil::toT(xml.getChildData());
+					links.features = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Help")) {
-					links.help = WinUtil::toT(xml.getChildData());
+					links.help = Text::toT(xml.getChildData());
 				}
 				xml.resetCurrentChild();
 				if(xml.findChild("Forum")) {
-					links.discuss = WinUtil::toT(xml.getChildData());
+					links.discuss = Text::toT(xml.getChildData());
 				}
 				xml.stepOut();
 			}
@@ -744,7 +744,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 		FavoriteHubEntry* entry = *i;
 		if(entry->getConnect()) {
 			if(!entry->getNick().empty() || !SETTING(NICK).empty())
-				HubFrame::openWindow(WinUtil::toT(entry->getServer()), WinUtil::toT(entry->getNick()), WinUtil::toT(entry->getPassword()), WinUtil::toT(entry->getUserDescription()));
+				HubFrame::openWindow(Text::toT(entry->getServer()), Text::toT(entry->getNick()), Text::toT(entry->getPassword()), Text::toT(entry->getUserDescription()));
 			else
 				missedAutoConnect = true;
 		}
@@ -909,8 +909,8 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	tstring site;
 	bool isFile = false;
 	switch(wID) {
-	case IDC_HELP_README: site = WinUtil::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
-	case IDC_HELP_CHANGELOG: site = WinUtil::toT(Util::getAppPath() + "changelog.txt"); isFile = true; break;
+	case IDC_HELP_README: site = Text::toT(Util::getAppPath() + "README.txt"); isFile = true; break;
+	case IDC_HELP_CHANGELOG: site = Text::toT(Util::getAppPath() + "changelog.txt"); isFile = true; break;
 	case IDC_HELP_HOMEPAGE: site = links.homepage; break;
 	case IDC_HELP_DOWNLOADS: site = links.downloads; break;
 	case IDC_HELP_TRANSLATIONS: site = links.translations; break;
@@ -919,7 +919,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = links.discuss; break;
 	case IDC_HELP_REQUEST_FEATURE: site = links.features; break;
 	case IDC_HELP_REPORT_BUG: site = links.bugs; break;
-	case IDC_HELP_DONATE: site = WinUtil::toT("https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
+	case IDC_HELP_DONATE: site = Text::toT("https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DCPlusPlus&no_shipping=1&return=http%3A//dcplusplus.sf.net&cn=Greeting+%28and+forum+nick%3F%29&currency_code=EUR"); break;
 	default: dcassert(0);
 	}
 
@@ -964,7 +964,7 @@ static const TCHAR types[] = _T("File Lists\0*.DcLst;*.xml.bz2\0All Files\0*.*\0
 
 LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	tstring file;
-	if(WinUtil::browseFile(file, m_hWnd, false, WinUtil::toT(Util::getAppPath() + "FileLists\\"), types)) {
+	if(WinUtil::browseFile(file, m_hWnd, false, Text::toT(Util::getAppPath() + "FileLists\\"), types)) {
 		tstring username;
 		if(file.rfind('\\') != string::npos) {
 			username = file.substr(file.rfind('\\') + 1);
@@ -973,7 +973,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			}
 			if(username.length() > 4 && Util::stricmp(username.c_str() + username.length() - 4, _T(".xml")) == 0)
 				username.erase(username.length()-4);
-			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(WinUtil::fromT(username)));
+			DirectoryListingFrame::openWindow(file, ClientManager::getInstance()->getUser(Text::fromT(username)));
 		}
 	}
 	return 0;
@@ -1008,7 +1008,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 		nid.hWnd = m_hWnd;
 		nid.uID = 0;
 		nid.uFlags = NIF_TIP;
-		_tcsncpy(nid.szTip, WinUtil::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" + 
+		_tcsncpy(nid.szTip, Text::toT("D: " + Util::formatBytes(DownloadManager::getInstance()->getAverageSpeed()) + "/s (" + 
 			Util::toString(DownloadManager::getInstance()->getDownloads()) + ")\r\nU: " +
 			Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()) + "/s (" + 
 			Util::toString(UploadManager::getInstance()->getUploads()) + ")").c_str(), 64);
@@ -1099,12 +1099,12 @@ void MainFrame::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 	TStringList* str = new TStringList();
 	str->push_back(Util::getAway() ? TSTRING(AWAY) : _T(""));
-	str->push_back(WinUtil::toT("H: " + Client::getCounts()));
-	str->push_back(WinUtil::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS))));
-	str->push_back(WinUtil::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
-	str->push_back(WinUtil::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
-	str->push_back(WinUtil::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")"));
-	str->push_back(WinUtil::toT("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")"));
+	str->push_back(Text::toT("H: " + Client::getCounts()));
+	str->push_back(Text::toT(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS))));
+	str->push_back(Text::toT("D: " + Util::formatBytes(Socket::getTotalDown())));
+	str->push_back(Text::toT("U: " + Util::formatBytes(Socket::getTotalUp())));
+	str->push_back(Text::toT("D: " + Util::formatBytes(downdiff*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")"));
+	str->push_back(Text::toT("U: " + Util::formatBytes(updiff*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")"));
 	PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + updiff);
 	SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + downdiff);
@@ -1123,19 +1123,19 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 			// This is a file listing, show it...
 
 			DirectoryListInfo* i = new DirectoryListInfo();
-			i->file = WinUtil::toT(qi->getListName());
+			i->file = Text::toT(qi->getListName());
 			i->user = qi->getCurrent()->getUser();
-			i->start = WinUtil::toT(qi->getSearchString());
+			i->start = Text::toT(qi->getSearchString());
 
 			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
 		} else if(qi->isSet(QueueItem::FLAG_TEXT)) {
-			PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new tstring(WinUtil::toT(qi->getTarget())));
+			PostMessage(WM_SPEAKER, VIEW_FILE_AND_DELETE, (LPARAM) new tstring(Text::toT(qi->getTarget())));
 		}
 	}
 }
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.65 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.66 2004/09/10 14:44:17 arnetheduck Exp $
  */
    

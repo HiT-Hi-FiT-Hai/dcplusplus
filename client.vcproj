@@ -38,7 +38,7 @@
 				PrecompiledHeaderFile="$(IntDir)/client.pch"
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
-				Detect64BitPortabilityProblems="TRUE"
+				Detect64BitPortabilityProblems="FALSE"
 				DebugInformationFormat="4"
 				CallingConvention="0"
 				CompileAs="0"/>

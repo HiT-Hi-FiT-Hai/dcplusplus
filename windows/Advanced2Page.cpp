@@ -100,7 +100,7 @@ void Advanced2Page::write()
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
 		SettingsManager::getInstance()->set(SettingsManager::LOG_DIRECTORY, s + '\\');
 	}
-	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
+	File::ensureDirectory(SETTING(LOG_DIRECTORY));
 	// Do specialized writing here
 	// settings->set(XX, YY);
 }
@@ -121,6 +121,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.12 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.13 2004/09/10 14:44:17 arnetheduck Exp $
  */
 

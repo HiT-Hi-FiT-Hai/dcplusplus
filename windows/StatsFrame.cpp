@@ -102,7 +102,7 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 					ypos = 0;
 				if(height == 0)
 					height = 1;
-				tstring txt = WinUtil::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
+				tstring txt = Text::toT(Util::formatBytes(max * (height-ypos) / height) + "/s");
 				int tw = WinUtil::getTextWidth(txt, dc);
 				if(tw + 2 > twidth)
 					twidth = tw + 2;
@@ -111,7 +111,7 @@ LRESULT StatsFrame::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		}
 
 		if(rc.left < twidth) {
-			tstring txt = WinUtil::toT(Util::formatBytes(max) + "/s");
+			tstring txt = Text::toT(Util::formatBytes(max) + "/s");
 			int tw = WinUtil::getTextWidth(txt, dc);
 			if(tw + 2 > twidth)
 				twidth = tw + 2;
@@ -212,5 +212,5 @@ void StatsFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */) {
 
 /**
  * @file
- * $Id: StatsFrame.cpp,v 1.10 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: StatsFrame.cpp,v 1.11 2004/09/10 14:44:17 arnetheduck Exp $
  */

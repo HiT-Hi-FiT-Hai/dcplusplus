@@ -39,7 +39,7 @@ int __cdecl main(int argc, char* argv[])
 		File tgt(argv[2], File::WRITE, File::CREATE | File::TRUNCATE);
 		File example(argv[3], File::WRITE, File::CREATE | File::TRUNCATE);
 		string x = src.read();
-		Util::toUtf8(x);
+		x = Text::acpToUtf8(x);
 		string::size_type k;
 		
 		while((k = x.find('\r')) != string::npos) {

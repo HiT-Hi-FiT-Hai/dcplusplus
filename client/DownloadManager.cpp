@@ -449,7 +449,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	dcassert(d->getSize() != -1);
 
 	string target = d->getDownloadTarget();
-	Util::ensureDirectory(target);
+	File::ensureDirectory(target);
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			target += ".xml.bz2";
@@ -726,7 +726,7 @@ noCRC:
 	// Check if we need to move the file
 	if( !d->getTempTarget().empty() && (Util::stricmp(d->getTarget().c_str(), d->getTempTarget().c_str()) != 0) ) {
 		try {
-			Util::ensureDirectory(d->getTarget());
+			File::ensureDirectory(d->getTarget());
 			if(File::getSize(d->getTempTarget()) > MOVER_LIMIT) {
 				mover.moveFile(d->getTempTarget(), d->getTarget());
 			} else {
@@ -910,5 +910,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.115 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.116 2004/09/10 14:44:16 arnetheduck Exp $
  */

@@ -552,25 +552,25 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 	// Generate values
 	TStringList line;
 	tstring fs;
-	line.push_back(WinUtil::toT(search.searchString));
-	line.push_back(WinUtil::toT(search.SourceTypeToString(search.sourceType)));
-	line.push_back(WinUtil::toT(search.destDir));
+	line.push_back(Text::toT(search.searchString));
+	line.push_back(Text::toT(search.SourceTypeToString(search.sourceType)));
+	line.push_back(Text::toT(search.destDir));
 
 	fs = _T("");
 	if(search.minFileSize >= 0)
 	{
-		fs = WinUtil::toT(Util::toString(search.minFileSize));
+		fs = Text::toT(Util::toString(search.minFileSize));
 		fs += _T(" ");
-		fs += WinUtil::toT(search.SizeTypeToStringInternational(search.typeFileSize));
+		fs += Text::toT(search.SizeTypeToStringInternational(search.typeFileSize));
 	}
 	line.push_back(fs);
 
 	fs = _T("");
 	if(search.maxFileSize >= 0)
 	{
-		fs = WinUtil::toT(Util::toString(search.maxFileSize));
+		fs = Text::toT(Util::toString(search.maxFileSize));
 		fs += _T(" ");
-		fs += WinUtil::toT(search.SizeTypeToStringInternational(search.typeFileSize));
+		fs += Text::toT(search.SizeTypeToStringInternational(search.typeFileSize));
 	}
 	line.push_back(fs);
 
@@ -583,5 +583,5 @@ void ADLSearchFrame::UpdateSearch(int index, BOOL doDelete)
 
 /**
  * @file
- * $Id: ADLSearchFrame.cpp,v 1.15 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: ADLSearchFrame.cpp,v 1.16 2004/09/10 14:44:17 arnetheduck Exp $
  */

@@ -236,7 +236,7 @@ public:
 	}
 	
 	LRESULT onOpenDownloads(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		WinUtil::openFile(WinUtil::toT(SETTING(DOWNLOAD_DIRECTORY)));
+		WinUtil::openFile(Text::toT(SETTING(DOWNLOAD_DIRECTORY)));
 		return 0;
 	}
 
@@ -338,7 +338,7 @@ private:
 	MainFrame(const MainFrame&) { dcassert(0); };
 
 	// LogManagerListener
-	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(WinUtil::toT(m))); };
+	virtual void on(LogManagerListener::Message, const string& m) throw() { PostMessage(WM_SPEAKER, STATUS_MESSAGE, (LPARAM)new tstring(Text::toT(m))); };
 
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Second type, u_int32_t aTick) throw();
@@ -358,7 +358,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.43 2004/09/07 01:36:53 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.44 2004/09/10 14:44:17 arnetheduck Exp $
  */
 
  

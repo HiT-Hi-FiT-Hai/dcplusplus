@@ -159,7 +159,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(j->getUser()->isOnline())
 					online++;
 
-				tmp += WinUtil::toT(j->getUser()->getFullNick());
+				tmp += Text::toT(j->getUser()->getFullNick());
 			}
 			display->columns[COLUMN_USERS] = tmp.empty() ? TSTRING(NO_USERS) : tmp;
 		}
@@ -195,12 +195,12 @@ void QueueFrame::QueueItemInfo::update() {
 			} 
 		}
 		if(colMask & MASK_SIZE) {
-			display->columns[COLUMN_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : WinUtil::toT(Util::formatBytes(getSize()));
-			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : WinUtil::toT(Util::formatExactSize(getSize()));
+			display->columns[COLUMN_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatBytes(getSize()));
+			display->columns[COLUMN_EXACT_SIZE] = (getSize() == -1) ? TSTRING(UNKNOWN) : Text::toT(Util::formatExactSize(getSize()));
 		}
 		if(colMask & MASK_DOWNLOADED) {
 			if(getSize() > 0)
-				display->columns[COLUMN_DOWNLOADED] = WinUtil::toT(Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)");
+				display->columns[COLUMN_DOWNLOADED] = Text::toT(Util::formatBytes(getDownloadedBytes()) + " (" + Util::toString((double)getDownloadedBytes()*100.0/(double)getSize()) + "%)");
 			else
 				display->columns[COLUMN_DOWNLOADED].clear();
 		}
@@ -227,7 +227,7 @@ void QueueFrame::QueueItemInfo::update() {
 				if(!j->isSet(QueueItem::Source::FLAG_REMOVED)) {
 					if(tmp.size() > 0)
 						tmp += _T(", ");
-					tmp += WinUtil::toT(j->getUser()->getNick());
+					tmp += Text::toT(j->getUser()->getNick());
 					tmp += _T(" (");
 					if(j->isSet(QueueItem::Source::FLAG_FILE_NOT_AVAILABLE)) {
 						tmp += TSTRING(FILE_NOT_AVAILABLE);
@@ -247,10 +247,10 @@ void QueueFrame::QueueItemInfo::update() {
 		}
 
 		if(colMask & MASK_ADDED) {
-			display->columns[COLUMN_ADDED] = WinUtil::toT(Util::formatTime("%Y-%m-%d %H:%M", getAdded()));
+			display->columns[COLUMN_ADDED] = Text::toT(Util::formatTime("%Y-%m-%d %H:%M", getAdded()));
 		}
 		if(colMask & MASK_TTH && getTTH() != NULL) {
-			display->columns[COLUMN_TTH] = WinUtil::toT(getTTH()->toBase32());
+			display->columns[COLUMN_TTH] = Text::toT(getTTH()->toBase32());
 		}
 	}
 }
@@ -659,7 +659,7 @@ void QueueFrame::moveSelected() {
 		ext2 += (TCHAR)0;
 
 		if(WinUtil::browseFile(name, m_hWnd, true, ii->getPath(), ext2.c_str(), ext.empty() ? NULL : ext.c_str())) {
-			QueueManager::getInstance()->move(WinUtil::fromT(ii->getTarget()), WinUtil::fromT(name));
+			QueueManager::getInstance()->move(Text::fromT(ii->getTarget()), Text::fromT(name));
 		}
 	} else if(n > 1) {
 		tstring name;
@@ -671,7 +671,7 @@ void QueueFrame::moveSelected() {
 			int i = -1;
 			while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				QueueItemInfo* ii = ctrlQueue.getItemData(i);
-				QueueManager::getInstance()->move(WinUtil::fromT(ii->getTarget()), WinUtil::fromT(name + ii->getTargetFileName()));
+				QueueManager::getInstance()->move(Text::fromT(ii->getTarget()), Text::fromT(name + ii->getTargetFileName()));
 			}			
 		}
 	}
@@ -701,7 +701,7 @@ void QueueFrame::moveDir(HTREEITEM ht, const tstring& target) {
 	
 	for(DirectoryIter i = p.first; i != p.second; ++i) {
 		QueueItemInfo* qi = i->second;
-		QueueManager::getInstance()->move(WinUtil::fromT(qi->getTarget()), WinUtil::fromT(target + qi->getTargetFileName()));
+		QueueManager::getInstance()->move(Text::fromT(qi->getTarget()), Text::fromT(target + qi->getTargetFileName()));
 	}			
 }
 
@@ -739,7 +739,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			menuItems = 0;
 			QueueItemInfo::SourceIter i;
 			for(i = ii->getSources().begin(); i != ii->getSources().end(); ++i) {
-				tstring nick = WinUtil::toT(i->getUser()->getNick());
+				tstring nick = Text::toT(i->getUser()->getNick());
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -758,7 +758,7 @@ LRESULT QueueFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			}
 			readdItems = 0;
 			for(i = ii->getBadSources().begin(); i != ii->getBadSources().end(); ++i) {
-				tstring nick = WinUtil::toT(i->getUser()->getNick());
+				tstring nick = Text::toT(i->getUser()->getNick());
 				mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_DATA;
 				mi.fType = MFT_STRING;
 				mi.dwTypeData = (LPTSTR)nick.c_str();
@@ -813,14 +813,14 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		int i = ctrlQueue.GetNextItem(-1, LVNI_SELECTED);
 		QueueItemInfo* ii = ctrlQueue.getItemData(i);
 		
-		tstring searchString = WinUtil::toT(SearchManager::clean(WinUtil::fromT(ii->getTargetFileName())));
+		tstring searchString = Text::toT(SearchManager::clean(Text::fromT(ii->getTargetFileName())));
 		
 		if(!searchString.empty()) {
 			bool bigFile = (ii->getSize() > 10*1024*1024);
 			if(bigFile) {
-				SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(WinUtil::fromT(ii->getTargetFileName())));
+				SearchFrame::openWindow(searchString, ii->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
 			} else {
-				SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(WinUtil::fromT(ii->getTargetFileName())));
+				SearchFrame::openWindow(searchString, ii->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(Text::fromT(ii->getTargetFileName())));
 			}
 		}
 	} 
@@ -886,9 +886,9 @@ LRESULT QueueFrame::onReadd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 		readdMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
 		try {
-			QueueManager::getInstance()->readd(WinUtil::fromT(ii->getTarget()), s->getUser());
+			QueueManager::getInstance()->readd(Text::fromT(ii->getTarget()), s->getUser());
 		} catch(const Exception& e) {
-			ctrlStatus.SetText(0, WinUtil::toT(e.getError()).c_str());
+			ctrlStatus.SetText(0, Text::toT(e.getError()).c_str());
 		}
 	}
 	return 0;
@@ -904,7 +904,7 @@ LRESULT QueueFrame::onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 		
 		removeMenu.GetMenuItemInfo(wID, FALSE, &mi);
 		QueueItemInfo::SourceInfo* s = (QueueItemInfo::SourceInfo*)mi.dwItemData;
-		QueueManager::getInstance()->removeSource(WinUtil::fromT(ii->getTarget()), s->getUser(), QueueItem::Source::FLAG_REMOVED);
+		QueueManager::getInstance()->removeSource(Text::fromT(ii->getTarget()), s->getUser(), QueueItem::Source::FLAG_REMOVED);
 	}
 	return 0;
 }
@@ -947,7 +947,7 @@ LRESULT QueueFrame::onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/,
 	} else {
 		int i = -1;
 		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->setPriority(WinUtil::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
+			QueueManager::getInstance()->setPriority(Text::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
 		}
 	}
 
@@ -965,7 +965,7 @@ void QueueFrame::removeDir(HTREEITEM ht) {
 	const tstring& name = getDir(ht);
 	DirectoryPair dp = directories.equal_range(name);
 	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->remove(WinUtil::fromT(i->second->getTarget()));
+		QueueManager::getInstance()->remove(Text::fromT(i->second->getTarget()));
 	}
 }
 
@@ -992,7 +992,7 @@ void QueueFrame::changePriority(bool inc){
 			case QueueItem::PAUSED:  p = QueueItem::LOWEST; break;
 		}
 
-		QueueManager::getInstance()->setPriority(WinUtil::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
+		QueueManager::getInstance()->setPriority(Text::fromT(ctrlQueue.getItemData(i)->getTarget()), p);
 	}
 }
 
@@ -1007,7 +1007,7 @@ void QueueFrame::setPriority(HTREEITEM ht, const QueueItem::Priority& p) {
 	const tstring& name = getDir(ht);
 	DirectoryPair dp = directories.equal_range(name);
 	for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-		QueueManager::getInstance()->setPriority(WinUtil::fromT(i->second->getTarget()), p);
+		QueueManager::getInstance()->setPriority(Text::fromT(i->second->getTarget()), p);
 	}
 }
 
@@ -1034,8 +1034,8 @@ void QueueFrame::updateStatus() {
 
 		}
 
-		tstring tmp1 = WinUtil::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
-		tstring tmp2 = WinUtil::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
+		tstring tmp1 = Text::toT(STRING(ITEMS) + ": " + Util::toString(cnt));
+		tstring tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(total));
 		bool u = false;
 
 		int w = WinUtil::getTextWidth(tmp1, ctrlStatus.m_hWnd);
@@ -1052,8 +1052,8 @@ void QueueFrame::updateStatus() {
 		ctrlStatus.SetText(3, tmp2.c_str());
 
 		if(dirty) {
-			tmp1 = WinUtil::toT(STRING(FILES) + ": " + Util::toString(queueItems));
-			tmp2 = WinUtil::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize));
+			tmp1 = Text::toT(STRING(FILES) + ": " + Util::toString(queueItems));
+			tmp2 = Text::toT(STRING(SIZE) + ": " + Util::formatBytes(queueSize));
 
 			w = WinUtil::getTextWidth(tmp2, ctrlStatus.m_hWnd);
 			if(statusSizes[3] < w) {
@@ -1200,7 +1200,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.60 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.61 2004/09/10 14:44:17 arnetheduck Exp $
  */
 
 

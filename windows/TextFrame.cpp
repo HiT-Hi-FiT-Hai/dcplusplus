@@ -40,7 +40,7 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	ctrlPad.SetFont(WinUtil::monoFont);
 	string tmp;
 	try {
-		tmp = Util::toDOS(File(WinUtil::fromT(file), File::READ, File::OPEN).read(MAX_TEXT_LEN));
+		tmp = Util::toDOS(File(Text::fromT(file), File::READ, File::OPEN).read(MAX_TEXT_LEN));
 		string::size_type i = 0;
 		while((i = tmp.find('\n', i)) != string::npos) {
 			if(i == 0 || tmp[i-1] != '\r') {
@@ -49,11 +49,11 @@ LRESULT TextFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 			}
 			i++;
 		}
-		ctrlPad.SetWindowText(WinUtil::toT(tmp).c_str());
+		ctrlPad.SetWindowText(Text::toT(tmp).c_str());
 		ctrlPad.EmptyUndoBuffer();
-		SetWindowText(WinUtil::toT(Util::getFileName(WinUtil::fromT(file))).c_str());
+		SetWindowText(Text::toT(Util::getFileName(Text::fromT(file))).c_str());
 	} catch(const FileException& e) {
-		SetWindowText(WinUtil::toT(Util::getFileName(WinUtil::fromT(file)) + ": " + e.getError()).c_str());
+		SetWindowText(Text::toT(Util::getFileName(Text::fromT(file)) + ": " + e.getError()).c_str());
 	}
 	
 	bHandled = FALSE;
@@ -81,7 +81,7 @@ void TextFrame::UpdateLayout(BOOL /*bResizeBars*/ /* = TRUE */)
 
 /**
  * @file
- * $Id: TextFrame.cpp,v 1.9 2004/09/06 12:32:45 arnetheduck Exp $
+ * $Id: TextFrame.cpp,v 1.10 2004/09/10 14:44:17 arnetheduck Exp $
  */
 
 
