@@ -84,6 +84,12 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 7500;
 
+	ctrlShowUsers.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	ctrlShowUsers.SetButtonStyle(BS_AUTOCHECKBOX, false);
+	ctrlShowUsers.SetFont(ctrlStatus.GetFont());
+	ctrlShowUsers.SetCheck(client->getUserInfo());
+	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
+
 	StringList l = StringTokenizer(SETTING(HUBFRAME_ORDER), ',').getTokens();
 	
 	{
@@ -240,7 +246,7 @@ void HubFrame::onEnter() {
 			} else if(stricmp(s.c_str(), "clear") == 0) {
 				ctrlClient.SetWindowText("");
 			} else if(stricmp(s.c_str(), "away") == 0) {
-				if(Util::getAway()) {
+				if(Util::getAway() && param.empty()) {
 					Util::setAway(false);
 					addClientLine(STRING(AWAY_MODE_OFF));
 				} else {
@@ -271,8 +277,10 @@ void HubFrame::onEnter() {
 				}
 			} else if(stricmp(s.c_str(), "close") == 0) {
 				PostMessage(WM_CLOSE);
+			} else if(stricmp(s.c_str(), "userlist") == 0) {
+				ctrlShowUsers.SetCheck(client->getUserInfo() ? BST_UNCHECKED : BST_CHECKED);
 			} else if(stricmp(s.c_str(), "help") == 0) {
-				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help");
+				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help, /userlist");
 			}
 		} else {
 			client->sendMessage(s);
@@ -482,7 +490,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		delete x;
 	} else if(wParam == STATS) {
 		ctrlStatus.SetText(1, (Util::toString(client->getUserCount()) + " " + STRING(HUB_USERS)).c_str());
-		ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
+		if(client->getUserInfo())
+			ctrlStatus.SetText(2, Util::formatBytes(client->getAvailable()).c_str());
+		else
+			ctrlStatus.SetText(2, "");
 
 		if(needSort) {
 			ctrlUsers.resort();
@@ -528,19 +539,33 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[3];
+		int w[4];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		int tmp = (sr.Width()) > 332 ? 232 : ((sr.Width() > 132) ? sr.Width()-100 : 32);
 		
 		w[0] = sr.right - tmp;
-		w[1] = w[0] + (tmp-16)/2;
-		w[2] = w[0] + (tmp-16);
+		w[1] = w[0] + (tmp-32)/2;
+		w[2] = w[0] + (tmp-32);
+		w[3] = w[2] + 16;
 		
-		ctrlStatus.SetParts(3, w);
+		ctrlStatus.SetParts(4, w);
+
+		// Strange, can't get the correct width of the last field...
+		ctrlStatus.GetRect(2, sr);
+		sr.left = sr.right + 2;
+		sr.right = sr.left + 16;
+		ctrlShowUsers.MoveWindow(sr);
 	}
 	
 	CRect rc = rect;
 	rc.bottom -=28;
+	if(!client->getUserInfo()) {
+		if(GetSinglePaneMode() == SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_LEFT);
+	} else {
+		if(GetSinglePaneMode() != SPLIT_PANE_NONE)
+			SetSinglePaneMode(SPLIT_PANE_NONE);
+	}
 	SetSplitterRect(rc);
 	
 	rc = rect;
@@ -673,8 +698,21 @@ LRESULT HubFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHan
 	return 0;
 }
 
+LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	bHandled = FALSE;
+	if((wParam == BST_CHECKED) && !client->getUserInfo()) {
+		client->setUserInfo(true);
+		client->refreshUserList();
+	} else {
+		client->setUserInfo(false);
+		clearUserList();
+	}
+
+	UpdateLayout(FALSE);
+	return 0;
+}
+
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.9 2002/05/23 21:48:24 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.10 2002/05/25 16:10:16 arnetheduck Exp $
  */
-

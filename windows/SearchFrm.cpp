@@ -103,7 +103,7 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	ctrlSlots.SetWindowText(CSTRING(ONLY_FREE_SLOTS));
 	slotsContainer.SubclassWindow(ctrlSlots.m_hWnd);
 
-	ctrlShowUI.Create(ctrlStatus, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+	ctrlShowUI.Create(ctrlStatus.m_hWnd, rcDefault, "+/-", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
 	ctrlShowUI.SetButtonStyle(BS_AUTOCHECKBOX, false);
 	ctrlShowUI.SetFont(ctrlStatus.GetFont());
 	ctrlShowUI.SetCheck(1);
@@ -848,5 +848,5 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 }
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.10 2002/05/23 21:48:24 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.11 2002/05/25 16:10:17 arnetheduck Exp $
  */

@@ -62,8 +62,8 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		(getFreeSlots()<=0) && 
 		(ui == reservedSlots.end()) ) 
 	{
-		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()));
-		if( (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
+		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()).c_str());
+		if( ((getlastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
 			if( !(smallfile || userlist) ||
 				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) || (aSource->getUser()->isSet(User::OP)) ) || 
 				!(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
@@ -76,6 +76,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 				return;
 			}
 		}
+		setlastAutoGrant(GET_TICK());
 	}
 
 	File* f;
@@ -220,5 +221,5 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.29 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.30 2002/05/25 16:10:16 arnetheduck Exp $
  */

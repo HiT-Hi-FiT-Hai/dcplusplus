@@ -224,6 +224,47 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 }
 
 /**
+* Sends data, will block until all data has been sent or an exception occurs
+* @param aBuffer Buffer with data
+* @param aLen Data length
+* @throw SocketExcpetion Send failed.
+*/
+void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen) throw(SocketException) {
+	dcassert(type == TYPE_UDP);
+	//	dcdebug("Writing %db: %.100s\n", aLen, aBuffer);
+	dcassert(aLen > 0);
+	dcassert(aLen < 1450);
+	dcassert(sock != INVALID_SOCKET);
+
+	sockaddr_in  serv_addr;
+	hostent* host;
+
+	if(ip.empty() || port == 0) {
+		throw SocketException(STRING(ADDRESS_NOT_AVAILABLE));
+	}
+
+	memset(&serv_addr, 0, sizeof(serv_addr));
+	serv_addr.sin_port = htons(port);
+	serv_addr.sin_family = AF_INET;
+
+	serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+
+	if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
+		host = gethostbyname(ip.c_str());
+		if (host == NULL) {
+			throw SocketException(STRING(UNKNOWN_ADDRESS));
+		}
+		serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+	}
+
+	int i = ::sendto(sock, aBuffer, aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+	checksockerr(i);
+
+	stats.up += i;
+	stats.totalUp += i;
+}
+
+/**
  * Blocks until timeout is reached one of the specified conditions have been fulfilled
  * @param waitFor WAIT_*** flags that set what we're waiting for, set to the combination of flags that
  *				  triggered the wait stop on return (==WAIT_NONE on timeout)
@@ -285,8 +326,29 @@ bool Socket::wait(u_int32_t millis, int& waitFor) throw(SocketException) {
 	return waitFor != WAIT_NONE;
 }
 
+string Socket::resolve(const string& aDns) {
+	sockaddr_in sock_addr;
+
+	memset(&sock_addr, 0, sizeof(sock_addr));
+	sock_addr.sin_port = 0;
+	sock_addr.sin_family = AF_INET;
+	sock_addr.sin_addr.s_addr = inet_addr(aDns.c_str());
+
+	if (sock_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
+		hostent* host;
+		host = gethostbyname(aDns.c_str());
+		if (host == NULL) {
+			return Util::emptyString;
+		}
+		sock_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+		return inet_ntoa(sock_addr.sin_addr);
+	} else {
+		return aDns;
+	}
+}
+
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.39 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.40 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

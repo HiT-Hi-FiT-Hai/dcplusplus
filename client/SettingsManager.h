@@ -85,14 +85,17 @@ public:
 	}
 
 	void set(StrSetting key, string const& value) {
-		strSettings[key - STR_FIRST] = value;
+		if(((key == DESCRIPTION) || (key == NICK)) && (value.size() > 35)) {
+			strSettings[key - STR_FIRST] = value.substr(0, 35);
+		} else {
+			strSettings[key - STR_FIRST] = value;
+		}
 		isSet[key] = !value.empty();
 	}
 
 	void set(IntSetting key, int value) {
-		if(key == SLOTS) {
-			if(value <= 0)
-				value = 1;
+		if((key == SLOTS) && (value <= 0)) {
+			value = 1;
 		}
 		intSettings[key - INT_FIRST] = value;
 		isSet[key] = true;
@@ -170,6 +173,6 @@ private:
 
 /**
  * @file SettingsManager.cpp
- * $Id: SettingsManager.h,v 1.32 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: SettingsManager.h,v 1.33 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

@@ -123,18 +123,16 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				char* buf = new char[1024];
 
 				try {
-					Socket s;
-					s.create(Socket::TYPE_UDP);
 					string ip, file;
 					short port = 0;
 					Util::decodeUrl(aSeeker, ip, port, file);
+					ip = Socket::resolve(ip);
 					if(port == 0) port = 412;
-					s.connect(ip, port);
 					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 						SearchResult* sr = *i;
 						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
 							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
-						s.write(buf, strlen(buf));
+						s.writeTo(ip, port, buf, strlen(buf));
 					}
 				} catch(SocketException /* e */) {
 					dcdebug("Search caught error\n");
@@ -256,6 +254,6 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.25 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.26 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

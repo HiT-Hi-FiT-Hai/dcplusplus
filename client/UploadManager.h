@@ -96,6 +96,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
+	GETSET(u_int32_t, lastAutoGrant, lastAutoGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -105,7 +106,7 @@ private:
 	SlotMap reservedSlots;
 
 	friend class Singleton<UploadManager>;
-	UploadManager() : running(0), extra(0) { 
+	UploadManager() : running(0), extra(0), lastAutoGrant(0) { 
 		TimerManager::getInstance()->addListener(this);
 	};
 
@@ -199,5 +200,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.46 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.47 2002/05/25 16:10:16 arnetheduck Exp $
  */

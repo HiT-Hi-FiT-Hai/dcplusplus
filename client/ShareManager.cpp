@@ -297,17 +297,16 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 	
 	Directory::FileIter j = files.begin();
 	while(j != files.end()) {
-		bool dupe = false;
 		pair<DupeIter, DupeIter> p = dupes.equal_range(j->second);
-		for(DupeIter k = p.first; k != p.second; ++k) {
+		DupeIter k = p.first;
+		for(; k != p.second; ++k) {
 			if(k->second == j->first) {
 				dcdebug("SM::D::toString Dupe found: %s (%I64d bytes)\n", k->second.c_str(), j->second);
-				dupe = true;
 				break;
 			}
 		}
 
-		if(dupe) {
+		if(k != p.second) {
 			size-=j->second;
 			if(BOOLSETTING(REMOVE_DUPES)) {
 				files.erase(j++);
@@ -482,6 +481,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.39 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.40 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

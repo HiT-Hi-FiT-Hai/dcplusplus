@@ -77,7 +77,11 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	onClickedActive(0,0,0,dummy);	// Update enable/disable for server/port controls
 
 	nick.Attach(GetDlgItem(IDC_NICK));
-
+	nick.LimitText(35);
+	CEdit desc;
+	desc.Attach(GetDlgItem(IDC_DESCRIPTION));
+	desc.LimitText(35);
+	desc.Detach();
 	return TRUE;
 }
 
@@ -96,11 +100,11 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 	GetDlgItemText(wID, buf, SETTINGS_BUF_LEN);
 	string old = buf;
 
-	// Strip '$', '|' and ' ' from text
+	// Strip '$', '|', '<', '>' and ' ' from text
 	char *b = buf, *f = buf, c;
 	while( (c = *b++) != 0 )
 	{
-		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' '))
+		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' ') && ( (wID != IDC_NICK) || c != '<' || c != '>') )
 			*f++ = c;
 	}
 
@@ -125,6 +129,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.3 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

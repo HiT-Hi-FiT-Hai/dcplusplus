@@ -128,6 +128,8 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+
 	static int sortSize(LPARAM a, LPARAM b) {
 		SearchResult* c = (SearchResult*)a;
 		SearchResult* d = (SearchResult*)b;
@@ -186,7 +188,7 @@ public:
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		bHandled = false;
+		bHandled = FALSE;
 		showUI = (wParam == BST_CHECKED);
 		UpdateLayout(FALSE);
 		return 0;
@@ -195,8 +197,6 @@ public:
 	void SearchFrame::setInitial(const string& str, LONGLONG size, SearchManager::SizeModes mode) {
 		initialString = str; initialSize = size; initialMode = mode;
 	}
-	
-	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 private:
 	string initialString;
@@ -275,6 +275,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.9 2002/05/23 21:48:24 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.10 2002/05/25 16:10:17 arnetheduck Exp $
  */
 

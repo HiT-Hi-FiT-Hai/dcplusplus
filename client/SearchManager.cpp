@@ -51,7 +51,7 @@ int SearchManager::run() {
 			onData(buf, len);
 		}
 	} catch(SocketException e) {
-		dcdebug("SearchManager::run Stopped listening: %s\n", e.getError());
+		dcdebug("SearchManager::run Stopped listening: %s\n", e.getError().c_str());
 		return 1;
 	}
 
@@ -113,6 +113,6 @@ void SearchManager::onData(const u_int8_t* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.21 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.22 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

@@ -7,6 +7,9 @@
 * Fixed some socket issues with worthless tcp implementations (read: win95/98/me) that don't provide a decent buffer
 * Worked some more on the socket handling in general
 * Fixed a crash when trying to use an invalid %[...] log message
+* Fixed some issues with online users being reported as offline
+* Added option to disable the user listing. This saves _a lot_ of CPU, memory and bandwidth for both user and hub
+* Fixed some issues with reloading user lists
 
  -- 0.175 2002-05-18 --
 * Fixed a 100% cpu bug (thanks zc...stoopid nmdc hub, sending strange things...)

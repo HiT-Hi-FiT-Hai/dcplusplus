@@ -125,9 +125,18 @@ private:
 	int minutes;
 
 	UserMap users;
+	Socket s;
 
 	friend class Singleton<ClientManager>;
-	ClientManager() : minutes(0) { TimerManager::getInstance()->addListener(this); };
+	ClientManager() : minutes(0) { 
+		try {
+			s.create(Socket::TYPE_UDP); 
+		} catch(SocketException e) {
+			dcassert(0);
+		}
+		TimerManager::getInstance()->addListener(this); 
+	};
+
 	virtual ~ClientManager() { TimerManager::getInstance()->removeListener(this); };
 
 	// ClientListener
@@ -201,6 +210,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.25 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.26 2002/05/25 16:10:16 arnetheduck Exp $
  */
 

@@ -40,8 +40,12 @@ class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener,
 {
 public:
 	HubFrame(const string& aServer, const string& aNick = Util::emptyString, const string& aPassword = Util::emptyString) : 
-	  waitingForPW(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
-	  clientContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), needSort(false) {
+	waitingForPW(false), server(aServer), needSort(false),
+	ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
+	showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
+	clientContainer("edit", this, EDIT_MESSAGE_MAP)
+	{
+		
 		client = ClientManager::getInstance()->getClient();
 		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
 		client->setNick(aNick);
@@ -91,6 +95,7 @@ public:
 		MESSAGE_HANDLER(WM_CHAR, onChar)
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
+		MESSAGE_HANDLER(BM_SETCHECK, onShowUsers)
 	END_MSG_MAP()
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
@@ -105,7 +110,8 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-		
+	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
 	void onEnter();
@@ -254,7 +260,7 @@ private:
 	string redirect;
 	bool timeStamps;
 	bool showJoins;
-	
+
 	string lastKick;
 	string lastRedir;
 	string lastServer;
@@ -266,10 +272,12 @@ private:
 	string server;
 	CContainedWindow ctrlMessageContainer;
 	CContainedWindow clientContainer;
+	CContainedWindow showUsersContainer;
 
 	CMenu userMenu;
 	CMenu opMenu;
 	
+	CButton ctrlShowUsers;
 	CEdit ctrlClient;
 	CEdit ctrlMessage;
 	ExListViewCtrl ctrlUsers;
@@ -368,9 +376,9 @@ private:
 
 	virtual void onAction(ClientListener::Types type, Client* /*client*/, const User::Ptr& user) {
 		switch(type) {
-		case ClientListener::MY_INFO: speak(UPDATE_USER, user); break;
-		case ClientListener::QUIT: speak(REMOVE_USER, user); break;
-		case ClientListener::HELLO: speak(UPDATE_USER, user); break;
+		case ClientListener::MY_INFO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
+		case ClientListener::QUIT: if(client->getUserInfo()) speak(REMOVE_USER, user); break;
+		case ClientListener::HELLO: if(client->getUserInfo()) speak(UPDATE_USER, user); break;
 		}
 	}
 	
@@ -378,7 +386,7 @@ private:
 		switch(type) {
 		case ClientListener::OP_LIST: // Fall through
 		case ClientListener::NICK_LIST: 
-			speak(UPDATE_USERS, aList); break;
+			if(client->getUserInfo()) speak(UPDATE_USERS, aList); break;
 		}
 	}
 
@@ -398,6 +406,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.10 2002/05/23 21:48:24 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.11 2002/05/25 16:10:16 arnetheduck Exp $
  */
 
