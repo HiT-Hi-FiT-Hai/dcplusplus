@@ -34,7 +34,7 @@
 
 #define STATUS_MESSAGE_MAP 9
 
-class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, CSplitterImpl<DirectoryListingFrame>
+class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)>, public CSplitterImpl<DirectoryListingFrame>
 {
 public:
 	typedef MDITabChildWindowImpl<DirectoryListingFrame, RGB(255, 0, 255)> baseClass;
@@ -259,5 +259,5 @@ private:
 
 /**
  * @file
- * $Id: DirectoryListingFrm.h,v 1.19 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.20 2003/09/24 12:06:19 arnetheduck Exp $
  */

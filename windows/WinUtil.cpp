@@ -65,6 +65,7 @@ void WinUtil::init(HWND hWnd) {
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(MENU_IMPORT_QUEUE));
+	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_SETTINGS));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_APP_EXIT, CSTRING(MENU_EXIT));
 
@@ -87,7 +88,6 @@ void WinUtil::init(HWND hWnd) {
 	view.AppendMenu(MF_STRING, ID_VIEW_TOOLBAR, CSTRING(MENU_TOOLBAR));
 	view.AppendMenu(MF_STRING, ID_VIEW_STATUS_BAR, CSTRING(MENU_STATUS_BAR));
 	view.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
-	view.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_SETTINGS));
 
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)view, CSTRING(MENU_VIEW));
 
@@ -410,5 +410,5 @@ int WinUtil::getIconIndex(const string& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.18 2003/09/22 13:17:24 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.19 2003/09/24 12:06:19 arnetheduck Exp $
  */

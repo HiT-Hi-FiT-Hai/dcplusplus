@@ -1,4 +1,4 @@
- -- 0.262 --
+ -- 0.262 2003-09-24 --
 * Added arrows and tri-state sorting (thanks saurod)
 * Fixed a crash with certain queues when opening queue frame
 * Fixed a bug in the search frame not setting b/kB/MB correctly when searching for alternates

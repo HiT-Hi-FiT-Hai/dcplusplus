@@ -339,7 +339,7 @@ private:
 	public:
 
 		typedef vector<TabInfo*> List;
-		typedef List::iterator ListIter;
+		typedef typename List::iterator ListIter;
 
 		enum { MAX_LENGTH = 20 };
 
@@ -603,5 +603,5 @@ private:
 
 /**
  * @file
- * $Id: FlatTabCtrl.h,v 1.15 2003/07/15 14:53:12 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.16 2003/09/24 12:06:19 arnetheduck Exp $
  */
