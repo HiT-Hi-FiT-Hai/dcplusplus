@@ -34,31 +34,22 @@
 CryptoManager* Singleton<CryptoManager>::instance;
 
 ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int aStrength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
-	state(STATE_RUNNING), inbuf(NULL), inbufLen(0), f(file), maxBytes(aMaxBytes), level(aStrength) {
+	inbuf(NULL), f(file), maxBytes(aMaxBytes), level(aStrength) {
 	
 	memset(&zs, 0, sizeof(zs));
 	
 	if(deflateInit(&zs, level) != Z_OK) {
 		throw CryptoException(STRING(COMPRESSION_ERROR));
 	}
+
+	inbuf = new u_int8_t[INBUF_SIZE];
 }
 
-u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(CryptoException) {
+u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(FileException, CryptoException) {
 	dcassert(buf);
 
-        if(bufLen == 0){
+	if(bufLen == 0) {
 		return 0;
-	}
-	
-	if(state == STATE_FINISHED) {
-		return (u_int32_t)-1;
-	}
-	
-	// We make a read buffer four times as large as the out buffer...this should be
-	// enough so that we don't need to read multiple times...
-	if(inbuf == NULL) {
-		inbufLen = bufLen << 2;
-		inbuf = new u_int8_t[inbufLen];
 	}
 
 	zs.avail_out = bufLen;
@@ -68,67 +59,40 @@ u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRea
 	// Check if we're compressing at all...if not; set level to 0 to just compute
 	// the adler32...we want at least 5% compression, a completely arbitrary value.
 	// The 64kb probe zone is also taken out of the air...
-	if( (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
+	if( (maxBytes != 0) && (level != 0) && (zs.total_out > 64*1024) && (zs.total_out > ((u_int32_t)((float)zs.total_in*0.95))) ) {
 		dcdebug("Disabling compression for 0x%p (%ld/%ld = %.02f)\n", this, zs.total_out, zs.total_in, ((float)zs.total_out / (float)zs.total_in));
 		setStrength(0);
-		if(zs.avail_out == 0)
-			return bufLen;
 	}
-	
-	while(true) {
-		if( (zs.avail_in == 0) && (state == STATE_RUNNING) ) {
-			u_int32_t bytes = (maxBytes == -1) ? inbufLen : (u_int32_t) min((int64_t) inbufLen, maxBytes);
 
-			if(bytes == 0) {
-				// Alright, that's it folks...
-				state = STATE_FINISHING;;
+	while(zs.avail_out > 0) {
+		// Check if we need to read more
+		if(zs.avail_in == 0 && maxBytes != 0) {
+			// Read more data
+			u_int32_t bytes = (maxBytes == -1) ? INBUF_SIZE : (u_int32_t) min((int64_t) INBUF_SIZE, maxBytes);
+			zs.avail_in = f.read(inbuf, bytes);
+			zs.next_in = (u_int8_t*)inbuf;
+			bytesRead += zs.avail_in;
+
+			if(maxBytes != -1) {
+				if(zs.avail_in == 0)
+					throw CryptoException(STRING(COMPRESSION_ERROR));
+				maxBytes -= zs.avail_in;
 			} else {
-				u_int32_t readBytes = f.read(inbuf, bytes);
-				bytesRead += readBytes;
-				if(readBytes == 0) {
-					if(maxBytes != -1 && maxBytes != 0) {
-						// This is an error, we didn't read as many bytes as requested
-						throw CryptoException(STRING(COMPRESSION_ERROR));
-					}
-
-					// Read all we can...
-					state = STATE_FINISHING;;
-				} else {
-					if(maxBytes != -1) {
-						maxBytes -= readBytes;
-					}
-					
-					zs.avail_in = readBytes;
-					zs.next_in = (u_int8_t*)inbuf;
-				}
+				if(zs.avail_in == 0)
+					maxBytes = 0;
 			}
 		}
-		
-		if(state == STATE_RUNNING) {
-			int err = ::deflate(&zs, Z_NO_FLUSH);
-			if(err != Z_OK) {
-				dcdebug("ZCompressor::compress Error %d while running\n", err);
-				throw CryptoException(STRING(COMPRESSION_ERROR));
-			}
-			if(zs.avail_out == 0) {
-				return bufLen;
-			}
-		} else {
-			dcassert(state == STATE_FINISHING);
-			int err = ::deflate(&zs, Z_FINISH);
-			if(err == Z_OK) {
-				// More bytes?
-				return bufLen - zs.avail_out;
-			} else if(err == Z_STREAM_END) {
-				// Good, we're finished...
-				state = STATE_FINISHED;
-				return bufLen - zs.avail_out;
-			} else {
-				dcdebug("ZCompressor::compress Error %d while finishing\n", err);
-				throw CryptoException(STRING(COMPRESSION_ERROR));
-			}
+
+		int err = ::deflate(&zs, ((maxBytes == 0) ? Z_FINISH : Z_NO_FLUSH));
+			
+		if(err == Z_STREAM_END)
+			return bufLen - zs.avail_out;
+		if(err != Z_OK) {
+			throw CryptoException(STRING(COMPRESSION_ERROR));
 		}
 	}
+
+	return bufLen;
 }
 
 void ZCompressor::setStrength(int str) throw(CryptoException) {
@@ -146,20 +110,18 @@ void ZCompressor::setStrength(int str) throw(CryptoException) {
 	}
 }
 
-ZDecompressor::ZDecompressor() throw(CryptoException) {
+ZDecompressor::ZDecompressor() throw(CryptoException) : outbuf(NULL) {
 	memset(&zs, 0, sizeof(zs));
 
 	if(inflateInit(&zs) != Z_OK)
 		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
 
-	outbufSize = 64*1024;
-	outbuf = new u_int8_t[outbufSize];
-	
+	outbuf = new u_int8_t[OUTBUF_SIZE];
 }
 
 u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(CryptoException) {
 	zs.avail_in = inbytes;
-	zs.avail_out = outbufSize;
+	zs.avail_out = OUTBUF_SIZE;
 	zs.next_in = (u_int8_t*)const_cast<void*>(inbuf);
 	zs.next_out = (u_int8_t*)outbuf;
 
@@ -167,9 +129,9 @@ u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) throw(Crypt
 
 	if(err == Z_OK || err == Z_STREAM_END) {
 		inbytes = zs.avail_in;
-		return outbufSize - zs.avail_out;
+		return OUTBUF_SIZE - zs.avail_out;
 	} else {
-		dcdebug("BZ2Decompressor::compress Error %d while decompressing\n", err);
+		dcdebug("ZDecompressor::decompress Error %d while decompressing\n", err);
 		throw CryptoException(STRING(DECOMPRESSION_ERROR));
 	}
 }
@@ -571,5 +533,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file
- * $Id: CryptoManager.cpp,v 1.36 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.37 2003/12/21 21:41:15 arnetheduck Exp $
  */

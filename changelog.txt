@@ -6,7 +6,9 @@
 * Fixed brightness of compressed transfer progress bars
 * Fixed a crash with badly formatted compressed transfer requests
 * Some work on memory managment, dramatically improving DC++'s behaviour with large queues / shares
-
+* Auto-match queue is only done on exact match
+* Fixed a bug in the compressor that may have caused compressed uploads not to finish and/or 100% cpu
+* The sound part of partially corrupted queues is now recovered
 
  -- 0.305 2003-12-04 --
 * Fixed disappearing queue items bug

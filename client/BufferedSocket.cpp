@@ -67,7 +67,7 @@ bool BufferedSocket::threadSendFile() {
 
 				u_int32_t br = 0;
 				bytes = comp->compress(inbuf, s, br);
-				if(bytes == (u_int32_t)-1) {
+				if(bytes == 0) {
 					// Finished!
 					delete comp;
 					comp = NULL;
@@ -75,14 +75,10 @@ bool BufferedSocket::threadSendFile() {
 					fire(BufferedSocketListener::TRANSMIT_DONE);
 					return true;
 				} else {
-					if(bytes != 0){
-						Socket::write((char*) inbuf, bytes);
-					}
-					if(br > 0) {
-						fire(BufferedSocketListener::BYTES_SENT, br, bytes);
-						size -= br;
-						dcassert(size >= 0);
-					}
+					Socket::write((char*) inbuf, bytes);
+					fire(BufferedSocketListener::BYTES_SENT, br, bytes);
+					size -= br;
+					dcassert(size >= 0);
 				}
 			}
 		} else {
@@ -460,5 +456,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.61 2003/12/14 20:41:37 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.62 2003/12/21 21:41:15 arnetheduck Exp $
  */

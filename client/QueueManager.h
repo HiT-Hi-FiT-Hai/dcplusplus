@@ -81,16 +81,20 @@ public:
 		const string& aTempTarget = Util::emptyString, bool addBad = true) throw(QueueException, FileException);
 	
 	/** Add a user's filelist to the queue. */
-	void addList(const User::Ptr& aUser, int aFlags) throw(QueueException, FileException) {
+	void addList(const User::Ptr& aUser, int aFlags, const string& startDir = Util::emptyString) throw(QueueException, FileException) {
 		string x = aUser->getNick();
 		string::size_type i = 0;
 		while((i = x.find('\\'), i) != string::npos)
 			x[i] = '_';
 		string file = Util::getAppPath() + "FileLists\\" + x + ".DcLst";
-		add(USER_LIST_NAME, -1, aUser, file, Util::emptyString,
+		// We use the searchString to store the start viewing directory for file lists
+		add(USER_LIST_NAME, -1, aUser, file, startDir,
 			QueueItem::FLAG_USER_LIST | aFlags,  QueueItem::DEFAULT, 
 			Util::emptyString, true);
 	}
+
+	/** Readd a source that was removed */
+	void readd(const string& target, User::Ptr& aUser) throw(QueueException);
 
 	/** Add a directory to the queue (downloads filelist and matches the directory). */
 	void addDirectory(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) throw();
@@ -243,6 +247,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.51 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.52 2003/12/21 21:41:15 arnetheduck Exp $
  */
 

@@ -428,6 +428,20 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
+void QueueManager::readd(const string& target, User::Ptr& aUser) throw(QueueException) {
+	bool wantConnection = false;
+	{
+		Lock l(cs);
+		QueueItem* q = fileQueue.find(target);
+		if(q != NULL && q->isBadSource(aUser)) {
+			QueueItem::Source* s = *q->getBadSource(aUser);
+			wantConnection = addSource(q, s->getPath(), aUser, true);
+		}
+	}
+	if(wantConnection && aUser->isOnline())
+		ConnectionManager::getInstance()->getDownloadConnection(aUser);
+}
+
 string QueueManager::checkTarget(const string& aTarget, int64_t aSize, int& flags) throw(QueueException, FileException) {
 #ifdef WIN32
 	if(aTarget.length() > MAX_PATH) {
@@ -1013,12 +1027,22 @@ void QueueManager::saveQueue() throw() {
 
 class QueueLoader : public SimpleXMLReader::CallBack {
 public:
-	QueueLoader() : cur(NULL), inDownloads(false) { };
+	enum { READ_SIZE = 64*1024 };
+	QueueLoader(File& f) : file(f), cur(NULL), inDownloads(false) { };
+	virtual bool getData(string& n) {
+		string::size_type start = n.length();
+		n.resize(start + READ_SIZE);
+		u_int32_t r = file.read(&n[start], READ_SIZE);
+		n.resize(start + r);
+		return r > 0;
+	}
+
 	virtual void startTag(const string& name, StringPairList& attribs, bool simple);
 	virtual void endTag(const string& name, const string& data);
 private:
 	string target;
 
+	File& file;
 	QueueItem* cur;
 	bool inDownloads;
 
@@ -1030,8 +1054,10 @@ private:
 
 void QueueManager::loadQueue() throw() {
 	try {
-		QueueLoader l;
-		SimpleXMLReader(&l).fromXML(Util::emptyString, File(getQueueFile(), File::READ, File::OPEN).read());
+		File f(getQueueFile(), File::READ, File::OPEN);
+		QueueLoader l(f);
+		string x;
+		SimpleXMLReader(&l).fromXML(x);
 		dirty = false;
 	} catch(const Exception&) {
 		// ...
@@ -1219,12 +1245,12 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 					add(sr->getFile(), sr->getSize(), sr->getUser(), *i, Util::emptyString, QueueItem::FLAG_RESUME, 
 						QueueItem::DEFAULT, Util::emptyString, false);
 					dcdebug("QueueManager::onAction New source %s for target %s found\n", sr->getUser()->getNick().c_str(), i->c_str());
-					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH))
+					// Only download list for exact matches
+					if(BOOLSETTING(AUTO_SEARCH_AUTO_MATCH) && (target == fileName))
 						addList(sr->getUser(), QueueItem::FLAG_MATCH_QUEUE);
 				} catch(const Exception&) {
 					// ...
 				}
-				// Ok, so let's match the file listing at once...
 			}
 		}
 	}
@@ -1270,5 +1296,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.66 2003/12/17 13:53:07 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.67 2003/12/21 21:41:15 arnetheduck Exp $
  */

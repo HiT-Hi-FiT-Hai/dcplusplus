@@ -80,7 +80,7 @@ public:
 	~ZDecompressor() { 	
 		dcdebug("Decompression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
 		inflateEnd(&zs); 
-		delete outbuf;
+		delete[] outbuf;
 	};
 
 	/**
@@ -91,14 +91,16 @@ public:
 	u_int32_t decompress(const void* inbuf, int& inbytes) throw(CryptoException);
 	GETSET(u_int8_t*, outbuf, Outbuf);
 private:
+	enum { OUTBUF_SIZE = 64*1024 };
 	ZDecompressor(const ZDecompressor&);
 	ZDecompressor& operator=(const ZDecompressor&);
 
 	z_stream zs;
-	int32_t outbufSize;
 };
 
-class ZCompressor {
+class FileException;
+
+class ZCompressor : public FastAlloc<ZCompressor> {
 public:
 	/**
 	 * @param maxBytes The maximum number of bytes to read from f, -1 = until EOF.
@@ -108,7 +110,7 @@ public:
 	~ZCompressor() throw() {
 		dcdebug("Compression ending, %ld/%ld = %.04f", zs.total_out, zs.total_in, (float)zs.total_out / max((float)zs.total_in, (float)1)); 
 		deflateEnd(&zs);
-		delete inbuf;
+		delete[] inbuf;
 	};
 
 	/**
@@ -118,18 +120,14 @@ public:
 	 * @return The final number of bytes used for the compression. When this equals 0,
 	 * the compression is finished.
 	 */
-	u_int32_t compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(CryptoException);
+	u_int32_t compress(void* buf, u_int32_t bufLen, u_int32_t& bytesRead) throw(FileException, CryptoException);
 
 private:
-	enum {
-		STATE_RUNNING,
-		STATE_FINISHING,
-		STATE_FINISHED
-	} state;
+
+	enum { INBUF_SIZE = 64*1024 };
 
 	z_stream zs;
 	u_int8_t* inbuf;
-	u_int32_t inbufLen;
 	
 	File& f;
 	int64_t maxBytes;
@@ -205,5 +203,5 @@ private:
 
 /**
  * @file
- * $Id: CryptoManager.h,v 1.28 2003/12/14 20:41:38 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.29 2003/12/21 21:41:15 arnetheduck Exp $
  */

@@ -172,12 +172,8 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	{
 		WLock l(cs);
 		
-		string d;
-		if(aDirectory[aDirectory.size() - 1] == PATH_SEPARATOR) {
-			d = aDirectory.substr(0, aDirectory.size()-1);
-		} else {
-			d = aDirectory;
-		}
+		string d = ((aDirectory[aDirectory.size() - 1] == PATH_SEPARATOR) ? 
+			aDirectory.substr(0, aDirectory.size()-1) : aDirectory);
 		
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(Util::stricmp(d, i->first) == 0) {
@@ -254,27 +250,24 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 			string name = data.cFileName;
 			if(name == "." || name == "..")
 				continue;
+			if(!BOOLSETTING(SHARE_HIDDEN) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN))
+				continue;
 			if(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
-					string newName = aName + PATH_SEPARATOR + name;
-					if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
-						dir->directories[name] = buildTree(newName, dir);
-						dir->addSearchType(dir->directories[name]->getSearchTypes()); 
-					}
+				string newName = aName + PATH_SEPARATOR + name;
+				if(Util::stricmp(newName + PATH_SEPARATOR, SETTING(TEMP_DOWNLOAD_DIRECTORY)) != 0) {
+					dir->directories[name] = buildTree(newName, dir);
+					dir->addSearchType(dir->directories[name]->getSearchTypes()); 
 				}
 			} else {
-				if( !((!BOOLSETTING(SHARE_HIDDEN)) && (data.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN)) ) {
+				// Not a directory, assume it's a file...make sure we're not sharing the settings file...
+				if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
+					(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
+					(name.find('$') == string::npos) ) {
 
-					// Not a directory, assume it's a file...make sure we're not sharing the settings file...
-					if( (Util::stricmp(name.c_str(), "DCPlusPlus.xml") != 0) && 
-						(Util::stricmp(name.c_str(), "Favorites.xml") != 0) &&
-						(name.find('$') == string::npos) ) {
-
-						dir->addSearchType(getMask(name));
-						dir->addType(getType(name));
-						lastFileIter = dir->files.insert(lastFileIter, make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
-						dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
-					}
+					dir->addSearchType(getMask(name));
+					dir->addType(getType(name));
+					lastFileIter = dir->files.insert(lastFileIter, make_pair(name, (int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32));
+					dir->size+=(int64_t)data.nFileSizeLow | ((int64_t)data.nFileSizeHigh)<<32;
 				}
 			}
 		} while(FindNextFile(hFind, &data));
@@ -743,6 +736,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.68 2003/12/02 15:40:24 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.69 2003/12/21 21:41:15 arnetheduck Exp $
  */
 
