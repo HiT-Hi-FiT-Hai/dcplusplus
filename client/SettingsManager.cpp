@@ -34,15 +34,18 @@ const string SettingsManager::settingTags[] =
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
-	"TempDownloadDirectory",
+	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"SENTRY", 
 	// Ints
-	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
+	"ConnectionType", "InPort", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow",
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
 	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
-	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler",
+	"UseSystemIcons", "PopupPMs", "MinUploadSpeed", "GetUserInfo", "UrlHandler", "MainWindowState", 
+	"MainWindowSizeX", "MainWindowSizeY", "MainWindowPosX", "MainWindowPosY", "AutoAway",
+	"SmallSendBuffer", "SocksPort", "SocksResolve", "KeepLists", "AutoKick", "QueueFrameShowTree",
+	"CompressTransfers",
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -68,7 +71,7 @@ SettingsManager::SettingsManager()
 	
 	setDefault(SLOTS, 1);
 	setDefault(SERVER, Util::getLocalIp());
-	setDefault(PORT, 1412);
+	setDefault(IN_PORT, Util::rand(1025, 32000));
 	setDefault(ROLLBACK, 4096);
 	setDefault(CLIENTVERSION, "1,0091");
 	setDefault(AUTO_FOLLOW, true);
@@ -108,7 +111,23 @@ SettingsManager::SettingsManager()
 	setDefault(LOG_FORMAT_PRIVATE_CHAT, "[%Y-%m-%d %H:%M] %[message]");
 	setDefault(GET_USER_INFO, true);
 	setDefault(URL_HANDLER, false);
-
+	setDefault(AUTO_AWAY, false);
+	setDefault(SMALL_SEND_BUFFER, false);
+	setDefault(SOCKS_PORT, 1080);
+	setDefault(SOCKS_RESOLVE, 1);
+	setDefault(CONFIG_VERSION, "0.181");		// 0.181 is the last version missing configversion
+	setDefault(KEEP_LISTS, false);
+	setDefault(AUTO_KICK, false);
+	setDefault(QUEUEFRAME_SHOW_TREE, true);
+	setDefault(COMPRESS_TRANSFERS, true);
+	
+#ifdef WIN32
+	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
+	setDefault(MAIN_WINDOW_SIZE_X, CW_USEDEFAULT);
+	setDefault(MAIN_WINDOW_SIZE_Y, CW_USEDEFAULT);
+	setDefault(MAIN_WINDOW_POS_X, CW_USEDEFAULT);
+	setDefault(MAIN_WINDOW_POS_Y, CW_USEDEFAULT);
+#endif
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -127,7 +146,7 @@ void SettingsManager::load(string const& aFileName)
 		return;
 	}
 
-	SimpleXML xml;
+	SimpleXML xml(1);
 	xml.fromXML(xmltext);
 
 	xml.resetCurrentChild();
@@ -171,12 +190,13 @@ void SettingsManager::load(string const& aFileName)
 		
 		xml.stepOut();
 	}
-	
+
 	fire(SettingsManagerListener::LOAD, &xml);
 	xml.stepOut();
 }
 
 void SettingsManager::save(string const& aFileName) {
+
 	SimpleXML xml;
 	xml.addTag("DCPlusPlus");
 	xml.stepIn();
@@ -184,14 +204,15 @@ void SettingsManager::save(string const& aFileName) {
 	xml.stepIn();
 
 	int i;
-	string attr, type("type"), curType("string");
+	string type("type"), curType("string");
 	
 	for(i=STR_FIRST; i<STR_LAST; i++)
 	{
-		if(isSet[i])
-		{
-			attr = settingTags[i];
-			xml.addTag(attr, get(StrSetting(i), false));
+		if(i == CONFIG_VERSION) {
+			xml.addTag(settingTags[i], VERSIONSTRING);
+			xml.addChildAttrib(type, curType);
+		} else if(isSet[i]) {
+			xml.addTag(settingTags[i], get(StrSetting(i), false));
 			xml.addChildAttrib(type, curType);
 		}
 	}
@@ -199,10 +220,8 @@ void SettingsManager::save(string const& aFileName) {
 	curType = "int";
 	for(i=INT_FIRST; i<INT_LAST; i++)
 	{
-		if(isSet[i])
-		{
-			attr = settingTags[i];
-			xml.addTag(attr, get(IntSetting(i), false));
+		if(isSet[i]) {
+			xml.addTag(settingTags[i], get(IntSetting(i), false));
 			xml.addChildAttrib(type, curType);
 		}
 	}
@@ -211,8 +230,7 @@ void SettingsManager::save(string const& aFileName) {
 	{
 		if(isSet[i])
 		{
-			attr = settingTags[i];
-			xml.addTag(attr, get(Int64Setting(i), false));
+			xml.addTag(settingTags[i], get(Int64Setting(i), false));
 			xml.addChildAttrib(type, curType);
 		}
 	}
@@ -221,9 +239,9 @@ void SettingsManager::save(string const& aFileName) {
 	fire(SettingsManagerListener::SAVE, &xml);
 
 	try {
-		File f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
+		BufferedFile f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
-		f.write(xml.toXML());
+		xml.toXML(&f);
 		f.close();
 		File::deleteFile(aFileName);
 		File::renameFile(aFileName + ".tmp", aFileName);
@@ -234,6 +252,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.45 2002/06/18 19:06:33 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.46 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

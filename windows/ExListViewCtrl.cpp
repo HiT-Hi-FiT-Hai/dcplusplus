@@ -24,7 +24,7 @@
 
 int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 
-	char buf[256];
+	char buf[512];
 	LVITEM lvi;
 	lvi.iItem = oldPos;
 	lvi.iSubItem = 0;
@@ -33,7 +33,7 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	StringList l;
 
 	for(int j = 0; j < GetHeader().GetItemCount(); j++) {
-		GetItemText(oldPos, j, buf, 256);
+		GetItemText(oldPos, j, buf, 512);
 		l.push_back(buf);
 	}
 
@@ -95,35 +95,33 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		{
 			loc = (low + high)/2;
 			
-			switch(sortType) {
-			case SORT_STRING:
+			// This is a trick, so that if fun() returns something bigger than one, use the
+			// internal default sort functions
+			comp = sortType;
+			if(comp == SORT_FUNC) {
+				data = GetItemData(loc);
+				comp = fun(lParam, data);
+			} else if(comp == SORT_FUNC_ITEM) {
+				LVITEM b;
+				b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+				b.iItem = loc;
+				b.iSubItem = 0;
+				GetItem(&b);
+				comp = fun((LPARAM)&a, (LPARAM)&b);
+			}
+			
+			if(comp == SORT_STRING) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(b, string(buf)); break;
-			case SORT_STRING_NOCASE:
+				comp = compare(b, string(buf));
+			} else if(comp == SORT_STRING_NOCASE) {
 				GetItemText(loc, sortColumn, buf, 128);
 				comp =  Util::stricmp(b.c_str(), buf);
-				break;
-			case SORT_INT:
+			} else if(comp == SORT_INT) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(c, atoi(buf)); break;
-			case SORT_FUNC:
-				data = GetItemData(loc);
-				comp = fun(lParam, data); break;
-			case SORT_FUNC_ITEM:
-				{
-					LVITEM b;
-					b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-					b.iItem = loc;
-					b.iSubItem = 0;
-					GetItem(&b);
-					comp = fun((LPARAM)&a, (LPARAM)&b);
-				} 
-				break;
-			case SORT_FLOAT:
+				comp = compare(c, atoi(buf)); 
+			} else if(comp == SORT_FLOAT) {
 				GetItemText(loc, sortColumn, buf, 128);
-				comp = compare(f, atof(buf)); break;
-			default:
-				dcassert(0);
+				comp = compare(f, atof(buf));
 			}
 			
 			if(!ascending)
@@ -138,30 +136,26 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 			} 
 		}
 
-		switch(sortType) {
-		case SORT_STRING:
-			comp = compare(b, string(buf)); break;
-		case SORT_STRING_NOCASE:
+		comp = sortType;
+		if(comp == SORT_FUNC) {
+			comp = fun(lParam, data);
+		} else if(comp == SORT_FUNC_ITEM) {
+			LVITEM b;
+			b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+			b.iItem = loc;
+			b.iSubItem = 0;
+			GetItem(&b);
+			comp = fun((LPARAM)&a, (LPARAM)&b);
+		}
+		
+		if(comp == SORT_STRING) {
+			comp = compare(b, string(buf));
+		} else if(comp == SORT_STRING_NOCASE) {
 			comp =  Util::stricmp(b.c_str(), buf);
-			break;
-		case SORT_INT:
-			comp = compare(c, atoi(buf)); break;
-		case SORT_FUNC:
-			comp = fun(lParam, data); break;
-		case SORT_FUNC_ITEM:
-			{
-				LVITEM b;
-				b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-				b.iItem = loc;
-				b.iSubItem = 0;
-				GetItem(&b);
-				comp = fun((LPARAM)&a, (LPARAM)&b);
-			}
-			break;
-		case SORT_FLOAT:
-			comp = compare(f, atof(buf)); break;
-		default:
-			dcassert(0);
+		} else if(comp == SORT_INT) {
+			comp = compare(c, atoi(buf)); 
+		} else if(comp == SORT_FLOAT) {
+			comp = compare(f, atof(buf));
 		}
 
 		if(!ascending)
@@ -169,7 +163,6 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 		
 		if(comp == 1)
 			loc++;
-		
 	}
 	dcassert(loc >= 0 && loc <= GetItemCount());
 	a.iItem = loc;
@@ -198,6 +191,6 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.4 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

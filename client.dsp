@@ -37,11 +37,11 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "Release/client"
-# PROP Intermediate_Dir "Release/client"
+# PROP Output_Dir "vc6\Release\client"
+# PROP Intermediate_Dir "vc6\Release\client"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /FAs /Yu"stdinc.h" /FD /c
+# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gf /Gy /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /FAs /Yu"stdinc.h" /FD /c
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -60,11 +60,11 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Debug\client"
-# PROP Intermediate_Dir "Debug\client"
+# PROP Output_Dir "vc6\Debug\client"
+# PROP Intermediate_Dir "vc6\Debug\client"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /GZ /c
-# ADD CPP /nologo /G6 /Gr /MTd /W4 /GX /Zi /O2 /Ob0 /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdinc.h" /FD /c
+# ADD CPP /nologo /G6 /Gd /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdinc.h" /FD /c
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
 # ADD RSC /l 0x41d /d "_DEBUG"
 BSC32=bscmake.exe
@@ -114,6 +114,10 @@ SOURCE=.\client\DirectoryListing.cpp
 # Begin Source File
 
 SOURCE=.\client\DownloadManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\FinishedManager.cpp
 # End Source File
 # Begin Source File
 
@@ -222,6 +226,10 @@ SOURCE=.\client\ClientManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\ClientManagerListener.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\config.h
 # End Source File
 # Begin Source File
@@ -258,6 +266,10 @@ SOURCE=.\client\File.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\FinishedManager.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\HttpConnection.h
 # End Source File
 # Begin Source File
@@ -278,11 +290,19 @@ SOURCE=.\client\QueueManager.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\QueueManagerListener.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\ResourceManager.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\client\SearchManager.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SearchManagerListener.h
 # End Source File
 # Begin Source File
 

@@ -200,7 +200,7 @@ private:
 #endif // !defined(AFX_FAVORITEHUBSFRM_H__F6D75CA8_F229_4E7D_8ADC_0B1F3B0083C4__INCLUDED_)
 
 /**
- * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.5 2002/06/02 00:12:44 arnetheduck Exp $
+ * @file FavoritesFrm.h
+ * $Id: FavoritesFrm.h,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

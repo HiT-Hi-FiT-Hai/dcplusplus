@@ -45,6 +45,11 @@ private:
 	const T2& a;
 };
 
+template<class T>
+struct PointerHash {
+	size_t operator()(const T* a) const { return ((size_t)a)/sizeof(T); };
+};
+
 /** 
  * Compares two values
  * @return -1 if v1 < v2, 0 if v1 == v2 and 1 if v1 > v2
@@ -64,14 +69,33 @@ class Flags {
 		int flags;
 };
 
+template<typename T>
+class AutoArray {
+	typedef T* TPtr;
+	typedef T& TRef;
+public:
+	AutoArray(size_t size) : p(new T[size]) { };
+	~AutoArray() { delete[] p; };
+	operator TPtr() { return p; };
+
+private:
+	AutoArray(const AutoArray&) { };
+	void operator=(const AutoArray&) { };
+
+	TPtr p;
+};
+
 template<typename Listener>
 class Speaker {
+	typedef vector<Listener*> ListenerList;
+	typedef typename ListenerList::iterator ListenerIter;
+	
 public:
 
 	void fire(typename Listener::Types type) throw() {
 		Lock l(listenerCS);
-		vector<Listener*> tmp = listeners;
-		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
 		}
 	};
@@ -79,8 +103,8 @@ public:
 	template<class T> 
 		void fire(typename Listener::Types type, const T& param) throw () {
 		Lock l(listenerCS);
-		vector<Listener*> tmp = listeners;
-		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, param);
 		}
 	};
@@ -88,24 +112,40 @@ public:
 	template<class T, class T2> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2) throw() {
 		Lock l(listenerCS);
-		vector<Listener*> tmp = listeners;
-		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2);
 		}
 	};
 	template<class T, class T2, class T3> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
 		Lock l(listenerCS);
-		vector<Listener*> tmp = listeners;
-		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3);
+		}
+	};
+	template<class T, class T2, class T3, class T4> 
+		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4) throw() {
+		Lock l(listenerCS);
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onAction(type, p, p2, p3, p4);
+		}
+	};
+	template<class T, class T2, class T3, class T4, class T5> 
+		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5) throw() {
+		Lock l(listenerCS);
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
+			(*i)->onAction(type, p, p2, p3, p4, p5);
 		}
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(typename Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
 		Lock l(listenerCS);
-		vector<Listener*> tmp = listeners;
-		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
+		ListenerList tmp = listeners;
+		for(ListenerIter i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
 		}
 	};
@@ -120,7 +160,7 @@ public:
 	void removeListener(Listener* aListener) {
 		Lock l(listenerCS);
 
-		vector<Listener*>::iterator i = find(listeners.begin(), listeners.end(), aListener);
+		ListenerIter i = find(listeners.begin(), listeners.end(), aListener);
 		if(i != listeners.end())
 			listeners.erase(i);
 	}
@@ -130,7 +170,7 @@ public:
 		listeners.clear();
 	}
 protected:
-	vector<Listener*> listeners;
+	ListenerList listeners;
 	CriticalSection listenerCS;
 };
 
@@ -146,7 +186,7 @@ public:
 #ifdef WIN32
 		string::size_type start = 0;
 		
-		while( (start = aFile.find('\\', start)) != string::npos) {
+		while( (start = aFile.find_first_of("\\/", start)) != string::npos) {
 			CreateDirectory(aFile.substr(0, start+1).c_str(), NULL);
 			start++;
 		}
@@ -204,15 +244,20 @@ public:
 
 	static string getFilePath(const string& path) {
 		string::size_type i = path.rfind('\\');
-		return (i != string::npos) ? path.substr(0, i) : path;
+		return (i != string::npos) ? path.substr(0, i + 1) : path;
 	}
 	static string getFileName(const string& path) {
 		string::size_type i = path.rfind('\\');
 		return (i != string::npos) ? path.substr(i + 1) : path;
 	}
+	static string getExtension(const string& path) {
+		string::size_type i = path.rfind('.');
+		return (i != string::npos) ? path.substr(i) : Util::emptyString;
+	}
 
 	static void decodeUrl(const string& aUrl, string& aServer, short& aPort, string& aFile);
-
+	static string filterFileName(const string& aFile);
+	
 	static string formatBytes(const string& aString) {
 		return formatBytes(toInt64(aString));
 	}
@@ -348,16 +393,18 @@ public:
 		while(*a && (lower[*a] == lower[*b])) {
 			a++; b++;
 		}
-		return (lower[*a] < lower[*b]) ? -1 : ((lower[*a] == lower[*b]) ? 0 : 1);
+		return compare(lower[*a], lower[*b]);
 	}
 	static int strnicmp(const char* a, const char* b, int n) {
 		// return ::strnicmp(a, b, n);
 		while(n && *a && (lower[*a] == lower[*b])) {
 			n--; a++; b++;
 		}
-		return (n == 0) ? 0 : ((lower[*a] < lower[*b]) ? -1 : ((lower[*a] == lower[*b]) ? 0 : 1));
+		return (n == 0) ? 0 : compare(lower[*a], lower[*b]);
 	}
-
+	static int stricmp(const string& a, const string& b) { return stricmp(a.c_str(), b.c_str()); };
+	static int strnicmp(const string& a, const string& b, int n) { return strnicmp(a.c_str(), b.c_str(), n); };
+	
 	static string validateNick(string tmp) {	
 		string::size_type i;
 		while( (i = tmp.find_first_of("|$ ")) != string::npos) {
@@ -394,10 +441,38 @@ private:
 	static char lower[];
 };
 
+/** Case insensitive hash function for strings */
+struct noCaseStringHash {
+	size_t operator()(const string& s) const {
+		size_t x = 0;
+		const char* y = s.data();
+		string::size_type j = s.size();
+		for(string::size_type i = 0; i < j; ++i) {
+			x = x*31 + (size_t)Util::toLower(y[i]);
+		}
+		return x;
+	}
+};
+
+/** Case insensitive string comparison */
+struct noCaseStringEq {
+	bool operator()(const string& a, const string& b) const {
+		return Util::stricmp(a.c_str(), b.c_str()) == 0;
+	}
+};
+
+/** Case insensitive string ordering */
+struct noCaseStringLess {
+	bool operator()(const string& a, const string& b) const {
+		return Util::stricmp(a.c_str(), b.c_str()) == -1;
+	}
+};
+
+
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.50 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: Util.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

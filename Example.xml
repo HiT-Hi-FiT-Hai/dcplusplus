@@ -24,6 +24,7 @@
 		<String Name="ClosingConnection">Closing connection...</String>
 		<String Name="Close">Close</String>
 		<String Name="Compressed">Compressed</String>
+		<String Name="CompressionError">Error during compression</String>
 		<String Name="Connect">Connect</String>
 		<String Name="Connected">Connected</String>
 		<String Name="Connecting">Connecting...</String>
@@ -34,10 +35,14 @@
 		<String Name="ConnectionRefused">Connection refused by target machine</String>
 		<String Name="ConnectionReset">Connection reset by server</String>
 		<String Name="ConnectionTimeout">Connection timeout</String>
+		<String Name="CopyNick">Copy nick to clipboard</String>
 		<String Name="CouldNotOpenTargetFile">Could not open target file: </String>
 		<String Name="CouldNotOpenFile">Could not open file</String>
 		<String Name="Count">Count</String>
+		<String Name="Port">Port: </String>
+		<String Name="DecompressionError">Error during decompression</String>
 		<String Name="Description">Description</String>
+		<String Name="Directory">Directory</String>
 		<String Name="DirectoryAlreadyShared">Directory already shared</String>
 		<String Name="Disconnected">Disconnected</String>
 		<String Name="DiscFull">Disk full(?)</String>
@@ -49,10 +54,13 @@
 		<String Name="DownloadStarting">Download starting...</String>
 		<String Name="DownloadTo">Download to...</String>
 		<String Name="DownloadQueue">Download queue</String>
+		<String Name="DownloadWholeDir">Download whole directory</String>
+		<String Name="DownloadWholeDirTo">Download whole directory to...</String>
 		<String Name="DownloadedLeft">Downloaded %s (%.01f%%), %s/s, %s left</String>
 		<String Name="DownloadedFrom"> downloaded from </String>
 		<String Name="Downloading">Downloading...</String>
 		<String Name="DownloadingHubList">Downloading public hub list...</String>
+		<String Name="DuplicateSource">Duplicate source</String>
 		<String Name="Email">E-Mail</String>
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
 		<String Name="EnterPassword">Please enter a password</String>
@@ -61,6 +69,7 @@
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="ErrorOpeningFile">Error opening file</String>
 		<String Name="Errors">Errors</String>
+		<String Name="ExactSize">Exact size</String>
 		<String Name="Executable">Executable</String>
 		<String Name="FavoriteHubs">Favorite Hubs</String>
 		<String Name="FavoriteUsers">Favorite Users</String>
@@ -91,8 +100,8 @@
 		<String Name="HubPassword">Hub password</String>
 		<String Name="HubUsers">Users</String>
 		<String Name="IgnoredMessage">Ignored message: </String>
-		<String Name="ImportQueue">Import queue from NMDC</String>
 		<String Name="InvalidNumberOfSlots">Invalid number of slots</String>
+		<String Name="Ip">Ip: </String>
 		<String Name="Joins">Joins: </String>
 		<String Name="JoinShowingOff">Join/part showing off</String>
 		<String Name="JoinShowingOn">Join/part showing on</String>
@@ -111,7 +120,9 @@
 		<String Name="MenuFileFavoriteHubs">&amp;Favorite Hubs\tCtrl+F</String>
 		<String Name="MenuFileFavoriteUsers">Favorite &amp;Users\tCtrl+U</String>
 		<String Name="MenuFileFollowRedirect">Follow last redirec&amp;t\tCtrl+T</String>
+		<String Name="MenuFileImportQueue">Import queue from NMDC...</String>
 		<String Name="MenuFileNotepad">&amp;Notepad\tCtrl+N</String>
+		<String Name="MenuFileOpenFileList">Open file list...</String>
 		<String Name="MenuFilePublicHubs">&amp;Public Hubs\tCtrl+P</String>
 		<String Name="MenuFileReconnect">&amp;Reconnect\tCtrl+R</String>
 		<String Name="MenuFileSearch">&amp;Search\tCtrl+S</String>
@@ -120,6 +131,7 @@
 		<String Name="MenuHelp">&amp;Help</String>
 		<String Name="MenuHelpAbout">About DC++...</String>
 		<String Name="MenuHelpDiscuss">DC++ discussion forum</String>
+		<String Name="MenuHelpDonate">Donate €€€/$$$ (paypal)</String>
 		<String Name="MenuHelpDownloads">Downloads and translations</String>
 		<String Name="MenuHelpFaq">Frequently asked questions</String>
 		<String Name="MenuHelpHelpForum">Help forum</String>
@@ -135,6 +147,7 @@
 		<String Name="MenuWindowArrange">Arrange icons</String>
 		<String Name="MenuWindowCascade">Cascade</String>
 		<String Name="MenuWindowTile">Tile</String>
+		<String Name="Move">Move/Rename</String>
 		<String Name="Next">Next</String>
 		<String Name="New">New...</String>
 		<String Name="Nick">Nick</String>
@@ -155,7 +168,7 @@
 		<String Name="Offline">Offline</String>
 		<String Name="Online">Online</String>
 		<String Name="OnlyFreeSlots">Only users with free slots</String>
-		<String Name="OpenFileList">Open file list</String>
+		<String Name="Open">Open</String>
 		<String Name="OperationWouldBlockExecution">Operation would block execution</String>
 		<String Name="OutOfBufferSpace">Out of buffer space</String>
 		<String Name="PassiveUser">Passive user</String>
@@ -205,10 +218,16 @@
 		<String Name="Slots">Slots</String>
 		<String Name="SlotsSet">Slots set</String>
 		<String Name="SocketShutDown">Socket has been shut down</String>
+		<String Name="SocksAuthFailed">Socks server authentication failed (bad username / password?)</String>
+		<String Name="SocksAuthUnsupported">The socks server doesn't support user / password authentication</String>
+		<String Name="SocksFailed">The socks server failed establish a connection</String>
+		<String Name="SocksNeedsAuth">The socks server requires authentication</String>
+		<String Name="SocksSetupError">Failed to set up the socks server for UDP relay (check socks address and port)</String>
 		<String Name="SpecifyServer">Specify a server to connect to</String>
 		<String Name="SpecifySearchString">Specify a search string</String>
 		<String Name="Speed">Speed</String>
 		<String Name="Status">Status</String>
+		<String Name="TargetFilenameTooLong">Target filename too long</String>
 		<String Name="Tb">TB</String>
 		<String Name="Time">Time</String>
 		<String Name="TimestampsDisabled">Timestamps disabled</String>
@@ -219,6 +238,7 @@
 		<String Name="Unknown">Unknown</String>
 		<String Name="UnknownAddress">Unknown address</String>
 		<String Name="UnknownError">Unknown error: 0x%x</String>
+		<String Name="UnsupportedFilelistFormat">Unsupported filelist format</String>
 		<String Name="UploadFinishedIdle">Upload finished, idle...</String>
 		<String Name="UploadStarting">Upload starting...</String>
 		<String Name="UploadedLeft">Uploaded %s (%.01f%%), %s/s, %s left</String>

@@ -32,6 +32,10 @@ HFONT WinUtil::font = NULL;
 CMenu WinUtil::mainMenu;
 CImageList WinUtil::fileImages;
 int WinUtil::dirIconIndex = 0;
+StringList WinUtil::lastDirs;
+string WinUtil::lastKick;
+string WinUtil::lastRedirect;
+string WinUtil::lastServer;
 
 void WinUtil::decodeFont(const string& setting, LOGFONT &dest) {
 	StringTokenizer st(setting, ',');
@@ -107,7 +111,7 @@ bool WinUtil::browseFile(string& target, HWND owner /* = NULL */, bool save /* =
 		ofn.lpstrInitialDir = initialDir.c_str();
 	}
 	ofn.nMaxFile = sizeof(buf);
-	ofn.Flags = OFN_PATHMUSTEXIST;
+	ofn.Flags = save ? 0: OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
 	
 	// Display the Open dialog box. 
 	if ( (save ? GetSaveFileName(&ofn) : GetOpenFileName(&ofn) ) ==TRUE) {
@@ -131,13 +135,13 @@ void WinUtil::buildMenu() {
 	file.AppendMenu(MF_STRING, ID_FILE_SEARCH, CSTRING(MENU_FILE_SEARCH));
 	file.AppendMenu(MF_STRING, IDC_NOTEPAD, CSTRING(MENU_FILE_NOTEPAD));
 	file.AppendMenu(MF_STRING, IDC_SEARCH_SPY, CSTRING(MENU_FILE_SEARCH_SPY));
-	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(OPEN_FILE_LIST));
+	file.AppendMenu(MF_STRING, IDC_OPEN_FILE_LIST, CSTRING(MENU_FILE_OPEN_FILE_LIST));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, IDC_FOLLOW, CSTRING(MENU_FILE_FOLLOW_REDIRECT));
 	file.AppendMenu(MF_STRING, ID_FILE_RECONNECT, CSTRING(MENU_FILE_RECONNECT));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_FILE_SETTINGS, CSTRING(MENU_FILE_SETTINGS));
-	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(IMPORT_QUEUE));
+	file.AppendMenu(MF_STRING, IDC_IMPORT_QUEUE, CSTRING(MENU_FILE_IMPORT_QUEUE));
 	file.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	file.AppendMenu(MF_STRING, ID_APP_EXIT, CSTRING(MENU_FILE_EXIT));
 	
@@ -174,12 +178,25 @@ void WinUtil::buildMenu() {
 	help.AppendMenu(MF_STRING, IDC_HELP_DISCUSS, CSTRING(MENU_HELP_DISCUSS));
 	help.AppendMenu(MF_STRING, IDC_HELP_REQUEST_FEATURE, CSTRING(MENU_HELP_REQUEST_FEATURE));
 	help.AppendMenu(MF_STRING, IDC_HELP_REPORT_BUG, CSTRING(MENU_HELP_REPORT_BUG));
-	
+	help.AppendMenu(MF_STRING, IDC_HELP_DONATE, CSTRING(MENU_HELP_DONATE));
+
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)help, CSTRING(MENU_HELP));
 	
 }
 
+void WinUtil::splitTokens(int* array, const string& tokens, int maxItems /* = -1 */) {
+	StringTokenizer t(tokens, ',');
+	StringList& l = t.getTokens();
+	if(maxItems == -1)
+		maxItems = l.size();
+	
+	int k = 0;
+	for(StringList::const_iterator i = l.begin(); i != l.end() && k < maxItems; ++i, ++k) {
+		array[k] = Util::toInt(*i);
+	}
+}
+
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.8 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.9 2002/12/28 01:31:50 arnetheduck Exp $
  */

@@ -57,40 +57,14 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	ctrlUsers.SetTextColor(WinUtil::textColor);
 	
 	// Create listview columns
-	StringList l = StringTokenizer(SETTING(USERSFRAME_ORDER), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
+	WinUtil::splitTokens(columnIndexes, SETTING(USERSFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(USERSFRAME_WIDTHS), COLUMN_LAST);
+	
+	for(int j=0; j<COLUMN_LAST; j++) {
+		ctrlUsers.InsertColumn(j, CSTRING_I(columnNames[j]), LVCFMT_LEFT, columnSizes[j], j);
 	}
 	
-	l = StringTokenizer(SETTING(USERSFRAME_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
-	}
-	
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	for(int j=0; j<COLUMN_LAST; j++)
-	{
-		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
-		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = columnSizes[j];
-		lvc.iOrder = columnIndexes[j];
-		lvc.iSubItem = j;
-		ctrlUsers.InsertColumn(j, &lvc);
-	}
-	
+	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	usersMenu.CreatePopupMenu();
 	usersMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	usersMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
@@ -199,6 +173,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file UsersFrame.cpp
- * $Id: UsersFrame.cpp,v 1.5 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -34,6 +34,10 @@ template <class T, class TBase = CWindow, class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE FlatTabCtrlImpl : public CWindowImpl< T, TBase, TWinTraits> {
 public:
 	FlatTabCtrlImpl() : active(NULL), boldFont(NULL), closing(NULL) { };
+	~FlatTabCtrlImpl() {
+		if(boldFont != NULL)
+			::DeleteObject(boldFont);
+	}
 
 	static LPCTSTR GetWndClassName()
 	{
@@ -462,5 +466,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.8 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.9 2002/12/28 01:31:50 arnetheduck Exp $
  */

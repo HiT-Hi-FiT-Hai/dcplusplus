@@ -53,6 +53,8 @@ public:
 	virtual void onAction(Types, int) { };
 };
 
+class ZCompressor;
+
 class BufferedSocket : public Speaker<BufferedSocketListener>, public Socket, public Thread
 {
 public:
@@ -98,7 +100,14 @@ public:
 		mode = MODE_DATA;
 		dataBytes = aBytes;
 	}
-
+	/**
+	 * Should be called when data mode.
+	 */
+	void setLineMode() {
+		dcassert(mode == MODE_DATA);
+		dcassert(dataBytes == -1);
+		mode = MODE_LINE;
+	}
 	int getMode() { return mode; };
 	
 	/**
@@ -119,20 +128,20 @@ public:
 	virtual void write(const char* aBuf, int aLen) throw();
 
 	/**
-	 * Send the file f over this socket. Note; reading is suspended until the whole file has
-	 * been sent.
+	 * Send the file f over this socket.
 	 */
-	void transmitFile(File* f, int64_t s) throw() {
+	void transmitFile(File* f, int64_t s, bool docomp = false) throw() {
 		Lock l(cs);
 		file = f;
 		size = s;
+		compress = docomp;
 		addTask(SEND_FILE);
 	}
 
 	GETSET(char, separator, Separator);
 private:
 	BufferedSocket(char aSeparator = 0x0a) throw(SocketException) : separator(aSeparator), port(0), mode(MODE_LINE), 
-		dataBytes(0), inbufSize(16384), curBuf(0), file(NULL), size(0) {
+		dataBytes(0), inbufSize(16384), curBuf(0), comp(NULL), compress(false), file(NULL), size(0) {
 		
 		inbuf = new u_int8_t[inbufSize];
 		
@@ -154,6 +163,8 @@ private:
 			throw SocketException(e.getError());
 		}
 	};
+
+	bool fillBuffer(char* buf, int bufLen, u_int32_t timeout = 0) throw(SocketException);
 	
 	virtual ~BufferedSocket() {
 		delete[] inbuf;
@@ -184,6 +195,8 @@ private:
 	int outbufPos[BUFFERS];
 	int curBuf;
 
+	ZCompressor* comp;
+	bool compress;
 	File* file;
 	int64_t size;
 
@@ -226,5 +239,5 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.42 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.43 2002/12/28 01:31:49 arnetheduck Exp $
  */

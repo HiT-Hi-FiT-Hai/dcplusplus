@@ -15,12 +15,12 @@ Feature: Supports
 Purpose: To identify which features a certain client supports
 
 Usage: "$Supports <featurename> <featurename> ...|"
-<featurename> = Case sensitive string describing the feature that a certain client supports. This should be the name of the command being sent, i e if a client supports a command "$GetBZListLen|", featurename should be GetBZListLen, unless of course, this is not a feature that requires sending extra data.
+<featurename> = Case sensitive string describing the feature that a certain client supports. This should be the name of the command being sent, i e if a client supports a command "$GetBZListLen|", featurename should be GetBZListLen, unless of course, this is not a feature that requires sending extra data. Feature names may (obviously) not contain spaces.
 
 Should be sent: After receiving $Lock but before sending $Key
 
-Notes: In the initial discussions, we thought about adding version information (something like "$Supports <name> <version>|"), but I've decided not to use this because 1) There could be problems with old version, i e client x supports version 1.2, does that mean that it supports version 1.1 and 1.0 as well? 2) It's really easy to add a new version, i e "$Supports GetBZListLen GetBZListLen2|" to advertise an upgraded $GetBZListLen command.
-This command should only be sent if the $Lock starts with the exact string "EXTENDEDPROTOCOL", to avoid confusing clients that don't understand it anyway. DC++ also uses the Pk part of the lock to identify exact client version, so a full $Lock string from a dc++ client is "$Lock EXTENDEDPROTOCOLxxxx Pk=DCPLUSPLUS0.164xxxx" where xxxx denotes some random data.
+Notes: In the initial discussions, we thought about adding version information (something like "$Supports <name> <version>|"), but I've decided not to use this because 1) There could be problems with old versions, i e client x supports version 1.2, does that mean that it supports version 1.1 and 1.0 as well? 2) It's really easy to add a new version, i e "$Supports GetBZListLen GetBZListLen2|" to advertise an upgraded $GetBZListLen command.
+This command should only be sent if the $Lock starts with the exact string "EXTENDEDPROTOCOL", to avoid confusing clients that don't understand it anyway. DC++ also uses the Pk part of the lock to identify exact client version, so a full $Lock string from a dc++ client is "$Lock EXTENDEDPROTOCOLxxxx Pk=DCPLUSPLUS0.164xxxx" where xxxx denotes some random data (not beginning with a number...=).
 
 --------------------------------------------------------------------
 
@@ -33,3 +33,21 @@ Usage: Normally, when getting a users file list, you use the command "$Get MyLis
 Should be sent: Instead of "MyList.DcList" when getting a file list.
 
 Note; libbzip2-1.0.2 (or a compatible library...) should be used for compression/decompression
+
+--------------------------------------------------------------------
+
+Feature: GetZBlock
+
+Usage: Instead of $Get and $Send, use "$GetZBlock <start> <numbytes> <filename>|" where <start> is the 0-based
+(yes, 0-based, not like get that's 1-based) starting index of the file used, <numbytes> is the number of bytes to
+send and <filename> obviously is the filename. The other client then responds "$Sending|<compressed data>", if the
+sending is ok or "$Failed <errordescription>|" if it isn't. If everything's ok, the data is sent until the whole
+uncompressed length has been sent. $Filelength or a similar command is never sent because it's not possible to know 
+from the beginning how many bytes will be sent, instead, check how many decompressed bytes you've received
+and act accordingly...$Sending is needed to be able to distinguish the failure command from file data. Only one
+roundtrip is done for each block though, minimizing the need for maintaining states (I would have preferred a protocol
+that that's fully stateless from the start such as http, but hey...)
+
+Compression: Compression is done using ZLib (v 1.1.4 in DC++ 0.21's case), using default compression level. The
+compression level can of course be changed by the implementator to reduce CPU usage, or even just store compression
+in the case of non-compressible files...

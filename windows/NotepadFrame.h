@@ -33,7 +33,7 @@ public:
 	
 	DECLARE_FRAME_WND_CLASS_EX("NotepadFrame", IDR_NOTEPAD, 0, COLOR_3DFACE);
 
-	NotepadFrame() { }
+	NotepadFrame() : dirty(false) { }
 	~NotepadFrame() { }
 	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
@@ -53,6 +53,8 @@ public:
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	void UpdateLayout(BOOL bResizeBars = TRUE);
 	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		HWND hWnd = (HWND)lParam;
@@ -66,47 +68,6 @@ public:
 		return FALSE;
 	};
 	
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-		
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[3];
-			ctrlStatus.GetClientRect(sr);
-			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
-			
-			w[0] = sr.right - tmp;
-			w[1] = w[0] + (tmp-16)/2;
-			w[2] = w[0] + (tmp-16);
-			
-			ctrlStatus.SetParts(3, w);
-		}
-
-		CRect rc = rect;
-
-		rc.bottom -= 2;
-		rc.top += 2;
-		rc.left +=2;
-		rc.right -=2;
-		ctrlPad.MoveWindow(rc);
-
-	}
-
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		char *buf = new char[ctrlPad.GetWindowTextLength() + 1];
-		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
-		SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, buf);
-		delete[] buf;
-		SettingsManager::getInstance()->save();
-		frame = NULL;
-		bHandled = FALSE;
-		return 0;
-		
-	}
 	
 	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlPad.SetFocus();
@@ -120,14 +81,14 @@ public:
 	
 private:
 	
+	bool dirty;
 	CEdit ctrlPad;
-	CStatusBarCtrl ctrlStatus;
 };
 
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

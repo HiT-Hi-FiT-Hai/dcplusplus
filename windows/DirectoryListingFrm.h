@@ -27,6 +27,7 @@
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
+#include "WinUtil.h"
 
 #include "../client/DirectoryListing.h"
 #include "../client/CryptoManager.h"
@@ -70,8 +71,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadDir)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadDirTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), lastDirs.size()), onDownloadTarget)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + lastDirs.size(), onDownloadTargetDir)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + max(targets.size(), WinUtil::lastDirs.size()), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET_DIR + WinUtil::lastDirs.size(), onDownloadTargetDir)
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		NOTIFY_HANDLER(IDC_FILES, LVN_KEYDOWN, onKeyDown)
 		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_KEYDOWN, onKeyDown)
@@ -115,7 +116,10 @@ public:
 	}
 	
 	void setWindowTitle() {
-		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+		if(error.empty())
+			SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+		else
+			SetWindowText(("Failed loading " + user->getNick() + "'s (" + user->getClientName() + ") file list, " + error).c_str());		
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
@@ -129,11 +133,11 @@ public:
 			ctrlList.setSortDirection(!ctrlList.getSortDirection());
 		} else {
 			if(l->iSubItem == COLUMN_FILENAME) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortFile);
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortFile);
 			} else if(l->iSubItem == COLUMN_SIZE) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else if(l->iSubItem == COLUMN_TYPE) {
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortType);
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortType);
 			}
 		}
 		return 0;
@@ -172,8 +176,8 @@ public:
 	}
 
 private:
-	static DirectoryListing::Directory *findFile(string const& str,
-		DirectoryListing::Directory *root, DirectoryListing::File *&foundFile, int &skipHits);
+	void changeDir(DirectoryListing::Directory* d, BOOL enableRedraw);
+	HTREEITEM findFile(string const& str, HTREEITEM root, int &foundFile, int &skipHits);
 
 	class ItemInfo {
 	public:
@@ -198,16 +202,18 @@ private:
 	CContainedWindow statusContainer;
 
 	StringList targets;
-	static StringList lastDirs;
 	
 	User::Ptr user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
 	CStatusBarCtrl ctrlStatus;
+	HTREEITEM treeRoot;
 	
 	CButton ctrlFind, ctrlFindNext;
 	int skipHits;
 	string findStr;
+
+	string error;
 
 	int files;
 	string size;
@@ -219,5 +225,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.11 2002/06/16 09:34:47 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.12 2002/12/28 01:31:50 arnetheduck Exp $
  */

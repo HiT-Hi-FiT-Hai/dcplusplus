@@ -61,39 +61,15 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.SetTextColor(WinUtil::textColor);
 	
 	// Create listview columns
-	StringList l = StringTokenizer(SETTING(FAVORITESFRAME_ORDER), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
+	WinUtil::splitTokens(columnIndexes, SETTING(FAVORITESFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(FAVORITESFRAME_WIDTHS), COLUMN_LAST);
+	
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = LVCFMT_LEFT;
+		ctrlHubs.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	l = StringTokenizer(SETTING(FAVORITESFRAME_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
-	}
-	
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	for(int j=0; j<COLUMN_LAST; j++)
-	{
-		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
-		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = columnSizes[j];
-		lvc.iOrder = columnIndexes[j];
-		lvc.iSubItem = j;
-		ctrlHubs.InsertColumn(j, &lvc);
-	}
+	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
 	ctrlConnect.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
 		BS_PUSHBUTTON , 0, IDC_CONNECT);
@@ -220,7 +196,7 @@ void FavoriteHubsFrame::onAction(HubManagerListener::Types type, FavoriteHubEntr
 };
 
 /**
- * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.5 2002/06/02 00:12:44 arnetheduck Exp $
+ * @file FavoritesFrm.cpp
+ * $Id: FavoritesFrm.cpp,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -22,6 +22,9 @@
 #include "Socket.h"
 #include "ServerSocket.h"
 
+string Socket::udpServer;
+short Socket::udpPort;
+
 #define checkconnected() if(!isConnected()) throw SocketException(STRING(NOT_CONNECTED))
 
 #ifdef _DEBUG
@@ -169,6 +172,22 @@ int Socket::read(void* aBuffer, int aBufLen) throw(SocketException) {
 }
 
 /**
+ * Reads data until aBufLen bytes have been read or an error occurs.
+ * On error, an unspecified amount of bytes might have already been read...
+ */
+int Socket::readFull(void* aBuffer, int aBufLen) throw(SocketException) {
+	int i = 0;
+	int j;
+	while(i < aBufLen) {
+		if((j = read(((char*)aBuffer) + i, aBufLen - i)) <= 0) {
+			return j;
+		}
+		i += j;
+	}
+	return i;
+}
+
+/**
  * Sends data, will block until all data has been sent or an exception occurs
  * @param aBuffer Buffer with data
  * @param aLen Data length
@@ -247,24 +266,69 @@ void Socket::writeTo(const string& ip, short port, const char* aBuffer, int aLen
 	}
 
 	memset(&serv_addr, 0, sizeof(serv_addr));
-	serv_addr.sin_port = htons(port);
-	serv_addr.sin_family = AF_INET;
 
-	serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
 
-	if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
-		host = gethostbyname(ip.c_str());
-		if (host == NULL) {
-			throw SocketException(STRING(UNKNOWN_ADDRESS));
+		if(udpServer.empty() || udpPort == 0) {
+			throw SocketException(STRING(SOCKS_SETUP_ERROR));
 		}
-		serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+
+		serv_addr.sin_port = htons(udpPort);
+		serv_addr.sin_family = AF_INET;
+		
+		serv_addr.sin_addr.s_addr = inet_addr(udpServer.c_str());
+		
+		string s = BOOLSETTING(SOCKS_RESOLVE) ? resolve(ip) : ip;
+
+		// Alrite, let's get on with it...
+		AutoArray<u_int8_t> connStr(10 + s.length() + aLen);
+		connStr[0] = 0;		// Reserved
+		connStr[1] = 0;		// Reserved
+		connStr[2] = 0;		// Fragment number, 0 always in our case...
+		
+		int connLen;
+		if(BOOLSETTING(SOCKS_RESOLVE)) {
+			
+			u_int8_t slen =(u_int8_t)(s.length() & 0xff);
+			connStr[3] = 3;		// Address type: domain name
+			connStr[4] = slen;
+			strncpy((char*)(u_int8_t*)connStr + 5, s.c_str(), slen);
+			*((u_int16_t*)(&connStr[5 + slen])) = htons(port);
+			connLen = 7 + slen;
+		} else {
+			connStr[3] = 1;		// Address type: IPv4;
+			*((long*)(&connStr[4])) = inet_addr(s.c_str());
+			*((u_int16_t*)(&connStr[8])) = htons(port);	
+			connLen = 10;
+		}
+
+		memcpy(((u_int8_t*)connStr) + connLen, aBuffer, aLen);
+
+		int i = ::sendto(sock, (char*)(u_int8_t*)connStr, connLen + aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		checksockerr(i);
+		
+		stats.up += i;
+		stats.totalUp += i;
+	} else {
+		serv_addr.sin_port = htons(port);
+		serv_addr.sin_family = AF_INET;
+		
+		serv_addr.sin_addr.s_addr = inet_addr(ip.c_str());
+		
+		if (serv_addr.sin_addr.s_addr == INADDR_NONE) {   /* server address is a name or invalid */
+			host = gethostbyname(ip.c_str());
+			if (host == NULL) {
+				throw SocketException(STRING(UNKNOWN_ADDRESS));
+			}
+			serv_addr.sin_addr.s_addr = *((u_int32_t*)host->h_addr);
+		}
+		
+		int i = ::sendto(sock, aBuffer, aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+		checksockerr(i);
+		
+		stats.up += i;
+		stats.totalUp += i;
 	}
-
-	int i = ::sendto(sock, aBuffer, aLen, 0, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-	checksockerr(i);
-
-	stats.up += i;
-	stats.totalUp += i;
 }
 
 /**
@@ -350,8 +414,102 @@ string Socket::resolve(const string& aDns) {
 	}
 }
 
+void Socket::socksUpdated() {
+	udpServer.clear();
+	udpPort = 0;
+	
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5) {
+		try {
+			Socket s(SETTING(SOCKS_SERVER), (short)SETTING(SOCKS_PORT));
+			
+			if(SETTING(SOCKS_USER).empty() && SETTING(SOCKS_PASSWORD).empty()) {
+				// No username and pw, easier...=)
+				char connStr[3];
+				connStr[0] = 5;			// SOCKSv5
+				connStr[1] = 1;			// 1 method
+				connStr[2] = 0;			// Method 0: No auth...
+				
+				s.write(connStr, 3);
+				
+				if(s.readFull(connStr, 2) <= 0)
+					return;
+				
+				if(connStr[1] != 0) {
+					return;
+				}				
+			} else {
+				// We try the username and password auth type (no, we don't support gssapi)
+				u_int8_t ulen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
+				u_int8_t plen = (u_int8_t)(SETTING(SOCKS_USER).length() & 0xff);
+				AutoArray<u_int8_t> connStr(3 + ulen + plen);
+				
+				connStr[0] = 5;			// SOCKSv5
+				connStr[1] = 1;			// 1 method
+				connStr[2] = 2;			// Method 2: Name/Password...
+				s.write((char*)(u_int8_t*)connStr, 3);
+				if(s.readFull((char*)(u_int8_t*)connStr, 2) <= 0)
+					return;
+
+				if(connStr[1] != 2) {
+					return;
+				}				
+				// Now we send the username / pw...
+				connStr[0] = 1;
+				connStr[1] = ulen;
+				strncpy((char*)(u_int8_t*)connStr + 2, SETTING(SOCKS_USER).c_str(), ulen);
+				connStr[2 + ulen] = plen;
+				strncpy((char*)(u_int8_t*)connStr + 3 + ulen, SETTING(SOCKS_PASSWORD).c_str(), plen);
+				s.write((char*)(u_int8_t*)connStr, 3 + plen + ulen);
+				
+				if(s.readFull((char*)(u_int8_t*)connStr, 2) <= 0) {
+					return;
+				}
+				
+				if(connStr[1] != 0) {
+					return;
+				}
+				
+			}
+			// Alrite, let's get on with it...
+			char connStr[10];
+			connStr[0] = 5;			// SOCKSv5
+			connStr[1] = 3;			// UDP Associate
+			connStr[2] = 0;			// Reserved
+			connStr[3] = 1;			// Address type: IPv4;
+			*((long*)(&connStr[4])) = 0;		// No specific outgoing UDP address
+			*((u_int16_t*)(&connStr[8])) = 0;	// No specific port...
+			
+			s.write(connStr, 10);
+			
+			// We assume we'll get a ipv4 address back...therefore, 10 bytes...if not, things
+			// will break, but hey...noone's perfect (and I'm tired...)...
+			if(s.readFull(connStr, 10) <= 0) {
+				return;
+			}
+
+			if(connStr[0] != 5 || connStr[1] != 0) {
+				return;
+			}
+
+			udpPort = (short)ntohs(*((u_int16_t*)(&connStr[8])));
+
+			sockaddr_in  serv_addr;
+			
+			memset(&serv_addr, 0, sizeof(serv_addr));
+			serv_addr.sin_port = htons(udpPort);
+			serv_addr.sin_family = AF_INET;
+			
+			serv_addr.sin_addr.s_addr = *((long*)(&connStr[4]));
+			udpServer = inet_ntoa(serv_addr.sin_addr);
+		} catch(SocketException e) {
+			dcdebug("Socket: Failed to register with socks server\n");
+			// ...
+		}
+	}
+}
+
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.42 2002/06/08 09:49:18 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.43 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

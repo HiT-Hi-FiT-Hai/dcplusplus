@@ -200,7 +200,7 @@ void ConnectionManager::onTimerSecond(u_int32_t aTick) {
 					continue;
 				}
 
-				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)) {
+				if(cqi->getUser()->isSet(User::PASSIVE) && (SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)) {
 					pendingDown.erase(i++);
 					failPassive.push_back(cqi);
 					continue;
@@ -472,22 +472,15 @@ void ConnectionManager::onFailed(UserConnection* aSource, const string& /*aError
 	putConnection(aSource);
 }
 
-void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
+void ConnectionManager::removeConnection(const User::Ptr& aUser, int isDownload) {
 	{
 		Lock l(cs);
-
-		ConnectionQueueItem::Iter i = find(active.begin(), active.end(), aCqi);
-		if(i != active.end()) {
-			dcassert((*i)->getConnection());
-			(*i)->getConnection()->disconnect();
-			return;
-		}
-
-		i = find(downPool.begin(), downPool.end(), aCqi);
-		if(i != downPool.end()) {
-			dcassert((*i)->getConnection());
-			(*i)->getConnection()->disconnect();
-			return;
+		for(UserConnection::Iter i = userConnections.begin(); i != userConnections.end(); ++i) {
+			UserConnection* uc = *i;
+			if(uc->getUser() == aUser && uc->isSet(isDownload ? UserConnection::FLAG_DOWNLOAD : UserConnection::FLAG_UPLOAD)) {
+				uc->disconnect();
+				break;
+			}
 		}
 	}
 }
@@ -555,6 +548,8 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 			for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
 				if(*i == "BZList")
 					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
+				else if(*i == "GetZBlock")
+					conn->setFlag(UserConnection::FLAG_SUPPORTS_GETZBLOCK);
 			}
 		}
 		break;
@@ -562,7 +557,7 @@ void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnect
 }
 
 // TimerManagerListener
-void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	switch(type) {
 	case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
 	case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
@@ -571,5 +566,5 @@ void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTi
 
 /**
  * @file ConnectionManager.cpp
- * $Id: ConnectionManager.cpp,v 1.56 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.57 2002/12/28 01:31:49 arnetheduck Exp $
  */

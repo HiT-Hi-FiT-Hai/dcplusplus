@@ -79,6 +79,8 @@ void HttpConnection::onAction(BufferedSocketListener::Types type) {
 	switch(type) {
 	case BufferedSocketListener::CONNECTED:
 		onConnected(); break;
+	default:
+		break;
 	}
 }
 void HttpConnection::onAction(BufferedSocketListener::Types type, const string& aLine) {
@@ -88,6 +90,8 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const string& 
 	case BufferedSocketListener::FAILED:
 		socket->removeListener(this);
 		fire(HttpConnectionListener::FAILED, this, aLine); break;
+	default:
+		break;
 	}
 }
 void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) {
@@ -98,7 +102,7 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) 
 		fire(HttpConnectionListener::COMPLETE, this); 
 		break;
 	default:
-		dcassert(0);
+		dcasserta(0);
 	}
 }
 void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
@@ -106,12 +110,12 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 	case BufferedSocketListener::DATA:
 		fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
 	default:
-		dcassert(0);
+		dcasserta(0);
 	}
 }
 
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.12 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.13 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

@@ -1,4 +1,156 @@
- -- 0.18 --
+ -- 0.211 2002-12-26 --
+* Oops, forgot to remove the transfer slowdown code when I was testing the progress bars...=)
+
+ -- 0.21 2002-12-26 --
+* Some DLLs are now delay loaded, speeding up startup and initial memory usage a tiny little bit
+* Fixed so that the default copy-menu appears when rightclicking outside a nickname in the hub chat
+* Added "copy nickname to clipboard" to the hub chat right click menu
+* Fixed a directory searching bug (no directory search results when hubname contained a space...*sigh*) (thanks xeroc)
+* Fixed returning of own search results (oops, some debug code left...)
+* More work on the queue internals (should hopefully fix the bug when an item is reported as running even though it's
+  not)
+* Fixed some issues with 0-byte files in the queue (an unnecessary disconnection occurred)
+* More work on the queue window; File lists now have a separate folder, fixed viewing of right-click menus so that
+  they only show the commands that actually work depending on selection count.
+* Fixed / Improved the sorting of the transfer status. It is now always sorted as running downloads - 
+  connecting downloads - uploads (unless you flip the sort order...doh!)
+* Added beautiful progress bars to the transfers area (hej ullis =)
+* Added exact byte size to the search window
+* Fixed a bug with directory downloading from other dc++ users (that use the .bz filelist)
+* Incomplete file lists are now deleted on failure.
+* Fixed the socks resolve setting bug (somebody will have to try the DNS resolution itself though...can't do)
+* Added "no-tree-mode" to the queue. The queue window then shows the full list of queueitems (if possible,
+  the number of items it can show depends on your operating system)
+* The search window now uses non-colored icons (system or dc++), I didn't like the coloring anyway, will think
+  of something better later on...
+* Some minor changes to the settings dialogs...preparing for making translation possible...
+* Fixed port changing bug (DC++ would still listen to the old port until restarted)
+* Added debug-build-type error reporting to the release builds as well. Now, if supported by the OS, dc++ will emit
+  a useful bug report whenever it crashes. If you have a lot of problems with dc++ crashing, you should download
+  the debug information from www.sourceforge.net/projects/dcplusplus, and then, when reporting the bug, include
+  the generated "extenedinfo.txt" file. Do not report the crash unless you have this file and have downloaded the 
+  debug information file.
+  The extended tracing code is in part written by Zoltan Csizmadia (zoltan_csizmadia@yahoo.com), found it on 
+  some web site. (
+* Added moving of files in the queue (experimental)
+* Fixed bug when a '\' was not added to the temp downloads directory
+* Right-click menu works for joins and parts as well now (changed the format of the join/part message =)
+* Fixed a lockup bug (transfer speeds would not update among other things...)
+
+ -- 0.20 --
+* Collective thanks to all who have donated $$$ to me, I didn't think people would do it, but they
+  actually have, amounts ranging from $1 to $200...keep 'em coming =) (keep in mind tho that paypal steals 30 cents
+  and some percentage (4 i think) from me when you pay with a credit card). Oh, I think you can also donate in 
+  € (euros) now, which is, of course, my preferred currency =)
+* The forum and lichlord.org are currently down for maintenance, and the owner is waiting for new network equipment. 
+  I would open an alternative forum if I could get the old posts, but because all network connections to the server are      broken it's difficult to get the old posts out of it for the moment (physical access to the server is somewhat 
+  limited). For the most desperate ones, I opened a new conference on sourceforge (where the old forums were) that
+  you can use, or if you feel like it, try one of the forums that people have put up on their own (I won't read
+  them though, don't have time). Anyway, lichlord should be up soon I hope...
+* This release is completely untested (more or less, i'm in the third world (italy...amazing that this country made
+  it to the G7, and is still actually there...)), and is most problably not very stable. If it crashes, I don't
+  want to know about it unless you're using the debug version (that most probably doesn't work with w98), that
+  generates an exceptioninfo.txt file. If you report a crash bug ("unhandled exception"), make sure you include
+  this file in the report, otherwise it's a waste of your time writing and my time deleting. I do not recommend
+  this version for those who are comfortable with 0.181...
+* I've decided to clear the bug and feature request forum of all posts, regardless of whether they have been 
+  fixed/implemented or not, because of the ridiculous amount of duplicates. I apologize to those that made valid, new
+  fresh and interesting requests, but because of all double-posting idiots, I can't keep up with things. I've tagged all
+  the closed requests as "out of date", and I kindly ask the original authors to reopen their posts if they still
+  consider them valid and non-duplicate. You can find them by browsing for closed posts. Also, before posting a feature
+  request, check that the feature is not already implemented (by looking in the settings for instance). It is not
+  exactly a sign of intelligence to suggest features that already exist...and there seems to be an alarming number of
+  stupid people out there...
+* The CVS is not up to date (because of the retarded firewall at my school...)
+* Clicking on a users name with ctrl pressed opens a pm window (thanks opera)
+* Clicking on a users name with shift downloads the users file list (thanks opera)
+* Right-clicking on a name in the chat will bring up the user menu (thanks opera)
+* Fixed a bug in the startup procedure resulting in a crash sometimes
+* Fixed bug that window size was set to 0 when dc++ was turned of while being minimized, resulting in "missing
+  dc++ window" on startup
+* Added socks5 support (more or less...no gssapi support), works like passive mode. M:5 means socks5 in the <++ tag.
+  (No, I won't be adding socks4 as it doesn't support UDP forwarding)
+* Myinfo is now sent out roughly every 1-2 minutes if something has changed hub-count-wise (was 10-20 min before)
+* Added directory downloading (from the search window, unfinished, not sure if it works, experimental,
+  kids, don't do it at home, dangerous...)
+* Fixed some random bugs and very uncommon memory leaks
+* Fixed the ordering in the right-click menus so that "browse" and recent dirs appear first
+* Added directory (folder) searching
+* .ogg and .wma are now returned when someone searches for audio files
+* .txt and .nfo are now returned when someone searches for documents
+* .divx is now returned when someone searches for videos
+* .gif and .jpg (!) are now returned when someone searches for pictures (oops, must have missed them 
+  when reverse engineering the original .exe...=)
+* Note; the extended search results only work if the client being searched is a new dc++...
+* Improved XML handling (much less memory used on queue load)
+* Speeded up queue save a lot, shouldn't take any notable amount of memory either (for those with large 
+  (10000+ files) queues), although if you have a queue that large you should perhaps consider your queuing
+  strategy...
+* Added total bytes and average speed to finished downloads window
+* A random free port between 1025 and 32000 is now used in active mode, unless a port specifically has been set. This
+  port is changed on every restart to avoid problems with networks where traffic on certain ports is limited or
+  banned. If you have a firewall that requires a certain port to be used (incoming traffic), go to the settings 
+  and set it (your best pick is a random one in the above noted range) (setting not kept from previous version).
+  DC++ requires that both TCP and UDP data can reach the client on this port. To find out the ip/port currently 
+  in use, type /connection in a hub window. 
+* Failed downloads are now not put at the beginning to avoid having partial unfinished downloads
+* The queue window now has a tree instead of a list to the left
+* Added a common controls version check to rid the support forum of (at least some of the) stupid questions
+* Spaces are now trimmed from most ip addresses
+* Added O: in the <++ tag, it means that the user is using the speedautoopen slot feature, and the number is the kb/s 
+  setting. IMHO this is a much better way of measuring the whole slots thing, and in future releases S: may become 
+  optional if the min upload speed feature is turned on (a good topic for the dc++ forums...). Uhm, in other words,
+  if the current total upload speed of a user is lower than the number after O:, dc++ will automatically open another
+  slot. 
+* Some internal changes in the queue handling (might cause trouble, untested)
+* The notepad content is now saved in a file called "Notepad.txt" in the dc++ main directory instead of the xml file
+* Fixed the file search and made it search a bit more accoring to the sort order
+* Fixed so that the same string won't be added to the recent searches list
+* Queue is now indexed by a map instead of a hash resulting in slightly more cpu use (if you have a huge queue)
+  but queue is ordered accoring to filename to avoid partially downloaded directories (when saved, queue is now sorted
+  by target location and will be downloaded in that order when reloaded from disk...)
+* Fixed so that focus is correctly set to the message input edit box in the hub chat window when changing back to dc++
+* Recreates filelisting if it's missing on request from another user (if it's been deleted that is...). This effectively
+  stops the "delete filelist"-cheat.
+* Added automatic disconnection of uploads if a user leaves the hub. This is a somewhat controversial feature
+  that disconnects any uploads to a user if the user leaves the hub (or is kicked...). If an upload is cancelled
+  in this way, a free slot is granted to the user being kicked, in case that the user was unwillingly disconnected
+  from the hub and returns within 10 minutes. This effectively prevents the "jump into hub, start a bunch of downloads,
+  and exit the hub"-cheat, without the cheater being able to do anything about it. It is off by default, turn on in
+  the settings.
+* Alt-S sends a message in the chats
+* The PM window now correctly shows when a user goes on/offline and doesn't send the message if the user is offline
+  (so that you don't lose it from the edit box)
+
+ -- 0.181 2002-08-12 --
+* Fixed a nick changing bug
+* Fixed some vc6 project build settings
+* Fixed some minor vc6 compatibility issues
+* Fixed some issues with invalid filenames (names containing invalid characters, should also fix
+  the file downloaded but missing from the download directory error) (thanks Kyrre Aalerud)
+* Added so that the user name appears at top level of the directory tree in the browse file list window
+  so that directory totals for the top directories can be seen, untested, might cause problems but shouldn't...
+* Main window state (maximized and so on) and size are saved on exit (and restored I think =)
+* Kick messages are now correctly filtered (even when status line in chat setting is on)
+* Fixed an issue with very long path names (win9x can't handle path names longer than 260 chars), 
+  these will now generate an error
+* Fixed the speed display of very fast transfers (>4 mb/s)
+* Fixed a bug where a bad file list could cause dc++ to crash
+* Fixed the loading of list view column orders
+* Added so that doubleclicking on usernames in the main chat (<nick>) will select the user in the user list
+* Added so that doubleclicking words starting with http://, www. and ftp:// will open the link
+* Fixed a bug with bad hublist server names (empty ones, not starting with http://...)
+* Added WM_ENDSESSION handling so that the queue and settings are saved when shutting down the computer
+* Added auto-away on minimize option
+* Fixed restoring window to maximized state after minimizing to tray
+* Added a "small send buffer" option that should help users that are having download problems when others leech
+  from them...basically, this makes the outgoing packet size smaller (1k instead of 16k), leaving more bandwidth
+  for acks to flow through...it also makes sending less efficient, specially for high bandwidth users, so don't
+  turn it on unless you have to...hard disk reading performance will be worse as well with this option enabled...
+* Added paypal-donate menu option to help
+
+
+ -- 0.18 2002-07-01 --
 * Added a finished downloads window
 * Added temporary download directory option
 * Added support for dchub://hubip:port and dchub://hubip:port/nick (will download that users filelist) (partially
@@ -603,4 +755,4 @@
  -- 0.01 2001-11-21 --
 
 * Initial release.
-* List hubs, connect to them and chat 
+* List hubs, connect to them and chat 

@@ -32,6 +32,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_HANDLER(IDC_ACTIVE, BN_CLICKED, onClickedActive)
 		COMMAND_HANDLER(IDC_PASSIVE, BN_CLICKED, onClickedActive)
+		COMMAND_HANDLER(IDC_SOCKS5, BN_CLICKED, onClickedActive)
 		COMMAND_HANDLER(IDC_NICK, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_EMAIL, EN_CHANGE, onTextChanged)
 		COMMAND_HANDLER(IDC_DESCRIPTION, EN_CHANGE, onTextChanged)
@@ -49,12 +50,14 @@ private:
 	static Item items[];
 	CComboBox ctrlConnection;
 	CEdit nick;
+
+	void fixControls();
 };
 
 #endif // GENERALPAGE_H
 
 /**
- * @file GeneralPage.cpp
- * $Id: GeneralPage.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * @file GeneralPage.h
+ * $Id: GeneralPage.h,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

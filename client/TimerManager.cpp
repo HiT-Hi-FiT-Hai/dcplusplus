@@ -23,6 +23,10 @@
 
 TimerManager* Singleton<TimerManager>::instance = NULL;
 
+#ifndef WIN32
+timeval TimerManager::tv;
+#endif
+
 int TimerManager::run() {
 	int nextMin = 0;
 
@@ -45,6 +49,6 @@ int TimerManager::run() {
 
 /**
  * @file TimerManager.cpp
- * $Id: TimerManager.cpp,v 1.10 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: TimerManager.cpp,v 1.11 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

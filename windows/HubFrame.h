@@ -53,8 +53,7 @@ public:
 	
 	BEGIN_MSG_MAP(HubFrame)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
-		MESSAGE_HANDLER(WM_ACTIVATE, onActivate)
-		MESSAGE_HANDLER(WM_MDIACTIVATE, onActivate)
+		MESSAGE_HANDLER(WM_SETFOCUS, onSetFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
@@ -69,7 +68,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_ID_HANDLER(IDC_FOLLOW, onFollow)
+		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		COMMAND_ID_HANDLER(IDC_ADD_TO_FAVORITES, onAddToFavorites)
+		COMMAND_ID_HANDLER(IDC_COPY_NICK, onCopyNick)
 		NOTIFY_HANDLER(IDC_USERS, NM_DBLCLK, onDoubleClickUsers)	
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickUsers)
 		CHAIN_MSG_MAP(baseClass)
@@ -79,11 +80,14 @@ public:
 		MESSAGE_HANDLER(WM_KEYDOWN, onChar)
 		MESSAGE_HANDLER(WM_KEYUP, onChar)
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUsers)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, onLButton)
+		MESSAGE_HANDLER(WM_RBUTTONDOWN, onContextMenu)
 	END_MSG_MAP()
 
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -95,20 +99,26 @@ public:
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onLButton(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
+	void addClientLine(const string& aLine, bool inChat = true);
 	void onEnter();
 	void onTab();
 
 	static void openWindow(HWND aParent, FlatTabCtrl* aTab, const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString);
 
-	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	LRESULT onSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		ctrlMessage.SetFocus();
-		bHandled = FALSE;
 		return 0;
 	}
-		
+
+	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onEnter();
+		return 0;
+	}
+	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		HWND hWnd = (HWND)lParam;
 		HDC hDC = (HDC)wParam;
@@ -179,19 +189,10 @@ public:
 		}
 		return 0;
 	}
-
-	void addClientLine(const string& aLine, bool inChat = true) {
-		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		setDirty();
-
-		if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
-			addLine("*** " + aLine);
-		}
-	}
-
+	
 private:
 	enum Speakers { UPDATE_USER, UPDATE_USERS, REMOVE_USER, REMOVE_USERS, ADD_CHAT_LINE,
-		ADD_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, PRIVATE_MESSAGE, STATS
+		ADD_STATUS_LINE, ADD_SILENT_STATUS_LINE, SET_WINDOW_TITLE, GET_PASSWORD, PRIVATE_MESSAGE, STATS
 	};
 
 	enum {
@@ -225,7 +226,9 @@ private:
 
 		client = ClientManager::getInstance()->getClient();
 		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
-		client->setNick(aNick);
+		if(!aNick.empty())
+			client->setNick(aNick);
+
 		client->setPassword(aPassword);
 		client->addListener(this);
 		TimerManager::getInstance()->addListener(this);
@@ -250,7 +253,7 @@ private:
 	
 	bool needSort;
 	bool waitingForPW;
-	
+
 	Client* client;
 	string server;
 	CContainedWindow ctrlMessageContainer;
@@ -297,7 +300,7 @@ private:
 	}
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/);
+	virtual void onAction(TimerManagerListener::Types type, DWORD /*aTick*/) throw();
 
 	// ClientListener
 	virtual void onAction(ClientListener::Types type, Client* client);
@@ -322,6 +325,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.15 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.16 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

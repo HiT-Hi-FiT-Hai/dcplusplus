@@ -1,8 +1,8 @@
-DC++ 0.17 Readme Version 0.17.1
+DC++ 0.181 Readme
 
 --------------------------------------------------
 DC++
-Copyright (C) 2001 Jacek Sieka, jacek@creatio.se
+Copyright (C) 2001-2002 Jacek Sieka, jacek@creatio.se
 
 License
 
@@ -47,8 +47,11 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
   Just delete the DCPlusPlus folder.
   There are no registry entries, installed dll's or likewise :)
 
-4 Available commands (type in main chat)
+4 Available commands (type in main chat or pm)
 ----------------------------------------
+  /grant				grants a slot to the user of the pm window you type in
+  /close				close current window
+  /help				short help message
   /refresh               Refreshes list of shared files :)
   /away <message>        Specifies a message to auto-respond in PM's while
                           you're AFK (there's a default message so you don't
@@ -82,13 +85,24 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
                           connections trough.
                          Only use this if Active is not working.
                          Note: Passive <-> Passive connections aren't possible.
+   Downloads:
+    Unfinished files temporary directory:	You can specify a Directory for your
+    					partial files here, suggestion si to have it on another
+    					partition than the "Default download directory" to have
+    					the files defragmented through moving there :)
+    Download slots:		Maximum number of Downloads runing at once, suggestion
+    					is to set it to the same number as your upload slots
    Appearance:
+    Use system icons:	Displays the icons set in Windows for filetypes
     Language File:       A XML-file containing most of the text used in DC++.
                          You can specify a file to have DC++ in your
                           favourite language.
                          There's an example.xml if you want to make your own.
                          Language files available at
                           http://DCPlusPlus.sourceforge.net
+   Logs and Sound:
+    Log Downloads:       You can use this feature to see what downloads
+                          completed while you were AFK :)
    Advanced:
     Rollback:            Size of bytes to rollback when resuming a file to
                           ensure it contains no errors.
@@ -98,17 +112,22 @@ Newbies should (also) check out the web site, http://dcplusplus.sourceforge.net
                           <write buffer size> bytes to keep fragmentation low.
     Client version:      Since most hubs specify a min client version that
                           is much higher than DC++'s real version number you
-                          can set soemthing here
+                          can set something here, i suggest adding 1 to version
+                          number e.g. 1.181
                          to be able to enter the hub.
     Automatically search for alternate download locations:  Allows DC++ to try
                           to find other locations to download your files.
-                          Usefull if' you're AFK a lot.
-   Advanced 2:
-    Log Downloads:       You can use this feature to see what downloads
-                          completed while you were AFK :)
+                          Useful if you're AFK a lot.
+    Install URL handler on startup:	Set if you want URLS of type dchub://
+    					to open in DC++
+    Use small send buffer:	If uploads slow down your downloads A LOT you may
+    					try this option, but beware it increases HD usage and
+    					slows down upload, so it's not suggested.
 
 7 Other things you might want to know about
 --------------------------------------------
+  * you can doubleclick on a user name in chat to select him in the user list
+  * you can doubleclick on stuff starting with www. http:// of ftp:// to open :)
   * DC++ supports uploading filelists and files <16 kB to other DC++ users
     WITHOUT REQUIRING A SLOT. There's a max of 3 connections in addition to
     normal slots.

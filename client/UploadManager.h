@@ -24,8 +24,8 @@
 #endif // _MSC_VER > 1000
 
 #include "UserConnection.h"
-#include "ShareManager.h"
 #include "Util.h"
+#include "ClientManagerListener.h"
 
 class Upload : public Transfer, public Flags {
 public:
@@ -65,7 +65,7 @@ public:
 
 };
 
-class UploadManager : private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
+class UploadManager : private ClientManagerListener, private UserConnectionListener, public Speaker<UploadManagerListener>, private TimerManagerListener, public Singleton<UploadManager>
 {
 public:
 	
@@ -96,7 +96,7 @@ public:
 
 	GETSET(int, running, Running);
 	GETSET(int, extra, Extra);
-	GETSET(u_int32_t, lastAutoGrant, lastAutoGrant);
+	GETSET(u_int32_t, lastAutoGrant, LastAutoGrant);
 private:
 	Upload::List uploads;
 	CriticalSection cs;
@@ -106,21 +106,8 @@ private:
 	SlotMap reservedSlots;
 
 	friend class Singleton<UploadManager>;
-	UploadManager() : running(0), extra(0), lastAutoGrant(0) { 
-		TimerManager::getInstance()->addListener(this);
-	};
-
-	virtual ~UploadManager() {
-		TimerManager::getInstance()->removeListener(this);
-		while(true) {
-			{
-				Lock l(cs);
-				if(uploads.empty())
-					break;
-			}
-			Thread::sleep(100);
-		}
-	}
+	UploadManager() throw();
+	virtual ~UploadManager() throw();
 
 	void removeConnection(UserConnection::Ptr aConn);
 	void removeUpload(Upload* aUpload) {
@@ -135,8 +122,12 @@ private:
 		aUpload->setUserConnection(NULL);
 		delete aUpload;
 	}
+
+	// ClientManagerListener
+	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
+	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	void onTimerMinute(u_int32_t aTick);
 
 	// UserConnectionListener
@@ -144,18 +135,21 @@ private:
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes);
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes);
 	
 	void onBytesSent(UserConnection* aSource, u_int32_t aBytes);
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onTransmitDone(UserConnection* aSource);
 	void onGet(UserConnection* aSource, const string& aFile, int64_t aResume);
+	void onGetBZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes);
 	void onSend(UserConnection* aSource);
-	
+
+	bool prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
  * @file UploadManager.h
- * $Id: UploadManager.h,v 1.50 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
  */

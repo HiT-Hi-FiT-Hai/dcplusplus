@@ -24,24 +24,9 @@
 #endif // _MSC_VER > 1000
 
 #include "Client.h"
-#include "CryptoManager.h"
-#include "ConnectionManager.h"
 #include "TimerManager.h"
 
-class ClientManagerListener {
-public:
-	typedef ClientManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	
-	enum Types {
-		USER_UPDATED,
-		INCOMING_SEARCH
-	};
-
-	virtual void onAction(Types, const User::Ptr&) { };
-	virtual void onAction(Types, const string&) { };
-};
+#include "ClientManagerListener.h"
 
 class ClientManager : public Speaker<ClientManagerListener>, private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
 {
@@ -105,12 +90,18 @@ public:
 		return false;
 	}
 
-	void ClientManager::putUserOffline(User::Ptr& aUser) {
+	/**
+	 * A user went offline. Must be called whenever a user quits a hub.
+	 * @param quitHub The user went offline because (s)he disconnected from the hub.
+	 */
+	void ClientManager::putUserOffline(User::Ptr& aUser, bool quitHub = false) {
 		{
 			Lock l(cs);
 			aUser->unsetFlag(User::PASSIVE);
 			aUser->unsetFlag(User::OP);
 			aUser->unsetFlag(User::DCPLUSPLUS);
+			if(quitHub)
+				aUser->setFlag(User::QUIT_HUB);
 			aUser->setClient(NULL);
 		}
 		fire(ClientManagerListener::USER_UPDATED, aUser);
@@ -147,7 +138,7 @@ private:
 		int aFileType, const string& aString) throw();
 
 	// TimerManagerListener
-	void onAction(TimerManagerListener::Types type, u_int8_t aTick);
+	void onAction(TimerManagerListener::Types type, u_int8_t aTick) throw();
 	void onTimerMinute(u_int8_t aTick);
 };
 
@@ -155,6 +146,6 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.29 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.30 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

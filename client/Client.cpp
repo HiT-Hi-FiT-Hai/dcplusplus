@@ -88,6 +88,7 @@ void Client::clearUsers() {
 	}
 	users.clear();
 }
+
 void Client::onLine(const string& aLine) throw() {
 	lastActivity = GET_TICK();
 
@@ -247,11 +248,11 @@ void Client::onLine(const string& aLine) throw() {
 				}
 				
 				u = i->second;
-				users.erase(param);
+				users.erase(i);
 			}
 			
 			fire(ClientListener::QUIT, this, u);
-			ClientManager::getInstance()->putUserOffline(u);
+			ClientManager::getInstance()->putUserOffline(u, true);
 		}
 	} else if(cmd == "$ConnectToMe") {
 		if(state != STATE_CONNECTED) {
@@ -361,7 +362,7 @@ void Client::onLine(const string& aLine) throw() {
 					}
 
 					u->setFlag(User::DCPLUSPLUS);
-					if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+					if(SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE)
 						u->setFlag(User::PASSIVE);
 				}
 			}
@@ -448,6 +449,40 @@ void Client::onLine(const string& aLine) throw() {
 	} 
 }
 
+void Client::myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
+	checkstate();
+	
+	dcdebug("MyInfo %s...\n", aNick.c_str());
+	lastHubs = hubs;
+	lastUpdate = GET_TICK();
+	string tmp1 = ";**\x1fU9";
+	string tmp2 = "+L9";
+	string tmp3 = "+G9";
+	string tmp4 = "+R9";
+	string tmp5 = "+N9";
+	string::size_type i;
+	
+	for(i = 0; i < tmp1.size(); i++) {
+		tmp1[i]++;
+	}
+	for(i = 0; i < tmp2.size(); i++) {
+		tmp2[i]++; tmp3[i]++; tmp4[i]++; tmp5[i]++;
+	}
+	char modeChar = '?';
+	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE)
+		modeChar = 'A';
+	else if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE)
+		modeChar = 'P';
+	else if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_SOCKS5)
+		modeChar = '5';
+	
+	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
+	send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
+		tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
+		tmp3 + Util::toString(lastHubs) + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
+		">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
+}
+
 void Client::disconnect() throw() {	
 	state = STATE_CONNECT;
 	socket->disconnect();
@@ -474,7 +509,7 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		string x = Socket::resolve(SETTING(SERVER));
 		buf = new char[x.length() + aString.length() + 64];
-		sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
+		sprintf(buf, "$Search %s:%d %c?%c?%s?%d?%s|", x.c_str(), SETTING(IN_PORT), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
 	} else {
 		buf = new char[getNick().length() + aString.length() + 64];
 		sprintf(buf, "$Search Hub:%s %c?%c?%s?%d?%s|", getNick().c_str(), c1, c2, Util::toString(aSize).c_str(), aFileType+1, tmp.c_str());
@@ -525,7 +560,7 @@ void Client::kick(User* aUser, const string& aMsg) {
 }
 
 // TimerManagerListener
-void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	if(type == TimerManagerListener::SECOND) {
 		if(socket && (lastActivity + 120 * 1000) < aTick) {
 			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
@@ -542,13 +577,12 @@ void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
 		}
 		{
 			Lock l(cs);
-			u_int32_t tick = GET_TICK();
 			
-			while(!seekers.empty() && seekers.front().second + (5 * 1000) < tick) {
+			while(!seekers.empty() && seekers.front().second + (5 * 1000) < aTick) {
 				seekers.pop_front();
 			}
 			
-			while(!flooders.empty() && flooders.front().second + (120 * 1000) < tick) {
+			while(!flooders.empty() && flooders.front().second + (120 * 1000) < aTick) {
 				flooders.pop_front();
 			}
 		}
@@ -579,11 +613,13 @@ void Client::onAction(BufferedSocketListener::Types type) {
 		lastActivity = GET_TICK();
 		fire(ClientListener::CONNECTED, this);
 		break;
+	default:
+		break;
 	}
 }
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.48 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.49 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

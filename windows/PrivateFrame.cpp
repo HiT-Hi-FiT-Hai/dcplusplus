@@ -28,6 +28,7 @@
 #include "../client/Util.h"
 #include "../client/LogManager.h"
 #include "../client/UploadManager.h"
+#include "../client/ShareManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -49,13 +50,11 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlMessageContainer.SubclassWindow(ctrlMessage.m_hWnd);
 	
 	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
-	if(user->isOnline()) {
-		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
-	} else {
-		SetWindowText((user->getNick() + " (" + STRING(OFFLINE) + ")").c_str());
-	}
-	
+
+	updateTitle();
 	created = true;
+
+	ClientManager::getInstance()->addListener(this);
 
 	bHandled = FALSE;
 	return 1;
@@ -119,10 +118,30 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 	}
 }
 
+LRESULT PrivateFrame::onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+	switch(wParam) {
+	case VK_RETURN:
+		if( (GetKeyState(VK_SHIFT) & 0x8000) || 
+			(GetKeyState(VK_CONTROL) & 0x8000) || 
+			(GetKeyState(VK_MENU) & 0x8000) ) {
+			bHandled = FALSE;
+		} else {
+			if(uMsg == WM_KEYDOWN) {
+				onEnter();
+			}
+		}
+		break;
+	default:
+		bHandled = FALSE;
+	}
+	return 0;
+}
+
 void PrivateFrame::onEnter()
 {
 	char* message;
-	
+	bool resetText = true;
+
 	if(ctrlMessage.GetWindowTextLength() > 0) {
 		message = new char[ctrlMessage.GetWindowTextLength()+1];
 		ctrlMessage.GetWindowText(message, ctrlMessage.GetWindowTextLength()+1);
@@ -193,10 +212,22 @@ void PrivateFrame::onEnter()
 				sendMessage(s);
 			} else {
 				ctrlStatus.SetText(0, CSTRING(USER_WENT_OFFLINE));
+				resetText = false;
 			}
 		}
-		ctrlMessage.SetWindowText("");
+		if(resetText)
+			ctrlMessage.SetWindowText("");
 	} 
+}
+
+LRESULT PrivateFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	ClientManager::getInstance()->removeListener(this);
+
+	Lock l(cs);
+
+	frames.erase(user);
+	bHandled = FALSE;
+	return FALSE;
 }
 
 void PrivateFrame::addLine(const string& aLine) {
@@ -252,9 +283,16 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 }
 
+// ClientManagerListener
+void PrivateFrame::onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
+	if(type == ClientManagerListener::USER_UPDATED && aUser == user) {
+		PostMessage(WM_SPEAKER, USER_UPDATED);
+	}
+}
+
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.9 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.10 2002/12/28 01:31:50 arnetheduck Exp $
  */
 
 

@@ -29,15 +29,11 @@
 #include "../client/QueueManager.h"
 #include "../client/CriticalSection.h"
 
+#define SHOWTREE_MESSAGE_MAP 12
+
 class QueueFrame : public MDITabChildWindowImpl<QueueFrame>, private QueueManagerListener, public CSplitterImpl<QueueFrame>
 {
 public:
-	enum {
-		ADD_ITEM,
-		REMOVE_ITEM,
-		SET_TEXT
-	};
-	
 	enum {
 		IDC_BROWSELIST = 3000,
 		IDC_REMOVE_SOURCE = 3400,
@@ -55,17 +51,19 @@ public:
 
 	static QueueFrame* frame;
 
-	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), dirty(false), usingDirMenu(false) { 
+	QueueFrame() : menuItems(0), queueSize(0), queueItems(0), spoken(false), dirty(false), 
+		usingDirMenu(false),  readdItems(0), fileLists(NULL), showTree(true),
+		showTreeContainer("BUTTON", this, SHOWTREE_MESSAGE_MAP)
+	{ 
 		searchFilter.push_back("the");
 		searchFilter.push_back("of");
 		searchFilter.push_back("divx");
 		searchFilter.push_back("frail");
 	}
 
-	~QueueFrame() { }
+	virtual ~QueueFrame() { }
 	
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
-		
 		delete this;
 	}
 
@@ -80,16 +78,19 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_COLUMNCLICK, onColumnClick)
 		NOTIFY_HANDLER(IDC_QUEUE, LVN_KEYDOWN, onKeyDown)
-		NOTIFY_HANDLER(IDC_DIRECTORIES, LVN_ITEMCHANGED, onItemChanged)
+		NOTIFY_HANDLER(IDC_DIRECTORIES, TVN_SELCHANGED, onItemChanged)
 		COMMAND_ID_HANDLER(IDC_SEARCH_ALTERNATES, onSearchAlternates)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
+		COMMAND_ID_HANDLER(IDC_MOVE, onMove)
 		COMMAND_RANGE_HANDLER(IDC_PRIORITY_PAUSED, IDC_PRIORITY_HIGHEST, onPriority)
 		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, IDC_BROWSELIST + menuItems, onBrowseList)
 		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, IDC_REMOVE_SOURCE + menuItems, onRemoveSource)
 		COMMAND_RANGE_HANDLER(IDC_PM, IDC_PM + menuItems, onPM)
 		COMMAND_RANGE_HANDLER(IDC_READD, IDC_READD + readdItems, onReadd)
-		CHAIN_MSG_MAP(splitBase);
+		CHAIN_MSG_MAP(splitBase)
 		CHAIN_MSG_MAP(baseClass)
+	ALT_MSG_MAP(SHOWTREE_MESSAGE_MAP)
+		MESSAGE_HANDLER(BM_SETCHECK, onShowTree)
 	END_MSG_MAP()
 
 	LRESULT onPriority(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -104,15 +105,18 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-	
+		
 	void UpdateLayout(BOOL bResizeBars = TRUE);
-
+	void removeDir(HTREEITEM ht);
+	void setPriority(HTREEITEM ht, const QueueItem::Priority& p);
+	
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(usingDirMenu) {
-			removeSelectedDir();
-		} else {
-			removeSelected();
-		}
+		usingDirMenu ? removeSelectedDir() : removeSelected();
+		return 0;
+	}
+
+	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		usingDirMenu ? moveSelectedDir() : moveSelected();
 		return 0;
 	}
 
@@ -125,41 +129,16 @@ public:
 		return 0;
 	}
 
-	void removeSelected() {
-		int i = -1;
-		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			QueueManager::getInstance()->remove(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget());
-		}
-	}
-
-	void removeSelectedDir() {
-		if(ctrlDirectories.GetSelectedCount() != 1) {
-			return;
-		}
-		int n = ctrlDirectories.GetNextItem(-1, LVNI_SELECTED);
-		char* buf = new char[MAX_PATH];
-		ctrlDirectories.GetItemText(n, 0, buf, MAX_PATH-1);
-		DirectoryPair dp = directories.equal_range(buf);
-		delete buf;
-		for(DirectoryIter i = dp.first; i != dp.second; ++i) {
-			QueueManager::getInstance()->remove(i->second->getTarget());
-		}
-	}
-	
 	static int sortSize(LPARAM a, LPARAM b) {
-		LVITEM* c = (LVITEM*)a;
-		LVITEM* d = (LVITEM*)b;
-		QueueItem* e = (QueueItem*)c->lParam;
-		QueueItem* f = (QueueItem*)d->lParam;
-		return compare(e->getSize(), f->getSize());
+		QueueItem* c = (QueueItem*)a;
+		QueueItem* d = (QueueItem*)b;
+		return compare(c->getSize(), d->getSize());
 	}
 
 	static int sortPriority(LPARAM a, LPARAM b) {
-		LVITEM* c = (LVITEM*)a;
-		LVITEM* d = (LVITEM*)b;
-		QueueItem* e = (QueueItem*)c->lParam;
-		QueueItem* f = (QueueItem*)d->lParam;
-		return compare(e->getPriority(), f->getPriority());
+		QueueItem* c = (QueueItem*)a;
+		QueueItem* d = (QueueItem*)b;
+		return compare(c->getPriority(), d->getPriority());
 	}
 
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -168,9 +147,9 @@ public:
 			ctrlQueue.setSortDirection(!ctrlQueue.getSortDirection());
 		} else {
 			if(l->iSubItem == COLUMN_SIZE) {
-				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else if(l->iSubItem == COLUMN_PRIORITY) {
-				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortPriority);
+				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortPriority);
 			} else {
 				ctrlQueue.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
 			}
@@ -181,6 +160,13 @@ public:
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		LPMSG pMsg = (LPMSG)lParam;
 		return baseClass::PreTranslateMessage(pMsg);
+	}
+	
+	LRESULT onShowTree(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+		bHandled = FALSE;
+		showTree = (wParam == BST_CHECKED);
+		UpdateLayout(FALSE);
+		return 0;
 	}
 	
 private:
@@ -197,23 +183,45 @@ private:
 		COLUMN_LAST
 	};
 
+	enum Tasks {
+		ADD_ITEM,
+		REMOVE_ITEM,
+		SET_TEXT
+	};
+	
 	class StringListInfo;
 	friend class StringListInfo;
 	
 	class StringListInfo {
 	public:
 		StringListInfo(QueueItem* aQi);
-		QueueItem* qi;
 		string columns[COLUMN_LAST];
 	};
+
+	typedef pair<Tasks, void*> Task;
+	typedef list<Task> TaskList;
+	typedef TaskList::iterator TaskIter;
 	
-	CMenu transferMenu;
+	TaskList tasks;
+	bool spoken;
+
+	/** Single selection in the queue part */
+	CMenu singleMenu;
+	/** Multiple selection in the queue part */
+	CMenu multiMenu;
+	/** Tree part menu */
 	CMenu browseMenu;
+
 	CMenu removeMenu;
 	CMenu pmMenu;
 	CMenu priorityMenu;
 	CMenu readdMenu;
 	CMenu dirMenu;
+
+	CButton ctrlShowTree;
+	CContainedWindow showTreeContainer;
+	bool showTree;
+
 	bool usingDirMenu;
 
 	bool dirty;
@@ -221,13 +229,20 @@ private:
 	int menuItems;
 	int readdItems;
 
+	/** 
+	 * The common elements in the target directory name, for use in the smarter queue
+	 * tree display.
+	 */
+	string commonStart;
+	HTREEITEM fileLists;
+
 	StringList searchFilter;
 
 	typedef map<QueueItem*, QueueItem*> QueueMap;
 	typedef QueueMap::iterator QueueIter;
 	QueueMap queue;
 	
-	typedef HASH_MULTIMAP<string, QueueItem*> DirectoryMap;
+	typedef HASH_MULTIMAP<string, QueueItem*, noCaseStringHash, noCaseStringEq> DirectoryMap;
 	typedef DirectoryMap::iterator DirectoryIter;
 	typedef pair<DirectoryIter, DirectoryIter> DirectoryPair;
 	DirectoryMap directories;
@@ -235,55 +250,70 @@ private:
 	
 	CriticalSection cs;
 	ExListViewCtrl ctrlQueue;
-	ExListViewCtrl ctrlDirectories;
+	CTreeViewCtrl ctrlDirs;
 	
 	CStatusBarCtrl ctrlStatus;
 	
-	LONGLONG queueSize;
+	int64_t queueSize;
 	int queueItems;
-
+	
 	static int columnIndexes[COLUMN_LAST];
 	static int columnSizes[COLUMN_LAST];
 
 	void addQueueList(const QueueItem::StringMap& l);
+	void addQueueItem(QueueItem* qi);
+	void addDirectory(const string& dir, bool isFileList = false, string* s = NULL);
+	void removeDirectory(const string& dir, bool isFileList = false);
+	void removeDirectories(HTREEITEM ht);
+
+	void updateQueue();
+	
+	/**
+	 * This one is different from the others because when a lot of files are removed
+	 * at the same time, the WM_SPEAKER messages seem to get lost in the handling or
+	 * something, they're not correctly processed anyway...thanks windows.
+	 */
+	void speak(Tasks t, void* p) {
+		Lock l(cs);
+		tasks.push_back(make_pair(t, p));
+		if(!spoken) {
+			PostMessage(WM_SPEAKER);
+			spoken = true;
+		}
+	}
+
+	void moveSelected();	
+	void moveSelectedDir();
+	void moveDir(HTREEITEM ht, const string& target);
+	
+	void removeSelected() {
+		int i = -1;
+		while( (i = ctrlQueue.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			QueueManager::getInstance()->remove(((QueueItem*)ctrlQueue.GetItemData(i))->getTarget());
+		}
+	}
+	
+	void removeSelectedDir() { removeDir(ctrlDirs.GetSelectedItem()); };
+	
+	const string& getSelectedDir() { 
+		HTREEITEM ht = ctrlDirs.GetSelectedItem();
+		return ht == NULL ? Util::emptyString : getDir(ctrlDirs.GetSelectedItem());
+	};
+	
+	const string& getDir(HTREEITEM ht) { dcassert(ht != NULL); return *((string*)ctrlDirs.GetItemData(ht)); };
 	
 	void updateStatus() {
 		if(dirty) {
-			ctrlStatus.SetText(1, ("Items: " + Util::toString(queueItems)).c_str());
-			ctrlStatus.SetText(2, ("Size: " + Util::formatBytes(queueSize)).c_str());
+			ctrlStatus.SetText(2, ("Items: " + Util::toString(queueItems)).c_str());
+			ctrlStatus.SetText(3, ("Size: " + Util::formatBytes(queueSize)).c_str());
 			dirty = false;
 		}
 	}
 
-	string getDirectory(const string& aTarget) {
-		string::size_type i, j, k;
-		if( (i = aTarget.rfind('\\')) == string::npos) {
-			return "\\";
-		}
-		if( (j = aTarget.rfind('\\', i-1)) == string::npos) {
-			return aTarget.substr(0, i+1);
-		}
-		if( ((k = aTarget.rfind('\\', j-1)) == string::npos) || ((i-j) > 4)) {
-			return aTarget.substr(j+1, i-j);
-		}
-		if(k > 3)
-			return aTarget.substr(k+1, i-k);
-		else
-			return aTarget.substr(0, i+1);
-	}
-
-	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI) { 
-		switch(type) {
-		case QueueManagerListener::ADDED: onQueueAdded(aQI); break;
-		case QueueManagerListener::QUEUE_ITEM: onQueueAdded(aQI); onQueueUpdated(aQI); break;
-		case QueueManagerListener::REMOVED: onQueueRemoved(aQI); break;
-		case QueueManagerListener::SOURCES_UPDATED: onQueueUpdated(aQI); break;
-		case QueueManagerListener::STATUS_UPDATED: onQueueUpdated(aQI); break;
-		default: dcassert(0); break;
-		}
-	};
+	virtual void onAction(QueueManagerListener::Types type, QueueItem* aQI);
 
 	void onQueueAdded(QueueItem* aQI);
+	void onQueueMoved(QueueItem* aQI);
 	void onQueueRemoved(QueueItem* aQI);
 	void onQueueUpdated(QueueItem* aQI);
 	
@@ -293,6 +323,6 @@ private:
 
 /**
  * @file QueueFrame.h
- * $Id: QueueFrame.h,v 1.12 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.13 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -7,14 +7,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bzip2", "bzip2.vcproj", "{8
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "client.vcproj", "{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zlib", "zlib.vcproj", "{DFBBE42A-45F4-4188-89C2-17F5DFE50673}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
 		ConfigName.1 = Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
-		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.0 = {F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}
-		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.1 = {8B162F1B-5D6C-41C1-8A80-858B379DE07D}
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.0 = {8B162F1B-5D6C-41C1-8A80-858B379DE07D}
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.1 = {DFBBE42A-45F4-4188-89C2-17F5DFE50673}
+		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.2 = {F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{E82610AA-B6FD-4813-B5B9-E717CBD0F23B}.Debug.ActiveCfg = Debug|Win32
@@ -31,6 +34,10 @@ Global
 		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Debug.Build.0 = Debug|Win32
 		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Release.ActiveCfg = Release|Win32
 		{F8D0E5FE-BABD-4FC8-B3FE-B48978D23FEB}.Release.Build.0 = Release|Win32
+		{DFBBE42A-45F4-4188-89C2-17F5DFE50673}.Debug.ActiveCfg = Debug|Win32
+		{DFBBE42A-45F4-4188-89C2-17F5DFE50673}.Debug.Build.0 = Debug|Win32
+		{DFBBE42A-45F4-4188-89C2-17F5DFE50673}.Release.ActiveCfg = Release|Win32
+		{DFBBE42A-45F4-4188-89C2-17F5DFE50673}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

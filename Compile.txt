@@ -1,11 +1,21 @@
 How to compile in 4 easy steps:
 
 1) Make sure you've downloaded the WTL 7.0 Package and have all the files in it in your include path
+   You can find it on the dc++ sourceforge site. Mind the version.
+
 2) Make sure you have stlport 4.5.3 installed and that it's included _before_ the standard vc directories
-3) Make sure you have a fairly recent platform sdk (I'm currently using the November 2001 release)
+   Use the one supplied on the dc++ sourceforge page (do not use the one from www.stlport.org unless 
+   you know what you're doing). Mind the version.
+
+3) Make sure you have a fairly recent platform sdk (November 2001 or newer has worked for me)
    The sdk is freely available from ms: http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
    You need the core sdk at least (not the 64-bit edition...)
    Make sure that this sdk is included _before_ the standard vc directories.
+
 4) Open the project workspace and press your build button.
 
-Note; you'll probably get a tonne of warnings, ignore those, it's a bug in the compiler...
+Note; you'll probably get a whole bunch of warnings, ignore those, it's a bug in the compiler...
+Note 2; I usually use vs.net, but I try to keep it vs6 compatible as well...
+
+By the way, with doxygen, graphviz and some luck you can use the supplied doxygen configuration file
+to generate some nice docs...just check that the paths in doxyfile are correct (graphviz)...

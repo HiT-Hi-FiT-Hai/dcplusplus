@@ -22,6 +22,8 @@
 #include "ClientManager.h"
 #include "ShareManager.h"
 #include "SearchManager.h"
+#include "CryptoManager.h"
+#include "ConnectionManager.h"
 
 ClientManager* Singleton<ClientManager>::instance = NULL;
 
@@ -82,6 +84,8 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 									int aFileType, const string& aString) throw() {
 	
 	bool search = false;
+
+	// Filter own searches
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
 		if(aSeeker.find(Socket::resolve(SETTING(SERVER))) == string::npos) {
 			search = true;
@@ -95,7 +99,7 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 	if(search) {
 		string::size_type pos = aSeeker.find("Hub:");
 		// We don't wan't to answer passive searches if we're in passive mode...
-		if(pos != string::npos && SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_PASSIVE) {
+		if(pos != string::npos && SETTING(CONNECTION_TYPE) != SettingsManager::CONNECTION_ACTIVE) {
 			return;
 		}
 		
@@ -109,8 +113,16 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 				char* buf = new char[1024];
 				for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 					SearchResult* sr = *i;
-					sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-						Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					if(sr->getType() == SearchResult::TYPE_FILE) {
+						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					} else {
+						dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
+						dcassert(sr->getFile().size() > 0);
+						string fname = sr->getFile().substr(0, sr->getFile().length() - 1);
+						sprintf(buf, "$SR %s %s %d/%d%c%s (%s)%c%s|", aClient->getNick().c_str(), fname.c_str(), 
+							sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str(), 5, name.c_str());
+					}
 					str += buf;
 					delete sr;
 				}
@@ -130,8 +142,16 @@ void ClientManager::onClientSearch(Client* aClient, const string& aSeeker, int a
 					if(port == 0) port = 412;
 					for(SearchResult::Iter i = l.begin(); i != l.end(); ++i) {
 						SearchResult* sr = *i;
-						sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
-							Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+						if(sr->getType() == SearchResult::TYPE_FILE) {
+							sprintf(buf, "$SR %s %s%c%s %d/%d%c%s (%s)", aClient->getNick().c_str(), sr->getFile().c_str(), 5,
+								Util::toString(sr->getSize()).c_str(), sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+						} else {
+							dcassert(sr->getType() == SearchResult::TYPE_DIRECTORY);
+							dcassert(sr->getFile().size() > 0);
+							string fname = sr->getFile().substr(0, sr->getFile().length() - 1);
+							sprintf(buf, "$SR %s %s %d/%d%c%s (%s)", aClient->getNick().c_str(), fname.c_str(), 
+								sr->getFreeSlots(), sr->getSlots(), 5, sr->getHubName().c_str(), sr->getHubAddress().c_str());
+						}
 						int len = strlen(buf);
 						if(len > 0 && len < 1400)
 							s.writeTo(ip, port, buf, len);
@@ -249,7 +269,7 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 		}
 
 		for(Client::Iter j = clients.begin(); j != clients.end(); ++j) {
-			if((*j)->lastUpdate + 10 * 1000 < aTick && (*j)->lastHubs != Client::hubs) {
+			if((((*j)->lastUpdate + 1000) < aTick) && ((*j)->lastHubs != Client::hubs)) {
 				(*j)->myInfo((*j)->getNick(), SETTING(DESCRIPTION), SETTING(CONNECTION), SETTING(EMAIL), ShareManager::getInstance()->getShareSizeString());
 			}
 		}
@@ -265,7 +285,8 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const s
 		break;
 	case ClientListener::CONNECT_TO_ME:
 		ConnectionManager::getInstance()->connect(line1, (short)Util::toInt(line2), client->getNick()); break;
-		
+	default:
+		break;
 	}
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, const User::Ptr& user) {
@@ -277,27 +298,33 @@ void ClientManager::onAction(ClientListener::Types type, Client* client, const U
 			client->connectToMe(user);
 		}
 		break;
-		
+	default:
+		break;		
 	}
 }
 void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) {
 	switch(type) {
 	case ClientListener::NICK_LIST:		// Fall through...
 	case ClientListener::OP_LIST:
-		for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
-			// Make sure we're indeed connected (if the server resets on the first getInfo, 
-			// we'll keep on trying aNicks.size times...not good...)
-			if(!client->isConnected()) {
-				break;
-			}
-			
-			if(type == OP_LIST) {
-				if((*i)->getNick() == client->getNick())
-					client->setOp(true);
-			} else {
-				client->getInfo(*i);
+		{
+			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+				// Make sure we're indeed connected (if the server resets on the first getInfo, 
+				// we'll keep on trying aNicks.size times...not good...)
+				if(!client->isConnected()) {
+					break;
+				}
+				
+				if(type == OP_LIST) {
+					if((*i)->getNick() == client->getNick())
+						client->setOp(true);
+				} else {
+					client->getInfo(*i);
+				}
 			}
 		}
+		break;
+	default:
+		break;
 	}
 }
 void ClientManager::onAction(ClientListener::Types type, Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
@@ -306,11 +333,14 @@ void ClientManager::onAction(ClientListener::Types type, Client* aClient, const 
 	case ClientListener::SEARCH:
 		fire(ClientManagerListener::INCOMING_SEARCH, aString);
 		onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
+		break;
+	default:
+		break;
 	}
 }
 
 // TimerManagerListener
-void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
+void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) throw() {
 	if(type == TimerManagerListener::MINUTE) {
 		onTimerMinute(aTick);
 	}
@@ -318,6 +348,6 @@ void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
 
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.30 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.31 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

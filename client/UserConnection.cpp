@@ -68,6 +68,18 @@ void UserConnection::onLine(const string& aLine) throw () {
 		if(x != string::npos) {
 			fire(UserConnectionListener::GET, this, param.substr(0, x), Util::toInt64(param.substr(x+1)) - (int64_t)1);
 		}
+	} else if(cmd == "$GetBZBlock") {
+		string::size_type i = param.find(' ');
+		if(i == string::npos)
+			return;
+		int64_t start = Util::toInt64(param.substr(0, i));
+		i++;
+		string::size_type j = param.find(' ', i);
+		if(j == string::npos)
+			return;
+		int64_t bytes = Util::toInt64(param.substr(i, j-i));
+		fire(UserConnectionListener::GET_BZ_BLOCK, this, param.substr(j+1), start, bytes);
+		
 	} else if(cmd == "$Key") {
 		if(!param.empty())
 			fire(UserConnectionListener::KEY, this, param);
@@ -89,12 +101,13 @@ void UserConnection::onLine(const string& aLine) throw () {
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
+	} else if(cmd == "$Sending") {
+		fire(UserConnectionListener::SENDING, this);
 	} else if(cmd == "$MaxedOut") {
 		fire(UserConnectionListener::MAXED_OUT, this);
 	} else if(cmd == "$Supports") {
 		if(!param.empty()) {
-			StringTokenizer t(param, ' ');
-			fire(UserConnectionListener::SUPPORTS, this, t.getTokens());
+			fire(UserConnectionListener::SUPPORTS, this, StringTokenizer(param, ' ').getTokens());
 		}
 	} else {
 		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
@@ -154,5 +167,5 @@ void UserConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.23 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.24 2002/12/28 01:31:49 arnetheduck Exp $
  */

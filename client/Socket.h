@@ -142,16 +142,18 @@ public:
 	virtual void writeTo(const string& ip, short port, const char* buffer, int len) throw(SocketException);
 	virtual void writeTo(const string& ip, short port, const string& aData) throw(SocketException) { writeTo(ip, port, aData.data(), aData.length()); };
 
-	int read(void* aBuffer, int aBufLen) throw(SocketException); 
+	int read(void* aBuffer, int aBufLen) throw(SocketException);
+	int readFull(void* aBuffer, int aBufLen) throw(SocketException);
+	
 	bool wait(u_int32_t millis, int& waitFor) throw(SocketException);
 	bool isConnected() { return connected; };
 	
 	static string resolve(const string& aDns);
 	static void resetStats() { stats.up = stats.down = 0; };
-	static u_int32_t getDown() { return stats.down; };
-	static u_int32_t getUp() { return stats.up; };
-	static u_int64_t getTotalDown() { return stats.totalDown; };
-	static u_int64_t getTotalUp() { return stats.totalUp; };
+	static int64_t getDown() { return stats.down; };
+	static int64_t getUp() { return stats.up; };
+	static int64_t getTotalDown() { return stats.totalDown; };
+	static int64_t getTotalUp() { return stats.totalUp; };
 	
 	virtual void disconnect() {
 		if(sock != INVALID_SOCKET) {
@@ -205,10 +207,16 @@ public:
 		return Util::emptyString;
 	}
 
+	/** When socks settings are updated, this has to be called... */
+	static void socksUpdated();
+
 	GETSETREF(string, ip, Ip);
 protected:
 	SOCKET sock;
 	bool connected;
+
+	static string udpServer;
+	static short udpPort;
 
 private:
 	Socket(const Socket&) {
@@ -218,8 +226,8 @@ private:
 
 	class Stats {
 	public:
-		u_int32_t down;
-		u_int32_t up;
+		int64_t down;
+		int64_t up;
 		int64_t totalDown;
 		int64_t totalUp;
 	};
@@ -230,6 +238,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.38 2002/06/13 17:50:38 arnetheduck Exp $
+ * $Id: Socket.h,v 1.39 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

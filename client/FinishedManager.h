@@ -36,19 +36,23 @@ public:
 	typedef List::iterator Iter;
 
 	FinishedItem(string const& aTarget, string const& aUser, int64_t aSize,
-		int64_t aSpeed, string const& aTime)
-		: target(aTarget), user(aUser), size(aSize), avgSpeed(aSpeed), time(aTime)
+		int64_t aMSeconds, string const& aTime)
+		: target(aTarget), user(aUser), size(aSize), milliSeconds(aMSeconds), time(aTime)
 	{
 	}
+
+	int64_t getAvgSpeed() { return milliSeconds > 0 ? (size * ((int64_t)1000) / milliSeconds) : 0; };
 
 	GETSET(string, target, Target);
 	GETSET(string, user, User);
 	GETSET(int64_t, size, Size);
-	GETSET(int64_t, avgSpeed, AvgSpeed);
+	GETSET(int64_t, milliSeconds, MilliSeconds);
 	GETSET(string, time, Time);
 
+	
 private:
 	friend class FinishedManager;
+
 };
 
 class FinishedManagerListener {
@@ -116,5 +120,5 @@ private:
 
 /**
  * @file FinishedManager.h
- * $Id: FinishedManager.h,v 1.2 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.3 2002/12/28 01:31:49 arnetheduck Exp $
  */

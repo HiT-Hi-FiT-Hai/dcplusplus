@@ -112,11 +112,12 @@ void User::setClient(Client* aClient) {
 		setLastHubIp(aClient->getIp());
 		setLastHubName(aClient->getName());
 		setFlag(ONLINE);
+		unsetFlag(QUIT_HUB);
 	}
 };
 
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.15 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: User.cpp,v 1.16 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

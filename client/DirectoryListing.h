@@ -59,6 +59,11 @@ public:
 			for_each(files.begin(), files.end(), DeleteFunction<File*>());
 		}
 
+		int getTotalFileCount();		
+		int64_t getTotalSize();
+		
+		int getFileCount() { return files.size(); };
+		
 		int64_t getSize() {
 			int64_t x = 0;
 			for(File::Iter i = files.begin(); i != files.end(); ++i) {
@@ -66,65 +71,11 @@ public:
 			}
 			return x;
 		}
-		int64_t getTotalSize() {
-			int64_t x = getSize();
-			for(Iter i = directories.begin(); i != directories.end(); ++i) {
-				x += (*i)->getTotalSize();
-			}
-			return x;
-		}
-
-		int getFileCount() {
-			return files.size();
-		}
-		int getTotalFileCount() {
-			int x = getFileCount();
-			for(Iter i = directories.begin(); i != directories.end(); ++i) {
-				x += (*i)->getTotalFileCount();
-			}
-			return x;
-		}
-		
 		
 		GETSETREF(string, name, Name);
 		GETSET(Directory*, parent, Parent);		
 	};
 
-	int64_t getTotalSize() {
-		return root->getTotalSize();
-	}
-	int getTotalFileCount() {
-		return root->getTotalFileCount();
-	}
-
-	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget) {
-		string target = aTarget + aDir->getName() + '\\';
-		// First, recurse over the directories
-		for(Directory::Iter j = aDir->directories.begin(); j != aDir->directories.end(); ++j) {
-				download(*j, aUser, target);
-		}
-		// Then add the files
-		for(File::Iter i = aDir->files.begin(); i != aDir->files.end(); ++i) {
-			File* file = *i;
-			try {
-				download(file, aUser, target + file->getName());
-			} catch(QueueException e) {
-				// Catch it here to allow parts of directories to be added...
-			} catch(FileException e) {
-				//..
-			}
-		}
-	}
-	
-	void download(File* aFile, const User::Ptr& aUser, const string& aTarget) {
-		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget);
-	}
-	
-	void load(string& i);
-	string getPath(Directory* d);
-	string getPath(File* f) { return getPath(f->getParent()); };
-
-	Directory* getRoot() { return root; };
 	DirectoryListing() {
 		root = new Directory();
 	};
@@ -132,9 +83,25 @@ public:
 	~DirectoryListing() {
 		delete root;
 	};
-	private:
+
+	void download(const string& aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT);
+	void download(Directory* aDir, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT);
+	void load(const string& i);
+	string getPath(Directory* d);
+	
+	string getPath(File* f) { return getPath(f->getParent()); };
+	int64_t getTotalSize() { return root->getTotalSize(); };
+	int getTotalFileCount() { return root->getTotalFileCount(); };
+	Directory* getRoot() { return root; };
+	
+	void download(File* aFile, const User::Ptr& aUser, const string& aTarget, QueueItem::Priority p = QueueItem::DEFAULT) {
+		QueueManager::getInstance()->add(getPath(aFile) + aFile->getName(), aFile->getSize(), aUser, aTarget, true, p);
+	}
+
+private:
 	Directory* root;
 		
+	Directory* find(const string& aName, Directory* current);
 		
 };
 
@@ -142,5 +109,5 @@ public:
 
 /**
  * @file DirectoryListing.h
- * $Id: DirectoryListing.h,v 1.12 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: DirectoryListing.h,v 1.13 2002/12/28 01:31:49 arnetheduck Exp $
  */

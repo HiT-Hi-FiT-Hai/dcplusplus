@@ -39,6 +39,9 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	// Only one of this window please...
 	dcassert(frame == NULL);
 	frame = this;
+
+	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
+	ctrlStatus.Attach(m_hWndStatusBar);
 	
 	SetWindowText(CSTRING(FINISHED_DOWNLOADS));
 	
@@ -56,39 +59,17 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	ctrlList.SetTextColor(WinUtil::textColor);
 	
 	// Create listview columns
-	StringList l = StringTokenizer(SETTING(FINISHED_ORDER), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
+	WinUtil::splitTokens(columnIndexes, SETTING(FINISHED_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(FINISHED_WIDTHS), COLUMN_LAST);
+	
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_SIZE || j == COLUMN_SPEED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlList.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	l = StringTokenizer(SETTING(FINISHED_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
-	}
+	ctrlList.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	for(int j=0; j<COLUMN_LAST; j++)
-	{
-		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
-		lvc.fmt = LVCFMT_LEFT;
-		lvc.cx = columnSizes[j];
-		lvc.iOrder = columnIndexes[j];
-		lvc.iSubItem = j;
-		ctrlList.InsertColumn(j, &lvc);
-	}
+	UpdateLayout();
 	
 	FinishedManager::getInstance()->addListener(this);
 	updateList(FinishedManager::getInstance()->lockList());
@@ -96,7 +77,7 @@ LRESULT FinishedFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 	
 	ctxMenu.CreatePopupMenu();
 	ctxMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
-	ctxMenu.AppendMenu(MF_STRING, IDC_OPENPUBLIC, "Open");
+	ctxMenu.AppendMenu(MF_STRING, IDC_OPENPUBLIC, CSTRING(OPEN));
 	ctxMenu.AppendMenu(MF_STRING, IDC_TOTAL, CSTRING(REMOVE_ALL));
 
 	bHandled = FALSE;
@@ -166,7 +147,7 @@ LRESULT FinishedFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* entry) {
 	switch(type) {
-		case FinishedManagerListener::ADDED: addEntry(entry);
+		case FinishedManagerListener::ADDED: addEntry(entry); updateStatus();
 			break;
 
 		case FinishedManagerListener::MAJOR_CHANGES: 
@@ -179,5 +160,5 @@ void FinishedFrame::onAction(FinishedManagerListener::Types type, FinishedItem* 
 
 /**
  * @file FinishedFrame.cpp
- * $Id: FinishedFrame.cpp,v 1.2 2002/06/16 09:34:47 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
  */

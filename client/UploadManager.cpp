@@ -22,15 +22,35 @@
 #include "UploadManager.h"
 #include "ConnectionManager.h"
 #include "LogManager.h"
+#include "ShareManager.h"
+#include "ClientManager.h"
 
 UploadManager* Singleton<UploadManager>::instance = NULL;
 
 static const string UPLOAD_AREA = "Uploads";
 
-void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t aResume) {
+UploadManager::UploadManager() throw() : running(0), extra(0), lastAutoGrant(0) { 
+	ClientManager::getInstance()->addListener(this);
+	TimerManager::getInstance()->addListener(this);
+};
+
+UploadManager::~UploadManager() throw() {
+	ClientManager::getInstance()->addListener(this);
+	TimerManager::getInstance()->removeListener(this);
+	while(true) {
+		{
+			Lock l(cs);
+			if(uploads.empty())
+				break;
+		}
+		Thread::sleep(100);
+	}
+}
+
+bool UploadManager::prepareFile(UserConnection* aSource, const string& aFile, int64_t aResume) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
 		dcdebug("UM:onGet Wrong state, ignoring\n");
-		return;
+		return false;
 	}
 	
 	Upload* u;
@@ -44,7 +64,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		file = ShareManager::getInstance()->translateFileName(aFile);
 	} catch(ShareException e) {
 		aSource->error("File Not Available");
-		return;
+		return false;
 	}
 	
 	if( (Util::stricmp(aFile.c_str(), "MyList.bz2") == 0) ) {
@@ -63,7 +83,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		(ui == reservedSlots.end()) ) 
 	{
 		dcdebug("Average speed: %s/s\n", Util::formatBytes(UploadManager::getInstance()->getAverageSpeed()).c_str());
-		if( ((getlastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
+		if( ((getLastAutoGrant() + 30*1000) > GET_TICK()) || (SETTING(MIN_UPLOAD_SPEED) == 0) || ( (SETTING(MIN_UPLOAD_SPEED)*1024) < UploadManager::getInstance()->getAverageSpeed() ) ) {
 			if( !(smallfile || userlist) ||
 				!(aSource->isSet(UserConnection::FLAG_HASEXTRASLOT) || (getFreeExtraSlots() > 0) || (aSource->getUser()->isSet(User::OP)) ) || 
 				!(aSource->getUser()->isSet(User::DCPLUSPLUS)) 
@@ -73,19 +93,33 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 				cs.leave();
 				aSource->maxedOut();
 				removeConnection(aSource);
-				return;
+				return false;
 			}
 		}
-		setlastAutoGrant(GET_TICK());
+		setLastAutoGrant(GET_TICK());
 	}
 
 	File* f;
 	try {
 		f = new File(file, File::READ, File::OPEN);
 	} catch(FileException e) {
-		cs.leave();
-		aSource->error("File Not Available");
-		return;
+		// Why isn't this possible?...let's reload the directory listing...
+		if(Util::stricmp(aFile.c_str(), "MyList.DcLst") == 0 || userlist) {
+			
+			ShareManager::getInstance()->refresh(true, true, true);
+			try {
+				f = new File(file, File::READ, File::OPEN);
+			} catch(FileException e) {
+				// Still not...very strange...?
+				cs.leave();
+				aSource->error("File Not Available");
+				return false;
+			}
+		} else {
+			cs.leave();
+			aSource->error("File Not Available");
+			return false;
+		}
 	}
 	
 	u = new Upload();
@@ -126,10 +160,29 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t 
 		aSource->unsetFlag(UserConnection::FLAG_HASEXTRASLOT);
 	}
 	
-	aSource->setState(UserConnection::STATE_SEND);
 	cs.leave();
+	return true;
 
-	aSource->fileLength(Util::toString(u->getSize()));
+}
+
+void UploadManager::onGet(UserConnection* aSource, const string& aFile, int64_t aResume) {
+	if(prepareFile(aSource, aFile, aResume)) {
+		aSource->setState(UserConnection::STATE_SEND);
+		aSource->fileLength(Util::toString(aSource->getUpload()->getSize()));
+	}
+}
+
+void UploadManager::onGetBZBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes) {
+	if(prepareFile(aSource, aFile, aResume)) {
+		Upload* u = aSource->getUpload();
+		dcassert(u != NULL);
+		
+		u->setStart(GET_TICK());
+		aSource->sending();
+		aSource->setState(UserConnection::STATE_DONE);
+		aSource->transmitFile(u->getFile(), aBytes, true);
+		fire(UploadManagerListener::STARTING, u);
+	}
 }
 
 void UploadManager::onSend(UserConnection* aSource) {
@@ -219,7 +272,7 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 }	
 
 // TimerManagerListener
-void UploadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+void UploadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	switch(type) {
 	case TimerManagerListener::SECOND: 
 		{
@@ -238,6 +291,26 @@ void UploadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) 
 		break;
 	}
 }
+
+void UploadManager::onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw() {
+	if( (type == ClientManagerListener::USER_UPDATED) && 
+		(!aUser->isOnline()) && 
+		(aUser->isSet(User::QUIT_HUB)) && 
+		(BOOLSETTING(AUTO_KICK)) ){
+
+		Lock l(cs);
+		for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+			Upload* u = *i;
+			if(u->getUser() == aUser) {
+				// Oops...adios...
+				u->getUserConnection()->disconnect();
+				// But let's grant him/her a free slot just in case...
+				reserveSlot(aUser);
+			}
+		}
+	}
+}
+
 
 // UserConnectionListener
 void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
@@ -269,7 +342,14 @@ void UploadManager::onAction(UserConnectionListener::Types type, UserConnection*
 	}
 }
 
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume, int64_t bytes) {
+	switch(type) {
+	case UserConnectionListener::GET_BZ_BLOCK:
+		onGetBZBlock(conn, line, resume, bytes); break;
+	}
+}
+
 /**
  * @file UploadManager.cpp
- * $Id: UploadManager.cpp,v 1.34 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.35 2002/12/28 01:31:49 arnetheduck Exp $
  */

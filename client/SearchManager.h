@@ -27,17 +27,25 @@
 #include "User.h"
 #include "Thread.h"
 
+#include "SearchManagerListener.h"
+
 class SearchResult {
 public:	
+
+	enum Types {
+		TYPE_FILE,
+		TYPE_DIRECTORY
+	};
+
 	typedef SearchResult* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult() : slots(0), freeSlots(0), size(0) { };
-	SearchResult(const SearchResult& rhs) : slots(rhs.slots), freeSlots(rhs.freeSlots), size(rhs.size), 
+	SearchResult() : type(TYPE_FILE), slots(0), freeSlots(0), size(0) { };
+	SearchResult(const SearchResult& rhs) : type(rhs.type), slots(rhs.slots), freeSlots(rhs.freeSlots), size(rhs.size), 
 		file(rhs.file), hubName(rhs.hubName), hubAddress(rhs.hubAddress), user(rhs.user) { };
 
-	string getFileName() { return Util::getFileName(getFile()); };
+	string getFileName();
 
 	User::Ptr& getUser() { return user; };
 	void setUser(const User::Ptr& aUser) { user = aUser; };
@@ -48,6 +56,7 @@ public:
 	
 	string getSlotString() { return Util::toString(getFreeSlots()) + '/' + Util::toString(getSlots()); };
 	
+	GETSET(Types, type, Type);
 	GETSET(int, slots, Slots);
 	GETSET(int, freeSlots, FreeSlots);
 	GETSET(int64_t, size, Size);
@@ -56,18 +65,7 @@ public:
 	GETSETREF(string, hubAddress, HubAddress);
 
 private:
-	User::Ptr user;	
-};
-
-class SearchManagerListener {
-public:
-	typedef SearchManagerListener* Ptr;
-	typedef vector<Ptr> List;
-	typedef List::iterator Iter;
-	enum Types {
-		SEARCH_RESULT
-	};
-	virtual void onAction(Types, SearchResult*) { }
+	User::Ptr user;
 };
 
 class SearchManager : public Speaker<SearchManagerListener>, public Singleton<SearchManager>, public Thread
@@ -87,7 +85,7 @@ public:
 		TYPE_EXECUTABLE,
 		TYPE_PICTURE,
 		TYPE_VIDEO,
-		TYPE_FOLDER
+		TYPE_DIRECTORY
 	};
 	
 	void search(const string& aName, int64_t aSize = 0, TypeModes aTypeMode = TYPE_ANY, SizeModes aSizeMode = SIZE_ATLEAST);
@@ -96,13 +94,17 @@ public:
 	}
 	
 	static string clean(const string& aSearchString) {
+		static const char* badChars = "$|.[]()-_+";
+		string::size_type i = aSearchString.find_first_of(badChars);
+		if(i == string::npos)
+			return aSearchString;
+
 		string tmp = aSearchString;
 		// Remove all strange characters from the search string
-		string::size_type i = 0;
-
-		while( (i = tmp.find_first_of("$|.[]()-_+")) != string::npos) {
+		do {
 			tmp[i] = ' ';
-		}
+		} while ( (i = tmp.find_first_of(badChars, i)) != string::npos);
+		
 		return tmp;
 	}
 
@@ -139,5 +141,5 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.21 2002/06/02 00:12:44 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.22 2002/12/28 01:31:49 arnetheduck Exp $
  */

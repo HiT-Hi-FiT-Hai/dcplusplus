@@ -99,7 +99,7 @@ void ShareManager::load(SimpleXML* aXml) {
 		while(aXml->findChild("Directory")) {
 			try {
 				addDirectory(aXml->getChildData());
-			} catch(...) {
+			} catch(ShareException) {
 				// ...
 			}
 		}
@@ -260,13 +260,13 @@ int ShareManager::run() {
 
 		Directory::DupeMap dupes;
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
-			tmp += i->second->toString(dupes);
+			i->second->toString(tmp, dupes);
 		}
 		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 		try {
 			File f(getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
-		} catch(FileException e) {
+		} catch(FileException) {
 		}
 		
 		listLen = tmp2.length();
@@ -275,7 +275,7 @@ int ShareManager::run() {
 		try {
 			File f(getBZListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
 			f.write(tmp2);
-		} catch(FileException e) {
+		} catch(FileException) {
 		}
 		
 		dirty = false;
@@ -286,13 +286,14 @@ int ShareManager::run() {
 	}
 	return 0;
 }
-
-string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
-	string tmp(ident, '\t');
-	tmp += name + "\r\n";
+#define STRINGLEN(n) n, sizeof(n)-1
+void ShareManager::Directory::toString(string& tmp, DupeMap& dupes, int ident /* = 0 */) {
+	tmp.append(ident, '\t');
+	tmp.append(name);
+	tmp.append(STRINGLEN("\r\n"));
 
 	for(MapIter i = directories.begin(); i != directories.end(); ++i) {
-		tmp += i->second->toString(dupes, ident + 1);
+		i->second->toString(tmp, dupes, ident + 1);
 	}
 	
 	Directory::FileIter j = files.begin();
@@ -311,38 +312,45 @@ string ShareManager::Directory::toString(DupeMap& dupes, int ident /* = 0 */) {
 			if(BOOLSETTING(REMOVE_DUPES)) {
 				files.erase(j++);
 			} else {
-				tmp += string(ident + 1, '\t') + j->first + "|" + Util::toString(j->second) + "\r\n";
+				tmp.append(ident+1, '\t');
+				tmp.append(j->first);
+				tmp.append(STRINGLEN("|"));
+				tmp.append(Util::toString(j->second));
+				tmp.append(STRINGLEN("\r\n"));
 				++j;
 			}
 		} else {
 			dupes.insert(make_pair(j->second, j->first));
-			tmp += string(ident + 1, '\t') + j->first + "|" + Util::toString(j->second) + "\r\n";
+			tmp.append(ident+1, '\t');
+			tmp.append(j->first);
+			tmp.append(STRINGLEN("|"));
+			tmp.append(Util::toString(j->second));
+			tmp.append(STRINGLEN("\r\n"));
 			++j;
 		}
 	}
-
-	return tmp;
 }
 
-#define IS_TYPE(x) (Util::findSubString(aString, x) != string::npos)
+#define IS_TYPE(x) (Util::stricmp(aString.c_str() + aString.length() - x.length(), x.c_str()) == 0)
 
-static const string types[] = { 
-	".mp3", ".mp2", ".mid", ".wav", ".au", ".aiff",				// 0-6
-	".zip", ".ace", ".rar",										// 6-9
-	".htm", ".doc",												// 9-11
-	".exe",														// 11-12
-	".eps", ".ai", ".ps", ".img", ".pct", ".pict", ".psp", ".pic", ".png", ".tif", ".rle", ".bmp", ".pcx",	// 12-25
-	".mpg", ".mov", ".mpeg", ".asf", ".avi", ".rm", ".pxp"		// 25-32
-};
+static const string typeAudio[] = {	".mp3", ".mp2", ".mid", ".wav", ".au", ".aiff", ".ogg",	".wma" };
+static const string typeCompressed[] = { ".zip", ".ace", ".rar" };
+static const string typeDocument[] = { ".htm", ".doc", ".txt", ".nfo" };
+static const string typeExe[] = { ".exe" };
+static const string typePicture[] = { ".jpg", ".gif", ".png", ".eps", ".ai", ".ps", ".img", ".pct", ".pict", ".psp", ".pic", ".tif", ".rle", ".bmp", ".pcx" };
+static const string typeVideo[] = { ".mpg", ".mov", ".mpeg", ".asf", ".avi", ".rm", ".pxp", ".divx" };
 
 bool checkType(const string& aString, int aType) {
+	if(aString.length() < 5 && aType != SearchManager::TYPE_ANY)
+		return false;
+	
 	bool found = false;
 	switch(aType) {
 	case SearchManager::TYPE_ANY: found = true; break;
 	case SearchManager::TYPE_AUDIO:
 		{
-			for(int i = 0; i < 6; i++) {
-				if(IS_TYPE(types[i])) {
+			for(int i = 0; i < (sizeof(typeAudio) / sizeof(typeAudio[0])); i++) {
+				if(IS_TYPE(typeAudio[i])) {
 					found = true;
 					break;
 				}
@@ -350,26 +358,25 @@ bool checkType(const string& aString, int aType) {
 		}
 		break;
 	case SearchManager::TYPE_COMPRESSED:
-		if( IS_TYPE(types[6]) || IS_TYPE(types[7]) || IS_TYPE(types[8]) ) {
+		if( IS_TYPE(typeAudio[0]) || IS_TYPE(typeAudio[1]) || IS_TYPE(typeAudio[3]) ) {
 			found = true;
 		}
 		break;
 	case SearchManager::TYPE_DOCUMENT:
-		if( IS_TYPE(types[9]) || IS_TYPE(types[10]) ) {
+		if( IS_TYPE(typeDocument[0]) || IS_TYPE(typeDocument[1]) || 
+			IS_TYPE(typeDocument[2]) || IS_TYPE(typeDocument[3]) ) {
 			found = true;
 		}
 		break;
 	case SearchManager::TYPE_EXECUTABLE:
-		if(IS_TYPE(types[11] ) ) {
+		if(IS_TYPE(typeExe[0]) ) {
 			found = true;
 		}
 		break;
-	case SearchManager::TYPE_FOLDER:
-		break;
 	case SearchManager::TYPE_PICTURE:
 		{
-			for(int i = 12; i < 25; i++) {
-				if(IS_TYPE(types[i])) {
+			for(int i = 0; i < (sizeof(typePicture) / sizeof(typePicture[0])); i++) {
+				if(IS_TYPE(typePicture[i])) {
 					found = true;
 					break;
 				}
@@ -378,13 +385,16 @@ bool checkType(const string& aString, int aType) {
 		break;
 	case SearchManager::TYPE_VIDEO:
 		{
-			for(int i = 25; i < 32; i++) {
-				if(IS_TYPE(types[i])) {
+			for(int i = 0; i < (sizeof(typeVideo) / sizeof(typeVideo[0])); i++) {
+				if(IS_TYPE(typeVideo[i])) {
 					found = true;
 					break;
 				}
 			}
 		}
+		break;
+	case SearchManager::TYPE_DIRECTORY:
+		dcassert(0);
 		break;
 	}
 	return found;		
@@ -422,41 +432,58 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringList& a
 		cur = &newStr;
 	}
 
+	if(cur->empty() && ((aFileType == SearchManager::TYPE_ANY) || (aFileType == SearchManager::TYPE_DIRECTORY))) {
+		// We satisfied all the search words! Add the directory...
+		SearchResult* sr = new SearchResult();
+		sr->setType(SearchResult::TYPE_DIRECTORY);
+		sr->setFile(getFullName());
+		sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+		sr->setSlots(SETTING(SLOTS));
+		sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
+		sr->setHubAddress(aClient->getIp());
+		sr->setHubName(aClient->getName());
+		aResults.push_back(sr);
+		ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
+	}
+
 	bool found = true;
-	for(FileIter i = files.begin(); i != files.end(); ++i) {
-
-		if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
-			continue;
-		} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
-			continue;
-		}	
-		
-		found = true;
-		for(StringIter j = cur->begin(); (j != cur->end()); ++j) {
-			if(Util::findSubString(i->first, *j) == string::npos) {
-				found = false;
-				break;
+	if(aFileType != SearchManager::TYPE_DIRECTORY) {
+		for(FileIter i = files.begin(); i != files.end(); ++i) {
+			
+			if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
+				continue;
+			} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
+				continue;
+			}	
+			
+			found = true;
+			for(StringIter j = cur->begin(); (j != cur->end()); ++j) {
+				if(Util::findSubString(i->first, *j) == string::npos) {
+					found = false;
+					break;
+				}
 			}
-		}
-		
-		if(!found)
-			continue;
-
-		// Check file type...
-		if(checkType(i->first, aFileType)) {
-
-			SearchResult* sr = new SearchResult();
-			sr->setFile(getFullName() + i->first);
-			sr->setSize(i->second);
-			sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
-			sr->setSlots(SETTING(SLOTS));
-			sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
-			sr->setHubAddress(aClient->getIp());
-			sr->setHubName(aClient->getName());
-			aResults.push_back(sr);
-			ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
-			if(aResults.size() >= maxResults) {
-				break;
+			
+			if(!found)
+				continue;
+			
+			// Check file type...
+			if(checkType(i->first, aFileType)) {
+				
+				SearchResult* sr = new SearchResult();
+				sr->setType(SearchResult::TYPE_FILE);
+				sr->setFile(getFullName() + i->first);
+				sr->setSize(i->second);
+				sr->setFreeSlots(UploadManager::getInstance()->getFreeSlots());
+				sr->setSlots(SETTING(SLOTS));
+				sr->setUser(ClientManager::getInstance()->getUser(aClient->getNick(), aClient, false));
+				sr->setHubAddress(aClient->getIp());
+				sr->setHubName(aClient->getName());
+				aResults.push_back(sr);
+				ShareManager::getInstance()->setHits(ShareManager::getInstance()->getHits()+1);
+				if(aResults.size() >= maxResults) {
+					break;
+				}
 			}
 		}
 	}
@@ -488,14 +515,13 @@ void ShareManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml)
 	}
 }
 
-void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
-	switch(type) {
-	case TimerManagerListener::MINUTE:
+void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) throw() {
+	if(type == TimerManagerListener::MINUTE) {
 		if(lastUpdate + 60 * 60 * 1000 < tick) {
 			try {
 				refresh(true, true);
 				lastUpdate = tick;
-			} catch(...) {
+			} catch(ShareException) {
 			}
 		}
 	}
@@ -503,6 +529,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.44 2002/06/18 19:06:33 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.45 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

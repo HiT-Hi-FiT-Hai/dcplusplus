@@ -26,8 +26,8 @@
 #include "Exception.h"
 #include "CriticalSection.h"
 #include "Util.h"
-#include "SearchManager.h"
 #include "TimerManager.h"
+#include "SearchManager.h"
 
 STANDARD_EXCEPTION(ShareException);
 
@@ -142,14 +142,14 @@ private:
 
 		void search(SearchResult::List& aResults, StringList& aStrings, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults);
 		
-		string toString(DupeMap& dupes, int ident = 0);
+		void toString(string& tmp, DupeMap& dupes, int ident = 0);
 	private:
 		string name; 
 		Directory* parent;
 	};
 		
 	friend class Singleton<ShareManager>;
-	ShareManager() : listLen(0), dirty(false), refreshDirs(false), update(false), lastUpdate(GET_TICK()) { 
+	ShareManager() : hits(0), listLen(0), dirty(false), refreshDirs(false), update(false), lastUpdate(GET_TICK()) { 
 		SettingsManager::getInstance()->addListener(this);
 		TimerManager::getInstance()->addListener(this);
 	};
@@ -189,7 +189,7 @@ private:
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) throw();
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -199,6 +199,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.30 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.31 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

@@ -43,10 +43,12 @@ private:
 
 #define STRING(x) ResourceManager::getInstance()->getString(ResourceManager::x)
 #define CSTRING(x) ResourceManager::getInstance()->getString(ResourceManager::x).c_str()
+#define STRING_I(x) ResourceManager::getInstance()->getString(x)
+#define CSTRING_I(x) ResourceManager::getInstance()->getString(x).c_str()
 
 #endif // !defined(AFX_RESOURCEMANAGER_H__AA978E1D_82F9_434B_8C3C_1D58B93F7582__INCLUDED_)
 
 /**
  * @file ResourceManager.h
- * $Id: ResourceManager.h,v 1.4 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ResourceManager.h,v 1.5 2002/12/28 01:31:49 arnetheduck Exp $
  */

@@ -25,15 +25,19 @@
 
 #include "../client/User.h"
 #include "../client/CriticalSection.h"
+#include "../client/ClientManagerListener.h"
 
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
 #define PM_MESSAGE_MAP 8		// This could be any number, really...
 
-class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>
+class PrivateFrame : public MDITabChildWindowImpl<PrivateFrame>, private ClientManagerListener
 {
 public:
+	enum {
+		USER_UPDATED
+	};
 
 	DECLARE_FRAME_WND_CLASS_EX("PrivateFrame", IDR_PRIVATE, 0, COLOR_3DFACE);
 
@@ -42,12 +46,14 @@ public:
 	}
 
 	BEGIN_MSG_MAP(PrivateFrame)
-		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
+		COMMAND_ID_HANDLER(IDC_SEND_MESSAGE, onSendMessage)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<PrivateFrame>)
 	ALT_MSG_MAP(PM_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -56,7 +62,8 @@ public:
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
+	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	
 	void addLine(const string& aLine);
 	void onEnter();
 	void UpdateLayout(BOOL bResizeBars = TRUE);	
@@ -64,11 +71,16 @@ public:
 	static void openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl* aTab);
 	static bool isOpen(const User::Ptr u) { return frames.find(u) != frames.end(); };
 	
-	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-		Lock l(cs);
-		frames.erase(user);
-		bHandled = FALSE;
-		return FALSE;
+	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	
+	LRESULT onSendMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onEnter();
+		return 0;
+	}
+
+	LRESULT PrivateFrame::onSpeaker(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+		updateTitle();
+		return 0;
 	}
 	
 	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -83,7 +95,7 @@ public:
 		return FALSE;
 	};
 
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlMessage.SetFocus();
 		return 0;
 	}
@@ -99,25 +111,6 @@ public:
 		}
 		ctrlStatus.SetText(0, ("[" + Util::getShortTimeString() + "] " + aLine).c_str());
 		setDirty();
-	}
-
-	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-		switch(wParam) {
-		case VK_RETURN:
-			if( (GetKeyState(VK_SHIFT) & 0x8000) || 
-				(GetKeyState(VK_CONTROL) & 0x8000) || 
-				(GetKeyState(VK_MENU) & 0x8000) ) {
-				bHandled = FALSE;
-			} else {
-				if(uMsg == WM_KEYDOWN) {
-					onEnter();
-				}
-			}
-			break;
-		default:
-			bHandled = FALSE;
-		}
-		return 0;
 	}
 	
 	void setUser(const User::Ptr& aUser) { user = aUser; };
@@ -149,13 +142,23 @@ private:
 
 	User::Ptr user;
 	CContainedWindow ctrlMessageContainer;
+
+	void updateTitle() {
+		if(user->isOnline()) {
+			SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
+		} else {
+			SetWindowText((user->getNick() + " (" + STRING(OFFLINE) + ")").c_str());
+		}
+	}
 	
+	// ClientManagerListener
+	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) throw();
 };
 
 #endif // !defined(AFX_PRIVATEFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.6 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -83,7 +83,7 @@ public:
 	void putDownloadConnection(UserConnection* aSource, bool reuse = false);
 	void putUploadConnection(UserConnection* aSource);
 	
-	void removeConnection(ConnectionQueueItem* aCqi);
+	void removeConnection(const User::Ptr& aUser, int isDownload);
 	void shutdown();	
 	/**
 	 * Set this ConnectionManager to listen at a different port.
@@ -119,6 +119,8 @@ private:
 		socket.addListener(this);
 
 		features.push_back("BZList");
+		// This is disabled for now, as it's not finished yet...
+		//		features.push_back("GetZBlock");
 	};
 	
 	virtual ~ConnectionManager() { shutdown(); };
@@ -151,7 +153,7 @@ private:
 	void onFailed(UserConnection* aSource, const string& aError) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);	
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();	
 	void onTimerSecond(u_int32_t aTick);
 	void onTimerMinute(u_int32_t aTick);
 
@@ -161,5 +163,5 @@ private:
 
 /**
  * @file ConnectionManager.h
- * $Id: ConnectionManager.h,v 1.45 2002/06/28 20:53:47 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.46 2002/12/28 01:31:49 arnetheduck Exp $
  */

@@ -31,12 +31,13 @@ class ExListViewCtrl : public CListViewCtrl
 	int (*fun)(LPARAM, LPARAM);
 
 public:
-	enum {	SORT_STRING,
-			SORT_STRING_NOCASE,
-			SORT_INT,
-			SORT_FUNC,
-			SORT_FUNC_ITEM,
-			SORT_FLOAT
+	enum {	
+		SORT_FUNC,
+		SORT_FUNC_ITEM,
+		SORT_STRING,
+		SORT_STRING_NOCASE,
+		SORT_INT,
+		SORT_FLOAT
 	};
 	void setSort(int aColumn, int aType, bool aAscending = true, int (*aFun)(LPARAM, LPARAM) = NULL) {
 		sortColumn = aColumn;
@@ -101,45 +102,45 @@ public:
 		ExListViewCtrl* p = (ExListViewCtrl*) lParamSort;
 		char buf[128];
 		char buf2[128];
+		// This is a trick, so that if fun() returns something bigger than one, use the
+		// internal default sort functions
+		int result = p->sortType;
+		if(result == SORT_FUNC) {
+			result = p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
+		} else if(result == SORT_FUNC_ITEM) {
+			LVITEM a;
+			LVITEM b;
+			a.mask = b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
+			a.iSubItem = b.iSubItem = 0;
 
-		switch(p->sortType) {
-		case SORT_STRING:
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			return p->ascending ? strcmp(buf, buf2) : -strcmp(buf, buf2);
-		case SORT_STRING_NOCASE:
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			return p->ascending ? Util::stricmp(buf,buf2) : -stricmp(buf, buf2);
-		case SORT_INT:
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			return p->ascending ? compare(atoi(buf), atoi(buf2)) : -compare(atoi(buf), atoi(buf2));
-		case SORT_FUNC:
-			return p->ascending ? p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2)) : -p->fun(p->GetItemData(lParam1), p->GetItemData(lParam2));
-		case SORT_FUNC_ITEM: 
-			{
-				LVITEM a;
-				a.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-				a.iItem = lParam1;
-				a.iSubItem = 0;
-				p->GetItem(&a);
-
-				LVITEM b;
-				b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-				b.iItem = lParam2;
-				b.iSubItem = 0;
-				p->GetItem(&b);
-				return p->ascending ? p->fun((LPARAM)&a, (LPARAM)&b) : -p->fun((LPARAM)&a, (LPARAM)&b);
-			}
-		case SORT_FLOAT:
-			p->GetItemText(lParam1, p->sortColumn, buf, 128);
-			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
-			return p->ascending ? compare(atof(buf), atof(buf2)) : -compare(atof(buf), atof(buf2));
+			a.iItem = lParam1;
+			p->GetItem(&a);
 			
-		default:
-			return -1;
+			b.iItem = lParam2;
+			p->GetItem(&b);
+			result = p->fun((LPARAM)&a, (LPARAM)&b);
 		}
+
+		if(result == SORT_STRING) {
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			result = strcmp(buf, buf2);			
+		} else if(result == SORT_STRING_NOCASE) {
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			result = Util::stricmp(buf, buf2);			
+		} else if(result == SORT_INT) {
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			result = compare(atoi(buf), atoi(buf2));
+		} else if(result == SORT_FLOAT) {
+			p->GetItemText(lParam1, p->sortColumn, buf, 128);
+			p->GetItemText(lParam2, p->sortColumn, buf2, 128);
+			result = compare(atof(buf), atof(buf2));
+		}
+		if(!p->ascending)
+			result = -result;
+		return result;
 	}
 	
 	template<class T> static int compare(const T& a, const T& b) {
@@ -155,6 +156,6 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.4 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

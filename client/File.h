@@ -248,32 +248,24 @@ public:
 #endif // WIN32
 
 	virtual ~File() {
-		close();
+		File::close();
 	}
 
-	virtual string read(u_int32_t len) throw(FileException) {
-		char* buf = new char[len];
-		u_int32_t x;
-		try {
-			x = read(buf, len);
-		} catch(...) {
-			delete[] buf;
-			throw;
-		}
-		string tmp(buf, x);
-		delete[] buf;
-		return tmp;
+	string read(u_int32_t len) throw(FileException) {
+		string s(len, 0);
+		u_int32_t x = read(&s[0], len);
+		if(x != len)
+			s.resize(x);
+		return s;
 	}
 
-	virtual string read() throw(FileException) {
+	string read() throw(FileException) {
 		setPos(0);
 		return read((u_int32_t)getSize());
 	}
 
-	virtual void write(const string& aString) throw(FileException) {
-		write((void*)aString.data(), aString.size());
-	}
-		
+	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
+			
 private:
 #ifdef WIN32
 	HANDLE h;
@@ -301,7 +293,7 @@ public:
 		if(pos > 0) {
 			try {
 				File::write(buf, (u_int32_t)pos);
-			} catch( ... ) {
+			} catch(...) {
 				pos = 0;
 				throw;
 			}
@@ -332,16 +324,15 @@ public:
 		}
 	}
 
-	virtual void write(const string& aStr) throw(FileException) { write(aStr.c_str(), aStr.size()); };
-
+	void write(const string& aString) throw(FileException) { write((void*)aString.data(), aString.size()); };
+	
 	virtual void close() { flush(); File::close(); };
 	virtual int64_t getSize() { flush(); return File::getSize(); };
 	virtual int64_t getPos() { flush(); return File::getPos(); };
-	virtual void setPos(int64_t pos) { flush(); File::setPos(pos); };	
+	virtual void setPos(int64_t pos) { flush(); File::setPos(pos); };
+	virtual void setEndPos(int64_t pos) { flush(); File::setEndPos(pos); };
 	virtual void movePos(int64_t pos) { flush(); File::movePos(pos); };
 	virtual u_int32_t read(void* aBuf, u_int32_t len) throw(FileException) { flush(); return File::read(aBuf, len); };
-	virtual string read(int32_t len) throw(FileException) { flush(); return File::read(len); };	
-	virtual string read() throw(FileException) {  flush(); return File::read(); };
 	virtual void setEOF() throw(FileException) { flush(); File::setEOF(); };
 
 private:
@@ -354,6 +345,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.15 2002/06/13 18:47:00 arnetheduck Exp $
+ * $Id: File.h,v 1.16 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

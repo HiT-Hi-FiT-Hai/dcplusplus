@@ -24,6 +24,11 @@
 #endif // _MSC_VER > 1000
 
 #include "Util.h"
+#include "Exception.h"
+#include "../bzip2/bzlib.h"
+#include "../zlib/zlib.h"
+
+STANDARD_EXCEPTION(CryptoException);
 
 class Node {
 public:
@@ -59,6 +64,61 @@ public:
 	}
 };
 
+class File;
+
+class ZDecompressor {
+public:
+	
+	ZDecompressor() throw(CryptoException);
+	~ZDecompressor() { 	inflateEnd(&zs); };
+
+	/**
+	 * To decompress some given bytes, keep calling this until inbytes
+	 * reaches 0.
+	 * @return The number of bytes available in the out buffer.
+	 */
+	u_int32_t decompress(const void* inbuf, int& inbytes) throw(CryptoException);
+	GETSET(u_int8_t*, outbuf, Outbuf);
+private:
+	z_stream zs;
+	int32_t outbufSize;
+};
+
+class ZCompressor {
+public:
+	/**
+	 * @param maxBytes The maximum number of bytes to read from f, -1 = until EOF.
+	 * @param strength BZip compression block size, more = better, slower (0 < strength < 10)
+	 */
+	ZCompressor(File& file, int64_t maxBytes = -1, int strength = Z_DEFAULT_COMPRESSION) throw(CryptoException);
+	~ZCompressor() {
+		deflateEnd(&zs);
+		delete inbuf;
+	};
+
+	/**
+	 * Compress data from the file until the buffer is full or no more data is
+	 * available. Call this method until it returns 0 to get all bytes necessary
+	 * for decompression.
+	 * @return The final number of bytes used for the compression. When this equals 0,
+	 * the compression is finished.
+	 */
+	u_int32_t compress(void* buf, u_int32_t bufLen) throw(CryptoException);
+private:
+	enum {
+		STATE_RUNNING,
+		STATE_FINISHING,
+		STATE_FINISHED
+	} state;
+
+	z_stream zs;
+	u_int8_t* inbuf;
+	u_int32_t inbufLen;
+	
+	File& f;
+	int64_t maxBytes;
+};
+
 class CryptoManager : public Singleton<CryptoManager>
 {
 public:
@@ -67,10 +127,10 @@ public:
 	const string& getPk() { return pk; };
 	bool isExtended(const string& aLock) { return aLock.find("EXTENDEDPROTOCOL") != string::npos; };
 
-	void decodeHuffman(const u_int8_t* is, string& os);
+	void decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException);
 	void encodeHuffman(const string& is, string& os);
-	void decodeBZ2(const u_int8_t* is, int sz, string& os);
-	void encodeBZ2(const string& is, string& os);
+	void decodeBZ2(const u_int8_t* is, int sz, string& os) throw(CryptoException);
+	void encodeBZ2(const string& is, string& os, int strength = 9);
 	
 private:
 
@@ -122,5 +182,5 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.17 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.18 2002/12/28 01:31:49 arnetheduck Exp $
  */

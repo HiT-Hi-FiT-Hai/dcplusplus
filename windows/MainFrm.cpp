@@ -40,8 +40,12 @@
 #include "../client/StringTokenizer.h"
 #include "../client/SimpleXML.h"
 
-int MainFrame::columnIndexes[MainFrame::COLUMN_LAST] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SIZE, COLUMN_FILE };
-int MainFrame::columnSizes[MainFrame::COLUMN_LAST] = { 200, 300, 400, 100 };
+int MainFrame::columnIndexes[] = { COLUMN_USER, COLUMN_STATUS, COLUMN_FILE, COLUMN_SIZE, COLUMN_PATH };
+int MainFrame::columnSizes[] = { 200, 300, 200, 100, 200 };
+
+static ResourceManager::Strings columnNames[] = { ResourceManager::USER, ResourceManager::STATUS,
+	ResourceManager::FILENAME, ResourceManager::SIZE, ResourceManager::PATH };
+
 MainFrame::~MainFrame() {
 	arrows.Destroy();
 	images.Destroy();
@@ -60,7 +64,7 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 		if(wnd == wnd2) 
 			Sleep(100);
 		else { 
-			::SendMessage(wnd, WM_CLOSE, 0, 0);
+			::PostMessage(wnd, WM_CLOSE, 0, 0);
 			wnd2 = wnd;
 		}
 	}
@@ -94,6 +98,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 	} else if(wParam == REMOVE_ITEM) {
 		dcassert(ctrlTransfers.find(lParam) != -1);
 		ctrlTransfers.DeleteItem(ctrlTransfers.find(lParam));
+		delete (ItemInfo*)lParam;
 	} else if(wParam == SET_TEXT) {
 		StringListInfo* l = (StringListInfo*)lParam;
 		int n = ctrlTransfers.find(l->lParam);
@@ -132,8 +137,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
-		int n = ctrlTransfers.find(i->lParam);
-		ctrlTransfers.SetItemText(n, COLUMN_STATUS, CSTRING(PREPARING_FILE_LIST));
 		try {
 			DirectoryListingFrame* pChild = new DirectoryListingFrame(i->file, i->user);
 			pChild->setTab(&ctrlTab);
@@ -143,7 +146,6 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		} catch(FileException e) {
 			// ...
 		}
-		ctrlTransfers.SetItemText(n, COLUMN_STATUS, CSTRING(DOWNLOAD_FINISHED_IDLE));
 	} else if(wParam == STATS) {
 		StringList* str = (StringList*)lParam;
 		if(ctrlStatus.IsWindow()) {
@@ -166,7 +168,15 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
-	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
+	ItemInfo::Types t = aCqi->getConnection() && aCqi->getConnection()->isSet(UserConnection::FLAG_UPLOAD) ? ItemInfo::TYPE_UPLOAD : ItemInfo::TYPE_DOWNLOAD;
+	ItemInfo* ii = new ItemInfo(aCqi->getUser(), t, ItemInfo::STATUS_WAITING);
+	
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) == transferItems.end());
+		transferItems.insert(make_pair(aCqi, ii));
+	}
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	i->columns[COLUMN_USER] = aCqi->getUser()->getNick() + " (" + aCqi->getUser()->getClientName() + ")";
 	i->columns[COLUMN_STATUS] = STRING(CONNECTING);
 
@@ -178,23 +188,57 @@ void MainFrame::onConnectionAdded(ConnectionQueueItem* aCqi) {
 }
 
 void MainFrame::onConnectionStatus(ConnectionQueueItem* aCqi) {
-	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	i->columns[COLUMN_STATUS] = aCqi->getState() == ConnectionQueueItem::CONNECTING ? STRING(CONNECTING) : STRING(WAITING_TO_RETRY);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onConnectionRemoved(ConnectionQueueItem* aCqi) {
-	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)aCqi);
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		ItemInfo::MapIter i = transferItems.find(aCqi);
+		dcassert(i != transferItems.end());
+		ii = i->second;
+		transferItems.erase(i);
+	}
+	PostMessage(WM_SPEAKER, REMOVE_ITEM, (LPARAM)ii);
 }
 
 void MainFrame::onConnectionFailed(ConnectionQueueItem* aCqi, const string& aReason) {
-	StringListInfo* i = new StringListInfo((LPARAM)aCqi);
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	i->columns[COLUMN_STATUS] = aReason;
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
+
 void MainFrame::onUploadStarting(Upload* aUpload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getUserConnection()->getCQI());
-	i->columns[COLUMN_FILE] = aUpload->getFileName();
+	ConnectionQueueItem* aCqi = aUpload->getUserConnection()->getCQI();
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	ii->pos = 0;
+	ii->size = aUpload->getSize();
+	ii->status = ItemInfo::STATUS_RUNNING;
+
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
+	
+	i->columns[COLUMN_FILE] = Util::getFileName(aUpload->getFileName());
+	i->columns[COLUMN_PATH] = Util::getFilePath(aUpload->getFileName());
 	i->columns[COLUMN_STATUS] = STRING(UPLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aUpload->getSize());
 
@@ -204,54 +248,96 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 void MainFrame::onUploadTick(const Upload::List& ul) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(ul.size());
+
+	char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
 	
-	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
-		Upload* u = *j;
+	{
+		Lock l(cs);
+		for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
+			Upload* u = *j;
+			
+			ConnectionQueueItem* aCqi = u->getUserConnection()->getCQI();
+			ItemInfo* ii = transferItems[aCqi];		
+			ii->pos = u->getPos();
 
-		char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
-		sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
-			(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getRunningAverage()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
-
-		StringListInfo* i = new StringListInfo((LPARAM)u->getUserConnection()->getCQI());
-		i->columns[COLUMN_STATUS] = buf;
-
-		delete[] buf;
-		v->push_back(i);
+			sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
+				(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(u->getRunningAverage()).c_str(), Util::formatSeconds(u->getSecondsLeft()).c_str());
+			
+			StringListInfo* i = new StringListInfo((LPARAM)ii);
+			i->columns[COLUMN_STATUS] = buf;
+			
+			v->push_back(i);
+		}
 	}
+
+	delete[] buf;
 	
 	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
 }
 
 void MainFrame::onUploadComplete(Upload* aUpload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getUserConnection()->getCQI());
+	ConnectionQueueItem* aCqi = aUpload->getUserConnection()->getCQI();
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	ii->status = ItemInfo::STATUS_WAITING;
+	ii->pos = 0;
+
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	i->columns[COLUMN_STATUS] = STRING(UPLOAD_FINISHED_IDLE);
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
 }
 
 void MainFrame::onDownloadComplete(Download* p) {
-	if(p->isSet(Download::USER_LIST)) {
-		// We have a new DC listing, show it...
-		DirectoryListInfo* i = new DirectoryListInfo((LPARAM)p->getUserConnection()->getCQI());
-		i->file = p->getTarget();
-		i->user = p->getUserConnection()->getUser();
-		
-		PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
-	} else {
-		StringListInfo* i = new StringListInfo((LPARAM)p->getUserConnection()->getCQI());
-		i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_FINISHED_IDLE);
-		PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
+	ConnectionQueueItem* aCqi = p->getUserConnection()->getCQI();
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
 	}
+	ii->status = ItemInfo::STATUS_WAITING;
+	ii->pos = 0;
+
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
+	i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_FINISHED_IDLE);
+	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);	
 }
 
 void MainFrame::onDownloadFailed(Download* aDownload, const string& aReason) {
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getUserConnection()->getCQI());
+	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	ii->status = ItemInfo::STATUS_WAITING;
+	ii->pos = 0;
+	
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
 	i->columns[COLUMN_STATUS] = aReason;
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
 void MainFrame::onDownloadStarting(Download* aDownload) {
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getUserConnection()->getCQI());
-	i->columns[COLUMN_FILE] = aDownload->getTargetFileName();
+	ConnectionQueueItem* aCqi = aDownload->getUserConnection()->getCQI();
+	ItemInfo* ii;
+	{
+		Lock l(cs);
+		dcassert(transferItems.find(aCqi) != transferItems.end());
+		ii = transferItems[aCqi];		
+	}
+	ii->status = ItemInfo::STATUS_RUNNING;
+	ii->pos = 0;
+	ii->size = aDownload->getSize();
+
+	StringListInfo* i = new StringListInfo((LPARAM)ii);
+	i->columns[COLUMN_FILE] = Util::getFileName(aDownload->getTarget());
+	i->columns[COLUMN_PATH] = Util::getFilePath(aDownload->getTarget());
 	i->columns[COLUMN_STATUS] = STRING(DOWNLOAD_STARTING);
 	i->columns[COLUMN_SIZE] = Util::formatBytes(aDownload->getSize());
 	
@@ -262,17 +348,24 @@ void MainFrame::onDownloadTick(const Download::List& dl) {
 	vector<StringListInfo*>* v = new vector<StringListInfo*>();
 	v->reserve(dl.size());
 
-	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
-		Download* d = *j;
-		char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
-		sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
-			(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getRunningAverage()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
-		
-		StringListInfo* i = new StringListInfo((LPARAM)d->getUserConnection()->getCQI());
-		i->columns[COLUMN_STATUS] = buf;
-		delete[] buf;
+	{
+		Lock l(cs);
+		for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
+			Download* d = *j;
+			char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
+			sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
+				(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(d->getRunningAverage()).c_str(), Util::formatSeconds(d->getSecondsLeft()).c_str());
+			
+			ConnectionQueueItem* aCqi = d->getUserConnection()->getCQI();
+			ItemInfo* ii = transferItems[aCqi];
+			ii->pos = d->getPos();
 
-		v->push_back(i);
+			StringListInfo* i = new StringListInfo((LPARAM)ii);
+			i->columns[COLUMN_STATUS] = buf;
+			delete[] buf;
+			
+			v->push_back(i);
+		}
 	}
 	
 	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
@@ -347,6 +440,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 	ConnectionManager::getInstance()->addListener(this);
+	QueueManager::getInstance()->addListener(this);
 	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -358,7 +452,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	WinUtil::bgColor = SETTING(BACKGROUND_COLOR);
 	WinUtil::font = ::CreateFontIndirect(&lf);
 
-	trayMessage = RegisterWindowMessage("TaskbarCreated");
+	trayMessage = RegisterWindowMessage("DCPP_TaskbarCreated");
 
 	if(BOOLSETTING(USE_SYSTEM_ICONS)) {
 		SHFILEINFO fi;
@@ -427,59 +521,16 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	} else {
 		ctrlTransfers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
 	}
+
+	WinUtil::splitTokens(columnIndexes, SETTING(MAINFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(MAINFRAME_WIDTHS), COLUMN_LAST);
 	
-	StringList l = StringTokenizer(SETTING(MAINFRAME_ORDER), ',').getTokens();
-
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
-	}
-
-	l = StringTokenizer(SETTING(MAINFRAME_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_SIZE) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlTransfers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	lvc.pszText = const_cast<char*>(CSTRING(USER));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_USER];
-	lvc.iOrder = columnIndexes[COLUMN_USER];
-	lvc.iSubItem = COLUMN_USER;
-	ctrlTransfers.InsertColumn(0, &lvc);
-
-	lvc.pszText = const_cast<char*>(CSTRING(STATUS));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_STATUS];
-	lvc.iOrder = columnIndexes[COLUMN_STATUS];
-	lvc.iSubItem = COLUMN_STATUS;
-	ctrlTransfers.InsertColumn(1, &lvc);
-
-	lvc.pszText = const_cast<char*>(CSTRING(FILE));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_FILE];
-	lvc.iOrder = columnIndexes[COLUMN_FILE];
-	lvc.iSubItem = COLUMN_FILE;
-	ctrlTransfers.InsertColumn(2, &lvc);
-
-	lvc.pszText = const_cast<char*>(CSTRING(SIZE));
-	lvc.fmt = LVCFMT_RIGHT;
-	lvc.cx = columnSizes[COLUMN_SIZE];
-	lvc.iOrder = columnIndexes[COLUMN_SIZE];
-	lvc.iSubItem = COLUMN_SIZE;
-	ctrlTransfers.InsertColumn(3, &lvc);
+	ctrlTransfers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
 	ctrlTransfers.SetBkColor(WinUtil::bgColor);
 	ctrlTransfers.SetTextBkColor(WinUtil::bgColor);
@@ -504,15 +555,30 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	pLoop->AddIdleHandler(this);
 
 	if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-		try {
-			ConnectionManager::getInstance()->setPort((short)SETTING(PORT));
-			SearchManager::getInstance()->setPort((short)SETTING(PORT));
-		} catch(Exception e) {
-			dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-			char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
-			sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
-			MessageBox(buf);
-			delete[] buf;
+		
+		short lastPort = (short)SETTING(IN_PORT);
+		short firstPort = lastPort;
+		
+		while(true) {
+			try {
+				ConnectionManager::getInstance()->setPort(lastPort);
+				SearchManager::getInstance()->setPort(lastPort);
+				break;
+			} catch(Exception e) {
+				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+				short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+				SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
+				if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
+					// Changing default didn't change port, a fixed port must be in use...(or we
+					// tried all ports
+					char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+					sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+					MessageBox(buf);
+					delete[] buf;
+					break;
+				}
+				lastPort = newPort;
+			}
 		}
 	}
 
@@ -537,6 +603,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	PostMessage(WM_SPEAKER, PARSE_COMMAND_LINE);
 
 	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
+
+	ctrlTransfers.setSort(COLUMN_STATUS, ExListViewCtrl::SORT_FUNC, true, sortStatus);
 	
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
@@ -568,7 +636,11 @@ void MainFrame::parseCommandLine(const string& cmdLine)
 			HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, server);
 		}
 		if(!user.empty()) {
-			QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user));
+			try {
+				QueueManager::getInstance()->addList(ClientManager::getInstance()->getUser(user));
+			} catch(Exception) {
+				// ...
+			}
 		}
 	}
 }
@@ -681,21 +753,38 @@ LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 LRESULT MainFrame::OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PropertiesDlg dlg(SettingsManager::getInstance());
-	
+
+	short lastPort = (short)SETTING(IN_PORT);
+	short firstPort = lastPort;
+	int lastConn = SETTING(CONNECTION_TYPE);
+
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{		
 		SettingsManager::getInstance()->save();
 		
-		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
-			try {
-				ConnectionManager::getInstance()->setPort((short)SETTING(PORT));
-				SearchManager::getInstance()->setPort((short)SETTING(PORT));
-			} catch(Exception e) {
-				dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
-				char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
-				sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(PORT));
-				MessageBox(buf);
-				delete[] buf;
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE && 
+			((SETTING(CONNECTION_TYPE) != lastConn) || (SETTING(IN_PORT) != lastPort))) {
+			while(true) {
+				try {
+					lastPort = (short)SETTING(IN_PORT);
+					ConnectionManager::getInstance()->setPort((short)SETTING(IN_PORT));
+					SearchManager::getInstance()->setPort((short)SETTING(IN_PORT));
+					break;
+				} catch(Exception e) {
+					dcdebug("MainFrame::OnCreate caught %s\n", e.getError().c_str());
+					short newPort = (short)((lastPort == 32000) ? 1025 : lastPort + 1);
+					SettingsManager::getInstance()->setDefault(SettingsManager::IN_PORT, newPort);
+					if(SETTING(IN_PORT) == lastPort || (firstPort == newPort)) {
+						// Changing default didn't change port, a fixed port must be in use...(or we
+						// tried all ports
+						char* buf = new char[STRING(PORT_IS_BUSY).size() + 8];
+						sprintf(buf, CSTRING(PORT_IS_BUSY), SETTING(IN_PORT));
+						MessageBox(buf);
+						delete[] buf;
+						break;
+					}
+					lastPort = newPort;
+				}
 			}
 		}
 		ClientManager::getInstance()->infoUpdated();
@@ -772,7 +861,7 @@ void MainFrame::autoConnect(const FavoriteHubEntry::List& fl) {
 LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		PrivateFrame::openWindow(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), m_hWndMDIClient, &ctrlTab);
+		PrivateFrame::openWindow(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, m_hWndMDIClient, &ctrlTab);
 	}
 	return 0;
 }
@@ -780,7 +869,7 @@ LRESULT MainFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 LRESULT MainFrame::onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		QueueManager::getInstance()->removeSources(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser(), QueueItem::Source::FLAG_REMOVED);
+		QueueManager::getInstance()->removeSources(((ItemInfo*)ctrlTransfers.GetItemData(i))->user, QueueItem::Source::FLAG_REMOVED);
 	}
 	return 0;
 }
@@ -789,7 +878,7 @@ LRESULT MainFrame::onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ctrlTransfers.SetItemText(i, COLUMN_STATUS, CSTRING(CONNECTING_FORCED));
-		((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser()->connect();
+		((ItemInfo*)ctrlTransfers.GetItemData(i))->user->connect();
 	}
 	return 0;
 }
@@ -819,13 +908,29 @@ void MainFrame::updateTray(bool add /* = true */) {
 		trayIcon = false;		
 	}
 }
+
+/**
+ * @todo Fix so that the away mode is not reset if it was set manually...
+ */
 LRESULT MainFrame::onSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if(wParam == SIZE_MINIMIZED && BOOLSETTING(MINIMIZE_TRAY)) {
-		updateTray(true);
-		ShowWindow(SW_HIDE);
-	} else if( ((wParam == SIZE_RESTORED) || wParam == SIZE_MAXIMIZED) && trayIcon) {
-		updateTray(false);
+	if(wParam == SIZE_MINIMIZED) {
+		if(BOOLSETTING(AUTO_AWAY)) {
+			Util::setAway(true);
+		}
+		if(BOOLSETTING(MINIMIZE_TRAY)) {
+			updateTray(true);
+			ShowWindow(SW_HIDE);
+		}
+		maximized = IsZoomed() > 0;
+
+	} else if( (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) ) {
+		if(BOOLSETTING(AUTO_AWAY)) {
+			Util::setAway(false);
+		}
+		if(trayIcon) {
+			updateTray(false);
+		}
 	}
 	
 	bHandled = FALSE;
@@ -836,13 +941,57 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	int i = -1;
 	while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		try {
-			QueueManager::getInstance()->addList(((ConnectionQueueItem*)ctrlTransfers.GetItemData(i))->getUser());
+			QueueManager::getInstance()->addList(((ItemInfo*)ctrlTransfers.GetItemData(i))->user);
 		} catch(QueueException e) {
 			ctrlStatus.SetText(0, e.getError().c_str());
 		} catch(FileException e) {
 			dcdebug("MainFonGetList caught %s\n", e.getError().c_str());
 		}
 	}
+	return 0;
+}
+
+LRESULT MainFrame::onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	if(c != NULL) {
+		c->removeListener(this);
+		delete c;
+		c = NULL;
+	}
+
+	string tmp1;
+	string tmp2;
+	
+	WINDOWPLACEMENT wp;
+	wp.length = sizeof(wp);
+	GetWindowPlacement(&wp);
+	
+	CRect rc;
+	GetWindowRect(rc);
+	
+	if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, rc.left);
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, rc.top);
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, rc.Width());
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, rc.Height());
+	}
+	if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
+		SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
+	
+	ctrlTransfers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
+	for(int i = COLUMN_FIRST; i != COLUMN_LAST; i++) {
+		columnSizes[i] = ctrlTransfers.GetColumnWidth(i);
+		tmp1 += Util::toString(columnIndexes[i]) + ",";
+		tmp2 += Util::toString(columnSizes[i]) + ",";
+	}
+	tmp1.erase(tmp1.size()-1, 1);
+	tmp2.erase(tmp2.size()-1, 1);
+	
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_ORDER, tmp1);
+	SettingsManager::getInstance()->set(SettingsManager::MAINFRAME_WIDTHS, tmp2);
+	
+	QueueManager::getInstance()->saveQueue();
+	SettingsManager::getInstance()->save();
+	
 	return 0;
 }
 
@@ -869,6 +1018,21 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 		if( oldshutdown ||(!BOOLSETTING(CONFIRM_EXIT)) || (MessageBox(CSTRING(REALLY_EXIT), "", MB_YESNO) == IDYES) ) {
 			string tmp1;
 			string tmp2;
+
+			WINDOWPLACEMENT wp;
+			wp.length = sizeof(wp);
+			GetWindowPlacement(&wp);
+
+			CRect rc;
+			GetWindowRect(rc);
+			if(wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWNORMAL) {
+				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_X, rc.left);
+				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_POS_Y, rc.top);
+				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_X, rc.Width());
+				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_SIZE_Y, rc.Height());
+			}
+			if(wp.showCmd == SW_SHOWNORMAL || wp.showCmd == SW_SHOW || wp.showCmd == SW_SHOWMAXIMIZED || wp.showCmd == SW_MAXIMIZE)
+				SettingsManager::getInstance()->set(SettingsManager::MAIN_WINDOW_STATE, (int)wp.showCmd);
 
 			ctrlTransfers.GetColumnOrderArray(COLUMN_LAST, columnIndexes);
 			for(int i = COLUMN_FIRST; i != COLUMN_LAST; i++) {
@@ -902,6 +1066,7 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_DISCUSS: site = "http://dcpp.lichlord.org/forum"; break;
 	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
 	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
+	case IDC_HELP_DONATE: site = "https://www.paypal.com/xclick/business=j_s%40telia.com&item_name=DC%2B%2B&no_shipping=1&cn=DC%2B%2B+forum+nick+or+greeting"; break;
 	default: dcassert(0);
 	}
 
@@ -962,7 +1127,7 @@ LRESULT MainFrame::onOpenFileList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		if(file.rfind('\\') != string::npos) {
 			username = file.substr(file.rfind('\\') + 1);
 			if(username.rfind('.') != string::npos) {
-				username = username.substr(0, username.rfind('.'));
+				username.erase(username.rfind('.'));
 			}
 			User::Ptr& u = ClientManager::getInstance()->getUser(username);
 
@@ -979,7 +1144,7 @@ LRESULT MainFrame::onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 {
 	if (lParam == WM_LBUTTONUP) {
 		ShowWindow(SW_SHOW);
-		ShowWindow(SW_RESTORE);
+		ShowWindow(maximized ? SW_MAXIMIZE : SW_RESTORE);
 	} else if(lParam == WM_MOUSEMOVE && ((lastMove + 1000) < GET_TICK()) ) {
 		NOTIFYICONDATA nid;
 		nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -1018,6 +1183,55 @@ LRESULT MainFrame::onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
  		MDIActivate(FinishedFrame::frame->m_hWnd);
 	}
 	return 0;
+}
+
+LRESULT MainFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    CRect rc;
+	LPNMLVCUSTOMDRAW cd = (LPNMLVCUSTOMDRAW)pnmh;
+	
+	switch(cd->nmcd.dwDrawStage) {
+    case CDDS_PREPAINT:
+        return CDRF_NOTIFYITEMDRAW;
+		
+    case CDDS_ITEMPREPAINT:
+		return CDRF_NOTIFYSUBITEMDRAW;
+		
+    case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
+		// Let's draw a box if needed...
+		if(cd->iSubItem == COLUMN_STATUS) {
+			ItemInfo* ii = (ItemInfo*)cd->nmcd.lItemlParam;
+			if(ii->status == ItemInfo::STATUS_RUNNING) {
+				// draw something nice...
+				char buf[256];
+				ctrlTransfers.GetItemText((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, buf, 255);
+				buf[255] = 0;
+
+				ctrlTransfers.GetSubItemRect((int)cd->nmcd.dwItemSpec, COLUMN_STATUS, LVIR_BOUNDS, rc);
+				CRect rc2 = rc;
+				rc2.left += 6;
+				//::Rectangle(cd->nmcd.hdc, rc.left, rc.top, rc.right, rc.bottom);
+				//rc.DeflateRect(1, 1, 1, 1);
+				if(ii->size == 0)
+					ii->size = 1;
+				rc.right = rc.left + (int) (((int64_t)rc.Width()) * ii->pos / ii->size);
+				HGDIOBJ old = ::SelectObject(cd->nmcd.hdc, GetSysColorBrush(COLOR_HIGHLIGHT));
+				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, 
+					rc.right, rc.bottom);
+				::SelectObject(cd->nmcd.hdc, old);
+				COLORREF oldcol = ::SetTextColor(cd->nmcd.hdc, cd->clrText);
+				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+				::SetTextColor(cd->nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+				rc2.right = rc.right;
+				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
+				::SelectObject(cd->nmcd.hdc, old);
+				::SetTextColor(cd->nmcd.hdc, oldcol);
+				return CDRF_SKIPDEFAULT;
+			}
+		}
+		// Fall through
+	default:
+		return CDRF_DODEFAULT;
+    }
 }
 
 void MainFrame::onAction(UploadManagerListener::Types type, Upload* aUpload) {
@@ -1066,16 +1280,16 @@ void MainFrame::onAction(ConnectionManagerListener::Types type, ConnectionQueueI
 	}
 }
 
-void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	if(type == TimerManagerListener::SECOND) {
-		u_int32_t diff = (lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate;
+		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 
 		StringList* str = new StringList();
-		str->push_back("Slots: " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
+		str->push_back(STRING(SLOTS) + ": " + Util::toString(UploadManager::getInstance()->getFreeSlots()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
 		str->push_back("U: " + Util::formatBytes(Socket::getTotalUp()));
-		str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
-		str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
+		str->push_back("D: " + Util::formatBytes(Socket::getDown()*1000I64/diff) + "/s (" + Util::toString(DownloadManager::getInstance()->getDownloads()) + ")");
+		str->push_back("U: " + Util::formatBytes(Socket::getUp()*1000I64/diff) + "/s (" + Util::toString(UploadManager::getInstance()->getUploads()) + ")");
 		PostMessage(WM_SPEAKER, STATS, (LPARAM)str);
 		SettingsManager::getInstance()->set(SettingsManager::TOTAL_UPLOAD, SETTING(TOTAL_UPLOAD) + Socket::getUp());
 		SettingsManager::getInstance()->set(SettingsManager::TOTAL_DOWNLOAD, SETTING(TOTAL_DOWNLOAD) + Socket::getDown());
@@ -1096,8 +1310,25 @@ void MainFrame::onAction(HttpConnectionListener::Types type, HttpConnection* /*c
 	}
 }
 
+void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) {
+	if(type == QueueManagerListener::FINISHED) {
+		if(qi->isSet(QueueItem::FLAG_CLIENT_VIEW)) {
+			// This is a file listing, show it...
+			DirectoryListInfo* i = new DirectoryListInfo();
+			if(qi->isSet(QueueItem::FLAG_BZLIST) ){
+				dcassert(qi->getTarget().rfind('.') != string::npos);
+				i->file = qi->getTarget().substr(0, qi->getTarget().rfind('.')+1) + "bz2";
+			} else {
+				i->file = qi->getTarget();
+			}
+			i->user = qi->getCurrent()->getUser();
+			PostMessage(WM_SPEAKER, DOWNLOAD_LISTING, (LPARAM)i);
+		}
+	}
+}
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.17 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.18 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -58,39 +58,15 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	}
 	
 	// Create listview columns
-	StringList l = StringTokenizer(SETTING(PUBLICHUBSFRAME_ORDER), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
+	WinUtil::splitTokens(columnIndexes, SETTING(PUBLICHUBSFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(PUBLICHUBSFRAME_WIDTHS), COLUMN_LAST);
+	
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlHubs.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	l = StringTokenizer(SETTING(PUBLICHUBSFRAME_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
-	}
-	
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-	
-	for(int j=0; j<COLUMN_LAST; j++)
-	{
-		lvc.pszText = const_cast<char*>(ResourceManager::getInstance()->getString(columnNames[j]).c_str());
-		lvc.fmt = ((j == COLUMN_USERS) ? LVCFMT_RIGHT : LVCFMT_LEFT);
-		lvc.cx = columnSizes[j];
-		lvc.iOrder = columnIndexes[j];
-		lvc.iSubItem = j;
-		ctrlHubs.InsertColumn(j, &lvc);
-	}
+	ctrlHubs.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
 	ctrlHubs.SetBkColor(WinUtil::bgColor);
 	ctrlHubs.SetTextBkColor(WinUtil::bgColor);
@@ -175,15 +151,21 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	if(!checkNick())
 		return 0;
 
-	char buf[256];
-
 	if(ctrlHub.GetWindowTextLength() > 0) {
-		ctrlHub.GetWindowText(buf, 256);
+		char* hub = new char[ctrlHub.GetWindowTextLength()+1];
+		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		ctrlHub.SetWindowText("");
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+		string tmp = hub;
+		delete hub;
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos)
+			tmp.erase(i, 1);
 
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), tmp);
+			
 	} else {
 		if(ctrlHubs.GetSelectedCount() == 1) {
+			char buf[256];
 			int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 			ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 			HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
@@ -214,18 +196,21 @@ LRESULT PublicHubsFrame::onAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 }
 
 LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
-	char* hub;
-	
 	if(wParam == VK_RETURN && ctrlHub.GetWindowTextLength() > 0) {
 		if(!checkNick()) {
 			return 0;
 		}
 		
-		hub = new char[ctrlHub.GetWindowTextLength()+1];
+		char *hub = new char[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
-		HubFrame::openWindow(m_hWndMDIClient, getTab(), hub);
-		delete hub;
 		ctrlHub.SetWindowText("");
+		string tmp = hub;
+		delete hub;
+		string::size_type i;
+		while((i = tmp.find(' ')) != string::npos)
+			tmp.erase(i, 1);
+		
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), tmp);
 	} else {
 		bHandled = FALSE;
 	}
@@ -390,6 +375,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.6 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

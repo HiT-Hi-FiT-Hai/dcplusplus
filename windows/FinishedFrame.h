@@ -33,8 +33,8 @@
 class FinishedFrame : public MDITabChildWindowImpl<FinishedFrame>, private FinishedManagerListener
 {
 public:
-	FinishedFrame() { }
-	virtual ~FinishedFrame() { }
+	FinishedFrame() : totalBytes(0), totalTime(0) { };
+	virtual ~FinishedFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("FinishedFrame", IDR_QUEUE, 0, COLOR_3DFACE);
 		
@@ -86,14 +86,14 @@ public:
 	}
 	
 	static int sortSize(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)((LVITEM *)a)->lParam;
-		FinishedItem* d = (FinishedItem*)((LVITEM *)b)->lParam;
+		FinishedItem* c = (FinishedItem*)a;
+		FinishedItem* d = (FinishedItem*)b;
 		return compare(c->getSize(), d->getSize());
 	}
 
 	static int sortSpeed(LPARAM a, LPARAM b) {
-		FinishedItem* c = (FinishedItem*)((LVITEM *)a)->lParam;
-		FinishedItem* d = (FinishedItem*)((LVITEM *)b)->lParam;
+		FinishedItem* c = (FinishedItem*)a;
+		FinishedItem* d = (FinishedItem*)b;
 		return compare(c->getAvgSpeed(), d->getAvgSpeed());
 	}
 
@@ -104,10 +104,10 @@ public:
 		} else {
 			switch(l->iSubItem) {
 			case COLUMN_SIZE:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSize);
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 				break;
 			case COLUMN_SPEED:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC_ITEM, true, sortSpeed);
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSpeed);
 				break;
 			default:
 				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
@@ -134,6 +134,20 @@ public:
 
 		// position bars and offset their dimensions
 		UpdateBarsPosition(rect, bResizeBars);
+
+		if(ctrlStatus.IsWindow()) {
+			CRect sr;
+			int w[3];
+			ctrlStatus.GetClientRect(sr);
+			int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+			
+			w[0] = sr.right - tmp;
+			w[1] = w[0] + (tmp-16)/2;
+			w[2] = w[0] + (tmp-16);
+			
+			ctrlStatus.SetParts(4, w);
+		}
+		
 		CRect rc(rect);
 		ctrlList.MoveWindow(rc);
 	}
@@ -156,9 +170,17 @@ private:
 	
 	ExListViewCtrl ctrlList;
 	
+	int64_t totalBytes;
+	int64_t totalTime;
+	
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 	
+	void updateStatus() {
+		ctrlStatus.SetText(1, Util::formatBytes(totalBytes).c_str());
+		ctrlStatus.SetText(2, (Util::formatBytes((totalTime > 0) ? totalBytes * ((int64_t)1000) / totalTime : 0) + "/s").c_str());
+	}
+
 	void updateList(const FinishedItem::List& fl) {
 		ctrlList.SetRedraw(FALSE);
 		for(FinishedItem::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
@@ -166,6 +188,7 @@ private:
 		}
 		ctrlList.SetRedraw(TRUE);
 		ctrlList.Invalidate();
+		updateStatus();
 	}
 
 	void addEntry(FinishedItem* entry) {
@@ -177,6 +200,9 @@ private:
 		l.push_back(Util::formatBytes(entry->getAvgSpeed()) + "/s");
 		int loc = ctrlList.insert(l, 0, (LPARAM)entry);
 		ctrlList.EnsureVisible(loc, FALSE);
+
+		totalBytes += entry->getSize();
+		totalTime += entry->getMilliSeconds();
 	}
 	
 	virtual void onAction(FinishedManagerListener::Types type, FinishedItem* entry);
@@ -186,5 +212,5 @@ private:
 
 /**
  * @file FinishedFrame.h
- * $Id: FinishedFrame.h,v 1.2 2002/06/16 09:34:47 arnetheduck Exp $
+ * $Id: FinishedFrame.h,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
  */

@@ -86,7 +86,8 @@ public:
 
 	bool isConnected() { if(!socket) return false; else return socket->isConnected(); };
 	void disconnect() throw();
-
+	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared);
+	
 	void refreshUserList(bool unknownOnly = false);
 
 #define checkstate() if(state != STATE_CONNECTED) return
@@ -103,40 +104,15 @@ public:
 	void search(int aSizeType, int64_t aSize, int aFileType, const string& aString);
 	void searchResults(const string& aResults) { send(aResults); };
 	
-	void myInfo(const string& aNick, const string& aDescription, const string& aSpeed, const string& aEmail, const string& aBytesShared) {
-		checkstate();
-
-		dcdebug("MyInfo %s...\n", aNick.c_str());
-		lastHubs = hubs;
-		lastUpdate = GET_TICK();
-		string tmp1 = ";**\x1fU9";
-		string tmp2 = "+L9";
-		string tmp3 = "+G9";
-		string tmp4 = "+R9";
-			
-		string::size_type i;
-
-		for(i = 0; i < tmp1.size(); i++) {
-			tmp1[i]++;
-		}
-		for(i = 0; i < tmp2.size(); i++) {
-			tmp2[i]++; tmp3[i]++; tmp4[i]++;
-		}
-		send("$MyINFO $ALL " + Util::validateNick(aNick) + " " + Util::validateMessage(aDescription) + 
-			tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
-			tmp3 + Util::toString(lastHubs) + tmp4 + Util::toString(SETTING(SLOTS)) + 
-			">$ $" + aSpeed + "\x01$" + Util::validateMessage(aEmail) + '$' + aBytesShared + "$|");
-	}
-
 	void connectToMe(const User::Ptr& aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(IN_PORT)) + "|");
 	}
 	void connectToMe(User* aUser) {
 		checkstate(); 
 		dcdebug("Client::connectToMe %s\n", aUser->getNick().c_str());
-		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(PORT)) + "|");
+		send("$ConnectToMe " + aUser->getNick() + " " + Socket::resolve(SETTING(SERVER)) + ":" + Util::toString(SETTING(IN_PORT)) + "|");
 	}
 	void privateMessage(const User::Ptr& aUser, const string& aMessage) {
 		checkstate(); 
@@ -189,11 +165,9 @@ public:
 		return x;
 	}
 
-	const string& getNick() { return nick.empty() ? SETTING(NICK) : nick; };
-	void setNick(const string& aNick) { nick = aNick; }
-	
 	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
 	
+	GETSETREF(string, nick, Nick);
 	GETSET(bool, userInfo, UserInfo);
 	GETSET(bool, op, Op);
 	GETSET(bool, registered, Registered);
@@ -205,7 +179,7 @@ private:
 		STATE_HELLO,
 		STATE_CONNECTED
 	} state;
-	string nick;
+
 	string server;
 	short port;
 	BufferedSocket* socket;
@@ -226,7 +200,8 @@ private:
 	FloodMap seekers;
 	FloodMap flooders;
 
-	Client() : userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), lastActivity(GET_TICK()), lastHubs(0), counted(false) {
+	Client() : nick(SETTING(NICK)), userInfo(true), op(false), registered(false), state(STATE_CONNECT), socket(NULL), 
+		lastActivity(GET_TICK()), lastHubs(0), counted(false), lastUpdate(0) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
@@ -239,7 +214,7 @@ private:
 	void onLine(const string& aLine) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 
 	// BufferedSocketListener
 	virtual void onAction(BufferedSocketListener::Types type, const string& aLine);
@@ -256,6 +231,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.60 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: Client.h,v 1.61 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

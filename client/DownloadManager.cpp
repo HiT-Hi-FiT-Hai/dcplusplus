@@ -24,10 +24,22 @@
 #include "User.h"
 #include "QueueManager.h"
 #include "LogManager.h"
+#include "CryptoManager.h"
 
 DownloadManager* Singleton<DownloadManager>::instance = NULL;
 
 static string DOWNLOAD_AREA = "Downloads";
+
+Download::Download(QueueItem* qi) throw() : source(qi->getCurrent()->getPath()),
+	target(qi->getTarget()), tempTarget(qi->getTempTarget()), 
+	comp(NULL), bytesLeft(0), rollbackBuffer(NULL), rollbackSize(0) { 
+	
+	setSize(qi->getSize());
+	if(qi->isSet(QueueItem::FLAG_USER_LIST))
+		setFlag(Download::FLAG_USER_LIST);
+	if(qi->isSet(QueueItem::FLAG_RESUME))
+		setFlag(Download::FLAG_RESUME);
+};
 
 void DownloadManager::onTimerSecond(u_int32_t /*aTick*/) {
 	Lock l(cs);
@@ -72,7 +84,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			downloads.push_back(d);
 		}
 		
-		if(d->isSet(Download::RESUME)) {
+		if(d->isSet(Download::FLAG_RESUME)) {
 			int64_t size = File::getSize(d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget());
 			int rollback = SETTING(ROLLBACK);
 			int cutoff = max(SETTING(ROLLBACK), SETTING(BUFFER_SIZE)*1024);
@@ -83,15 +95,26 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 			} else {
 				d->setPos(size - rollback - cutoff);
 				d->setRollbackBuffer(rollback);
-				d->setFlag(Download::ROLLBACK);
+				d->setFlag(Download::FLAG_ROLLBACK);
 			}
 		} else {
 			d->setPos(0);
 		}
-		if(d->isSet(Download::USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+		if(d->isSet(Download::FLAG_USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
 			d->setSource("MyList.bz2");
 		}
-		aConn->get(d->getSource(), d->getPos());
+
+		if(BOOLSETTING(COMPRESS_TRANSFERS) && !d->isSet(Download::FLAG_USER_LIST) && 
+			aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK)) {
+
+			// This one, we'll download with a bzblock download instead...
+			d->setFlag(Download::FLAG_ZDOWNLOAD);
+			d->bytesLeft = d->getSize() - d->getPos();
+			d->setComp(new ZDecompressor());
+			aConn->getBZBlock(d->getSource(), d->getPos(), d->bytesLeft);
+		} else {
+			aConn->get(d->getSource(), d->getPos());
+		}
 		return;
 	}
 
@@ -99,49 +122,70 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	removeConnection(aConn, true);
 }
 
-void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+void DownloadManager::onSending(UserConnection* aSource) {
 	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
 		dcdebug("DM::onFileLength Bad state, ignoring\n");
 		return;
 	}
-
-	int64_t fileLength = Util::toInt64(aFileLength);
 	
+	if(prepareFile(aSource)) {
+		aSource->setDataMode();
+	}
+}
+
+bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = -1 */) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
-
+	
 	string target = d->getTempTarget().empty() ? d->getTarget() : d->getTempTarget();
 	Util::ensureDirectory(target);
-	if(d->isSet(Download::USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+	if(d->isSet(Download::FLAG_USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
 		target.replace(target.size() - 5, 5, "bz2");
 	}
 	File* file;
 	try {
-		file = new BufferedFile(target, File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
+		file = new BufferedFile(target, File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::FLAG_RESUME) ? 0 : File::TRUNCATE));
 	} catch(FileException e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
-		return;
+		return false;
 	}
 
 	dcassert(d->getPos() != -1);
 	file->setPos(d->getPos());
 	d->setFile(file);
-	d->setSize(fileLength);
 
+	if(newSize != -1)
+		d->setSize(newSize);
+	
 	if(d->getSize() <= d->getPos()) {
 		aSource->setDownload(NULL);
 		removeDownload(d, true);
 		removeConnection(aSource);
+		return false;
 	} else {
 		d->setStart(GET_TICK());
 		aSource->setState(UserConnection::STATE_DONE);
 		
 		fire(DownloadManagerListener::STARTING, d);
 		
-		aSource->setDataMode(d->getSize() - d->getPos());
+	}
+	
+	return true;
+}	
+
+void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileLength) {
+
+	if(aSource->getState() != UserConnection::STATE_FILELENGTH) {
+		dcdebug("DM::onFileLength Bad state, ignoring\n");
+		return;
+	}
+
+	int64_t fileLength = Util::toInt64(aFileLength);
+	if(prepareFile(aSource, fileLength)) {
+		aSource->setDataMode(aSource->getDownload()->getSize() - aSource->getDownload()->getPos());
 		aSource->startSend();
 	}
 }
@@ -150,23 +194,17 @@ bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen
 	dcassert(d->getRollbackBuffer());
 	
 	if(d->getTotal() + aLen >= d->getRollbackSize()) {
-		u_int8_t* buf = new u_int8_t[d->getRollbackSize()];
+		AutoArray<u_int8_t> buf(d->getRollbackSize());
 		int len = d->getRollbackSize() - (int)d->getTotal();
 		dcassert(len > 0);
 		dcassert(len <= d->getRollbackSize());
 		memcpy(d->getRollbackBuffer() + d->getTotal(), aData, len);
 		
-		try {
-			d->getFile()->read(buf, d->getRollbackSize());
-		} catch(...) {
-			delete[] buf;
-			throw;
-		}
+		d->getFile()->read((u_int8_t*)buf, d->getRollbackSize());
 		
 		int cmp = memcmp(d->getRollbackBuffer(), buf, d->getRollbackSize());
 		
-		delete[] buf;
-		d->unsetFlag(Download::ROLLBACK);
+		d->unsetFlag(Download::FLAG_ROLLBACK);
 		d->setRollbackBuffer(0);
 		
 		if(cmp != 0) {
@@ -183,13 +221,43 @@ bool DownloadManager::checkRollback(Download* d, const u_int8_t* aData, int aLen
 }
 
 void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
+	Download* d = aSource->getDownload();
+	dcassert(d != NULL);
+
+	if(d->isSet(Download::FLAG_ZDOWNLOAD)) {
+		// Oops, this is a bit more work...
+		dcassert(d->getComp() != NULL);
+		dcassert(d->bytesLeft > 0);
+		int l = aLen;
+		while(l > 0) {
+			const u_int8_t* data = aData + (aLen - l);
+			u_int32_t b = d->getComp()->decompress(data, l);
+			if(!handleData(aSource, d->getComp()->getOutbuf(), b))
+				break;
+			d->bytesLeft -= b;
+			if(d->bytesLeft == 0) {
+				aSource->setLineMode();
+				handleEndData(aSource);
+				if(l != 0) {
+					// Uhm, this client must be sending junk data after the compressed block...
+					aSource->disconnect();
+					return;
+				}
+			}
+		}
+	} else {
+		handleData(aSource, aData, aLen);
+	}
+}
+
+bool DownloadManager::handleData(UserConnection* aSource, const u_int8_t* aData, int aLen) {
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
 	try {
-		if(d->isSet(Download::ROLLBACK)) {
+		if(d->isSet(Download::FLAG_ROLLBACK)) {
 			if(!checkRollback(d, aData, aLen)) {
 				fire(DownloadManagerListener::FAILED, d, STRING(ROLLBACK_INCONSISTENCY));
 				
@@ -200,7 +268,7 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 
 				QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_ROLLBACK_INCONSISTENCY);
 				removeConnection(aSource);
-				return;
+				return false;
 			} 
 		} else {
 			d->getFile()->write(aData, aLen);
@@ -212,12 +280,17 @@ void DownloadManager::onData(UserConnection* aSource, const u_int8_t* aData, int
 		aSource->setDownload(NULL);
 		removeDownload(d);
 		removeConnection(aSource);
-		return;
+		return false;
 	}
+	return true;
+}
+
+void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
+	handleEndData(aSource);
 }
 
 /** Download finished! */
-void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
+void DownloadManager::handleEndData(UserConnection* aSource) {
 
 	dcassert(aSource->getState() == UserConnection::STATE_DONE);
 	Download* d = aSource->getDownload();
@@ -303,6 +376,10 @@ void DownloadManager::removeDownload(Download* d, bool finished /* = false */) {
 		delete d->getFile();
 		d->setFile(NULL);
 	}
+	if(d->getComp()) {
+		delete d->getComp();
+		d->setComp(NULL);
+	}
 
 	{
 		Lock l(cs);
@@ -337,7 +414,7 @@ void DownloadManager::abortDownload(const string& aTarget) {
 	}
 }
 
-void DownloadManager::onFileNotAvailabe(UserConnection* aSource) {
+void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
@@ -361,7 +438,9 @@ void DownloadManager::onFileNotAvailabe(UserConnection* aSource) {
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
 	switch(type) {
 	case UserConnectionListener::MAXED_OUT: onMaxedOut(conn); break;
-	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailabe(conn); break;
+	case UserConnectionListener::FILE_NOT_AVAILABLE: onFileNotAvailable(conn); break;
+	case UserConnectionListener::SENDING: onSending(conn); break;
+	default: break;
 	}
 }
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
@@ -370,12 +449,16 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 		onFileLength(conn, line); break;
 	case UserConnectionListener::FAILED:
 		onFailed(conn, line); break;
+	default:
+		break;
 	}
 }
 void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) {
 	switch(type) {
 	case UserConnectionListener::DATA:
 		onData(conn, data, len); break;
+	default:
+		break;
 	}
 }
 
@@ -383,18 +466,22 @@ void DownloadManager::onAction(UserConnectionListener::Types type, UserConnectio
 	switch(type) {
 	case UserConnectionListener::MODE_CHANGE:
 		onModeChange(conn, mode); break;
+	default:
+		break;
 	}
 }
 
 // TimerManagerListener
-void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) throw() {
 	switch(type) {
 	case TimerManagerListener::SECOND:
 		onTimerSecond(aTick); break;
+	default:
+		break;
 	}
 }
 
 /**
  * @file DownloadManager.cpp
- * $Id: DownloadManager.cpp,v 1.68 2002/06/28 20:53:47 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.69 2002/12/28 01:31:49 arnetheduck Exp $
  */

@@ -25,6 +25,7 @@
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
+#include "WinUtil.h"
 
 #include "../client/SearchManager.h"
 #include "../client/CriticalSection.h"
@@ -36,7 +37,8 @@ class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchMan
 {
 public:
 	enum {
-		IDC_DOWNLOAD_TARGET = 5000
+		IDC_DOWNLOAD_TARGET = 5000,
+		IDC_DOWNLOAD_WHOLE_TARGET = 5500
 	};
 
 	enum {
@@ -49,6 +51,7 @@ public:
 		COLUMN_SLOTS,
 		COLUMN_CONNECTION,
 		COLUMN_HUB,
+		COLUMN_EXACT_SIZE,
 		COLUMN_LAST
 	};
 
@@ -71,22 +74,23 @@ public:
 		showUIContainer("BUTTON", this, SHOWUI_MESSAGE_MAP),
 		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), targetFileCount(0), showUI(true)	
+		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
+		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), 
+		showUI(true), onlyFree(false)	
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
 
 	virtual ~SearchFrame() {
-		images.Destroy();
 	}
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) { delete this; }
 
 	typedef MDITabChildWindowImpl<SearchFrame> baseClass;
 	BEGIN_MSG_MAP(SearchFrame)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_SETFOCUS, OnFocus)
+		MESSAGE_HANDLER(WM_CREATE, onCreate)
+		MESSAGE_HANDLER(WM_FORWARDMSG, onForwardMsg)
+		MESSAGE_HANDLER(WM_SETFOCUS, onFocus)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, onCtlColor)
@@ -97,14 +101,18 @@ public:
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_KEYDOWN, onKeyDown)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
-		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
+		COMMAND_ID_HANDLER(IDC_DOWNLOADDIRTO, onDownloadWholeTo)
+		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_KICK, onKick)
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
-		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
+		COMMAND_HANDLER(IDC_FREESLOTS, BN_CLICKED, onFreeSlots)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size() + WinUtil::lastDirs.size(), onDownloadTarget)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_WHOLE_TARGET, IDC_DOWNLOAD_WHOLE_TARGET + WinUtil::lastDirs.size(), onDownloadWholeTarget)
 		CHAIN_MSG_MAP(baseClass)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -114,20 +122,23 @@ public:
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUI)
 	END_MSG_MAP()
 
-	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onCtlColor(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
-
+	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT onColumnClickResults(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onCtlColor(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadWholeTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 
 	static int sortSize(LPARAM a, LPARAM b) {
@@ -157,11 +168,21 @@ public:
 		return 0;
 	}
 
+	LRESULT onDownloadWhole(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		downloadWholeSelected(SETTING(DOWNLOAD_DIRECTORY));
+		return 0;
+	}
+	
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
 	}
-	
+
+	LRESULT onFreeSlots(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		onlyFree = (ctrlSlots.GetCheck() == 1);
+		return 0;
+	}
+
 	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		onEnter();
 		return 0;
@@ -176,17 +197,16 @@ public:
 		return 0;
 	}
 
-	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	LRESULT onForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 		return baseClass::PreTranslateMessage((LPMSG)lParam);
 	}
 
-	LRESULT OnFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		
+	LRESULT onFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		if(::IsWindow(ctrlSearch))
 			ctrlSearch.SetFocus();
 		return 0;
 	}
-
-	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
 		bHandled = FALSE;
@@ -203,7 +223,6 @@ private:
 	string initialString;
 	LONGLONG initialSize;
 	SearchManager::SizeModes initialMode;
-	int targetFileCount;
 
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
@@ -223,27 +242,24 @@ private:
 	CContainedWindow slotsContainer;
 	CContainedWindow showUIContainer;
 	CContainedWindow doSearchContainer;
+	CContainedWindow resultsContainer;
 	
 	CStatic searchLabel, sizeLabel, optionLabel, typeLabel;
 	CButton ctrlSlots, ctrlShowUI;
 	bool showUI;
 
-	CImageList images;
-
 	ExListViewCtrl ctrlResults;
 	CMenu resultsMenu;
 	CMenu opMenu;
 	CMenu targetMenu;
+	CMenu targetDirMenu;
 	
 	StringList search;
 	StringList targets;
+	StringList wholeTargets;
 
-	StringList lastDirs;
-	
-	string lastKick;
-	string lastRedirect;
-	string lastServer;
-	
+	bool onlyFree;
+
 	static StringList lastSearches;
 
 	DWORD lastSearch;
@@ -253,11 +269,12 @@ private:
 	CriticalSection cs;
 
 	void downloadSelected(const string& aDir); 
+	void downloadWholeSelected(const string& aDir);
 	void onEnter();
-	void onTab();
+	void onTab(bool shift);
 	
 	// SearchManagerListener
-	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) {
+	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) throw() {
 		switch(type) {
 		case SearchManagerListener::SEARCH_RESULT:
 			onSearchResult(sr); break;
@@ -276,6 +293,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.12 2002/06/18 19:06:34 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.13 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

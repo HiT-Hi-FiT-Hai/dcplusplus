@@ -115,46 +115,17 @@ private:
 	int cur;
 	string searchString;
 	
-	typedef HASH_MAP<string, int> SearchMap;
-	typedef SearchMap::iterator SearchIter;
-
-	SearchMap searches;
-
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const string& s) {
-		switch(type) {
-		case ClientManagerListener::INCOMING_SEARCH:
-			{
-				string* x = new string(s);
-				int i = -1;
-				while( (i=x->find('$')) != string::npos) {
-					(*x)[i] = ' ';
-				}
-				PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
-			}
-			break;
-		}
-	}
+	virtual void onAction(ClientManagerListener::Types type, const string& s);
 	
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
-		switch(type) {
-		case TimerManagerListener::SECOND: 
-			float* f = new float(0.0);
-			for(int i = 0; i < AVG_TIME; ++i) {
-				(*f) += (float)perSecond[i];
-			}
-			(*f) /= AVG_TIME;
-
-			perSecond[++cur] = 0;
-			PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
-		}
-	}
+	// TimerManagerListener
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw();
 };
 
 #endif // !defined(AFX_SPYFRAME_H__19A67830_B811_4672_BBC2_3D793E0342E8__INCLUDED_)
 
 /**
  * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.6 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

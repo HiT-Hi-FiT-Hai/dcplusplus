@@ -22,7 +22,7 @@
 class Exception  
 {
 public:
-	Exception(const string& aError = "") throw() : error(aError) { if(error.size()>0) dcdebug("Thrown: %s\n", error.c_str()); };
+	Exception(const string& aError = "") throw() : error(aError) { dcdrun(if(error.size()>0)) dcdebug("Thrown: %s\n", error.c_str()); };
 	virtual ~Exception() { };
 	virtual const string& getError() const { return error; };
 protected:
@@ -33,7 +33,6 @@ protected:
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
-	name(const Exception& e, const string& aError) : Exception(#name ": " + aError + ":" + e.getError()) { }; \
 	name(const string& aError) : Exception(#name ": " + aError) { }; \
 	virtual ~name() { }; \
 }
@@ -42,7 +41,6 @@ public:\
 
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
-	name(const Exception& e, const string& aError) : Exception(aError + ":" + e.getError()) { }; \
 	name(const string& aError) : Exception(aError) { }; \
 	virtual ~name() { }; \
 }
@@ -52,6 +50,6 @@ public:\
 
 /**
  * @file Exception.h
- * $Id: Exception.h,v 1.8 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: Exception.h,v 1.9 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

@@ -37,6 +37,7 @@ PropPage::Item DownloadPage::items[] = {
 	{ IDC_DOWNLOADS, SettingsManager::DOWNLOAD_SLOTS, PropPage::T_INT },
 	{ IDC_MAXSPEED, SettingsManager::MAX_DOWNLOAD_SPEED, PropPage::T_INT },
 	{ IDC_PROXY, SettingsManager::HTTP_PROXY, PropPage::T_STR },
+	{ IDC_PUBLIC_HUBS, SettingsManager::HUBLIST_SERVERS, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -63,6 +64,11 @@ void DownloadPage::write()
 	if(s.length() > 0 && s[s.length() - 1] != '\\') {
 		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, s + '\\');
 	}
+	const string& t = SETTING(TEMP_DOWNLOAD_DIRECTORY);
+	if(t.length() > 0 && t[t.length() - 1] != '\\') {
+		SettingsManager::getInstance()->set(SettingsManager::DOWNLOAD_DIRECTORY, t + '\\');
+	}
+	
 }
 
 LRESULT DownloadPage::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -95,5 +101,5 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 /**
  * @file DownloadPage.cpp
- * $Id: DownloadPage.cpp,v 1.4 2002/06/13 18:47:01 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
  */

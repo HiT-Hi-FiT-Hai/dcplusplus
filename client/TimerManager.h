@@ -41,7 +41,7 @@ public:
 		MINUTE
 	};
 	
-	virtual void onAction(Types, u_int32_t) { };
+	virtual void onAction(Types, u_int32_t) throw() { };
 };
 
 class TimerManager : public Speaker<TimerManagerListener>, public Singleton<TimerManager>, public Thread
@@ -76,7 +76,7 @@ private:
 	virtual int run();
 	
 #ifndef WIN32
-	timeval tv;
+	static timeval tv;
 #endif
 };
 
@@ -85,6 +85,6 @@ private:
 
 /**
  * @file TimerManager.h
- * $Id: TimerManager.h,v 1.14 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: TimerManager.h,v 1.15 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

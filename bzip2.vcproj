@@ -17,6 +17,7 @@
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="0"
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -35,7 +36,7 @@
 				RuntimeLibrary="0"
 				BufferSecurityCheck="FALSE"
 				EnableFunctionLevelLinking="TRUE"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Release\bzip/bzip2.pch"
 				AssemblerOutput="4"
 				AssemblerListingLocation=".\Release\bzip/"
@@ -74,6 +75,7 @@
 			ConfigurationType="4"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="0"
 			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -83,13 +85,14 @@
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,BZ_NO_STDIO"
 				StringPooling="TRUE"
 				MinimalRebuild="TRUE"
+				ExceptionHandling="FALSE"
 				BasicRuntimeChecks="3"
 				SmallerTypeCheck="TRUE"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
 				EnableFunctionLevelLinking="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
-				UsePrecompiledHeader="0"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderFile=".\Debug\bzip/bzip2.pch"
 				AssemblerListingLocation=".\Debug\bzip/"
 				ObjectFile=".\Debug\bzip/"
@@ -97,7 +100,8 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="2"
+				CallingConvention="0"
+				CompileAs="0"
 				DisableSpecificWarnings="4244;4100"/>
 			<Tool
 				Name="VCCustomBuildTool"/>

@@ -17,7 +17,7 @@
 // header through StdAfx.h
 #include "stdafx.h"
 
-#if defined(_DEBUG) && defined(WIN32)
+#if defined(WIN32)
 
 #include "../client/DCPlusPlus.h"
 #include "../client/File.h"

@@ -35,22 +35,30 @@
 CImageList* HubFrame::images = NULL;
 HubFrame::FrameMap HubFrame::frames;
 
-char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
-"\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
-"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I share, therefore I am.\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I came, I searched, I found...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I came, I shared, I sent...\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I can set away mode, can't you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I don't have to see any ads, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I don't have to see those annoying kick messages, do you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">",
-"\r\n-- I can resume my files to a different filename, can you?\r\n-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+#define LINE2 "-- http://dcplusplus.sourceforge.net  <DC++ " VERSIONSTRING ">"
+char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n" LINE2,
+"\r\n-- Neo-...what? Nope...never heard of it...\r\n" LINE2,
+"\r\n-- Evolution of species: Ape --> Man\r\n-- Evolution of science: \"The Earth is Flat\" --> \"The Earth is Round\"\r\n-- Evolution of sharing: NMDC --> DC++\r\n" LINE2,
+"\r\n-- I share, therefore I am.\r\n" LINE2,
+"\r\n-- I came, I searched, I found...\r\n" LINE2,
+"\r\n-- I came, I shared, I sent...\r\n" LINE2,
+"\r\n-- I can set away mode, can't you?\r\n" LINE2,
+"\r\n-- I don't have to see any ads, do you?\r\n" LINE2,
+"\r\n-- I don't have to see those annoying kick messages, do you?\r\n" LINE2,
+"\r\n-- I can resume my files to a different filename, can you?\r\n" LINE2,
+"\r\n-- I can share huge amounts of files, can you?\r\n" LINE2,
+"\r\n-- My client doesn't spam the chat with useless debug messages, does yours?\r\n" LINE2,
+"\r\n-- I can add multiple users to the same download and have the client connect to another automatically when one goes offline, can you?\r\n" LINE2,
+"\r\n-- These addies are pretty annoying, aren't they? Get revenge by sending them yourself!\r\n" LINE2
 };
+
+#define MSGS 14
 
 int HubFrame::columnSizes[] = { 100, 75, 100, 75, 100 };
 int HubFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_SHARED, COLUMN_DESCRIPTION, COLUMN_CONNECTION, COLUMN_EMAIL };
+static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::SHARED,
+	ResourceManager::DESCRIPTION, ResourceManager::CONNECTION, ResourceManager::EMAIL };
 
-#define MSGS 10
 
 LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -91,66 +99,16 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlShowUsers.SetCheck(client->getUserInfo());
 	showUsersContainer.SubclassWindow(ctrlShowUsers.m_hWnd);
 
-	StringList l = StringTokenizer(SETTING(HUBFRAME_ORDER), ',').getTokens();
+	WinUtil::splitTokens(columnIndexes, SETTING(HUBFRAME_ORDER), COLUMN_LAST);
+	WinUtil::splitTokens(columnSizes, SETTING(HUBFRAME_WIDTHS), COLUMN_LAST);
 	
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnIndexes[k++] = Util::toInt(*i);
-		}
+	for(int j=0; j<COLUMN_LAST; j++) {
+		int fmt = (j == COLUMN_SHARED) ? LVCFMT_RIGHT : LVCFMT_LEFT;
+		ctrlUsers.InsertColumn(j, CSTRING_I(columnNames[j]), fmt, columnSizes[j], j);
 	}
 	
-	l = StringTokenizer(SETTING(HUBFRAME_WIDTHS), ',').getTokens();
-	{
-		int k = 0;
-		for(StringIter i = l.begin(); i != l.end(); ++i) {
-			if(k >= COLUMN_LAST)
-				break;
-			columnSizes[k++] = Util::toInt(*i);
-		}
-	}
-
-	LV_COLUMN lvc;
-	ZeroMemory(&lvc, sizeof(lvc));
-	lvc.mask = LVCF_FMT | LVCF_ORDER | LVCF_SUBITEM | LVCF_TEXT | LVCF_WIDTH;
-
-	lvc.pszText = const_cast<char*>(CSTRING(NICK));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_NICK];
-	lvc.iOrder = columnIndexes[COLUMN_NICK];
-	lvc.iSubItem = COLUMN_NICK;
-	ctrlUsers.InsertColumn(0, &lvc);
-
-	lvc.pszText = const_cast<char*>(CSTRING(SHARED));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_SHARED];
-	lvc.iOrder = columnIndexes[COLUMN_SHARED];
-	lvc.iSubItem = COLUMN_SHARED;
-	ctrlUsers.InsertColumn(1, &lvc);
+	ctrlUsers.SetColumnOrderArray(COLUMN_LAST, columnIndexes);
 	
-	lvc.pszText = const_cast<char*>(CSTRING(DESCRIPTION));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_DESCRIPTION];
-	lvc.iOrder = columnIndexes[COLUMN_DESCRIPTION];
-	lvc.iSubItem = COLUMN_DESCRIPTION;
-	ctrlUsers.InsertColumn(2, &lvc);
-	
-	lvc.pszText = const_cast<char*>(CSTRING(CONNECTION));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_CONNECTION];
-	lvc.iOrder = columnIndexes[COLUMN_CONNECTION];
-	lvc.iSubItem = COLUMN_CONNECTION;
-	ctrlUsers.InsertColumn(3, &lvc);
-	
-	lvc.pszText = const_cast<char*>(CSTRING(EMAIL));
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.cx = columnSizes[COLUMN_EMAIL];
-	lvc.iOrder = columnIndexes[COLUMN_EMAIL];
-	lvc.iSubItem = COLUMN_EMAIL;
-	ctrlUsers.InsertColumn(4, &lvc);
-
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextBkColor(WinUtil::bgColor);
 	ctrlUsers.SetTextColor(WinUtil::textColor);
@@ -168,6 +126,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	userMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	userMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
 	userMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
+	userMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	userMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	userMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
 
@@ -175,6 +134,7 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	opMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
 	opMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	opMenu.AppendMenu(MF_STRING, IDC_GRANTSLOT, CSTRING(GRANT_EXTRA_SLOT));
+	opMenu.AppendMenu(MF_STRING, IDC_COPY_NICK, CSTRING(COPY_NICK));
 	opMenu.AppendMenu(MF_STRING, IDC_ADD_TO_FAVORITES, CSTRING(ADD_TO_FAVORITES));
 	opMenu.AppendMenu(MF_SEPARATOR, 0, (LPCTSTR)NULL);
 	opMenu.AppendMenu(MF_STRING, IDC_REFRESH, CSTRING(REFRESH_USER_LIST));
@@ -292,7 +252,9 @@ void HubFrame::onEnter() {
 			} else if(Util::stricmp(s.c_str(), "userlist") == 0) {
 				ctrlShowUsers.SetCheck(client->getUserInfo() ? BST_UNCHECKED : BST_CHECKED);
 			} else if(Util::stricmp(s.c_str(), "help") == 0) {
-				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help, /userlist");
+				addLine("/clear, /refresh, /slots #, /join <hub-ip>, /search <string>, /dc++, /away <msg>, /back, /ts, /password, /showjoins, /close, /help, /userlist, /connection");
+			} else if(Util::stricmp(s.c_str(), "connection") == 0) {
+				addLine(STRING(IP) + SETTING(SERVER) + ", " + STRING(PORT) + Util::toString(SETTING(IN_PORT)));
 			}
 		} else {
 			client->sendMessage(s);
@@ -309,8 +271,8 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			try {
 				QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(i))->user);
-			} catch(...) {
-				// ...
+			} catch(Exception e) {
+				addClientLine(e.getError());
 			}
 		}
 	}
@@ -322,6 +284,45 @@ LRESULT HubFrame::onAddToFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			HubManager::getInstance()->addFavoriteUser(((UserInfo*)ctrlUsers.GetItemData(i))->user);
+		}
+	}
+	return 0;
+}
+
+LRESULT HubFrame::onCopyNick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	int i=-1;
+	if(client->isConnected()) {
+		string nicks;
+
+		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			nicks += ((UserInfo*)ctrlUsers.GetItemData(i))->user->getNick();
+			nicks += ' ';
+		}
+		if(!nicks.empty()) {
+			// remove last space
+			nicks.erase(nicks.length() - 1);
+
+			if(!OpenClipboard()) {
+				return 0;
+			}
+
+			EmptyClipboard();
+			
+			// Allocate a global memory object for the text. 
+			HGLOBAL hglbCopy = GlobalAlloc(GMEM_MOVEABLE, (nicks.size() + 1)); 
+			if (hglbCopy == NULL) { 
+				CloseClipboard(); 
+				return FALSE; 
+			} 
+			
+			// Lock the handle and copy the text to the buffer. 
+			char* lptstrCopy = (char*)GlobalLock(hglbCopy); 
+			memcpy(lptstrCopy, nicks.c_str(), nicks.length() + 1);
+			GlobalUnlock(hglbCopy); 
+			
+			// Place the handle on the clipboard. 
+			SetClipboardData(CF_TEXT, hglbCopy); 
+			CloseClipboard();
 		}
 	}
 	return 0;
@@ -343,8 +344,8 @@ LRESULT HubFrame::onDoubleClickUsers(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	if(client->isConnected() && item->iItem != -1) {
 		try {
 			QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(item->iItem))->user);
-		} catch(...) {
-			// ...
+		} catch(Exception e) {
+			addClientLine(e.getError());
 		}
 	}
 	return 0;
@@ -434,8 +435,9 @@ bool HubFrame::updateUser(const User::Ptr& u, bool sorted /* = false */, UserInf
 	if(sorted && ctrlUsers.getSortColumn() != COLUMN_NICK) {
 		needSort = true;
 	}
-	if(!newUser && ui == NULL)
+	if(!newUser && ui)
 		delete ui;
+	
 	return newUser;
 }
 
@@ -444,7 +446,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		UserInfo* ui = (UserInfo*)lParam;
 		User::Ptr& u = ui->user;
 		if(updateUser(u, true, ui) && showJoins) {
-			addLine("*** " + STRING(JOINS) + ui->user->getNick());
+			addLine("*** " + STRING(JOINS) + '<' + ui->user->getNick() + '>');
 		}
 	} else if(wParam == UPDATE_USERS) {
 		User::List* ul = (User::List*)lParam;
@@ -465,7 +467,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			ctrlUsers.DeleteItem(j);
 		
 			if(showJoins) {
-				addLine("*** " + STRING(PARTS) + ui->user->getNick());
+				addLine("*** " + STRING(PARTS) + '<' + ui->user->getNick() +'>');
 			}
 		}
 		delete ui;
@@ -478,6 +480,10 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	} else if(wParam == ADD_STATUS_LINE) {
 		string* x = (string*)lParam;
 		addClientLine(*x);
+		delete x;
+	} else if(wParam == ADD_SILENT_STATUS_LINE) {
+		string* x = (string*)lParam;
+		addClientLine(*x, false);
 		delete x;
 	} else if(wParam == SET_WINDOW_TITLE) {
 		string* x = (string*)lParam;
@@ -604,6 +610,86 @@ LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 	return 0;
 }
 
+static int textUnderCursor(POINT p, CEdit& ctrl, string& x) {
+	
+	int i = ctrl.CharFromPos(p);
+	int line = ctrl.LineFromChar(i);
+	int c = LOWORD(i) - ctrl.LineIndex(line);
+	int len = ctrl.LineLength(i) + 1;
+	if(len < 3) {
+		return 0;
+	}
+
+	char* buf = new char[len];
+	ctrl.GetLine(line, buf, len);
+	x = string(buf, len-1);
+	delete buf;
+
+	string::size_type start = x.rfind(' ', c);
+	if(start == string::npos) {
+		start = x.rfind('<', c);
+		if(start == string::npos) {
+			start = 0;
+		}
+	} else {
+		start++;
+	}
+	return start;
+}
+
+LRESULT HubFrame::onLButton(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+	HWND focus = GetFocus();
+	if(focus == ctrlClient.m_hWnd) {
+		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+		string x;
+		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
+		
+		if(x[start] == '<') {
+			string::size_type end = x.find('>', 1);
+			if(end == string::npos || end == start + 1) {
+				return 0;
+			}
+
+			// Nickname click, let's see if we can find one like it in the name list...
+			int pos = ctrlUsers.find(x.substr(start + 1, end - start - 1));
+			if(pos != -1) {
+				if (wParam & MK_CONTROL) { // MK_CONTROL = 0x0008
+					PrivateFrame::openWindow(((UserInfo*)ctrlUsers.GetItemData(pos))->user, m_hWndMDIClient, getTab());
+				} else if (wParam & MK_SHIFT) {
+					try {
+						QueueManager::getInstance()->addList(((UserInfo*)ctrlUsers.GetItemData(pos))->user);
+					} catch(Exception e) {
+						addClientLine(e.getError());
+					}
+				} else {
+					int items = ctrlUsers.GetItemCount();
+					ctrlUsers.SetRedraw(FALSE);
+					for(int i = 0; i < items; ++i) {
+						ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
+					}
+					ctrlUsers.SetRedraw(TRUE);
+					ctrlUsers.EnsureVisible(pos, FALSE);
+				}
+			}
+		} else if( (Util::strnicmp(x.c_str() + start, "http://", 7) == 0) || 
+			(Util::strnicmp(x.c_str() + start, "www.", 4) == 0) ||
+			(Util::strnicmp(x.c_str() + start, "ftp://", 6) == 0) )	{
+
+			// Web links...
+			string::size_type end = x.find(' ', start + 7);
+			if(end == string::npos) {
+				end = x.length();
+			}
+			if(end < start + 10) {
+				return 0;
+			}
+
+			ShellExecute(NULL, NULL, x.substr(start, end-start).c_str(), NULL, NULL, SW_SHOWNORMAL);
+		}
+	}
+	return 0;
+}
+
 void HubFrame::addLine(const string& aLine) {
 	if(ctrlClient.GetWindowTextLength() > 25000) {
 		// We want to limit the buffer to 25000 characters...after that, w95 becomes sad...
@@ -638,27 +724,68 @@ void HubFrame::addLine(const string& aLine) {
 	setDirty();
 }
 
-LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT HubFrame::onContextMenu(UINT uMsg, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
 	RECT rc;                    // client area of window 
 	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+	ctrlClient.GetClientRect(&rc);
+	if(uMsg == WM_CONTEXTMENU)
+		ctrlClient.ScreenToClient(&pt);
 	
-	// Get the bounding rectangle of the client area. 
-	ctrlUsers.GetClientRect(&rc);
-	ctrlUsers.ScreenToClient(&pt); 
-	
-	if (PtInRect(&rc, pt)) 
-	{ 
-		ctrlUsers.ClientToScreen(&pt);
-		if(client->getOp()) {
-			opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+	if (PtInRect(&rc, pt)) {
+		string x;
+		string::size_type start = (string::size_type)textUnderCursor(pt, ctrlClient, x);
+
+		if(x[start] == '<') {
+			string::size_type end = x.find('>', 1);
+			if(end == string::npos || end == start + 1) {
+				bHandled = FALSE;
+				return FALSE;
+			}
+			
+			// Nickname click, let's see if we can find one like it in the name list...
+			int pos = ctrlUsers.find(x.substr(start + 1, end - start - 1));
+			if(pos != -1) {
+				int items = ctrlUsers.GetItemCount();
+				ctrlUsers.SetRedraw(FALSE);
+				for(int i = 0; i < items; ++i) {
+					ctrlUsers.SetItemState(i, (i == pos) ? LVIS_SELECTED | LVIS_FOCUSED : 0, LVIS_SELECTED | LVIS_FOCUSED);
+				}
+				ctrlUsers.SetRedraw(TRUE);
+				ctrlUsers.EnsureVisible(pos, FALSE);
+				
+				ctrlClient.ClientToScreen(&pt);
+				if(client->getOp()) {
+					opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				} else {
+					userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+				}
+				return TRUE; 
+			} else {
+				bHandled = FALSE;
+			}
 		} else {
-			userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			bHandled = FALSE;
 		}
+	} else {
+		ctrlClient.ClientToScreen(&pt);
+		// Get the bounding rectangle of the client area. 
+		ctrlUsers.GetClientRect(&rc);
+		if(uMsg == WM_CONTEXTMENU)
+			ctrlUsers.ScreenToClient(&pt); 
 		
-		return TRUE; 
+		if (PtInRect(&rc, pt)) { 
+			ctrlUsers.ClientToScreen(&pt);
+			if(client->getOp()) {
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			} else {
+				userMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			}
+			return TRUE; 
+		}
 	}
-	
-	return FALSE; 
+
+	return FALSE;
 }
 
 void HubFrame::onTab() {
@@ -739,7 +866,18 @@ LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 }
 
-void HubFrame::onAction(TimerManagerListener::Types type, DWORD /*aTick*/) {
+void HubFrame::addClientLine(const string& aLine, bool inChat /* = true */) {
+	string line = "[" + Util::getShortTimeString() + "] " + aLine;
+
+	ctrlStatus.SetText(0, (line + "\r\n").c_str());
+	setDirty();
+	
+	if(BOOLSETTING(STATUS_IN_CHAT) && inChat) {
+		addLine("*** " + aLine);
+	}
+}
+
+void HubFrame::onAction(TimerManagerListener::Types type, DWORD /*aTick*/) throw() {
 	switch(type) {
 		case TimerManagerListener::SECOND:
 			updateStatusBar(); break;
@@ -774,7 +912,7 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const st
 				if((line.find("Hub-Security") != string::npos) && (line.find("was kicked by") != string::npos)) {
 					// Do nothing...
 				} else if((line.find("is kicking") != string::npos) && (line.find("because:") != string::npos)) {
-					speak(ADD_STATUS_LINE, line);
+					speak(ADD_SILENT_STATUS_LINE, line);
 				} else {
 					speak(ADD_CHAT_LINE, line);
 				}
@@ -827,5 +965,5 @@ void HubFrame::onAction(ClientListener::Types type, Client* /*client*/, const Us
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.17 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.18 2002/12/28 01:31:50 arnetheduck Exp $
  */

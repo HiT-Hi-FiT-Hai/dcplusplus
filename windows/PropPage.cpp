@@ -36,12 +36,16 @@ void PropPage::read(HWND page, Item const* items)
 		switch(i->type)
 		{
 		case T_STR:
-			::SetDlgItemText(page, i->itemID,
-				settings->get((SettingsManager::StrSetting)i->setting, useDef).c_str());
+			if(!SettingsManager::getInstance()->isDefault(i->setting)) {
+				::SetDlgItemText(page, i->itemID,
+					settings->get((SettingsManager::StrSetting)i->setting, useDef).c_str());
+			}
 			break;
 		case T_INT:
-			::SetDlgItemInt(page, i->itemID,
-				settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
+			if(!SettingsManager::getInstance()->isDefault(i->setting)) {
+				::SetDlgItemInt(page, i->itemID,
+					settings->get((SettingsManager::IntSetting)i->setting, useDef), FALSE);
+			}
 			break;
 		case T_BOOL:
 			if(settings->getBool((SettingsManager::IntSetting)i->setting, useDef))
@@ -65,14 +69,13 @@ void PropPage::write(HWND page, Item const* items)
 			{
 				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
 				settings->set((SettingsManager::StrSetting)i->setting, buf);
+
 				break;
 			}
 		case T_INT:
 			{
-				BOOL transl;
-				int val = ::GetDlgItemInt(page, i->itemID, &transl, FALSE);
-				//if(transl == FALSE) throw ...
-				settings->set((SettingsManager::IntSetting)i->setting, val);
+				::GetDlgItemText(page, i->itemID, buf, SETTING_STR_MAXLEN);
+				settings->set((SettingsManager::IntSetting)i->setting, string(buf));
 				break;
 			}
 		case T_BOOL:
@@ -89,6 +92,6 @@ void PropPage::write(HWND page, Item const* items)
 
 /**
  * @file PropPage.cpp
- * $Id: PropPage.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: PropPage.cpp,v 1.3 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

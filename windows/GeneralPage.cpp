@@ -22,6 +22,7 @@
 
 #include "GeneralPage.h"
 #include "../client/SettingsManager.h"
+#include "../client/Socket.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -35,12 +36,34 @@ PropPage::Item GeneralPage::items[] = {
 	{ IDC_DESCRIPTION,	SettingsManager::DESCRIPTION,	PropPage::T_STR }, 
 	{ IDC_CONNECTION,	SettingsManager::CONNECTION,	PropPage::T_STR }, 
 	{ IDC_SERVER,		SettingsManager::SERVER,		PropPage::T_STR }, 
-	{ IDC_PORT,			SettingsManager::PORT,			PropPage::T_INT }, 
+	{ IDC_PORT,			SettingsManager::IN_PORT,		PropPage::T_INT }, 
+	{ IDC_SOCKS_SERVER, SettingsManager::SOCKS_SERVER,	PropPage::T_STR },
+	{ IDC_SOCKS_PORT,	SettingsManager::SOCKS_PORT,	PropPage::T_INT },
+	{ IDC_SOCKS_USER,	SettingsManager::SOCKS_USER,	PropPage::T_STR },
+	{ IDC_SOCKS_PASSWORD, SettingsManager::SOCKS_PASSWORD, PropPage::T_STR },
+	{ IDC_SOCKS_RESOLVE, SettingsManager::SOCKS_RESOLVE, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
 void GeneralPage::write()
 {
+	char tmp[1024];
+	GetDlgItemText(IDC_SOCKS_SERVER, tmp, 1024);
+	string x = tmp;
+	string::size_type i;
+
+	while((i = x.find(' ')) != string::npos)
+		x.erase(i, 1);
+	SetDlgItemText(IDC_SOCKS_SERVER, x.c_str());
+
+	GetDlgItemText(IDC_SERVER, tmp, 1024);
+	x = tmp;
+
+	while((i = x.find(' ')) != string::npos)
+		x.erase(i, 1);
+
+	SetDlgItemText(IDC_SERVER, x.c_str());
+	
 	PropPage::write((HWND)(*this), items);
 
 	// Set connection active/passive
@@ -49,7 +72,13 @@ void GeneralPage::write()
 		ct = SettingsManager::CONNECTION_ACTIVE;
 	else if(IsDlgButtonChecked(IDC_PASSIVE))
 		ct = SettingsManager::CONNECTION_PASSIVE;
-	settings->set(SettingsManager::CONNECTION_TYPE, ct);
+	else if(IsDlgButtonChecked(IDC_SOCKS5))
+		ct = SettingsManager::CONNECTION_SOCKS5;
+
+	if(SETTING(CONNECTION_TYPE) != ct) {
+		settings->set(SettingsManager::CONNECTION_TYPE, ct);
+		Socket::socksUpdated();
+	}
 }
 
 LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -59,22 +88,19 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	for(int i = 0; i < SettingsManager::SPEED_LAST; i++)
 		ctrlConnection.AddString(SettingsManager::connectionSpeeds[i].c_str());
 
-	PropPage::read((HWND)(*this), items);
-	if(SettingsManager::getInstance()->get(SettingsManager::SERVER, false).empty()) {
-		SetDlgItemText(IDC_SERVER, "");
-	}
-	
-	SetDlgItemText(IDC_MODEHELP, "This is the most common configuration. Select this if you have a direct connection to the Internet or if you're not using a firewall that's configured to forward incoming connections. Sometimes, DC++ might not be able to correctly detect your ip address. Frequent connection timeouts and absence of search results are typical indications of this problem, and to make it work you should either try entering your ip in the box below or use passive mode.");
 	int const connType = settings->get(SettingsManager::CONNECTION_TYPE);
 	if(connType == SettingsManager::CONNECTION_ACTIVE)
-		CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_ACTIVE);
+		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_ACTIVE);
 	else if(connType == SettingsManager::CONNECTION_PASSIVE)
-		CheckRadioButton(IDC_ACTIVE, IDC_PASSIVE, IDC_PASSIVE);
+		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_PASSIVE);
+	else if(connType == SettingsManager::CONNECTION_SOCKS5)
+		CheckRadioButton(IDC_ACTIVE, IDC_SOCKS5, IDC_SOCKS5);
+
+	PropPage::read((HWND)(*this), items);
+
+	fixControls();
 
 	ctrlConnection.SetCurSel(ctrlConnection.FindString(0, SETTING(CONNECTION).c_str()));
-
-	BOOL dummy;
-	onClickedActive(0,0,0,dummy);	// Update enable/disable for server/port controls
 
 	nick.Attach(GetDlgItem(IDC_NICK));
 	nick.LimitText(35);
@@ -82,14 +108,37 @@ LRESULT GeneralPage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	desc.Attach(GetDlgItem(IDC_DESCRIPTION));
 	desc.LimitText(35);
 	desc.Detach();
+	desc.Attach(GetDlgItem(IDC_SOCKS_SERVER));
+	desc.LimitText(250);
+	desc.Detach();
+	desc.Attach(GetDlgItem(IDC_SOCKS_PORT));
+	desc.LimitText(5);
+	desc.Detach();
+	desc.Attach(GetDlgItem(IDC_SOCKS_USER));
+	desc.LimitText(250);
+	desc.Detach();
+	desc.Attach(GetDlgItem(IDC_SOCKS_PASSWORD));
+	desc.LimitText(250);
+	desc.Detach();
 	return TRUE;
 }
 
-LRESULT GeneralPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	BOOL const checked = IsDlgButtonChecked(IDC_ACTIVE);
+void GeneralPage::fixControls() {
+	BOOL checked = IsDlgButtonChecked(IDC_ACTIVE);
 	::EnableWindow(GetDlgItem(IDC_SERVER), checked);
 	::EnableWindow(GetDlgItem(IDC_PORT), checked);
+
+	checked = IsDlgButtonChecked(IDC_SOCKS5);
+	::EnableWindow(GetDlgItem(IDC_SOCKS_SERVER), checked);
+	::EnableWindow(GetDlgItem(IDC_SOCKS_PORT), checked);
+	::EnableWindow(GetDlgItem(IDC_SOCKS_USER), checked);
+	::EnableWindow(GetDlgItem(IDC_SOCKS_PASSWORD), checked);
+	::EnableWindow(GetDlgItem(IDC_SOCKS_RESOLVE), checked);
+
+}
+
+LRESULT GeneralPage::onClickedActive(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	fixControls();
 	return 0;
 }
 
@@ -104,7 +153,7 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 	char *b = buf, *f = buf, c;
 	while( (c = *b++) != 0 )
 	{
-		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' ') && ( (wID != IDC_NICK) || c != '<' || c != '>') )
+		if(c != '$' && c != '|' && (wID == IDC_DESCRIPTION || c != ' ') && ( (wID != IDC_NICK) || (c != '<' && c != '>')) )
 			*f++ = c;
 	}
 
@@ -129,6 +178,6 @@ LRESULT GeneralPage::onTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl,
 
 /**
  * @file GeneralPage.cpp
- * $Id: GeneralPage.cpp,v 1.3 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: GeneralPage.cpp,v 1.4 2002/12/28 01:31:50 arnetheduck Exp $
  */
 

@@ -84,14 +84,6 @@ void SpyFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 	if(wParam == SEARCH) {
 		string* x = (string*)lParam;
-		SearchIter i = searches.find(*x);
-		int n;
-		if(i == searches.end()) {
-			n = searches[*x] = 1;
-
-		} else {
-			n = ++i->second;
-		}
 
 		total++;
 
@@ -102,13 +94,15 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 		if(j == -1) {
 			StringList a;
 			a.push_back(*x);
-			a.push_back(Util::toString(n));
+			a.push_back(Util::toString(1));
 			ctrlSearches.insert(a);
 			if(ctrlSearches.GetItemCount() > 500) {
 				ctrlSearches.DeleteItem(ctrlSearches.GetItemCount() - 1);
 			}
 		} else {
-			ctrlSearches.SetItemText(j, COLUMN_COUNT, Util::toString(n).c_str());
+			char tmp[32];
+			ctrlSearches.GetItemText(j, COLUMN_COUNT, tmp, 32);
+			ctrlSearches.SetItemText(j, COLUMN_COUNT, Util::toString(Util::toInt(tmp)+1).c_str());
 			if(ctrlSearches.getSortColumn() == COLUMN_COUNT )
 				ctrlSearches.resort();
 		}
@@ -163,7 +157,36 @@ LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return 0;
 };
 
+void SpyFrame::onAction(ClientManagerListener::Types type, const string& s) {
+	switch(type) {
+	case ClientManagerListener::INCOMING_SEARCH:
+		{
+			string* x = new string(s);
+			int i = -1;
+			while( (i=x->find('$')) != string::npos) {
+				(*x)[i] = ' ';
+			}
+			PostMessage(WM_SPEAKER, SEARCH, (LPARAM)x);
+		}
+		break;
+	}
+}
+
+void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
+	switch(type) {
+	case TimerManagerListener::SECOND: 
+		float* f = new float(0.0);
+		for(int i = 0; i < AVG_TIME; ++i) {
+			(*f) += (float)perSecond[i];
+		}
+		(*f) /= AVG_TIME;
+		
+		perSecond[++cur] = 0;
+		PostMessage(WM_SPEAKER, TICK_AVG, (LPARAM)f);
+	}
+}
+
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.7 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.8 2002/12/28 01:31:50 arnetheduck Exp $
  */

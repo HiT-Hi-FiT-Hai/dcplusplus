@@ -21,24 +21,128 @@
 
 #include "BitInputStream.h"
 #include "BitOutputStream.h"
+#include "File.h"
 
 #include "CryptoManager.h"
 
-#include "../bzip2/bzlib.h"
-
 CryptoManager* Singleton<CryptoManager>::instance;
 
-void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) {
+ZCompressor::ZCompressor(File& file, int64_t aMaxBytes /* = -1 */, int strength /* = Z_DEFAULT_COMPRESSION */) throw(CryptoException) : 
+inbuf(NULL), inbufLen(0), state(STATE_RUNNING), f(file), maxBytes(aMaxBytes) {
+	memset(&zs, 0, sizeof(zs));
+	
+	if(deflateInit(&zs, strength) != Z_OK) {
+		throw CryptoException(STRING(COMPRESSION_ERROR));
+	}
+}
+
+u_int32_t ZCompressor::compress(void* buf, u_int32_t bufLen) throw(CryptoException) {
+	dcassert(buf);
+	dcassert(bufLen > 0); 
+
+	if(state == STATE_FINISHED) {
+		return 0;
+	}
+	
+	// We make a read buffer four times as large as the out buffer...this should be
+	// enough so that we don't need to read multiple times...
+	if(inbuf == NULL) {
+		inbufLen = bufLen << 2;
+		inbuf = new u_int8_t[inbufLen];
+	}
+	zs.avail_out = bufLen;
+	zs.next_out = (u_int8_t*) buf;
+	
+	while(true) {
+		if( (zs.avail_in == 0) && (state == STATE_RUNNING) ) {
+			u_int32_t bytes = (maxBytes == -1) ? inbufLen : (u_int32_t) min((int64_t) inbufLen, maxBytes);
+
+			if(bytes == 0) {
+				// Alright, that's it folks...
+				state = STATE_FINISHING;;
+			} else {
+				u_int32_t readBytes = f.read(inbuf, bytes);
+				if(readBytes == 0) {
+					// Read all we can...
+					state = STATE_FINISHING;;
+				} else {
+					if(maxBytes != -1) {
+						maxBytes -= readBytes;
+					}
+					
+					zs.avail_in = readBytes;
+					zs.next_in = (u_int8_t*)inbuf;
+				}
+			}
+		}
+		
+		if(state == STATE_RUNNING) {
+			int err = ::deflate(&zs, Z_NO_FLUSH);
+			if(err != Z_OK) {
+				dcdebug("ZCompressor::compress Error %d while running\n", err);
+				throw CryptoException(STRING(COMPRESSION_ERROR));
+			}
+			if(zs.avail_out == 0) {
+				return bufLen;
+			}
+		} else {
+			dcassert(state == STATE_FINISHING);
+			int err = ::deflate(&zs, Z_FINISH);
+			if(err == Z_OK) {
+				// More bytes?
+				return bufLen - zs.avail_out;
+			} else if(err == Z_STREAM_END) {
+				// Good, we're finished...
+				state = STATE_FINISHED;
+				return bufLen - zs.avail_out;
+			} else {
+				dcdebug("ZCompressor::compress Error %d while finishing\n", err);
+				throw CryptoException(STRING(COMPRESSION_ERROR));
+			}
+		}
+	}
+}
+
+ZDecompressor::ZDecompressor() throw(CryptoException) {
+	memset(&zs, 0, sizeof(zs));
+
+	if(inflateInit(&zs) != Z_OK)
+		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
+
+	outbufSize = 64*1024;
+	outbuf = new u_int8_t[outbufSize];
+	
+}
+
+u_int32_t ZDecompressor::decompress(const void* inbuf, int& inbytes) {
+	zs.avail_in = inbytes;
+	zs.avail_out = outbufSize;
+	zs.next_in = (u_int8_t*)const_cast<void*>(inbuf);
+	zs.next_out = (u_int8_t*)outbuf;
+
+	int err = inflate(&zs, Z_NO_FLUSH);
+
+	if(err == Z_OK || err == Z_STREAM_END) {
+		inbytes = zs.avail_in;
+		return outbufSize - zs.avail_out;
+	} else {
+		dcdebug("BZ2Decompressor::compress Error %d while decompressing\n", err);
+		throw CryptoException(STRING(DECOMPRESSION_ERROR));
+	}
+}
+
+void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) throw (CryptoException) {
 	bz_stream bs;
 
 	memset(&bs, 0, sizeof(bs));
 
 	if(BZ2_bzDecompressInit(&bs, 0, 0) != BZ_OK)
-		return;
+		throw(CryptoException(STRING(DECOMPRESSION_ERROR)));
 
-	// We assume that the files aren't compressed more than 4:1...
+	// We assume that the files aren't compressed more than 4:1...if they are it'll work anyway,
+	// but we'll have to do multiple passes...
 	int bufsize = 4*sz;
-	char* buf = new char[bufsize];
+	AutoArray<char> buf(bufsize);
 	
 	bs.avail_in = sz;
 	bs.avail_out = bufsize;
@@ -47,33 +151,38 @@ void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) {
 
 	int err;
 
+	os.clear();
+	
 	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) {
-		os += string(buf, bufsize-bs.avail_out);
+		os.append(buf, bufsize-bs.avail_out);
 		bs.avail_out = bufsize;
 		bs.next_out = buf;
 	}
 
 	if(err == BZ_STREAM_END)
-		os += string(buf, bufsize-bs.avail_out);
-
-	BZ2_bzDecompressEnd(&bs);
+		os.append(buf, bufsize-bs.avail_out);
 	
-	delete buf;
+	BZ2_bzDecompressEnd(&bs);
+
+	if(err < 0) {
+		// This was a real error
+		throw CryptoException(STRING(DECOMPRESSION_ERROR));	
+	}
 }
 
-void CryptoManager::encodeBZ2(const string& is, string& os) {
+void CryptoManager::encodeBZ2(const string& is, string& os, int strength /* = 9 */) {
 	bz_stream bs;
 	
 	memset(&bs, 0, sizeof(bs));
 
-	if(BZ2_bzCompressInit(&bs, 9, 0, 30) != BZ_OK) {
+	if(BZ2_bzCompressInit(&bs, strength, 0, 30) != BZ_OK) {
 		return;
 	}
 
 	// This size guarantees that the compressed data will fit (according to the bzip docs)
 	int bufsize = (int)((double)is.size() * 1.01) + 600;
 	
-	char* buf = new char[bufsize];
+	AutoArray<char> buf(bufsize);
 
 	bs.next_in = const_cast<char*>(is.data());
 	bs.avail_in = is.size();
@@ -89,7 +198,6 @@ void CryptoManager::encodeBZ2(const string& is, string& os) {
 
 	BZ2_bzCompressEnd(&bs);
 
-	delete buf;
 }
 
 string CryptoManager::keySubst(const u_int8_t* aKey, int len, int n) {
@@ -152,12 +260,12 @@ string CryptoManager::makeKey(const string& lock) {
 	return tmp;
 }
 
-void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
+void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) throw(CryptoException) {
 //	BitInputStream bis;
 	int pos = 0;
 
 	if(is[pos] != 'H' || is[pos+1] != 'E' || !((is[pos+2] == '3') || (is[pos+2] == '0'))) {
-		return;
+		throw CryptoException(STRING(DECOMPRESSION_ERROR));
 	}
 	pos+=5;
 
@@ -207,7 +315,8 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
 	bis.skipToByte();
 	
 	// We know the size, so no need to use strange STL stuff...
-	char* buf = new char[size+1];
+	AutoArray<char> buf(size+1);
+
 	pos = 0;
 	for(i=0; i<size; i++) {
 		DecNode* node = root;
@@ -219,15 +328,21 @@ void CryptoManager::decodeHuffman(const u_int8_t* is, string& os) {
 			}
 
 			if(node == NULL) {
+				for(i=0; i<treeSize; i++) {
+					delete leaves[i];
+				}
+				
+				delete[] leaves;
+				delete root;
+
 				dcdebug("Bad node found!!!\n");
-				return;
+				throw CryptoException(STRING(DECOMPRESSION_ERROR));
 			}
 		}
 		buf[pos++] = (u_int8_t)node->chr;
 	}
 	buf[pos] = 0;
 	os.assign(buf, size);
-	delete[] buf;
 
 	for(i=0; i<treeSize; i++) {
 		delete leaves[i];
@@ -409,5 +524,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.26 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.27 2002/12/28 01:31:49 arnetheduck Exp $
  */

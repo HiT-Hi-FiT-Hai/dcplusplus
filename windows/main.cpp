@@ -25,17 +25,40 @@
 #include "WinUtil.h"
 #include "SingleInstance.h"
 
+#include <delayimp.h>
 CAppModule _Module;
 
-#ifdef _DEBUG
 CriticalSection cs;
 enum { DEBUG_BUFSIZE = 2048 };
 char buf[DEBUG_BUFSIZE];
 
+#ifndef _DEBUG
+
+FARPROC WINAPI FailHook(unsigned dliNotify, PDelayLoadInfo  pdli) {
+	MessageBox(NULL, "DC++ just encountered an unhandled exception, and can do nothing about it as your Operating System is too old and doesn't have the functionality needed to write a crash report. Please don't report this bug as there's nothing I can do about it (it'll be ignored/removed).", "Unhandled Exception", MB_OK | MB_ICONERROR);
+	exit(-1);
+	return 0;
+}
+
+#endif
+
 LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 {
 	Lock l(cs);
-	
+
+#ifndef _DEBUG
+#if _MSC_VER == 1200
+	__pfnDliFailureHook = FailHook;
+#elif _MSC_VER == 1300
+	__pfnDliFailureHook2 = FailHook;
+#else
+#error Unknown Compiler version
+#endif
+
+	// The release version loads the dll and pdb:s here...
+	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
+
+#endif
 	File f(Util::getAppPath() + "exceptioninfo.txt", File::WRITE, File::OPEN | File::CREATE);
 	f.setEndPos(0);
 	
@@ -46,11 +69,16 @@ LONG __stdcall DCUnhandledExceptionFilter( LPEXCEPTION_POINTERS e )
 	f.write(buf);
 	STACKTRACE2(f, e->ContextRecord->Eip, e->ContextRecord->Esp, e->ContextRecord->Ebp);
 	f.close();
+#ifndef _DEBUG
+
+	EXTENDEDTRACEUNINITIALIZE();
 	
+	MessageBox(NULL, "DC++ just encountered an unhandled exception and has written some information about it to a file called exceptioninfo.txt. If you choose to report this crash as a bug, please include that file in the bug report, otherwise it'll be ignored.", "Unhandled Exception", MB_OK | MB_ICONERROR);
+	exit(-1);
+#endif
+
 	return EXCEPTION_CONTINUE_SEARCH;
 }
-
-#endif
 
 void callBack(void* x, const string& a) {
 	::SetWindowText((HWND)x, (STRING(LOADING) + "(" + a + ")").c_str());
@@ -115,14 +143,55 @@ static void installUrlHandler() {
 	}
 } 
 
+static void checkCommonControls() {
+#define PACKVERSION(major,minor) MAKELONG(minor,major)
+	
+	HINSTANCE hinstDll;
+	DWORD dwVersion = 0;
+	
+	hinstDll = LoadLibrary("comctl32.dll");
+	
+	if(hinstDll)
+	{
+		DLLGETVERSIONPROC pDllGetVersion;
+	
+		pDllGetVersion = (DLLGETVERSIONPROC) GetProcAddress(hinstDll, "DllGetVersion");
+		
+		if(pDllGetVersion)
+		{
+			DLLVERSIONINFO dvi;
+			HRESULT hr;
+			
+			ZeroMemory(&dvi, sizeof(dvi));
+			dvi.cbSize = sizeof(dvi);
+			
+			hr = (*pDllGetVersion)(&dvi);
+			
+			if(SUCCEEDED(hr))
+			{
+				dwVersion = PACKVERSION(dvi.dwMajorVersion, dvi.dwMinorVersion);
+			}
+		}
+		
+		FreeLibrary(hinstDll);
+	}
+
+	if(dwVersion < PACKVERSION(5,80)) {
+		MessageBox(NULL, "Your version of windows common controls is too old for DC++ to run correctly, and you will most probably experience problems with the user interface. You should download version 5.80 or higher from the DC++ homepage or from Microsoft directly.", "User Interface Warning", MB_OK);
+	}
+}
+
 static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+
+	checkCommonControls();
+
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 	
 	MainFrame wndMain;
 	CEdit splash;
-	RECT rc;
+	CRect rc;
 	rc.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
 	rc.right = GetSystemMetrics(SM_CXFULLSCREEN);
 	rc.left = (rc.right / 2) - 150;
@@ -153,13 +222,29 @@ static int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		installUrlHandler();
 	}
 
-	if(wndMain.CreateEx() == NULL)
-	{
+	rc = wndMain.rcDefault;
+
+	if( (SETTING(MAIN_WINDOW_POS_X) != CW_USEDEFAULT) &&
+		(SETTING(MAIN_WINDOW_POS_Y) != CW_USEDEFAULT) &&
+		(SETTING(MAIN_WINDOW_SIZE_X) != CW_USEDEFAULT) &&
+		(SETTING(MAIN_WINDOW_SIZE_Y) != CW_USEDEFAULT) ) {
+
+		rc.left = SETTING(MAIN_WINDOW_POS_X);
+		rc.top = SETTING(MAIN_WINDOW_POS_Y);
+		rc.right = rc.left + SETTING(MAIN_WINDOW_SIZE_X);
+		rc.bottom = rc.top + SETTING(MAIN_WINDOW_SIZE_Y);
+		// Now, let's ensure we have sane values here...
+		if( (rc.left < 0 ) || (rc.top < 0) || (rc.right - rc.left < 10) || ((rc.bottom - rc.top) < 10) ) {
+			rc = wndMain.rcDefault;
+		}
+	}
+
+	if(wndMain.CreateEx(NULL, rc) == NULL) {
 		ATLTRACE(_T("Main window creation failed!\n"));
 		return 0;
 	}
 	
-	wndMain.ShowWindow(nCmdShow);
+	wndMain.ShowWindow((nCmdShow == SW_SHOWDEFAULT) ? SETTING(MAIN_WINDOW_STATE) : nCmdShow);
 	
 	int nRet = theLoop.Run();
 	
@@ -188,18 +273,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 		return FALSE;
 	}
-
 	HRESULT hRes = ::CoInitialize(NULL);
-	// If you are running on NT 4.0 or higher you can use the following call instead to 
-	// make the EXE free threaded. This means that calls come in on a random RPC thread.
-	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	//	ATLASSERT(SUCCEEDED(hRes));
 #ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( Util::getAppPath().c_str() );
-	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
-	File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
+	//File::deleteFile(Util::getAppPath() + "exceptioninfo.txt");
 #endif
-
+	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
+	
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 	
@@ -211,7 +291,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
-	
 	
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 	
@@ -225,5 +304,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.8 2002/06/18 19:06:35 arnetheduck Exp $
+ * $Id: main.cpp,v 1.9 2002/12/28 01:31:50 arnetheduck Exp $
  */

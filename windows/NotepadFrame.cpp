@@ -22,20 +22,34 @@
 
 #include "NotepadFrame.h"
 #include "WinUtil.h"
+#include "../client/File.h"
 
 NotepadFrame* NotepadFrame::frame = NULL;
 
 LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
-	ctrlStatus.Attach(m_hWndStatusBar);
-	
 	ctrlPad.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
 		WS_VSCROLL | ES_AUTOVSCROLL | ES_MULTILINE | ES_NOHIDESEL, WS_EX_CLIENTEDGE);
 	
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
-	ctrlPad.SetWindowText(SETTING(NOTEPAD_TEXT).c_str());
+	string tmp;
+	try {
+		tmp = File(Util::getAppPath() + "Notepad.txt", File::READ).read();
+	} catch(FileException) {
+		// ...
+	}
+	
+	if(tmp.empty()) {
+		tmp = SETTING(NOTEPAD_TEXT);
+		if(!tmp.empty()) {
+			dirty = true;
+			SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, Util::emptyString);
+		}
+	}
+
+	ctrlPad.SetWindowText(tmp.c_str());
+	ctrlPad.EmptyUndoBuffer();
 	
 	SetWindowText(CSTRING(NOTEPAD));
 	frame = this;
@@ -44,9 +58,41 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
+LRESULT NotepadFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+	
+	if(dirty || ctrlPad.GetModify()) {
+		AutoArray<char> buf(ctrlPad.GetWindowTextLength() + 1);
+		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
+		try {
+			File(Util::getAppPath() + "Notepad.txt", File::WRITE, File::CREATE | File::TRUNCATE).write(buf, ctrlPad.GetWindowTextLength());
+		} catch(FileException) {
+			// Oops...
+		}
+	}
+
+	frame = NULL;
+	bHandled = FALSE;
+	return 0;
+	
+}
+
+void NotepadFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+{
+	CRect rc;
+
+	GetClientRect(rc);
+	
+	rc.bottom -= 1;
+	rc.top += 1;
+	rc.left +=1;
+	rc.right -=1;
+	ctrlPad.MoveWindow(rc);
+	
+}
+
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.4 2002/06/08 09:34:34 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.5 2002/12/28 01:31:50 arnetheduck Exp $
  */
 
 

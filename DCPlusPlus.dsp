@@ -39,11 +39,11 @@ RSC=rc.exe
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
 # PROP Output_Dir "App"
-# PROP Intermediate_Dir "Release"
+# PROP Intermediate_Dir "vc6\Release\windows"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /FAs /Yu"stdafx.h" /Gs256 /FD /GF /Zm150 /c
+# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gf /Gy /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /FAs /Yu"stdafx.h" /Gs256 /FD /GF /Zm150 /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
@@ -53,8 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib Release/client/client.lib Release/bzip/bzip2.lib /nologo /version:0.171 /subsystem:windows /map /machine:I386
-# SUBTRACT LINK32 /profile /debug
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib uuid.lib comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib delayimp.lib vc6\Release\client\client.lib vc6\Release\bzip\bzip2.lib vc6\release\zlib\zlib.lib /nologo /version:0.201 /subsystem:windows /profile /map /debug /machine:I386 /delayload:imagehlp.dll /delayload:comdlg32.dll
 
 !ELSEIF  "$(CFG)" == "DCPlusPlus - Win32 Debug"
 
@@ -66,11 +65,11 @@ LINK32=link.exe
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
 # PROP Output_Dir "App"
-# PROP Intermediate_Dir "Debug"
+# PROP Intermediate_Dir "vc6\Debug\windows"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /GZ /c
-# ADD CPP /nologo /G6 /Gr /MTd /W4 /GX /Zi /O2 /Ob0 /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdafx.h" /FD /Zm200 /c
+# ADD CPP /nologo /G6 /Gd /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdafx.h" /FD /Zm200 /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
@@ -80,8 +79,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 comctl32.lib Ws2_32.lib wininet.lib mswsock.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Debug/client/client.lib Debug/bzip/bzip2.lib /nologo /version:0.171 /subsystem:windows /debug /machine:I386
-# SUBTRACT LINK32 /profile /map
+# ADD LINK32 comctl32.lib Ws2_32.lib wininet.lib mswsock.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib vc6\Debug\client\client.lib vc6\Debug\bzip\bzip2.lib vc6\Debug\zlib\zlib.lib /nologo /version:0.171 /subsystem:windows /profile /debug /machine:I386
+# SUBTRACT LINK32 /map
 
 !ENDIF 
 
@@ -166,6 +165,10 @@ SOURCE=.\res\Search.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\Speeds.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\toolbar.bmp
 # End Source File
 # Begin Source File
@@ -219,6 +222,10 @@ SOURCE=.\windows\FavHubProperties.cpp
 # Begin Source File
 
 SOURCE=.\windows\FavoritesFrm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FinishedFrame.cpp
 # End Source File
 # Begin Source File
 
@@ -328,6 +335,10 @@ SOURCE=.\windows\FavHubProperties.h
 # Begin Source File
 
 SOURCE=.\windows\FavoritesFrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\windows\FinishedFrame.h
 # End Source File
 # Begin Source File
 

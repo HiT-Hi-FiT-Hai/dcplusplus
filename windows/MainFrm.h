@@ -30,18 +30,20 @@
 #include "../client/CriticalSection.h"
 #include "../client/HttpConnection.h"
 #include "../client/HubManager.h"
+#include "../client/QueueManagerListener.h"
+#include "../client/Util.h"
 
 #include "FlatTabCtrl.h"
 #include "ExListViewCtrl.h"
 #include "SingleInstance.h"
-
 class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFrame>,
 		public CMessageFilter, public CIdleHandler, public DownloadManagerListener, public CSplitterImpl<MainFrame, false>,
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener,
-		private ConnectionManagerListener
+		private ConnectionManagerListener, private QueueManagerListener
 {
 public:
-	MainFrame() : trayMessage(0), trayIcon(false), lastUpload(-1), lastUpdate(0), oldshutdown(false), stopperThread(NULL), c(NULL) { 
+	MainFrame() : trayMessage(0), trayIcon(false), maximized(false), lastUpload(-1), lastUpdate(0), 
+		oldshutdown(false), stopperThread(NULL), c(NULL) { 
 		c = new HttpConnection();
 	};
 	virtual ~MainFrame();
@@ -94,6 +96,7 @@ public:
 		MESSAGE_HANDLER(WM_APP+242, onTrayIcon)
 		MESSAGE_HANDLER(WM_DESTROY, onDestroy)
 		MESSAGE_HANDLER(WM_SIZE, onSize)
+		MESSAGE_HANDLER(WM_ENDSESSION, onEndSession)
 		MESSAGE_HANDLER(trayMessage, onTray)
 		MESSAGE_HANDLER(WM_COPYDATA, onCopyData)
 		MESSAGE_HANDLER(WMU_WHERE_ARE_YOU, onWhereAreYou)
@@ -117,6 +120,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
 		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
 		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_DONATE, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
 		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
@@ -131,6 +135,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REMOVEALL, onRemoveAll)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
+		NOTIFY_HANDLER(IDC_TRANSFERS, NM_CUSTOMDRAW, onCustomDraw)
 		NOTIFY_CODE_HANDLER(TTN_GETDISPINFO, onGetToolTip)
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
@@ -154,6 +159,7 @@ public:
 	LRESULT onForce(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);			
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -169,7 +175,8 @@ public:
 	LRESULT onFinished(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onRemoveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyData(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-
+	LRESULT onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		
 	static DWORD WINAPI stopper(void* p);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void parseCommandLine(const string& cmdLine);
@@ -183,15 +190,48 @@ public:
 		return 0;
 	};
 
+	static int sortSize(LPARAM a, LPARAM b) {
+		int i = sortItem(a, b);
+		if( i == ExListViewCtrl::SORT_STRING_NOCASE) {
+			ItemInfo* c = (ItemInfo*)a;
+			ItemInfo* d = (ItemInfo*)b;
+			return compare(c->size, d->size);			
+		}
+		return i;
+	}
+	static int sortStatus(LPARAM a, LPARAM b) {
+		int i = sortItem(a, b);
+		return (i == ExListViewCtrl::SORT_STRING_NOCASE) ? 0 : i;
+	}
+	static int sortItem(LPARAM a, LPARAM b) {
+		ItemInfo* c = (ItemInfo*)a;
+		ItemInfo* d = (ItemInfo*)b;
+		if(c->type == d->type) {
+			if(c->status == d->status || d->type == ItemInfo::TYPE_UPLOAD) {
+				return ExListViewCtrl::SORT_STRING_NOCASE;
+			} else {
+				return c->status == ItemInfo::STATUS_RUNNING ? -1 : 1;
+			}
+		} else {
+			return c->type == ItemInfo::TYPE_DOWNLOAD ? -1 : 1;
+		}
+	}
+
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
 		if(l->iSubItem == ctrlTransfers.getSortColumn()) {
 			ctrlTransfers.setSortDirection(!ctrlTransfers.getSortDirection());
 		} else {
-			if(l->iSubItem == COLUMN_SIZE) {
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
-			} else {
-				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+			switch(l->iSubItem) {
+			case COLUMN_SIZE:
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortSize); 
+				break;
+			case COLUMN_STATUS:
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortStatus); 
+				break;
+			default:
+				ctrlTransfers.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, &sortItem); 
+				break;
 			}
 		}
 		return 0;
@@ -231,7 +271,8 @@ public:
 	void removeSelected() {
 		int i = -1;
 		while( (i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ConnectionManager::getInstance()->removeConnection((ConnectionQueueItem*)ctrlTransfers.GetItemData(i));
+			ItemInfo* ii = (ItemInfo*)ctrlTransfers.GetItemData(i);
+			ConnectionManager::getInstance()->removeConnection(ii->user, ii->type == ItemInfo::TYPE_DOWNLOAD);
 		}
 	}
 	
@@ -287,7 +328,31 @@ private:
 		COLUMN_STATUS,
 		COLUMN_FILE,
 		COLUMN_SIZE,
+		COLUMN_PATH,
 		COLUMN_LAST
+	};
+
+	class ItemInfo {
+	public:
+		typedef HASH_MAP<ConnectionQueueItem*, ItemInfo*, PointerHash<ConnectionQueueItem> > Map;
+		typedef Map::iterator MapIter;
+
+		enum Status {
+			STATUS_RUNNING,
+			STATUS_WAITING
+		};
+		enum Types {
+			TYPE_DOWNLOAD,
+			TYPE_UPLOAD
+		};
+
+		ItemInfo(const User::Ptr& u, Types t = TYPE_DOWNLOAD, Status s = STATUS_WAITING, 
+			int64_t p = 0, int64_t sz = 0) : user(u), type(t), status(s), pos(p), size(sz) { };
+		User::Ptr user;
+		Types type;
+		Status status;
+		int64_t pos;
+		int64_t size;
 	};
 
 	class StringInfo {
@@ -323,17 +388,22 @@ private:
 	CImageList images;
 	CImageList largeImages;
 	
+	ItemInfo::Map transferItems;
+	
 	CMenu transferMenu;
 
 	UINT trayMessage;
+	/** Is the tray icon visible? */
 	bool trayIcon;
+	/** Was the window maximized when minimizing it? */
+	bool maximized;
 	u_int32_t lastMove;
 	u_int32_t lastUpdate;
 	bool oldshutdown;
 
 	int lastUpload;
-	static int columnIndexes[COLUMN_LAST];
-	static int columnSizes[COLUMN_LAST];
+	static int columnIndexes[];
+	static int columnSizes[];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -371,19 +441,22 @@ private:
 	void onConnectionStatus(ConnectionQueueItem* aCqi);
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	
 	// HttpConnectionListener
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* conn);
 	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const BYTE* buf, int len);	
 	void onHttpComplete(HttpConnection* aConn);
+
+	// QueueManagerListener
+	virtual void onAction(QueueManagerListener::Types type, QueueItem* qi);
 };
 
 #endif // !defined(AFX_MAINFRM_H__E73C3806_489F_4918_B986_23DCFBD603D5__INCLUDED_)
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.11 2002/06/28 20:53:49 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.12 2002/12/28 01:31:50 arnetheduck Exp $
  */
 
  

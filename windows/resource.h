@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Microsoft Developer Studio generated include file.
+// Used by C:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_PROPPAGE_1                  107
@@ -159,8 +159,23 @@
 #define IDC_FINISHED                    1084
 #define IDC_TEMP_DOWNLOAD_DIRECTORY     1084
 #define IDC_BROWSETEMPDIR               1085
-#define IDC_CHECK1                      1086
-#define IDC_REMOVEALL					1087
+#define IDC_AUTO_AWAY                   1086
+#define IDC_SOCKS_RESOLVE               1086
+#define IDC_REMOVEALL                   1087
+#define IDC_SMALL_SEND_SIZE             1087
+#define IDC_SMALL_SEND_BUFFER           1087
+#define IDC_HELP_DONATE                 1088
+#define IDC_SOCKS5                      1089
+#define IDC_SOCKS_SERVER                1090
+#define IDC_SOCKS_PORT                  1091
+#define IDC_SOCKS_USER                  1092
+#define IDC_SOCKS_PASSWORD              1093
+#define IDC_FREESLOTS                   1094
+#define IDC_KEEP_LISTS                  1094
+#define IDC_AUTO_KICK                   1095
+#define IDC_COPY_NICK                   1096
+#define IDC_SHOW_UI						1097
+#define IDC_MOVE						1098
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -169,6 +184,8 @@
 #define IDC_DOWNLOADTO                  32781
 #define IDC_FAVORITES                   32783
 #define IDC_FOLLOW                      32784
+#define IDC_SEND_MESSAGE                32786
+#define IDC_DELETE_WORD                 32787
 #define ID_WINDOW_MINIMIZE_ALL          57654
 
 // Next default values for new objects
@@ -176,9 +193,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        228
-#define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1087
+#define _APS_NEXT_RESOURCE_VALUE        230
+#define _APS_NEXT_COMMAND_VALUE         32788
+#define _APS_NEXT_CONTROL_VALUE         1096
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

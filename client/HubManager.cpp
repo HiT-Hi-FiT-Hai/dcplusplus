@@ -35,7 +35,11 @@ void HubManager::onHttpFinished() throw() {
 	string bzlist;
 
 	if(listType == TYPE_BZIP2) {
-		CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
+		try {
+			CryptoManager::getInstance()->decodeBZ2((u_int8_t*)downloadBuf.data(), downloadBuf.size(), bzlist);
+		} catch(CryptoException) {
+			bzlist.clear();
+		}
 		x = &bzlist;
 	} else {
 		x = &downloadBuf;
@@ -125,6 +129,10 @@ void HubManager::load(SimpleXML* aXml) {
 void HubManager::refresh() {
 	StringList l = StringTokenizer(SETTING(HUBLIST_SERVERS), ';').getTokens();
 	const string& server = l[(lastServer) % l.size()];
+	if(Util::strnicmp(server.c_str(), "http://", 7) != 0) {
+		lastServer++;
+		return;
+	}
 
 	fire(HubManagerListener::DOWNLOAD_STARTING, server);
 	if(!running) {
@@ -176,7 +184,7 @@ void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*
 }
 
 // TimerManagerListener
-void HubManager::onAction(TimerManagerListener::Types type, u_int32_t) {
+void HubManager::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 	if(type == TimerManagerListener::MINUTE) {
 		if(publicHubs.empty() && !running)
 			refresh();
@@ -192,6 +200,6 @@ void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.25 2002/05/26 20:28:11 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.26 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

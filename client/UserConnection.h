@@ -46,6 +46,8 @@ public:
 		KEY,
 		DIRECTION,
 		GET,
+		GET_BZ_BLOCK,
+		SENDING,
 		FILE_LENGTH,
 		SEND,
 		GET_LIST_LENGTH,
@@ -63,6 +65,7 @@ public:
 	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) { };	// DATA
 	virtual void onAction(Types, UserConnection*, const string&, const string&) { };	// DIRECTION, LOCK
 	virtual void onAction(Types, UserConnection*, const string&, int64_t) { };	// GET
+	virtual void onAction(Types, UserConnection*, const string&, int64_t, int64_t) { };	// GET_BZ_BLOCK
 	virtual void onAction(Types, UserConnection*, int) { };						// MODE_CHANGE
 	virtual void onAction(Types, UserConnection*, const StringList&) { };		// SUPPORTS
 };
@@ -71,6 +74,10 @@ class ConnectionQueueItem;
 
 class Transfer {
 public:
+	Transfer() : file(NULL), userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
+		last(0), total(0), pos(-1), size(-1) { };
+	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
+	
 	int64_t getPos() { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
 	void setPos(int64_t aPos, bool aUpdate) { 
@@ -118,10 +125,6 @@ public:
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
-	Transfer() : file(NULL), userConnection(NULL), start(0), lastTick(GET_TICK()), runningAverage(0), 
-		last(0), total(0), pos(-1), size(-1) { };
-	virtual ~Transfer() { dcassert(userConnection == NULL); dcassert(file == NULL); };
-
 	GETSET(File*, file, File);
 	GETSET(UserConnection*, userConnection, UserConnection);
 	GETSET(u_int32_t, start, Start);
@@ -160,7 +163,8 @@ public:
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
 		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
-		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1
+		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1,
+		FLAG_SUPPORTS_GETZBLOCK = FLAG_SUPPORTS_BZLIST << 1
 	};
 	
 	enum States {
@@ -186,8 +190,10 @@ public:
 	void key(const string& aKey) { send("$Key " + aKey + '|'); }
 	void direction(const string& aDirection, int aNumber) { send("$Direction " + aDirection + " " + Util::toString(aNumber) + '|'); }
 	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
+	void getBZBlock(const string& aFile, int64_t aResume, int64_t aBytes) { send("$GetBZBlock " + Util::toString(aResume) + ' ' + Util::toString(aBytes) + ' ' + aFile + '|'); };
 	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
+	void sending() { send("$Sending|"); };
 	void error(const string& aError) { send("$Error " + aError + '|'); };
 	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
@@ -198,7 +204,8 @@ public:
 		}
 		send("$Supports " + x + '|');
 	}
-	void setDataMode(int64_t aBytes) { dcassert(socket); socket->setDataMode(aBytes); }
+	void setDataMode(int64_t aBytes = -1) { dcassert(socket); socket->setDataMode(aBytes); }
+	void setLineMode() { dcassert(socket); socket->setLineMode(); };
 
 	void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
 		if(socket == NULL) {
@@ -219,7 +226,9 @@ public:
 	}
 	
 	void disconnect() { if(socket) socket->disconnect(); };
-	void transmitFile(File* f, int64_t size) { socket->transmitFile(f, size); };
+	void transmitFile(File* f, int64_t size, bool comp = false) { 
+		socket->transmitFile(f, size, comp); 
+	};
 
 	const string& getDirectionString() {
 		dcassert(isSet(FLAG_UPLOAD) ^ isSet(FLAG_DOWNLOAD));
@@ -228,16 +237,16 @@ public:
 
 	User::Ptr& getUser() { return user; };
 
-	GETSET(ConnectionQueueItem*, cqi, CQI);
-	GETSET(States, state, State);
-	GETSET(u_int32_t, lastActivity, LastActivity);
-	GETSETREF(string, nick, Nick);
-	
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
 	void setUpload(Upload* u) { dcassert(isSet(FLAG_UPLOAD)); upload = u; };
 
+	GETSET(ConnectionQueueItem*, cqi, CQI);
+	GETSET(States, state, State);
+	GETSET(u_int32_t, lastActivity, LastActivity);
+	GETSETREF(string, nick, Nick);
+	
 private:
 	BufferedSocket* socket;
 	User::Ptr user;
@@ -250,7 +259,7 @@ private:
 	};
 
 	// We only want ConnectionManager to create this...
-	UserConnection() : state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL), cqi(NULL) { };
+	UserConnection() : cqi(NULL), state(STATE_UNCONNECTED), lastActivity(0), socket(NULL), download(NULL) { };
 	UserConnection(const UserConnection&) { dcassert(0); };
 
 	virtual ~UserConnection() {
@@ -286,5 +295,6 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.50 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.51 2002/12/28 01:31:49 arnetheduck Exp $
  */
+

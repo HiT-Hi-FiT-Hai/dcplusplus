@@ -41,13 +41,13 @@
 				WarningLevel="4"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
-				CallingConvention="2"/>
+				CallingConvention="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib odbc32.lib odbccp32.lib Debug/client/client.lib Debug/bzip/bzip2.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib odbc32.lib odbccp32.lib Debug/client/client.lib Debug/bzip/bzip2.lib debug/zlib/zlib.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
 				Version="0.171"
 				LinkIncremental="2"
@@ -120,17 +120,21 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386 /FIXED:NO"
-				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib mswsock.lib shlwapi.lib Release/client/client.lib Release/bzip/bzip2.lib"
+				AdditionalDependencies="comctl32.lib Ws2_32.lib wininet.lib shlwapi.lib delayimp.lib Release/client/client.lib Release/bzip/bzip2.lib"
 				OutputFile=".\App/DCPlusPlus.exe"
-				Version="0.18"
+				Version="0.20"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				GenerateDebugInformation="FALSE"
+				DelayLoadDLLs="comdlg32.dll;imagehlp.dll"
+				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\App/DCPlusPlus.pdb"
 				GenerateMapFile="TRUE"
 				MapFileName=".\App\DCPlusPlus.map"
 				SubSystem="2"
-				OptimizeReferences="2"/>
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				SetChecksum="TRUE"
+				TargetMachine="0"/>
 			<Tool
 				Name="VCMIDLTool"
 				PreprocessorDefinitions="NDEBUG"

@@ -25,6 +25,7 @@
 
 #include "Exception.h"
 #include "Util.h"
+#include "File.h"
 
 STANDARD_EXCEPTION(SimpleXMLException);
 
@@ -35,7 +36,7 @@ STANDARD_EXCEPTION(SimpleXMLException);
 class SimpleXML  
 {
 public:
-	SimpleXML() : found(false) { root = current = new Tag("BOGUSROOT", Util::emptyString, NULL); };
+	SimpleXML(int numAttribs = 0) : found(false), attribs(numAttribs) { root = current = new Tag("BOGUSROOT", Util::emptyString, NULL); };
 	~SimpleXML() { delete root; }
 	
 	void addTag(const string& aName, const string& aData = Util::emptyString) throw(SimpleXMLException);
@@ -92,27 +93,13 @@ public:
 		found = true;
 	}
 
-	void resetCurrentChild() {
+	void resetCurrentChild() throw() {
 		found = false;
 		dcassert(current != NULL);
 		currentChild = current->children.begin();
 	}
 
-	bool findChild(const string& aName) {
-		dcassert(current != NULL);
-
-		if(found && currentChild != current->children.end())
-			currentChild++;
-
-		while(currentChild!=current->children.end()) {
-			if((*currentChild)->name == aName) {
-				found = true;
-				return true;
-			} else
-				currentChild++;
-		}
-		return false;
-	}
+	bool findChild(const string& aName) throw();
 
 	const string& getChildData() const throw(SimpleXMLException) {
 		checkChildSelected();
@@ -121,7 +108,7 @@ public:
 
 	const string& getChildAttrib(const string& aName) throw(SimpleXMLException) {
 		checkChildSelected();
-		return (*currentChild)->attribs[aName];
+		return (*currentChild)->getAttrib(aName);
 	}
 
 	int getIntChildAttrib(const string& aName) throw(SimpleXMLException) {
@@ -141,14 +128,26 @@ public:
 	
 	void fromXML(const string& aXML) throw(SimpleXMLException);
 	string toXML() { return (!root->children.empty()) ? root->children[0]->toXML(0) : Util::emptyString; };
+	void toXML(File* f) throw(FileException) { if(!root->children.empty()) root->children[0]->toXML(0, f); };
 	
-
+	static string escape(const string& aString, bool aAttrib, bool aReverse = false);
+	/** 
+	 * This is a heurestic for whether escape needs to be called or not. The results are
+	 * only guaranteed for false, i e sometimes true might be returned even though escape
+	 * was not needed...
+	 */
+	static bool needsEscape(const string& aString, bool aAttrib, bool aReverse = false) {
+		return ((aReverse) ? aString.find('&') : aString.find_first_of(aAttrib ? "<&>'\"" : "<&>")) != string::npos;
+	}
 private:
 	class Tag {
 	public:
 		typedef Tag* Ptr;
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
+		typedef pair<string,string> StringPair;
+		typedef vector<StringPair> AttribMap;
+		typedef AttribMap::iterator AttribIter;
 
 		/**
 		 * A simple list of children. To find a tag, one must search the entire list.
@@ -156,9 +155,11 @@ private:
 		List children;
 		/**
 		 * Attributes of this tag. According to the XML standard the names
-		 * must be unique (case-sensitive).
+		 * must be unique (case-sensitive). (Assuming that we have few attributes here,
+		 * we use a vector instead of a (hash)map to save a few bytes of memory and unnecessary
+		 * calls to the memory allocator...)
 		 */
-		StringMap attribs;
+		AttribMap attribs;
 		
 		/** Tag name */
 		string name;
@@ -169,10 +170,19 @@ private:
 		/** Parent tag, for easy traversal */
 		Ptr parent;
 
-		Tag(const string& aName, const string& aData, Ptr aParent) : name(aName), data(aData), parent(aParent) { };
+		Tag(const string& aName, const string& aData, Ptr aParent, int numAttribs = 0) : name(aName), data(aData), parent(aParent) { 
+			if(numAttribs > 0) 
+				attribs.reserve(numAttribs);
+		};
 		
+		const string& getAttrib(const string& aName) {
+			AttribIter i = find_if(attribs.begin(), attribs.end(), CompareFirst<string,string>(aName));
+			return (i == attribs.end()) ? Util::emptyString : i->second; 
+		}
 		string toXML(int indent);
-		void fromXML(const string& aXML, string::size_type start, string::size_type end) throw(SimpleXMLException);
+		void toXML(int indent, File* f);
+		
+		void fromXML(const string& aXML, string::size_type start, string::size_type end, int aa = 0) throw(SimpleXMLException);
 		string getAttribString();
 		/** Delete all children! */
 		~Tag() {
@@ -190,21 +200,19 @@ private:
 
 	Tag::Iter currentChild;
 
-	void checkChildSelected() const throw(SimpleXMLException) {
+	void checkChildSelected() const throw() {
 		dcassert(current != NULL);
-		if(currentChild == current->children.end()) {
-			throw SimpleXMLException("No child selected");				
-		}
+		dcassert(currentChild != current->children.end());
 	}
 
 	bool found;
-
+	int attribs;
 };
 
 #endif // !defined(AFX_SIMPLEXML_H__3FDC96DD_A4D6_4357_9557_9D7585529A98__INCLUDED_)
 
 /**
  * @file SimpleXML.h
- * $Id: SimpleXML.h,v 1.17 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.18 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

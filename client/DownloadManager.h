@@ -29,6 +29,7 @@
 
 class QueueItem;
 class ConnectionQueueItem;
+class ZDecompressor;
 
 class Download : public Transfer, public Flags {
 public:
@@ -36,23 +37,20 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 
-	Download(bool aResume, bool aUserList) : rollbackBuffer(NULL), rollbackSize(0) { 
-		if(aUserList)
-			setFlag(Download::USER_LIST);
-		if(aResume)
-			setFlag(Download::RESUME);
+	enum {
+		FLAG_USER_LIST = 0x01,
+		FLAG_RESUME = 0x02,
+		FLAG_ROLLBACK = 0x04,
+		FLAG_ZDOWNLOAD = 0x08
 	};
+
+	Download(QueueItem* qi) throw();
 
 	virtual ~Download() {
 		if(rollbackBuffer)
 			delete[] rollbackBuffer;
+		dcassert(comp == NULL);
 	}
-
-	enum {
-		USER_LIST = 0x01,
-		RESUME = 0x02,
-		ROLLBACK = 0x04
-	};
 
 	u_int8_t* getRollbackBuffer() { return rollbackBuffer; };
 
@@ -78,10 +76,15 @@ public:
 	GETSETREF(string, source, Source);
 	GETSETREF(string, target, Target);
 	GETSETREF(string, tempTarget, TempTarget);
+	GETSET(ZDecompressor*, comp, Comp);
+
+	int64_t bytesLeft;
 private:
+
+	Download() { };
+
 	u_int8_t* rollbackBuffer;
 	int rollbackSize;
-
 };
 
 
@@ -157,6 +160,8 @@ private:
 	};
 	
 	void checkDownloads(UserConnection* aConn);
+	bool handleData(UserConnection* aSource, const u_int8_t* aData, int aLen);
+	void handleEndData(UserConnection* aSource);
 	
 	// UserConnectionListener
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
@@ -164,15 +169,17 @@ private:
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len);
 	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode);
 	
-	void onFileNotAvailabe(UserConnection* aSource);
+	void onFileNotAvailable(UserConnection* aSource) throw();
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onData(UserConnection* aSource, const u_int8_t* aData, int aLen);
 	void onFileLength(UserConnection* aSource, const string& aFileLength);
 	void onMaxedOut(UserConnection* aSource);
 	void onModeChange(UserConnection* aSource, int aNewMode);
+	void onSending(UserConnection* aSource);
 	
+	bool prepareFile(UserConnection* aSource, int64_t newSize = -1);
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) throw();
 	void onTimerSecond(u_int32_t aTick);
 
 };
@@ -181,5 +188,5 @@ private:
 
 /**
  * @file DownloadManager.h
- * $Id: DownloadManager.h,v 1.46 2002/06/28 20:53:47 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.47 2002/12/28 01:31:49 arnetheduck Exp $
  */

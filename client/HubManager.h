@@ -223,7 +223,7 @@ private:
  	void onHttpFinished() throw();
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t);
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t) throw();
 	
 	// SettingsManagerListener
 	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);	
@@ -236,6 +236,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.33 2002/06/29 18:58:49 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.34 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

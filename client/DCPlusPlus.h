@@ -45,13 +45,24 @@ inline void CDECL debugTrace(const char* format, ...)
 
 #define dcdebug debugTrace
 #ifdef WIN32
-#define dcassert(exp) _ASSERTE(exp)
+#define dcassert(exp) \
+do { if (!(exp)) { \
+	dcdebug("Assertion hit in %s(%d): " #exp "\n", __FILE__, __LINE__); \
+	if(1 == _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, NULL, #exp)) \
+_CrtDbgBreak(); } } while (0)
+#define dcasserta(exp) dcassert(exp)
 #else
 #include <assert.h>
+#define dcasserta(exp) assert(exp)
 #define dcassert(exp) assert(exp)
 #endif
 #define dcdrun(exp) exp
 #else //_DEBUG
+#ifdef WIN32
+#define dcasserta(exp) __assume(exp)
+#else
+#define dcasserta(exp)
+#endif // WIN32
 #define dcdebug true ? (0) : printf
 #define dcassert(exp) 
 #define dcdrun(exp)
@@ -87,6 +98,6 @@ extern void shutdown();
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.28 2002/06/03 20:45:38 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.29 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

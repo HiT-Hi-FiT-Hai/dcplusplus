@@ -31,10 +31,23 @@ public:
 	static HFONT font;
 	static CMenu mainMenu;
 	static int dirIconIndex;
+	static StringList lastDirs;
+	static string lastKick;
+	static string lastRedirect;
+	static string lastServer;
 	
 	static void buildMenu();
-
 	static void decodeFont(const string& setting, LOGFONT &dest);
+	
+	static void addLastDir(const string& dir) {
+		if(find(lastDirs.begin(), lastDirs.end(), dir) != lastDirs.end()) {
+			return;
+		}
+		if(lastDirs.size() == 10) {
+			lastDirs.erase(lastDirs.begin());
+		}
+		lastDirs.push_back(dir);
+	}
 	
 	static string encodeFont(LOGFONT const& font)
 	{
@@ -74,7 +87,7 @@ public:
 			return 2;
 		}
 	}
-
+	
 	static int getFontHeight(HDC dc, HFONT h) {
 		TEXTMETRIC tm;
 		HFONT old = (HFONT)SelectObject(dc, h);
@@ -87,6 +100,8 @@ public:
 		return dirIconIndex;
 	}
 	
+	static void splitTokens(int* array, const string& tokens, int maxItems = -1);
+	
 private:
 	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM /*lp*/, LPARAM pData);		
 	
@@ -96,5 +111,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.6 2002/05/30 19:09:33 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.7 2002/12/28 01:31:50 arnetheduck Exp $
  */

@@ -38,7 +38,8 @@ public:
 		OP = 0x01,
 		ONLINE = 0x02,
 		DCPLUSPLUS = 0x04,
-		PASSIVE = 0x08
+		PASSIVE = 0x08,
+		QUIT_HUB = 0x10
 	};
 	typedef Pointer<User> Ptr;
 	typedef vector<Ptr> List;
@@ -47,7 +48,7 @@ public:
 	typedef NickMap::iterator NickIter;
 
 	struct HashFunction {
-		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))>>2; };
+		size_t operator()(const Ptr& x) const { return ((size_t)(&(*x)))/sizeof(User); };
 	};
 
 	User(const string& aNick) throw() : nick(aNick), bytesShared(0), client(NULL) { };
@@ -88,6 +89,6 @@ private:
 
 /**
  * @file User.h
- * $Id: User.h,v 1.21 2002/06/28 20:53:48 arnetheduck Exp $
+ * $Id: User.h,v 1.22 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

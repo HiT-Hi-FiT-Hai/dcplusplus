@@ -20,7 +20,6 @@
 #include "DCPlusPlus.h"
 
 #include "Util.h"
-#include "StringTokenizer.h"
 
 #ifndef WIN32
 #include <sys/socket.h>
@@ -46,6 +45,42 @@ void Util::initialize() {
 	}
 
 	sgenrand(time(NULL));
+}
+
+static const char badChars[] = { 
+	1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+		17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+		31, '<', '>', '"', '|',0
+};
+
+/**
+ * Replaces all strange characters in a file with '_'
+ * @todo Check for invalid names such as nul and aux...
+ */
+string Util::filterFileName(const string& aFile) {
+
+	if(aFile.empty())
+		return aFile;
+	
+	string tmp = aFile;
+	string::size_type i;
+
+	// First, eliminate forbidden chars
+	i=0;
+	while( (i = tmp.find_first_of(badChars, i)) != string::npos) {
+		tmp[i] = '_';
+	}
+
+	i = tmp.length() - 1;
+	// Then, eliminate all ':' that are not the second letter ("c:\...")
+	while(true) {
+		i = tmp.rfind(':', i);
+		if(i == 1 || i == string::npos)
+			break;
+		
+		tmp[i] = '_';	
+	}
+	return tmp;
 }
 
 /**
@@ -241,6 +276,6 @@ u_int32_t Util::rand() {
 
 /**
  * @file Util.cpp
- * $Id: Util.cpp,v 1.19 2002/06/27 23:38:24 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.20 2002/12/28 01:31:49 arnetheduck Exp $
  */
 

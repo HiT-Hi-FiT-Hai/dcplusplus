@@ -35,7 +35,7 @@ public:
 			File f(SETTING(LOG_DIRECTORY) + area + ".log", File::WRITE, File::OPEN | File::CREATE);
 			f.setEndPos(0);
 			f.write(msg + "\r\n");
-		} catch (FileException e) {
+		} catch (FileException) {
 			// ...
 		}
 	};
@@ -63,5 +63,5 @@ private:
 
 /**
  * @file LogManager.h
- * $Id: LogManager.h,v 1.2 2002/04/07 16:08:14 arnetheduck Exp $
+ * $Id: LogManager.h,v 1.3 2002/12/28 01:31:49 arnetheduck Exp $
  */
