@@ -408,7 +408,7 @@ public:
 	}
 	
 	virtual int64_t verifiedBytes() {
-		return min(real.getFileSize(), cur.getBlockSize() * (int64_t)cur.getLeaves().size());
+		return min(real.getFileSize(), (int64_t)(cur.getBlockSize() * cur.getLeaves().size()));
 	}
 private:
 	OutputStream* s;
@@ -912,5 +912,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.119 2004/09/23 09:06:26 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.120 2004/09/25 20:40:40 arnetheduck Exp $
  */

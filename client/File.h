@@ -333,7 +333,7 @@ public:
 		return (size_t)x;
 	}
 	
-	virtual u_int32_t write(const void* buf, u_int32_t len) throw(FileException) {
+	virtual size_t write(const void* buf, size_t len) throw(FileException) {
 		ssize_t x = ::write(h, buf, len);
 		if(x == -1)
 			throw FileException("Write error");
@@ -359,6 +359,9 @@ public:
 
 	static void deleteFile(const string& aFileName) throw() { ::unlink(aFileName.c_str()); };
 	static void renameFile(const string& source, const string& target) throw() { ::rename(source.c_str(), target.c_str()); };
+	static void copyFile(const string& source, const string& target) throw() { 
+#warning FIXME
+	}
 
 	static int64_t getSize(const string& aFileName) {
 		struct stat s;
@@ -502,6 +505,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.41 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: File.h,v 1.42 2004/09/25 20:40:39 arnetheduck Exp $
  */
 

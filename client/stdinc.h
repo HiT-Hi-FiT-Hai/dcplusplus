@@ -63,11 +63,8 @@
 using namespace _STL;
 #include <hash_map>
 
-#elif defined(__GLIBCPP__)  // Using GNU C++ library?
+#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
 #include <ext/hash_map>
-#define HAS_HASH 1
-#define HASH_MAP hash_map
-#define HASH_MULTIMAP hash_multimap
                                                                                 
 using namespace std;
 using namespace __gnu_cxx;
@@ -94,5 +91,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.9 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.10 2004/09/25 20:40:40 arnetheduck Exp $
  */

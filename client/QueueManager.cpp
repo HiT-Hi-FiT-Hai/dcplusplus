@@ -589,7 +589,7 @@ static SizeMap sizeMap;
 static string utfTmp;
 
 static const string& utfEscaper(const string& x) {
-	return curDl->getUtf8() ? x : utfTmp.clear(), Text::acpToUtf8(x, utfTmp);
+	return curDl->getUtf8() ? x : (utfTmp.clear(), Text::acpToUtf8(x, utfTmp));
 }
 
 int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
@@ -1251,5 +1251,5 @@ void QueueManager::on(TimerManagerListener::Second, u_int32_t aTick) throw() {
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.102 2004/09/24 20:48:27 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.103 2004/09/25 20:40:40 arnetheduck Exp $
  */
