@@ -24,6 +24,7 @@
 #endif // _MSC_VER > 1000
 
 #include "HubManager.h"
+#include "ExListViewCtrl.h"
 
 class PublicHubsDlg : public CDialogImpl<PublicHubsDlg>  
 {
@@ -32,39 +33,35 @@ private:
 	static DWORD WINAPI FillHubList(void* p);
 	HANDLE readerThread;
 	HANDLE stopEvent;
-	CRITICAL_SECTION stopCS;
-	CListViewCtrl ctrlHubs;
+	int stopID;
+	ExListViewCtrl ctrlHubs;
 	boolean refresh;
 
 	void startReader() {
 		DWORD threadId;
-		InitializeCriticalSection(&stopCS);
 		stopEvent=CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerThread=CreateThread(NULL, 0, &FillHubList, this, 0, &threadId);
 	}
 	
 	void stopReader() {
+		dcdebug("stopreader\n");
 		if(readerThread != NULL) {
-			EnterCriticalSection(&stopCS);
 			SetEvent(stopEvent);
-			LeaveCriticalSection(&stopCS);
-			
-			/* Not necessary here, as the thread will enter critical as soon as it actually matters
-			if(WaitForSingleObject(readerThread, 1000) == WAIT_TIMEOUT) {
-				::MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
-			}
-			*/
-			readerThread = NULL;
-			CloseHandle(stopEvent);
-			stopEvent = NULL;
-			DeleteCriticalSection(&stopCS);
+			DWORD threadId;
+			CreateThread(NULL, 0, &stopper, this, 0, &threadId);
+			return;
 		}
+		CloseHandle(stopEvent);
+		stopEvent = NULL;
+		dcdebug("End in stopReader\n");
+		EndDialog(stopID);
+		
 	}
+	static DWORD WINAPI stopper(void* p);
 	
 public:
 	PublicHubsDlg() : readerThread(NULL), stopEvent(NULL), refresh(false) { };
 	~PublicHubsDlg() {
-		stopReader();
 	}
 	string server;
 
@@ -76,11 +73,25 @@ public:
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		NOTIFY_HANDLER(IDC_HUBLIST, LVN_ITEMCHANGED, OnItemchangedHublist)
 		COMMAND_HANDLER(IDC_REFRESH, BN_CLICKED, OnClickedRefresh)
+		NOTIFY_HANDLER(IDC_HUBLIST, LVN_COLUMNCLICK, onColumnClickHublist)
 	END_MSG_MAP()
-		
+
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnItemchangedHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+	LRESULT onColumnClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+		if(l->iSubItem == ctrlHubs.getSortColumn()) {
+			ctrlHubs.setSortDirection(!ctrlHubs.getSortDirection());
+		} else {
+			if(l->iSubItem == 2) {
+				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+			} else {
+				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING);
+			}
+		}
+		return 0;
+	}
 	LRESULT OnClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 };
 
@@ -88,11 +99,14 @@ public:
 
 /**
  * @file PublicHubsDlg.h
- * $Id: PublicHubsDlg.h,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: PublicHubsDlg.h,v 1.2 2001/11/24 10:31:45 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.h,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/24 10:31:45  arnetheduck
+ * Added hub list sorting and fixed deadlock bugs (hopefully...).
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */

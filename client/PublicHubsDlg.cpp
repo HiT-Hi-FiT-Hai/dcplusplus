@@ -31,10 +31,10 @@ DWORD WINAPI PublicHubsDlg::FillHubList(void* p) {
 	
 	if(WaitForSingleObject(hEvent, 0)!=WAIT_TIMEOUT) {
 		ATLTRACE("Hublist Thread ended");
+		dlg->readerThread = NULL;
 		return 0;
 	}
 	
-	EnterCriticalSection(&dlg->stopCS);
 	if(hubs.size() == 0) {
 		dlg->SetWindowText("Public Hub List - Unable to download public server list. Check your internet connection!");
 	} else {
@@ -42,12 +42,20 @@ DWORD WINAPI PublicHubsDlg::FillHubList(void* p) {
 	}
 
 	for(HubManager::HubEntry::Iter i = hubs.begin(); i != hubs.end(); ++i) {
-		int j = dlg->ctrlHubs.AddItem(dlg->ctrlHubs.GetItemCount(), 0, i->name.c_str());
-		dlg->ctrlHubs.SetItemText(j, 1, i->description.c_str());
-		dlg->ctrlHubs.SetItemText(j, 2, i->users.c_str());
-		dlg->ctrlHubs.SetItemText(j, 3, i->server.c_str());
+		if(WaitForSingleObject(hEvent, 0)!=WAIT_TIMEOUT) {
+			ATLTRACE("Hublist Thread ended");
+			dlg->readerThread = NULL;
+			return 0;
+		}
+		StringList l;
+		l.push_back(i->name.c_str());
+		l.push_back(i->description.c_str());
+		l.push_back(i->users.c_str());
+		l.push_back(i->server.c_str());
+		dlg->ctrlHubs.insertItem(l);
+		
 	}
-	LeaveCriticalSection(&dlg->stopCS);
+	dlg->readerThread = NULL;
 	return 0;
 }
 
@@ -59,6 +67,7 @@ LRESULT PublicHubsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	ctrlHubs.InsertColumn(2, _T("Users"), LVCFMT_RIGHT, 50, 2);
 	ctrlHubs.InsertColumn(3, _T("Server"), LVCFMT_LEFT, 100, 3);
 	
+	ctrlHubs.setSort(2, ExListViewCtrl::SORT_INT, false);
 	SetDlgItemText(IDC_SERVER, server.c_str());
 
 	startReader();
@@ -73,8 +82,23 @@ LRESULT PublicHubsDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 		GetDlgItemText(IDC_SERVER, buf, 1024);
 		server = buf;
 	}
+	stopID = wID;
 	stopReader();
-	EndDialog(wID);
+	return 0;
+}
+
+DWORD WINAPI PublicHubsDlg::stopper(void* p) {
+	PublicHubsDlg* dlg = (PublicHubsDlg*)p;
+
+	if(WaitForSingleObject(dlg->readerThread, INFINITE) == WAIT_TIMEOUT) {
+		::MessageBox(NULL, _T("Unable to stop reader thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
+	}
+	dlg->readerThread = NULL;
+	CloseHandle(dlg->stopEvent);
+	dlg->stopEvent = NULL;
+	
+	dcdebug("end in stopper\n");
+	dlg->EndDialog(dlg->stopID);
 	return 0;
 }
 
@@ -99,11 +123,14 @@ LRESULT PublicHubsDlg::OnClickedRefresh(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 /**
  * @file PublicHubsDlg.cpp
- * $Id: PublicHubsDlg.cpp,v 1.1 2001/11/21 17:33:20 arnetheduck Exp $
+ * $Id: PublicHubsDlg.cpp,v 1.2 2001/11/24 10:31:45 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsDlg.cpp,v $
- * Revision 1.1  2001/11/21 17:33:20  arnetheduck
- * Initial revision
+ * Revision 1.2  2001/11/24 10:31:45  arnetheduck
+ * Added hub list sorting and fixed deadlock bugs (hopefully...).
+ *
+ * Revision 1.1.1.1  2001/11/21 17:33:20  arnetheduck
+ * Inital release
  *
  * @endif
  */
