@@ -40,7 +40,9 @@
 
 #include "FastAlloc.h"
 
+#ifndef _DEBUG
 FastCriticalSection FastAllocBase::cs;
+#endif
 
 string Util::emptyString;
 wstring Util::emptyStringW;
@@ -864,6 +866,6 @@ int Util::getOsMinor()
 }
 /**
  * @file
- * $Id: Util.cpp,v 1.73 2004/10/31 22:33:27 arnetheduck Exp $
+ * $Id: Util.cpp,v 1.74 2004/11/02 09:03:51 arnetheduck Exp $
  */
 

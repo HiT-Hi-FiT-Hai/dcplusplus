@@ -25,6 +25,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#ifndef _DEBUG
 struct FastAllocBase {
 	static FastCriticalSection cs;
 };
@@ -36,7 +37,6 @@ struct FastAllocBase {
 template<class T>
 struct FastAlloc : public FastAllocBase {
 	// Custom new & delete that (hopefully) use the node allocator
-#ifndef DEBUG
 	static void* operator new(size_t s) {
 		if(s != sizeof(T))
 			return ::operator new(s);
@@ -91,13 +91,14 @@ private:
 		}
 		*(void**)tmp = NULL;
 	}
-#endif
-
 };
 template<class T> void* FastAlloc<T>::freeList = NULL;
+#else
+template<class T> struct FastAlloc { };
+#endif
 
 #endif // _FAST_ALLOC
 /**
  * @file
- * $Id: FastAlloc.h,v 1.7 2004/10/29 15:53:38 arnetheduck Exp $
+ * $Id: FastAlloc.h,v 1.8 2004/11/02 09:03:50 arnetheduck Exp $
  */
