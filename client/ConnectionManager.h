@@ -101,17 +101,6 @@ public:
 		}
 	}		
 	
-/*	bool isConnected(const User::Ptr& aUser, bool downOnly = true) {
-		Lock l(cs);
-		for(ConnectionQueueItem::QueueIter i = connections.begin(); i != connections.end(); ++i) {
-			if( (i->first->getUser() == aUser) && 
-				(!downOnly || i->first->isSet(UserConnection::FLAG_DOWNLOAD)) ) {
-				return true;
-			}
-		}
-		return false;
-	}
-*/	
 	/**
 	 * Set this ConnectionManager to listen at a different port.
 	 */
@@ -132,11 +121,14 @@ private:
 	UserConnection::List userConnections;
 
 	ServerSocket socket;
+	StringList features;
 
 	friend class Singleton<ConnectionManager>;
 	ConnectionManager() {
 		TimerManager::getInstance()->addListener(this);
 		socket.addListener(this);
+
+		features.push_back("BZList");
 	};
 	
 	virtual ~ConnectionManager() {
@@ -210,6 +202,20 @@ private:
 			onDirection(conn, line1, line2); break;
 		}
 	}
+	// UserConnectionListener
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) {
+		switch(type) {
+		case UserConnectionListener::SUPPORTS:
+			{
+				for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+					if(*i == "BZList")
+						conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
+				}
+			}
+			break;
+		}
+	}
+	
 	void onMyNick(UserConnection* aSource, const string& aNick) throw();
 	void onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw();
 	void onDirection(UserConnection* aSource, const string& dir, const string& num) throw();
@@ -234,5 +240,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.34 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.35 2002/04/22 13:58:14 arnetheduck Exp $
  */

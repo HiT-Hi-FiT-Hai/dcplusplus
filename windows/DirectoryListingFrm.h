@@ -46,20 +46,37 @@ public:
 	};
 	
 	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) : user(aUser) { 
-
-		File f(aFile, File::READ, File::OPEN);
-		dl = new DirectoryListing();
-		DWORD size = (DWORD)f.getSize();
-		
 		string tmp;
-		if(size > 16) {
-			BYTE* buf = new BYTE[size];
-			f.read(buf, size);
-			CryptoManager::getInstance()->decodeHuffman(buf, tmp);
-			delete[] buf;
-		} else {
-			tmp = Util::emptyString;
+		try{
+			File f(aFile, File::READ, File::OPEN);
+			dl = new DirectoryListing();
+			DWORD size = (DWORD)f.getSize();
+			
+			if(size > 16) {
+				BYTE* buf = new BYTE[size];
+				f.read(buf, size);
+				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+				delete[] buf;
+			} else {
+				tmp = Util::emptyString;
+			}
+		} catch(FileException) {
+			string file = aFile.substr(0, aFile.size() - 5) + "bz2";
+			
+			File f(file, File::READ, File::OPEN);
+			dl = new DirectoryListing();
+			DWORD size = (DWORD)f.getSize();
+			
+			if(size > 16) {
+				BYTE* buf = new BYTE[size];
+				f.read(buf, size);
+				CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
+				delete[] buf;
+			} else {
+				tmp = Util::emptyString;
+			}
 		}
+
 		dl->load(tmp);
 	};
 
@@ -164,5 +181,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.4 2002/04/18 19:48:11 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
  */

@@ -328,7 +328,7 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		
 		if (PtInRect(&rc, pt) && ctrlTree.GetSelectedItem() != NULL) 
 		{ 
-			while(targetMenu.GetMenuItemCount() > 0) {
+			while(targetDirMenu.GetMenuItemCount() > 0) {
 				targetDirMenu.DeleteMenu(0, MF_BYPOSITION);
 			}
 			int n = 0;
@@ -500,5 +500,5 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.4 2002/04/18 19:48:10 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
  */

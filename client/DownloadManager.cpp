@@ -87,7 +87,9 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 		} else {
 			d->setPos(0);
 		}
-				
+		if(d->isSet(Download::USER_LIST) && aConn->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+			d->setSource("MyList.bz2");
+		}
 		aConn->get(d->getSource(), d->getPos());
 		return;
 	}
@@ -108,10 +110,13 @@ void DownloadManager::onFileLength(UserConnection* aSource, const string& aFileL
 	dcassert(d != NULL);
 
 	Util::ensureDirectory(d->getTarget());
-	
+	string target = d->getTarget();
+	if(d->isSet(Download::USER_LIST) && aSource->isSet(UserConnection::FLAG_SUPPORTS_BZLIST)) {
+		target.replace(target.size() - 5, 5, "bz2");
+	}
 	File* file;
 	try {
-		file = new BufferedFile(d->getTarget(), File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
+		file = new BufferedFile(target, File::WRITE | File::READ, File::OPEN | File::CREATE | (d->isSet(Download::RESUME) ? 0 : File::TRUNCATE));
 	} catch(FileException e) {
 		fire(DownloadManagerListener::FAILED, d, STRING(COULD_NOT_OPEN_TARGET_FILE) + e.getError());
 		aSource->setDownload(NULL);
@@ -306,5 +311,5 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.57 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.58 2002/04/22 13:58:14 arnetheduck Exp $
  */

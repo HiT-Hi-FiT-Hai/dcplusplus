@@ -155,7 +155,7 @@ void Client::onLine(const string& aLine) throw() {
 		i = 5;
 		string nick;
 		j = param.find(' ', i);
-		if(j == string::npos)
+		if( (j == string::npos) || (j == i) )
 			return;
 		nick = param.substr(i, j-i);
 		i = j + 1;
@@ -382,6 +382,6 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.39 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.40 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

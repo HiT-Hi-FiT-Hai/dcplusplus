@@ -96,6 +96,10 @@ void ConnectionManager::putDownloadConnection(UserConnection* aSource, bool reus
 				
 				ConnectionQueueItem::QueueIter i = connections.find(aSource);
 				if(i != connections.end()) {
+					ConnectionQueueItem::Iter j = find(pendingAdd.begin(), pendingAdd.end(), i->second);
+					if(j != pendingAdd.end()) {
+						pendingAdd.erase(j);
+					}
 					i->second->setConnection(NULL);
 					i->second->setStatus(ConnectionQueueItem::WAITING);
 					dcassert(pendingDown.find(i->second) == pendingDown.end());
@@ -354,6 +358,7 @@ void ConnectionManager::onLock(UserConnection* aSource, const string& aLock, con
 			aSource->getUser()->setFlag(User::DCPLUSPLUS);
 			User::updated(aSource->getUser());
 		}
+		aSource->supports(features);
 	}
 	aSource->setState(UserConnection::STATE_KEY);
 	aSource->direction(aSource->getDirectionString(), "666");
@@ -474,5 +479,5 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 
 /**
  * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.41 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.42 2002/04/22 13:58:14 arnetheduck Exp $
  */

@@ -217,7 +217,6 @@ public:
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
 		string file = Util::getAppPath() + "FileLists\\" + aUser->getNick() + ".DcLst";
 		add(USER_LIST_NAME, -1, aUser, file, false);
-		userLists.push_back(file);
 	}
 	
 	void remove(const string& aTarget) throw(QueueException);
@@ -275,9 +274,29 @@ private:
 		SettingsManager::getInstance()->removeListener(this);
 		SearchManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this); 
+#ifdef WIN32
+		string path = Util::getAppPath() + "FileLists\\";
+		WIN32_FIND_DATA data;
+		HANDLE hFind;
+		
+		hFind = FindFirstFile((path + "\\*.bz2").c_str(), &data);
+		if(hFind != INVALID_HANDLE_VALUE) {
+			do {
+				File::deleteFile(data.cFileName);			
+			} while(FindNextFile(hFind, &data));
 
-		for_each(userLists.begin(), userLists.end(), File::deleteFile);
+			FindClose(hFind);
+		}
 
+		hFind = FindFirstFile((path + "\\*.DcLst").c_str(), &data);
+		if(hFind != INVALID_HANDLE_VALUE) {
+			do {
+				File::deleteFile(data.cFileName);			
+			} while(FindNextFile(hFind, &data));
+			
+			FindClose(hFind);
+		}
+#endif
 		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
 			delete *i;
 		}
@@ -285,7 +304,6 @@ private:
 	
 	CriticalSection cs;
 	QueueItem::List queue;
-	StringList userLists;
 	typedef hash_map<string, u_int32_t> SearchMap;
 	SearchMap search;
 
@@ -329,6 +347,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.17 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.18 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

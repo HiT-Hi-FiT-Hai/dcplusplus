@@ -131,6 +131,8 @@ void QueueManager::add(const string& aFile, int64_t aSize, const User::Ptr& aUse
 		Lock l(cs);
 		if(!q->isSource(aUser)) {
 			s = q->addSource(aUser, aFile);
+		} else {
+			return;
 		}
 		if(newItem) {
 			queue.push_back(q);
@@ -446,7 +448,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.19 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.20 2002/04/22 13:58:14 arnetheduck Exp $
  */
 
 

@@ -29,7 +29,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 1 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "client\\resource.h\0"
+    "windows\\resource.h\0"
 END
 
 2 TEXTINCLUDE DISCARDABLE 
@@ -73,18 +73,18 @@ IDR_NOTEPAD             ICON    DISCARDABLE     "res\\notepad.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 180, 172
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 205, 178
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,65,151,50,14
+    DEFPUSHBUTTON   "OK",IDOK,78,157,50,14
     CTEXT           "DC++ v0.122\n(c) Copyright 2001 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/",
-                    IDC_VERSION,18,38,143,36
-    ICON            IDR_MAINFRAME,IDC_STATIC,79,15,20,20
-    GROUPBOX        "",IDC_STATIC,7,7,166,69
-    GROUPBOX        "",IDC_STATIC,7,81,166,63
-    LTEXT           "",IDC_THANKS,13,89,154,51
+                    IDC_VERSION,31,38,143,36
+    ICON            IDR_MAINFRAME,IDC_STATIC,92,15,20,20
+    GROUPBOX        "",IDC_STATIC,7,7,191,69
+    GROUPBOX        "",IDC_STATIC,7,81,191,71
+    LTEXT           "",IDC_THANKS,13,89,178,59
 END
 
 IDD_LINE DIALOG DISCARDABLE  0, 0, 239, 46
@@ -267,6 +267,13 @@ BEGIN
                     WS_TABSTOP,124,60,55,10
     GROUPBOX        "Logging",IDC_STATIC,7,7,261,71
     LTEXT           "Log directory",IDC_STATIC,15,17,42,8
+    GROUPBOX        "Sounds",IDC_STATIC,7,82,261,40
+    CONTROL         "Make an annoying sound every time a private message is received",
+                    IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,92,225,10
+    CONTROL         "Make an annoying sound when a private message window is opened",
+                    IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,104,233,10
 END
 
 
@@ -281,9 +288,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 173
+        RIGHTMARGIN, 198
         TOPMARGIN, 7
-        BOTTOMMARGIN, 165
+        BOTTOMMARGIN, 171
     END
 
     IDD_LINE, DIALOG

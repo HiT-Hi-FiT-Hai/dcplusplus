@@ -69,12 +69,14 @@ public:
 
 	void decodeHuffman(const u_int8_t* is, string& os);
 	void encodeHuffman(const string& is, string& os);
+	void decodeBZ2(const u_int8_t* is, int sz, string& os);
+	void encodeBZ2(const string& is, string& os);
 	
 private:
 
 	friend class Singleton<CryptoManager>;
 	
-	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABCABC") { };
+	CryptoManager() : lock("EXTENDEDPROTOCOLABCABCABCABCABCABC"), pk("DCPLUSPLUS" VERSIONSTRING "ABCABC") { };
 	virtual ~CryptoManager() { };
 
 	class Leaf {
@@ -120,5 +122,5 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.15 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.16 2002/04/22 13:58:14 arnetheduck Exp $
  */

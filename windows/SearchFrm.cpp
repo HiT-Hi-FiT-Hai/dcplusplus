@@ -233,6 +233,7 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	} else {
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(WinUtil::browseDirectory(target, m_hWnd)) {
+			lastDirs.push_back(target);
 			downloadSelected(target);
 		}
 	}
@@ -366,7 +367,6 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	
 	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
 	{
-		CMenuItemInfo mi;
 		int n = 0;
 
 		ctrlResults.ClientToScreen(&pt);
@@ -383,18 +383,11 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			
 			targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
-				mi.fMask = MIIM_ID | MIIM_TYPE;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
-				mi.wID = IDC_DOWNLOAD_TARGET + n;
-				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				n++;
 			}
 
-			mi.fMask = MIIM_ID | MIIM_TYPE;
-			mi.fType = MFT_STRING;
-			mi.dwTypeData = const_cast<char*>(CSTRING(BROWSE));
-			mi.wID = IDC_DOWNLOADTO;
-			targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 
 			if(sr->getUser() && sr->getUser()->isClientOp()) {
 				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
@@ -404,18 +397,10 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		} else {
 			
 			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
-				mi.fMask = MIIM_ID | MIIM_TYPE;
-				mi.fType = MFT_STRING;
-				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
-				mi.wID = IDC_DOWNLOAD_TARGET + n;
-				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+				targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOAD_TARGET + n, i->c_str());
+				n++;
 			}
-			
-			mi.fMask = MIIM_ID | MIIM_TYPE;
-			mi.fType = MFT_STRING;
-			mi.dwTypeData = const_cast<char*>(CSTRING(BROWSE));
-			mi.wID = IDC_DOWNLOADTO;
-			targetMenu.InsertMenuItem(0, TRUE, &mi);
+			targetMenu.AppendMenu(MF_STRING, IDC_DOWNLOADTO, CSTRING(BROWSE));
 
 			int pos = -1;
 			bool op = true;
@@ -752,6 +737,6 @@ void SearchFrame::onTab() {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
  */
 

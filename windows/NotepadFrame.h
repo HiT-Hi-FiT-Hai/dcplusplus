@@ -26,7 +26,7 @@
 #include "FlatTabCtrl.h"
 #include "WinUtil.h"
 
-class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>, private SettingsManagerListener
+class NotepadFrame : public MDITabChildWindowImpl<NotepadFrame>
 {
 public:
 	static NotepadFrame* frame;
@@ -99,7 +99,7 @@ public:
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		char *buf = new char[ctrlPad.GetWindowTextLength() + 1];
 		ctrlPad.GetWindowText(buf, ctrlPad.GetWindowTextLength() + 1);
-		text = buf;
+		SettingsManager::getInstance()->set(SettingsManager::NOTEPAD_TEXT, buf);
 		delete[] buf;
 		SettingsManager::getInstance()->save();
 		frame = NULL;
@@ -122,24 +122,12 @@ private:
 	
 	CEdit ctrlPad;
 	CStatusBarCtrl ctrlStatus;
-	static string text;
-	
-	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
-		switch(type) {
-		case SettingsManagerListener::LOAD: load(xml); break;
-		case SettingsManagerListener::SAVE: save(xml); break;
-		}
-	}
-	
-	void load(SimpleXML* aXml);
-	void save(SimpleXML* aXml);
 };
 
 #endif // !defined(AFX_NOTEPADFRAME_H__8F6D05EC_ADCF_4987_8881_6DF3C0E355FA__INCLUDED_)
 
 /**
  * @file NotepadFrame.h
- * $Id: NotepadFrame.h,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: NotepadFrame.h,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
  */
 

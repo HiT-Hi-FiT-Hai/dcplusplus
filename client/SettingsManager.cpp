@@ -40,7 +40,7 @@ const string SettingsManager::settingTags[] =
 	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
 	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
-	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", 
+	"LogDownloads", "LogUploads", "StatusInChat", "ShowJoins", "PrivateMessageBeep", "PrivateMessageBeepOpen",
 	"SENTRY"
 };
 
@@ -88,11 +88,8 @@ SettingsManager::SettingsManager()
 	setDefault(STATUS_IN_CHAT, false);
 	setDefault(SHOW_JOINS, false);
 	setDefault(CONNECTION, connectionSpeeds[0]);
-	
-#ifdef WIN32
-	setDefault(BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
-	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
-#endif
+	setDefault(PRIVATE_MESSAGE_BEEP, false);
+	setDefault(PRIVATE_MESSAGE_BEEP_OPEN, false);
 }
 
 void SettingsManager::load(string const& aFileName)
@@ -200,6 +197,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.32 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.33 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

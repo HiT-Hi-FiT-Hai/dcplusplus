@@ -76,22 +76,16 @@ typedef StringMap::iterator StringMapIter;
 #include "SettingsManager.h"
 #include "version.h"
 
-void shutdown();
+extern void startup();
+extern void shutdown();
 
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
 #define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() const { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
-
-/**
- * This message is posted when something's changed about the hub. It's necessary, because using a SendMessage
- * might block the main window thread if it's trying to access a resource that the Speaker owns.
- * wParam Specifies what actually happened
- */
-#define WM_SPEAKER (WM_APP + 100)		
 
 #endif // _DCPLUSPLUS_H
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.23 2002/04/18 19:18:29 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.24 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

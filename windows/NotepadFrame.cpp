@@ -23,14 +23,10 @@
 #include "NotepadFrame.h"
 #include "WinUtil.h"
 
-#include "../client/SimpleXML.h"
-
 NotepadFrame* NotepadFrame::frame = NULL;
-string NotepadFrame::text;
 
 LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
 	
@@ -39,7 +35,7 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	ctrlPad.LimitText(0);
 	ctrlPad.SetFont(WinUtil::font);
-	ctrlPad.SetWindowText(text.c_str());
+	ctrlPad.SetWindowText(SETTING(NOTEPAD_TEXT).c_str());
 
 	frame = this;
 	
@@ -47,26 +43,9 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	return 1;
 }
 
-void NotepadFrame::load(SimpleXML* aXml) {
-	if(aXml->findChild("Notepad")) {
-		aXml->stepIn();
-		if(aXml->findChild("Text")) {
-			text = aXml->getChildData();
-		}
-	}
-}
-
-void NotepadFrame::save(SimpleXML* aXml) {
-	aXml->addTag("Notepad");
-	aXml->stepIn();
-	aXml->addTag("Text", text);
-	aXml->stepOut();
-
-}
-
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
  */
 
 

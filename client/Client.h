@@ -291,13 +291,15 @@ private:
 					connect(server, port);
 				}
 			}
-			
-			for(FloodIter i = searchFlood.begin(); i != searchFlood.end();) {
-				dcassert(i->second > 0);
-				if(--i->second == 0) {
-					searchFlood.erase(i++);
-				} else {
-					++i;
+			{
+				Lock l(cs);
+				for(FloodIter i = searchFlood.begin(); i != searchFlood.end();) {
+					dcassert(i->second > 0);
+					if(--i->second == 0) {
+						searchFlood.erase(i++);
+					} else {
+						++i;
+					}
 				}
 			}
 		} 
@@ -339,6 +341,6 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.49 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: Client.h,v 1.50 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

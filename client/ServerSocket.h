@@ -26,7 +26,6 @@
 #include "Util.h"
 #include "Socket.h"
 #include "Thread.h"
-#include "Semaphore.h"
 
 class ServerSocketListener {
 public:
@@ -43,63 +42,34 @@ class ServerSocket : public Speaker<ServerSocketListener>, public Thread
 {
 public:
 	void waitForConnections(short aPort) throw(SocketException);
-#ifdef WIN32
-	ServerSocket() : sock(INVALID_SOCKET), sockEvent(NULL) {
-	};
-#else
-	ServerSocket() : sock(INVALID_SOCKET) { };
-#endif
+	ServerSocket() : stop(false), sock(INVALID_SOCKET) { };
 
 	virtual ~ServerSocket() {
 		disconnect();
 	}
 	
 	void disconnect() {
-		s.signal();
-		join();
-
 		if(sock != INVALID_SOCKET) {
+			stop = true;
 			closesocket(sock);
 			sock = INVALID_SOCKET;
+			join();
+			stop = false;
 		}
-#ifdef WIN32
-		if(sockEvent != NULL) {
-			CloseHandle(sockEvent);
-			sockEvent = NULL;
-		}
-#endif
-
 	}
-
-#ifdef WIN32	
-	HANDLE getReadEvent() throw(SocketException) {
-		if(sockEvent == NULL) {
-			sockEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-			if(sockEvent == NULL)
-				throw SocketException(WSAGetLastError());
-			
-			checksockerr(WSAEventSelect(sock, sockEvent, FD_ACCEPT | FD_READ | FD_CLOSE));
-		}
-		return sockEvent;
-	}
-#endif
 
 	virtual int run();
 	SOCKET getSocket() const { return sock; }
 	
 private:
-	Semaphore s;
-
+	bool stop;	
 	SOCKET sock;
-#ifdef WIN32
-	HANDLE sockEvent;
-#endif
 };
 
 #endif // !defined(AFX_SERVERSOCKET_H__789A5170_2834_4B7B_9E44_A22566439C9F__INCLUDED_)
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.14 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.15 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

@@ -36,6 +36,8 @@ PropPage::Item Advanced2Page::items[] = {
 	{ IDC_LOG_DOWNLOADS, SettingsManager::LOG_DOWNLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_UPLOADS, SettingsManager::LOG_UPLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_DIRECTORY, SettingsManager::LOG_DIRECTORY, PropPage::T_STR },
+	{ IDC_PRIVATE_MESSAGE_BEEP, SettingsManager::PRIVATE_MESSAGE_BEEP, PropPage::T_BOOL },
+	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, SettingsManager::PRIVATE_MESSAGE_BEEP_OPEN, PropPage::T_BOOL },
 	{ 0, 0, PropPage::T_END }
 };
 
@@ -76,6 +78,6 @@ LRESULT Advanced2Page::onClickedBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 /**
  * @file Advanced2Page.cpp
- * $Id: Advanced2Page.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
  */
 

@@ -24,7 +24,73 @@
 
 #include "CryptoManager.h"
 
+#include "../bzip2/bzlib.h"
+
 CryptoManager* Singleton<CryptoManager>::instance;
+
+void CryptoManager::decodeBZ2(const u_int8_t* is, int sz, string& os) {
+	bz_stream bs;
+
+	memset(&bs, 0, sizeof(bs));
+
+	if(BZ2_bzDecompressInit(&bs, 0, 0) != BZ_OK)
+		return;
+
+	// We assume that the files aren't compressed more than 4:1...
+	int bufsize = 4*sz;
+	char* buf = new char[bufsize];
+	
+	bs.avail_in = sz;
+	bs.avail_out = bufsize;
+	bs.next_in = (char*)(const_cast<u_int8_t*>(is));
+	bs.next_out = buf;
+
+	int err;
+
+	while((err = BZ2_bzDecompress(&bs)) == BZ_OK) {
+		os += string(buf, bufsize-bs.avail_out);
+		bs.avail_out = bufsize;
+		bs.next_out = buf;
+	}
+
+	if(err == BZ_STREAM_END)
+		os += string(buf, bufsize-bs.avail_out);
+
+	BZ2_bzDecompressEnd(&bs);
+	
+	delete buf;
+}
+
+void CryptoManager::encodeBZ2(const string& is, string& os) {
+	bz_stream bs;
+	
+	memset(&bs, 0, sizeof(bs));
+
+	if(BZ2_bzCompressInit(&bs, 9, 0, 30) != BZ_OK) {
+		return;
+	}
+
+	// This size guarantees that the compressed data will fit (according to the bzip docs)
+	int bufsize = (int)((double)is.size() * 1.01) + 600;
+	
+	char* buf = new char[bufsize];
+
+	bs.next_in = const_cast<char*>(is.data());
+	bs.avail_in = is.size();
+
+	bs.next_out = buf;
+	bs.avail_out = bufsize;
+
+	int err = BZ2_bzCompress ( &bs, BZ_FINISH );
+	dcassert(err != BZ_FINISH);
+	if(err == BZ_STREAM_END) {
+		os = string(buf, bufsize-bs.avail_out);
+	}
+
+	BZ2_bzCompressEnd(&bs);
+
+	delete buf;
+}
 
 string CryptoManager::keySubst(string aKey, int n) {
 	u_int8_t* temp = new u_int8_t[aKey.length() + n * 10];
@@ -256,7 +322,9 @@ public:
  * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
  */
 void CryptoManager::encodeHuffman(const string& is, string& os) {
-
+	
+	// We might as well expect this much data as huffman encoding doesn't go very far...
+	os.reserve(is.size());
 	if(is.length() == 0) {
 		os.append("HE3\x0d");
 		
@@ -338,5 +406,5 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.22 2002/04/13 12:57:22 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.23 2002/04/22 13:58:14 arnetheduck Exp $
  */

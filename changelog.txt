@@ -1,4 +1,4 @@
- -- 0.164 --
+ -- 0.17 2002-04-04 --
 * Fixed the disk full crash
 * Fixed some minor memory handling issues
 * Fixed sorting in the search frame
@@ -34,6 +34,13 @@
 * Added current search string to the title of the search window
 * Fixed missing/bad connection type bug
 * Fixed some user handling problems (when having the same nick on multiple hubs...)
+* Added a second "users" string so that translating into finnish will work ok
+* Fixed a small bug that might have caused some firewalls to complain (UDP packets were sometimes being sent to port 0)
+* Added abilitly to use bzip2 compressed file lists resulting in _a lot_ faster file list downloads (bzip2 compresses 2-4 times better than
+  the simple huffman encoding done in nmdc. Note; this requires DC++ >0.164 in both ends and was mainly added to test the protocol extension
+  scheme, but should be fairly useful for all the low bandwidth people out there...
+* Added an optional annoying noise when a private chat window is opened and / or when a pm is received
+* Changed the way notepad is saved, old notepad contents will disappear when you update from older versions
 
  -- 0.163 2002-04-04 --
 * More internationalization

@@ -170,7 +170,7 @@ public:
 		if(mode & TRUNCATE) {
 			m |= O_TRUNC;
 		}
-		h = open(aFileName.c_str(), m);
+		h = open(aFileName.c_str(), m, S_IRUSR | S_IWUSR);
 		if(h == -1)
 			throw FileException("Could not open file");
 	}		
@@ -333,6 +333,6 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.11 2002/04/16 16:45:53 arnetheduck Exp $
+ * $Id: File.h,v 1.12 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

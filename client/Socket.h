@@ -224,12 +224,17 @@ public:
 	}
 
 	void setBlocking(bool block) throw(SocketException) {
+		u_long b = block ? 0 : 1;
 		if(block) {
 			checksockerr(WSAEventSelect(sock, event, 0));
-			ioctlsocket(sock, FIONBIO, (u_long*)0);
+		
+			ioctlsocket(sock, FIONBIO, &b);
 		} else {
-			ioctlsocket(sock, FIONBIO, (u_long*)1);
+			ioctlsocket(sock, FIONBIO, &b);
 		}
+	}
+#else
+	void setBlocking(bool block) throw(SocketException) {
 	}
 #endif
 
@@ -277,6 +282,6 @@ private:
 
 /**
  * @file Socket.h
- * $Id: Socket.h,v 1.28 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: Socket.h,v 1.29 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

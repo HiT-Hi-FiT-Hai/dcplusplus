@@ -21,6 +21,7 @@
 #include "Resource.h"
 
 #include "MainFrm.h"
+#include "ExtendedTrace.h"
 
 extern void startup();
 extern void shutdown();
@@ -28,7 +29,6 @@ extern void shutdown();
 CAppModule _Module;
 
 #ifdef _DEBUG
-#include "ExtendedTrace.h"
 CriticalSection cs;
 enum { DEBUG_BUFSIZE = 2048 };
 char buf[DEBUG_BUFSIZE];
@@ -60,6 +60,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	
 	startup();
 	
+	SettingsManager::getInstance()->setDefault(SettingsManager::BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
+	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
+	
 	if(wndMain.CreateEx() == NULL)
 	{
 		ATLTRACE(_T("Main window creation failed!\n"));
@@ -81,8 +84,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	// make the EXE free threaded. This means that calls come in on a random RPC thread.
 	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	//	ATLASSERT(SUCCEEDED(hRes));
+#ifdef _DEBUG
 	EXTENDEDTRACEINITIALIZE( NULL );
 	SetUnhandledExceptionFilter(&DCUnhandledExceptionFilter);
+#endif
 
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -101,11 +106,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	
 	_Module.Term();
 	::CoUninitialize();
+#ifdef _DEBUG
 	EXTENDEDTRACEUNINITIALIZE();
+#endif
 	return nRet;
 }
 
 /**
  * @file main.cpp
- * $Id: main.cpp,v 1.3 2002/04/18 08:13:45 arnetheduck Exp $
+ * $Id: main.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
  */

@@ -159,9 +159,9 @@ bool BufferedSocket::threadConnect() {
 		fail(e.getError());
 	}
 
+#endif
 	// ?
 	return false;
-#endif
 }	
 
 void BufferedSocket::threadRead() {
@@ -343,5 +343,5 @@ void BufferedSocket::threadRun() {
 
 /**
  * @file BufferedSocket.cpp
- * $Id: BufferedSocket.cpp,v 1.36 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.37 2002/04/22 13:58:14 arnetheduck Exp $
  */

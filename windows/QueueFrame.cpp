@@ -139,6 +139,7 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 QueueFrame::StringListInfo::StringListInfo(QueueItem* aQI) : qi(aQI) {
 
 	columns[COLUMN_TARGET] = qi->getTargetFileName();
+	columns[COLUMN_SIZE] = (qi->getSize() == -1) ? STRING(UNKNOWN) : Util::toString(qi->getSize());
 	string tmp;
 	
 	int online = 0;
@@ -620,7 +621,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.4 2002/04/19 00:12:04 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
  */
 
 

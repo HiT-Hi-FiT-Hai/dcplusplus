@@ -86,7 +86,6 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, onSize)
 		MESSAGE_HANDLER(WM_CREATE, onCreate)
 		MESSAGE_HANDLER(WM_PAINT, onPaint)
-		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, onWindowPosChanging)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, onLButtonDown)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
 		COMMAND_ID_HANDLER(IDCLOSE, onClose)
@@ -113,8 +112,6 @@ public:
 		}
 		return 0;
 	}
-		
-	LRESULT onWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) { return 0; };
 		
 	int getTabHeight() { return 15; };
 	int getHeight() { return getTabHeight()+1; };
@@ -433,5 +430,5 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
  */

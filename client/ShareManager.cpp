@@ -36,6 +36,8 @@ string ShareManager::translateFileName(const string& aFile) throw(ShareException
 	RLock l(cs);
 	if(aFile == "MyList.DcLst") {
 		return getListFile();
+	} else if(aFile == "MyList.bz2") {
+		return getBZListFile();
 	} else {
 		string::size_type i = aFile.find('\\');
 		if(i == string::npos)
@@ -260,7 +262,6 @@ int ShareManager::run() {
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			tmp += i->second->toString(dupes);
 		}
-		
 		CryptoManager::getInstance()->encodeHuffman(tmp, tmp2);
 		try {
 			File f(getListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
@@ -271,6 +272,16 @@ int ShareManager::run() {
 		}
 		
 		listLen = tmp2.length();
+		tmp2.clear();
+		CryptoManager::getInstance()->encodeBZ2(tmp, tmp2);
+		try {
+			File f(getBZListFile(), File::WRITE, File::CREATE | File::TRUNCATE);
+			f.write(tmp2);
+		} catch(FileException e) {
+			// ...
+			return 1;
+		}
+		
 		dirty = false;
 	}
 
@@ -474,6 +485,6 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.34 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.35 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

@@ -67,6 +67,8 @@ extern CAppModule _Module;
 
 using namespace _STL;
 
+#define WM_SPEAKER (WM_APP + 500)
+
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
@@ -74,6 +76,6 @@ using namespace _STL;
 
 /**
  * @file stdafx.h
- * $Id: stdafx.h,v 1.1 2002/04/09 18:46:32 arnetheduck Exp $
+ * $Id: stdafx.h,v 1.2 2002/04/22 13:58:15 arnetheduck Exp $
  */
 

@@ -39,7 +39,6 @@ public:
 	typedef List::iterator Iter;
 	enum Types {
 		BYTES_SENT,
-		CONNECTING,
 		CONNECTED,
 		DATA,
 		FAILED,
@@ -53,16 +52,18 @@ public:
 		MAXED_OUT,
 		MODE_CHANGE,
 		MY_NICK,
-		TRANSMIT_DONE
+		TRANSMIT_DONE,
+		SUPPORTS
 	};
 
-	virtual void onAction(Types, UserConnection*) { };
-	virtual void onAction(Types, UserConnection*, u_int32_t) { };
-	virtual void onAction(Types, UserConnection*, const string&) { };
-	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) { };
-	virtual void onAction(Types, UserConnection*, const string&, const string&) { };
-	virtual void onAction(Types, UserConnection*, const string&, int64_t) { };
-	virtual void onAction(Types, UserConnection*, int) { };
+	virtual void onAction(Types, UserConnection*) { };							// GET_LIST_LENGTH, SEND, MAXED_OUT, CONNECTED, TRANSMIT_DONE
+	virtual void onAction(Types, UserConnection*, u_int32_t) { };				// BYTES_SENT
+	virtual void onAction(Types, UserConnection*, const string&) { };			// MY_NICK, FAILED, FILE_LENGTH, KEY, SUPPORTS
+	virtual void onAction(Types, UserConnection*, const u_int8_t*, int) { };	// DATA
+	virtual void onAction(Types, UserConnection*, const string&, const string&) { };	// DIRECTION, LOCK
+	virtual void onAction(Types, UserConnection*, const string&, int64_t) { };	// GET
+	virtual void onAction(Types, UserConnection*, int) { };						// MODE_CHANGE
+	virtual void onAction(Types, UserConnection*, const StringList&) { };		// SUPPORTS
 };
 
 class ConnectionQueueItem;
@@ -135,7 +136,8 @@ public:
 		FLAG_INCOMING = FLAG_DOWNLOAD << 1,
 		FLAG_HASSLOT = FLAG_INCOMING << 1,
 		FLAG_HASEXTRASLOT = FLAG_HASSLOT << 1,
-		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1
+		FLAG_INVALIDKEY = FLAG_HASEXTRASLOT << 1,
+		FLAG_SUPPORTS_BZLIST = FLAG_INVALIDKEY << 1
 	};
 	
 	enum States {
@@ -153,17 +155,23 @@ public:
 		STATE_FILELENGTH
 	};
 
-	void myNick(const string& aNick) { send("$MyNick " + aNick + "|"); }
-	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + "|"); }
-	void key(const string& aKey) { send("$Key " + aKey + "|"); }
-	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + "|"); }
-	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + "|"); };
-	void fileLength(const string& aLength) { send("$FileLength " + aLength + "|"); }
+	void myNick(const string& aNick) { send("$MyNick " + aNick + '|'); }
+	void lock(const string& aLock, const string& aPk) { send ("$Lock " + aLock + " Pk=" + aPk + '|'); }
+	void key(const string& aKey) { send("$Key " + aKey + '|'); }
+	void direction(const string& aDirection, const string& aNumber) { send("$Direction " + aDirection + " " + aNumber + '|'); }
+	void get(const string& aFile, int64_t aResume) { send("$Get " + aFile + "$" + Util::toString(aResume + 1) + '|'); };
+	void fileLength(const string& aLength) { send("$FileLength " + aLength + '|'); }
 	void startSend() { send("$Send|"); }
-	void error(const string& aError) { send("$Error " + aError + "|"); };
-	void listLen(const string& aLength) { send("$ListLen " + aLength + "|"); };
+	void error(const string& aError) { send("$Error " + aError + '|'); };
+	void listLen(const string& aLength) { send("$ListLen " + aLength + '|'); };
 	void maxedOut() { send("$MaxedOut|"); };
-
+	void supports(const StringList& feat) { 
+		string x;
+		for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+			x+= *i + ' ';
+		}
+		send("$Supports " + x + '|');
+	}
 	void setDataMode(int64_t aBytes) { dcassert(socket); socket->setDataMode(aBytes); }
 
 	void UserConnection::connect(const string& aServer, short aPort) throw(SocketException) { 
@@ -184,7 +192,7 @@ public:
 		socket = BufferedSocket::accept(aServer, '|', this);
 	}
 	
-	void disconnect() { dcassert(socket); socket->disconnect(); };
+	void disconnect() { if(socket) socket->disconnect(); };
 	void transmitFile(File* f) { socket->transmitFile(f); };
 
 	const string& getDirectionString() {
@@ -295,5 +303,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.41 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.42 2002/04/22 13:58:14 arnetheduck Exp $
  */

@@ -24,12 +24,8 @@
 #define MAX_CONNECTIONS 20
 
 void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
-	if(sock != INVALID_SOCKET) {
-		s.signal();
-		join();
-		closesocket(sock);
-	}
-
+	disconnect();
+	
 	sockaddr_in tcpaddr;
     checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 	
@@ -44,28 +40,25 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 }
 
 int ServerSocket::run() {
-#ifdef WIN32
-	HANDLE wait[2];
-	wait[0] = s;
-	wait[1] = getReadEvent();
+	fd_set fd;
+	FD_ZERO(&fd);
+	FD_SET(sock, &fd);
+
 	dcdebug("Waiting for incoming connections...\n");
-	while(WaitForMultipleObjects(2, wait, FALSE, INFINITE) == WAIT_OBJECT_0 + 1) {
-		// Make an extra check that there really is something to accept...
-		fd_set fd;
-		FD_ZERO(&fd);
-		FD_SET(sock, &fd);
-		TIMEVAL t = { 0, 0 };
-		select(1, &fd, NULL, NULL, &t);
-		if(FD_ISSET(sock, &fd))
-			fire(ServerSocketListener::INCOMING_CONNECTION);
+	while(select(1, &fd, NULL, NULL, NULL) != -1) {
+		if(stop) {
+			return 0;
+		}
+
+		fire(ServerSocketListener::INCOMING_CONNECTION);
 	}
 	dcdebug("Stopped waiting for incoming connections...\n");
-#endif
+	
 	return 0;
 }
 
 /**
  * @file ServerSocket.cpp
- * $Id: ServerSocket.cpp,v 1.9 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.10 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

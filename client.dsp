@@ -41,7 +41,7 @@ RSC=rc.exe
 # PROP Intermediate_Dir "Release/client"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_REENTRANT" /FAs /Yu"stdinc.h" /FD /c
+# ADD CPP /nologo /G6 /Gr /MT /W4 /Gm /GX /Zi /Og /Oi /Os /Oy /Ob2 /Gy /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /FAs /Yu"stdinc.h" /FD /c
 # ADD BASE RSC /l 0x41d /d "NDEBUG"
 # ADD RSC /l 0x409 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -64,7 +64,7 @@ LIB32=xilink6.exe -lib
 # PROP Intermediate_Dir "Debug\client"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /GZ /c
-# ADD CPP /nologo /G6 /Gr /MTd /W4 /Gm /Gi /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_REENTRANT" /Yu"stdinc.h" /FD /GZ /c
+# ADD CPP /nologo /G6 /Gr /MTd /W4 /Gm /Gi /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_REENTRANT" /D "BZ_NO_STDIO" /Yu"stdinc.h" /FD /GZ /c
 # ADD BASE RSC /l 0x41d /d "_DEBUG"
 # ADD RSC /l 0x41d /d "_DEBUG"
 BSC32=bscmake.exe

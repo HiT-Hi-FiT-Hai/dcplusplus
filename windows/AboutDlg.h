@@ -33,7 +33,7 @@ public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		SetDlgItemText(IDC_VERSION, "DC++ v" VERSIONSTRING "\n(c) Copyright 2001-2002 Jacek Sieka\n\nhttp://dcplusplus.sourceforge.net/");
-		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the first and (so far) only mirror...more thanks go out to the people testing the application and to all those who have been discussing it on sourceforge and all over the world...you probably know who you are...");
+		SetDlgItemText(IDC_THANKS, "Thanks go out to sourceforge for hosting the project and nro for hosting the first and (so far) only mirror...more thanks go out to the people testing the application and to all those who have been discussing it on sourceforge and all over the world...you probably know who you are...also, thanks to the bzip2 team, they're the ones that made the bzip2 compression library used in DC++");
 		CenterWindow(GetParent());
 		return TRUE;
 	}
@@ -49,6 +49,6 @@ public:
 
 /**
  * @file AboutDlg.h
- * $Id: AboutDlg.h,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.3 2002/04/22 13:58:15 arnetheduck Exp $
  */
 

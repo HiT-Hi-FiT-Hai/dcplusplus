@@ -76,12 +76,20 @@ public:
 	
 	int64_t getListLen() { return listLen; };
 	string getListLenString() { return Util::toString(getListLen()); };
+	int64_t getBZListLen() { return bzListLen; };
+	string getBZListLenString() { return Util::toString(getBZListLen()); };
 	
 	const string& getListFile() {
 		if(listFile.empty())
 			listFile = Util::getAppPath() + "\\MyList.DcLst";
 
 		return listFile;
+	}
+	const string& getBZListFile() {
+		if(bzListFile.empty())
+			bzListFile = Util::getAppPath() + "\\MyList.bz2";
+		
+		return bzListFile;
 	}
 private:
 	class Directory {
@@ -153,11 +161,13 @@ private:
 	}
 	
 	int64_t listLen;
+	int64_t bzListLen;
 	bool dirty;
 	bool refreshDirs;
 	bool update;
 	
 	string listFile;
+	string bzListFile;
 
 	RWLock cs;
 
@@ -186,6 +196,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.24 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.25 2002/04/22 13:58:14 arnetheduck Exp $
  */
 

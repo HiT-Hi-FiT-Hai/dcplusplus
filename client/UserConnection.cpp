@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "UserConnection.h"
+#include "StringTokenizer.h"
 
 const string UserConnection::UPLOAD = "Upload";
 const string UserConnection::DOWNLOAD = "Download";
@@ -84,8 +85,13 @@ void UserConnection::onLine(const string& aLine) throw () {
 		}
 	} else if(cmd == "$Send") {
 		fire(UserConnectionListener::SEND, this);
-	} else if(cmd == "$MaxedOut"){
+	} else if(cmd == "$MaxedOut") {
 		fire(UserConnectionListener::MAXED_OUT, this);
+	} else if(cmd == "$Supports") {
+		if(!param.empty()) {
+			StringTokenizer t(param, ' ');
+			fire(UserConnectionListener::SUPPORTS, this, t.getTokens());
+		}
 	} else {
 		dcdebug("Unknown UserConnection command: %.50s\n", aLine.c_str());
 	}
@@ -93,5 +99,5 @@ void UserConnection::onLine(const string& aLine) throw () {
 
 /**
  * @file UserConnection.cpp
- * $Id: UserConnection.cpp,v 1.19 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: UserConnection.cpp,v 1.20 2002/04/22 13:58:14 arnetheduck Exp $
  */

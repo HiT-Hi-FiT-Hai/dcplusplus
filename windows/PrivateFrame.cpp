@@ -77,6 +77,9 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 				frames[aUser] = p;
 				p->setUser(aUser);
 				p->addLine(aMessage);
+				if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
+					MessageBeep(MB_OK);
+				}
 				break;
 			}
 		}
@@ -88,8 +91,15 @@ void PrivateFrame::gotMessage(const User::Ptr& aUser, const string& aMessage, HW
 			if(Util::getAway()) {
 				p->sendMessage(Util::getAwayMessage());
 			}
+
+			if(BOOLSETTING(PRIVATE_MESSAGE_BEEP) || BOOLSETTING(PRIVATE_MESSAGE_BEEP_OPEN)) {
+				MessageBeep(MB_OK);
+			}
 		}
 	} else {
+		if(BOOLSETTING(PRIVATE_MESSAGE_BEEP)) {
+			MessageBeep(MB_OK);
+		}
 		i->second->addLine(aMessage);
 	}
 }
@@ -196,7 +206,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.4 2002/04/22 13:58:15 arnetheduck Exp $
  */
 
 
