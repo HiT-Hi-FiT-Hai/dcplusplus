@@ -49,12 +49,19 @@ typedef StringMap::iterator StringMapIter;
  */
 #define WM_SPEAKER (WM_USER + 100)		
 
+#define WM_ENTER (WM_USER + 120)
+#define WM_TAB (WM_ENTER + 1)
+
+#define IDC_DOWNLOAD_TARGET 5000
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.10 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.11 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.11  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.10  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

@@ -6,8 +6,14 @@
 * Fixed some application lockups
 * Fixed some random crashes
 * Fixed a bug in the user connection procuedure
-* Fixed data corruption bug (in rare cases, dc++ was filling files with $send)
-
+* Fixed data corruption bug (in rare cases, dc++ was filling files with "$send")
+* Changed the default directory in "Download to..." to the default download directory (instead of "My Computer")
+* Added op commands in search window
+* Added "Download to" for each file of the same size already in the download queue
+* Reorganized transfers menu
+* Running downloads are now moved to top of transfer list, and running uploads are put at bottom
+* Files smaller than 16k and file lists are now downloaded before any larger ones from the same user
+* More work on the multihub feature
 
  -- 0.122 2002-01-16 --
 * Fixed search bug

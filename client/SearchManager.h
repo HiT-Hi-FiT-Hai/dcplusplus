@@ -32,17 +32,22 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	const string& getNick() { return nick; };
-	void setNick(const string& aNick) { nick = aNick; };
-	
-	const string& getFile() { return file; };
-	void setFile(const string& aFile) { file = aFile; };
-	
-	const string& getHubName() { return hubName; };
-	void setHubName(const string aHub) { hubName = aHub; };
-	
-	const string& getHubAddress() { return hubAddress; };
-	void setHubAddress(const string& aAddress) { hubAddress = aAddress; };
+	SearchResult() : size(0), slots(0), freeSlots(0) { };
+	SearchResult(const SearchResult& rhs) : user(rhs.user), nick(rhs.nick), file(rhs.file), 
+		hubName(rhs.hubName), hubAddress(rhs.hubAddress), size(rhs.size), slots(rhs.slots), freeSlots(rhs.freeSlots) { };
+
+	string getFileName() { 
+		int i;
+		if( (i=file.rfind('\\')) != string::npos ) {
+			if((i + 1) < file.size()) {
+				return file.substr(i + 1);
+			}
+		}
+		return Util::emptyString;
+	}
+
+	User::Ptr& getUser() { return user; };
+	void setUser(const User::Ptr& aUser) { user = aUser; };
 	
 	LONGLONG getSize() { return size; };
 	void setSize(LONGLONG aSize) { size = aSize; };
@@ -57,13 +62,13 @@ public:
 	void setFreeSlots(int aFreeSlots) { freeSlots = aFreeSlots; };
 	void setFreeSlots(const string& aSlots) { setFreeSlots(atoi(aSlots.c_str())); };
 	
-	GETSETREF(User::Ptr, user, User);
+	GETSETREF(string, nick, Nick);
+	GETSETREF(string, file, File);
+	GETSETREF(string, hubName, HubName);
+	GETSETREF(string, hubAddress, HubAddress);
+
 private:
-	string nick;
-	string file;
-	string hubName;
-	string hubAddress;
-	
+	User::Ptr user;	
 	LONGLONG size;
 	int slots;
 	int freeSlots;
@@ -148,9 +153,12 @@ private:
 
 /**
  * @file SearchManager.h
- * $Id: SearchManager.h,v 1.8 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.9 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.h,v $
+ * Revision 1.9  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.8  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -55,6 +55,11 @@ public:
 	void update();
 	string getClientName();
 	void privateMessage(const string& aMsg);
+	void clientMessage(const string& aMsg);
+	void kick();
+	void redirect(const string& aTarget, const string& aReason);
+
+	bool isClientOp();
 	
 	LONGLONG getBytesShared() const { return sharingLong; };
 	const string& getBytesSharedString() const { return sharing; };
@@ -89,9 +94,12 @@ private:
 
 /**
  * @file User.cpp
- * $Id: User.h,v 1.7 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: User.h,v 1.8 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: User.h,v $
+ * Revision 1.8  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.7  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

@@ -37,7 +37,7 @@ class MainFrame : public CMDIFrameWindowImpl<MainFrame>, public CUpdateUI<MainFr
 		private TimerManagerListener, private UploadManagerListener, private HttpConnectionListener, private HubManagerListener
 {
 public:
-	MainFrame() : stopperThread(NULL), menuItems(0) { };
+	MainFrame() : lastUpload(-1), stopperThread(NULL), menuItems(0) { };
 	virtual ~MainFrame();
 	DECLARE_FRAME_WND_CLASS("DC++", IDR_MAINFRAME)
 
@@ -109,7 +109,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_FAVORITES, onFavorites)
 		COMMAND_ID_HANDLER(IDC_REMOVE, onRemove)
 		CHAIN_MDI_CHILD_COMMANDS()
-		COMMAND_RANGE_HANDLER(IDC_TRANSFERITEM, (IDC_TRANSFERITEM + menuItems), onTransferItem)
+		COMMAND_RANGE_HANDLER(IDC_BROWSELIST, (IDC_BROWSELIST + menuItems), onBrowseList)
+		COMMAND_RANGE_HANDLER(IDC_REMOVE_SOURCE, (IDC_REMOVE_SOURCE + menuItems), onRemoveSource)
+		COMMAND_RANGE_HANDLER(IDC_PM, (IDC_PM + menuItems), onPM)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		CHAIN_MSG_MAP(CUpdateUI<MainFrame>)
 		CHAIN_MSG_MAP(CMDIFrameWindowImpl<MainFrame>)
@@ -138,8 +140,10 @@ public:
 		return 0;
 	}
 	LRESULT onFavorites(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT onTransferItem(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+	LRESULT onBrowseList(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRemoveSource(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onPM(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	LRESULT onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		removeSelected();
 		return 0;
@@ -270,7 +274,9 @@ public:
 private:
 
 	enum {
-		IDC_TRANSFERITEM = 3000
+		IDC_BROWSELIST = 3000,
+		IDC_REMOVE_SOURCE = 3200,
+		IDC_PM = 3400
 	};
 	int menuItems;
 	
@@ -297,12 +303,16 @@ private:
 	CImageList images;
 	
 	CMenu transferMenu;
+	CMenu browseMenu;
+	CMenu removeMenu;
+	CMenu pmMenu;
+	
+	int lastUpload;
 	
 	CImageList arrows;
 	HANDLE stopperThread;
 
 	HWND createToolbar();
-
 
 	// UploadManagerListener
 	virtual void onAction(UploadManagerListener::Types type, Upload* aUpload) {
@@ -403,9 +413,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.30 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.31 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.31  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.30  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

@@ -203,7 +203,7 @@ public:
 		send("$Kick " + aUser->getNick() + "|");
 	}
 	
-	void opForceMove(User::Ptr& aUser, const string& aServer, const string& aMsg) {
+	void opForceMove(const User::Ptr& aUser, const string& aServer, const string& aMsg) {
 		dcdebug("Client::opForceMove\n");
 		send("$OpForceMove $Who:" + aUser->getNick() + "$Where:" + aServer + "$Msg:" + aMsg + "|");
 	}
@@ -254,6 +254,7 @@ public:
 		nick = aNick;
 	}
 
+	GETSET(bool, op, Op);
 	GETSETREF(string, defpassword, Password);
 private:
 	
@@ -267,7 +268,7 @@ private:
 	CriticalSection cs;
 	User::NickMap users;
 
-	Client() : socket('|'), lastActivity(TimerManager::getTick()) {
+	Client() : op(false), socket('|'), lastActivity(TimerManager::getTick()) {
 		TimerManager::getInstance()->addListener(this);
 	};
 	
@@ -325,9 +326,10 @@ private:
 	}
 	void onLine(const string& aLine) throw();
 
-	void send(const string& a) {
+	void send(const string& a) throw() {
 		lastActivity = TimerManager::getTick();
 		try {
+			dcdebug("Sending %d to %s: %.40s\n", a.size(), getName().c_str(), a.c_str());
 			socket.write(a);
 		} catch(SocketException e) {
 			fire(ClientListener::FAILED, this, e.getError());
@@ -340,9 +342,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.29 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: Client.h,v 1.30 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.30  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.29  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

@@ -89,7 +89,7 @@ public:
 		Socket::write(aBuf, aLen);
 	}
 	
-	BufferedSocket(char aSeparator = 0x0a) : inbuf(NULL), inbufSize(2048), outbufPos(0), outbuf(NULL), outbufSize(2048), file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
+	BufferedSocket(char aSeparator = 0x0a) : inbuf(NULL), inbufSize(4096), outbufPos(0), outbuf(NULL), outbufSize(4096), file(NULL), separator(aSeparator), readerThread(NULL), mode(MODE_LINE),
 		dataBytes(0) {
 		writerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 		readerEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -168,9 +168,12 @@ private:
 
 /**
  * @file BufferedSocket.h
- * $Id: BufferedSocket.h,v 1.19 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: BufferedSocket.h,v 1.20 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: BufferedSocket.h,v $
+ * Revision 1.20  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.19  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

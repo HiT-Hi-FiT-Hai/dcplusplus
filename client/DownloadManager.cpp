@@ -176,7 +176,7 @@ void DownloadManager::connectFailed(const User::Ptr& aUser) {
  * @param aTarget Target location of a file.
  * @param aResume Try to resume download if possible (not recommended for MyList.DcLst).
  */
-void DownloadManager::download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) throw(DownloadException) {
+void DownloadManager::download(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aTarget, bool aResume /* = true /*/) throw(DownloadException) {
 
 	cs.enter();
 	
@@ -369,7 +369,7 @@ void DownloadManager::download(const string& aFile, LONGLONG aSize, const string
 
 }
 
-void DownloadManager::downloadList(User::Ptr& aUser) throw(DownloadException) {
+void DownloadManager::downloadList(const User::Ptr& aUser) throw(DownloadException) {
 	string file = Util::getAppPath() + aUser->getNick() + ".DcLst";
 	download(USER_LIST_NAME, -1, aUser, file, false);
 	userLists.push_back(file);
@@ -772,9 +772,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.32 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.33 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.33  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.32  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

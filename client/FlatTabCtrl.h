@@ -102,7 +102,7 @@ public:
 		if(GetUpdateRect(&rc, FALSE)) {
 			CPaintDC dc(m_hWnd);
 			HFONT oldfont = dc.SelectFont((HFONT)GetStockObject(DEFAULT_GUI_FONT));
-			ATLTRACE("%d, %d\n", rc.left, rc.right);
+			//ATLTRACE("%d, %d\n", rc.left, rc.right);
 				
 			for(vector<TabInfo*>::iterator i = tabs.begin(); i != tabs.end(); ++i) {
 				TabInfo* t = *i;
@@ -299,9 +299,12 @@ private:
 
 /**
  * @file FlatTabCtrl.h
- * $Id: FlatTabCtrl.h,v 1.2 2002/01/05 10:13:39 arnetheduck Exp $
+ * $Id: FlatTabCtrl.h,v 1.3 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: FlatTabCtrl.h,v $
+ * Revision 1.3  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.2  2002/01/05 10:13:39  arnetheduck
  * Automatic version detection and some other updates
  *

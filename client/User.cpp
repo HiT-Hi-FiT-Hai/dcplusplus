@@ -67,11 +67,43 @@ void User::privateMessage(const string& aMsg) {
 	}
 }
 
+bool User::isClientOp() {
+	Lock l(cs);
+	if(client) {
+		return client->getOp();
+	}
+	return false;
+}
+
+void User::kick() {
+	Lock l(cs);
+	if(client) {
+		client->kick(this);
+	}
+}
+
+void User::redirect(const string& aTarget, const string& aReason) {
+	Lock l(cs);
+	if(client) {
+		client->opForceMove(this, aTarget, aReason);
+	}
+}
+
+void User::clientMessage(const string& aMsg) {
+	Lock l(cs);
+	if(client) {
+		client->sendMessage(aMsg);
+	}
+}
+
 /**
  * @file User.cpp
- * $Id: User.cpp,v 1.3 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: User.cpp,v 1.4 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: User.cpp,v $
+ * Revision 1.4  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.3  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

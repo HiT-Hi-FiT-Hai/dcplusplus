@@ -165,6 +165,8 @@ public:
 		bi.pszDisplayName = buf;
 		bi.lpszTitle = "Choose folder";
 		bi.ulFlags = BIF_DONTGOBELOWDOMAIN | BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+		bi.lParam = (LPARAM)target.c_str();
+		bi.lpfn = &browseCallbackProc;
 		LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
 		if(pidl != NULL) {
 			SHGetPathFromIDList(pidl, buf);
@@ -313,16 +315,40 @@ public:
 			nick.replace(i, 1, 1, '_');
 		return nick;
 	}
-	
+
+private:
+	static int CALLBACK browseCallbackProc(HWND hwnd, UINT uMsg, LPARAM lp, LPARAM pData) {
+		switch(uMsg) {
+		case BFFM_INITIALIZED: 
+			// WParam is TRUE since you are passing a path.
+			// It would be FALSE if you were passing a pidl.
+			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, pData);
+			break;
+			
+/*		case BFFM_SELCHANGED: 
+			// Set the status window to the currently selected path.
+			if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir))
+			{
+				SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
+			}
+			break;*/
+		}
+		return 0;
+	}
+		
+		
 };
 
 #endif // !defined(AFX_UTIL_H__1758F242_8D16_4C50_B40D_E59B3DD63913__INCLUDED_)
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.16 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: Util.h,v 1.17 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.17  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.16  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

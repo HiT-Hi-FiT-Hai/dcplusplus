@@ -44,7 +44,7 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlClient.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	ctrlMessage.SetFont((HFONT)::GetStockObject(DEFAULT_GUI_FONT));
 	if(user->isOnline()) {
-		SetWindowText((user->getNick() + " (" + user->getClientNick() + ")").c_str());
+		SetWindowText((user->getNick() + " (" + user->getClientName() + ")").c_str());
 	} else {
 		SetWindowText((user->getNick() + " (Offline)").c_str());
 	}
@@ -109,9 +109,12 @@ LRESULT PrivateFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.6 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.7 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.7  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.6  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

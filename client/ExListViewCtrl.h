@@ -54,131 +54,21 @@ public:
 	int getSortColumn() { return sortColumn; };
 	int getSortType() { return sortType; };
 
-	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL) {
-
-		char buf[128];
-		int loc = 0;
-		int count = GetItemCount();
-
-		LVITEM a;
-		a.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE | LVIF_TEXT;
-		a.iItem = -1;
-		a.iSubItem = sortColumn;
-		a.iImage = iImage;
-		a.state = 0;
-		a.stateMask = 0;
-		a.lParam = lParam;
-		a.iIndent = 0;
-		a.pszText = const_cast<char*>(sortColumn == -1 ? aList[0].c_str() : aList[sortColumn].c_str());
-		a.cchTextMax = sortColumn == -1 ? aList[0].size() : aList[sortColumn].size();
-		
-		if(sortColumn == -1) {
-			loc = count;
-		} else if(count == 0) {
-			loc = 0;
-		} else {
-
-			string& b = aList[sortColumn];
-			int c;
-			LPARAM data;			
-			int low = 0;
-			int high = count-1;
-			int comp = 0;
-			while(low <= high)
-			{
-				loc = (low + high)/2;
-				
-				switch(sortType) {
-				case SORT_STRING:
-					GetItemText(loc, sortColumn, buf, 128);
-					comp = compare(b, string(buf)); break;
-				case SORT_STRING_NOCASE:
-					GetItemText(loc, sortColumn, buf, 128);
-					comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
-					break;
-				case SORT_INT:
-					GetItemText(loc, sortColumn, buf, 128);
-					c = atoi(b.c_str());
-					comp = compare(c, atoi(buf)); break;
-				case SORT_FUNC:
-					data = GetItemData(loc);
-					comp = fun(lParam, data); break;
-				case SORT_FUNC_ITEM:
-					{
-						LVITEM b;
-						b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-						b.iItem = loc;
-						b.iSubItem = 0;
-						GetItem(&b);
-						comp = fun((LPARAM)&a, (LPARAM)&b);
-					} 
-					break;
-				default:
-					dcassert(0);
-				}
-				
-				if(!ascending)
-					comp = -comp;
-
-				if(comp == -1) {
-					high = loc - 1;
-				} else if(comp == 1) {
-					low = loc + 1;
-				} else {
-					break;
-				} 
-			}
-
-			switch(sortType) {
-			case SORT_STRING:
-				comp = compare(b, string(buf)); break;
-			case SORT_STRING_NOCASE:
-				comp =  strnicmp(b.c_str(), buf, min(b.length(), strlen(buf)));
-				break;
-			case SORT_INT:
-				comp = compare(c, atoi(buf)); break;
-			case SORT_FUNC:
-				comp = fun(lParam, data); break;
-			case SORT_FUNC_ITEM:
-				{
-					LVITEM b;
-					b.mask = LVIF_IMAGE | LVIF_INDENT | LVIF_PARAM | LVIF_STATE;
-					b.iItem = loc;
-					b.iSubItem = 0;
-					GetItem(&b);
-					comp = fun((LPARAM)&a, (LPARAM)&b);
-				}
-				break;
-			default:
-				dcassert(0);
-			}
-
-			if(!ascending)
-				comp = -comp;
-			
-			if(comp == 1)
-				loc++;
-			
-		}
-		SetRedraw(FALSE);
-		dcassert(loc >= 0 && loc <= GetItemCount());
-		a.iItem = loc;
-		a.iSubItem = 0;
-		int i = InsertItem(&a);
-		int k = 0;
-		for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
-			SetItemText(i, k, j->c_str());
-		}
-		SetRedraw(TRUE);
-		RECT rc;
-		GetItemRect(i, &rc, LVIR_BOUNDS);
-		InvalidateRect(&rc);
-		return loc;
-	}
+	int insert(int nItem, StringList& aList, int iImage = 0, LPARAM lParam = NULL);
+	int insert(StringList& aList, int iImage = 0, LPARAM lParam = NULL);
 	int insert(int nItem, const string& aString, int iImage = 0, LPARAM lParam = NULL) {
 		return InsertItem(LVIF_PARAM | LVIF_TEXT | LVIF_IMAGE, nItem, aString.c_str(), 0, 0, iImage, lParam);
 	}
 
+	int getItemImage(int aItem) {
+		LVITEM lvi;
+		lvi.iItem = aItem;
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_IMAGE;
+		GetItem(&lvi);
+		return lvi.iImage;
+	}
+	
 	int find(LPARAM lParam, int aStart = -1) {
 		LV_FINDINFO fi;
 		fi.flags = LVFI_PARAM;
@@ -206,6 +96,7 @@ public:
 			}
 		}
 	}
+	int moveItem(int oldPos, int newPos);
 	void setSortDirection(bool aAscending) { setSort(sortColumn, sortType, aAscending, fun); };
 
 	static int CALLBACK CompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
@@ -271,9 +162,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.14 2002/01/16 20:56:26 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.15 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.15  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.14  2002/01/16 20:56:26  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

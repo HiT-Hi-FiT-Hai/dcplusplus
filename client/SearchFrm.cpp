@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "SearchFrm.h"
+#include "LineDlg.h"
 
 LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -74,29 +75,51 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	SetWindowText("Search");
 
+	targetMenu.CreatePopupMenu();
+
 	resultsMenu.CreatePopupMenu();
+	opMenu.CreatePopupMenu();
 	
+	int n = 0;
+
 	CMenuItemInfo mi;
+
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 13;
 	mi.dwTypeData = "Get File List";
 	mi.wID = IDC_GETLIST;
-	resultsMenu.InsertMenuItem(0, TRUE, &mi);
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 16;
-	mi.dwTypeData = "Download file(s)";
+	mi.dwTypeData = "Download";
 	mi.wID = IDC_DOWNLOAD;
-	resultsMenu.InsertMenuItem(1, TRUE, &mi);
-
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Download to...";
+	mi.hSubMenu = targetMenu;
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_TYPE;
+	mi.fType = MFT_SEPARATOR;
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.cch = 22;
-	mi.dwTypeData = "Download file(s) to...";
-	mi.wID = IDC_DOWNLOADTO;
-	resultsMenu.InsertMenuItem(2, TRUE, &mi);
+	mi.dwTypeData = "Kick User";
+	mi.wID = IDC_KICK;
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = "Redirect";
+	mi.wID = IDC_REDIRECT;
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	bHandled = FALSE;
 	
@@ -104,21 +127,18 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 }
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	char buf[MAX_PATH];
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
-		ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, MAX_PATH);
-		string file = buf;
-		string target = SETTING(DOWNLOAD_DIRECTORY) + buf;
+		dcassert(i != -1);
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+
+		string target = SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName();
 		if(Util::browseSaveFile(target)) {
-			ctrlResults.GetItemText(i, COLUMN_NICK, buf, MAX_PATH);
-			string user = buf;
-			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, COLUMN_PATH, buf, MAX_PATH);
-			string path = buf;
-			
 			try {
-				DownloadManager::getInstance()->download(path + file, size, user, target);
+				if(sr->getUser())
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), target);
+				else
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), target);
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -129,6 +149,24 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			downloadSelected(target);
 		}
 	}
+	return 0;
+}
+
+LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(ctrlResults.GetSelectedCount() == 1) {
+		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+		dcassert(i != -1);
+		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+		dcassert((wID - IDC_DOWNLOAD_TARGET) < targets.size());
+		try {
+			if(sr->getUser())
+				DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+			else
+				DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), targets[(wID - IDC_DOWNLOAD_TARGET)]);
+		} catch(Exception e) {
+			MessageBox(e.getError().c_str());
+		}
+	} 
 	return 0;
 }
 
@@ -157,7 +195,7 @@ LRESULT SearchFrame::onEnter(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHan
 		}
 		
 		for(int i = 0; i != ctrlResults.GetItemCount(); i++) {
-			delete (LONGLONG*)ctrlResults.GetItemData(i);
+			delete (SearchResult*)ctrlResults.GetItemData(i);
 		}
 		ctrlResults.DeleteAllItems();
 		
@@ -179,8 +217,7 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 			return;
 		}
 	}
-	LONGLONG* psize = new LONGLONG;
-	*psize = aResult->getSize();
+	SearchResult* copy = new SearchResult(*aResult);
 	
 	string file, path;
 	if(aResult->getFile().rfind('\\') == string::npos) {
@@ -208,14 +245,117 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 		l->push_back("");
 	}
 	l->push_back(aResult->getHubName());
-	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)psize);	
+	PostMessage(WM_SPEAKER, (WPARAM)l, (LPARAM)copy);	
 }
+
+LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+	
+	// Get the bounding rectangle of the client area. 
+	ctrlResults.GetClientRect(&rc);
+	ctrlResults.ScreenToClient(&pt); 
+	
+	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
+	{
+		CMenuItemInfo mi;
+		ctrlResults.ClientToScreen(&pt);
+
+		while(targetMenu.GetMenuItemCount() > 0) {
+			targetMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+		
+		if(ctrlResults.GetSelectedCount() == 1) {
+			int pos = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
+			dcassert(pos != -1);
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
+
+			int n = 0;
+			
+			targets = DownloadManager::getInstance()->getTargetsBySize(sr->getSize());
+			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
+				mi.fMask = MIIM_ID | MIIM_TYPE;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
+				mi.wID = IDC_DOWNLOAD_TARGET + n;
+				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			}
+
+			mi.fMask = MIIM_ID | MIIM_TYPE;
+			mi.fType = MFT_STRING;
+			mi.dwTypeData = "Browse...";
+			mi.wID = IDC_DOWNLOADTO;
+			targetMenu.InsertMenuItem(n++, TRUE, &mi);
+
+			if(sr->getUser() && sr->getUser()->isClientOp()) {
+				opMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			} else {
+				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			}
+		} else {
+			mi.fMask = MIIM_ID | MIIM_TYPE;
+			mi.fType = MFT_STRING;
+			mi.dwTypeData = "Browse...";
+			mi.wID = IDC_DOWNLOADTO;
+			targetMenu.InsertMenuItem(0, TRUE, &mi);
+
+			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		}
+		
+		return TRUE; 
+	}
+	
+	return FALSE; 
+}
+
+LRESULT SearchFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LineDlg dlg;
+	dlg.title = "Kick user(s)";
+	dlg.description = "Please enter a reason";
+	if(dlg.DoModal() == IDOK) {
+		int i = -1;
+		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+			if(sr->getUser() && sr->getUser()->isOnline()) {
+				sr->getUser()->clientMessage(sr->getUser()->getClientNick() + " is kicking " + sr->getUser()->getNick() + " because: " + dlg.line);
+				sr->getUser()->privateMessage("You are being kicked because: " + dlg.line);
+				sr->getUser()->kick();
+			}
+		}
+	}
+	
+	return 0; 
+};
+
+LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) { 
+	LineDlg dlg1, dlg2;
+	dlg1.title = "Redirect user(s)";
+	dlg1.description = "Please enter a reason";
+	if(dlg1.DoModal() == IDOK) {
+		dlg2.title = "Redirect user(s)";
+		dlg2.description = "Please enter destination server";
+		if(dlg2.DoModal() == IDOK) {
+			int i = -1;
+			while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
+				SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+				if(sr->getUser() && sr->getUser()->isOnline()) {
+					sr->getUser()->redirect(dlg2.line, "You are being redirected to " + dlg2.line + ": " + dlg1.line);
+				}
+			}
+		}
+	}
+	
+	return 0; 
+};
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.15 2002/01/16 20:56:27 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.16 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.16  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.15  2002/01/16 20:56:27  arnetheduck
  * Bug fixes, file listing sort and some other small changes
  *

@@ -40,7 +40,7 @@ public:
 		typedef vector<Ptr> List;
 		typedef List::iterator Iter;
 
-		Source(const string& aNick, const string& aFileName, const string& aPath, User::Ptr& aUser = User::nuser) : nick(aNick),
+		Source(const string& aNick, const string& aFileName, const string& aPath, const User::Ptr& aUser = User::nuser) : nick(aNick),
 			fileName(aFileName), path(aPath), user(aUser) { };
 
 		User::Ptr& getUser() { return user; };
@@ -104,7 +104,7 @@ public:
 		sources.push_back(s);
 		return s;
 	}
-	Source::Ptr addSource(User::Ptr& aUser, const string& aFileName, const string& aPath) {
+	Source::Ptr addSource(const User::Ptr& aUser, const string& aFileName, const string& aPath) {
 		Source::Ptr s = new Source(aUser->getNick(), aFileName, aPath, aUser);
 		sources.push_back(s);
 		return s;
@@ -207,16 +207,16 @@ public:
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
 {
 public:
-	void download(const string& aFile, const string& aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
+	void download(const string& aFile, const string& aSize, const User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
 		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
-	void download(const string& aFile, LONGLONG aSize, User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
+	void download(const string& aFile, LONGLONG aSize, const User::Ptr& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
 
 	void download(const string& aFile, const string& aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException) {
 		download(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aDestination, aResume);
 	}
 	void download(const string& aFile, LONGLONG aSize, const string& aUser, const string& aDestination, bool aResume = true) throw(DownloadException);
-	void downloadList(User::Ptr& aUser) throw(DownloadException);
+	void downloadList(const User::Ptr& aUser) throw(DownloadException);
 	void downloadList(const string& aUser) throw(DownloadException);
 	void connectFailed(const User::Ptr& aUser);
 	
@@ -233,7 +233,17 @@ public:
 
 		checkDownloads(conn);
 	}
-	
+	StringList getTargetsBySize(LONGLONG aSize) {
+		Lock l(cs);
+		StringList sl;
+
+		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
+			if((*i)->getSize() == aSize) {
+				sl.push_back((*i)->getTarget());
+			}
+		}
+		return sl;
+	}
 	void removeSource(Download* aDownload, Download::Source::Ptr aSource);
 
 	void removeConnection(UserConnection::Ptr aConn, bool reuse = false);
@@ -266,13 +276,22 @@ private:
 	
 	Download* getNextDownload(const User::Ptr& aUser) {
 		Lock l(cs);
+		Download* d = NULL;
 		for(Download::Iter i = queue.begin(); i != queue.end(); ++i) {
 			if((*i)->isSource(aUser) ) {
-				if( !(*i)->isSet(Download::RUNNING) )
-					return *i;
+				if( !(*i)->isSet(Download::RUNNING) ) {
+					if((*i)->getSize() < 16*1024) {
+						d = *i;
+						break;
+					}
+
+					if(d == NULL) {
+						d = *i;
+					}
+				}
 			}
 		}
-		return NULL;
+		return d;
 	}
 
 	void checkDownloads(UserConnection* aConn);
@@ -332,9 +351,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.26 2002/01/17 23:35:59 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.27 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.27  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.26  2002/01/17 23:35:59  arnetheduck
  * Reworked threading once more, now it actually seems stable. Also made
  * sure that noone tries to access client objects that have been deleted

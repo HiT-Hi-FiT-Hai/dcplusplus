@@ -31,9 +31,6 @@
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 
-#define WM_ENTER (WM_USER + 120)
-#define WM_TAB (WM_ENTER + 1)
-
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
@@ -72,6 +69,9 @@ public:
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
+		COMMAND_ID_HANDLER(IDC_KICK, onKick)
+		COMMAND_ID_HANDLER(IDC_REDIRECT, onRedirect)
+		COMMAND_RANGE_HANDLER(IDC_DOWNLOAD_TARGET, IDC_DOWNLOAD_TARGET + targets.size(), onDownloadTarget)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<SearchFrame>)
 	ALT_MSG_MAP(SEARCH_MESSAGE_MAP)
 		MESSAGE_HANDLER(WM_CHAR, onChar)
@@ -80,12 +80,12 @@ public:
 	END_MSG_MAP()
 
 	static int sortSize(LPARAM a, LPARAM b) {
-		LONGLONG* c = (LONGLONG*)a;
-		LONGLONG* d = (LONGLONG*)b;
+		SearchResult* c = (SearchResult*)a;
+		SearchResult* d = (SearchResult*)b;
 		
-		if(*c < *d) {
+		if(c->getSize() < d->getSize()) {
 			return -1;
-		} else if(*c == *d) {
+		} else if(c->getSize() == d->getSize()) {
 			return 0;
 		} else {
 			return 1;
@@ -97,7 +97,7 @@ public:
 		if(l->iSubItem == ctrlResults.getSortColumn()) {
 			ctrlResults.setSortDirection(!ctrlResults.getSortDirection());
 		} else {
-			if(l->iSubItem == 3) {
+			if(l->iSubItem == COLUMN_SIZE) {
 				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
 			} else {
 				ctrlResults.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
@@ -119,22 +119,21 @@ public:
 		return 0;
 	}
 	
+	LRESULT onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onDownloadTarget(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void downloadSelected(const string& aDir) {
 		int i=-1;
-		char buf[256];
 		
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlResults.GetItemText(i, COLUMN_NICK, buf, 256);
-			string user = buf;
-			ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, 256);
-			string file = buf;
-			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, COLUMN_PATH, buf, 256);
-			string path = buf;
-			try {
-				DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+			try { 
+				if(sr->getUser())
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), aDir + sr->getFileName());
+				else
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), aDir + sr->getFileName());
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -143,11 +142,13 @@ public:
 
 	LRESULT onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		int i=-1;
-		char buf[256];
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlResults.GetItemText(i, COLUMN_NICK, buf, 256);
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 			try {
-				DownloadManager::getInstance()->downloadList(buf);
+				if(sr->getUser())
+					DownloadManager::getInstance()->downloadList(sr->getUser());
+				else
+					DownloadManager::getInstance()->downloadList(sr->getNick());
 			} catch(...) {
 				// ...
 			}
@@ -155,40 +156,17 @@ public:
 		return 0;
 	}
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		// Get the bounding rectangle of the client area. 
-		ctrlResults.GetClientRect(&rc);
-		ctrlResults.ScreenToClient(&pt); 
-		
-		if (PtInRect(&rc, pt)) 
-		{ 
-			ctrlResults.ClientToScreen(&pt);
-			resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-			
-			return TRUE; 
-		}
-		
-		return FALSE; 
-	}
-
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 		NMITEMACTIVATE* item = (NMITEMACTIVATE*)pnmh;
-		char buf[256];
 		
 		if(item->iItem != -1) {
-			ctrlResults.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
-			string user = buf;
-			ctrlResults.GetItemText(item->iItem, COLUMN_FILENAME, buf, 256);
-			string file = buf;
-			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(item->iItem);
-			ctrlResults.GetItemText(item->iItem, COLUMN_PATH, buf, 256);
-			string path = buf;
-			
+			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(item->iItem);
 			try { 
-				DownloadManager::getInstance()->download(path + file, size, user, SETTING(DOWNLOAD_DIRECTORY) + file);
+				if(sr->getUser())
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getUser(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
+				else
+					DownloadManager::getInstance()->download(sr->getFile(), sr->getSize(), sr->getNick(), SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName());
 			} catch(Exception e) {
 				MessageBox(e.getError().c_str());
 			}
@@ -348,9 +326,12 @@ private:
 	
 	ExListViewCtrl ctrlResults;
 	CMenu resultsMenu;
+	CMenu opMenu;
+	CMenu targetMenu;
 	
 	StringList search;
-
+	StringList targets;
+	
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types type, SearchResult* sr) {
 		switch(type) {
@@ -371,9 +352,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.19 2002/01/15 21:57:53 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.20 2002/01/18 17:41:43 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.20  2002/01/18 17:41:43  arnetheduck
+ * Reworked many right button menus, adding op commands and making more easy to use
+ *
  * Revision 1.19  2002/01/15 21:57:53  arnetheduck
  * Hopefully fixed the two annoying bugs...
  *
