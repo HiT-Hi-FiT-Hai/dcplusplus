@@ -139,18 +139,22 @@ template<typename T> struct ReferenceSelector<T,true> {
 };
 
 template<typename T> class IsOfClassType {
-private:
+public:
 	struct Overloads {
 		template<typename U> static char check(int U::*);
 		template<typename U> static float check(...);
 	};
+
+	template<typename U> static char check(int U::*);
+	template<typename U> static float check(...);
 public:
-	enum { Result = (sizeof(IsOfClassType<T>::Overloads::check<T>(0)) == 1) };
+	enum { Result = sizeof(check<T>(0)) };
 };
 
 template<typename T> struct TypeTraits {
-	typedef typename ReferenceSelector<T,IsOfClassType<T>::Result || 
-		(sizeof(T)>sizeof(char*))>::ResultType ParameterType;
+	typedef IsOfClassType<T> ClassType;
+	typedef ReferenceSelector<T, ((ClassType::Result == 1) || (sizeof(T) > sizeof(char*)) ) > Selector;
+	typedef typename Selector::ResultType ParameterType;
 };
 
 #define GETSET(type, name, name2) \
@@ -164,6 +168,6 @@ public: TypeTraits<type>::ParameterType get##name2() const { return name; }; \
 
 /**
  * @file
- * $Id: DCPlusPlus.h,v 1.42 2004/10/17 12:51:30 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.43 2004/10/23 17:06:25 arnetheduck Exp $
  */
 

@@ -78,7 +78,7 @@ public:
 		hits += aHits;
 	}
 
-	BOOLEAN isTTHShared(TTHValue* tth){
+	bool isTTHShared(TTHValue* tth){
 		HashFileIter i = tthIndex.find(tth);
 		return (i != tthIndex.end());
 	}
@@ -277,6 +277,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.61 2004/10/21 10:27:16 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.62 2004/10/23 17:06:26 arnetheduck Exp $
  */
 
