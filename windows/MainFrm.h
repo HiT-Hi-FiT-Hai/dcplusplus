@@ -428,7 +428,7 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 
-	int statusSizes[6];
+	int statusSizes[7];
 	
 	CImageList arrows;
 	HANDLE stopperThread;
@@ -482,7 +482,7 @@ private:
 
 /**
  * @file
- * $Id: MainFrm.h,v 1.17 2003/05/21 12:08:43 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.18 2003/06/20 10:49:27 arnetheduck Exp $
  */
 
  

@@ -508,8 +508,7 @@ void Client::myInfo() {
 	string uMin = (SETTING(MIN_UPLOAD_SPEED) == 0) ? Util::emptyString : tmp5 + Util::toString(SETTING(MIN_UPLOAD_SPEED));
 	send("$MyINFO $ALL " + Util::validateNick(getNick()) + " " + Util::validateMessage(getDescription(), false) + 
 		tmp1 + VERSIONSTRING + tmp2 + ((SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) ? string("A") : string("P")) + 
-		tmp3 + Util::toString(counts.normal) + '/' + Util::toString(counts.registered) +
-		'/' + Util::toString(counts.op) + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
+		tmp3 + getCounts() + tmp4 + Util::toString(SETTING(SLOTS)) + uMin + 
 		">$ $" + SETTING(CONNECTION) + "\x01$" + Util::validateMessage(SETTING(EMAIL), false) + '$' + 
 		ShareManager::getInstance()->getShareSizeString() + "$|");
 }
@@ -652,6 +651,6 @@ void Client::onAction(BufferedSocketListener::Types type) throw() {
 
 /**
  * @file
- * $Id: Client.cpp,v 1.51 2003/04/15 10:13:51 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.52 2003/06/20 10:49:27 arnetheduck Exp $
  */
 

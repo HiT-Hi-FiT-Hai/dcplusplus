@@ -191,10 +191,10 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		lastSearches.push_back(initialString);
 		ctrlSearchBox.InsertString(0, initialString.c_str());
 		ctrlSearchBox.SetCurSel(0);
-		ctrlSizeMode.SetCurSel(0);
+		ctrlSizeMode.SetCurSel(initialMode);
 		ctrlSize.SetWindowText(Util::toString(initialSize).c_str());
-		ctrlFiletype.SetCurSel(0);
-		SearchManager::getInstance()->search(initialString, initialSize, SearchManager::TYPE_ANY, initialMode);
+		ctrlFiletype.SetCurSel(initialType);
+		SearchManager::getInstance()->search(initialString, initialSize, initialType, initialMode);
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
 	}
 
@@ -1026,5 +1026,5 @@ LRESULT SearchFrame::onDownloadWholeTarget(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.19 2003/05/28 11:53:05 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.20 2003/06/20 10:49:27 arnetheduck Exp $
  */

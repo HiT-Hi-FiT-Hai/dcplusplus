@@ -47,12 +47,11 @@ void QueueManager::UserQueue::add(QueueItem* qi, const User::Ptr& aUser, bool in
 	dcassert(qi->isSource(aUser));
 	dcassert(qi->getCurrent() == NULL);
 
+	QueueItem::List& l = userQueue[qi->getPriority()][aUser];
 	if(inFront) {
-		QueueItem::List& l = userQueue[qi->getPriority()][aUser];
-		//l.push_front(qi);
-		l.insert(l.begin(), qi);
+		l.insert(l.begin(), qi);		//l.push_front(qi);
 	} else {
-		userQueue[qi->getPriority()][aUser].push_back(qi);
+		l.push_back(qi);
 	}
 }
 
@@ -418,7 +417,7 @@ void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, cons
 
 QueueItem* QueueManager::getQueueItem(const string& aTarget, int64_t aSize, bool aResume, bool& newItem) throw(QueueException, FileException) {
 	QueueItem* q;
-	if(lastInsert->first == aTarget) {
+	if((lastInsert != queue.end()) && (lastInsert->first == aTarget)) {
 		q = lastInsert->second;
 	} else {
 		q = findByTarget(aTarget);
@@ -1098,5 +1097,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.41 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.42 2003/06/20 10:49:27 arnetheduck Exp $
  */

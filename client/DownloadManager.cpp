@@ -520,7 +520,7 @@ void DownloadManager::onFailed(UserConnection* aSource, const string& aError) {
 	aSource->setDownload(NULL);
 	removeDownload(d);
 	
-	if(aError == "File Not Available") {
+	if(aError.find("File Not Available") != string::npos) {
 		QueueManager::getInstance()->removeSource(target, aSource->getUser(), QueueItem::Source::FLAG_FILE_NOT_AVAILABLE, false);
 	}
 
@@ -595,7 +595,7 @@ void DownloadManager::onFileNotAvailable(UserConnection* aSource) throw() {
 		d->setFile(NULL);
 	}
 
-	fire(DownloadManagerListener::FAILED, d, STRING(FILE_NOT_AVAILABLE));
+	fire(DownloadManagerListener::FAILED, d, d->getTargetFileName() + ": " + STRING(FILE_NOT_AVAILABLE));
 
 	aSource->setDownload(NULL);
 
@@ -653,5 +653,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.73 2003/05/21 12:08:43 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.74 2003/06/20 10:49:27 arnetheduck Exp $
  */

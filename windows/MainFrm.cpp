@@ -170,8 +170,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 	ctrlStatus.Attach(m_hWndStatusBar);
 	ctrlStatus.SetSimple(FALSE);
-	int w[7] = { 0, 0, 0, 0, 0, 0, 0 };
-	ctrlStatus.SetParts(7, w);
+	int w[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+	ctrlStatus.SetParts(8, w);
 	statusSizes[0] = WinUtil::getTextWidth(STRING(AWAY), ::GetDC(ctrlStatus.m_hWnd)); // for "AWAY" segment
 
 	CreateMDIClient();
@@ -446,7 +446,7 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		if(ctrlStatus.IsWindow()) {
 			HDC dc = ::GetDC(ctrlStatus.m_hWnd);
 			bool u = false;
-			for(int i = 0; i < 6; i++) {
+			for(int i = 0; i < 7; i++) {
 				int w = WinUtil::getTextWidth(str[i], dc);
 				
 				if(statusSizes[i] < w) {
@@ -1139,13 +1139,13 @@ void MainFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
 	
 	if(ctrlStatus.IsWindow()) {
 		CRect sr;
-		int w[7];
+		int w[8];
 		ctrlStatus.GetClientRect(sr);
-		w[6] = sr.right - 16;
+		w[7] = sr.right - 16;
 #define setw(x) w[x] = max(w[x+1] - statusSizes[x], 0)
-		setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
+		setw(6); setw(5); setw(4); setw(3); setw(2); setw(1); setw(0);
 
-		ctrlStatus.SetParts(7, w);
+		ctrlStatus.SetParts(8, w);
 	}
 	CRect rc = rect;
 	rc.top = rc.bottom - ctrlTab.getHeight();
@@ -1267,13 +1267,16 @@ LRESULT MainFrame::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled) {
 				if(ii->size == 0)
 					ii->size = 1;
 				rc.right = rc.left + (int) (((int64_t)rc.Width()) * ii->pos / ii->size);
-				HGDIOBJ old = ::SelectObject(cd->nmcd.hdc, GetSysColorBrush(COLOR_HIGHLIGHT));
+				bool altColor = (ctrlTransfers.m_hWnd == ::GetFocus()) && (ctrlTransfers.GetItemState((int)cd->nmcd.dwItemSpec, LVIS_SELECTED) & LVIS_SELECTED);
+				int color =  altColor ? COLOR_BTNFACE : COLOR_HIGHLIGHT;
+				HGDIOBJ old = ::SelectObject(cd->nmcd.hdc, GetSysColorBrush(color));
 				::Rectangle(cd->nmcd.hdc, rc.left, rc.top, 
 					rc.right, rc.bottom);
 				::SelectObject(cd->nmcd.hdc, old);
 				COLORREF oldcol = ::SetTextColor(cd->nmcd.hdc, cd->clrText);
 				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
-				::SetTextColor(cd->nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+				color = altColor ? COLOR_BTNTEXT : COLOR_HIGHLIGHTTEXT;
+				::SetTextColor(cd->nmcd.hdc, GetSysColor(color));
 				rc2.right = rc.right;
 				::DrawText(cd->nmcd.hdc, buf, strlen(buf), rc2, DT_LEFT | DT_NOPREFIX | DT_SINGLELINE | DT_VCENTER);
 				::SelectObject(cd->nmcd.hdc, old);
@@ -1360,6 +1363,7 @@ void MainFrame::onAction(TimerManagerListener::Types type, u_int32_t aTick) thro
 		int64_t diff = (int64_t)((lastUpdate == 0) ? aTick - 1000 : aTick - lastUpdate);
 
 		StringList* str = new StringList();
+		str->push_back("H: " + Client::getCounts());
 		str->push_back(Util::getAway() ? STRING(AWAY) : "");
 		str->push_back(STRING(SLOTS) + ": " + Util::toString(SETTING(SLOTS) - UploadManager::getInstance()->getRunning()) + '/' + Util::toString(SETTING(SLOTS)));
 		str->push_back("D: " + Util::formatBytes(Socket::getTotalDown()));
@@ -1405,6 +1409,6 @@ void MainFrame::onAction(QueueManagerListener::Types type, QueueItem* qi) throw(
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.25 2003/05/21 12:08:43 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.26 2003/06/20 10:49:27 arnetheduck Exp $
  */
 

@@ -1,6 +1,4 @@
-Alrite, this document describes the extensions I've made to the DC protocol, to be able to support extra functionality. Those are of course subject to change and discussion but I'll try to keep it as up to date as possible. Other clients are most welcome to follow this scheme and use the features presented here as they wish. The main scheme stems from a discussion sometime ago on the javadc-devel list on sourceforge...
-
-So far, I've only thought about the client-client protocol, and that's what is presented here...
+This document describes the extensions I've made to the DC protocol, to be able to support extra functionality. Those are of course subject to change and discussion but I'll try to keep it as up to date as possible. Other clients are most welcome to follow this scheme and use the features presented here as they wish. The main scheme stems from a discussion sometime ago on the javadc-devel list on sourceforge...
 
 Note; I assume familiarity with the dc protocol as used in neomodus dc 1.00091...
 
@@ -8,14 +6,15 @@ The main idea behind the protocol is that when setting up the connection, each c
 
 On a side note; DC++ requires commands to come in a certain order to be able to efficiently use resources and will ignore any commands out of order (such as multiple $Send commands). This also improves the determinism of the protocol.
 
---------------------------------------------------------------------
+
+*** Client-Client communication ***
 
 Feature: Supports
 
 Purpose: To identify which features a certain client supports
 
-Usage: "$Supports <featurename> <featurename> ...|"
-<featurename> = Case sensitive string describing the feature that a certain client supports. This should be the name of the command being sent, i e if a client supports a command "$GetBZListLen|", featurename should be GetBZListLen, unless of course, this is not a feature that requires sending extra data. Feature names may (obviously) not contain spaces.
+Usage: "$Supports <feature1> <feature2> ... <featureN>|"
+<featurename> = Case sensitive string describing the feature that a certain client supports. This should be the name of the command being sent, i e if a client supports a command "$GetBZListLen|", featurename should be GetBZListLen, unless of course, this is not a feature that requires sending extra data. Feature names may (obviously) not contain spaces. Empty $Supports should not be sent.
 
 Should be sent: After receiving $Lock but before sending $Key
 
@@ -48,6 +47,17 @@ and act accordingly...$Sending is needed to be able to distinguish the failure c
 roundtrip is done for each block though, minimizing the need for maintaining states (I would have preferred a protocol
 that that's fully stateless from the start such as http, but hey...)
 
-Compression: Compression is done using ZLib (v 1.1.4 in DC++ 0.21's case), using default compression level. The
+Compression: Compression is done using ZLib (v 1.1.4 in DC++ 0.21's case), using dynamic compression level. The
 compression level can of course be changed by the implementator to reduce CPU usage, or even just store compression
-in the case of non-compressible files...
+in the case of non-compressible files, which then works as adler32 check of the transferred data.
+
+--------------------------------------------------------------------
+
+*** Client-Hub communication ***
+
+Feature: Supports
+
+Usage: "$Supports <feature1> <feature2> ... <featureN>|"
+This is mostly analogous to the client-client communcation part. The hub must send a $Lock that begins with "EXTENDEDPROTOCOL", which will prompt the client to answer with $Supports. Then, when a hub receives "$Supports" it must answer with "$Supports" to tell the client about its features (which may differ from the ones the client supports). See client-client part for details. The hub must not send "EXTENDEDPROTOCOL" unless it supports at least one feature.
+
+Should be sent: After $Lock, before $Key

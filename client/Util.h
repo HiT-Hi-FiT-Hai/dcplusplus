@@ -186,10 +186,13 @@ public:
 
 	static string getShortTimeString() {
 		char buf[8];
-		time_t _tt;
-		time(&_tt);
+		time_t _tt = time(NULL);
 		tm* _tm = localtime(&_tt);
-		strftime(buf, 8, "%H:%M", _tm);
+		if(_tm == NULL) {
+			strcpy(buf, "xx:xx");
+		} else {
+			strftime(buf, 8, "%H:%M", _tm);
+		}
 		return buf;
 	}
 
@@ -426,5 +429,5 @@ struct noCaseStringLess {
 
 /**
  * @file
- * $Id: Util.h,v 1.57 2003/05/28 11:53:05 arnetheduck Exp $
+ * $Id: Util.h,v 1.58 2003/06/20 10:49:27 arnetheduck Exp $
  */

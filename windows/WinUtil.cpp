@@ -287,7 +287,7 @@ bool WinUtil::checkCommand(HWND mdiClient, string& cmd, string& param, string& m
 		if(!param.empty()) {
 			SearchFrame* pChild = new SearchFrame();
 			pChild->setTab(tabCtrl);
-			pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST);
+			pChild->setInitial(param, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 			pChild->CreateEx(mdiClient);
 		} else {
 			status = STRING(SPECIFY_SEARCH_STRING);
@@ -338,5 +338,5 @@ void WinUtil::saveHeaderOrder(CListViewCtrl& ctrl, SettingsManager::StrSetting o
 
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.15 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.16 2003/06/20 10:49:27 arnetheduck Exp $
  */

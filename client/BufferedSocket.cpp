@@ -108,6 +108,7 @@ bool BufferedSocket::threadSendFile() {
 					return true;
 				}
 				Socket::write((char*)inbuf, len);
+				Thread::sleep(500);
 				fire(BufferedSocketListener::BYTES_SENT, len);
 				size -= len;
 			}
@@ -461,5 +462,5 @@ int BufferedSocket::run() {
 
 /**
  * @file
- * $Id: BufferedSocket.cpp,v 1.49 2003/04/15 10:13:50 arnetheduck Exp $
+ * $Id: BufferedSocket.cpp,v 1.50 2003/06/20 10:49:27 arnetheduck Exp $
  */

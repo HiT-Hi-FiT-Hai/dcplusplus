@@ -26,6 +26,7 @@
 
 #include "../client/SimpleXML.h"
 #include "../client/StringTokenizer.h"
+#include "../client/ShareManager.h"
 
 QueueFrame* QueueFrame::frame = NULL;
 
@@ -704,12 +705,15 @@ LRESULT QueueFrame::onSearchAlternates(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 				tmp += *si + ' ';
 			}
 		}
-		int64_t size = qi->getSize();
 		if(!tmp.empty()) {
 			SearchFrame* pChild = new SearchFrame();
 			pChild->setTab(getTab());
-			bool bigFile = (size > 10*1024*1024);
-			pChild->setInitial(tmp, (bigFile ? size-1: size + 1), (bigFile ? SearchManager::SIZE_ATLEAST : SearchManager::SIZE_ATMOST) );
+			bool bigFile = (qi->getSize() > 10*1024*1024);
+			if(bigFile) {
+				pChild->setInitial(tmp, qi->getSize()-1, SearchManager::SIZE_ATLEAST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
+			} else {
+				pChild->setInitial(tmp, qi->getSize()+1, SearchManager::SIZE_ATMOST, ShareManager::getInstance()->getType(qi->getTargetFileName()));
+			}
 			pChild->CreateEx(m_hWndMDIClient);
 			
 		}
@@ -1019,7 +1023,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.22 2003/05/28 11:53:05 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.23 2003/06/20 10:49:27 arnetheduck Exp $
  */
 
 

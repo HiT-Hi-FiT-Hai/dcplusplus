@@ -1,3 +1,14 @@
+ -- 0.252 --
+* Search for alternates now sets file type as well (and should work correctly with sizes...)
+* Search now returns results for exact size matches on at least/most searches
+* Some minor fixes
+* Fixed a crash on adding items to the queue
+* Progress bar now has different color for selected items
+* Added notification for which file was not available for downloading
+* Added H: to main window status bar
+* Hub developers: Added section about $Supports scheme for client-hub communication to extensions.txt that 
+  dc++/dch++ will use to extend the protocol.
+
  -- 0.251 2003-05-28 --
 * Fixed 100% cpu bug in new search (thanks opera)
 * Fixed a bug with queue selection counts (thanks sed)
@@ -10,7 +21,7 @@
  -- 0.25 2003-05-20 --
 Major:
 * Implemented a faster substring search algorithm for share and file listing searches (the QuickSearch variant of 
-  the Boyer-Moore)
+  Boyer-Moore)
 * User commands now work from search as well
 * Fixed a major bug where queue items without sources were not loaded from disk on restart
 * Fixed slow favorites opening / excessive saving (thanks todd pederzani)

@@ -422,7 +422,7 @@ static const string type2Video[] = { ".rm", ".divx", ".mpeg" };
 #define IS_TYPE(x) ( type == (*((u_int32_t*)x)) )
 #define IS_TYPE2(x) (Util::stricmp(aString.c_str() + aString.length() - x.length(), x.c_str()) == 0)
 
-bool checkType(const string& aString, int aType) {
+static bool checkType(const string& aString, int aType) {
 	if(aType == SearchManager::TYPE_ANY)
 		return true;
 
@@ -614,9 +614,9 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 	if(aFileType != SearchManager::TYPE_DIRECTORY) {
 		for(FileIter i = files.begin(); i != files.end(); ++i) {
 			
-			if(aSearchType == SearchManager::SIZE_ATLEAST && i->second <= aSize) {
+			if(aSearchType == SearchManager::SIZE_ATLEAST && aSize > i->second) {
 				continue;
-			} else if(aSearchType == SearchManager::SIZE_ATMOST && i->second >= aSize) {
+			} else if(aSearchType == SearchManager::SIZE_ATMOST && aSize < i->second) {
 				continue;
 			}	
 			StringSearch::Iter j = cur->begin();
@@ -697,6 +697,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.52 2003/05/28 11:53:04 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.53 2003/06/20 10:49:27 arnetheduck Exp $
  */
 

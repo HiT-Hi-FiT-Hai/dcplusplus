@@ -151,7 +151,7 @@ LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 	SearchFrame* pChild = new SearchFrame();
-	pChild->setInitial(searchString, 0, SearchManager::SIZE_ATLEAST);
+	pChild->setInitial(searchString, 0, SearchManager::SIZE_ATLEAST, SearchManager::TYPE_ANY);
 	pChild->setTab(getTab());
 	pChild->CreateEx(m_hWndMDIClient);
 	return 0;
@@ -188,5 +188,5 @@ void SpyFrame::onAction(TimerManagerListener::Types type, u_int32_t) throw() {
 
 /**
  * @file
- * $Id: SpyFrame.cpp,v 1.10 2003/04/15 10:14:03 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.11 2003/06/20 10:49:27 arnetheduck Exp $
  */

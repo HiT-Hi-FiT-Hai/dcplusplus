@@ -71,7 +71,7 @@ public:
 		slotsContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		doSearchContainer("BUTTON", this, SEARCH_MESSAGE_MAP),
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), 
+		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
 		showUI(true), onlyFree(false), closed(false), commands(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
@@ -207,8 +207,8 @@ public:
 		return 0;
 	}
 
-	void SearchFrame::setInitial(const string& str, LONGLONG size, SearchManager::SizeModes mode) {
-		initialString = str; initialSize = size; initialMode = mode;
+	void SearchFrame::setInitial(const string& str, LONGLONG size, SearchManager::SizeModes mode, SearchManager::TypeModes type) {
+		initialString = str; initialSize = size; initialMode = mode; initialType = type;
 	}
 	
 private:
@@ -222,6 +222,7 @@ private:
 	string initialString;
 	int64_t initialSize;
 	SearchManager::SizeModes initialMode;
+	SearchManager::TypeModes initialType;
 
 	CStatusBarCtrl ctrlStatus;
 	CEdit ctrlSearch;
@@ -298,6 +299,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.17 2003/05/14 09:17:57 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.18 2003/06/20 10:49:27 arnetheduck Exp $
  */
 

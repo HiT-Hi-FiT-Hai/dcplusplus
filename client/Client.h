@@ -167,6 +167,11 @@ public:
 		return x;
 	}
 
+	static string getCounts() {
+		char buf[128];
+		return string(buf, sprintf(buf, "%d/%d/%d", counts.normal, counts.registered, counts.op));
+	}
+
 	const string& getIp() {	return ((socket == NULL) || socket->getIp().empty()) ? server : socket->getIp(); };
 	const short getPort() { return port; }
 	
@@ -269,6 +274,6 @@ private:
 
 /**
  * @file
- * $Id: Client.h,v 1.65 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: Client.h,v 1.66 2003/06/20 10:49:27 arnetheduck Exp $
  */
 
