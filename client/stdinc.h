@@ -16,9 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
-#if !defined(AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
-#define AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_
+#ifndef STDINC_H
+#define STDINC_H
 
 #include "config.h"
 
@@ -38,6 +37,7 @@
 #include <windows.h>
 #include <crtdbg.h>
 #include <tchar.h>
+
 #else
 #include <unistd.h>
 #endif
@@ -46,17 +46,16 @@
 #include <stdarg.h>
 #include <memory.h>
 #include <sys/types.h>
-
 #include <time.h>
+#include <locale.h>
 
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <map>
-#include <list>
-#include <deque>
 #include <set>
-
+#include <deque>
+#include <list>
 #include <utility>
 
 #ifdef HAVE_STLPORT
@@ -81,15 +80,15 @@ namespace __gnu_cxx {
 }
 #else // __GLIBCPP__
 
-using namespace std;
 #include <hash_map>
+using namespace std;
 using namespace stdext;
 
 #endif // __GLIBCPP__
 
-#endif // !defined(AFX_STDINC_H__65559042_5D04_44EF_9ECF_E0A7FA6E1348__INCLUDED_)
+#endif // STDINC_H
 
 /**
  * @file
- * $Id: stdinc.h,v 1.11 2004/11/29 23:21:30 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.12 2004/12/04 00:33:38 arnetheduck Exp $
  */

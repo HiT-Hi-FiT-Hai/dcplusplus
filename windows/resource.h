@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Used by d:\Direct Connect Nerladdningar\DC++ källa\Cvs\69\dcplusplus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDC_TRAY_QUIT                   102
@@ -47,6 +47,7 @@
 #define IDD_HASH_PROGRESS               239
 #define IDD_FAVORITE_DIRSPAGE           240
 #define IDD_HUB_LIST                    241
+#define IDD_APPEARANCE2PAGE             242
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002

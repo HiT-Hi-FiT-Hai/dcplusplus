@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _SOCKET_H
-#define _SOCKET_H
+#ifndef SOCKET_H
+#define SOCKET_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,7 +27,6 @@
 #include "Exception.h"
 
 #ifdef _WIN32
-
 // Berkely constants converted to the windows equivs...
 #	define EWOULDBLOCK             WSAEWOULDBLOCK
 #	define EINPROGRESS             WSAEINPROGRESS
@@ -79,7 +78,7 @@
 #	ifdef errno
 #		undef errno
 #	endif
-#	define errno WSAGetLastError()
+#	define errno ::WSAGetLastError()
 #	define checksocket(x) if((x) == INVALID_SOCKET) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
 #	define checkrecv(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); if(a == EWOULDBLOCK) return -1; else { Socket::disconnect(); throw SocketException(a); } }
 #	define checksockerr(x) if((x) == SOCKET_ERROR) { int a = WSAGetLastError(); Socket::disconnect(); throw SocketException(a); }
@@ -97,8 +96,6 @@ typedef SOCKET socket_t;
 #include <fcntl.h>
 
 typedef int socket_t;
-typedef socket_t SOCKET;
-
 #define SOCKET_ERROR -1
 #define INVALID_SOCKET -1
 #	define closesocket(x) close(x)
@@ -111,15 +108,15 @@ typedef socket_t SOCKET;
 class SocketException : public Exception {
 public:
 #ifdef _DEBUG
-	SocketException(const string& aError) : Exception("SocketException: " + aError) { };
+	SocketException(const string& aError) throw() : Exception("SocketException: " + aError) { }
 #else //_DEBUG
-	SocketException(const string& aError) : Exception(aError) { };
+	SocketException(const string& aError) throw() : Exception(aError) { }
 #endif // _DEBUG
 	
-	SocketException(int aError);
-	virtual ~SocketException() { };
+	SocketException(int aError) throw();
+	virtual ~SocketException() throw() { }
 private:
-	string errorToString(int aError);
+	static string errorToString(int aError) throw();
 };
 
 class ServerSocket;
@@ -144,14 +141,16 @@ public:
 	Socket::Socket(const string& aIp, short aPort) throw(SocketException) : noproxy(false), sock(INVALID_SOCKET), connected(false) { connect(aIp, aPort); };
 	virtual ~Socket() { Socket::disconnect(); };
 
+	virtual void create(int aType = TYPE_TCP) throw(SocketException);
 	virtual void bind(short aPort) throw(SocketException);
 	virtual void connect(const string& aIp, short aPort) throw(SocketException);
 	void connect(const string& aIp, const string& aPort) throw(SocketException) { connect(aIp, (short)Util::toInt(aPort)); };
 	virtual void accept(const ServerSocket& aSocket) throw(SocketException);
-	virtual void write(const char* buffer, size_t len) throw(SocketException);
+	virtual void write(const char* aBuffer, size_t aLen) throw(SocketException);
 	void write(const string& aData) throw(SocketException) { write(aData.data(), aData.length()); };
-	virtual void writeTo(const string& aIp, short aPort, const char* buffer, size_t len) throw(SocketException);
+	virtual void writeTo(const string& aIp, short aPort, const char* aBuffer, size_t aLen) throw(SocketException);
 	void writeTo(const string& aIp, short aPort, const string& aData) throw(SocketException) { writeTo(aIp, aPort, aData.data(), aData.length()); };
+	virtual void disconnect() throw();
 
 	int read(void* aBuffer, int aBufLen) throw(SocketException);
 	int read(void* aBuffer, int aBufLen, string &aIP) throw(SocketException);
@@ -164,33 +163,6 @@ public:
 	static int64_t getTotalDown() { return stats.totalDown; };
 	static int64_t getTotalUp() { return stats.totalUp; };
 	
-	virtual void disconnect() {
-		if(sock != INVALID_SOCKET) {
-			::shutdown(sock, 1); // Make sure we send FIN (SD_SEND shutdown type...)
-			closesocket(sock);
-		}
-		connected = false;
-
-		sock = INVALID_SOCKET;
-	}
-
-	virtual void create(int aType = TYPE_TCP) throw(SocketException) {
-		if(sock != INVALID_SOCKET)
-			Socket::disconnect();
-
-		switch(aType) {
-		case TYPE_TCP:
-			checksocket(sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
-			break;
-		case TYPE_UDP:
-			checksocket(sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP));
-			break;
-		default:
-			dcassert(0);
-		}
-		type = aType;
-	}
-
 	int getAvailable() {
 		u_int32_t i = 0;
 		ioctlsocket(sock, FIONREAD, &i);
@@ -198,12 +170,12 @@ public:
 	}
 
 #ifdef _WIN32
-	void setBlocking(bool block) throw(SocketException) {
+	void setBlocking(bool block) throw() {
 		u_long b = block ? 0 : 1;
 		ioctlsocket(sock, FIONBIO, &b);
 	}
 #else
-	void setBlocking(bool block) throw(SocketException) {
+	void setBlocking(bool block) throw() {
 		int flags = fcntl(sock, F_GETFL, 0); 
 		if(block) {
 			fcntl(sock, F_SETFL, flags | O_NONBLOCK); 
@@ -228,13 +200,11 @@ public:
 	/** When socks settings are updated, this has to be called... */
 	static void socksUpdated();
 
-	string getRemoteIp() const;
-
 	GETSET(string, ip, Ip);
-
 	GETSET(bool, noproxy, Noproxy);
 protected:
 	socket_t sock;
+	int type;
 	bool connected;
 
 	static string udpServer;
@@ -243,8 +213,6 @@ protected:
 private:
 	Socket(const Socket&);
 	Socket& operator=(const Socket&);
-
-	int type;
 
 	class Stats {
 	public:
@@ -258,6 +226,5 @@ private:
 
 /**
  * @file
- * $Id: Socket.h,v 1.55 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: Socket.h,v 1.56 2004/12/04 00:33:39 arnetheduck Exp $
  */
-

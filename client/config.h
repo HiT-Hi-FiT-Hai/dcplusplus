@@ -16,91 +16,77 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#if _MSC_VER > 1000
+#pragma once
+#endif // _MSC_VER > 1000
+
 #ifdef HAVE_CONFIG_H
 #include "autoconf.h"
 #endif
 
+// Changing this number will change the maximum number of simultaneous users
+// we can handle (when using select)...
+#define FD_SETSIZE 4096
+
 // Remove this line if hashes are not available in your stl
-// Hint: the once that comes with mcvc++ 6.0 doesn't have hashes...
-#define HAS_HASH 1
+#define HAVE_HASH 1
+
+// This enables stlport's debug mode (and slows it down to a crawl...)
+//# define _STLP_DEBUG 1
 
 // --- Shouldn't have to change anything under here...
 
-#ifdef _WIN32
-// Change these values to use different versions...don't know what happens though...=)
-//#define WINVER		0x0501
-#define _WIN32_WINNT 0x0501
-#define _WIN32_IE	0x0500
-//#define _RICHEDIT_VER	0x0200
+#ifndef _REENTRANT
+# define _REENTRANT 1
+#endif
+
+#ifdef HAVE_STLPORT
+# ifndef _DEBUG
+#  define _STLP_NO_EXCEPTIONS 1
+# endif
+#endif
+
+// Use maps if hash_maps aren't available
+#ifdef HAVE_HASH
+# ifdef HAVE_STLPORT
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+# elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+# elif defined(_MSC_VER)  // Assume the msvc 7.x stl
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc >
+# else
+#  error Unknown STL, hashes need to be configured
+# endif
+
+# define HASH_SET hash_set
+# define HASH_MAP hash_map
+# define HASH_MULTIMAP hash_multimap
+
+#else // HAVE_HASH
+
+# define HASH_SET set
+# define HASH_MAP map
+# define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
+# define HASH_MULTIMAP multimap
+# define HASH_MULTIMAP_X(key, type, hfunc, eq, order) multimap<key, type, order >
+
+#endif // HAVE_HASH
 
 #ifdef _MSC_VER
-#pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion
-#pragma warning(disable: 4786) // identifier was truncated to '255' characters in the debug information
-#pragma warning(disable: 4290) // C++ Exception Specification ignored
-#pragma warning(disable: 4512) // can't generate assignment operator
-#pragma warning(disable: 4710) // function not inlined
-#pragma warning(disable: 4127) // conditional expression is constant
-#pragma warning(disable: 4503) // decorated name length exceeded, name was truncated
-#endif
+# pragma warning(disable: 4711) // function 'xxx' selected for automatic inline expansion
+# pragma warning(disable: 4786) // identifier was truncated to '255' characters in the debug information
+# pragma warning(disable: 4290) // C++ Exception Specification ignored
+# pragma warning(disable: 4127) // constant expression
+# pragma warning(disable: 4710) // function not inlined
 
-#ifndef CDECL
-#define CDECL _cdecl
-#endif
+# if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
 
-#else
-
-#ifndef CDECL
-#define CDECL
-#endif
-
-#endif
-
-
-#if !(defined(_REENTRANT))
-#define _REENTRANT 1
-#endif
-
-#ifdef HAVE_STLPORT
-#if !defined(_DEBUG)
-#define _STLP_NO_EXCEPTIONS
-#undef _STLP_DEBUG
-#else
-// This enables stlport's debug mode (and slows it down to a crawl...)
-//#define _STLP_DEBUG 1
-#endif
-#endif
-#define BZ_NO_STDIO
-
-// User maps instead of hash_maps if they're not available...(even if there's
-// no need for the data to be sorted...
-#ifdef HAS_HASH
-#define HASH_MAP hash_map
-#define HASH_MULTIMAP hash_multimap
-
-#ifdef HAVE_STLPORT
-
-#define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
-#define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
-
-#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
-
-#define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
-#define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
-
-#else // Assume the msvc 7.x stl
-#define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc >
-#define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc >
-#endif
-
-#else
-#define HASH_MAP map
-#define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
-#define HASH_MULTIMAP multimap
-#endif
-
-
-// These are defined by the C99 standard, but vc 6.0/7.0/7.1 doesn't understand them
-#if _MSC_VER == 1200 || _MSC_VER == 1300 || _MSC_VER == 1310
 typedef signed char int8_t;
 typedef signed short int16_t;
 typedef signed long int32_t;
@@ -110,6 +96,9 @@ typedef unsigned char u_int8_t;
 typedef unsigned short u_int16_t;
 typedef unsigned long u_int32_t;
 typedef unsigned __int64 u_int64_t;
+
+# endif
+
 #endif
 
 #ifdef _MSC_VER
@@ -123,14 +112,41 @@ typedef unsigned __int64 u_int64_t;
 #endif
 
 #ifdef _WIN32
-#define PATH_SEPARATOR '\\'
-#define PATH_SEPARATOR_STR "\\"
+
+# define PATH_SEPARATOR '\\'
+# define PATH_SEPARATOR_STR "\\"
+
 #else
-#define PATH_SEPARATOR '/'
-#define PATH_SEPARATOR_STR "/"
+
+# define PATH_SEPARATOR '/'
+# define PATH_SEPARATOR_STR "/"
+
 #endif
+
+#ifdef _MSC_VER
+
+# ifndef CDECL
+#  define CDECL _cdecl
+# endif
+
+#else // _MSC_VER
+
+# ifndef CDECL
+#  define CDECL
+# endif
+
+#endif // _MSC_VER
+
+#define BZ_NO_STDIO
+
+#ifdef _WIN32
+# define _WIN32_WINNT 0x0501
+# define _WIN32_IE	0x0500
+#endif
+
+#endif // CONFIG_H
 
 /**
  * @file
- * $Id: config.h,v 1.28 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: config.h,v 1.29 2004/12/04 00:33:39 arnetheduck Exp $
  */

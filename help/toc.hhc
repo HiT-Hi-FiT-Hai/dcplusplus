@@ -93,8 +93,12 @@
 			<param name="Local" value="settings_appearance.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Logs and Sound">
-			<param name="Local" value="settings_logs_and_sound.html">
+			<param name="Name" value="Colors and sounds">
+			<param name="Local" value="settings_colors_and_sounds.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Logs">
+			<param name="Local" value="settings_logs.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Advanced">

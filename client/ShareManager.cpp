@@ -116,7 +116,7 @@ ShareManager::Directory::~Directory() {
 }
 
 string ShareManager::translateFileName(const string& aFile, bool adc) throw(ShareException) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(aFile == "MyList.DcLst") {
 		generateNmdcList();
 		return getListFile();
@@ -160,7 +160,7 @@ string ShareManager::translateFileName(const string& aFile, bool adc) throw(Shar
 		
 		string aDir = file.substr(0, i);
 
-		RLock l(cs);
+		RLock<> l(cs);
 		StringPairIter j = lookupVirtual(aDir);
 		if(j == virtualMap.end()) {
 			throw ShareException("File Not Available");
@@ -225,7 +225,7 @@ string ShareManager::validateVirtual(const string& aVirt) {
 }
 
 void ShareManager::load(SimpleXML* aXml) {
-	WLock l(cs);
+	WLock<> l(cs);
 
 	if(aXml->findChild("Share")) {
 		aXml->stepIn();
@@ -259,7 +259,7 @@ void ShareManager::load(SimpleXML* aXml) {
 }
 
 void ShareManager::save(SimpleXML* aXml) {
-	RLock l(cs);
+	RLock<> l(cs);
 	
 	aXml->addTag("Share");
 	aXml->stepIn();
@@ -288,7 +288,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 
 	Directory* dp = NULL;
 	{
-		RLock l(cs);
+		RLock<> l(cs);
 
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 			if(Util::strnicmp(d, i->first, i->first.length()) == 0) {
@@ -309,7 +309,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 	dp->setName(vName);
 
 	{
-		WLock l(cs);
+		WLock<> l(cs);
 		addTree(d, dp);
 
 		directories[d] = dp;
@@ -319,7 +319,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 }
 
 void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh) {
-	WLock l(cs);
+	WLock<> l(cs);
 
 	string d(aDirectory);
 
@@ -347,7 +347,7 @@ void ShareManager::removeDirectory(const string& aDirectory, bool duringRefresh)
 
 void ShareManager::renameDirectory(const string& oName, const string& nName) throw(ShareException) {
 	StringPairIter i;
-	WLock l(cs);
+	WLock<> l(cs);
 	//Find the virtual name
 	i = lookupVirtual(oName);
 	if (lookupVirtual(nName) != virtualMap.end()) {
@@ -369,7 +369,7 @@ void ShareManager::renameDirectory(const string& oName, const string& nName) thr
 }
 
 int64_t ShareManager::getShareSize(const string& aDir) throw() {
-	RLock l(cs);
+	RLock<> l(cs);
 	dcassert(aDir.size()>0);
 	Directory::MapIter i = directories.find(aDir);
 
@@ -381,7 +381,7 @@ int64_t ShareManager::getShareSize(const string& aDir) throw() {
 }
 
 int64_t ShareManager::getShareSize() throw() {
-	RLock l(cs);
+	RLock<> l(cs);
 	int64_t tmp = 0;
 	for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
 		tmp += i->second->getSize();
@@ -668,7 +668,7 @@ int ShareManager::run() {
 			StringPairList dirs;
 			Directory::Map newDirs;
 			{
-				RLock l(cs);
+				RLock<> l(cs);
 				dirs = virtualMap;
 			}
 
@@ -679,7 +679,7 @@ int ShareManager::run() {
 			}
 
 			{
-				WLock l(cs);
+				WLock<> l(cs);
 				StringPairList dirs = virtualMap;
 				for(StringPairIter i = dirs.begin(); i != dirs.end(); ++i) {
 					removeDirectory(i->second, true);
@@ -1039,7 +1039,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, StringSearch:
 }
 
 void ShareManager::search(SearchResult::List& results, const string& aString, int aSearchType, int64_t aSize, int aFileType, Client* aClient, StringList::size_type maxResults) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(aFileType == SearchManager::TYPE_TTH) {
 		if(aString.compare(0, 4, "TTH:") == 0) {
 			TTHValue tth(aString.substr(4));
@@ -1183,7 +1183,7 @@ void ShareManager::Directory::search(SearchResult::List& aResults, AdcSearch& aS
 void ShareManager::search(SearchResult::List& results, const StringList& params, Client* aClient, StringList::size_type maxResults) {
 	AdcSearch srch(params);	
 
-	RLock l(cs);
+	RLock<> l(cs);
 
 	if(srch.hasRoot) {
 		HashFileIter i = tthIndex.find(&srch.root);
@@ -1232,7 +1232,7 @@ ShareManager::Directory* ShareManager::getDirectory(const string& fname) {
 void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 	if(BOOLSETTING(ADD_FINISHED_INSTANTLY)) {
 		// Check if finished download is supposed to be shared
-		WLock l(cs);
+		WLock<> l(cs);
 		const string& n = d->getTarget();
 		for(Directory::MapIter i = directories.begin(); i != directories.end(); i++) {
 			if(Util::strnicmp(i->first, n, i->first.size()) == 0 && n[i->first.size()] == PATH_SEPARATOR) {
@@ -1250,7 +1250,7 @@ void ShareManager::on(DownloadManagerListener::Complete, Download* d) throw() {
 }
 
 void ShareManager::on(HashManagerListener::TTHDone, const string& fname, const TTHValue& root) throw() {
-	WLock l(cs);
+	WLock<> l(cs);
 	Directory* d = getDirectory(fname);
 	if(d != NULL) {
         Directory::File::Iter i = d->findFile(Util::getFileName(fname));
@@ -1286,6 +1286,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.116 2004/11/24 17:00:44 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.117 2004/12/04 00:33:38 arnetheduck Exp $
  */
 

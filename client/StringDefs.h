@@ -339,6 +339,7 @@ enum Strings { // @DontAdd
 	SETTINGS_ADVANCED_SETTINGS, // "Advanced settings"
 	SETTINGS_ANTI_FRAG, // "Use antifragmentation method for downloads"
 	SETTINGS_APPEARANCE, // "Appearance"
+	SETTINGS_APPEARANCE2, // "Colors and sounds"
 	SETTINGS_AUTO_AWAY, // "Auto-away on minimize (and back on restore)"
 	SETTINGS_AUTO_FOLLOW, // "Automatically follow redirects"
 	SETTINGS_AUTO_KICK, // "Automatically disconnect users who leave the hub (does not disconnect when hub goes down / you leave it)"

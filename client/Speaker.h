@@ -27,8 +27,8 @@ class Speaker {
 	typedef typename ListenerList::iterator ListenerIter;
 
 public:
-	Speaker() { };
-	virtual ~Speaker() { };
+	Speaker() throw() { };
+	virtual ~Speaker() throw() { };
 
 	template<typename T0>
 	void fire(T0 type) throw() {
@@ -101,15 +101,16 @@ public:
 
 	void removeListener(Listener* aListener) {
 		Lock l(listenerCS);
-		ListenerIter i = find(listeners.begin(), listeners.end(), aListener);
-		if(i != listeners.end())
-			listeners.erase(i);
+		ListenerIter it = find(listeners.begin(), listeners.end(), aListener);
+		if(it != listeners.end())
+			listeners.erase(it);
 	}
 
 	void removeListeners() {
 		Lock l(listenerCS);
 		listeners.clear();
 	}
+	
 protected:
 	ListenerList listeners;
 	ListenerList tmp;
@@ -119,5 +120,5 @@ protected:
 #endif // SPEAKER_H
 /**
  * @file
- * $Id: Speaker.h,v 1.4 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: Speaker.h,v 1.5 2004/12/04 00:33:39 arnetheduck Exp $
  */

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
-#define AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_
+#ifndef CRITICALSECTION_H
+#define CRITICALSECTION_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -70,13 +70,13 @@ private:
 };
 
 /**
-* A fast, non-recursive and unfair implementation of the Critical Section.
-* It is meant to be used in situations where the risk for lock conflict is very low, 
-* i e locks that are held for a very short time. The lock is _not_ recursive, i e if 
-* the same thread will try to grab the lock it'll hang in a never-ending loop. The lock
-* is not fair, i e the first to try to enter a locked lock is not guaranteed to be the
-* first to get it when it's freed...
-*/
+ * A fast, non-recursive and unfair implementation of the Critical Section.
+ * It is meant to be used in situations where the risk for lock conflict is very low, 
+ * i e locks that are held for a very short time. The lock is _not_ recursive, i e if 
+ * the same thread will try to grab the lock it'll hang in a never-ending loop. The lock
+ * is not fair, i e the first to try to enter a locked lock is not guaranteed to be the
+ * first to get it when it's freed...
+ */
 class FastCriticalSection {
 public:
 #ifdef _WIN32
@@ -108,21 +108,22 @@ private:
 };
 
 template<class T>
-class SimpleLock {
+class LockBase {
 public:
-	SimpleLock(T& aCs) throw() : cs(aCs)  { cs.enter(); };
-	~SimpleLock() throw() { cs.leave(); };
+	LockBase(T& aCs) throw() : cs(aCs)  { cs.enter(); };
+	~LockBase() throw() { cs.leave(); };
 private:
+	LockBase& operator=(const LockBase&);
 	T& cs;
 };
+typedef LockBase<CriticalSection> Lock;
+typedef LockBase<FastCriticalSection> FastLock;
 
-typedef SimpleLock<CriticalSection> Lock;
-typedef SimpleLock<FastCriticalSection> FastLock;
-
+template<class T = CriticalSection>
 class RWLock
 {
 public:
-	RWLock() throw() : readers(0) { }
+	RWLock() throw() : cs(), readers(0) { }
 	~RWLock() throw() { dcassert(readers==0); }
 
 	void enterRead() throw() {
@@ -140,7 +141,6 @@ public:
 		while(readers > 0) {
 			cs.leave();
 			Thread::yield();
-			
 			cs.enter();
 		}
 	}
@@ -148,29 +148,33 @@ public:
 		cs.leave();
 	}
 private:
-	CriticalSection cs;
+	T cs;
 	volatile long readers;
 };
 
+template<class T = CriticalSection>
 class RLock {
 public:
-	RLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterRead(); };
-	~RLock() throw() { cs.leaveRead(); };
+	RLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterRead(); };
+	~RLock() throw() { rwl.leaveRead(); };
 private:
-	RWLock& cs;
+	RLock& operator=(const RLock&);
+	RWLock<T>& rwl;
 };
 
+template<class T = CriticalSection>
 class WLock {
 public:
-	WLock(RWLock& aCs) throw() : cs(aCs)  { cs.enterWrite(); };
-	~WLock() throw() { cs.leaveWrite(); };
+	WLock(RWLock<T>& aRwl) throw() : rwl(aRwl)  { rwl.enterWrite(); };
+	~WLock() throw() { rwl.leaveWrite(); };
 private:
-	RWLock& cs;
+	WLock& operator=(const WLock&);
+	RWLock<T>& rwl;
 };
 
-#endif // !defined(AFX_CRITCALSECTION_H__1226AAB5_254F_4CBD_B384_5E8D3A23C346__INCLUDED_)
+#endif // CRITICALSECTION_H
 
 /**
  * @file
- * $Id: CriticalSection.h,v 1.25 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: CriticalSection.h,v 1.26 2004/12/04 00:33:39 arnetheduck Exp $
  */

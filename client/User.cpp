@@ -33,14 +33,14 @@ User::~User() throw() {
 }
 
 void User::connect() {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		client->connect(this);
 	}
 }
 
 const string& User::getClientNick() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		return client->getNick();
 	} else {
@@ -49,7 +49,7 @@ const string& User::getClientNick() const {
 }
 
 CID User::getClientCID() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		return client->getMe()->getCID();
 	} else {
@@ -58,14 +58,14 @@ CID User::getClientCID() const {
 }
 
 void User::updated(User::Ptr& aUser) {
-	RLock l(aUser->cs);
+	RLock<> l(aUser->cs);
 	if(aUser->client) {
 		aUser->client->updated(aUser);
 	}
 }
 
 const string& User::getClientName() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		return client->getName();
 	} else if(!getLastHubName().empty()) {
@@ -76,7 +76,7 @@ const string& User::getClientName() const {
 }
 
 string User::getClientAddressPort() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		return client->getAddressPort();
 	} else {
@@ -85,14 +85,14 @@ string User::getClientAddressPort() const {
 }
 
 void User::privateMessage(const string& aMsg) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		client->privateMessage(this, aMsg);
 	}
 }
 
 bool User::isClientOp() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		return client->getOp();
 	}
@@ -100,28 +100,28 @@ bool User::isClientOp() const {
 }
 
 void User::send(const string& aMsg) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		client->send(aMsg);
 	}
 }
 
 void User::sendUserCmd(const string& aUserCmd) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		client->sendUserCmd(aUserCmd);
 	}
 }
 
 void User::clientMessage(const string& aMsg) {
-	RLock l(cs);
+	RLock<> l(cs);
 	if(client) {
 		client->hubMessage(aMsg);
 	}
 }
 
 void User::setClient(Client* aClient) { 
-	WLock l(cs); 
+	WLock<> l(cs); 
 	client = aClient; 
 	if(client == NULL) {
 		if (isSet(ONLINE) && isFavoriteUser())
@@ -149,23 +149,23 @@ void User::getParams(StringMap& ucParams) {
 
 // favorite user stuff
 void User::setFavoriteUser(FavoriteUser* aUser) {
-	WLock l(cs);
+	WLock<> l(cs);
 	delete favoriteUser;
 	favoriteUser = aUser;
 }
 
 bool User::isFavoriteUser() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	return (favoriteUser != NULL);
 }
 
 bool User::getFavoriteGrantSlot() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	return (favoriteUser != NULL && favoriteUser->isSet(FavoriteUser::FLAG_GRANTSLOT));
 }
 
 void User::setFavoriteGrantSlot(bool grant) {
-	WLock l(cs);
+	WLock<> l(cs);
 	if (favoriteUser == NULL)
 		return;
 
@@ -176,7 +176,7 @@ void User::setFavoriteGrantSlot(bool grant) {
 }
 
 void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
-	WLock l(cs);
+	WLock<> l(cs);
 	if (favoriteUser != NULL) {
 		if (anOfflineTime != 0)
 			favoriteUser->setLastSeen(anOfflineTime);
@@ -186,7 +186,7 @@ void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
 }
 
 u_int32_t User::getFavoriteLastSeen() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if (favoriteUser != NULL)
 		return favoriteUser->getLastSeen();
 	else
@@ -194,7 +194,7 @@ u_int32_t User::getFavoriteLastSeen() const {
 }
 
 const string& User::getUserDescription() const {
-	RLock l(cs);
+	RLock<> l(cs);
 	if (favoriteUser != NULL)
 		return favoriteUser->getDescription();
 	else
@@ -202,7 +202,7 @@ const string& User::getUserDescription() const {
 }
 
 void User::setUserDescription(const string& aDescription) {
-	WLock l(cs);
+	WLock<> l(cs);
 	if (favoriteUser != NULL)
 		favoriteUser->setDescription(aDescription);
 }
@@ -213,6 +213,6 @@ StringMap& User::clientEscapeParams(StringMap& sm) const {
 
 /**
  * @file
- * $Id: User.cpp,v 1.38 2004/11/22 00:13:30 arnetheduck Exp $
+ * $Id: User.cpp,v 1.39 2004/12/04 00:33:39 arnetheduck Exp $
  */
 

@@ -131,7 +131,7 @@ public:
 	GETSET(CID, cid, CID);
 	GETSET(int64_t, bytesShared, BytesShared);
 private:
-	mutable RWLock cs;
+	mutable RWLock<> cs;
 
 	User(const User&);
 	User& operator=(const User&);
@@ -144,5 +144,5 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.48 2004/11/22 00:13:29 arnetheduck Exp $
+ * $Id: User.h,v 1.49 2004/12/04 00:33:38 arnetheduck Exp $
  */

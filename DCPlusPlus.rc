@@ -273,6 +273,29 @@ EXSTYLE WS_EX_STATICEDGE
 CAPTION "Appearance"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
+    GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,9,261,75
+    CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,16,20,244,57
+    GROUPBOX        "Default away message",IDC_SETTINGS_DEFAULT_AWAY_MSG,7,
+                    87,165,32
+    EDITTEXT        IDC_DEFAULT_AWAY_MESSAGE,16,98,145,14,ES_AUTOHSCROLL
+    GROUPBOX        "Set timestamps",IDC_SETTINGS_TIME_STAMPS_FORMAT,174,87,
+                    96,32
+    EDITTEXT        IDC_TIME_STAMPS_FORMAT,180,98,80,15,ES_AUTOHSCROLL
+    GROUPBOX        "Language file",IDC_SETTINGS_LANGUAGE_FILE,7,120,261,32
+    EDITTEXT        IDC_LANGUAGE,16,131,188,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_BROWSE,210,131,50,14
+    LTEXT           "Note; most of these options require that you restart DC++",
+                    IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
+END
+
+IDD_APPEARANCE2PAGE DIALOGEX 0, 0, 275, 225
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_STATICEDGE
+CAPTION "Colors and sounds"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
     GROUPBOX        "Colors",IDC_SETTINGS_COLORS,7,7,261,50
     PUSHBUTTON      "Select &window color",IDC_SELWINCOLOR,16,17,82,14
     PUSHBUTTON      "Select &text style",IDC_SELTEXT,16,35,82,14
@@ -281,21 +304,15 @@ BEGIN
                     WS_BORDER | NOT WS_GROUP
     PUSHBUTTON      "Uploads",IDC_SETTINGS_UPLOAD_BAR_COLOR,209,17,51,14
     PUSHBUTTON      "Downloads",IDC_SETTINGS_DOWNLOAD_BAR_COLOR,209,35,51,14
-    GROUPBOX        "Options",IDC_SETTINGS_APPEARANCE_OPTIONS,7,57,261,75
-    CONTROL         "",IDC_APPEARANCE_BOOLEANS,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,16,68,244,57
-    GROUPBOX        "Default away message",IDC_SETTINGS_DEFAULT_AWAY_MSG,7,
-                    135,165,32
-    EDITTEXT        IDC_DEFAULT_AWAY_MESSAGE,16,145,145,14,ES_AUTOHSCROLL
-    GROUPBOX        "Set timestamps",IDC_SETTINGS_TIME_STAMPS_FORMAT,174,135,
-                    96,32
-    EDITTEXT        IDC_TIME_STAMPS_FORMAT,180,145,80,15,ES_AUTOHSCROLL
-    GROUPBOX        "Language file",IDC_SETTINGS_LANGUAGE_FILE,7,169,261,32
-    EDITTEXT        IDC_LANGUAGE,16,180,188,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Browse...",IDC_BROWSE,210,180,50,14
     LTEXT           "Note; most of these options require that you restart DC++",
-                    IDC_SETTINGS_REQUIRES_RESTART,7,210,253,8
+                    IDC_SETTINGS_REQUIRES_RESTART,7,209,253,8
+    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,62,264,42
+    CONTROL         "Make an annoying sound every time a private message is received",
+                    IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,74,246,10
+    CONTROL         "Make an annoying sound when a private message window is opened",
+                    IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,87,246,10
 END
 
 IDD_ADVANCED2PAGE DIALOGEX 0, 0, 275, 237
@@ -328,13 +345,6 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,18,153,240,10
     CONTROL         "Log status messages",IDC_SETTINGS_LOG_STATUS_MESSAGES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,165,240,10
-    GROUPBOX        "Sounds",IDC_SETTINGS_SOUNDS,6,186,264,42
-    CONTROL         "Make an annoying sound every time a private message is received",
-                    IDC_PRIVATE_MESSAGE_BEEP,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,198,246,10
-    CONTROL         "Make an annoying sound when a private message window is opened",
-                    IDC_PRIVATE_MESSAGE_BEEP_OPEN,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,210,246,10
 END
 
 IDD_USER_COMMAND DIALOGEX 0, 0, 195, 295

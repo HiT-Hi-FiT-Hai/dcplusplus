@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _EXCEPTION_H
-#define _EXCEPTION_H
+#ifndef EXCEPTION_H
+#define EXCEPTION_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -28,8 +28,8 @@ class Exception
 public:
 	Exception() { };
 	Exception(const string& aError) throw() : error(aError) { dcdrun(if(error.size()>0)) dcdebug("Thrown: %s\n", error.c_str()); };
-	virtual ~Exception() { };
-	virtual const string& getError() const { return error; };
+	virtual ~Exception() throw() { };
+	virtual const string& getError() const throw() { return error; };
 protected:
 	string error;
 };
@@ -40,7 +40,7 @@ protected:
 public:\
 	name() throw() : Exception(#name) { } \
 	name(const string& aError) throw() : Exception(#name ": " + aError) { } \
-	virtual ~name() { } \
+	virtual ~name() throw() { } \
 }
 
 #else // _DEBUG
@@ -48,15 +48,14 @@ public:\
 #define STANDARD_EXCEPTION(name) class name : public Exception { \
 public:\
 	name() throw() : Exception() { } \
-	name(const string& aError) throw() : Exception(aError) { }; \
-	virtual ~name() { }; \
+	name(const string& aError) throw() : Exception(aError) { } \
+	virtual ~name() throw() { } \
 }
 #endif
 
-#endif // _EXCEPTION_H
+#endif // EXCEPTION_H
 
 /**
  * @file
- * $Id: Exception.h,v 1.15 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: Exception.h,v 1.16 2004/12/04 00:33:38 arnetheduck Exp $
  */
-

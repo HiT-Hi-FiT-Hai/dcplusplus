@@ -37,9 +37,6 @@ PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_FORMAT2, ResourceManager::SETTINGS_FORMAT },
 	{ IDC_SETTINGS_FORMAT3, ResourceManager::SETTINGS_FORMAT },
 	{ IDC_SETTINGS_FORMAT4, ResourceManager::SETTINGS_FORMAT },
-	{ IDC_SETTINGS_SOUNDS, ResourceManager::SETTINGS_SOUNDS },
-	{ IDC_PRIVATE_MESSAGE_BEEP, ResourceManager::SETTINGS_PM_BEEP },
-	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, ResourceManager::SETTINGS_PM_BEEP_OPEN },
 	{ IDC_SETTINGS_LOG_STATUS_MESSAGES, ResourceManager::SETTINGS_LOG_STATUS_MESSAGES },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
@@ -51,8 +48,6 @@ PropPage::Item Advanced2Page::items[] = {
 	{ IDC_LOG_UPLOADS, SettingsManager::LOG_UPLOADS, PropPage::T_BOOL },
 	{ IDC_LOG_DIRECTORY, SettingsManager::LOG_DIRECTORY, PropPage::T_STR },
 	{ IDC_LOG_SYSTEM, SettingsManager::LOG_SYSTEM, PropPage::T_BOOL },
-	{ IDC_PRIVATE_MESSAGE_BEEP, SettingsManager::PRIVATE_MESSAGE_BEEP, PropPage::T_BOOL },
-	{ IDC_PRIVATE_MESSAGE_BEEP_OPEN, SettingsManager::PRIVATE_MESSAGE_BEEP_OPEN, PropPage::T_BOOL },
 	{ IDC_POST_DOWNLOAD, SettingsManager::LOG_FORMAT_POST_DOWNLOAD, PropPage::T_STR },
 	{ IDC_POST_UPLOAD, SettingsManager::LOG_FORMAT_POST_UPLOAD, PropPage::T_STR },
 	{ IDC_MAIN_CHAT, SettingsManager::LOG_FORMAT_MAIN_CHAT, PropPage::T_STR },
@@ -125,6 +120,6 @@ LRESULT Advanced2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.15 2004/10/17 12:51:31 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.16 2004/12/04 00:33:43 arnetheduck Exp $
  */
 

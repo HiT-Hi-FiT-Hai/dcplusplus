@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef APPEARANCEPAGE_H
-#define APPEARANCEPAGE_H
+#ifndef APPEARANCE2PAGE_H
+#define APPEARANCE2PAGE_H
 
 #if _MSC_VER > 1000
 #pragma once
@@ -27,27 +27,33 @@
 #include "PropPage.h"
 #include "ExListViewCtrl.h"
 
-class AppearancePage : public CPropertyPage<IDD_APPEARANCEPAGE>, public PropPage
+class Appearance2Page : public CPropertyPage<IDD_APPEARANCE2PAGE>, public PropPage
 {
 public:
-	AppearancePage(SettingsManager *s) : PropPage(s) { 
-		SetTitle(CTSTRING(SETTINGS_APPEARANCE));
+	Appearance2Page(SettingsManager *s) : PropPage(s) { 
+		SetTitle(CTSTRING(SETTINGS_APPEARANCE2));
 		m_psp.dwFlags |= PSP_HASHELP;
 	};
 
-	virtual ~AppearancePage();
+	virtual ~Appearance2Page();
 
-	BEGIN_MSG_MAP(AppearancePage)
+	BEGIN_MSG_MAP(Appearance2Page)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_HELP, onHelp)
-		COMMAND_ID_HANDLER(IDC_BROWSE, onBrowse)
+		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
+		COMMAND_ID_HANDLER(IDC_SELWINCOLOR, onClickedBackground)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_UPLOAD_BAR_COLOR, onPickColor)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_DOWNLOAD_BAR_COLOR, onPickColor)
 		NOTIFY_CODE_HANDLER_EX(PSN_HELP, onHelpInfo)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	
 	LRESULT onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onClickedBackground(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onPickColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onHelpInfo(LPNMHDR /*pnmh*/);
 
 	// Common PropPage interface
@@ -60,14 +66,12 @@ protected:
 
 	static Item items[];
 	static TextItem texts[];
-	static ListItem listItems[];
 
+	CStatic ctrlExample;
+	COLORREF fg, bg, upBar, downBar;
+	HBRUSH bgbrush;
+	HFONT fontObj;
 	LOGFONT font;
 };
 
-#endif //APPEARANCEPAGE_H
-
-/**
- * @file
- * $Id: AppearancePage.h,v 1.12 2004/12/04 00:33:42 arnetheduck Exp $
- */
+#endif //APPEARANCEPAGE2_H

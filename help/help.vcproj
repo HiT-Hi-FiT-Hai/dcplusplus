@@ -115,13 +115,16 @@
 				RelativePath=".\settings_general.html">
 			</File>
 			<File
-				RelativePath=".\settings_logs_and_sound.html">
+				RelativePath=".\settings_logs.html">
 			</File>
 			<File
 				RelativePath=".\settings_sharing.html">
 			</File>
 			<File
 				RelativePath=".\settings_usercommands.html">
+			</File>
+			<File
+				RelativePath=".\settings_colors_and_sounds.html">
 			</File>
 		</Filter>
 	</Files>

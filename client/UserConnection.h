@@ -286,7 +286,7 @@ public:
 
 	User::Ptr& getUser() { return user; };
 
-	string getRemoteIp() const { return socket->getRemoteIp(); }
+	string getRemoteIp() const { return socket->getIp(); }
 	Download* getDownload() { dcassert(isSet(FLAG_DOWNLOAD)); return download; };
 	void setDownload(Download* d) { dcassert(isSet(FLAG_DOWNLOAD)); download = d; };
 	Upload* getUpload() { dcassert(isSet(FLAG_UPLOAD)); return upload; };
@@ -388,6 +388,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.83 2004/11/29 23:21:31 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.84 2004/12/04 00:33:39 arnetheduck Exp $
  */
 
