@@ -331,6 +331,9 @@
 #define IDC_SETTINGS_PM_HISTORY         1280
 #define IDC_SEARCH_HISTORY_SPIN         1281
 #define IDC_PURGE                       1282
+#define IDC_SET_MINISLOT_SIZE           1283
+#define IDC_SETTINGS_TEXT_MINISLOT      1284
+#define IDC_SETTINGS_KB2                1285
 #define IDC_BROWSELIST                  3000
 #define IDC_REMOVE_SOURCE               3500
 #define IDC_PM                          4000
@@ -370,7 +373,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        242
 #define _APS_NEXT_COMMAND_VALUE         32789
-#define _APS_NEXT_CONTROL_VALUE         1282
+#define _APS_NEXT_CONTROL_VALUE         1286
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif

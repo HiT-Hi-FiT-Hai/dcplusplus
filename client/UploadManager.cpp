@@ -78,7 +78,7 @@ bool UploadManager::prepareFile(UserConnection* aSource, const string& aType, co
 
 				size = f->getSize();
 
-				free = userlist || (size <= (int64_t)(64 * 1024) );
+				free = userlist || (size <= (int64_t)(SETTING(SET_MINISLOT_SIZE) * 1024) );
 
 				if(aBytes == -1) {
 					aBytes = size - aStartPos;
@@ -419,5 +419,5 @@ void UploadManager::on(ClientManagerListener::UserUpdated, const User::Ptr& aUse
 
 /**
  * @file
- * $Id: UploadManager.cpp,v 1.88 2005/02/04 19:57:59 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.89 2005/02/05 12:52:50 arnetheduck Exp $
  */

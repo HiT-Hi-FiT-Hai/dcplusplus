@@ -61,7 +61,7 @@ const string SettingsManager::settingTags[] =
 	"ShowToolbar", "ShowTransferview", "PopunderPm", "PopunderFilelist", "MagnetAsk", "MagnetAction", "MagnetRegister",
 	"AddFinishedInstantly", "UseUPnP", "DontDLAlreadyShared", "UseCTRLForLineHistory", "ConfirmHubRemoval", 
 	"OpenNewWindow", "UDPPort", "SearchOnlyTTH", "ShowLastLinesLog", "ConfirmItemRemoval",
-	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", 
+	"AdvancedResume", "AdcDebug", "ToggleActiveWindow", "SearchHistory", "SetMinislotSize", 
 	"SENTRY",
 	// Int64
 	"TotalUpload", "TotalDownload",
@@ -194,6 +194,7 @@ SettingsManager::SettingsManager()
 	setDefault(ADC_DEBUG, false);
 	setDefault(TOGGLE_ACTIVE_WINDOW, true);
 	setDefault(SEARCH_HISTORY, 10);
+	setDefault(SET_MINISLOT_SIZE, 64);
 	
 #ifdef _WIN32
 	setDefault(MAIN_WINDOW_STATE, SW_SHOWNORMAL);
@@ -264,6 +265,9 @@ void SettingsManager::load(string const& aFileName)
 
 		if(CID(SETTING(CLIENT_ID)).isZero())
 			set(CLIENT_ID, CID::generate().toBase32());
+
+		if(SETTING(SET_MINISLOT_SIZE) < 64)
+			set(SET_MINISLOT_SIZE, 64);
 
 #ifdef _DEBUG
 		set(CLIENT_ID, CID::generate().toBase32());
@@ -339,6 +343,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.114 2005/02/04 14:40:58 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.115 2005/02/05 12:53:10 arnetheduck Exp $
  */
 

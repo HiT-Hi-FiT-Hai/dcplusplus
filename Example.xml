@@ -450,6 +450,7 @@
 		<String Name="SettingsTabCompletion">Tab completion of nicks in chat</String>
 		<String Name="SettingsTabDirty">Set hub/PM/Search tab bold when contents change</String>
 		<String Name="SettingsTcpPort">TCP Port</String>
+		<String Name="SettingsTextMinislot">Mini slot size</String>
 		<String Name="SettingsTimeStamps">Show timestamps in chat by default</String>
 		<String Name="SettingsTimeStampsFormat">Set timestamps</String>
 		<String Name="SettingsToggleActiveWindow">Toggle window when selecting an active tab</String>

@@ -1,4 +1,7 @@
-﻿-- 0.670 2005-02-04 --
+﻿-- 0.671 --
+* Added possibility to set minislot size (thanks ullner)
+
+-- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)
 * Fixed a minor crash log output address issue
 * Split off color and sound to a new page (thanks ullner)

@@ -454,6 +454,7 @@ enum Strings { // @DontAdd
 	SETTINGS_TAB_COMPLETION, // "Tab completion of nicks in chat"
 	SETTINGS_TAB_DIRTY, // "Set hub/PM/Search tab bold when contents change"
 	SETTINGS_TCP_PORT, // "TCP Port"
+	SETTINGS_TEXT_MINISLOT, // "Mini slot size"
 	SETTINGS_TIME_STAMPS, // "Show timestamps in chat by default"
 	SETTINGS_TIME_STAMPS_FORMAT, // "Set timestamps"
 	SETTINGS_TOGGLE_ACTIVE_WINDOW, // "Toggle window when selecting an active tab"
