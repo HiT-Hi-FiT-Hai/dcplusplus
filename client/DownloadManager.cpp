@@ -239,8 +239,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(d->isSet(Download::FLAG_USER_LIST)) {
 		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
-			if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET))
-				d->setFlag(Download::FLAG_UTF8);
+			d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
@@ -375,10 +374,10 @@ public:
 	}
 
 	virtual size_t write(const void* b, size_t len) throw(FileException) {
-		u_int8_t* wb = (u_int8_t*)b;
 		if(buf != NULL) {
-			size_t n = len < (bufSize - pos) ? len : bufSize - pos;
+			size_t n = min(len, bufSize - pos);
 
+			u_int8_t* wb = (u_int8_t*)b;
 			if(memcmp(buf + pos, wb, n) != 0) {
 				throw RollbackException(STRING(ROLLBACK_INCONSISTENCY));
 			}
@@ -388,7 +387,7 @@ public:
 				buf = NULL;
 			}
 		}
-		return s->write(wb, len);
+		return s->write(b, len);
 	}
 
 private:
@@ -557,7 +556,7 @@ void DownloadManager::handleEndData(UserConnection* aSource) {
 		d->getFile()->flush();
 		delete d->getFile();
 		d->setFile(NULL);
-
+		
 		int64_t bl = 1024;
 		while(bl * (int64_t)d->getTigerTree().getLeaves().size() < d->getTigerTree().getFileSize())
 			bl *= 2;
@@ -887,5 +886,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.148 2005/03/14 10:37:23 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.149 2005/03/19 09:02:45 arnetheduck Exp $
  */

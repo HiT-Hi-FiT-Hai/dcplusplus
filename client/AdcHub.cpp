@@ -142,7 +142,7 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		return;
 
 	User::Ptr p = cidMap[c.getFrom()];
-	if(!p || p == getMe())
+	if(!p)
 		return;
 	string pmFrom;
 	if(c.getParam("PM", 1, pmFrom)) { // add PM<group-cid> as well
@@ -150,6 +150,9 @@ void AdcHub::handle(AdcCommand::MSG, AdcCommand& c) throw() {
 		if(!pm)
 			return;
 
+		if(pmFrom == getMe()) {
+			return;
+		}
 		string msg = '<' + p->getNick() + "> " + c.getParam(0);
 		fire(ClientListener::PrivateMessage(), this, pm, msg);
 	} else {
@@ -425,5 +428,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.43 2005/03/14 10:37:22 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.44 2005/03/19 09:02:45 arnetheduck Exp $
  */

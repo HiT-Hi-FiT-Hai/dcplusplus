@@ -37,7 +37,7 @@ const string SettingsManager::settingTags[] =
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
 	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "NotepadText", "LogFormatPostDownload",
 	"LogFormatPostUpload", "LogFormatMainChat", "LogFormatPrivateChat", "FinishedOrder", "FinishedWidths",	
-	"TempDownloadDirectory", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
+	"TempDownloadDirectory", "BindAddress", "SocksServer", "SocksUser", "SocksPassword", "ConfigVersion",
 	"DefaultAwayMessage", "TimeStampsFormat", "ADLSearchFrameOrder", "ADLSearchFrameWidths", 
 	"FinishedULWidths", "FinishedULOrder", "CID", "SpyFrameWidths", "SpyFrameOrder", "LogFileMainChat", 
 	"LogFilePrivateChat", "LogFileStatus", "LogFileUpload", "LogFileDownload", "LogFileSystem", 
@@ -139,6 +139,7 @@ SettingsManager::SettingsManager()
 	setDefault(URL_HANDLER, false);
 	setDefault(AUTO_AWAY, false);
 	setDefault(SMALL_SEND_BUFFER, false);
+	setDefault(BIND_ADDRESS, "0.0.0.0");
 	setDefault(SOCKS_PORT, 1080);
 	setDefault(SOCKS_RESOLVE, 1);
 	setDefault(CONFIG_VERSION, "0.181");		// 0.181 is the last version missing configversion
@@ -344,6 +345,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file
- * $Id: SettingsManager.cpp,v 1.116 2005/03/12 13:36:34 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.117 2005/03/19 09:02:45 arnetheduck Exp $
  */
 

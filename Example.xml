@@ -353,6 +353,7 @@
 		<String Name="SettingsAutoSearch">Automatically search for alternative download locations</String>
 		<String Name="SettingsAutoSearchAutoMatch">Automatically match queue for auto search hits</String>
 		<String Name="SettingsAutoUpdateList">Automatically refresh share list every hour</String>
+		<String Name="SettingsBindAddress">Bind address</String>
 		<String Name="SettingsChange">&amp;Change</String>
 		<String Name="SettingsClearSearch">Clear search box after each search</String>
 		<String Name="SettingsColors">Colors</String>

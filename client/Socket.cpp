@@ -87,7 +87,7 @@ string SocketException::errorToString(int aError) throw() {
 	}
 }
 
-void Socket::create(int aType /* = TYPE_TCP */) throw(SocketException) {
+void Socket::create(int aType /* = TYPE_TCP */, bool server /* = false */) throw(SocketException) {
 	if(sock != INVALID_SOCKET)
 		Socket::disconnect();
 
@@ -101,6 +101,15 @@ void Socket::create(int aType /* = TYPE_TCP */) throw(SocketException) {
 	default:
 		dcasserta(0);
 	}
+	// Multiple interface fix
+	if(!server && SETTING(BIND_ADDRESS) != "0.0.0.0") {
+		sockaddr_in sock_addr;
+		sock_addr.sin_family = AF_INET;
+		sock_addr.sin_port = htons(0); // Let stack choose our port
+		sock_addr.sin_addr.s_addr = inet_addr(SETTING(BIND_ADDRESS).c_str());
+		::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr));
+		// If it fails, we'll get normal INADDR binding instead...
+	}	
 	type = aType;
 }
 
@@ -114,8 +123,12 @@ void Socket::bind(short aPort) throw (SocketException){
 		
 	sock_addr.sin_family = AF_INET;
 	sock_addr.sin_port = htons(aPort);
+	// Multiple interface fix
+	sock_addr.sin_addr.s_addr = inet_addr(SETTING(BIND_ADDRESS).c_str());
+	if(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)) == SOCKET_ERROR) {
 	sock_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     checksockerr(::bind(sock, (sockaddr *)&sock_addr, sizeof(sock_addr)));
+	}
 	connected = true;
 }
 
@@ -571,5 +584,5 @@ void Socket::disconnect() throw() {
 
 /**
  * @file
- * $Id: Socket.cpp,v 1.63 2005/01/18 15:53:31 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.64 2005/03/19 09:02:45 arnetheduck Exp $
  */

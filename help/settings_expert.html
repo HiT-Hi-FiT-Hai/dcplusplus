@@ -33,8 +33,16 @@ log and displayed when a new PM is received.&nbsp; (default: 0)</dd>
   <dt><a name="minislotsize">Mini slot size</dt>
   <dd>Define the size of the <a href=settings_sharing.html#slots>mini slot</a>. Can not be defined as
  lower than 64 KiB. (default: 64 KiB)</dd>
-    </dl>
-  </dd>
+  <dt>Bind address</dt>
+  <dd>This is an advanced setting that allows you to set a bind address
+for DC++ to use. Normally this is 0.0.0.0 and most users
+do not want to change this. If you however have two network interfaces
+connected to the internet, it can be useful to change this. Set one of
+your local IP addresses here, DC++ will then only use that particular
+network interface for all connections. If binding fails, it will do so
+silently and INADDR_ANY will be used instead. If you experience connection
+problems make sure that this is set to default. (default: 0.0.0.0)<br>
+This feature requires a restart to be fully effective.</dd>
 </dl>
 </body>
 </html>

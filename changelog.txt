@@ -17,6 +17,8 @@
 * Basic ADC searches now work
 * Basic ADC pms now work
 * Basic ADC transfers now work
+* Added option to specify bind address for sockets (thanks sed)
+
 
 -- 0.670 2005-02-04 --
 * Fixed an issue with international formats of float numbers (also fixes UDP port setting)

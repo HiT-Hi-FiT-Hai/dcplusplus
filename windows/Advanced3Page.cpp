@@ -40,6 +40,7 @@ PropPage::TextItem Advanced3Page::texts[] = {
 	{ IDC_SETTINGS_SEARCH_HISTORY, ResourceManager::SETTINGS_SEARCH_HISTORY },
 	{ IDC_SETTINGS_TEXT_MINISLOT, ResourceManager::SETTINGS_TEXT_MINISLOT }, 
 	{ IDC_SETTINGS_KB2, ResourceManager::KiB },
+	{ IDC_SETTINGS_BIND_ADDRESS, ResourceManager::SETTINGS_BIND_ADDRESS },
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -51,6 +52,7 @@ PropPage::Item Advanced3Page::items[] = {
 	{ IDC_SHOW_LAST_LINES_LOG, SettingsManager::SHOW_LAST_LINES_LOG, PropPage::T_INT },
 	{ IDC_SEARCH_HISTORY, SettingsManager::SEARCH_HISTORY, PropPage::T_INT },
 	{ IDC_SET_MINISLOT_SIZE, SettingsManager::SET_MINISLOT_SIZE, PropPage::T_INT },
+	{ IDC_BIND_ADDRESS, SettingsManager::BIND_ADDRESS, PropPage::T_STR },
 	{ 0, 0, PropPage::T_END }
 };
 

@@ -20,6 +20,7 @@
 #include "DCPlusPlus.h"
 
 #include "ServerSocket.h"
+#include "SettingsManager.h"
 
 #define MAX_CONNECTIONS 20
 
@@ -38,9 +39,12 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 
 	tcpaddr.sin_family = AF_INET;
 	tcpaddr.sin_port = htons(aPort);
-	tcpaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	
-	if(bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)) == SOCKET_ERROR) {
+	// Multiple interfaces fix
+	tcpaddr.sin_addr.s_addr = inet_addr(SETTING(BIND_ADDRESS).c_str());
+	if(::bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)) == SOCKET_ERROR) {
+		tcpaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+		if(::bind(sock, (sockaddr *)&tcpaddr, sizeof(tcpaddr)) == SOCKET_ERROR)
 		throw SocketException(errno);
 	}
 	if(listen(sock, MAX_CONNECTIONS) == SOCKET_ERROR) {
@@ -50,6 +54,6 @@ void ServerSocket::waitForConnections(short aPort) throw(SocketException) {
 
 /**
  * @file
- * $Id: ServerSocket.cpp,v 1.15 2005/01/05 19:30:27 arnetheduck Exp $
+ * $Id: ServerSocket.cpp,v 1.16 2005/03/19 09:02:45 arnetheduck Exp $
  */
 

@@ -357,6 +357,7 @@ enum Strings { // @DontAdd
 	SETTINGS_AUTO_SEARCH, // "Automatically search for alternative download locations"
 	SETTINGS_AUTO_SEARCH_AUTO_MATCH, // "Automatically match queue for auto search hits"
 	SETTINGS_AUTO_UPDATE_LIST, // "Automatically refresh share list every hour"
+	SETTINGS_BIND_ADDRESS, // "Bind address"
 	SETTINGS_CHANGE, // "&Change"
 	SETTINGS_CLEAR_SEARCH, // "Clear search box after each search"
 	SETTINGS_COLORS, // "Colors"
