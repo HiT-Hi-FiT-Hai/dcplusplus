@@ -61,7 +61,7 @@ Only once: When selecting multiple items in search, select this to avoid command
 In the parameters, you can use %[xxx] variables and date/time specifiers (%Y, %m, ...). The following are available:\r\n\
 %[mynick]: your own nick\r\n\
 %[nick]: the users nick (user && search context only)\r\n\
-%[tab]: user tag (user && search context only)\r\n\
+%[tag]: user tag (user && search context only)\r\n\
 %[description]: user description (user && search context only)\r\n\
 %[email]: user email (user && search context only)\r\n\
 %[share]: user shared bytes (exact) (user && search context only)\r\n\
@@ -147,5 +147,5 @@ void CommandDlg::updateContext() {
 
 /**
 * @file
-* $Id: CommandDlg.cpp,v 1.3 2003/11/13 15:32:16 arnetheduck Exp $
+* $Id: CommandDlg.cpp,v 1.4 2003/11/19 19:50:45 arnetheduck Exp $
 */

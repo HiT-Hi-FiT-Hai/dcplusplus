@@ -109,6 +109,17 @@ adler32 check of the transferred data.
 
 --------------------------------------------------------------------
 
+Feature: MiniSlots
+
+Usage: This allows the other client to use a free slot for small files / 
+file list. $Supports is needed because nmdc closes the file list browser
+when the connection is broken, which it becomes when the client on the
+other side tries to download its first file and fails because it has no
+real slot (there were lots of nmdc users bitching about this...).
+
+--------------------------------------------------------------------
+
+
 *** Client-Hub communication ***
 
 Feature: Supports

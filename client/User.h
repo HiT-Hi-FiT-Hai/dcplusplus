@@ -100,6 +100,9 @@ public:
 	bool isFavoriteUser() const;
 	bool getFavoriteGrantSlot() const;
 	void setFavoriteGrantSlot(bool grant);
+	void setFavoriteLastSeen(u_int32_t anOfflineTime = 0);
+	u_int32_t getFavoriteLastSeen() const;
+
 
 	static void updated(User::Ptr& aUser);
 	
@@ -123,6 +126,6 @@ private:
 
 /**
  * @file
- * $Id: User.h,v 1.33 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: User.h,v 1.34 2003/11/19 19:50:44 arnetheduck Exp $
  */
 

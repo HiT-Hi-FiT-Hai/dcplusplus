@@ -115,7 +115,7 @@ static QueueItem* findCandidate(QueueItem::StringIter start, QueueItem::StringIt
 		if(q->getPriority() == QueueItem::PAUSED)
 			continue;
 		// Check that we have a search string
-		if(!BOOLSETTING(AUTO_SEARCH_AUTO_STRING) || q->getSearchString().empty())
+		if(!BOOLSETTING(AUTO_SEARCH_AUTO_STRING) && q->getSearchString().empty())
 			continue;
 		// Did we search for it recently?
         if(find(recent.begin(), recent.end(), q->getSearchString()) != recent.end())
@@ -1224,5 +1224,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.57 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.58 2003/11/19 19:50:44 arnetheduck Exp $
  */

@@ -26,9 +26,9 @@
 #include "../client/StringTokenizer.h"
 #include "../client/QueueManager.h"
 
-int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_GRANT_SLOT };
-int UsersFrame::columnSizes[] = { 200, 150, 300, 100 };
-static ResourceManager::Strings columnNames[] = { ResourceManager::NICK, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::GRANT_EXTRA_SLOT };
+int UsersFrame::columnIndexes[] = { COLUMN_NICK, COLUMN_STATUS, COLUMN_HUB, COLUMN_SEEN };
+int UsersFrame::columnSizes[] = { 200, 150, 300, 125 };
+static ResourceManager::Strings columnNames[] = { ResourceManager::AUTO_GRANT, ResourceManager::STATUS, ResourceManager::LAST_HUB, ResourceManager::LAST_SEEN };
 
 LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
@@ -39,9 +39,9 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS , WS_EX_CLIENTEDGE, IDC_USERS);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
+		ctrlUsers.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES);
 	} else {
-		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP);
+		ctrlUsers.SetExtendedListViewStyle(LVS_EX_HEADERDRAGDROP | LVS_EX_CHECKBOXES);
 	}
 	
 	ctrlUsers.SetBkColor(WinUtil::bgColor);
@@ -75,6 +75,8 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	m_hMenu = WinUtil::mainMenu;
 
+	startup = false;
+
 	bHandled = FALSE;
 	return TRUE;
 
@@ -88,6 +90,16 @@ LRESULT UsersFrame::onRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
+LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMITEMACTIVATE* l = (NMITEMACTIVATE*)pnmh;
+	if(!startup && l->iItem != -1 && ((l->uNewState & LVIS_STATEIMAGEMASK) != (l->uOldState & LVIS_STATEIMAGEMASK))) {
+		User::Ptr &f = *(User::Ptr *)ctrlUsers.GetItemData(l->iItem);
+		f->setFavoriteGrantSlot(ctrlUsers.GetCheckState(l->iItem) != FALSE);
+		HubManager::getInstance()->save();
+	}
+	return 0;
+} 
+
 void UsersFrame::addUser(const User::Ptr& aUser) {
 	dcassert(ctrlUsers.find(aUser->getNick()) == -1);
 
@@ -99,8 +111,13 @@ void UsersFrame::addUser(const User::Ptr& aUser) {
 	} else {
 		l.push_back(aUser->getClientName() + " (" + aUser->getLastHubAddress() + ")");
 	}
-	l.push_back(aUser->getFavoriteGrantSlot() ? STRING(YES) : STRING(NO));
-	ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
+	if (!aUser->isOnline())
+		l.push_back(Util::formatTime("%Y-%m-%d %H:%M", aUser->getFavoriteLastSeen()));
+	else
+		l.push_back("");
+	bool b = aUser->getFavoriteGrantSlot();
+	int i =  ctrlUsers.insert(l, 0, (LPARAM)new UserInfo(aUser));
+	ctrlUsers.SetCheckState(i, b);
 }
 
 void UsersFrame::updateUser(const User::Ptr& aUser) {
@@ -109,15 +126,19 @@ void UsersFrame::updateUser(const User::Ptr& aUser) {
 	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
 	ctrlUsers.SetItemText(i, 1, aUser->isOnline() ? CSTRING(ONLINE) : CSTRING(OFFLINE) );
 	ctrlUsers.SetItemText(i, 2, (aUser->getLastHubName() + " (" + aUser->getLastHubAddress() + ")").c_str());
-	ctrlUsers.SetItemText(i, 3, aUser->getFavoriteGrantSlot() ? CSTRING(YES) : CSTRING(NO));
+	if (!aUser->isOnline())
+		ctrlUsers.SetItemText(i, 3, Util::formatTime("%Y-%m-%d %H:%M", aUser->getFavoriteLastSeen()).c_str());
+	else
+		ctrlUsers.SetItemText(i, 3, "");
 }
 
 void UsersFrame::removeUser(const User::Ptr& aUser) {
 	int i = ctrlUsers.find(aUser->getNick());
 	dcassert(i != -1);
 	dcassert( ((UserInfo*)ctrlUsers.GetItemData(i))->user == aUser );
-	delete (UserInfo*)ctrlUsers.GetItemData(i);
+	UserInfo *ui = (UserInfo*)ctrlUsers.GetItemData(i);
 	ctrlUsers.DeleteItem(i);
+	delete ui;
 }
 
 LRESULT UsersFrame::onGrantSlot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -186,6 +207,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file
- * $Id: UsersFrame.cpp,v 1.15 2003/11/07 00:42:41 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.16 2003/11/19 19:50:45 arnetheduck Exp $
  */
 

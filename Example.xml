@@ -20,6 +20,7 @@
 		<String Name="AtMost">At most</String>
 		<String Name="Audio">Audio</String>
 		<String Name="AutoConnect">Auto connect / Name</String>
+		<String Name="AutoGrant">Auto grant slot / Nick</String>
 		<String Name="Average">Average/s: </String>
 		<String Name="Away">AWAY</String>
 		<String Name="AwayModeOff">Away mode off</String>
@@ -128,6 +129,7 @@
 		<String Name="KickUser">Kick user(s)</String>
 		<String Name="LargerTargetFileExists">A file of equal or larger size already exists at the target location</String>
 		<String Name="LastHub">Hub (last seen on if offline)</String>
+		<String Name="LastSeen">Time last seen</String>
 		<String Name="Loading">Loading DC++, please wait...</String>
 		<String Name="Low">Low</String>
 		<String Name="Lowest">Lowest</String>

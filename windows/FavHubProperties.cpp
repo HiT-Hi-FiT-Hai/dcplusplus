@@ -62,11 +62,11 @@ LRESULT FavHubProperties::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 		entry->setDescription(buf);
 		GetDlgItemText(IDC_HUBADDR, buf, 256);
 		entry->setServer(buf);
-		GetDlgItemText(IDC_HUBNICK, buf, 35);
+		GetDlgItemText(IDC_HUBNICK, buf, 256);
 		entry->setNick(buf);
 		GetDlgItemText(IDC_HUBPASS, buf, 256);
 		entry->setPassword(buf);
-		GetDlgItemText(IDC_HUBUSERDESCR, buf, 35);
+		GetDlgItemText(IDC_HUBUSERDESCR, buf, 256);
 		entry->setUserDescription(buf);
 		HubManager::getInstance()->save();
 	}
@@ -110,5 +110,5 @@ LRESULT FavHubProperties::OnTextChanged(WORD /*wNotifyCode*/, WORD wID, HWND hWn
 
 /**
  * @file
- * $Id: FavHubProperties.cpp,v 1.6 2003/05/13 11:34:07 arnetheduck Exp $
+ * $Id: FavHubProperties.cpp,v 1.7 2003/11/19 19:50:45 arnetheduck Exp $
  */

@@ -166,7 +166,7 @@ void ShareManager::addDirectory(const string& aDirectory) throw(ShareException) 
 	if(aDirectory.size() == 0) {
 		throw ShareException(STRING(NO_DIRECTORY_SPECIFIED));
 	}
-	if(Util::stricmp(SETTING(TEMP_DOWNLOAD_DIRECTORY), aDirectory)) {
+	if(Util::stricmp(SETTING(TEMP_DOWNLOAD_DIRECTORY), aDirectory) == 0) {
 		throw ShareException(STRING(DONT_SHARE_TEMP_DIRECTORY));
 	}
 	{
@@ -732,6 +732,6 @@ void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) th
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.63 2003/11/19 15:07:58 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.64 2003/11/19 19:50:44 arnetheduck Exp $
  */
 

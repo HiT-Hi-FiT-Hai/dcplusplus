@@ -33,7 +33,7 @@ class UsersFrame : public MDITabChildWindowImpl<UsersFrame>, public StaticFrame<
 	private HubManagerListener, private ClientManagerListener {
 public:
 	
-	UsersFrame() : closed(false) { };
+	UsersFrame() : closed(false), startup(true) { };
 	virtual ~UsersFrame() { };
 
 	DECLARE_FRAME_WND_CLASS_EX("UsersFrame", IDR_USERS, 0, COLOR_3DFACE);
@@ -54,6 +54,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_GRANTSLOT, onGrantSlot)
 		NOTIFY_HANDLER(IDC_USERS, LVN_COLUMNCLICK, onColumnClickHublist)
+		NOTIFY_HANDLER(IDC_USERS, LVN_ITEMCHANGED, onItemChanged)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 		
@@ -63,6 +64,7 @@ public:
 	LRESULT onPrivateMessage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onGetList(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onGrantSlot(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT UsersFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
 		if(wParam == USER_UPDATED) {
@@ -133,7 +135,7 @@ private:
 		COLUMN_NICK = COLUMN_FIRST,
 		COLUMN_STATUS,
 		COLUMN_HUB,
-		COLUMN_GRANT_SLOT,
+		COLUMN_SEEN,
 		COLUMN_LAST
 	};
 
@@ -153,6 +155,7 @@ private:
 
 	bool closed;
 	
+	bool startup;
 	static int columnSizes[COLUMN_LAST];
 	static int columnIndexes[COLUMN_LAST];
 
@@ -183,6 +186,6 @@ private:
 
 /**
  * @file
- * $Id: UsersFrame.h,v 1.10 2003/11/11 20:31:57 arnetheduck Exp $
+ * $Id: UsersFrame.h,v 1.11 2003/11/19 19:50:45 arnetheduck Exp $
  */
 

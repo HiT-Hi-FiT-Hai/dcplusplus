@@ -80,13 +80,13 @@ private:
 
 	void onConnected(); 
 	void onLine(const string& aLine);
-
+	
 };
 
 #endif // !defined(AFX_HTTPCONNECTION_H__47AE2649_8D90_4C38_B048_69B3C26B3954__INCLUDED_)
 
 /**
  * @file
- * $Id: HttpConnection.h,v 1.15 2003/11/13 10:55:52 arnetheduck Exp $
+ * $Id: HttpConnection.h,v 1.16 2003/11/19 19:50:44 arnetheduck Exp $
  */
 

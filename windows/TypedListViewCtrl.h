@@ -161,13 +161,18 @@ public:
 		return mid;
 	}
 
+	void setSortColumn(int aSortColumn) {
+		sortColumn = aSortColumn;
+		updateArrow();
+	}
+	int getSortColumn() { return sortColumn; };
 	bool isAscending() { return sortAscending; };
 
-	GETSET(int, sortColumn, SortColumn);
 private:
 
+	int sortColumn;
 	bool sortAscending;
-
+	
 	static int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
 		thisClass* t = (thisClass*)lParamSort;
 		int result = T::compareItems(t->getItemData(lParam1), t->getItemData(lParam2), t->sortColumn);
@@ -179,5 +184,5 @@ private:
 
 /**
 * @file
-* $Id: TypedListViewCtrl.h,v 1.5 2003/11/19 15:07:58 arnetheduck Exp $
+* $Id: TypedListViewCtrl.h,v 1.6 2003/11/19 19:50:45 arnetheduck Exp $
 */

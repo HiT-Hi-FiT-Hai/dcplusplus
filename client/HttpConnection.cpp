@@ -33,12 +33,18 @@
 void HttpConnection::downloadFile(const string& aUrl) {
 	dcassert(Util::findSubString(aUrl, "http://") == 0);
 	currentUrl = aUrl;
+	// Trim spaces
+	while(currentUrl[0] == ' ')
+		currentUrl.erase(0, 1);
+	while(currentUrl[currentUrl.length() - 1] == ' ') {
+		currentUrl.erase(currentUrl.length()-1);
+	}
 	// reset all settings (as in constructor), moved here from onLine(302) because ok was not reset properly
 	moved302 = false; 
 	ok = false;
 	size = -1;
 	// set download type
-	if(aUrl.substr(aUrl.size() - 4) == ".bz2") {
+	if(Util::stricmp(aUrl.substr(aUrl.size() - 4), ".bz2") == 0) {
 		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_BZIP2, this);
 	} else {
 		fire(HttpConnectionListener::SET_DOWNLOAD_TYPE_NORMAL, this);
@@ -95,7 +101,7 @@ void HttpConnection::onLine(const string& aLine) {
 			}
 		}
 		ok = true;
-	} else if(moved302 && aLine.find("Location") != string::npos){
+	} else if(moved302 && Util::findSubString(aLine, "Location") != string::npos){
 		dcassert(socket);
 		socket->removeListener(this);
 		socket->disconnect();
@@ -176,6 +182,6 @@ void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t
 
 /**
  * @file
- * $Id: HttpConnection.cpp,v 1.20 2003/11/11 20:31:56 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.21 2003/11/19 19:50:44 arnetheduck Exp $
  */
 

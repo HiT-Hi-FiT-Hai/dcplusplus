@@ -138,8 +138,11 @@ void User::clientPM(const string& aTo, const string& aMsg) {
 void User::setClient(Client* aClient) { 
 	WLock l(cs); 
 	client = aClient; 
-	if(client == NULL)
+	if(client == NULL) {
+		if (isSet(ONLINE) && isFavoriteUser())
+			setFavoriteLastSeen();
 		unsetFlag(ONLINE);
+	}
 	else {
 		setLastHubAddress(aClient->getIpPort());
 		setLastHubName(aClient->getName());
@@ -148,7 +151,7 @@ void User::setClient(Client* aClient) {
 	}
 };
 
-// favorite uesr stuff
+// favorite user stuff
 void User::setFavoriteUser(FavoriteUser* aUser)
 {
 	WLock l(cs);
@@ -180,8 +183,24 @@ void User::setFavoriteGrantSlot(bool grant)
 		favoriteUser->unsetFlag(FavoriteUser::FLAG_GRANTSLOT);
 }
 
+void User::setFavoriteLastSeen(u_int32_t anOfflineTime) {
+	if (favoriteUser != NULL) {
+		if (anOfflineTime != 0)
+			favoriteUser->setLastSeen(anOfflineTime);
+		else
+			favoriteUser->setLastSeen(GET_TIME());
+	}
+}
+
+u_int32_t User::getFavoriteLastSeen() const {
+	if (favoriteUser != NULL)
+		return favoriteUser->getLastSeen();
+	else
+		return 0;
+}
+
 /**
  * @file
- * $Id: User.cpp,v 1.25 2003/11/10 22:42:12 arnetheduck Exp $
+ * $Id: User.cpp,v 1.26 2003/11/19 19:50:44 arnetheduck Exp $
  */
 

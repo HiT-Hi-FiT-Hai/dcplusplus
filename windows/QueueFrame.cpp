@@ -247,7 +247,7 @@ void QueueFrame::QueueItemInfo::update() {
 	}
 
 	if(colMask & MASK_ADDED) {
-		columns[COLUMN_ADDED] = Util::formatTime("%Y-%M-%d %H:%m", getAdded());
+		columns[COLUMN_ADDED] = Util::formatTime("%Y-%m-%d %H:%M", getAdded());
 	}
 }
 
@@ -1263,7 +1263,7 @@ void QueueFrame::onAction(QueueManagerListener::Types type, QueueItem* aQI) thro
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.36 2003/11/11 13:16:10 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.37 2003/11/19 19:50:45 arnetheduck Exp $
  */
 
 
