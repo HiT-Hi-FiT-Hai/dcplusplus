@@ -8,7 +8,7 @@
 #define IDC_COPY_HUB                    104
 #define ID_VIEW_TRANSFER_VIEW           105
 #define IDD_GENERALPAGE                 107
-#define IDD_NetworkPage                108
+#define IDD_NETWORKPAGE                 108
 #define IDR_MAINFRAME                   128
 #define IDR_HUB                         129
 #define IDC_HUBLIST                     131

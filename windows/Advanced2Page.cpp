@@ -22,7 +22,9 @@
 
 #include "Advanced2Page.h"
 #include "../client/SettingsManager.h"
+#include "../client/File.h"
 #include "WinUtil.h"
+
 
 PropPage::TextItem Advanced2Page::texts[] = {
 	{ IDC_SETTINGS_LOGGING, ResourceManager::SETTINGS_LOGGING },
@@ -166,6 +168,6 @@ LRESULT Advanced2Page::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 /**
  * @file
- * $Id: Advanced2Page.cpp,v 1.18 2004/12/17 15:12:10 arnetheduck Exp $
+ * $Id: Advanced2Page.cpp,v 1.19 2004/12/19 18:15:46 arnetheduck Exp $
  */
 

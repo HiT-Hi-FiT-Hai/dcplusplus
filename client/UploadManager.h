@@ -28,28 +28,32 @@
 
 #include "ClientManagerListener.h"
 #include "File.h"
+#include "MerkleTree.h"
 
 class Upload : public Transfer, public Flags {
 public:
 	enum Flags {
 		FLAG_USER_LIST = 0x01,
 		FLAG_TTH_LEAVES = 0x02,
-		FLAG_ZUPLOAD = 0x04
+		FLAG_ZUPLOAD = 0x04,
+		FLAG_PARTIAL_LIST = 0x08
 	};
 
 	typedef Upload* Ptr;
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	Upload() : file(NULL) { };
+	Upload() : tth(NULL), file(NULL) { };
 	virtual ~Upload() { 
 		delete file;
+		delete tth;
 	};
 	
 	User::Ptr& getUser() { dcassert(getUserConnection() != NULL); return getUserConnection()->getUser(); };
 	
 	GETSET(string, fileName, FileName);
 	GETSET(string, localFileName, LocalFileName);
+	GETSET(TTHValue*, tth, TTH);
 	GETSET(InputStream*, file, File);
 };
 
@@ -174,12 +178,12 @@ private:
 	//virtual void on(Command::STA, UserConnection*, const Command&) throw();
 
 	void onGetBlock(UserConnection* aSource, const string& aFile, int64_t aResume, int64_t aBytes, bool z);
-	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes, bool adc);
+	bool prepareFile(UserConnection* aSource, const string& aType, const string& aFile, int64_t aResume, int64_t aBytes);
 };
 
 #endif // !defined(AFX_UPLOADMANAGER_H__B0C67119_3445_4208_B5AA_938D4A019703__INCLUDED_)
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.71 2004/11/09 20:29:25 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.72 2004/12/19 18:15:43 arnetheduck Exp $
  */

@@ -26,7 +26,6 @@
 #include "TigerHash.h"
 #include "Encoder.h"
 #include "HashValue.h"
-#include "File.h"
 
 /**
  * A class that represents a Merkle Tree hash. Storing
@@ -139,11 +138,20 @@ public:
 	u_int32_t getTimeStamp() const { return timeStamp; }
 
 	bool verifyRoot(const u_int8_t* aRoot) {
-		return memcmp(aRoot, getRoot().data(), Hasher::HASH_SIZE) == 0;
+		return memcmp(aRoot, getRoot().data(), HASH_SIZE) == 0;
 	}
 
 	void calcRoot() {
 		root = getHash(0, fileSize);
+	}
+
+	vector<u_int8_t> getLeafData() {
+		vector<u_int8_t> buf(getLeaves().size() * HASH_SIZE);
+		u_int8_t* p = &buf[0];
+		for(size_t i = 0; i < getLeaves().size(); ++i) {
+			memcpy(p + i * HASH_SIZE, &getLeaves()[i], HASH_SIZE);
+		}
+		return buf;
 	}
 
 private:	
@@ -208,31 +216,6 @@ private:
 typedef MerkleTree<TigerHash> TigerTree;
 typedef TigerTree::MerkleValue TTHValue;
 
-template<class T>
-class TreeInputStream : public InputStream {
-public:
-	
-	TreeInputStream(const MerkleTree<T>& aTree) : leaves(aTree.getLeaves().size() * Value::SIZE, 0),  pos(0) {
-		u_int8_t* p = &leaves[0];
-		for(size_t i = 0; i < aTree.getLeaves().size(); ++i) {
-			memcpy(p + i * Value::SIZE, &aTree.getLeaves()[i], Value::SIZE);
-		}
-	}
-
-	virtual ~TreeInputStream() {
-	}
-
-	virtual size_t read(void* buf, size_t& len) throw(Exception) {
-		len = min(len, leaves.size() - pos);
-		memcpy(buf, &leaves[pos], len);
-		pos += len;
-		return len;
-	}
-private:
-	typedef typename MerkleTree<T>::MerkleValue Value;
-	vector<u_int8_t> leaves;
-	size_t pos;
-};
 struct TTFilter {
 	TTFilter(int64_t aBlockSize, u_int32_t aTimeStamp = 0) : tt(aBlockSize, aTimeStamp) { };
 	void operator()(const void* data, size_t len) { tt.update(data, len); }
@@ -245,5 +228,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.19 2004/10/29 15:53:37 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.20 2004/12/19 18:15:43 arnetheduck Exp $
  */

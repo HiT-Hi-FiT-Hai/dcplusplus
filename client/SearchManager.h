@@ -34,6 +34,7 @@
 #include "MerkleTree.h"
 
 #include "SearchManagerListener.h"
+#include "TimerManager.h"
 
 class SearchManager;
 
@@ -49,7 +50,7 @@ public:
 	typedef vector<Ptr> List;
 	typedef List::iterator Iter;
 	
-	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, TTHValue* aTTH, bool aUtf8);
+	SearchResult(Client* aClient, Types aType, int64_t aSize, const string& name, const TTHValue* aTTH, bool aUtf8);
 
 	SearchResult(const User::Ptr& aUser, Types aType, int aSlots, int aFreeSlots, 
 		int64_t aSize, const string& aFile, const string& aHubName, 
@@ -159,14 +160,23 @@ public:
 		onData((const u_int8_t*)aLine.data(), aLine.length(), Util::emptyString);
 	}
 	
+	int32_t timeToSearch() {
+		return (int32_t)(((((int64_t)lastSearch) + 5000) - GET_TICK() ) / 1000);
+	}
+
+	bool okToSearch() {
+		return timeToSearch() <= 0;
+	}
+
 private:
 	
 	Socket* socket;
 	short port;
 	bool stop;
+	u_int32_t lastSearch;
 	friend class Singleton<SearchManager>;
 
-	SearchManager() : socket(NULL), port(0), stop(false) {  };
+	SearchManager() : socket(NULL), port(0), stop(false), lastSearch(0) {  };
 
 	virtual int run();
 
@@ -188,5 +198,5 @@ private:
 
 /**
  * @file
- * $Id: SearchManager.h,v 1.47 2004/11/15 13:53:45 arnetheduck Exp $
+ * $Id: SearchManager.h,v 1.48 2004/12/19 18:15:43 arnetheduck Exp $
  */

@@ -206,7 +206,7 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	if(firstTry && !d->getTreeValid() && 
 		!d->isSet(Download::FLAG_USER_LIST) && d->getTTH() != NULL)
 	{
-		if(HashManager::getInstance()->getTree(d->getTarget(), d->getTTH(), d->getTigerTree())) {
+		if(HashManager::getInstance()->getTree(*d->getTTH(), d->getTigerTree())) {
 			d->setTreeValid(true);
 		} else if(!d->isSet(Download::FLAG_TREE_TRIED) && 
 			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHL)) 
@@ -944,5 +944,5 @@ void DownloadManager::on(UserConnectionListener::FileNotAvailable, UserConnectio
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.128 2004/12/05 15:51:05 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.129 2004/12/19 18:15:43 arnetheduck Exp $
  */

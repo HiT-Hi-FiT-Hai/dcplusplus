@@ -323,6 +323,8 @@
 		<String Name="SearchSpy">Search Spy</String>
 		<String Name="SearchString">Search String</String>
 		<String Name="SearchingFor">Searching for </String>
+		<String Name="SearchingReady">Ready to search...</String>
+		<String Name="SearchingWait">Searching too soon, next search in %i seconds</String>
 		<String Name="SeekBeyondEnd">Request to seek beyond the end of data</String>
 		<String Name="SendPrivateMessage">Send private message</String>
 		<String Name="Separator">Separator</String>
@@ -370,7 +372,7 @@
 		<String Name="SettingsFilterMessages">Filter kick and NMDC debug messages</String>
 		<String Name="SettingsFinishedDirty">Set Finished Manager(s) tab bold when an entry is added</String>
 		<String Name="SettingsFormat">Format</String>
-		<String Name="SettingsGeneral">General</String>
+		<String Name="SettingsGeneral">Personal information</String>
 		<String Name="SettingsGetUserCountry">Get User Country</String>
 		<String Name="SettingsHubUserCommands">Accept custom user commands from hub</String>
 		<String Name="SettingsIgnoreOffline">Ignore private messages from offline users</String>
@@ -392,6 +394,7 @@
 		<String Name="SettingsMaxTabRows">Max tab rows</String>
 		<String Name="SettingsMinimizeTray">Minimize to tray</String>
 		<String Name="SettingsName">Name</String>
+		<String Name="SettingsNetwork">Connection settings</String>
 		<String Name="SettingsNoAwaymsgToBots">Don't send the away message to bots</String>
 		<String Name="SettingsOnlyHashed">Note; New files are added to the share only once they've been hashed!</String>
 		<String Name="SettingsOnlyTth">Search for files with TTH root only as standard</String>

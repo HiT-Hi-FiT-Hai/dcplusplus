@@ -26,7 +26,7 @@
 #include <atlcrack.h>
 #include "PropPage.h"
 
-class NetworkPage : public CPropertyPage<IDD_NetworkPage>, public PropPage
+class NetworkPage : public CPropertyPage<IDD_NETWORKPAGE>, public PropPage
 {
 public:
 	NetworkPage(SettingsManager *s) : PropPage(s) { 

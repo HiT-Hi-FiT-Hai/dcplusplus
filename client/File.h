@@ -81,6 +81,34 @@ public:
 	virtual size_t read(void* buf, size_t& len) throw(Exception) = 0;
 };
 
+class MemoryInputStream : public InputStream {
+public:
+	MemoryInputStream(const u_int8_t* src, size_t len) : pos(0), size(len), buf(new u_int8_t[len]) {
+		memcpy(buf, src, len);
+	}
+	MemoryInputStream(const string& src) : pos(0), size(src.size()), buf(new u_int8_t[src.size()]) {
+		memcpy(buf, src.data(), src.size());
+	}
+
+	~MemoryInputStream() {
+		delete[] buf;
+	}
+
+	virtual size_t read(void* tgt, size_t& len) throw(Exception) {
+		len = min(len, size - pos);
+		memcpy(tgt, buf+pos, len);
+		pos += len;
+		return len;
+	}
+
+	size_t getSize() { return size; }
+
+private:
+	size_t pos;
+	size_t size;
+	u_int8_t* buf;
+};
+
 class IOStream : public InputStream, public OutputStream {
 };
 
@@ -548,6 +576,8 @@ private:
 
 class StringOutputStream : public OutputStream {
 public:
+	using OutputStream::write;
+
 	virtual size_t flush() throw(Exception) { return 0; }
 	virtual size_t write(const void* buf, size_t len) throw(Exception) {
 		str.append((char*)buf, len);
@@ -561,6 +591,6 @@ private:
 
 /**
  * @file
- * $Id: File.h,v 1.46 2004/12/05 16:19:18 arnetheduck Exp $
+ * $Id: File.h,v 1.47 2004/12/19 18:15:43 arnetheduck Exp $
  */
 

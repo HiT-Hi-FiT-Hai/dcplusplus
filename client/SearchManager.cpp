@@ -25,7 +25,7 @@
 #include "ClientManager.h"
 #include "AdcCommand.h"
 
-SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, TTHValue* aTTH, bool aUtf8) :
+SearchResult::SearchResult(Client* aClient, Types aType, int64_t aSize, const string& aFile, const TTHValue* aTTH, bool aUtf8) :
 file(aFile), hubName(aClient->getName()), hubIpPort(aClient->getIpPort()), user(aClient->getMe()), 
 size(aSize), type(aType), slots(SETTING(SLOTS)), freeSlots(UploadManager::getInstance()->getFreeSlots()),  
 tth(aTTH == NULL ? NULL : new TTHValue(*aTTH)), utf8(aUtf8), ref(1) { }
@@ -88,11 +88,17 @@ string SearchResult::toRES() const {
 }
 
 void SearchManager::search(const string& aName, int64_t aSize, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
-	ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
+	if(okToSearch()) {
+		ClientManager::getInstance()->search(aSizeMode, aSize, aTypeMode, aName);
+		lastSearch = GET_TICK();
+	}
 }
 
 void SearchManager::search(StringList& who, const string& aName, int64_t aSize /* = 0 */, TypeModes aTypeMode /* = TYPE_ANY */, SizeModes aSizeMode /* = SIZE_ATLEAST */) {
-	ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
+	if(okToSearch()) {
+		ClientManager::getInstance()->search(who, aSizeMode, aSize, aTypeMode, aName);
+		lastSearch = GET_TICK();
+	}
 }
 
 string SearchResult::getFileName() const { 
@@ -293,6 +299,6 @@ string SearchManager::clean(const string& aSearchString) {
 
 /**
  * @file
- * $Id: SearchManager.cpp,v 1.47 2004/11/30 15:46:19 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.48 2004/12/19 18:15:43 arnetheduck Exp $
  */
 

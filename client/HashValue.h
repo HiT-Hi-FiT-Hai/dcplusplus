@@ -38,9 +38,17 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 		int operator()(const Ptr lhs, const Ptr rhs) { return (*lhs) < (*rhs); };
 	};
 
+	struct Hash {
+		size_t operator()(const HashValue& rhs) const { return *(size_t*)&rhs; };
+		bool operator()(const HashValue& lhs, const HashValue& rhs) const { return lhs == rhs; };
+	};
+	struct Less {
+		int operator()(const HashValue& lhs, const HashValue& rhs) { return lhs < rhs; };
+	};
+
 	HashValue() { };
-	HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
-	HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); };
+	explicit HashValue(u_int8_t* aData) { memcpy(data, aData, SIZE); }
+	explicit HashValue(const string& base32) { Encoder::fromBase32(base32.c_str(), data, SIZE); };
 	HashValue(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); }
 	HashValue& operator=(const HashValue& rhs) { memcpy(data, rhs.data, SIZE); return *this; }
 	bool operator!=(const HashValue& rhs) const { return !(*this == rhs); }
@@ -57,5 +65,5 @@ struct HashValue : FastAlloc<HashValue<Hasher> >{
 
 /**
 * @file
-* $Id: HashValue.h,v 1.8 2004/09/23 09:06:26 arnetheduck Exp $
+* $Id: HashValue.h,v 1.9 2004/12/19 18:15:43 arnetheduck Exp $
 */

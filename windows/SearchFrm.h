@@ -66,6 +66,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORSTATIC, onCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, onCtlColor)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_TIMER, onTimer)
 		COMMAND_ID_HANDLER(IDC_DOWNLOAD, onDownload)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADTO, onDownloadTo)
 		COMMAND_ID_HANDLER(IDC_DOWNLOADDIR, onDownloadWhole)
@@ -107,8 +108,8 @@ public:
 		resultsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		hubsContainer(WC_LISTVIEW, this, SEARCH_MESSAGE_MAP),
 		tthContainer(WC_COMBOBOX, this, SEARCH_MESSAGE_MAP),
-		lastSearch(0), initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
-		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0), onlyTTH(false)
+		initialSize(0), initialMode(SearchManager::SIZE_ATLEAST), initialType(SearchManager::TYPE_ANY),
+		showUI(true), onlyFree(false), closed(false), isHash(false), droppedResults(0), onlyTTH(false), timerID(0)
 	{	
 		SearchManager::getInstance()->addListener(this);
 	}
@@ -133,6 +134,7 @@ public:
 	LRESULT onSearchByTTH(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onBitziLookup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCopyMagnet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void runUserCommand(UserCommand& uc);
@@ -432,11 +434,13 @@ private:
 	static TStringList lastSearches;
 	size_t droppedResults;
 
-	DWORD lastSearch;
 	bool closed;
 
 	static int columnIndexes[];
 	static int columnSizes[];
+
+	// Timer ID, needed to turn off timer
+	UINT timerID;
 
 	void downloadSelected(const tstring& aDir, bool view = false); 
 	void downloadWholeSelected(const tstring& aDir);
@@ -474,6 +478,6 @@ private:
 
 /**
  * @file
- * $Id: SearchFrm.h,v 1.47 2004/12/17 15:12:10 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.48 2004/12/19 18:15:46 arnetheduck Exp $
  */
 

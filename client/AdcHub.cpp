@@ -330,7 +330,7 @@ void AdcHub::on(Connected) throw() {
 	dcassert(state == STATE_PROTOCOL);
 	setMe(ClientManager::getInstance()->getUser(CID(SETTING(CLIENT_ID)), this, false));
 	lastInfoMap.clear();
-	send(Command(Command::SUP(), Command::TYPE_HUB).addParam("BAS0"));
+	send(Command(Command::SUP(), Command::TYPE_HUB).addParam("+BAS0"));
 	
 	fire(ClientListener::Connected(), this);
 }
@@ -344,5 +344,5 @@ void AdcHub::on(Failed, const string& aLine) throw() {
 }
 /**
  * @file
- * $Id: AdcHub.cpp,v 1.28 2004/11/29 23:21:30 arnetheduck Exp $
+ * $Id: AdcHub.cpp,v 1.29 2004/12/19 18:15:43 arnetheduck Exp $
  */

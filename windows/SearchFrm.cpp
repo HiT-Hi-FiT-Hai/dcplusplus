@@ -222,7 +222,7 @@ LRESULT SearchFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 void SearchFrame::onEnter() {
 	StringList clients;
 	
-	if(!(ctrlSearch.GetWindowTextLength() > 0 && lastSearch + 3*1000 < TimerManager::getInstance()->getTick()))
+	if(!(ctrlSearch.GetWindowTextLength() > 0))
 		return;
 
 	int n = ctrlHubs.GetItemCount();
@@ -277,11 +277,6 @@ void SearchFrame::onEnter() {
 
 	int ftype = ctrlFiletype.GetCurSel();
 
-	if(BOOLSETTING(CLEAR_SEARCH)){
-		ctrlSearch.SetWindowText(_T(""));
-	} else {
-		lastSearch = TimerManager::getInstance()->getTick();
-	}
 
 	// Add new searches to the last-search dropdown list
 	if(find(lastSearches.begin(), lastSearches.end(), s) == lastSearches.end()) 
@@ -304,8 +299,24 @@ void SearchFrame::onEnter() {
 
 	SetWindowText((TSTRING(SEARCH) + _T(" - ") + s).c_str());
 
-	SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
-		(SearchManager::TypeModes)ftype, mode);
+	if(SearchManager::getInstance()->okToSearch()) {
+		SearchManager::getInstance()->search(clients, Text::fromT(s), llsize, 
+			(SearchManager::TypeModes)ftype, mode);
+		if(BOOLSETTING(CLEAR_SEARCH)) // Only clear if the search was sent
+			ctrlSearch.SetWindowText(_T(""));
+	} else {
+		int32_t waitFor = SearchManager::getInstance()->timeToSearch();
+		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
+		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
+
+		ctrlStatus.SetText(1, buf);
+		ctrlStatus.SetText(2, _T(""));
+		ctrlStatus.SetText(3, _T(""));
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
+		// Start the countdown timer
+		timerID = SetTimer(1, 1000);
+	}
 
 }
 
@@ -339,7 +350,11 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	}
 
 	// Reject results without free slots or tth if selected
-	if( (onlyFree && aResult->getFreeSlots() < 1) || (onlyTTH && aResult->getTTH() == NULL) ) {
+	// but always show directories
+	if( (onlyFree && aResult->getFreeSlots() < 1) ||
+		((onlyTTH && aResult->getTTH() == NULL) && (aResult->getType() != SearchResult::TYPE_DIRECTORY))
+		)
+	{
 		droppedResults++;
 		ctrlStatus.SetText(3, Text::toT(Util::toString(droppedResults) + ' ' + STRING(FILTERED)).c_str());
 		return;
@@ -350,6 +365,30 @@ void SearchFrame::on(SearchManagerListener::SR, SearchResult* aResult) throw() {
 	PostMessage(WM_SPEAKER, ADD_RESULT, (LPARAM)i);	
 }
 
+LRESULT SearchFrame::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+	int32_t waitFor = SearchManager::getInstance()->timeToSearch();
+	if(waitFor > 0) {
+		AutoArray<TCHAR> buf(TSTRING(SEARCHING_WAIT).size() + 16);
+		_stprintf(buf, CTSTRING(SEARCHING_WAIT), waitFor);
+
+		ctrlStatus.SetText(1, buf);
+		ctrlStatus.SetText(2, _T(""));
+		ctrlStatus.SetText(3, _T(""));
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + tstring(buf)).c_str());
+	} else {
+		if(timerID != 0) {
+			KillTimer(timerID);
+			timerID = 0;
+		}
+		ctrlStatus.SetText(1, (TSTRING(SEARCHING_READY)).c_str());
+		ctrlStatus.SetText(2, _T(""));
+		ctrlStatus.SetText(3, _T(""));
+
+		SetWindowText((TSTRING(SEARCH) + _T(" - ") + TSTRING(SEARCHING_READY)).c_str());
+	}
+	return 0;
+}
 void SearchFrame::SearchInfo::view() {
 	try {
 		if(sr->getType() == SearchResult::TYPE_FILE) {
@@ -711,9 +750,8 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 		ucParams["file"] = sr->getFile();
 		ucParams["filesize"] = Util::toString(sr->getSize());
 		ucParams["filesizeshort"] = Util::formatBytes(sr->getSize());
-		TTHValue *hash = sr->getTTH();
-		if(hash != NULL) {
-			ucParams["tth"] = hash->toBase32();
+		if(sr->getTTH() != NULL) {
+			ucParams["tth"] = sr->getTTH()->toBase32();
 		}
 
 		StringMap tmp = ucParams;
@@ -1043,5 +1081,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.77 2004/12/17 15:12:10 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.78 2004/12/19 18:15:46 arnetheduck Exp $
  */

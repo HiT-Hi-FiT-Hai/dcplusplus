@@ -255,9 +255,9 @@ public:
 	static bool browseDirectory(tstring& target, HWND owner = NULL);
 
 	// Hash related
-	static void bitziLink(TTHValue* /*aHash*/);
-	static void copyMagnet(TTHValue* /*aHash*/, const tstring& /*aFile*/);
-	static void searchHash(TTHValue* /*aHash*/);
+	static void bitziLink(const TTHValue* /*aHash*/);
+	static void copyMagnet(const TTHValue* /*aHash*/, const tstring& /*aFile*/);
+	static void searchHash(const TTHValue* /*aHash*/);
 
 	// URL related
 	static void registerDchubHandler();
@@ -307,5 +307,5 @@ private:
 
 /**
  * @file
- * $Id: WinUtil.h,v 1.38 2004/12/18 14:49:14 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.39 2004/12/19 18:15:46 arnetheduck Exp $
  */

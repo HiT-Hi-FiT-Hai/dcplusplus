@@ -61,7 +61,7 @@ public:
 	/**
 	 * Check if the TTH tree associated with the filename is current.
 	 */
-	void checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
+	bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
 	void stopHashing(const string& baseDir) {
 		hasher.stopHashing(baseDir);
@@ -71,12 +71,11 @@ public:
 		hasher.setThreadPriority(p);
 	}
 	/**
-	 * Retrieves TTH root or queue's file for hashing.
-	 * @return TTH root if available, otherwise NULL
+	 * @return TTH root
 	 */
 	const TTHValue& getTTH(const string& aFileName, int64_t aSize) throw(HashException);
 
-	bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tt);
+	bool getTree(const TTHValue& root, TigerTree& tt);
 
 	void addTree(const string& aFileName, const TigerTree& tt) {
 		hashDone(aFileName, tt, -1);
@@ -188,40 +187,54 @@ private:
 		bool checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp);
 
 		const TTHValue* getTTH(const string& aFileName);
-		bool getTree(const string& aFileName, const TTHValue* root, TigerTree& tth);
+		bool getTree(const TTHValue& root, TigerTree& tth);
 		bool isDirty() { return dirty; };
 	private:
-		class FileInfo : public FastAlloc<FileInfo> {
+		/** Root -> tree mapping info, we assume there's only one tree for each root (a collision would mean we've broken tiger...) */
+		struct TreeInfo {
+			TreeInfo() : size(0), index(0), blockSize(0) { }
+			TreeInfo(int64_t aSize, int64_t aIndex, int64_t aBlockSize) : size(aSize), index(aIndex), blockSize(aBlockSize) { }
+			TreeInfo(const TreeInfo& rhs) : size(rhs.size), index(rhs.index), blockSize(rhs.blockSize) { }
+			TreeInfo& operator=(const TreeInfo& rhs) { size = rhs.size; index = rhs.index; blockSize = rhs.blockSize; return *this; }
+
+			GETSET(int64_t, size, Size);
+			GETSET(int64_t, index, Index);
+			GETSET(int64_t, blockSize, BlockSize);
+		};
+
+		/** File -> root mapping info */
+		struct FileInfo {
 		public:
 			struct StringComp {
 				const string& str;
 				StringComp(const string& aStr) : str(aStr) { }
-				bool operator()(FileInfo* a) { return a->getFileName() == str; }	
+				bool operator()(const FileInfo& a) { return a.getFileName() == str; }	
 			private:
 				StringComp& operator=(const StringComp&);
 			};
 
-			FileInfo(const string& aFileName, const TTHValue& aRoot, int64_t aSize, int64_t aIndex, int64_t aBlockSize, u_int32_t aTimeStamp, bool aUsed) :
-			  root(aRoot), size(aSize), index(aIndex), blockSize(aBlockSize), timeStamp(aTimeStamp), used(aUsed), fileName(aFileName) { }
+			FileInfo(const string& aFileName, const TTHValue& aRoot, u_int32_t aTimeStamp, bool aUsed) :
+			  fileName(aFileName), root(aRoot), timeStamp(aTimeStamp), used(aUsed) { }
 
+			GETSET(string, fileName, FileName);
 			GETSET(TTHValue, root, Root);
-			GETSET(int64_t, size, Size)
-			GETSET(int64_t, index, Index);
-			GETSET(int64_t, blockSize, BlockSize);
 			GETSET(u_int32_t, timeStamp, TimeStamp);
 			GETSET(bool, used, Used);
-			GETSET(string, fileName, FileName);
 		};
 
-		typedef vector<FileInfo*> FileInfoList;
+		typedef vector<FileInfo> FileInfoList;
 		typedef FileInfoList::iterator FileInfoIter;
 
 		typedef HASH_MAP<string, FileInfoList> DirMap;
 		typedef DirMap::iterator DirIter;
-		
+
+		typedef HASH_MAP_X(TTHValue, TreeInfo, TTHValue::Hash, TTHValue::Hash, TTHValue::Less) TreeMap;
+		typedef TreeMap::iterator TreeIter;
+
 		friend class HashLoader;
 
-		DirMap indexTTH;
+		DirMap fileIndex;
+		TreeMap treeIndex;
 
 		string indexFile;
 		string dataFile;
@@ -240,7 +253,10 @@ private:
 	CriticalSection cs;
 
 	void hashDone(const string& aFileName, const TigerTree& tth, int64_t speed);
-
+	void doRebuild() {
+		Lock l(cs);
+		store.rebuild();
+	}
 	virtual void on(TimerManagerListener::Minute, u_int32_t) throw() {
 		Lock l(cs);
 		store.save();
@@ -251,5 +267,5 @@ private:
 
 /**
  * @file
- * $Id: HashManager.h,v 1.24 2004/12/17 15:11:52 arnetheduck Exp $
+ * $Id: HashManager.h,v 1.25 2004/12/19 18:15:43 arnetheduck Exp $
  */

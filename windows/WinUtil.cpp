@@ -628,7 +628,7 @@ bool WinUtil::checkCommand(tstring& cmd, tstring& param, tstring& message, tstri
 	return true;
 }
 
-void WinUtil::bitziLink(TTHValue* aHash) {
+void WinUtil::bitziLink(const TTHValue* aHash) {
 	// to use this free service by bitzi, we must not hammer or request information from bitzi
 	// except when the user requests it (a mass lookup isn't acceptable), and (if we ever fetch
 	// this data within DC++, we must identify the client/mod in the user agent, so abuse can be 
@@ -638,13 +638,13 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 	}
 }
 
- void WinUtil::copyMagnet(TTHValue* aHash, const tstring& aFile) {
+ void WinUtil::copyMagnet(const TTHValue* aHash, const tstring& aFile) {
 	if(aHash != NULL && !aFile.empty()) {
 		setClipboard(_T("magnet:?xt=urn:tree:tiger:") + Text::toT(aHash->toBase32()) + _T("&dn=") + Text::toT(Util::encodeURI(Text::fromT(aFile))));
 	}
 }
 
- void WinUtil::searchHash(TTHValue* aHash) {
+ void WinUtil::searchHash(const TTHValue* aHash) {
 	 if(aHash != NULL) {
 		 SearchFrame::openWindow(Text::toT(aHash->toBase32()), 0, SearchManager::SIZE_DONTCARE, SearchManager::TYPE_TTH);
 	 }
@@ -1043,5 +1043,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.70 2004/12/18 14:49:14 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.71 2004/12/19 18:15:46 arnetheduck Exp $
  */
