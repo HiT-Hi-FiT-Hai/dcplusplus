@@ -28,16 +28,16 @@
 #include "../Client/HubManager.h"
 #include "ExListViewCtrl.h"
 
-class CPublicHubListDlg : public CDialogImpl<CPublicHubListDlg> {
+class PublicHubListDlg : public CDialogImpl<PublicHubListDlg> {
 public:
 	enum { IDD = IDD_HUB_LIST };
 
-	CPublicHubListDlg() { };
-	virtual ~CPublicHubListDlg() {
+	PublicHubListDlg() { };
+	virtual ~PublicHubListDlg() {
 		ctrlList.Detach();
 	};
 
-	BEGIN_MSG_MAP(CPublicHubListDlg)
+	BEGIN_MSG_MAP(PublicHubListDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDC_LIST_ADD, onAdd);
 		COMMAND_ID_HANDLER(IDC_LIST_UP, onMoveUp);
@@ -144,6 +144,6 @@ private:
 
 /**
 * @file
-* $Id: PublicHubsListDlg.h,v 1.1 2004/11/06 12:14:00 arnetheduck Exp $
+* $Id: PublicHubsListDlg.h,v 1.2 2004/11/09 20:29:25 arnetheduck Exp $
 */
 

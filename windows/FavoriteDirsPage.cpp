@@ -160,3 +160,8 @@ void FavoriteDirsPage::addDirectory(const tstring& aPath){
 		}
 	}
 }
+
+/**
+ * @file
+ * $Id: FavoriteDirsPage.cpp,v 1.3 2004/11/09 20:29:25 arnetheduck Exp $
+ */

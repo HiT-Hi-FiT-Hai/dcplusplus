@@ -41,16 +41,16 @@ _T("theparanoidone, gadget, naga, tremor, joakim tosteberg, pofis, psf8500, laur
 _T("defr, ullner, fleetcommand, liny, xan, olle svensson, mark gillespie, jeremy huddleston. ")
 _T("Keep it coming!");
 
-class CAboutDlg : public CDialogImpl<CAboutDlg>, private HttpConnectionListener
+class AboutDlg : public CDialogImpl<AboutDlg>, private HttpConnectionListener
 {
 public:
 	enum { IDD = IDD_ABOUTBOX };
 	enum { WM_VERSIONDATA = WM_APP + 53 };
 
-	CAboutDlg() { };
-	virtual ~CAboutDlg() { };
+	AboutDlg() { };
+	virtual ~AboutDlg() { };
 
-	BEGIN_MSG_MAP(CAboutDlg)
+	BEGIN_MSG_MAP(AboutDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_VERSIONDATA, onVersionData)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
@@ -94,7 +94,7 @@ public:
 private:
 	HttpConnection c;
 
-	CAboutDlg(const CAboutDlg&) { dcassert(0); };
+	AboutDlg(const AboutDlg&) { dcassert(0); };
 	
 	virtual void on(HttpConnectionListener::Data, HttpConnection* /*conn*/, const u_int8_t* buf, size_t len) throw() {
 		downBuf.append((char*)buf, len);
@@ -128,6 +128,6 @@ private:
 
 /**
  * @file
- * $Id: AboutDlg.h,v 1.40 2004/11/02 10:43:12 arnetheduck Exp $
+ * $Id: AboutDlg.h,v 1.41 2004/11/09 20:29:25 arnetheduck Exp $
  */
 

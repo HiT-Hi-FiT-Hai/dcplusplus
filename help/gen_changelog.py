@@ -7,32 +7,32 @@ filehtml = "changelog.html"
 fp_txt = open(filetext,'r')
 fp_html = open(filehtml,'w')
 
-start_head = """<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r
-<html>\r
-<head>\r
-  <meta content=\"en-us\" http-equiv=\"Content-Language\">\
-  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\r
-  <link href=\"office11.css\" rel=\"stylesheet\" type=\"text/css\">\r
-  <title>Changelog</title>\
-  <style type=\"text/css\">\r
-    li { margin-left: auto; margin: 0em 0em 0em 0em; }\r
-  </style>\r
-</head>\
-<body>\
-<h1>DC++ Changelog</h1>\r
-See the version history of DC++ below.\r
+start_head = """<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
+<html>
+<head>
+  <meta content=\"en-us\" http-equiv=\"Content-Language\">
+  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">
+  <link href=\"office11.css\" rel=\"stylesheet\" type=\"text/css\">
+  <title>Changelog</title>
+  <style type=\"text/css\">
+    li { margin-left: auto; margin: 0em 0em 0em 0em; }
+  </style>
+</head>
+<body>
+<h1>DC++ Changelog</h1>
+See the version history of DC++ below.
 """
 
-end_html = "</body>\r\n</html>"
+end_html = "</body>\n</html>"
 
 start_change = "  <li>%(change)s"
 change = " %(change)s"
-end_change = "</li>\r\n"
+end_change = "</li>\n"
 
-start_version = "<h2>%(version)s <span style=\"color: gray;\">(%(date)s)</span></h2>\r\n<ul>\r\n"
-end_version = "</ul>\r\n\r\n"
+start_version = "<h2>%(version)s <span style=\"color: gray;\">(%(date)s)</span></h2>\n<ul>\n"
+end_version = "</ul>\n\n"
 
-start_warning_end = "  <li><span style=\"color: red;\">%(change)s</span></li>\r\n"
+start_warning_end = "  <li><span style=\"color: red;\">%(change)s</span></li>\n"
 
 new_version_pattern = re.compile("^.*?-- (?P<version>.*?) (?P<date>.*?) --")
 new_change = re.compile("^\* (?P<change>.*?)$")

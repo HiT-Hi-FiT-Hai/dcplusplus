@@ -2,10 +2,15 @@
 * Improved multiple hublist support (thanks garg)
 * Fixed some favdirs issues (thanks naga)
 * Fixed a status logging issue (thanks naga)
-* Fixed annoying login issue
+* [bug 289] Fixed annoying login issue
 * Added possibility to rename shares (thanks naga)
-* Fixed show joins for fav users (thanks ullner)
-
+* [bug 106] Fixed show joins for fav users (thanks ullner)
+* Fixed some unnecessary connects when download slots are full
+* Fixed magnet registration issue (thanks garg)
+* Some code documentation work (thanks jonathan jansson)
+* Makedefs.py fixes (thanks garg)
+* A connection attempt is made when you grant a slot to potentially start the other 
+  fella's transfers (thanks sed)
 
 -- 0.666 2004-11-03 --
 * [bug 173] Fixed copy nick to clipboard (thanks trem)
@@ -14,59 +19,58 @@
 * Added # of locally filtered results to search frame (thanks garg)
 * Fixed a crash in the upnp code
 * Fixed wide formatting of time (thanks garg)
-* Added local filtering of searches with "-" in front of the search term (thanks cologic) [bug 166]
+* [bug 166] Added local filtering of searches with "-" in front of the search term (thanks cologic)
 * Fixed a missing hubframe stats bug (thanks trem)
-* TTH's are now correctly searched for in search spy (thanks trem) [bug 87]
-* Fixed an issue with utf8 user commands (thanks trem)
+* [bug 87] TTH's are now correctly searched for in search spy (thanks trem)
+* [bug 256] Fixed an issue with utf8 user commands (thanks trem)
 * Moved to a less intrusive build procedure where stlport and wtl are local to the
   DC++ build (see compile.txt)
 * Added /log to show log for current hub / user (thanks garg)
 * More internationalization (thanks garg)
 * Updated some template code (thanks farcry)
 * Extended log command (thanks ullner)
-* Fixed issue with utf-8 nicks during login to some hubs (thanks garg) [bug 212]
+* [bug 212] Fixed issue with utf-8 nicks during login to some hubs (thanks garg)
 * Fixed issue with utf-8 time formatting for certain languages in certain locales
 * Removed search optimisation obsoleted by tth's and bloom filters (those of
   you with a large number of files in your share, post on the forum if you notice
   any big increase in CPU usage)
-* Added option not to download files already in share (by TTH) (thanks TPO) [bug 69]
+* [bug 69] Added option not to download files already in share (by TTH) (thanks TPO)
 * Help file work (garg, ullner)
 * Added petabytes (PiB) (thanks garg)
 * Clicking on active tab will deactivate it (thanks garg)
-* Fixed an issue with loading invalid virtual names when upgrading (thanks garg) [bug 227]
-* Fixed another issue with user commands (thanks garg)
+* [bug 227] Fixed an issue with loading invalid virtual names when upgrading (thanks garg)
+* [bug 256] Fixed another issue with user commands (thanks garg)
 * Updated to WTL 7.5.4291
-* Hopefully fixed a few issues with w9x and Unicode [bug 183]
+* [bug 183] Hopefully fixed a few issues with w9x and Unicode
 * Fixed common control initialization
 * Unix makefile now generates a shared lib (thanks jeremy huddleston)
 * Slight memory save for hash database
-* Added favorite hub removal confirmation option (thanks ullner)
-* Fixed broken redirect (thanks garg) [bug 5]
+* [bug 130] Added favorite hub removal confirmation option (thanks ullner)
+* [bug 5] Fixed broken redirect (thanks garg)
 * Added spy frame column saving (thanks garg)
 * ADL Search autoqueue saved now (thanks garg)
 * Window minimization issue fix (thanks garg)
-* Fixed some issues with downloading >4GiB files
-* ADL Search goto directory fixed (thanks garg)
+* [bug 129] Fixed some issues with downloading >4GiB files
+* [bug 15] ADL Search goto directory fixed (thanks garg)
 * Some fixes for compiling on osx (thanks jonathan jansson)
 * Removed Makedefs in favour of a python script
 * FastAlloc disabled in debug builds
-* Fixed a crash with offline users and user commands (thanks naga) [bug 266]
-* Fixed a case insensitivity issue (thanks farcry)
-* Added favorite download directories (thanks naga)
+* [bug 266] Fixed a crash with offline users and user commands (thanks naga)
+* [bug 165] Fixed a case insensitivity issue (thanks farcry)
+* [bug 18] Added favorite download directories (thanks naga)
 * Fixed MyINFO spam when hashing
-
 
 -- 0.4034 2004-10-03 --
 * Help file additions (thanks naga & ullner)
-* Fixed a few issues with files not being hashed correctly (thanks garg) [bug 170]
+* [bug 170] Fixed a few issues with files not being hashed correctly (thanks garg)
 * More ADC fixes (thanks sed)
 * Fixed some ADLSearch stuff (thanks garg)
 * Added item count to finished frames (thanks garg)
 * Fixed user commands encoding (thanks garg)
 * Added last search time to search spy (thanks ullner)
-* Fixed queue size growing on queue item move [bug 3]
+* [bug 3] Fixed queue size growing on queue item move
 * Fixed missing file list on 0 byte share
-* Fixed missing search results (thanks garg) [bug 185]
+* [bug 185] Fixed missing search results (thanks garg)
 
 -- 0.4033 2004-09-27 --
 *** WARNING *** 

@@ -1,6 +1,6 @@
 @echo off
 REM generate changelog.html
-python.exe gen_changelog.py
+gen_changelog.py
 REM  this isn't pretty. - Todd
 if exist "%ProgramFiles%\HTML Help Workshop\hhc.exe" goto compile
 echo.

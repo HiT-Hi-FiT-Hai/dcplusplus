@@ -29,14 +29,14 @@
 // and can take filename, size, etc. values from there.
 //                                                        - GargoyleMT
 
-class CMagnetDlg : public CDialogImpl<CMagnetDlg > {
+class MagnetDlg : public CDialogImpl<MagnetDlg > {
 public:
 	enum { IDD = IDD_MAGNET };
 
-	CMagnetDlg(const tstring& aHash, const tstring& aFileName) : mHash(aHash), mFileName(aFileName) { };
-	virtual ~CMagnetDlg() { };
+	MagnetDlg(const tstring& aHash, const tstring& aFileName) : mHash(aHash), mFileName(aFileName) { };
+	virtual ~MagnetDlg() { };
 
-	BEGIN_MSG_MAP(CMagnetDlg)
+	BEGIN_MSG_MAP(MagnetDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
 		COMMAND_ID_HANDLER(IDOK, onCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, onCloseCmd)
@@ -121,6 +121,6 @@ private:
 
 /**
 * @file
-* $Id: MagnetDlg.h,v 1.4 2004/09/10 14:44:17 arnetheduck Exp $
+* $Id: MagnetDlg.h,v 1.5 2004/11/09 20:29:25 arnetheduck Exp $
 */
 

@@ -111,7 +111,7 @@ LRESULT DownloadPage::onClickedBrowseTempDir(WORD /*wNotifyCode*/, WORD /*wID*/,
 }
 
 LRESULT DownloadPage::onClickedListConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CPublicHubListDlg dlg;
+	PublicHubListDlg dlg;
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -128,5 +128,5 @@ LRESULT DownloadPage::onHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 /**
  * @file
- * $Id: DownloadPage.cpp,v 1.14 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: DownloadPage.cpp,v 1.15 2004/11/09 20:29:25 arnetheduck Exp $
  */

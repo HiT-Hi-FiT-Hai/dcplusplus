@@ -80,7 +80,7 @@ public:
 	 * @remarks This is only used in the tray icons. Could be used in
 	 * MainFrame too.
 	 *
-	 * @return Agerage download speed in Bytes/s
+	 * @return Average download speed in Bytes/s
 	 */
 	int getAverageSpeed() {
 		Lock l(cs);
@@ -114,9 +114,13 @@ public:
 	int getFreeExtraSlots() { return max(3 - getExtra(), 0); };
 	
 	/** @param aUser Reserve an upload slot for this user. */
-	void reserveSlot(const User::Ptr& aUser) {
-		Lock l(cs);
-		reservedSlots[aUser] = GET_TICK();
+	void reserveSlot(User::Ptr& aUser) {
+		{
+			Lock l(cs);
+			reservedSlots[aUser] = GET_TICK();
+		}
+		if(aUser->isOnline())
+			aUser->connect();
 	}
 
 	/** @internal */
@@ -150,7 +154,7 @@ private:
 	}
 
 	// ClientManagerListener
-	virtual void on(ClientManagerListener::UserUpdated, const User::Ptr& aUser) throw();
+	virtual void on(ClientManagerListener::UserUpdated, User::Ptr& aUser) throw();
 	
 	// TimerManagerListener
 	virtual void on(TimerManagerListener::Minute, u_int32_t aTick) throw();
@@ -177,5 +181,5 @@ private:
 
 /**
  * @file
- * $Id: UploadManager.h,v 1.70 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.71 2004/11/09 20:29:25 arnetheduck Exp $
  */

@@ -352,7 +352,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 				switch(i->second) {
 				case UPDATE_USER:
 					if(updateUser(u)) {
-						if (!favShowJoins | u->isFavoriteUser()) {
+						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
 							addLine(_T("*** ") + TSTRING(JOINS) + Text::toT(u->getNick()));
 						}
 					} else {
@@ -369,7 +369,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 					if( j != -1 ) {
 						UserInfo* ui = ctrlUsers.getItemData(j);
 						ctrlUsers.DeleteItem(j);
-						if (!favShowJoins | u->isFavoriteUser()) {
+						if (showJoins || (favShowJoins && u->isFavoriteUser())) {
 							addLine(Text::toT("*** " + STRING(PARTS) + u->getNick()));
 						}
 						dcassert(userMap[u] == ui);
@@ -1104,5 +1104,5 @@ void HubFrame::on(SearchFlood, Client*, const string& line) throw() {
 
 /**
  * @file
- * $Id: HubFrame.cpp,v 1.85 2004/11/07 17:04:09 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.86 2004/11/09 20:29:25 arnetheduck Exp $
  */

@@ -141,7 +141,6 @@ void FinishedFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	ctrlList.MoveWindow(rc);
 }
 
-
 LRESULT FinishedFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	
 	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
@@ -255,5 +254,5 @@ void FinishedFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedFrame.cpp,v 1.29 2004/10/29 15:53:41 arnetheduck Exp $
+ * $Id: FinishedFrame.cpp,v 1.30 2004/11/09 20:29:25 arnetheduck Exp $
  */

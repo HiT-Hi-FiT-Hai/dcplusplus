@@ -206,7 +206,7 @@ LRESULT PublicHubsFrame::onClickedRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 }
 
 LRESULT PublicHubsFrame::onClickedConfigure(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CPublicHubListDlg dlg;
+	PublicHubListDlg dlg;
 	if(dlg.DoModal(m_hWnd) == IDOK) {
 		updateDropDown();
 	}
@@ -455,6 +455,6 @@ void PublicHubsFrame::updateDropDown() {
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.30 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.31 2004/11/09 20:29:25 arnetheduck Exp $
  */
 

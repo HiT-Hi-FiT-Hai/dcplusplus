@@ -723,11 +723,11 @@ void WinUtil::bitziLink(TTHValue* aHash) {
 		::RegSetValueEx(hk, _T("URL Protocol"), NULL, REG_SZ, NULL, NULL);
 		::RegCloseKey(hk);
 		::RegCreateKey(HKEY_CLASSES_ROOT, _T("magnet\\DefaultIcon"), &hk);
-		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), magnetLoc.length()+1);
+		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), sizeof(TCHAR)*(magnetLoc.length()+1));
 		::RegCloseKey(hk);
 		magnetLoc += _T(" %1");
 		::RegCreateKey(HKEY_CLASSES_ROOT, _T("magnet\\shell\\open\\command"), &hk);
-		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), magnetLoc.length()+1);
+		::RegSetValueEx(hk, NULL, NULL, REG_SZ, (LPBYTE)magnetLoc.c_str(), sizeof(TCHAR)*(magnetLoc.length()+1));
 		::RegCloseKey(hk);
 	}
 	// magnet-handler specific code
@@ -893,7 +893,7 @@ void WinUtil::parseMagnetUri(const tstring& aUrl, bool /*aOverride*/) {
 			//	};
 			//} else {
 			// use aOverride to force the display of the dialog.  used for auto-updating
-				CMagnetDlg dlg(fhash, fname);
+				MagnetDlg dlg(fhash, fname);
 				dlg.DoModal(mainWnd);
 			//}
 		} else {
@@ -990,5 +990,5 @@ int WinUtil::getIconIndex(const tstring& aFileName) {
 }
 /**
  * @file
- * $Id: WinUtil.cpp,v 1.64 2004/10/31 22:33:26 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.65 2004/11/09 20:29:25 arnetheduck Exp $
  */

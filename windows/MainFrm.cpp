@@ -559,7 +559,7 @@ LRESULT MainFrame::onFileADLSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 }
 
 LRESULT MainFrame::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	CAboutDlg dlg;
+	AboutDlg dlg;
 	dlg.DoModal(m_hWnd);
 	return 0;
 }
@@ -1146,5 +1146,5 @@ void MainFrame::on(QueueManagerListener::Finished, QueueItem* qi) throw() {
 
 /**
  * @file
- * $Id: MainFrm.cpp,v 1.72 2004/11/06 12:14:00 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.73 2004/11/09 20:29:25 arnetheduck Exp $
  */

@@ -184,12 +184,12 @@ void ConnectionManager::on(TimerManagerListener::Second, u_int32_t aTick) throw(
 		bool tooMany = ((SETTING(DOWNLOAD_SLOTS) != 0) && DownloadManager::getInstance()->getDownloadCount() >= (size_t)SETTING(DOWNLOAD_SLOTS));
 		bool tooFast = ((SETTING(MAX_DOWNLOAD_SPEED) != 0 && DownloadManager::getInstance()->getAverageSpeed() >= (SETTING(MAX_DOWNLOAD_SPEED)*1024)));
 		
-		bool startDown = !tooMany && !tooFast;
-
 		int attempts = 0;
 		
 		ConnectionQueueItem::Iter i = pendingDown.begin();
 		while(i != pendingDown.end()) {
+			bool startDown = !tooMany && !tooFast;
+
 			ConnectionQueueItem* cqi = *i;
 			dcassert(cqi->getUser());
 
@@ -574,5 +574,5 @@ void ConnectionManager::on(UserConnectionListener::Supports, UserConnection* con
 
 /**
  * @file
- * $Id: ConnectionManager.cpp,v 1.79 2004/11/06 12:13:59 arnetheduck Exp $
+ * $Id: ConnectionManager.cpp,v 1.80 2004/11/09 20:29:26 arnetheduck Exp $
  */

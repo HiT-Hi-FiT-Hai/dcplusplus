@@ -22,6 +22,7 @@
 
 #include "ExListViewCtrl.h"
 
+// TODO: make sure that moved items maintain their selection state
 int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	TCHAR buf[512];
 	LVITEM lvi;
@@ -37,14 +38,19 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	}
 
 	SetRedraw(FALSE);
-	
-	lvi.iItem = newPos;
+
+	if(oldPos < newPos) {
+		lvi.iItem = newPos + 1;
+	} else {
+		lvi.iItem = newPos;
+	}
 	int i = InsertItem(&lvi);
 	j = 0;
 	for(TStringIter k = l.begin(); k != l.end(); ++k, j++) {
 		SetItemText(i, j, k->c_str());
 	}
-	
+	EnsureVisible(i, FALSE);
+
 	if(i < oldPos)
 		DeleteItem(oldPos + 1);
 	else
@@ -55,7 +61,7 @@ int ExListViewCtrl::moveItem(int oldPos, int newPos) {
 	RECT rc;
 	GetItemRect(i, &rc, LVIR_BOUNDS);
 	InvalidateRect(&rc);
-	
+
 	return i;
 }
 
@@ -175,6 +181,6 @@ int ExListViewCtrl::insert(int nItem, TStringList& aList, int iImage, LPARAM lPa
 
 /**
  * @file
- * $Id: ExListViewCtrl.cpp,v 1.12 2004/09/08 11:00:52 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.13 2004/11/09 20:29:25 arnetheduck Exp $
  */
 

@@ -53,3 +53,8 @@ protected:
 };
 
 #endif //FAVORITEDIRSPAGE_H
+
+/**
+ * @file
+ * $Id: FavoriteDirsPage.h,v 1.3 2004/11/09 20:29:25 arnetheduck Exp $
+ */
