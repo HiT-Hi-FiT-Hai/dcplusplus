@@ -140,6 +140,14 @@ SOURCE=.\client\Settings.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\SettingsDlg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SimpleXML.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\Socket.cpp
 # End Source File
 # Begin Source File
@@ -206,6 +214,14 @@ SOURCE=.\client\resource.h
 # Begin Source File
 
 SOURCE=.\client\Settings.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SettingsDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SimpleXML.h
 # End Source File
 # Begin Source File
 

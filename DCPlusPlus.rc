@@ -46,18 +46,11 @@ END
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 16
 BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_CONNECT
     SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
+    BUTTON      ID_FILE_SETTINGS
 END
 
 
@@ -77,8 +70,9 @@ IDR_MAINFRAME MENU PRELOAD DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Connect to public hub\tCtrl+N", ID_FILE_CONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
@@ -97,24 +91,14 @@ IDR_MDICHILD MENU DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
-        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM "&Connect to public hub...\tCtrl+T", ID_FILE_CONNECT
         MENUITEM SEPARATOR
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
+        MENUITEM "&Reconnect\tCtrl+R",          ID_FILE_RECONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Settings...",                ID_FILE_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Edit"
-    BEGIN
-        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
-        MENUITEM SEPARATOR
-        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
-        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
     END
     POPUP "&View"
     BEGIN
@@ -175,6 +159,25 @@ BEGIN
     PUSHBUTTON      "&Refresh",IDC_REFRESH,7,285,50,14
 END
 
+IDD_SETTINGS DIALOG DISCARDABLE  0, 0, 191, 116
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Settings"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,127,95,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,74,95,50,14
+    GROUPBOX        "Personal information",IDC_STATIC,7,7,177,84
+    LTEXT           "Nick (Required)",IDC_STATIC,15,19,50,8
+    LTEXT           "E-Mail",IDC_STATIC,15,37,20,8
+    LTEXT           "Description",IDC_STATIC,15,55,36,8
+    LTEXT           "Connection",IDC_STATIC,15,73,37,8
+    EDITTEXT        IDC_NICK,74,16,103,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EMAIL,74,34,103,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_DESCRIPTION,74,52,103,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_CONNECTION,74,71,103,48,CBS_DROPDOWNLIST | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -198,6 +201,17 @@ BEGIN
         RIGHTMARGIN, 449
         TOPMARGIN, 7
         BOTTOMMARGIN, 299
+    END
+
+    IDD_SETTINGS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 184
+        VERTGUIDE, 15
+        VERTGUIDE, 74
+        VERTGUIDE, 177
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 109
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -248,6 +262,35 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Dialog Info
+//
+
+IDD_SETTINGS DLGINIT
+BEGIN
+    IDC_CONNECTION, 0x403, 9, 0
+0x3832, 0x382e, 0x624b, 0x7370, "\000" 
+    IDC_CONNECTION, 0x403, 9, 0
+0x3333, 0x362e, 0x624b, 0x7370, "\000" 
+    IDC_CONNECTION, 0x403, 7, 0
+0x3635, 0x624b, 0x7370, "\000" 
+    IDC_CONNECTION, 0x403, 5, 0
+0x5349, 0x4e44, "\000" 
+    IDC_CONNECTION, 0x403, 10, 0
+0x6153, 0x6574, 0x6c6c, 0x7469, 0x0065, 
+    IDC_CONNECTION, 0x403, 6, 0
+0x6143, 0x6c62, 0x0065, 
+    IDC_CONNECTION, 0x403, 4, 0
+0x5344, 0x004c, 
+    IDC_CONNECTION, 0x403, 8, 0
+0x614c, 0x286e, 0x3154, 0x0029, 
+    IDC_CONNECTION, 0x403, 8, 0
+0x614c, 0x286e, 0x3354, 0x0029, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -255,19 +298,6 @@ STRINGTABLE PRELOAD DISCARDABLE
 BEGIN
     IDR_MAINFRAME           "DCPlusPlus"
     IDR_MDICHILD            "Document"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    ID_FILE_NEW             "Create a new document\nNew"
-    ID_FILE_OPEN            "Open an existing document\nOpen"
-    ID_FILE_CLOSE           "Close the active document\nClose"
-    ID_FILE_SAVE            "Save the active document\nSave"
-    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
-    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
-    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
-    ID_FILE_PRINT           "Print the active document\nPrint"
-    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -290,21 +320,6 @@ BEGIN
     ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles\nTile Windows"
     ID_WINDOW_TILE_VERT     "Arrange windows as non-overlapping tiles\nTile Windows"
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
-END
-
-STRINGTABLE DISCARDABLE 
-BEGIN
-    ID_EDIT_CLEAR           "Erase the selection\nErase"
-    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
-    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
-    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
-    ID_EDIT_FIND            "Find the specified text\nFind"
-    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
-    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
-    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
-    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
-    ID_EDIT_UNDO            "Undo the last action\nUndo"
-    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -339,6 +354,11 @@ END
 STRINGTABLE DISCARDABLE 
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_CONNECT         "Displays a list of public hubs\nConnect"
 END
 
 #endif    // English (U.S.) resources
