@@ -345,6 +345,7 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
 	SettingsManager::getInstance()->setDefault(SettingsManager::TEXT_FONT, WinUtil::encodeFont(lf));
+	WinUtil::decodeFont(SETTING(TEXT_FONT), lf);
 
 	WinUtil::bgBrush = CreateSolidBrush(SETTING(BACKGROUND_COLOR));
 	WinUtil::textColor = SETTING(TEXT_COLOR);
@@ -829,6 +830,6 @@ LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.4 2002/04/22 15:50:51 arnetheduck Exp $
  */
 

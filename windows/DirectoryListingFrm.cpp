@@ -425,12 +425,8 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 		DirectoryListing::Directory* e = (DirectoryListing::Directory*)c->lParam;
 		DirectoryListing::Directory* f = (DirectoryListing::Directory*)d->lParam;
 
-		string::size_type k = e->getName().rfind('.');
-		string suffix1 = (k != string::npos) ? e->getName().substr(k + 1) : Util::emptyString;
-		k = f->getName().rfind('.');
-		string suffix2 = (k != string::npos) ? f->getName().substr(k + 1) : Util::emptyString;
+		return stricmp(e->getName().c_str(), f->getName().c_str());
 		
-		return stricmp(suffix1.c_str(), suffix2.c_str());
 	} else {
 		if(d->iImage == WinUtil::IMAGE_DIRECTORY) {
 			return 1;
@@ -439,8 +435,13 @@ int DirectoryListingFrame::sortType(LPARAM a, LPARAM b) {
 		
 		DirectoryListing::File* e = (DirectoryListing::File*)c->lParam;
 		DirectoryListing::File* f = (DirectoryListing::File*)d->lParam;
+
+		string::size_type k = e->getName().rfind('.');
+		string suffix1 = (k != string::npos) ? e->getName().substr(k + 1) : Util::emptyString;
+		k = f->getName().rfind('.');
+		string suffix2 = (k != string::npos) ? f->getName().substr(k + 1) : Util::emptyString;
 		
-		return stricmp(e->getName().c_str(), f->getName().c_str());
+		return stricmp(suffix1.c_str(), suffix2.c_str());
 	}
 }
 
@@ -500,5 +501,5 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.5 2002/04/22 13:58:15 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.6 2002/04/22 15:50:51 arnetheduck Exp $
  */

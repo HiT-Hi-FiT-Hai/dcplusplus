@@ -1,3 +1,11 @@
+ -- 0.171 2002-04-05 --
+* Fixed version number in changelog and exe-file =)
+* Fixed downloading bug
+* Fixed queue frame size column
+* Fixed favorite users right-click menu
+* Fixed sort by file type in file list
+* Fixed missing font settings
+
  -- 0.17 2002-04-04 --
 * Fixed the disk full crash
 * Fixed some minor memory handling issues

@@ -1,0 +1,35 @@
+Alrite, this document describes the extensions I've made to the DC protocol, to be able to support extra functionality. Those are of course subject to change and discussion but I'll try to keep it as up to date as possible. Other clients are most welcome to follow this scheme and use the features presented here as they wish. The main scheme stems from a discussion sometime ago on the javadc-devel list on sourceforge...
+
+So far, I've only thought about the client-client protocol, and that's what is presented here...
+
+Note; I assume familiarity with the dc protocol as used in neomodus dc 1.00091...
+
+The main idea behind the protocol is that when setting up the connection, each client tells the other one about all commands it understands, and after that, use those commands as pleased...to be able to do this we need to add a command to the protocol that tells the other client about the features it supports. We also need to make sure that only clients that have a fair chance of understanding this command (to avoid unneccesary data being sent and to avoid confusing other clients). The scheme I've chosen is based on the $Lock information being sent upon setting up a connection, where a client that supports the extension command sends a special string in the lock, to let the other one know that it supports the extended commands. When having found such a client, it sends information about all features it supports before sending a correctly computed $Key.
+
+On a side note; DC++ requires commands to come in a certain order to be able to efficiently use resources and will ignore any commands out of order (such as multiple $Send commands). This also improves the determinism of the protocol.
+
+--------------------------------------------------------------------
+
+Feature: Supports
+
+Purpose: To identify which features a certain client supports
+
+Usage: "$Supports <featurename> <featurename> ...|"
+<featurename> = Case sensitive string describing the feature that a certain client supports. This should be the name of the command being sent, i e if a client supports a command "$GetBZListLen|", featurename should be GetBZListLen, unless of course, this is not a feature that requires sending extra data.
+
+Should be sent: After receiving $Lock but before sending $Key
+
+Notes: In the initial discussions, we thought about adding version information (something like "$Supports <name> <version>|"), but I've decided not to use this because 1) There could be problems with old version, i e client x supports version 1.2, does that mean that it supports version 1.1 and 1.0 as well? 2) It's really easy to add a new version, i e "$Supports GetBZListLen GetBZListLen2|" to advertise an upgraded $GetBZListLen command.
+This command should only be sent if the $Lock starts with the exact string "EXTENDEDPROTOCOL", to avoid confusing clients that don't understand it anyway. DC++ also uses the Pk part of the lock to identify exact client version, so a full $Lock string from a dc++ client is "$Lock EXTENDEDPROTOCOLxxxx Pk=DCPLUSPLUS0.164xxxx" where xxxx denotes some random data.
+
+--------------------------------------------------------------------
+
+Feature: BZList
+
+Purpose: The file listing of a user is by default compressed with huffman encoding which is really inefficient. This feature adds the ability to get a file list compressed with bzip2 instead, which generally compresses 2-3 times better (My 300kb list compressed to 210 kb with huffman and 82 kb with bzip2). This is a good thing because a) file lists can be transferred faster (specially on slower connections), b) bzip2 compression is very standard, c) It's a really easy feature to add (that's why I added it, to test this protocol extension scheme).
+
+Usage: Normally, when getting a users file list, you use the command "$Get MyList.DcLst", where "MyList.DcList" is a unique filename that always denotes the users file listing. When a client supports BZList, it guarantees that the file "MyList.bz2" will always be available, and when decompressed, be exactly the same file as "MyList.DcLst".
+
+Should be sent: Instead of "MyList.DcList" when getting a file list.
+
+Note; libbzip2-1.0.2 (or a compatible library...) should be used for compression/decompression

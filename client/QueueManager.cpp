@@ -426,7 +426,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 		if(records.size() < 5)
 			continue;
 
-		for(StringIter j = records.begin(); j != records.end(); j++) {
+		for(StringIter j = records.begin(); j != records.end(); ++j) {
 			j++; // filename
 			
 			const string& size   = *(++j);
@@ -448,7 +448,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.20 2002/04/22 13:58:14 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.21 2002/04/22 15:50:51 arnetheduck Exp $
  */
 
 

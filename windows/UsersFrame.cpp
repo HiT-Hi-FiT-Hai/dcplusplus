@@ -95,7 +95,7 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	usersMenu.CreatePopupMenu();
 	usersMenu.AppendMenu(MF_STRING, IDC_PRIVATEMESSAGE, CSTRING(SEND_PRIVATE_MESSAGE));
 	usersMenu.AppendMenu(MF_STRING, IDC_GETLIST, CSTRING(GET_FILE_LIST));
-	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(GET_FILE_LIST));
+	usersMenu.AppendMenu(MF_STRING, IDC_REMOVE, CSTRING(REMOVE));
 
 	HubManager::getInstance()->addListener(this);
 	ClientManager::getInstance()->addListener(this);
@@ -200,6 +200,6 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file UsersFrame.cpp
- * $Id: UsersFrame.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.4 2002/04/22 15:50:51 arnetheduck Exp $
  */
 
