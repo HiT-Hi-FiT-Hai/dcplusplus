@@ -262,15 +262,16 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 	}
 
 	if(d->isSet(Download::FLAG_USER_LIST)) {
-		if(aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+		if(!aConn->isSet(UserConnection::FLAG_NMDC) || aConn->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			d->setSource("files.xml.bz2");
+			d->setFlag(Download::FLAG_UTF8);
 		}
 	}
 
-	if(aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && d->isSet(Download::FLAG_UTF8)) {
+	if(!aConn->isSet(UserConnection::FLAG_NMDC) || (aConn->isSet(UserConnection::FLAG_SUPPORTS_ADCGET) && d->isSet(Download::FLAG_UTF8))) {
 		aConn->send(d->getCommand(
 			aConn->isSet(UserConnection::FLAG_SUPPORTS_ZLIB_GET),
-			aConn->isSet(UserConnection::FLAG_SUPPORTS_TTHF)
+			aConn->isSet(!aConn->isSet(UserConnection::FLAG_NMDC) || UserConnection::FLAG_SUPPORTS_TTHF)
 			));
 	} else {
 		if(BOOLSETTING(COMPRESS_TRANSFERS) && aConn->isSet(UserConnection::FLAG_SUPPORTS_GETZBLOCK) && d->getSize() != -1 ) {
@@ -479,7 +480,7 @@ bool DownloadManager::prepareFile(UserConnection* aSource, int64_t newSize /* = 
 	string target = d->getDownloadTarget();
 	File::ensureDirectory(target);
 	if(d->isSet(Download::FLAG_USER_LIST)) {
-		if(aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
+		if(!aSource->isSet(UserConnection::FLAG_NMDC) || aSource->isSet(UserConnection::FLAG_SUPPORTS_XML_BZLIST)) {
 			target += ".xml.bz2";
 		} else {
 			target += ".DcLst";
@@ -976,5 +977,5 @@ void DownloadManager::fileNotAvailable(UserConnection* aSource) {
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.131 2005/01/03 20:23:33 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.132 2005/01/03 20:44:55 arnetheduck Exp $
  */
