@@ -269,7 +269,7 @@ private:
 	// TimerManagerListener
 	virtual void onAction(TimerManagerListener::Types type, DWORD aTick) {
 		if(type == TimerManagerListener::SECOND) {
-			if((lastActivity + 60 * 1000) < aTick) {
+			if((lastActivity + 120 * 1000) < aTick) {
 				// Nothing's happened for 60 seconds, check if we're connected, if not, try to connect...
 				lastActivity = aTick;
 				// Try to send something for the fun of it...
@@ -281,6 +281,7 @@ private:
 						dcdebug("Client::onTimerSecond caught %s\n", e.getError().c_str());
 						fire(ClientListener::FAILED, this, e.getError());
 						disconnect();
+						connect(server, port);
 					}
 				} else {
 					// Try to reconnect...
@@ -328,9 +329,12 @@ private:
 
 /**
  * @file Client.h
- * $Id: Client.h,v 1.26 2002/01/13 22:50:47 arnetheduck Exp $
+ * $Id: Client.h,v 1.27 2002/01/15 00:41:54 arnetheduck Exp $
  * @if LOG
  * $Log: Client.h,v $
+ * Revision 1.27  2002/01/15 00:41:54  arnetheduck
+ * late night fixes...
+ *
  * Revision 1.26  2002/01/13 22:50:47  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -1,3 +1,14 @@
+ -- 0.121 2002-01-15 --
+* Fixed resume bug
+* Fixed rollback bug
+* Fixed upload slots bug
+* Fixed some minor download queue bugs
+* Tried a different approach to the download problems in 0.12. When implementing different user nicks on different hubs,
+  I had to change some of the download code to something that I'm not sure will work with the original client,
+  that's why you've had so many problems with 0.12. Please remember that this is still alpha software, and that
+  I release these versions this frequently so that 1) you have the latest of the latest and 2) so that I have someone
+  who does the testing for me to speed up development...anyway, keep on reporting them bugs and one day, they will be gone!!
+
  -- 0.12 2002-01-14 --
 * Improved search efficiency a tiny bit
 * Changed default option in the search window to 'At Least'. All files are at least 0 bytes long anyway...

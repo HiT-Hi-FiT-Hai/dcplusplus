@@ -749,8 +749,11 @@ void DownloadManager::load(SimpleXML* aXml) {
 				const string& nick = aXml->getChildAttrib("Nick");
 				const string& path = aXml->getChildAttrib("Path");
 				const string& file = aXml->getChildAttrib("FileName");
-
-				download(path + file, size, nick, target, resume);
+				try {
+					download(path + file, size, nick, target, resume);
+				} catch(...) {
+					// ...
+				}
 			}
 			aXml->stepOut();
 		}
@@ -761,9 +764,12 @@ void DownloadManager::load(SimpleXML* aXml) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.30 2002/01/14 22:19:43 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.31 2002/01/15 00:41:54 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.31  2002/01/15 00:41:54  arnetheduck
+ * late night fixes...
+ *
  * Revision 1.30  2002/01/14 22:19:43  arnetheduck
  * Commiting minor bugfixes
  *

@@ -29,7 +29,7 @@ void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG
 	cs.enter();
 	
 	try {
-		if((getFreeSlots() + 1) == 0) {
+		if((getFreeSlots()<0)) {
 			aSource->maxedOut();
 			removeConnection(aSource);
 			cs.leave();
@@ -166,9 +166,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.4 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.5 2002/01/15 00:41:54 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.5  2002/01/15 00:41:54  arnetheduck
+ * late night fixes...
+ *
  * Revision 1.4  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

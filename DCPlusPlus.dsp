@@ -455,7 +455,19 @@ SOURCE=.\res\DCPlusPlusdoc.ico
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\Directory.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\Favorites.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\folders.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\Hub.ico
 # End Source File
 # Begin Source File
 
@@ -467,7 +479,19 @@ SOURCE=.\res\mdichild.bmp
 # End Source File
 # Begin Source File
 
+SOURCE=.\res\PublicHubs.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\Search.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\res\toolbar.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\res\User.ico
 # End Source File
 # Begin Source File
 
