@@ -138,6 +138,8 @@ void TransferView::runUserCommand(UserCommand& uc) {
 	int i = -1;
 	while((i = ctrlTransfers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		ItemInfo* itemI = ctrlTransfers.getItemData(i);
+		if(!itemI->user->isOnline())
+			return;
 
 		ucParams["mynick"] = itemI->user->getClientNick();
 		ucParams["mycid"] = itemI->user->getClientCID().toBase32();
@@ -585,5 +587,5 @@ void TransferView::ItemInfo::disconnect() {
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.36 2004/10/02 22:22:50 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.37 2004/10/29 15:53:41 arnetheduck Exp $
  */

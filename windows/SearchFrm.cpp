@@ -667,6 +667,8 @@ void SearchFrame::runUserCommand(UserCommand& uc) {
 				continue;
 			nicks.insert(sr->getUser());
 		}
+		if(!sr->getUser()->isOnline())
+			return;
 		ucParams["mynick"] = sr->getUser()->getClientNick();
 		ucParams["mycid"] = sr->getUser()->getClientCID().toBase32();
 		ucParams["file"] = sr->getFile();
@@ -980,5 +982,5 @@ LRESULT SearchFrame::onItemChangedHub(int /* idCtrl */, LPNMHDR pnmh, BOOL& /* b
 
 /**
  * @file
- * $Id: SearchFrm.cpp,v 1.69 2004/10/14 18:12:57 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.70 2004/10/29 15:53:40 arnetheduck Exp $
  */

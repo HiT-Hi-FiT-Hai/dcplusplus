@@ -142,6 +142,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\client\AdcCommand.cpp">
+			</File>
+			<File
 				RelativePath=".\client\AdcHub.cpp">
 			</File>
 			<File
@@ -434,7 +437,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building StringDefs.cpp and Example.xml from StringDefs.h"
-						CommandLine="python makedefs.py"
+						CommandLine="python makedefs.py
+"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -442,7 +446,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Building StringDefs.cpp and Example.xml from StringDefs.h (you need python installed in c:\python23 for this to work)"
-						CommandLine="c:\python23\python.exe makedefs.py"
+						CommandLine="c:\python23\python.exe makedefs.py
+"
 						Outputs=".\client\StringDefs.cpp"/>
 				</FileConfiguration>
 			</File>

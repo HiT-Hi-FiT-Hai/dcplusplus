@@ -31,6 +31,89 @@
 
 #define FAVORITES_FILE "Favorites.xml"
 
+UserCommand HubManager::addUserCommand(int type, int ctx, int flags, const string& name, const string& command, const string& hub) {
+	// No dupes, add it...
+	Lock l(cs);
+	userCommands.push_back(UserCommand(lastId++, type, ctx, flags, name, command, hub));
+	UserCommand& uc = userCommands.back();
+	if(!uc.isSet(UserCommand::FLAG_NOSAVE)) 
+		save();
+	return userCommands.back();
+}
+
+bool HubManager::getUserCommand(int cid, UserCommand& uc) {
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getId() == cid) {
+			uc = *i;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool HubManager::moveUserCommand(int cid, int pos) {
+	dcassert(pos == -1 || pos == 1);
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getId() == cid) {
+			swap(*i, *(i + pos));
+			return true;
+		}
+	}
+	return false;
+}
+
+void HubManager::updateUserCommand(const UserCommand& uc) {
+	bool nosave = true;
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getId() == uc.getId()) {
+			*i = uc;
+			nosave = uc.isSet(UserCommand::FLAG_NOSAVE);
+			break;
+		}
+	}
+	if(!nosave)
+		save();
+}
+
+void HubManager::removeUserCommand(int cid) {
+	bool nosave = true;
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ++i) {
+		if(i->getId() == cid) {
+			nosave = i->isSet(UserCommand::FLAG_NOSAVE);
+			userCommands.erase(i);
+			break;
+		}
+	}
+	if(!nosave)
+		save();
+}
+void HubManager::removeUserCommand(const string& srv) {
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+		if((i->getHub() == srv) && i->isSet(UserCommand::FLAG_NOSAVE)) {
+			i = userCommands.erase(i);
+		} else {
+			++i;
+		}
+	}
+}
+
+void HubManager::removeHubUserCommands(int ctx, const string& hub) {
+	Lock l(cs);
+	for(UserCommand::Iter i = userCommands.begin(); i != userCommands.end(); ) {
+		if(i->getHub() == hub && i->isSet(UserCommand::FLAG_NOSAVE) && i->getCtx() & ctx) {
+			i = userCommands.erase(i);
+		} else {
+			++i;
+		}
+	}
+}
+
+
 void HubManager::addFavoriteUser(User::Ptr& aUser) { 
 	if(find(users.begin(), users.end(), aUser) == users.end()) {
 		users.push_back(aUser);
@@ -434,5 +517,5 @@ void HubManager::on(TypeBZ2, HttpConnection*) throw() {
 
 /**
  * @file
- * $Id: HubManager.cpp,v 1.55 2004/09/26 08:45:33 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.56 2004/10/29 15:53:37 arnetheduck Exp $
  */

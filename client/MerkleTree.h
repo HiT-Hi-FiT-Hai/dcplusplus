@@ -28,8 +28,6 @@
 #include "HashValue.h"
 #include "File.h"
 
-#include <math.h>
-
 /**
  * A class that represents a Merkle Tree hash. Storing
  * only the leaves of the tree, it is rather memory efficient, 
@@ -247,5 +245,5 @@ private:
 
 /**
  * @file
- * $Id: MerkleTree.h,v 1.18 2004/10/26 13:53:58 arnetheduck Exp $
+ * $Id: MerkleTree.h,v 1.19 2004/10/29 15:53:37 arnetheduck Exp $
  */

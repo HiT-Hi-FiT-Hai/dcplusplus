@@ -94,26 +94,26 @@ public:
 		last(0), actual(0), pos(0), startPos(0), size(-1) { };
 	virtual ~Transfer() { };
 	
-	int64_t getPos() { return pos; };
+	int64_t getPos() const { return pos; };
 	void setPos(int64_t aPos) { pos = aPos; };
 
 	void resetPos() { pos = getStartPos(); };
 	void setStartPos(int64_t aPos) { startPos = aPos; pos = aPos; };
-	int64_t getStartPos() { return startPos; }
+	int64_t getStartPos() const { return startPos; }
 
 	void addPos(int64_t aBytes, int64_t aActual) { pos += aBytes; actual+= aActual; };
 
 	enum { AVG_PERIOD = 30000 };
 	void updateRunningAverage();
 
-	int64_t getTotal() { return getPos() - getStartPos(); };
-	int64_t getActual() { return actual; };
+	int64_t getTotal() const { return getPos() - getStartPos(); };
+	int64_t getActual() const { return actual; };
 	
-	int64_t getSize() { return size; };
+	int64_t getSize() const { return size; };
 	void setSize(int64_t aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 
-	int64_t getAverageSpeed() {
+	int64_t getAverageSpeed() const {
 		int64_t diff = (int64_t)(GET_TICK() - getStart());
 		return (diff > 0) ? (getTotal() * (int64_t)1000 / diff) : 0;
 	}
@@ -124,7 +124,7 @@ public:
 		return (avg > 0) ? ((getSize() - getPos()) / avg) : 0;
 	}
 
-	int64_t getBytesLeft() {
+	int64_t getBytesLeft() const {
 		return getSize() - getPos();
 	}
 
@@ -344,6 +344,6 @@ private:
 
 /**
  * @file
- * $Id: UserConnection.h,v 1.79 2004/09/10 14:44:16 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.80 2004/10/29 15:53:37 arnetheduck Exp $
  */
 

@@ -142,6 +142,26 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	return TRUE;
 }
 
+LRESULT PublicHubsFrame::onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
+	if(l->iSubItem == ctrlHubs.getSortColumn()) {
+		if (!ctrlHubs.isAscending())
+			ctrlHubs.setSort(-1, ctrlHubs.getSortType());
+		else
+			ctrlHubs.setSortDirection(false);
+	} else {
+		// BAH, sorting on bytes will break of course...oh well...later...
+		if(l->iSubItem == COLUMN_USERS || l->iSubItem == COLUMN_MINSLOTS ||l->iSubItem == COLUMN_MAXHUBS || l->iSubItem == COLUMN_MAXUSERS) {
+			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
+		} else if(l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE || l->iSubItem == COLUMN_RELIABILITY) {
+			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
+		} else {
+			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+		}
+	}
+	return 0;
+}
+
 LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	if(!checkNick())
 		return 0;
@@ -454,6 +474,6 @@ LRESULT PublicHubsFrame::onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 /**
  * @file
- * $Id: PublicHubsFrm.cpp,v 1.27 2004/09/13 23:02:44 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.28 2004/10/29 15:53:41 arnetheduck Exp $
  */
 

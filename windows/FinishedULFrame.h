@@ -68,29 +68,16 @@ public:
 	LRESULT onViewAsText(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onOpenFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-	
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+	void UpdateLayout(BOOL bResizeBars = TRUE);
+
 	LRESULT onSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /* bHandled */) {
 		ctrlList.SetFocus();
 		return 0;
 	}
 
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		// Get the bounding rectangle of the client area. 
-		ctrlList.GetClientRect(&rc);
-		ctrlList.ScreenToClient(&pt); 
-		
-		if (ctrlList.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
-		{ 
-			ctrlList.ClientToScreen(&pt);
-			ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
-			return TRUE; 
-		}
-		return FALSE; 
-	}
-	
 	static int sortSize(LPARAM a, LPARAM b) {
 		FinishedItem* c = (FinishedItem*)a;
 		FinishedItem* d = (FinishedItem*)b;
@@ -103,28 +90,6 @@ public:
 		return compare(c->getAvgSpeed(), d->getAvgSpeed());
 	}
 
-	LRESULT onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlList.getSortColumn()) {
-			if (!ctrlList.isAscending())
-				ctrlList.setSort(-1, ctrlList.getSortType());
-			else
-				ctrlList.setSortDirection(false);
-		} else {
-			switch(l->iSubItem) {
-			case COLUMN_SIZE:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
-				break;
-			case COLUMN_SPEED:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSpeed);
-				break;
-			default:
-				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-				break;
-			}
-		}
-		return 0;
-	}
 	
 	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
@@ -136,30 +101,6 @@ public:
 		return 0;
 	}
 
-	void UpdateLayout(BOOL bResizeBars = TRUE)
-	{
-		RECT rect;
-		GetClientRect(&rect);
-
-		// position bars and offset their dimensions
-		UpdateBarsPosition(rect, bResizeBars);
-
-		if(ctrlStatus.IsWindow()) {
-			CRect sr;
-			int w[4];
-			ctrlStatus.GetClientRect(sr);
-			w[3] = sr.right - 16;
-			w[2] = max(w[3] - 100, 0);
-			w[1] = max(w[2] - 100, 0);
-			w[0] = max(w[1] - 100, 0);
-
-			ctrlStatus.SetParts(4, w);
-		}
-		
-		CRect rc(rect);
-		ctrlList.MoveWindow(rc);
-	}
-	
 private:
 	enum {
 		SPEAK_ADD_LINE,
@@ -229,5 +170,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedULFrame.h,v 1.16 2004/10/02 22:22:49 arnetheduck Exp $
+ * $Id: FinishedULFrame.h,v 1.17 2004/10/29 15:53:41 arnetheduck Exp $
  */

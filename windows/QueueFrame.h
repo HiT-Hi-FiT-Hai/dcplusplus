@@ -99,6 +99,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void removeDir(HTREEITEM ht);
@@ -124,22 +125,6 @@ public:
 
 	LRESULT onMove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		usingDirMenu ? moveSelectedDir() : moveSelected();
-		return 0;
-	}
-
-	LRESULT onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
-		if(kd->wVKey == VK_DELETE) {
-			removeSelected();
-		} else if(kd->wVKey == VK_ADD){
-			// Increase Item priority
-			changePriority(true);
-		} else if(kd->wVKey == VK_SUBTRACT){
-			// Decrease item priority
-			changePriority(false);
-		} else if(kd->wVKey == VK_TAB) {
-			onTab();
-		}
 		return 0;
 	}
 
@@ -438,5 +423,5 @@ private:
 
 /**
  * @file
- * $Id: QueueFrame.h,v 1.43 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: QueueFrame.h,v 1.44 2004/10/29 15:53:41 arnetheduck Exp $
  */

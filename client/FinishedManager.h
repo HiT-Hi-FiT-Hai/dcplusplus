@@ -86,39 +86,8 @@ public:
 	FinishedItem::List& lockList(bool upload = false) { cs.enter(); return upload ? uploads : downloads; };
 	void unlockList() { cs.leave(); };
 
-	void remove(FinishedItem *item, bool upload = false)
-	{
-		{
-			Lock l(cs);
-			FinishedItem::List *listptr = upload ? &uploads : &downloads;
-			FinishedItem::Iter it = find(listptr->begin(), listptr->end(), item);
-
-			if(it != listptr->end())
-				listptr->erase(it);
-			else
-				return;
-		}
-		if (!upload)
-			fire(FinishedManagerListener::RemovedDl(), item);
-		else
-			fire(FinishedManagerListener::RemovedUl(), item);
-		delete item;		
-	}
-
-	void removeAll(bool upload = false)
-	{
-		{
-			Lock l(cs);
-			FinishedItem::List *listptr = upload ? &uploads : &downloads;
-			for_each(listptr->begin(), listptr->end(), DeleteFunction<FinishedItem*>());
-			listptr->clear();
-		}
-		if (!upload)
-			fire(FinishedManagerListener::RemovedAllDl());
-		else
-			fire(FinishedManagerListener::RemovedAllUl());
-	}
-
+	void remove(FinishedItem *item, bool upload = false);
+	void removeAll(bool upload = false);
 private:
 	friend class Singleton<FinishedManager>;
 	
@@ -139,5 +108,5 @@ private:
 
 /**
  * @file
- * $Id: FinishedManager.h,v 1.13 2004/09/06 12:32:42 arnetheduck Exp $
+ * $Id: FinishedManager.h,v 1.14 2004/10/29 15:53:37 arnetheduck Exp $
  */

@@ -19,6 +19,8 @@
 #ifndef _COMMAND_H
 #define _COMMAND_H
 
+#include "CID.h"
+
 class Command {
 public:
 	template<u_int32_t T>
@@ -71,33 +73,8 @@ public:
 	StringList& getParameters() { return parameters; }
 	const StringList& getParameters() const { return parameters; }
 
-	string toString(bool nmdc = false) const {
-		string tmp;
-		if(nmdc) {
-			tmp += "$ADC";
-		} else {
-			tmp += getType();
-		}
-		tmp += cmdChar;
-		if(getType() != TYPE_CLIENT) {
-			tmp += ' ';
-			tmp += from.toBase32();
-		}
-		if(getType() == TYPE_DIRECT) {
-			tmp += ' ';
-			tmp += to.toBase32();
-		}
-		for(StringIterC i = getParameters().begin(); i != getParameters().end(); ++i) {
-			tmp += ' ';
-			tmp += escape(*i);
-		}
-		if(nmdc) {
-			tmp += '|';
-		} else {
-			tmp += '$';
-		}
-		return tmp;
-	}
+	string toString(bool nmdc = false) const;
+
 	void addParam(const string& name, const string& value) {
 		parameters.push_back(name);
 		parameters.back() += value;
@@ -109,27 +86,8 @@ public:
 		return getParameters().size() > n ? getParameters()[n] : Util::emptyString;
 	}
 	/** Return a named parameter where the name is a two-letter code */
-	bool getParam(const char* name, size_t start, string& ret) const {
-		for(string::size_type i = start; i < getParameters().size(); ++i) {
-			if(toCode(name) == toCode(getParameters()[i].c_str())) {
-				ret = getParameters()[i].substr(2);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	bool hasFlag(const char* name, size_t start) const {
-		for(string::size_type i = start; i < getParameters().size(); ++i) {
-			if(toCode(name) == toCode(getParameters()[i].c_str()) && 
-				getParameters()[i][2] == '1' &&
-				getParameters()[i].size() == 3) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	bool getParam(const char* name, size_t start, string& ret) const;
+	bool hasFlag(const char* name, size_t start) const;
 	static u_int16_t toCode(const char* x) { return *((u_int16_t*)x); }
 
 	bool operator==(u_int32_t aCmd) { return cmdInt == aCmd; }
@@ -183,6 +141,8 @@ public:
 			CMD(SND);
 			CMD(NTD);
 		default: break;
+#undef CMD
+
 		}
 	}
 };
@@ -190,5 +150,5 @@ public:
 #endif // _COMMAND_H
 /**
 * @file
-* $Id: AdcCommand.h,v 1.9 2004/10/21 10:27:15 arnetheduck Exp $
+* $Id: AdcCommand.h,v 1.10 2004/10/29 15:53:38 arnetheduck Exp $
 */

@@ -183,7 +183,8 @@ void ADLSearchManager::MatchesFile(DestDirList& destDirVector, DirectoryListing:
 	for(DestDirList::iterator id = destDirVector.begin(); id != destDirVector.end(); ++id) {
 		if(id->subdir != NULL) {
 			DirectoryListing::File *copyFile = new DirectoryListing::File(*currentFile);
-			copyFile->setAdls(true);
+			dcassert(id->subdir->getAdls());
+			
 			id->subdir->files.push_back(copyFile);
 		}
 		id->fileAdded = false;	// Prepare for next stage
@@ -294,6 +295,6 @@ void ADLSearchManager::PrepareDestinationDirectories(DestDirList& destDirVector,
 
 /**
 * @file
-* $Id: ADLSearch.cpp,v 1.17 2004/10/26 13:53:58 arnetheduck Exp $
+* $Id: ADLSearch.cpp,v 1.18 2004/10/29 15:53:37 arnetheduck Exp $
 */
 

@@ -70,6 +70,7 @@ public:
 	LRESULT onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT onMoveUp(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onMoveDown(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	bool checkNick();
 	void UpdateLayout(BOOL bResizeBars = TRUE);
@@ -84,48 +85,12 @@ public:
 		return 0;
 	}
 	
-	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
-		RECT rc;                    // client area of window 
-		POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
-		
-		if(ctrlHubs.GetSelectedCount() > 0) {
-			// Get the bounding rectangle of the client area. 
-			ctrlHubs.GetClientRect(&rc);
-			ctrlHubs.ScreenToClient(&pt); 
-
-			if (PtInRect(&rc, pt)) 
-			{ 
-				ctrlHubs.ClientToScreen(&pt);
-				hubsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
-
-				return TRUE; 
-			}
-		}
-		
-		return FALSE; 
-	}
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
 		return 0;
 	}
 
-#if 0
-	// No sort, it'll screw up the move functionality...
-	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlHubs.getSortColumn()) {
-			if (!ctrlHubs.getSortDirection())
-				ctrlHubs.setSort(-1, ctrlHubs.getSortType());
-			else
-				ctrlHubs.setSortDirection(false);
-		} else {
-			ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-		}
-		return 0;
-	}
-#endif // 0
-	
 private:
 
 	enum {
@@ -174,6 +139,6 @@ private:
 
 /**
  * @file
- * $Id: FavoritesFrm.h,v 1.18 2004/09/06 12:32:43 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.19 2004/10/29 15:53:41 arnetheduck Exp $
  */
 

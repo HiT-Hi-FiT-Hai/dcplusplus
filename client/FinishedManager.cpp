@@ -28,6 +28,37 @@ FinishedManager::~FinishedManager()
 	for_each(uploads.begin(), uploads.end(), DeleteFunction<FinishedItem*>());
 }
 
+void FinishedManager::remove(FinishedItem *item, bool upload /* = false */) {
+	{
+		Lock l(cs);
+		FinishedItem::List *listptr = upload ? &uploads : &downloads;
+		FinishedItem::Iter it = find(listptr->begin(), listptr->end(), item);
+
+		if(it != listptr->end())
+			listptr->erase(it);
+		else
+			return;
+	}
+	if (!upload)
+		fire(FinishedManagerListener::RemovedDl(), item);
+	else
+		fire(FinishedManagerListener::RemovedUl(), item);
+	delete item;		
+}
+
+void FinishedManager::removeAll(bool upload /* = false */) {
+	{
+		Lock l(cs);
+		FinishedItem::List *listptr = upload ? &uploads : &downloads;
+		for_each(listptr->begin(), listptr->end(), DeleteFunction<FinishedItem*>());
+		listptr->clear();
+	}
+	if (!upload)
+		fire(FinishedManagerListener::RemovedAllDl());
+	else
+		fire(FinishedManagerListener::RemovedAllUl());
+}
+
 void FinishedManager::on(DownloadManagerListener::Complete, Download* d) throw()
 {
 	if(!d->isSet(Download::FLAG_USER_LIST) || BOOLSETTING(LOG_FILELIST_TRANSFERS)) {
@@ -62,5 +93,5 @@ void FinishedManager::on(UploadManagerListener::Complete, Upload* u) throw()
 
 /**
  * @file
- * $Id: FinishedManager.cpp,v 1.18 2004/09/11 06:50:48 arnetheduck Exp $
+ * $Id: FinishedManager.cpp,v 1.19 2004/10/29 15:53:37 arnetheduck Exp $
  */

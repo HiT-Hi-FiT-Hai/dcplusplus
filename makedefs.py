@@ -1,5 +1,6 @@
 import re
 import codecs
+import xml.sax.saxutils
 
 def makename(n):
 	newname = "";
@@ -16,11 +17,6 @@ def makename(n):
 				
 	return newname;
 
-def encval(string):
-	return string.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;');
-	
-def encattr(string):
-	return encval(string).replace('"', '&quot;').replace("'", '&apos;');
 	
 version = re.search("VERSIONSTRING (\S+)", file("client/version.h").read()).group(1)
 
@@ -36,23 +32,27 @@ example += '<Language Name="Example Language" Author="arnetheduck" Version=' + v
 example += '\t<Strings>\r\n';
 
 lre = re.compile('\s*(\w+),\s*//\s*\"(.+)\"\s*')
-decoder = codecs.getdecoder('cp1252');
-encoder = codecs.getencoder('utf8');
+
+decoder = codecs.getdecoder('cp1252')
+encoder = codecs.getencoder('utf8')
+recodeattr = lambda s: encoder(decoder(xml.sax.saxutils.quoteattr(s))[0])[0]
+recodeval = lambda s: encoder(decoder(xml.sax.saxutils.escape(s,{"\\t" : "\t"}))[0])[0]
+
 for x in file("client/StringDefs.h", "r"):
-    if x[:13] == "// @Strings: ":
+    if x.startswith("// @Strings: "):
         varstr = x[13:].strip();
-    elif x[:11] == "// @Names: ":
+    elif x.startswith("// @Names: "):
         varname = x[11:].strip();
-    elif x[:12] == "// @Prolog: ":
+    elif x.startswith("// @Prolog: "):
         prolog += x[12:];
     elif len(x) >= 5:
         match = lre.match(x);
         if match is not None:
             name , value = match.groups();
-            strings += '"' + value + '", \n';
+            strings += '"' + value + '", \n'
             newname = makename(name)
-            names += '"' + newname + '", \n';
-            example += '\t\t<String Name="' + encoder(decoder(encattr(newname))[0])[0] + '">' + encoder(decoder(encval(value))[0])[0] + '</String>\n';
+            names += '"' + newname + '", \n'
+            example += '\t\t<String Name=%s>%s</String>\n' % (recodeattr(newname),  recodeval(value))
 
 example += '\t</Strings>\n';
 example += '</Language>\n';

@@ -306,6 +306,23 @@ void QueueFrame::addQueueList(const QueueItem::StringMap& li) {
 	ctrlDirs.Invalidate();
 }
 
+LRESULT QueueFrame::onKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLVKEYDOWN* kd = (NMLVKEYDOWN*) pnmh;
+	if(kd->wVKey == VK_DELETE) {
+		removeSelected();
+	} else if(kd->wVKey == VK_ADD){
+		// Increase Item priority
+		changePriority(true);
+	} else if(kd->wVKey == VK_SUBTRACT){
+		// Decrease item priority
+		changePriority(false);
+	} else if(kd->wVKey == VK_TAB) {
+		onTab();
+	}
+	return 0;
+}
+
+
 HTREEITEM QueueFrame::addDirectory(const tstring& dir, bool isFileList /* = false */, HTREEITEM startAt /* = NULL */) {
 	TVINSERTSTRUCT tvi;
 	tvi.hInsertAfter = TVI_SORT;
@@ -1206,7 +1223,7 @@ void QueueFrame::moveNode(HTREEITEM item, HTREEITEM parent) {
 
 /**
  * @file
- * $Id: QueueFrame.cpp,v 1.62 2004/10/03 15:11:02 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.63 2004/10/29 15:53:41 arnetheduck Exp $
  */
 
 

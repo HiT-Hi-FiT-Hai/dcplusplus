@@ -78,6 +78,70 @@ LRESULT FinishedULFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	return TRUE;
 }
 
+LRESULT FinishedULFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+	// Get the bounding rectangle of the client area. 
+	ctrlList.GetClientRect(&rc);
+	ctrlList.ScreenToClient(&pt); 
+
+	if (ctrlList.GetSelectedCount() > 0 && PtInRect(&rc, pt)) 
+	{ 
+		ctrlList.ClientToScreen(&pt);
+		ctxMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);			
+		return TRUE; 
+	}
+	return FALSE; 
+}
+
+LRESULT FinishedULFrame::onColumnClickFinished(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+	NMLISTVIEW* const l = (NMLISTVIEW*)pnmh;
+	if(l->iSubItem == ctrlList.getSortColumn()) {
+		if (!ctrlList.isAscending())
+			ctrlList.setSort(-1, ctrlList.getSortType());
+		else
+			ctrlList.setSortDirection(false);
+	} else {
+		switch(l->iSubItem) {
+			case COLUMN_SIZE:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSize);
+				break;
+			case COLUMN_SPEED:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_FUNC, true, sortSpeed);
+				break;
+			default:
+				ctrlList.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
+				break;
+		}
+	}
+	return 0;
+}
+
+void FinishedULFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */)
+{
+	RECT rect;
+	GetClientRect(&rect);
+
+	// position bars and offset their dimensions
+	UpdateBarsPosition(rect, bResizeBars);
+
+	if(ctrlStatus.IsWindow()) {
+		CRect sr;
+		int w[4];
+		ctrlStatus.GetClientRect(sr);
+		w[3] = sr.right - 16;
+		w[2] = max(w[3] - 100, 0);
+		w[1] = max(w[2] - 100, 0);
+		w[0] = max(w[1] - 100, 0);
+
+		ctrlStatus.SetParts(4, w);
+	}
+
+	CRect rc(rect);
+	ctrlList.MoveWindow(rc);
+}
+
 LRESULT FinishedULFrame::onDoubleClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
 	
 	NMITEMACTIVATE * const item = (NMITEMACTIVATE*) pnmh;
@@ -190,5 +254,5 @@ void FinishedULFrame::addEntry(FinishedItem* entry) {
 
 /**
  * @file
- * $Id: FinishedULFrame.cpp,v 1.22 2004/09/10 14:44:17 arnetheduck Exp $
+ * $Id: FinishedULFrame.cpp,v 1.23 2004/10/29 15:53:41 arnetheduck Exp $
  */

@@ -88,6 +88,7 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onCopyHub(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	bool checkNick();
@@ -106,26 +107,6 @@ public:
 	
 	LRESULT onSetFocus(UINT /* uMsg */, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		ctrlHubs.SetFocus();
-		return 0;
-	}
-	
-	LRESULT onColumnClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
-		NMLISTVIEW* l = (NMLISTVIEW*)pnmh;
-		if(l->iSubItem == ctrlHubs.getSortColumn()) {
-			if (!ctrlHubs.isAscending())
-				ctrlHubs.setSort(-1, ctrlHubs.getSortType());
-			else
-				ctrlHubs.setSortDirection(false);
-		} else {
-			// BAH, sorting on bytes will break of course...oh well...later...
-			if(l->iSubItem == COLUMN_USERS || l->iSubItem == COLUMN_MINSLOTS ||l->iSubItem == COLUMN_MAXHUBS || l->iSubItem == COLUMN_MAXUSERS) {
-				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_INT);
-			} else if(l->iSubItem == COLUMN_SHARED || l->iSubItem == COLUMN_MINSHARE || l->iSubItem == COLUMN_RELIABILITY) {
-				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_FLOAT);
-			} else {
-				ctrlHubs.setSort(l->iSubItem, ExListViewCtrl::SORT_STRING_NOCASE);
-			}
-		}
 		return 0;
 	}
 	
@@ -192,5 +173,5 @@ private:
 
 /**
  * @file
- * $Id: PublicHubsFrm.h,v 1.25 2004/09/13 23:02:44 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.26 2004/10/29 15:53:40 arnetheduck Exp $
  */

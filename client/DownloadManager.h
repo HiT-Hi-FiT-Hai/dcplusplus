@@ -78,28 +78,7 @@ public:
 		return tt;
 	}
 
-	Command getCommand(bool zlib, bool tthf) {
-		Command cmd = Command(Command::GET());
-		if(isSet(FLAG_TREE_DOWNLOAD)) {
-			cmd.addParam("tthl");
-		} else {
-			cmd.addParam("file");
-		}
-		if(tthf && getTTH() != NULL) {
-			cmd.addParam("TTH/" + getTTH()->toBase32());
-		} else {
-			cmd.addParam(Util::toAdcFile(getSource()));
-		}
-		cmd.addParam(Util::toString(getPos()));
-		cmd.addParam(Util::toString(getSize() - getPos()));
-
-		if(zlib && getSize() != -1 && BOOLSETTING(COMPRESS_TRANSFERS)) {
-			setFlag(FLAG_ZDOWNLOAD);
-			cmd.addParam("ZL1");
-		}
-
-		return cmd;
-	}
+	Command getCommand(bool zlib, bool tthf);
 
 	typedef CalcOutputStream<CRC32Filter, true> CrcOS;
 	GETSET(string, source, Source);
@@ -230,5 +209,5 @@ private:
 
 /**
  * @file
- * $Id: DownloadManager.h,v 1.69 2004/09/09 09:27:36 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.70 2004/10/29 15:53:37 arnetheduck Exp $
  */
