@@ -15,7 +15,7 @@
 * ADC url's clickable (thanks naga)
 * Improved search timer to avoid spamming hub (thanks naga)
 * Redid some of the hash storage code, should be slighly more efficient
-
+* Share is cached for faster startup
 
 -- 0.668 2004-11-30 --
 * Fixed crash on open own filelist (thanks sulan)

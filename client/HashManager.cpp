@@ -30,7 +30,11 @@ static const u_int32_t HASH_FILE_VERSION=1;
 
 bool HashManager::checkTTH(const string& aFileName, int64_t aSize, u_int32_t aTimeStamp) {
 	Lock l(cs);
-	return store.checkTTH(aFileName, aSize, aTimeStamp);
+	if(!store.checkTTH(aFileName, aSize, aTimeStamp)) {
+		hasher.hashFile(aFileName, aSize);
+		return false;
+	}
+	return true;
 }
 
 const TTHValue& HashManager::getTTH(const string& aFileName, int64_t aSize) throw(HashException) {
@@ -600,5 +604,5 @@ int HashManager::Hasher::run() {
 
 /**
  * @file
- * $Id: HashManager.cpp,v 1.36 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: HashManager.cpp,v 1.37 2004/12/27 20:30:03 arnetheduck Exp $
  */

@@ -58,6 +58,36 @@
 #include <list>
 #include <utility>
 
+// Use maps if hash_maps aren't available
+#ifdef HAVE_HASH
+# ifdef HAVE_STLPORT
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+# elif defined(__GLIBCPP__) || defined(__GLIBCXX__)  // Using GNU C++ library?
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc, eq >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc, eq >
+# elif defined(_MSC_VER)  // Assume the msvc 7.x stl
+#  define HASH_MAP_X(key, type, hfunc, eq, order) hash_map<key, type, hfunc >
+#  define HASH_MULTIMAP_X(key, type, hfunc, eq, order) hash_multimap<key, type, hfunc >
+# else
+#  error Unknown STL, hashes need to be configured
+# endif
+
+# define HASH_SET hash_set
+# define HASH_MAP hash_map
+# define HASH_MULTIMAP hash_multimap
+
+#else // HAVE_HASH
+
+# define HASH_SET set
+# define HASH_MAP map
+# define HASH_MAP_X(key, type, hfunc, eq, order) map<key, type, order >
+# define HASH_MULTIMAP multimap
+# define HASH_MULTIMAP_X(key, type, hfunc, eq, order) multimap<key, type, order >
+
+#endif // HAVE_HASH
+
+
 #ifdef HAVE_STLPORT
 using namespace _STL;
 #include <hash_map>
@@ -90,5 +120,5 @@ using namespace stdext;
 
 /**
  * @file
- * $Id: stdinc.h,v 1.12 2004/12/04 00:33:38 arnetheduck Exp $
+ * $Id: stdinc.h,v 1.13 2004/12/27 20:30:04 arnetheduck Exp $
  */

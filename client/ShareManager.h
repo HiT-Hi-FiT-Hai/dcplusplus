@@ -45,6 +45,8 @@ class File;
 class OutputStream;
 class MemoryInputStream;
 
+struct ShareLoader;
+
 class ShareManager : public Singleton<ShareManager>, private SettingsManagerListener, private Thread, private TimerManagerListener,
 	private HashManagerListener, private DownloadManagerListener
 {
@@ -191,6 +193,7 @@ private:
 	};
 
 	friend class Directory;
+	friend struct ShareLoader;
 
 	friend class Singleton<ShareManager>;
 	ShareManager();
@@ -241,6 +244,7 @@ private:
 	bool nmdcDirty;
 	bool refreshDirs;
 	bool update;
+	bool initial;
 	
 	int listN;
 
@@ -270,10 +274,11 @@ private:
 	bool checkFile(const string& aDir, const string& aFile, Directory::File::Iter& it);
 
 	Directory* buildTree(const string& aName, Directory* aParent);
-	void addTree(const string& aName, Directory* aDirectory);
+	void addTree(Directory* aDirectory);
 	void addFile(Directory* dir, Directory::File::Iter i);
 	void generateNmdcList();
 	void generateXmlList();
+	bool loadCache();
 
 	void removeTTH(const TTHValue& tth, const Directory::File::Iter&);
 
@@ -306,6 +311,6 @@ private:
 
 /**
  * @file
- * $Id: ShareManager.h,v 1.69 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.70 2004/12/27 20:30:04 arnetheduck Exp $
  */
 

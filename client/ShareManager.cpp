@@ -43,7 +43,7 @@
 #include <limits>
 
 ShareManager::ShareManager() : hits(0), listLen(0), bzXmlListLen(0),
-	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), listN(0), lFile(NULL), 
+	xmlDirty(true), nmdcDirty(false), refreshDirs(false), update(false), initial(true), listN(0), lFile(NULL), 
 	xFile(NULL), lastXmlUpdate(0), lastNmdcUpdate(0), lastFullUpdate(GET_TICK()), bloom(1<<20) 
 { 
 	SettingsManager::getInstance()->addListener(this);
@@ -246,6 +246,82 @@ void ShareManager::load(SimpleXML* aXml) {
 	}
 }
 
+struct ShareLoader : public SimpleXMLReader::CallBack {
+	ShareLoader(ShareManager::Directory::Map& aDirs, StringPairList& aVirts) : dirs(aDirs), virts(aVirts), cur(NULL), depth(0) { }
+	virtual void startTag(const string& name, StringPairList& attribs, bool simple) {
+		if(name == "Directory") {
+			if(depth == 0) {
+				const string& name = getAttrib(attribs, "Name", 0);
+				for(StringPairIter i = virts.begin(); i != virts.end(); ++i) {
+					if(i->first == name) {
+						cur = dirs[i->second];
+						break;
+					}
+				}
+			} else if(cur != NULL) {
+				cur = new ShareManager::Directory(getAttrib(attribs, "Name", 0), cur);
+				cur->addType(SearchManager::TYPE_DIRECTORY); // needed since we match our own name in directory searches
+				cur->getParent()->directories[cur->getName()] = cur;
+			}
+
+			if(simple)
+				cur = cur->getParent();
+			else
+				depth++;
+		} else if(cur != NULL && name == "File") {
+			const string& fname = getAttrib(attribs, "Name", 0);
+			int64_t size = Util::toInt64(getAttrib(attribs, "Size", 1));
+			const string& root = getAttrib(attribs, "TTH", 2);
+			cur->files.insert(ShareManager::Directory::File(fname, size, cur, TTHValue(root)));
+		}
+	}
+	virtual void endTag(const string& name, const string&) {
+		if(name == "Directory") {
+			depth--;
+			if(cur) {
+				cur = cur->getParent();
+			}
+		}
+	}
+
+private:
+	StringPairList& virts;
+	ShareManager::Directory::Map& dirs;
+
+	ShareManager::Directory* cur;
+	size_t depth;
+};
+
+bool ShareManager::loadCache() {
+	try {
+		ShareLoader loader(directories, virtualMap);
+		string txt;
+		::File ff(Util::getAppPath() + "files.xml.bz2", ::File::READ, ::File::OPEN);
+		FilteredInputStream<UnBZFilter, false> f(&ff);
+		const size_t BUF_SIZE = 64*1024;
+		char buf[BUF_SIZE];
+		size_t len;
+		for(;;) {
+			size_t n = BUF_SIZE;
+			len = f.read(buf, n);
+			txt.append(buf, len);
+			if(len < BUF_SIZE)
+				break;
+		}
+
+		SimpleXMLReader(&loader).fromXML(txt);
+
+		for(Directory::MapIter i = directories.begin(); i != directories.end(); ++i) {
+			addTree(i->second);
+		}
+
+		return true;
+	} catch(const Exception& e) {
+		dcdebug("%s\n", e.getError().c_str());
+	}
+	return false;
+}
+
 void ShareManager::save(SimpleXML* aXml) {
 	RLock<> l(cs);
 	
@@ -298,7 +374,7 @@ void ShareManager::addDirectory(const string& aDirectory, const string& aName) t
 
 	{
 		WLock<> l(cs);
-		addTree(d, dp);
+		addTree(dp);
 
 		directories[d] = dp;
 		virtualMap.push_back(make_pair(vName, d));
@@ -582,12 +658,12 @@ ShareManager::Directory* ShareManager::buildTree(const string& aName, Directory*
 	return dir;
 }
 
-void ShareManager::addTree(const string& fullName, Directory* dir) {
+void ShareManager::addTree(Directory* dir) {
 	bloom.add(Text::toLower(dir->getName()));
 
 	for(Directory::MapIter i = dir->directories.begin(); i != dir->directories.end(); ++i) {
 		Directory* d = i->second;
-		addTree(fullName + d->getName() + PATH_SEPARATOR, d);
+		addTree(d);
 	}
 
 	for(Directory::File::Iter i = dir->files.begin(); i != dir->files.end(); ) {
@@ -629,8 +705,13 @@ void ShareManager::refresh(bool dirs /* = false */, bool aUpdate /* = true */, b
 	update = aUpdate;
 	refreshDirs = dirs;
 	join();
+	bool cached = false;
+	if(initial) {
+		cached = loadCache();
+		initial = false;
+	}
 	start();
-	if(block) {
+	if(block && !cached) {
 		join();
 	} else {
 		setThreadPriority(Thread::LOW);
@@ -666,7 +747,7 @@ int ShareManager::run() {
 				virtualMap = dirs;
 
 				for(Directory::MapIter i = newDirs.begin(); i != newDirs.end(); ++i) {
-					addTree(i->first, i->second);
+					addTree(i->second);
 					directories.insert(*i);
 				}
 			}
@@ -1343,6 +1424,6 @@ void ShareManager::on(TimerManagerListener::Minute, u_int32_t tick) throw() {
 
 /**
  * @file
- * $Id: ShareManager.cpp,v 1.118 2004/12/19 18:15:43 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.119 2004/12/27 20:30:04 arnetheduck Exp $
  */
 

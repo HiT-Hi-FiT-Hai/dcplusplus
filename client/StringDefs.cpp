@@ -373,7 +373,7 @@ string ResourceManager::strings[] = {
 "Filter kick and NMDC debug messages", 
 "Set Finished Manager(s) tab bold when an entry is added", 
 "Format", 
-"Personal information", 
+"Personal information ", 
 "Get User Country", 
 "Accept custom user commands from hub", 
 "Ignore private messages from offline users", 

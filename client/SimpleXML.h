@@ -31,12 +31,8 @@ STANDARD_EXCEPTION(SimpleXMLException);
 
 /**
  * This class reads an XML and calls a callback for each
- * element encountered. T is a functor with two overloads,
- * void operator()(const string& name, StringPairList& attribs, bool simple)
- * void operator()(const string& data);
- * The first will be called on every tag encountered, the second when exiting
- * from a non-simple tag.
- * It is in now way a full XML parser.
+ * element encountered.
+ * It is in no way a full XML parser.
  */
 class SimpleXMLReader {
 public:
@@ -287,6 +283,6 @@ private:
 
 /**
  * @file
- * $Id: SimpleXML.h,v 1.39 2004/12/05 16:19:18 arnetheduck Exp $
+ * $Id: SimpleXML.h,v 1.40 2004/12/27 20:30:04 arnetheduck Exp $
  */
 
