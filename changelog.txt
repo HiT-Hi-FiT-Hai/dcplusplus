@@ -3,7 +3,7 @@
 * Fixed a crash with certain queues when opening queue frame
 * Fixed a bug in the search frame not setting b/kB/MB correctly when searching for alternates
 * Fixed bad loading of menu translations
-* Fixed tag not being removed when someone turs it off
+* Fixed tag not being removed when someone turns it off
 * Added connection flooding protection
 * Fixed a bug with file extension being cut off when moving files in certain windows setups (I think, not tested)
 * Small fix to ip detect code (thanks fusbar)
