@@ -105,7 +105,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int idCtrl, LPNMHDR pnmh, BOOL& bH
 	if(item->iItem != -1) {
 		char buf[256];
 		
-		ctrlHubs.GetItemText(item->iItem, 3, buf, 256);
+		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
@@ -136,7 +136,7 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD wNotifyCode, WORD wID, HWND hWndC
 	
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
-		ctrlHubs.GetItemText(i, 3, buf, 256);
+		ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
 		string tmp = buf;
 		if(!ClientManager::getInstance()->isConnected(tmp)) {
 			HubFrame* frm = new HubFrame(buf);
@@ -206,9 +206,12 @@ LRESULT PublicHubsFrame::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.12 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.13 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.13  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.12  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -1,3 +1,7 @@
+ -- 0.122 2002-01-16 --
+* Fixed search bug
+* Hopefully fixed download bug, please report...
+
  -- 0.121 2002-01-15 --
 * Fixed resume bug
 * Fixed rollback bug

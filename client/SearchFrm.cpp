@@ -63,14 +63,14 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 	ctrlSizeMode.SetCurSel(2);
 
-	ctrlResults.InsertColumn(0, _T("User"), LVCFMT_LEFT, 100, 0);
-	ctrlResults.InsertColumn(1, _T("File"), LVCFMT_LEFT, 200, 1);
-	ctrlResults.InsertColumn(2, _T("Type"), LVCFMT_LEFT, 50, 2);
-	ctrlResults.InsertColumn(3, _T("Size"), LVCFMT_RIGHT, 80, 3);
-	ctrlResults.InsertColumn(4, _T("Path"), LVCFMT_LEFT, 100, 4);
-	ctrlResults.InsertColumn(5, _T("Slots"), LVCFMT_LEFT, 40, 5);
-	ctrlResults.InsertColumn(6, _T("Connection"), LVCFMT_LEFT, 70, 6);
-	ctrlResults.InsertColumn(7, _T("Hub"), LVCFMT_LEFT, 150, 7);
+	ctrlResults.InsertColumn(COLUMN_NICK, _T("User"), LVCFMT_LEFT, 100, COLUMN_NICK);
+	ctrlResults.InsertColumn(COLUMN_FILENAME, _T("File"), LVCFMT_LEFT, 200, COLUMN_FILENAME);
+	ctrlResults.InsertColumn(COLUMN_TYPE, _T("Type"), LVCFMT_LEFT, 50, COLUMN_TYPE);
+	ctrlResults.InsertColumn(COLUMN_SIZE, _T("Size"), LVCFMT_RIGHT, 80, COLUMN_SIZE);
+	ctrlResults.InsertColumn(COLUMN_PATH, _T("Path"), LVCFMT_LEFT, 100, COLUMN_PATH);
+	ctrlResults.InsertColumn(COLUMN_SLOTS, _T("Slots"), LVCFMT_LEFT, 40, COLUMN_SLOTS);
+	ctrlResults.InsertColumn(COLUMN_CONNECTION, _T("Connection"), LVCFMT_LEFT, 70, COLUMN_CONNECTION);
+	ctrlResults.InsertColumn(COLUMN_HUB, _T("Hub"), LVCFMT_LEFT, 150, COLUMN_HUB);
 
 	SetWindowText("Search");
 
@@ -104,17 +104,17 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 }
 
 LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-	char buf[512];
+	char buf[MAX_PATH];
 	if(ctrlResults.GetSelectedCount() == 1) {
 		int i = ctrlResults.GetNextItem(-1, LVNI_SELECTED);
-		ctrlResults.GetItemText(i, 1, buf, 512);
+		ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, MAX_PATH);
 		string file = buf;
 		string target = SETTING(DOWNLOAD_DIRECTORY) + buf;
 		if(Util::browseSaveFile(target)) {
-			ctrlResults.GetItemText(i, 0, buf, 512);
+			ctrlResults.GetItemText(i, COLUMN_NICK, buf, MAX_PATH);
 			string user = buf;
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, 3, buf, 512);
+			ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, MAX_PATH);
 			string path = buf;
 			
 			try {
@@ -213,9 +213,12 @@ void SearchFrame::onSearchResult(SearchResult* aResult) {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.13 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.14 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.14  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.13  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -37,6 +37,18 @@
 class SearchFrame : public MDITabChildWindowImpl<SearchFrame>, private SearchManagerListener
 {
 public:
+
+	enum {
+		COLUMN_NICK,
+		COLUMN_FILENAME,
+		COLUMN_TYPE,
+		COLUMN_SIZE,
+		COLUMN_PATH,
+		COLUMN_SLOTS,
+		COLUMN_CONNECTION,
+		COLUMN_HUB
+	};
+
 	DECLARE_FRAME_WND_CLASS("SearchFrame", IDR_SEARCH)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
@@ -114,12 +126,12 @@ public:
 		char buf[256];
 		
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlResults.GetItemText(i, 0, buf, 256);
+			ctrlResults.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
-			ctrlResults.GetItemText(i, 1, buf, 256);
+			ctrlResults.GetItemText(i, COLUMN_FILENAME, buf, 256);
 			string file = buf;
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(i);
-			ctrlResults.GetItemText(i, 3, buf, 256);
+			ctrlResults.GetItemText(i, COLUMN_PATH, buf, 256);
 			string path = buf;
 			try {
 				DownloadManager::getInstance()->download(path + file, size, user, aDir + file);
@@ -133,7 +145,7 @@ public:
 		int i=-1;
 		char buf[256];
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlResults.GetItemText(i, 0, buf, 256);
+			ctrlResults.GetItemText(i, COLUMN_NICK, buf, 256);
 			try {
 				DownloadManager::getInstance()->downloadList(buf);
 			} catch(...) {
@@ -167,12 +179,12 @@ public:
 		char buf[256];
 		
 		if(item->iItem != -1) {
-			ctrlResults.GetItemText(item->iItem, 0, buf, 256);
+			ctrlResults.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
 			string user = buf;
-			ctrlResults.GetItemText(item->iItem, 1, buf, 256);
+			ctrlResults.GetItemText(item->iItem, COLUMN_FILENAME, buf, 256);
 			string file = buf;
 			LONGLONG size = *(LONGLONG*)ctrlResults.GetItemData(item->iItem);
-			ctrlResults.GetItemText(item->iItem, 3, buf, 256);
+			ctrlResults.GetItemText(item->iItem, COLUMN_PATH, buf, 256);
 			string path = buf;
 			
 			try { 
@@ -262,7 +274,7 @@ public:
 		delete (StringList*)wParam;
 		return 0;
 	}
-		
+
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
 		switch (uMsg) 
 		{ 
@@ -359,9 +371,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.18 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.19 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.19  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.18  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

@@ -38,7 +38,13 @@
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
-
+	enum {
+		COLUMN_NICK,
+		COLUMN_SHARED,
+		COLUMN_DESCRIPTION,
+		COLUMN_CONNECTION,
+		COLUMN_EMAIL
+	};
 	HubFrame(const string& aServer, const string& aNick = "", const string& aPassword = "") : op(false), ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), server(aServer), stopperThread(NULL) {
 		client = ClientManager::getInstance()->getClient();
 		client->setNick(aNick);
@@ -450,9 +456,12 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.35 2002/01/14 01:56:33 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.36 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.h,v $
+ * Revision 1.36  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.35  2002/01/14 01:56:33  arnetheduck
  * All done for 0.12
  *

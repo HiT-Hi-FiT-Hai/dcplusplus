@@ -52,11 +52,11 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	m_nProportionalPos = 7500;
 
-	ctrlUsers.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100, 0);
-	ctrlUsers.InsertColumn(1, _T("Shared"), LVCFMT_LEFT, 75, 1);
-	ctrlUsers.InsertColumn(2, _T("Description"), LVCFMT_LEFT, 100, 2);
-	ctrlUsers.InsertColumn(3, _T("Connection"), LVCFMT_LEFT, 75, 3);
-	ctrlUsers.InsertColumn(4, _T("E-Mail"), LVCFMT_LEFT, 100, 4);
+	ctrlUsers.InsertColumn(COLUMN_NICK, _T("Nick"), LVCFMT_LEFT, 100, COLUMN_NICK);
+	ctrlUsers.InsertColumn(COLUMN_SHARED, _T("Shared"), LVCFMT_LEFT, 75, COLUMN_SHARED);
+	ctrlUsers.InsertColumn(COLUMN_DESCRIPTION, _T("Description"), LVCFMT_LEFT, 100, COLUMN_DESCRIPTION);
+	ctrlUsers.InsertColumn(COLUMN_CONNECTION, _T("Connection"), LVCFMT_LEFT, 75, COLUMN_CONNECTION);
+	ctrlUsers.InsertColumn(COLUMN_EMAIL, _T("E-Mail"), LVCFMT_LEFT, 100, COLUMN_EMAIL);
 
 	userMenu.CreatePopupMenu();
 	opMenu.CreatePopupMenu();
@@ -124,7 +124,7 @@ LRESULT HubFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	char buf[256];
 	if(client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlUsers.GetItemText(i, 0, buf, 256);
+			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
 			User::Ptr& u = client->getUser(user);
 			try {
@@ -145,7 +145,7 @@ LRESULT HubFrame::onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	char buf[256];
 	if(client->isConnected()) {
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
-			ctrlUsers.GetItemText(i, 0, buf, 256);
+			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
 			User::Ptr& u = client->getUser(user);
 			if(u) {
@@ -168,7 +168,7 @@ LRESULT HubFrame::onDoubleClickUsers(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 	char buf[256];
 	
 	if(client->isConnected() && item->iItem != -1) {
-		ctrlUsers.GetItemText(item->iItem, 0, buf, 256);
+		ctrlUsers.GetItemText(item->iItem, COLUMN_NICK, buf, 256);
 		user = buf;
 		User::Ptr& u = client->getUser(user);
 		try {
@@ -191,7 +191,7 @@ LRESULT HubFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
 		int i = -1;
 		while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			char buf[256];
-			ctrlUsers.GetItemText(i, 0, buf, 256);
+			ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 			string user = buf;
 			User::Ptr& u = client->getUser(user);
 			if(u) {
@@ -216,7 +216,7 @@ LRESULT HubFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 			int i = -1;
 			while( (i = ctrlUsers.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				char buf[256];
-				ctrlUsers.GetItemText(i, 0, buf, 256);
+				ctrlUsers.GetItemText(i, COLUMN_NICK, buf, 256);
 				string user = buf;
 				User::Ptr& u = client->getUser(user);
 				if(u) {
@@ -338,9 +338,12 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.21 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.22 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.22  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.21  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *

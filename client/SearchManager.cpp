@@ -69,7 +69,7 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 			}
 			sr.setHubName(x.substr(i, j-i));
 			i = j + 2;
-			if( (j = x.rfind(')', i)) == string::npos) {
+			if( (j = x.rfind(')')) == string::npos) {
 				return;
 			}
 			sr.setHubAddress(x.substr(i, j-i));
@@ -83,9 +83,12 @@ void SearchManager::onData(const BYTE* buf, int aLen) {
 
 /**
  * @file SearchManager.cpp
- * $Id: SearchManager.cpp,v 1.11 2002/01/13 22:50:48 arnetheduck Exp $
+ * $Id: SearchManager.cpp,v 1.12 2002/01/15 21:57:53 arnetheduck Exp $
  * @if LOG
  * $Log: SearchManager.cpp,v $
+ * Revision 1.12  2002/01/15 21:57:53  arnetheduck
+ * Hopefully fixed the two annoying bugs...
+ *
  * Revision 1.11  2002/01/13 22:50:48  arnetheduck
  * Time for 0.12, added favorites, a bunch of new icons and lot's of other stuff
  *
