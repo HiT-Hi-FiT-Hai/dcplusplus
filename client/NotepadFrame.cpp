@@ -38,6 +38,8 @@ LRESULT NotepadFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	ctrlPad.SetFont(Util::font);
 	ctrlPad.SetWindowText(text.c_str());
 
+	m_hMenu = Util::mainMenu;
+	
 	bHandled = FALSE;
 	return 1;
 }
@@ -60,9 +62,12 @@ void NotepadFrame::save(SimpleXML* aXml) {
 }
 /**
  * @file NotepadFrame.cpp
- * $Id: NotepadFrame.cpp,v 1.2 2002/01/26 21:09:51 arnetheduck Exp $
+ * $Id: NotepadFrame.cpp,v 1.3 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: NotepadFrame.cpp,v $
+ * Revision 1.3  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.2  2002/01/26 21:09:51  arnetheduck
  * Release 0.14
  *

@@ -35,12 +35,13 @@ const string SettingsManager::settingTags[] =
 	"ClientVersion", "Font", "MainFrameOrder", "MainFrameWidths", "HubFrameOrder", "HubFrameWidths", 
 	"LanguageFile", "SearchFrameOrder", "SearchFrameWidths", "FavoritesFrameOrder", "FavoritesFrameWidths", 
 	"HublistServers", "QueueFrameOrder", "QueueFrameWidths", "PublicHubsFrameOrder", "PublicHubsFrameWidths", 
-	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "SENTRY", 
+	"UsersFrameOrder", "UsersFrameWidths", "HttpProxy", "LogDirectory", "SENTRY", 
 	// Ints
 	"ConnectionType", "Port", "Slots", "Rollback", "AutoFollow", "ClearSearch", "FullRow", "RemoveNotAvailable",
-	"BackgroundColor", "TextColor", "ShareHidden", "RemoveFinished", "FilterKickMessages", "MinimizeToTray",
+	"BackgroundColor", "TextColor", "ShareHidden", "FilterKickMessages", "MinimizeToTray",
 	"OpenPublic", "OpenQueue", "AutoSearch", "TimeStamps", "ConfirmExit", "IgnoreOffline", "PopupOffline",
-	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed",
+	"RemoveDupes", "BufferSize", "DownloadSlots", "MaxDownloadSpeed", "LogMainChat", "LogPrivateChat",
+	"LogDownloads", "LogUploads",
 	"SENTRY"
 };
 
@@ -59,7 +60,7 @@ SettingsManager::SettingsManager()
 
 	setDefault(SERVER, Util::getLocalIp());
 	setDefault(PORT, 1412);
-	setDefault(ROLLBACK, 1024);
+	setDefault(ROLLBACK, 4096);
 	setDefault(CLIENTVERSION, "1,0091");
 	setDefault(AUTO_FOLLOW, true);
 	setDefault(CLEAR_SEARCH, true);
@@ -68,7 +69,6 @@ SettingsManager::SettingsManager()
 	setDefault(BACKGROUND_COLOR, (int)(GetSysColor(COLOR_WINDOW)));
 	setDefault(TEXT_COLOR, (int)(GetSysColor(COLOR_WINDOWTEXT)));
 	setDefault(SHARE_HIDDEN, false);
-	setDefault(REMOVE_FINISHED, true);
 	setDefault(FILTER_KICKMSGS, false);
 	setDefault(MINIMIZE_TRAY, false);
 	setDefault(OPEN_PUBLIC, true);
@@ -80,9 +80,14 @@ SettingsManager::SettingsManager()
 	setDefault(POPUP_OFFLINE, false);
 	setDefault(REMOVE_DUPES, true);
 	setDefault(BUFFER_SIZE, 64);
-	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config;http://dcplusplus.sourceforge.net/PublicHubList.config;http://www.neo-modus.com/PublicHubList.config");
+	setDefault(HUBLIST_SERVERS, "http://dcpp.lichlord.org/PublicHubList.config;http://dcplusplus.sourceforge.net/PublicHubList.config");
 	setDefault(DOWNLOAD_SLOTS, 0);
 	setDefault(MAX_DOWNLOAD_SPEED, 0);
+	setDefault(LOG_DIRECTORY, Util::getAppPath() + "logs\\");
+	setDefault(LOG_UPLOADS, false);
+	setDefault(LOG_DOWNLOADS, false);
+	setDefault(LOG_PRIVATE_CHAT, false);
+	setDefault(LOG_MAIN_CHAT, false);
 	
 	LOGFONT lf;
 	::GetObject((HFONT)GetStockObject(DEFAULT_GUI_FONT), sizeof(lf), &lf);
@@ -205,9 +210,12 @@ void SettingsManager::save(string const& aFileName) const
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.27 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.28 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: SettingsManager.cpp,v $
+ * Revision 1.28  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.27  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

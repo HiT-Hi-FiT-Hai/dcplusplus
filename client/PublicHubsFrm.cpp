@@ -124,7 +124,9 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	ctrlFilterDesc.SetWindowText(CSTRING(FILTER));
 	ctrlFilterDesc.SetFont(ctrlHubs.GetFont());
 
-	ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
+	if(HubManager::getInstance()->isDownloading()) 
+		ctrlStatus.SetText(0, CSTRING(DOWNLOADING_HUB_LIST));
+	
 	hubsMenu.CreatePopupMenu();
 
 	CMenuItemInfo mi;
@@ -144,6 +146,8 @@ LRESULT PublicHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 	hubs = HubManager::getInstance()->getPublicHubs();
 	updateList();
+	
+	m_hMenu = Util::mainMenu;
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -241,7 +245,7 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		if(!checkNick()) {
 			return 0;
 		}
-
+		
 		hub = new char[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
 		string s(hub, ctrlHub.GetWindowTextLength());
@@ -370,6 +374,7 @@ LRESULT PublicHubsFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, 
 	if(wParam == FINISHED) {
 		hubs = HubManager::getInstance()->getPublicHubs();
 		updateList();
+		ctrlStatus.SetText(0, CSTRING(HUB_LIST_DOWNLOADED));
 	} else if(wParam == STARTING) {
 		string* x = (string*)lParam;
 		ctrlStatus.SetText(0, (STRING(DOWNLOADING_HUB_LIST) + "(" + (*x) + ")").c_str());
@@ -399,9 +404,12 @@ LRESULT PublicHubsFrame::onFilterChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.19 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.cpp,v $
+ * Revision 1.20  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.19  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

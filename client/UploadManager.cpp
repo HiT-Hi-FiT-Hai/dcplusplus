@@ -21,8 +21,12 @@
 
 #include "UploadManager.h"
 #include "ConnectionManager.h"
+#include "LogManager.h"
+#include "ResourceManager.h"
 
 UploadManager* UploadManager::instance = NULL;
+
+static const string UPLOAD_AREA = "Uploads";
 
 void UploadManager::onGet(UserConnection* aSource, const string& aFile, LONGLONG aResume) {
 	if(aSource->getState() != UserConnection::STATE_GET) {
@@ -192,6 +196,12 @@ void UploadManager::onTransmitDone(UserConnection* aSource) {
 	aSource->setStatus(UserConnection::IDLE);
 	aSource->setState(UserConnection::STATE_GET);
 
+	if(BOOLSETTING(LOG_UPLOADS)) {
+		LOGDT(UPLOAD_AREA, u->getFileName() + STRING(UPLOADED_TO) + aSource->getUser()->getNick() + 
+			", " + Util::toString(u->getSize()) + " b, : " + Util::formatBytes(u->getAverageSpeed()) + 
+			"/s, " + Util::formatSeconds(u->getSecondsLeft()));
+	}
+	
 	fire(UploadManagerListener::COMPLETE, u);
 	delete u;
 	
@@ -250,9 +260,12 @@ void UploadManager::onTimerMinute(DWORD aTick) {
 
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.21 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.22 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.cpp,v $
+ * Revision 1.22  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.21  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

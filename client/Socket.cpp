@@ -200,6 +200,9 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 		int i = ::send(sock, aBuffer+pos, min(aLen-pos, sendSize), 0);
 		if(i == SOCKET_ERROR) {
 			if(errno == EWOULDBLOCK) {
+				// First make sure we give some time to someone else so that we don't loop 100%...
+				Sleep(0);
+
 				TIMEVAL t;
 
 				// 0.2 seconds...
@@ -234,9 +237,12 @@ void Socket::write(const char* aBuffer, int aLen) throw(SocketException) {
 
 /**
  * @file Socket.cpp
- * $Id: Socket.cpp,v 1.27 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: Socket.cpp,v 1.28 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: Socket.cpp,v $
+ * Revision 1.28  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.27  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

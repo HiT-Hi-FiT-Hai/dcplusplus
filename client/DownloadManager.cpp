@@ -23,18 +23,25 @@
 #include "ConnectionManager.h"
 #include "User.h"
 #include "QueueManager.h"
+#include "LogManager.h"
+#include "ResourceManager.h"
 
 DownloadManager* DownloadManager::instance = NULL;
+
+static string DOWNLOAD_AREA = "Downloads";
 
 void DownloadManager::onTimerSecond(DWORD /*aTick*/) {
 	Lock l(cs);
 
+	Download::List tickList;
 	// Tick each ongoing download
 	for(Download::Iter i = downloads.begin(); i != downloads.end(); ++i) {
 		if((*i)->getPos() > 0) {
-			fire(DownloadManagerListener::TICK, *i);
+			tickList.push_back(*i);
 		}
 	}
+
+	fire(DownloadManagerListener::TICK, tickList);
 }
 
 void DownloadManager::removeConnection(UserConnection::Ptr aConn, bool reuse /* = false */) {
@@ -173,7 +180,7 @@ void DownloadManager::onData(UserConnection* aSource, const BYTE* aData, int aLe
 	try {
 		if(d->isSet(Download::ROLLBACK)) {
 			if(!checkRollback(d, aData, aLen)) {
-				fire(DownloadManagerListener::FAILED, d, "Rollback inconsistency, existing file does not match the one being downloaded");
+				fire(DownloadManagerListener::FAILED, d, STRING(ROLLBACK_INCONSISTENCY));
 				
 				string target = d->getTarget();
 				
@@ -210,6 +217,12 @@ void DownloadManager::onModeChange(UserConnection* aSource, int /*aNewMode*/) {
 	
 	dcdebug("Download finished: %s, size %I64d\n", d->getTarget().c_str(), d->getSize());
 
+	if(BOOLSETTING(LOG_DOWNLOADS)) {
+		LOGDT(DOWNLOAD_AREA, d->getTarget() + STRING(DOWNLOADED_FROM) + aSource->getUser()->getNick() + 
+			", " + Util::toString(d->getSize()) + " b, : " + Util::formatBytes(d->getAverageSpeed()) + 
+			"/s, " + Util::formatSeconds(d->getSecondsLeft()));
+	}
+
 	fire(DownloadManagerListener::COMPLETE, d);
 	
 	aSource->setDownload(NULL);
@@ -226,7 +239,7 @@ void DownloadManager::onMaxedOut(UserConnection* aSource) {
 	Download* d = aSource->getDownload();
 	dcassert(d != NULL);
 
-	fire(DownloadManagerListener::FAILED, d, "No slots available");
+	fire(DownloadManagerListener::FAILED, d, STRING(NO_SLOTS_AVAILABLE));
 
 	aSource->setDownload(NULL);
 	removeDownload(d);
@@ -279,9 +292,12 @@ void DownloadManager::abortDownload(const string& aTarget) {
 
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.52 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.53 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.cpp,v $
+ * Revision 1.53  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.52  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

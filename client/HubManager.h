@@ -174,6 +174,9 @@ public:
 		return publicHubs;
 	}
 
+	bool isDownloading() {
+		return running;
+	}
 private:
 	
 	HubEntry::List publicHubs;
@@ -262,9 +265,12 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.25 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.26 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.h,v $
+ * Revision 1.26  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.25  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

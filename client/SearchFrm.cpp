@@ -181,32 +181,26 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	
 	int n = 0;
 	CMenuItemInfo mi;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
 
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
-	mi.wID = IDC_PRIVATEMESSAGE;
-	resultsMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
-	mi.wID = IDC_GETLIST;
-	resultsMenu.InsertMenuItem(n, TRUE, &mi);
-	opMenu.InsertMenuItem(n++, TRUE, &mi);
-
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD));
 	mi.wID = IDC_DOWNLOAD;
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD_TO));
 	mi.hSubMenu = targetMenu;
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
+	mi.wID = IDC_GETLIST;
+	resultsMenu.InsertMenuItem(n, TRUE, &mi);
+	opMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
+	mi.wID = IDC_PRIVATEMESSAGE;
 	resultsMenu.InsertMenuItem(n, TRUE, &mi);
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
@@ -220,8 +214,6 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	mi.wID = IDC_KICK;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(REDIRECT));
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -237,7 +229,9 @@ LRESULT SearchFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		SearchManager::getInstance()->search(initialString, initialSize, SearchManager::TYPE_ANY, initialMode);
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + initialString + "...").c_str());
 	}
-	
+
+	m_hMenu = Util::mainMenu;
+		
 	bHandled = FALSE;
 	return 1;
 }
@@ -249,7 +243,12 @@ LRESULT SearchFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
 
 		string target = SETTING(DOWNLOAD_DIRECTORY) + sr->getFileName();
+
 		if(Util::browseFile(target, m_hWnd)) {
+			if(lastDirs.size() > 10)
+				lastDirs.erase(lastDirs.begin());
+			lastDirs.push_back(target);
+
 			try {
 				QueueManager::getInstance()->add(sr->getFile(), sr->getSize(), sr->getUser(), target);
 			} catch(QueueException e) {
@@ -280,7 +279,10 @@ LRESULT SearchFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		} catch(FileException e) {
 			//..
 		}
-	} 
+	} else if(ctrlResults.GetSelectedCount() > 1) {
+		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)lastDirs.size());
+		downloadSelected(lastDirs[wID-IDC_DOWNLOAD_TARGET]);
+	}
 	return 0;
 }
 
@@ -390,6 +392,8 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	if (PtInRect(&rc, pt) && ctrlResults.GetSelectedCount() > 0) 
 	{
 		CMenuItemInfo mi;
+		int n = 0;
+
 		ctrlResults.ClientToScreen(&pt);
 
 		while(targetMenu.GetMenuItemCount() > 0) {
@@ -401,7 +405,6 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 			dcassert(pos != -1);
 			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(pos);
 
-			int n = 0;
 			
 			targets = QueueManager::getInstance()->getTargetsBySize(sr->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
@@ -424,11 +427,21 @@ LRESULT SearchFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 				resultsMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 			}
 		} else {
+			
+			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
+				mi.fMask = MIIM_ID | MIIM_TYPE;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
+				mi.wID = IDC_DOWNLOAD_TARGET + n;
+				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			}
+			
 			mi.fMask = MIIM_ID | MIIM_TYPE;
 			mi.fType = MFT_STRING;
 			mi.dwTypeData = const_cast<char*>(CSTRING(BROWSE));
 			mi.wID = IDC_DOWNLOADTO;
 			targetMenu.InsertMenuItem(0, TRUE, &mi);
+
 			int pos = -1;
 			bool op = true;
 			while( (pos = ctrlResults.GetNextItem(pos, LVNI_SELECTED)) != -1) {
@@ -454,10 +467,18 @@ LRESULT SearchFrame::onKick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	LineDlg dlg;
 	dlg.title = STRING(KICK_USER);
 	dlg.description = STRING(ENTER_REASON);
+	dlg.line = lastKick;
 	if(dlg.DoModal() == IDOK) {
+		lastKick = dlg.line;
 		int i = -1;
+		User::List kicked;
+		kicked.reserve(ctrlResults.GetSelectedCount());
 		while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 			SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+			if(find(kicked.begin(), kicked.end(), sr->getUser()) != kicked.end()) {
+				continue;
+			}
+			kicked.push_back(sr->getUser());
 			if(sr->getUser() && sr->getUser()->isOnline()) {
 				sr->getUser()->kick(dlg.line);
 			}
@@ -471,13 +492,24 @@ LRESULT SearchFrame::onRedirect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	LineDlg dlg1, dlg2;
 	dlg1.title = STRING(REDIRECT_USER);
 	dlg1.description = STRING(ENTER_REASON);
+	dlg1.line = lastRedirect;
 	if(dlg1.DoModal() == IDOK) {
 		dlg2.title = STRING(REDIRECT_USER);
 		dlg2.description = STRING(ENTER_SERVER);
+		dlg2.line = lastServer;
 		if(dlg2.DoModal() == IDOK) {
+			lastRedirect = dlg1.line;
+			lastServer = dlg2.line;
+			
 			int i = -1;
+			User::List kicked;
+			kicked.reserve(ctrlResults.GetSelectedCount());
 			while( (i = ctrlResults.GetNextItem(i, LVNI_SELECTED)) != -1) {
 				SearchResult* sr = (SearchResult*)ctrlResults.GetItemData(i);
+				if(find(kicked.begin(), kicked.end(), sr->getUser()) != kicked.end()) {
+					continue;
+				}
+				kicked.push_back(sr->getUser());
 				if(sr->getUser() && sr->getUser()->isOnline()) {
 					sr->getUser()->redirect(dlg2.line, STRING(YOU_ARE_BEING_REDIRECTED) + dlg2.line + ": " + dlg1.line);
 				}
@@ -758,9 +790,12 @@ LRESULT SearchFrame::onShowUI(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.32 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.33 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.cpp,v $
+ * Revision 1.33  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.32  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

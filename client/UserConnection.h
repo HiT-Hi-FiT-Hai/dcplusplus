@@ -95,6 +95,23 @@ public:
 	void setSize(LONGLONG aSize) { size = aSize; };
 	void setSize(const string& aSize) { setSize(Util::toInt64(aSize)); };
 
+	LONGLONG getAverageSpeed() {
+		LONGLONG dif = (LONGLONG)(TimerManager::getTick() - getStart());
+		if(dif > 0) {
+			return (int) (getTotal() * (LONGLONG)1000 / dif);
+		} else {
+			return 0;
+		}
+	}
+
+	LONGLONG getSecondsLeft() {
+		LONGLONG avg = getAverageSpeed();
+		if(avg > 0)
+			return (getSize() - getPos()) / avg;
+		else
+			return 0;
+	}
+
 	Transfer(ConnectionQueueItem* aQI) : cqi(aQI), total(0), start(0), last(0), pos(-1), size(-1), file(NULL) { };
 	~Transfer() { if(file) delete file; };
 
@@ -293,9 +310,12 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.38 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.39 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: UserConnection.h,v $
+ * Revision 1.39  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.38  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *

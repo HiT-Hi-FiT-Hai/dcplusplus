@@ -21,7 +21,56 @@
 
 #include "MainFrm.h"
 
+#include "ConnectionManager.h"
+#include "DownloadManager.h"
+#include "UploadManager.h"
+#include "CryptoManager.h"
+#include "ShareManager.h"
+#include "SearchManager.h"
+#include "QueueManager.h"
+#include "ResourceManager.h"
+#include "ClientManager.h"
+
 CAppModule _Module;
+
+void startup() {
+	ResourceManager::newInstance();
+	SettingsManager::newInstance();
+	ShareManager::newInstance();
+	TimerManager::newInstance();
+	CryptoManager::newInstance();
+	SearchManager::newInstance();
+	ClientManager::newInstance();
+	ConnectionManager::newInstance();
+	DownloadManager::newInstance();
+	UploadManager::newInstance();
+	HubManager::newInstance();
+	QueueManager::newInstance();
+
+	SettingsManager::getInstance()->load();	
+
+	ShareManager::getInstance()->refresh(false, false);
+	HubManager::getInstance()->refresh();
+}
+
+void shutdown() {
+	TimerManager::getInstance()->removeListeners();
+	
+	SettingsManager::getInstance()->save();
+	SettingsManager::deleteInstance();
+	
+	ShareManager::deleteInstance();
+	CryptoManager::deleteInstance();
+	DownloadManager::deleteInstance();
+	UploadManager::deleteInstance();
+	QueueManager::deleteInstance();
+	ConnectionManager::deleteInstance();
+	SearchManager::deleteInstance();
+	ClientManager::deleteInstance();
+	HubManager::deleteInstance();
+	TimerManager::deleteInstance();
+	ResourceManager::deleteInstance();
+}
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -30,6 +79,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	MainFrame wndMain;
 
+	startup();
+	
 	if(wndMain.CreateEx() == NULL)
 	{
 		ATLTRACE(_T("Main window creation failed!\n"));
@@ -80,9 +131,12 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 /**
  * @file DCPlusPlus.cpp
- * $Id: DCPlusPlus.cpp,v 1.6 2002/01/20 22:54:46 arnetheduck Exp $
+ * $Id: DCPlusPlus.cpp,v 1.7 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.cpp,v $
+ * Revision 1.7  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.6  2002/01/20 22:54:46  arnetheduck
  * Bugfixes to 0.131 mainly...
  *

@@ -93,6 +93,10 @@ LINK32=xilink6.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\client\Advanced2Page.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\AdvancedPage.cpp
 # End Source File
 # Begin Source File
@@ -197,6 +201,10 @@ SOURCE=.\client\HubManager.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\LogManager.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\MainFrm.cpp
 # End Source File
 # Begin Source File
@@ -269,6 +277,10 @@ SOURCE=.\client\Socket.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\SpyFrame.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\stdafx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
@@ -315,6 +327,10 @@ SOURCE=.\client\Util.cpp
 # Begin Source File
 
 SOURCE=.\client\AboutDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\Advanced2Page.h
 # End Source File
 # Begin Source File
 
@@ -430,6 +446,10 @@ SOURCE=.\client\LineDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\client\LogManager.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\client\MainFrm.h
 # End Source File
 # Begin Source File
@@ -503,6 +523,10 @@ SOURCE=.\client\SimpleXML.h
 # Begin Source File
 
 SOURCE=.\client\Socket.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\client\SpyFrame.h
 # End Source File
 # Begin Source File
 

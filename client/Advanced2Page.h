@@ -16,29 +16,37 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
-#define AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_
+#ifndef ADVANCED2PAGE_H
+#define ADVANCED2PAGE_H
 
 #include "PropPage.h"
 
-class PropertiesDlg : public CPropertySheet
+class Advanced2Page : public CPropertyPage<IDD_ADVANCED2PAGE>, public PropPage
 {
 public:
-	enum { numPages = 6 };
+	Advanced2Page(SettingsManager *s) : PropPage(s) { };
+	~Advanced2Page() { };
 
-	BEGIN_MSG_MAP(PropertiesDlg)
-		COMMAND_HANDLER(IDOK, BN_CLICKED, onOK)
+	BEGIN_MSG_MAP(Advanced2Page)
+		MESSAGE_HANDLER(WM_INITDIALOG, onInitDialog)
+		COMMAND_HANDLER(IDC_BROWSE_LOG, BN_CLICKED, onClickedBrowseDir)
 	END_MSG_MAP()
 
-	PropertiesDlg(SettingsManager *s);
-	virtual ~PropertiesDlg();
-
-	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onClickedBrowseDir(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+	
+	// Common PropPage interface
+	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
+	virtual void write();
 
 protected:
-	void write();
-
-	PropPage *pages[numPages];
+	static Item items[];
 };
 
-#endif // !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
+#endif //ADVANCED2PAGE_H
+
+/**
+ * @file Advanced2Page.h
+ * $Id: Advanced2Page.h,v 1.1 2002/04/03 23:20:35 arnetheduck Exp $
+ */
+

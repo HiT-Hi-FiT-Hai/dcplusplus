@@ -128,6 +128,8 @@ LRESULT FavoriteHubsFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE));
 	mi.wID = IDC_REMOVE;
 	hubsMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	m_hMenu = Util::mainMenu;
 	
 	bHandled = FALSE;
 	return TRUE;
@@ -236,9 +238,12 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.11 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.12 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: FavoritesFrm.cpp,v $
+ * Revision 1.12  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.11  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

@@ -21,7 +21,6 @@
 
 #include "DirectoryListingFrm.h"
 #include "DirectoryListing.h"
-#include "QueueManager.h"
 #include "ResourceManager.h"
 
 void DirectoryListingFrame::updateTree(DirectoryListing::Directory* aTree, HTREEITEM aParent) {
@@ -133,6 +132,10 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 		DirectoryListing::Directory* dir = (DirectoryListing::Directory*)ctrlTree.GetItemData(t);
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(Util::browseDirectory(target, m_hWnd)) {
+			if(lastDirs.size() > 10)
+				lastDirs.erase(lastDirs.begin());
+			lastDirs.push_back(target);
+			
 			try {
 				dl->download(dir, user, target);
 			} catch(Exception e) {
@@ -158,7 +161,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 			target = aTarget;
 		}
 		try {
-			if(lvi.iImage == 2) {
+			if(lvi.iImage == IMAGE_FILE) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 				dl->download(file, user, target + file->getName());
 			} else {
@@ -185,7 +188,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		ctrlList.GetItem(&lvi);
 
 		try {
-			if(lvi.iImage == 2) {
+			if(lvi.iImage == IMAGE_FILE) {
 				DirectoryListing::File* file = (DirectoryListing::File*) lvi.lParam;
 				string target = file->getName();
 				if(Util::browseFile(target, m_hWnd))
@@ -194,6 +197,10 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				DirectoryListing::Directory* d = (DirectoryListing::Directory*) lvi.lParam;
 				string target;
 				if(Util::browseDirectory(target, m_hWnd)) {
+					if(lastDirs.size() > 10)
+						lastDirs.erase(lastDirs.begin());
+					lastDirs.push_back(target);
+
 					dl->download(d, user, target);
 				}
 			} 
@@ -203,9 +210,12 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	} else {
 		string target = SETTING(DOWNLOAD_DIRECTORY);
 		if(Util::browseDirectory(target, m_hWnd)) {
+			if(lastDirs.size() > 10)
+				lastDirs.erase(lastDirs.begin());
+			lastDirs.push_back(target);
+			
 			downloadList(target);
 		}
-		
 	}
 	return 0;
 }
@@ -246,42 +256,32 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlStatus.SetText(2, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
 
 	fileMenu.CreatePopupMenu();
-	oneFileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
 	directoryMenu.CreatePopupMenu();
 
 	CMenuItemInfo mi;
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
+
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD));
 	mi.wID = IDC_DOWNLOAD;
-	oneFileMenu.InsertMenuItem(0, TRUE, &mi);
 	fileMenu.InsertMenuItem(0, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD_TO));
-	mi.wID = IDC_DOWNLOADTO;
-	fileMenu.InsertMenuItem(1, TRUE, &mi);
-
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
-	mi.fType = MFT_STRING;
+	mi.fMask = MIIM_ID | MIIM_TYPE | MIIM_SUBMENU;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD_TO));
 	mi.hSubMenu = targetMenu;
-	oneFileMenu.InsertMenuItem(1, TRUE, &mi);
+	fileMenu.InsertMenuItem(1, TRUE, &mi);
 
 	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD));
 	mi.wID = IDC_DOWNLOADDIR;
 	directoryMenu.InsertMenuItem(0, TRUE, &mi);
 
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(DOWNLOAD_TO));
 	mi.wID = IDC_DOWNLOADDIRTO;
 	directoryMenu.InsertMenuItem(1, TRUE, &mi);
 	
+	m_hMenu = Util::mainMenu;
 	bHandled = FALSE;
 	return 1;
 }
@@ -295,6 +295,9 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 	ctrlList.ScreenToClient(&pt); 
 	
 	if (PtInRect(&rc, pt) && ctrlList.GetSelectedCount() > 0) {
+		int n = 0;
+		CMenuItemInfo mi;
+		
 		ctrlList.ClientToScreen(&pt);
 
 		LVITEM lvi;
@@ -303,18 +306,16 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 		lvi.mask = LVIF_PARAM | LVIF_IMAGE;
 		ctrlList.GetItem(&lvi);
 
+		while(targetMenu.GetMenuItemCount() > 0) {
+			targetMenu.DeleteMenu(0, MF_BYPOSITION);
+		}
+
 		if(ctrlList.GetSelectedCount() == 1 && lvi.iImage == IMAGE_FILE) {
-			while(targetMenu.GetMenuItemCount() > 0) {
-				targetMenu.DeleteMenu(0, MF_BYPOSITION);
-			}
 
 			int pos = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 			dcassert(pos != -1);
 			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(pos);
 			
-			int n = 0;
-			CMenuItemInfo mi;
-
 			targets = QueueManager::getInstance()->getTargetsBySize(f->getSize());
 			for(StringIter i = targets.begin(); i != targets.end(); ++i) {
 				mi.fMask = MIIM_ID | MIIM_TYPE;
@@ -330,8 +331,22 @@ LRESULT DirectoryListingFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, L
 			mi.wID = IDC_DOWNLOADTO;
 			targetMenu.InsertMenuItem(n++, TRUE, &mi);
 			
-			oneFileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		} else {
+			for(StringIter i = lastDirs.begin(); i != lastDirs.end(); ++i) {
+				mi.fMask = MIIM_ID | MIIM_TYPE;
+				mi.fType = MFT_STRING;
+				mi.dwTypeData = const_cast<LPSTR>(i->c_str());
+				mi.wID = IDC_DOWNLOAD_TARGET + n;
+				targetMenu.InsertMenuItem(n++, TRUE, &mi);
+			}
+			
+			mi.fMask = MIIM_ID | MIIM_TYPE;
+			mi.fType = MFT_STRING;
+			mi.dwTypeData = const_cast<char*>(CSTRING(BROWSE));
+			mi.wID = IDC_DOWNLOADTO;
+			targetMenu.InsertMenuItem(n++, TRUE, &mi);
+
 			fileMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
 		}
 		
@@ -359,15 +374,22 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 	if(ctrlList.GetSelectedCount() == 1) {
 		int i = ctrlList.GetNextItem(-1, LVNI_SELECTED);
 		dcassert(i != -1);
-		DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
-		dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
-		try {
-			QueueManager::getInstance()->add(f->getName(), f->getSize(), user, targets[(wID - IDC_DOWNLOAD_TARGET)]);
-		} catch(QueueException e) {
-			ctrlStatus.SetText(0, e.getError().c_str());
-		} catch(FileException e) {
-			//..
+		if(ctrlList.getItemImage(i) == IMAGE_FILE) {
+			DirectoryListing::File* f = (DirectoryListing::File*)ctrlList.GetItemData(i);
+			dcassert((wID - IDC_DOWNLOAD_TARGET) < (WORD)targets.size());
+
+			try {
+				dl->download(f, user, targets[wID-IDC_DOWNLOAD_TARGET]);
+			} catch(Exception e) {
+				ctrlStatus.SetText(0, e.getError().c_str());
+			} 
+		} else {
+			dcassert((StringList::size_type)(wID-IDC_DOWNLOAD_TARGET) < lastDirs.size());
+			downloadList(lastDirs[wID-IDC_DOWNLOAD_TARGET]);
 		}
+	} else if(ctrlList.GetSelectedCount() > 1) {
+		dcassert((StringList::size_type)(wID-IDC_DOWNLOAD_TARGET) < lastDirs.size());
+		downloadList(lastDirs[wID-IDC_DOWNLOAD_TARGET]);
 	}
 	return 0;
 }
@@ -455,9 +477,12 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.26 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.27 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.cpp,v $
+ * Revision 1.27  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.26  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

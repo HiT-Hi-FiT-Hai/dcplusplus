@@ -109,12 +109,6 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	mi.wID = IDC_SEARCH_ALTERNATES;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE));
-	mi.wID = IDC_REMOVE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(SET_PRIORITY));
@@ -129,14 +123,20 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
 	mi.fType = MFT_STRING;
+	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
+	mi.hSubMenu = pmMenu;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+
+	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE_SOURCE));
 	mi.hSubMenu = removeMenu;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
-	mi.fMask = MIIM_TYPE | MIIM_SUBMENU;
+	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(SEND_PRIVATE_MESSAGE));
-	mi.hSubMenu = pmMenu;
+	mi.dwTypeData = const_cast<char*>(CSTRING(REMOVE));
+	mi.wID = IDC_REMOVE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 	
 	n = 0;
@@ -169,6 +169,9 @@ LRESULT QueueFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	QueueManager::getInstance()->getQueue();
 	
 	updateStatus();
+
+	m_hMenu = Util::mainMenu;
+	
 	bHandled = FALSE;
 	return 1;
 }
@@ -280,8 +283,6 @@ void QueueFrame::onQueueUpdated(QueueItem* aQI) {
 				i->columns[COLUMN_STATUS] = buf;
 			}
 		}
-	} else if(aQI->getStatus() == QueueItem::FINISHED) {
-		i->columns[COLUMN_STATUS] = STRING(FINISHED);
 	} else if(aQI->getStatus() == QueueItem::RUNNING) {
 		i->columns[COLUMN_STATUS] = STRING(RUNNING);
 	} 
@@ -591,9 +592,12 @@ LRESULT QueueFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.14 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.15 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueFrame.cpp,v $
+ * Revision 1.15  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.14  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

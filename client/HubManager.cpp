@@ -126,15 +126,19 @@ void HubManager::refresh() {
 		}
 		c->addListener(this);
 		c->downloadFile(server);
+		running = true;
 
 	}
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.19 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubManager.cpp,v $
+ * Revision 1.20  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.19  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

@@ -34,8 +34,10 @@
 #define IDR_NOTEPAD                     220
 #define IDB_TOOLBAR20                   221
 #define IDR_QUEUE                       221
+#define IDR_SPY                         222
 #define IDD_FAVORITEHUB                 223
 #define IDR_USERS                       224
+#define IDD_ADVANCED2PAGE               224
 #define IDC_REFRESH                     1000
 #define IDC_NICK                        1001
 #define IDC_EMAIL                       1002
@@ -114,7 +116,22 @@
 #define IDC_FAVUSERS                    1060
 #define IDC_PROXY                       1060
 #define IDC_ADD_TO_FAVORITES            1061
+#define IDC_LOG_MAIN_CHAT               1061
 #define IDC_COMMENT                     1062
+#define IDC_LOG_PRIVATE_CHAT            1062
+#define IDC_HELP_HOMEPAGE               1063
+#define IDC_LOG_DOWNLOADS               1063
+#define IDC_HELP_DOWNLOADS              1064
+#define IDC_LOG_UPLOADS                 1064
+#define IDC_HELP_REPORT_BUG             1065
+#define IDC_LOG_DIRECTORY               1065
+#define IDC_HELP_REQUEST_FEATURE        1066
+#define IDC_BROWSE_LOG                  1066
+#define IDC_HELP_DISCUSS                1067
+#define IDC_HELP_HELP_FORUM             1068
+#define IDC_HELP_FAQ                    1069
+#define IDC_SEARCH_SPY                  1070
+#define IDC_IMPORT_QUEUE                1071
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -131,7 +148,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        224
 #define _APS_NEXT_COMMAND_VALUE         32786
-#define _APS_NEXT_CONTROL_VALUE         1061
+#define _APS_NEXT_CONTROL_VALUE         1067
 #define _APS_NEXT_SYMED_VALUE           102
 #endif
 #endif

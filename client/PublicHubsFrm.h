@@ -33,6 +33,8 @@ class PublicHubsFrame : public MDITabChildWindowImpl<PublicHubsFrame>, private H
 {
 public:
 
+	static PublicHubsFrame* frame;
+
 	PublicHubsFrame() : users(0), hubs(0), ctrlHubContainer("edit", this, SERVER_MESSAGE_MAP), 
 		filterContainer("edit", this, FILTER_MESSAGE_MAP) {
 	};
@@ -149,8 +151,6 @@ public:
 		return 0;
 	}
 	
-	static PublicHubsFrame* frame;
-	
 private:
 	enum {
 		COLUMN_FIRST,
@@ -214,9 +214,12 @@ private:
 
 /**
  * @file PublicHubsFrm.h
- * $Id: PublicHubsFrm.h,v 1.18 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: PublicHubsFrm.h,v 1.19 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: PublicHubsFrm.h,v $
+ * Revision 1.19  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.18  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

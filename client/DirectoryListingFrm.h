@@ -124,12 +124,12 @@ private:
 	CImageList ctrlImages;
 	
 	CMenu targetMenu;
-	CMenu oneFileMenu;
 	CMenu fileMenu;
 	CMenu directoryMenu;
 	
 	StringList targets;
-
+	StringList lastDirs;
+	
 	User::Ptr user;
 	CTreeViewCtrl ctrlTree;
 	ExListViewCtrl ctrlList;
@@ -150,9 +150,12 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.17 2002/03/13 20:35:25 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.18 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DirectoryListingFrm.h,v $
+ * Revision 1.18  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.17  2002/03/13 20:35:25  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

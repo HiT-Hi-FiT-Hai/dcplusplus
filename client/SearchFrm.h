@@ -193,6 +193,12 @@ private:
 	StringList search;
 	StringList targets;
 	
+	StringList lastDirs;
+	
+	string lastKick;
+	string lastRedirect;
+	string lastServer;
+	
 	static StringList lastSearches;
 
 	DWORD lastSearch;
@@ -223,9 +229,12 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.30 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.31 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: SearchFrm.h,v $
+ * Revision 1.31  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.30  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

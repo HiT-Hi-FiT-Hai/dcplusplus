@@ -63,6 +63,7 @@ public:
 	};
 
 	virtual void onAction(Types, Upload*) { };
+	virtual void onAction(Types, const Upload::List) { };
 	virtual void onAction(Types, Upload*, const string&) { };
 
 };
@@ -124,9 +125,13 @@ private:
 		case TimerManagerListener::SECOND: 
 			{
 				Lock l(cs);
+				Upload::List ticks;
+				
 				for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-					fire(UploadManagerListener::TICK, *i);
+					ticks.push_back(*i);
 				}
+
+				fire(UploadManagerListener::TICK, ticks);
 			}
 			break;
 		case TimerManagerListener::MINUTE: onTimerMinute(aTick);	break;
@@ -178,9 +183,12 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.40 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.41 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: UploadManager.h,v $
+ * Revision 1.41  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.40  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

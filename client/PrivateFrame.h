@@ -124,19 +124,7 @@ public:
 		return 0;
 	}
 		
-	void addLine(const string& aLine) {
-		if(!created) {
-			CreateEx(parent);
-		}
-		if(BOOLSETTING(TIME_STAMPS)) {
-			ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
-		} else {
-			ctrlClient.AppendText(("\r\n" + aLine).c_str());
-		}
-		addClientLine("Last change: " + Util::getTimeString());
-		setDirty();
-	}
-
+	void addLine(const string& aLine);
 	void addClientLine(const string& aLine) {
 		if(!created) {
 			CreateEx(parent);
@@ -213,9 +201,12 @@ private:
 
 /**
  * @file PrivateFrame.h
- * $Id: PrivateFrame.h,v 1.17 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: PrivateFrame.h,v 1.18 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.h,v $
+ * Revision 1.18  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.17  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

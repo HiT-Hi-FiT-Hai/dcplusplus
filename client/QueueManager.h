@@ -45,8 +45,7 @@ public:
 
 	enum Status {
 		WAITING,
-		RUNNING,
-		FINISHED
+		RUNNING
 	};
 	enum Priority {
 		DEFAULT = -1,
@@ -266,6 +265,8 @@ public:
 		}
 	}
 
+	void importNMQueue(const string& aFile) throw(FileException);
+	
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -325,9 +326,12 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.12 2002/03/10 22:41:08 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.13 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.h,v $
+ * Revision 1.13  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.12  2002/03/10 22:41:08  arnetheduck
  * Working on internationalization...
  *

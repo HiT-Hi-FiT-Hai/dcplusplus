@@ -54,335 +54,6 @@ IDB_TOOLBAR20           BITMAP  DISCARDABLE     "res\\toolbar20.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_HUB MENU DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs\tCtrl+F",      IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "Follow last redirec&t\tCtrl+T", IDC_FOLLOW
-        MENUITEM "&Reconnect\tCtrl+R",          ID_FILE_RECONNECT
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_DIRECTORY MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_FAVORITES MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_PRIVATE MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_SEARCH MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_PUBLICHUBS MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_NOTEPAD MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_QUEUE MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-IDR_USERS MENU PRELOAD DISCARDABLE 
-BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Download Queue...\tCtrl+D",  IDC_QUEUE
-        MENUITEM "&Public Hubs...\tCtrl+P",     ID_FILE_CONNECT
-        MENUITEM "&Favorite Hubs...\tCtrl+F",   IDC_FAVORITES
-        MENUITEM "Favorite &Users\tCtrl+U",     IDC_FAVUSERS
-        MENUITEM "&Search...\tCtrl+S",          ID_FILE_SEARCH
-        MENUITEM "&Notepad\tCtrl+N",            IDC_NOTEPAD
-        MENUITEM SEPARATOR
-        MENUITEM "&Settings...",                ID_FILE_SETTINGS
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&View"
-    BEGIN
-        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
-        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
-    END
-    POPUP "&Window"
-    BEGIN
-        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
-        MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About DCPlusPlus...",        ID_APP_ABOUT
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Icon
 //
 
@@ -459,43 +130,40 @@ STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Advanced"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Rollback",IDC_STATIC,15,22,29,8
     EDITTEXT        IDC_ROLLBACK,71,19,50,14,ES_AUTOHSCROLL | ES_NUMBER
-    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
-    LTEXT           "Client version",IDC_STATIC,15,54,43,8
+    EDITTEXT        IDC_BUFFERSIZE,71,35,50,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_CLVERSION,71,51,50,14
     CONTROL         "Follow redirects automatically",IDC_AUTOFOLLOW,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,15,70,107,10
     CONTROL         "Clear search box after each search",IDC_CLEARSEARCH,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,81,126,10
-    CONTROL         "Automatically remove source on ""File Not Available""",
-                    IDC_REMOVENOTAVAILABLE,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,15,103,179,10
-    CONTROL         "Automatically remove finished downloads from the queue",
-                    IDC_REMOVEFINISHED,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,114,194,10
-    CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,125,141,10
-    CONTROL         "Open the download queue window at startup",
-                    IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    136,157,10
     CONTROL         "Automatically search for alternative download locations",
                     IDC_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
                     92,188,10
+    CONTROL         "Automatically remove source on ""File Not Available""",
+                    IDC_REMOVENOTAVAILABLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,15,103,179,10
+    CONTROL         "Open the public hubs window at startup",IDC_OPENPUBLIC,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,114,141,10
+    CONTROL         "Open the download queue window at startup",
+                    IDC_OPENQUEUE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
+                    125,157,10
     CONTROL         "Ignore messages from users that are not online (effective agains bots)",
                     IDC_IGNOREOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,147,233,10
+                    15,136,233,10
     CONTROL         "Popup messages from users that are not online (if not ignoring)",
                     IDC_POPUPOFFLINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    15,158,211,10
+                    15,147,211,10
     CONTROL         "Remove dupes completely (instead of just subtracting their size)",
                     IDC_REMOVEDUPES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,
-                    169,215,10
-    EDITTEXT        IDC_BUFFERSIZE,71,35,50,14,ES_AUTOHSCROLL
+                    158,215,10
+    EDITTEXT        IDC_PUBLIC_HUBS,16,198,246,14,ES_AUTOHSCROLL
+    LTEXT           "Rollback",IDC_STATIC,15,22,29,8
+    GROUPBOX        "Advanced settings",IDC_STATIC,7,7,261,211
+    LTEXT           "Client version",IDC_STATIC,15,54,43,8
     LTEXT           "Write buffer size",IDC_STATIC,15,38,52,8
     LTEXT           "B",IDC_STATIC,124,22,8,8
     LTEXT           "kB (0 to disable)",IDC_STATIC,124,38,52,8
-    EDITTEXT        IDC_PUBLIC_HUBS,16,198,246,14,ES_AUTOHSCROLL
     LTEXT           "Download public hublist from:",IDC_STATIC,15,187,93,8
 END
 
@@ -505,24 +173,26 @@ CAPTION "Downloads"
 FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_DOWNLOADDIR,14,19,186,14,ES_AUTOHSCROLL
-    GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
-    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,209,19,39,14
-    GROUPBOX        "Options",IDC_STATIC,7,45,248,82
+    PUSHBUTTON      "&Browse...",IDC_BROWSEDIR,204,19,44,14
     EDITTEXT        IDC_DOWNLOADS,14,56,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_PROXY,14,116,235,14,ES_AUTOHSCROLL
+    GROUPBOX        "Default download directory",IDC_STATIC,7,7,248,33
+    GROUPBOX        "Options",IDC_STATIC,7,45,248,93
     CONTROL         "Spin1",IDC_SLOTSSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,37,56,11,
                     14
     LTEXT           "Download slots (0 = infinite)",IDC_STATIC,49,59,87,8
     LTEXT           "Don't start new downloads if download speed is more than",
                     IDC_STATIC,14,77,184,8
-    EDITTEXT        IDC_MAXSPEED,200,74,29,14,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin2",IDC_SPEEDSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,223,74,11,
                     14
     LTEXT           "kB/s",IDC_STATIC,231,77,16,8
-    EDITTEXT        IDC_PROXY,14,106,235,14,ES_AUTOHSCROLL
     LTEXT           "HTTP proxy address for downloading the hub list (i e www.proxy.com:8080)",
-                    IDC_STATIC,14,95,237,8
+                    IDC_STATIC,14,105,237,8
+    LTEXT           "Note; because of changing download speeds, this is not 100% accurate...",
+                    IDC_STATIC,14,90,233,8
 END
 
 IDD_UPLOADPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -535,6 +205,8 @@ BEGIN
                     WS_TABSTOP,14,17,247,161
     PUSHBUTTON      "&Add  folder",IDC_ADD,215,183,46,14
     PUSHBUTTON      "&Remove",IDC_REMOVE,168,183,44,14,WS_DISABLED
+    CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,93,185,72,10
     EDITTEXT        IDC_SLOTS,243,204,25,14,ES_NUMBER
     CONTROL         "Spin1",IDC_SLOTSPIN,"msctls_updown32",UDS_SETBUDDYINT | 
                     UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
@@ -543,8 +215,6 @@ BEGIN
     LTEXT           "Total size:",IDC_STATIC,14,186,33,8
     LTEXT           "0 B",IDC_TOTAL,50,186,41,8
     LTEXT           "Upload slots",IDC_STATIC,197,207,40,8
-    CONTROL         "Share hidden files",IDC_SHAREHIDDEN,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,93,185,72,10
 END
 
 IDD_APPEARANCEPAGE DIALOG DISCARDABLE  0, 0, 275, 225
@@ -554,26 +224,45 @@ FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "Select window color",IDC_SELWINCOLOR,16,17,68,14
     PUSHBUTTON      "Select text style",IDC_SELTEXT,16,35,68,14
-    GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
-    LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
-                    SS_SUNKEN | WS_BORDER | NOT WS_GROUP
     CONTROL         "Full row select in lists",IDC_FULLROW,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,73,81,10
-    GROUPBOX        "Options",IDC_STATIC,7,60,261,103
     CONTROL         "Filter kick messages",IDC_FILTERKICK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,85,79,10
     CONTROL         "Minimize to tray",IDC_MINIMIZETRAY,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,16,96,64,10
-    CONTROL         "Confirm application exit",IDC_CONFIRMEXIT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,16,119,88,10
     CONTROL         "Automatically enable timestamps in chat windows",
                     IDC_TIMESTAMPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,
                     107,170,10
-    GROUPBOX        "Language file",IDC_STATIC,7,167,261,32
+    CONTROL         "Confirm application exit",IDC_CONFIRMEXIT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,119,88,10
     EDITTEXT        IDC_LANGUAGE,16,178,188,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_BROWSE,210,178,50,14
+    GROUPBOX        "Colors",IDC_STATIC,7,7,261,50
+    LTEXT           "DC++ rocks!",IDC_COLOREXAMPLE,93,17,168,32,SS_NOPREFIX | 
+                    SS_SUNKEN | WS_BORDER | NOT WS_GROUP
+    GROUPBOX        "Options",IDC_STATIC,7,60,261,103
+    GROUPBOX        "Language file",IDC_STATIC,7,167,261,32
     LTEXT           "Note; most of these options require that you restart DC++",
                     IDC_STATIC,7,210,179,8
+END
+
+IDD_ADVANCED2PAGE DIALOG DISCARDABLE  0, 0, 275, 225
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Advanced 2"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_LOG_DIRECTORY,15,27,194,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Browse...",IDC_BROWSE_LOG,211,27,50,14
+    CONTROL         "Log main chat",IDC_LOG_MAIN_CHAT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,48,61,10
+    CONTROL         "Log private chat",IDC_LOG_PRIVATE_CHAT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,124,48,67,10
+    CONTROL         "Log downloads",IDC_LOG_DOWNLOADS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,15,60,64,10
+    CONTROL         "Log uploads",IDC_LOG_UPLOADS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,124,60,55,10
+    GROUPBOX        "Logging",IDC_STATIC,7,7,261,71
+    LTEXT           "Log directory",IDC_STATIC,15,17,42,8
 END
 
 
@@ -646,6 +335,17 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 268
         VERTGUIDE, 16
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 218
+    END
+
+    IDD_ADVANCED2PAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 268
+        VERTGUIDE, 15
+        VERTGUIDE, 71
+        VERTGUIDE, 124
         TOPMARGIN, 7
         BOTTOMMARGIN, 218
     END
@@ -807,6 +507,7 @@ BEGIN
     IDR_FAVORITES           "Favorites"
     IDR_NOTEPAD             "Notepad"
     IDR_QUEUE               "Download Queue"
+    IDR_SPY                 "Search Spy"
 END
 
 STRINGTABLE DISCARDABLE 
@@ -853,6 +554,11 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION
 CAPTION "Favorite Hub Properties"
 FONT 8, "MS Sans Serif"
 BEGIN
+    EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_HUBNICK,56,87,131,12
+    EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
     DEFPUSHBUTTON   "OK",IDOK,90,127,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,144,127,50,14
     GROUPBOX        "Hub",IDC_STATIC,7,7,187,62
@@ -863,11 +569,6 @@ BEGIN
     LTEXT           "Name",IDC_STATIC,15,21,20,8
     LTEXT           "Description",IDC_STATIC,16,51,36,8
     LTEXT           "Address",IDC_STATIC,16,36,26,8
-    EDITTEXT        IDC_HUBNAME,56,19,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBADDR,56,34,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBDESCR,56,49,131,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_HUBNICK,56,87,131,12
-    EDITTEXT        IDC_HUBPASS,56,102,131,12,ES_PASSWORD
 END
 
 

@@ -138,7 +138,9 @@ public:
 	static COLORREF textColor;
 	static COLORREF bgColor;
 	static HFONT font;
+	static CMenu mainMenu;
 	
+	static void buildMenu();
 	static void decodeFont(const string& setting, LOGFONT &dest);
 
 	static string encodeFont(LOGFONT const& font)
@@ -204,7 +206,7 @@ public:
 		time_t _tt;
 		time(&_tt);
 		tm* _tm = localtime(&_tt);
-		strftime(buf, 64, "%H:%M", _tm);
+		strftime(buf, 8, "%H:%M", _tm);
 		return buf;
 	}
 
@@ -353,9 +355,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.36 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: Util.h,v 1.37 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.37  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.36  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

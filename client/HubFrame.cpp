@@ -29,6 +29,7 @@
 #include "StringTokenizer.h"
 #include "ResourceManager.h"
 #include "HubManager.h"
+#include "LogManager.h"
 
 CImageList* HubFrame::images = NULL;
 
@@ -206,6 +207,8 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	mi.dwTypeData = const_cast<char*>(CSTRING(REDIRECT));
 	mi.wID = IDC_REDIRECT;
 	opMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	m_hMenu = Util::mainMenu;
 	
 	bHandled = FALSE;
 	client->connect(server);
@@ -632,8 +635,14 @@ void HubFrame::addLine(const string& aLine) {
 	}
 	if(timeStamps) {
 		ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		if(BOOLSETTING(LOG_MAIN_CHAT)) {
+			LOG(client->getServer(), "[" + Util::getShortTimeString() + "] " + aLine);
+		}
 	} else {
 		ctrlClient.AppendText(("\r\n" + aLine).c_str());
+		if(BOOLSETTING(LOG_MAIN_CHAT)) {
+			LOG(client->getServer(), aLine);
+		}
 	}
 	if(noscroll) {
 		ctrlClient.SetRedraw(TRUE);
@@ -666,9 +675,12 @@ LRESULT HubFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.48 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.49 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.49  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.48  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

@@ -245,6 +245,12 @@ void CryptoManager::buildLookup(vector<BYTE>* table, Node* aRoot) {
  * @todo Use real streams maybe? or something else than string (operator[] contains a compare, slow...)
  */
 
+template<> struct std::greater<Node*> { 
+	bool operator() (const Node*& a, const Node*& b) const { 
+		return *a < *b; 
+	}; 
+};
+
 void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 	if(is.length() == 0) {
@@ -327,9 +333,12 @@ void CryptoManager::encodeHuffman(const string& is, string& os) {
 
 /**
  * @file CryptoManager.cpp
- * $Id: CryptoManager.cpp,v 1.19 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: CryptoManager.cpp,v 1.20 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.cpp,v $
+ * Revision 1.20  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.19  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

@@ -16,29 +16,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#if !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
-#define AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_
+#include "stdafx.h"
+#include "DCPlusPlus.h"
 
-#include "PropPage.h"
+#include "LogManager.h"
 
-class PropertiesDlg : public CPropertySheet
-{
-public:
-	enum { numPages = 6 };
+LogManager* LogManager::instance = NULL;
 
-	BEGIN_MSG_MAP(PropertiesDlg)
-		COMMAND_HANDLER(IDOK, BN_CLICKED, onOK)
-	END_MSG_MAP()
-
-	PropertiesDlg(SettingsManager *s);
-	virtual ~PropertiesDlg();
-
-	LRESULT onOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
-protected:
-	void write();
-
-	PropPage *pages[numPages];
-};
-
-#endif // !defined(AFX_PROPERTIESDLG_H__9B8B3ABC_D165_47D8_AA4B_AF695F7A7D54__INCLUDED_)
+/**
+ * @file LogManager.cpp
+ * $Id: LogManager.cpp,v 1.1 2002/04/03 23:21:08 arnetheduck Exp $
+ */

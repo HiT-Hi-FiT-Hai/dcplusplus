@@ -24,6 +24,7 @@
 #include "ClientManager.h"
 #include "Util.h"
 #include "ResourceManager.h"
+#include "LogManager.h"
 
 CriticalSection PrivateFrame::cs;
 PrivateFrame::FrameMap PrivateFrame::frames;
@@ -54,6 +55,8 @@ LRESULT PrivateFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	
 	created = true;
 
+	m_hMenu = Util::mainMenu;
+	
 	bHandled = FALSE;
 	return 1;
 }
@@ -139,11 +142,34 @@ void PrivateFrame::onEnter()
 	}
 }
 
+void PrivateFrame::addLine(const string& aLine) {
+	if(!created) {
+		CreateEx(parent);
+	}
+	if(BOOLSETTING(TIME_STAMPS)) {
+		ctrlClient.AppendText(("\r\n[" + Util::getShortTimeString() + "] " + aLine).c_str());
+		if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
+			LOG(user->getNick(), "[" + Util::getShortTimeString() + "] " + aLine);
+		}
+		
+	} else {
+		ctrlClient.AppendText(("\r\n" + aLine).c_str());
+		if(BOOLSETTING(LOG_PRIVATE_CHAT)) {
+			LOG(user->getNick(), aLine);
+		}
+	}
+	addClientLine("Last change: " + Util::getTimeString());
+	setDirty();
+}
+
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.20 2002/03/13 20:35:26 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.21 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: PrivateFrame.cpp,v $
+ * Revision 1.21  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.20  2002/03/13 20:35:26  arnetheduck
  * Release canditate...internationalization done as far as 0.155 is concerned...
  * Also started using mirrors of the public hub lists

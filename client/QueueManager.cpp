@@ -26,6 +26,7 @@
 #include "UserConnection.h"
 #include "SimpleXML.h"
 #include "StringTokenizer.h"
+#include "File.h"
 
 QueueManager* QueueManager::instance = NULL;
 
@@ -224,20 +225,13 @@ void QueueManager::putDownload(Download* aDownload, bool finished /* = false */)
 
 		if(q) {
 			if(finished) {
-	
-				if(q->isSet(QueueItem::USER_LIST) || BOOLSETTING(REMOVE_FINISHED)) {
-					dcassert(find(queue.begin(), queue.end(), q) != queue.end());
-					queue.erase(find(queue.begin(), queue.end(), q));
-					
-					fire(QueueManagerListener::REMOVED, q);
-					
-					delete q;
-					delete aDownload;
-				} else {
-					q->setStatus(QueueItem::FINISHED);
-					fire(QueueManagerListener::STATUS_UPDATED, q);
-				}
-
+				dcassert(find(queue.begin(), queue.end(), q) != queue.end());
+				queue.erase(find(queue.begin(), queue.end(), q));
+				
+				fire(QueueManagerListener::REMOVED, q);
+				
+				delete q;
+				delete aDownload;
 				dirty = true;
 				
 			} else {
@@ -394,11 +388,69 @@ void QueueManager::onAction(SearchManagerListener::Types type, SearchResult* sr)
 	}
 }
 
+void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
+	File f(aFile, File::READ, File::OPEN);
+	
+	DWORD size = (DWORD)f.getSize();
+	
+	string tmp;
+	if(size > 16) {
+		BYTE* buf = new BYTE[size];
+		f.read(buf, size);
+		CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+		delete buf;
+	} else {
+		tmp = "";
+	}
+	
+	StringTokenizer line(tmp);
+	StringList& tokens = line.getTokens();
+	
+	for(StringIter i = tokens.begin(); i != tokens.end(); i++) {
+		string& tok = *i;
+		string::size_type k = tok.find('|');
+
+		if( (k == -1) || ((k+1) >= tok.size()) )
+			continue;
+
+		if(tok.substr(k + 1).compare("Active") == TRUE || tok.substr(k + 1).compare("Paused") == TRUE) {
+			i++; // ignore first line
+		}
+		
+		StringTokenizer t(*i, '\t');
+		StringList& records = t.getTokens();
+		
+		if(records.size() < 5)
+			continue;
+
+		for(StringIter j = records.begin(); j != records.end(); j++) {
+			j++; // filename
+			
+			const string& size   = *(++j);
+			const string& target = *(++j);
+			const string& file   = *(++j);
+			const string& nick   = *(++j);
+
+			try {
+				add(file, size, ClientManager::getInstance()->getUser(nick), target);
+			} catch(Exception e) {
+				// ...
+			}
+			break;			
+		}
+	}
+		
+	return;
+}
+
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.14 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.15 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.15  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.14  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

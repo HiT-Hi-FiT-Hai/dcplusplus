@@ -50,7 +50,8 @@ public:
 		ADD_UPLOAD_ITEM,
 		ADD_DOWNLOAD_ITEM,
 		REMOVE_ITEM,
-		SET_TEXT,		
+		SET_TEXT,
+		SET_TEXTS,
 		DOWNLOAD_LISTING,
 		STATS,
 		AUTO_CONNECT
@@ -107,6 +108,15 @@ public:
 		COMMAND_ID_HANDLER(IDC_PRIVATEMESSAGE, onPrivateMessage)
 		COMMAND_ID_HANDLER(IDC_GETLIST, onGetList)
 		COMMAND_ID_HANDLER(IDC_FORCE, onForce)
+		COMMAND_ID_HANDLER(IDC_SEARCH_SPY, onSearchSpy)
+		COMMAND_ID_HANDLER(IDC_HELP_HOMEPAGE, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_DOWNLOADS, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_FAQ, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_HELP_FORUM, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_DISCUSS, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_REQUEST_FEATURE, onLink)
+		COMMAND_ID_HANDLER(IDC_HELP_REPORT_BUG, onLink)
+		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		CHAIN_MDI_CHILD_COMMANDS()
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
@@ -133,10 +143,13 @@ public:
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	
+	LRESULT onLink(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		
 	static DWORD WINAPI stopper(void* p);
 
 	LRESULT onColumnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
@@ -154,13 +167,14 @@ public:
 	}
 
 	LRESULT onSelected(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+		::ShowWindow((HWND)wParam, SW_RESTORE);
+		MDIActivate((HWND)wParam);
 		SendMessage(m_hWndMDIClient, WM_MDIACTIVATE, wParam, 0);
 		return 0;
 	}
 	
 	LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-		dcassert(trayIcon);
 		if (lParam == WM_LBUTTONUP)
 		{
 			ShowWindow(SW_SHOW);
@@ -333,7 +347,7 @@ private:
 	CImageList largeImages;
 	
 	CMenu transferMenu;
-	
+
 	bool trayIcon;
 
 	int lastUpload;
@@ -344,6 +358,7 @@ private:
 	HANDLE stopperThread;
 
 	HWND createToolbar();
+	void buildMenu();
 
 	MainFrame(const MainFrame&) { dcassert(0); };
 	// UploadManagerListener
@@ -353,15 +368,18 @@ private:
 			onUploadComplete(aUpload); break;
 		case UploadManagerListener::STARTING:
 			onUploadStarting(aUpload); break;
-		case UploadManagerListener::TICK:
-			onUploadTick(aUpload); break;
 		default:
 			dcassert(0);
 		}
 	}
-
+	virtual void onAction(UploadManagerListener::Types type, const Upload::List ul) {
+		switch(type) {	
+		case UploadManagerListener::TICK: onUploadTick(ul); break;
+		}
+	}
+	
 	void onUploadStarting(Upload* aUpload);
-	void onUploadTick(Upload* aUpload);
+	void onUploadTick(const Upload::List aUpload);
 	void onUploadComplete(Upload* aUpload);
 	
 	// DownloadManagerListener
@@ -369,11 +387,14 @@ private:
 		switch(type) {
 		case DownloadManagerListener::COMPLETE: onDownloadComplete(aDownload); break;
 		case DownloadManagerListener::STARTING: onDownloadStarting(aDownload); break;
-		case DownloadManagerListener::TICK: onDownloadTick(aDownload); break;
 		default: dcassert(0); break;
 		}
 	}
-	
+	virtual void onAction(DownloadManagerListener::Types type, const Download::List& dl) {
+		switch(type) {	
+		case DownloadManagerListener::TICK: onDownloadTick(dl); break;
+		}
+	}
 	virtual void onAction(DownloadManagerListener::Types type, Download* aDownload, const string& aReason) {
 		switch(type) {
 		case DownloadManagerListener::FAILED: onDownloadFailed(aDownload, aReason); break;
@@ -384,7 +405,7 @@ private:
 	void onDownloadComplete(Download* aDownload);
 	void onDownloadFailed(Download* aDownload, const string& aReason);
 	void onDownloadStarting(Download* aDownload);
-	void onDownloadTick(Download* aDownload);
+	void onDownloadTick(const Download::List aDownload);
 
 	// ConnectionManagerListener
 	virtual void onAction(ConnectionManagerListener::Types type, ConnectionQueueItem* aCqi) { 
@@ -455,9 +476,12 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.49 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.50 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.h,v $
+ * Revision 1.50  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.49  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

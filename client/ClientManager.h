@@ -35,10 +35,12 @@ public:
 	typedef List::iterator Iter;
 	
 	enum Types {
-		USER_UPDATED
+		USER_UPDATED,
+		INCOMING_SEARCH
 	};
 
 	virtual void onAction(Types, const User::Ptr&) { };
+	virtual void onAction(Types, const string&) { };
 };
 
 class ClientManager : public Speaker<ClientManagerListener>, private ClientListener, public Singleton<ClientManager>, private TimerManagerListener
@@ -155,14 +157,16 @@ private:
 		case ClientListener::OP_LIST:
 			for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
 				// Make sure we're indeed connected (if the server resets on the first getInfo, 
-				// we'll on trying aNicks.size times...not good...)
+				// we'll keep on trying aNicks.size times...not good...)
 				if(!client->isConnected()) {
 					break;
 				}
-				client->getInfo(*i);
+				
 				if(type == OP_LIST) {
 					if((*i)->getNick() == client->getNick())
 						client->setOp(true);
+				} else {
+					client->getInfo(*i);
 				}
 			}
 		}
@@ -171,6 +175,7 @@ private:
 		int aFileType, const string& aString) {
 		switch(type) {
 		case ClientListener::SEARCH:
+			fire(ClientManagerListener::INCOMING_SEARCH, aString);
 			onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
 		}
 	}
@@ -193,9 +198,12 @@ private:
 
 /**
  * @file ClientManager.h
- * $Id: ClientManager.h,v 1.20 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: ClientManager.h,v 1.21 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: ClientManager.h,v $
+ * Revision 1.21  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.20  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

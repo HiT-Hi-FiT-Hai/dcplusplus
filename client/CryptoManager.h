@@ -25,6 +25,8 @@
 
 #include "Util.h"
 
+
+
 class Node {
 public:
 	// What's this? The only way (I've found out) to avoid a Internal Compiler Error! If this class is moved into
@@ -57,12 +59,6 @@ public:
 	bool operator >=(const Node& rhs) const {
 		return weight>rhs.weight;
 	}
-};
-
-template<> struct std::greater<Node*> { 
-	bool operator() (const Node*& a, const Node*& b) const { 
-		return *a < *b; 
-	}; 
 };
 
 class CryptoManager : public Singleton<CryptoManager>
@@ -126,9 +122,12 @@ private:
 
 /**
  * @file CryptoManager.h
- * $Id: CryptoManager.h,v 1.12 2002/03/19 00:41:37 arnetheduck Exp $
+ * $Id: CryptoManager.h,v 1.13 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: CryptoManager.h,v $
+ * Revision 1.13  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.12  2002/03/19 00:41:37  arnetheduck
  * 0.162, hub counting and cpu bug
  *

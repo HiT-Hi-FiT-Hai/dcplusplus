@@ -30,17 +30,14 @@
 #include "ConnectionManager.h"
 #include "DownloadManager.h"
 #include "UploadManager.h"
-#include "CryptoManager.h"
 #include "DirectoryListing.h"
 #include "DirectoryListingFrm.h"
-#include "ShareManager.h"
-#include "SearchManager.h"
 #include "FavoritesFrm.h"
 #include "NotepadFrame.h"
-#include "QueueManager.h"
 #include "QueueFrame.h"
 #include "StringTokenizer.h"
 #include "ResourceManager.h"
+#include "SpyFrame.h"
 
 int MainFrame::columnIndexes[MainFrame::COLUMN_LAST] = { COLUMN_USER, COLUMN_STATUS, COLUMN_SIZE, COLUMN_FILE };
 int MainFrame::columnSizes[MainFrame::COLUMN_LAST] = { 200, 300, 400, 100 };
@@ -66,22 +63,9 @@ DWORD WINAPI MainFrame::stopper(void* p) {
 			wnd2 = wnd;
 		}
 	}
-	TimerManager::getInstance()->removeListeners();
+
+	shutdown();
 	
-	SettingsManager::getInstance()->save();
-	SettingsManager::deleteInstance();
-	
-	ShareManager::deleteInstance();
-	CryptoManager::deleteInstance();
-	DownloadManager::deleteInstance();
-	UploadManager::deleteInstance();
-	QueueManager::deleteInstance();
-	ConnectionManager::deleteInstance();
-	SearchManager::deleteInstance();
-	ClientManager::deleteInstance();
-	HubManager::deleteInstance();
-	TimerManager::deleteInstance();
-	ResourceManager::deleteInstance();
 	mf->PostMessage(WM_CLOSE);	
 	return 0;
 }
@@ -123,6 +107,25 @@ LRESULT MainFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
 		}
 		ctrlTransfers.resort();
 		delete l;
+	} else if(wParam == SET_TEXTS) {
+		vector<StringListInfo*>* v = (vector<StringListInfo*>*)lParam;
+		ctrlTransfers.SetRedraw(FALSE);
+		for(vector<StringListInfo*>::iterator j = v->begin(); j != v->end(); ++j) {
+			StringListInfo* l = *j;
+			int n = ctrlTransfers.find(l->lParam);
+			if(n != -1) {
+				for(int i = 0; i < COLUMN_LAST; i++) {
+					if(!l->columns[i].empty()) {
+						ctrlTransfers.SetItemText(n, i, l->columns[i].c_str());
+					}
+				}
+			}
+			delete l;
+		}
+		ctrlTransfers.SetRedraw(TRUE);
+		ctrlTransfers.resort();
+		delete v;
+
 	} else if(wParam == DOWNLOAD_LISTING) {
 		DirectoryListInfo* i = (DirectoryListInfo*)lParam;
 		int n = ctrlTransfers.find(i->lParam);
@@ -208,26 +211,34 @@ void MainFrame::onUploadStarting(Upload* aUpload) {
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
-void MainFrame::onUploadTick(Upload* aUpload) {
-	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aUpload->getStart());
-	LONGLONG seconds = 0;
-	LONGLONG avg = 0;
-	if(dif > 0) {
-		avg = aUpload->getTotal() * (LONGLONG)1000 / dif;
-		if(avg > 0) {
-			seconds = (aUpload->getSize() - aUpload->getPos()) / avg;
+void MainFrame::onUploadTick(const Upload::List ul) {
+	vector<StringListInfo*>* v = new vector<StringListInfo*>();
+	v->reserve(ul.size());
+	
+	for(Upload::List::const_iterator j = ul.begin(); j != ul.end(); ++j) {
+		Upload* u = *j;
+		LONGLONG dif = (LONGLONG)(TimerManager::getTick() - u->getStart());
+		LONGLONG seconds = 0;
+		LONGLONG avg = 0;
+		if(dif > 0) {
+			avg = u->getTotal() * (LONGLONG)1000 / dif;
+			if(avg > 0) {
+				seconds = (u->getSize() - u->getPos()) / avg;
+			}
 		}
+
+		char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
+		sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(u->getPos()).c_str(), 
+			(double)u->getPos()*100.0/(double)u->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
+
+		StringListInfo* i = new StringListInfo((LPARAM)u->getCQI());
+		i->columns[COLUMN_STATUS] = buf;
+
+		delete buf;
+		v->push_back(i);
 	}
-
-	char* buf = new char[STRING(UPLOADED_LEFT).size() + 32];
-	sprintf(buf, CSTRING(UPLOADED_LEFT), Util::formatBytes(aUpload->getPos()).c_str(), 
-		(double)aUpload->getPos()*100.0/(double)aUpload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
-
-	StringListInfo* i = new StringListInfo((LPARAM)aUpload->getCQI());
-	i->columns[COLUMN_STATUS] = buf;
-
-	delete buf;
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	
+	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
 }
 
 void MainFrame::onUploadComplete(Upload* aUpload) {
@@ -266,25 +277,34 @@ void MainFrame::onDownloadStarting(Download* aDownload) {
 	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
 }
 
-void MainFrame::onDownloadTick(Download* aDownload) {
-	LONGLONG dif = (LONGLONG)(TimerManager::getTick() - aDownload->getStart());
-	LONGLONG seconds = 0;
-	LONGLONG avg = 0;
-	if(dif > 0) {
-		avg = aDownload->getTotal() * (LONGLONG)1000 / dif;
-		if(avg > 0) {
-			seconds = (aDownload->getSize() - aDownload->getPos()) / avg;
+void MainFrame::onDownloadTick(const Download::List dl) {
+	vector<StringListInfo*>* v = new vector<StringListInfo*>();
+	v->reserve(dl.size());
+
+	for(Download::List::const_iterator j = dl.begin(); j != dl.end(); ++j) {
+		Download* d = *j;
+		LONGLONG dif = (LONGLONG)(TimerManager::getTick() - d->getStart());
+		LONGLONG seconds = 0;
+		LONGLONG avg = 0;
+		if(dif > 0) {
+			avg = d->getTotal() * (LONGLONG)1000 / dif;
+			if(avg > 0) {
+				seconds = (d->getSize() - d->getPos()) / avg;
+			}
 		}
+		
+		char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
+		sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(d->getPos()).c_str(), 
+			(double)d->getPos()*100.0/(double)d->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
+		
+		StringListInfo* i = new StringListInfo((LPARAM)d->getCQI());
+		i->columns[COLUMN_STATUS] = buf;
+		delete buf;
+
+		v->push_back(i);
 	}
 	
-	char* buf = new char[STRING(DOWNLOADED_LEFT).size() + 32];
-	sprintf(buf, CSTRING(DOWNLOADED_LEFT), Util::formatBytes(aDownload->getPos()).c_str(), 
-		(double)aDownload->getPos()*100.0/(double)aDownload->getSize(), Util::formatBytes(avg).c_str(), Util::formatSeconds(seconds).c_str());
-	
-	StringListInfo* i = new StringListInfo((LPARAM)aDownload->getCQI());
-	i->columns[COLUMN_STATUS] = buf;
-	delete buf;
-	PostMessage(WM_SPEAKER, SET_TEXT, (LPARAM)i);
+	PostMessage(WM_SPEAKER, SET_TEXTS, (LPARAM)v);
 }
 
 HWND MainFrame::createToolbar() {
@@ -347,31 +367,14 @@ HWND MainFrame::createToolbar() {
 	
 }
 
+
 LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
-	
-	ResourceManager::newInstance();
-	SettingsManager::newInstance();
-	ShareManager::newInstance();
-	TimerManager::newInstance();
-	CryptoManager::newInstance();
-	SearchManager::newInstance();
-	ClientManager::newInstance();
-	ConnectionManager::newInstance();
-	DownloadManager::newInstance();
-	UploadManager::newInstance();
-	HubManager::newInstance();
-	QueueManager::newInstance();
 
 	TimerManager::getInstance()->addListener(this);
 	DownloadManager::getInstance()->addListener(this);
 	UploadManager::getInstance()->addListener(this);
 	ConnectionManager::getInstance()->addListener(this);
 	
-	SettingsManager::getInstance()->load();	
-	
-	ShareManager::getInstance()->refresh(false, false);
-	HubManager::getInstance()->refresh();
-
 	TimerManager::getInstance()->start();
 	
 	if(!SETTING(LANGUAGE_FILE).empty()) {
@@ -392,8 +395,12 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	// Load images
 	// create command bar window
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+
+	Util::buildMenu();
+	m_hMenu = Util::mainMenu;
+
 	// attach menu
-	m_CmdBar.AttachMenu(GetMenu());
+	m_CmdBar.AttachMenu(Util::mainMenu);
 	// load command bar images
 	images.CreateFromImage(IDB_TOOLBAR, 16, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
 	largeImages.CreateFromImage(IDB_TOOLBAR20, 20, 5, CLR_DEFAULT, IMAGE_BITMAP, LR_CREATEDIBSECTION | LR_SHARED);
@@ -528,18 +535,6 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	
 	mi.fMask = MIIM_ID | MIIM_TYPE;
 	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(CLOSE_CONNECTION));
-	mi.wID = IDC_REMOVE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
-	mi.dwTypeData = const_cast<char*>(CSTRING(FORCE_ATTEMPT));
-	mi.wID = IDC_FORCE;
-	transferMenu.InsertMenuItem(n++, TRUE, &mi);
-	
-	mi.fMask = MIIM_ID | MIIM_TYPE;
-	mi.fType = MFT_STRING;
 	mi.dwTypeData = const_cast<char*>(CSTRING(GET_FILE_LIST));
 	mi.wID = IDC_GETLIST;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
@@ -550,6 +545,18 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	mi.wID = IDC_PRIVATEMESSAGE;
 	transferMenu.InsertMenuItem(n++, TRUE, &mi);
 
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = const_cast<char*>(CSTRING(FORCE_ATTEMPT));
+	mi.wID = IDC_FORCE;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
+	mi.fMask = MIIM_ID | MIIM_TYPE;
+	mi.fType = MFT_STRING;
+	mi.dwTypeData = const_cast<char*>(CSTRING(CLOSE_CONNECTION));
+	mi.wID = IDC_REMOVE;
+	transferMenu.InsertMenuItem(n++, TRUE, &mi);
+	
 	c.addListener(this);
 	c.downloadFile("http://dcplusplus.sourceforge.net/version.xml");
 
@@ -559,6 +566,8 @@ LRESULT MainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		PostMessage(WM_COMMAND, IDC_QUEUE);
 	
 	PostMessage(WM_SPEAKER, AUTO_CONNECT);
+
+	Util::ensureDirectory(SETTING(LOG_DIRECTORY));
 	
 	// We want to pass this one on to the splitter...hope it get's there...
 	bHandled = FALSE;
@@ -643,6 +652,18 @@ LRESULT MainFrame::OnFileConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		MDIActivate(PublicHubsFrame::frame->m_hWnd);
 	}
 
+	return 0;
+}
+
+LRESULT MainFrame::onSearchSpy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	if(SpyFrame::frame == NULL) {
+		SpyFrame* pChild = new SpyFrame();
+		pChild->setTab(&ctrlTab);
+		pChild->CreateEx(m_hWndClient);
+	} else {
+		MDIActivate(SpyFrame::frame->m_hWnd);
+	}
+	
 	return 0;
 }
 
@@ -825,11 +846,48 @@ LRESULT MainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 0;
 }
 
+LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+
+	string site;
+
+	switch(wID) {
+	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
+	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
+	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1"; break;
+	case IDC_HELP_HELP_FORUM: site = "http://sourceforge.net/forum/forum.php?forum_id=126238"; break;
+	case IDC_HELP_DISCUSS: site = "http://sourceforge.net/forum/forum.php?forum_id=126237"; break;
+	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
+	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
+	default: dcassert(0);
+	}
+
+	ShellExecute(NULL, NULL, site.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+	return 0;
+}
+
+LRESULT MainFrame::onImport(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	string file = Util::getAppPath() + "queue.config";
+ 	if(Util::browseFile(file, m_hWnd, false) == IDOK) {
+		try {
+			QueueManager::getInstance()->importNMQueue(file);
+ 		} catch(FileException e) {
+			ctrlStatus.SetText(0, CSTRING(ERROR_OPENING_FILE));
+ 		}
+ 	} 
+ 
+ 	return 0;
+}
+ 
+
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.71 2002/03/25 22:23:25 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.72 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.72  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.71  2002/03/25 22:23:25  arnetheduck
  * Lots of minor updates
  *

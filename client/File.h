@@ -92,7 +92,10 @@ public:
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_BEGIN);
 	}
-
+	virtual void setEndPos(LONGLONG pos) {
+		LONG x = (LONG) (pos>>32);
+		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_END);
+	}
 	virtual void movePos(LONGLONG pos) {
 		LONG x = (LONG) (pos>>32);
 		::SetFilePointer(h, (DWORD)(pos & 0xffffffff), &x, FILE_CURRENT);
@@ -228,9 +231,12 @@ private:
 
 /**
  * @file File.h
- * $Id: File.h,v 1.7 2002/03/14 16:17:35 arnetheduck Exp $
+ * $Id: File.h,v 1.8 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: File.h,v $
+ * Revision 1.8  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.7  2002/03/14 16:17:35  arnetheduck
  * Oops, file buffering bug
  *

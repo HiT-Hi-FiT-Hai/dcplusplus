@@ -53,6 +53,7 @@ typedef StringMap::iterator StringMapIter;
 #include "SettingsManager.h"
 #include "version.h"
 
+void shutdown();
 
 #define GETSET(type, name, name2) private: type name; public: type get##name2() const { return name; }; void set##name2(type a##name2) { name = a##name2; };
 #define GETSETREF(type, name, name2) private: type name; public: const type& get##name2() const { return name; }; void set##name2(const type& a##name2) { name = a##name2; };
@@ -70,9 +71,12 @@ typedef StringMap::iterator StringMapIter;
 
 /**
  * @file DCPlusPlus.h
- * $Id: DCPlusPlus.h,v 1.18 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: DCPlusPlus.h,v 1.19 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DCPlusPlus.h,v $
+ * Revision 1.19  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.18  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

@@ -422,35 +422,40 @@ public:
 // MDI client window message handlers
 	LRESULT OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		BOOL fShow = false;
-		m_wndMDIClient.SendMessage(WM_MDIGETACTIVE, 0, (LPARAM)&fShow);
-
-		int xGapPos = UpdateMenu(fShow == TRUE, (HMENU)wParam);
-		LRESULT lRes = CCommandBarCtrlImpl< T, TBase, TWinTraits >::OnMDISetMenu(uMsg, wParam, lParam, bHandled);
-		UpdateMDIButtons(fShow == TRUE);
-
+		if(wParam != NULL) {
+			BOOL fShow = false;
+			m_wndMDIClient.SendMessage(WM_MDIGETACTIVE, 0, (LPARAM)&fShow);
+			
+			int xGapPos = UpdateMenu(fShow == TRUE, (HMENU)wParam);
+			LRESULT lRes = CCommandBarCtrlImpl< T, TBase, TWinTraits >::OnMDISetMenu(uMsg, wParam, lParam, bHandled);
+			UpdateMDIButtons(fShow == TRUE);
+			
 #if (_WIN32_IE >= 0x0400)
-		// Update rebar band width
-		if(xGapPos == 0)
-		{
-			int nIndex = GetButtonCount();
-			RECT rc;
-			GetItemRect(nIndex - 1, &rc);
-			xGapPos = rc.right;
-		}
-		REBARBANDINFO rbBand;
-		rbBand.cbSize = sizeof(REBARBANDINFO);
-		rbBand.fMask = RBBIM_SIZE | RBBIM_IDEALSIZE;
-		rbBand.cx = xGapPos;
-		rbBand.cxIdeal = rbBand.cx;
-		lRes = ::SendMessage(GetParent(), RB_SETBANDINFO, (WPARAM)0, (LPARAM)&rbBand);
-		if(lRes == 0)
-		{
-			ATLTRACE2(atlTraceUI, 0, _T("Failed to modify the menu band size.\n"));
-			return FALSE;
-		}
+			// Update rebar band width
+			if(xGapPos == 0)
+			{
+				int nIndex = GetButtonCount();
+				RECT rc;
+				GetItemRect(nIndex - 1, &rc);
+				xGapPos = rc.right;
+			}
+			REBARBANDINFO rbBand;
+			rbBand.cbSize = sizeof(REBARBANDINFO);
+			rbBand.fMask = RBBIM_SIZE | RBBIM_IDEALSIZE;
+			rbBand.cx = xGapPos;
+			rbBand.cxIdeal = rbBand.cx;
+			lRes = ::SendMessage(GetParent(), RB_SETBANDINFO, (WPARAM)0, (LPARAM)&rbBand);
+			if(lRes == 0)
+			{
+				ATLTRACE2(atlTraceUI, 0, _T("Failed to modify the menu band size.\n"));
+				return FALSE;
+			}
 #endif //(_WIN32_IE >= 0x0400)
-		return lRes;
+			return lRes;
+		} else  {
+			bHandled = FALSE;
+			return 0;
+		}
 	}
 
 	LRESULT OnMDIChildSized(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)

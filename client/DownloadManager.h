@@ -107,6 +107,7 @@ public:
 
 	virtual void onAction(Types, Download*) { };
 	virtual void onAction(Types, Download*, const string&) { };
+	virtual void onAction(Types, const Download::List&) { };
 };
 
 class DownloadManager : public Speaker<DownloadManagerListener>, private UserConnectionListener, private TimerManagerListener, public Singleton<DownloadManager>
@@ -214,9 +215,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.37 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.38 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.38  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.37  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

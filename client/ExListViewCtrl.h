@@ -47,8 +47,9 @@ public:
 	}
 
 	void resort() {
-		if(sortColumn != -1)
+		if(sortColumn != -1) {
 			SortItemsEx(&CompareFunc, (LPARAM)this);
+		}
 	}
 
 	bool getSortDirection() { return ascending; };
@@ -168,9 +169,12 @@ public:
 
 /**
  * @file ExListViewCtrl.h
- * $Id: ExListViewCtrl.h,v 1.17 2002/03/25 22:23:24 arnetheduck Exp $
+ * $Id: ExListViewCtrl.h,v 1.18 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: ExListViewCtrl.h,v $
+ * Revision 1.18  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.17  2002/03/25 22:23:24  arnetheduck
  * Lots of minor updates
  *

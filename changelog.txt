@@ -10,6 +10,16 @@
 * Added proxy support for downloading the hub list
 * Fixed a crash when loading invalid hub lists
 * Added transfer window sorting
+* Fixed kicking the same user multiple times from search
+* Added last kick/redirect reason to the search frame as well
+* Reordered some of the right-click menus so that "dangerous" options are at the end
+* Worked some on the cpu bug, should a bit better now...
+* Fixed a bug where some data was unnecessarily requested from the hub, causing a little extra load (thanks dan kline)
+* Added some new menu options to the help menu
+* Added search spy window with counter
+* Added NMDC queue importing (thanks luca rota)
+* Added some simple logging, more will probably come...
+* Removed option to keep finished downloads in queue (replaced by log...and yes, the log will be improved later on...)
 
  -- 0.162 2002-03-18 --
 * Fixed another hub counting bug (this is becoming annoying...gee, I should be sleeping...=)

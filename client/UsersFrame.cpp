@@ -119,6 +119,8 @@ LRESULT UsersFrame::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	}
 	ctrlUsers.SetRedraw(TRUE);
 
+	m_hMenu = Util::mainMenu;
+	
 	bHandled = FALSE;
 	return TRUE;
 
@@ -212,9 +214,12 @@ LRESULT UsersFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: UsersFrame.cpp,v 1.1 2002/03/26 09:17:59 arnetheduck Exp $
+ * $Id: UsersFrame.cpp,v 1.2 2002/04/03 23:20:35 arnetheduck Exp $
  * @if LOG
  * $Log: UsersFrame.cpp,v $
+ * Revision 1.2  2002/04/03 23:20:35  arnetheduck
+ * ...
+ *
  * Revision 1.1  2002/03/26 09:17:59  arnetheduck
  * New UsersFrame
  *
