@@ -16,8 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-// NT4 fix
-
 #include "stdafx.h"
 #include "Resource.h"
 
@@ -27,12 +25,12 @@
 #endif
 
 // Basic sanity check
-#if (_WTL_VER < 0x710)
+#if (_WTL_VER < 0x750)
 #error WTL not correctly installed, read compile.txt
 #endif
 
 /**
  * @file
- * $Id: stdafx.cpp,v 1.13 2004/11/30 14:49:35 arnetheduck Exp $
+ * $Id: stdafx.cpp,v 1.14 2004/11/30 17:14:42 arnetheduck Exp $
  */
 
