@@ -39,8 +39,9 @@ class Flags {
 template<typename Listener>
 class Speaker {
 public:
+
 	void fire(Listener::Types type) throw () {
-		RLock l(listenerCS);
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type);
@@ -49,7 +50,7 @@ public:
 	
 	template<class T> 
 		void fire(Listener::Types type, const T& param) throw () {
-		RLock l(listenerCS);
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, param);
@@ -58,7 +59,7 @@ public:
 	
 	template<class T, class T2> 
 		void fire(Listener::Types type, const T& p, const T2& p2) throw() {
-		RLock l(listenerCS);
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2);
@@ -66,7 +67,7 @@ public:
 	};
 	template<class T, class T2, class T3> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3) throw() {
-		RLock l(listenerCS);
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3);
@@ -74,7 +75,7 @@ public:
 	};
 	template<class T, class T2, class T3, class T4, class T5, class T6> 
 		void fire(Listener::Types type, const T& p, const T2& p2, const T3& p3, const T4& p4, const T5& p5, const T6& p6) throw() {
-		RLock l(listenerCS);
+		Lock l(listenerCS);
 		vector<Listener*> tmp = listeners;
 		for(vector<Listener*>::iterator i=tmp.begin(); i != tmp.end(); ++i) {
 			(*i)->onAction(type, p, p2, p3, p4, p5, p6);
@@ -83,13 +84,13 @@ public:
 	
 	
 	void addListener(Listener* aListener) {
-		WLock l(listenerCS);
+		Lock l(listenerCS);
 		if(find(listeners.begin(), listeners.end(), aListener) == listeners.end())
 			listeners.push_back(aListener);
 	}
 	
 	void removeListener(Listener* aListener) {
-		WLock l(listenerCS);
+		Lock l(listenerCS);
 
 		vector<Listener*>::iterator i = find(listeners.begin(), listeners.end(), aListener);
 		if(i != listeners.end())
@@ -97,12 +98,12 @@ public:
 	}
 	
 	void removeListeners() {
-		WLock l(listenerCS);
+		Lock l(listenerCS);
 		listeners.clear();
 	}
 protected:
 	vector<Listener*> listeners;
-	RWLock listenerCS;
+	CriticalSection listenerCS;
 };
 
 template<typename T>
@@ -383,9 +384,12 @@ private:
 
 /**
  * @file Util.h
- * $Id: Util.h,v 1.32 2002/03/07 19:07:52 arnetheduck Exp $
+ * $Id: Util.h,v 1.33 2002/03/07 20:17:15 arnetheduck Exp $
  * @if LOG
  * $Log: Util.h,v $
+ * Revision 1.33  2002/03/07 20:17:15  arnetheduck
+ * Oops...
+ *
  * Revision 1.32  2002/03/07 19:07:52  arnetheduck
  * Minor fixes + started code review
  *
