@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="windows-1252"?>
 <Language Name="Example Language">
 	<Strings>
 		<String Name="AddToFavorites">Add To Favorites</String>
@@ -55,6 +56,7 @@
 		<String Name="EnterNick">Please enter a nickname in the settings dialog!</String>
 		<String Name="EnterPassword">Please enter a password</String>
 		<String Name="EnterReason">Please enter a reason</String>
+		<String Name="EnterSearchString">Enter search string</String>
 		<String Name="EnterServer">Please enter a destination server</String>
 		<String Name="ErrorOpeningFile">Error opening file</String>
 		<String Name="Executable">Executable</String>
@@ -67,6 +69,7 @@
 		<String Name="FileWithDifferentSize">A file with a different size already exists in the queue</String>
 		<String Name="Filename">Filename</String>
 		<String Name="Filter">Filter</String>
+		<String Name="Find">Find</String>
 		<String Name="ForceAttempt">Force attempt</String>
 		<String Name="Gb">GB</String>
 		<String Name="GetFileList">Get file list</String>
@@ -119,9 +122,11 @@
 		<String Name="MenuViewStatusBar">&amp;Status bar</String>
 		<String Name="MenuViewToolbar">&amp;Toolbar</String>
 		<String Name="MenuWindow">&amp;Window</String>
+		<String Name="MenuWindowMinimizeAll">Minimize &amp;All</String>
 		<String Name="MenuWindowArrange">Arrange icons</String>
 		<String Name="MenuWindowCascade">Cascade</String>
 		<String Name="MenuWindowTile">Tile</String>
+		<String Name="Next">Next</String>
 		<String Name="New">New...</String>
 		<String Name="Nick">Nick</String>
 		<String Name="NickTaken">Your nick was already taken, please change to something else!</String>
@@ -130,6 +135,8 @@
 		<String Name="NotConnected">Not connected</String>
 		<String Name="NotSocket">Not a socket</String>
 		<String Name="NoDirectorySpecified">No directory specified</String>
+		<String Name="NoDownloadsFromSelf">You're trying to download from yourself!</String>
+		<String Name="NoMatches">No matches</String>
 		<String Name="NoSlotsAvailable">No slots available</String>
 		<String Name="NoUsers">No users</String>
 		<String Name="NoUsersToDownloadFrom">No users to download from</String>
@@ -166,6 +173,7 @@
 		<String Name="Search">Search</String>
 		<String Name="SearchFor">Search for</String>
 		<String Name="SearchForAlternates">Search for alternates</String>
+		<String Name="SearchForFile">Search for file</String>
 		<String Name="SearchOptions">Search options</String>
 		<String Name="SearchSpamFrom">Search spam detected from </String>
 		<String Name="SearchSpy">Search Spy</String>

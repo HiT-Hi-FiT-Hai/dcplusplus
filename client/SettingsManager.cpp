@@ -59,6 +59,7 @@ SettingsManager::SettingsManager()
 		intSettings[j] = 0;
 	}
 
+	setDefault(SLOTS, 1);
 	setDefault(SERVER, Util::getLocalIp());
 	setDefault(PORT, 1412);
 	setDefault(ROLLBACK, 4096);
@@ -188,7 +189,6 @@ void SettingsManager::save(string const& aFileName) {
 	fire(SettingsManagerListener::SAVE, &xml);
 
 	try {
-		
 		File f(aFileName + ".tmp", File::WRITE, File::CREATE | File::TRUNCATE);
 		f.write("<?xml version=\"1.0\" encoding=\"windows-1252\"?>\r\n");
 		f.write(xml.toXML());
@@ -202,6 +202,6 @@ void SettingsManager::save(string const& aFileName) {
 
 /**
  * @file SettingsManager.h
- * $Id: SettingsManager.cpp,v 1.35 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: SettingsManager.cpp,v 1.36 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

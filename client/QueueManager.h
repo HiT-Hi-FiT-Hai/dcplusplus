@@ -211,7 +211,7 @@ public:
 
 		add(aFile, aSize.length() > 0 ? Util::toInt64(aSize.c_str()) : -1, aUser, aTarget, aResume, p);
 	}
-	void add(const string& aFile, int64_t aSize, const User::Ptr& aUser, const string& aTarget, 
+	void add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 		bool aResume = true, QueueItem::Priority p = QueueItem::DEFAULT) throw(QueueException, FileException);
 	
 	void addList(const User::Ptr& aUser) throw(QueueException, FileException) {
@@ -348,6 +348,6 @@ private:
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.20 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.21 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

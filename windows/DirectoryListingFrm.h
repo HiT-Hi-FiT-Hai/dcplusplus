@@ -31,7 +31,7 @@
 #include "../client/DirectoryListing.h"
 #include "../client/CryptoManager.h"
 
-#define FINDFILE_MESSAGE_MAP 9
+#define STATUS_MESSAGE_MAP 9
 
 class DirectoryListingFrame : public MDITabChildWindowImpl<DirectoryListingFrame>, CSplitterImpl<DirectoryListingFrame>
 {
@@ -48,10 +48,9 @@ public:
 	};
 	
 	DirectoryListingFrame(const string& aFile, const User::Ptr& aUser) :
+		statusContainer(STATUSCLASSNAME, this, STATUS_MESSAGE_MAP),
 		user(aUser),
-		skipHits(0), 
-		findContainer("BUTTON", this, FINDFILE_MESSAGE_MAP),
-		findNextContainer("BUTTON", this, FINDFILE_MESSAGE_MAP)
+		skipHits(0)
 	{
 		string tmp;
 		try{
@@ -62,7 +61,11 @@ public:
 			if(size > 16) {
 				BYTE* buf = new BYTE[size];
 				f.read(buf, size);
-				CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+				if(aFile.substr(aFile.size() - 4) == ".bz2") {
+					CryptoManager::getInstance()->decodeBZ2(buf, size, tmp);
+				} else {
+					CryptoManager::getInstance()->decodeHuffman(buf, tmp);
+				}
 				delete[] buf;
 			} else {
 				tmp = Util::emptyString;
@@ -114,9 +117,9 @@ public:
 		NOTIFY_HANDLER(IDC_FILES, LVN_COLUMNCLICK, onColumnClickFiles)
 		CHAIN_MSG_MAP(MDITabChildWindowImpl<DirectoryListingFrame>)
 		CHAIN_MSG_MAP(CSplitterImpl<DirectoryListingFrame>)
-	ALT_MSG_MAP(FINDFILE_MESSAGE_MAP)
-		MESSAGE_HANDLER(WM_LBUTTONUP, onFindFile2)
-		NOTIFY_HANDLER(IDC_SEARCH, BN_CLICKED, onFindFile3)
+	ALT_MSG_MAP(STATUS_MESSAGE_MAP)
+		COMMAND_HANDLER(IDC_FIND, BN_CLICKED, onFind)
+		COMMAND_HANDLER(IDC_NEXT, BN_CLICKED, onNext)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
@@ -129,8 +132,6 @@ public:
 	LRESULT onDoubleClickFiles(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onSelChangedDirectories(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onFindFile2(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
-	LRESULT onFindFile3(int idCtrl, LPNMHDR pnmh, BOOL& bHandled); 
 	
 	void downloadList(const string& aTarget);
 	static int sortFile(LPARAM a, LPARAM b);
@@ -138,6 +139,7 @@ public:
 	static int sortType(LPARAM a, LPARAM b);
 	void updateTree(DirectoryListing::Directory* tree, HTREEITEM treeItem);
 	void UpdateLayout(BOOL bResizeBars = TRUE);
+	void findFile(bool findNext);
 	
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
 		return 0;
@@ -182,7 +184,14 @@ public:
 		ctrlList.DeleteAllItems();
 	}
 
-	void findFile(bool findNext);
+	LRESULT onFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		findFile(false);
+		return 0;
+	}
+	LRESULT onNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		findFile(true);
+		return 0;
+	}
 
 private:
 	static DirectoryListing::Directory *findFile(string const& str,
@@ -208,7 +217,8 @@ private:
 	CMenu targetDirMenu;
 	CMenu fileMenu;
 	CMenu directoryMenu;
-	
+	CContainedWindow statusContainer;
+
 	StringList targets;
 	static StringList lastDirs;
 	
@@ -218,7 +228,6 @@ private:
 	CStatusBarCtrl ctrlStatus;
 	
 	CButton ctrlFind, ctrlFindNext;
-	CContainedWindow findContainer, findNextContainer;
 	int skipHits;
 	string findStr;
 
@@ -232,5 +241,5 @@ private:
 
 /**
  * @file DirectoryListingFrm.h
- * $Id: DirectoryListingFrm.h,v 1.7 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.h,v 1.8 2002/05/05 13:16:29 arnetheduck Exp $
  */

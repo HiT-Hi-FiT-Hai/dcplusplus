@@ -121,6 +121,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_HELP_README, onLink)
 		COMMAND_ID_HANDLER(IDC_IMPORT_QUEUE, onImport)
 		COMMAND_ID_HANDLER(IDC_OPEN_FILE_LIST, onOpenFileList)
+		COMMAND_ID_HANDLER(ID_WINDOW_MINIMIZE_ALL, onWindowMinimizeAll)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_KEYDOWN, onKeyDownTransfers)
 		NOTIFY_HANDLER(IDC_TRANSFERS, LVN_COLUMNCLICK, onColumnClick)
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -249,6 +250,16 @@ public:
 
 	LRESULT OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 		MDIIconArrange();
+		return 0;
+	}
+
+	LRESULT onWindowMinimizeAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+		HWND tmpWnd = GetWindow(GW_CHILD); //getting client window
+		tmpWnd = ::GetWindow(tmpWnd, GW_CHILD); //getting first child window
+		while (tmpWnd!=NULL) {
+			::CloseWindow(tmpWnd);
+			tmpWnd = ::GetWindow(tmpWnd, GW_HWNDNEXT);
+		}
 		return 0;
 	}
 
@@ -422,7 +433,7 @@ private:
 
 /**
  * @file MainFrm.h
- * $Id: MainFrm.h,v 1.4 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: MainFrm.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
  */
 
  

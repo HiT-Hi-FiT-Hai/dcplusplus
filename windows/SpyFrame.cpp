@@ -21,6 +21,7 @@
 #include "Resource.h"
 
 #include "SpyFrame.h"
+#include "SearchFrm.h"
 #include "WinUtil.h"
 
 SpyFrame* SpyFrame::frame = NULL;
@@ -31,7 +32,7 @@ LRESULT SpyFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	ctrlStatus.Attach(m_hWndStatusBar);
 
 	ctrlSearches.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | 
-		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS, WS_EX_CLIENTEDGE, IDC_RESULTS);
+		WS_HSCROLL | WS_VSCROLL | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SINGLESEL, WS_EX_CLIENTEDGE, IDC_RESULTS);
 
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
 		ctrlSearches.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
@@ -119,7 +120,43 @@ LRESULT SpyFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 	return 0;
 }
 
+LRESULT SpyFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
+	RECT rc;                    // client area of window 
+	POINT pt = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };        // location of mouse click 
+
+	// Get the bounding rectangle of the client area. 
+	ctrlSearches.GetClientRect(&rc);
+	ctrlSearches.ScreenToClient(&pt); 
+
+	if (PtInRect(&rc, pt) && ctrlSearches.GetSelectedCount() == 1) {
+		int i = ctrlSearches.GetNextItem(-1, LVNI_SELECTED);
+
+		CMenu mnu;
+		mnu.CreatePopupMenu();
+		mnu.AppendMenu(MF_STRING, IDC_SEARCH, CSTRING(SEARCH));
+		char* buf = new char[256];
+		ctrlSearches.GetItemText(i, COLUMN_STRING, buf, 256);
+		searchString = buf;
+		delete buf;
+
+		ctrlSearches.ClientToScreen(&pt);
+		mnu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON, pt.x, pt.y, m_hWnd);
+		
+		return TRUE; 
+	}
+
+	return FALSE; 
+}
+
+LRESULT SpyFrame::onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	SearchFrame* pChild = new SearchFrame();
+	pChild->setInitial(searchString, 0, SearchManager::SIZE_ATLEAST);
+	pChild->setTab(getTab());
+	pChild->CreateEx(m_hWndMDIClient);
+	return 0;
+};
+
 /**
  * @file SpyFrame.cpp
- * $Id: SpyFrame.cpp,v 1.5 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: SpyFrame.cpp,v 1.6 2002/05/05 13:16:29 arnetheduck Exp $
  */

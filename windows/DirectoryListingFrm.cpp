@@ -29,7 +29,8 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	CreateSimpleStatusBar(ATL_IDS_IDLEMESSAGE, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | SBARS_SIZEGRIP);
 	ctrlStatus.Attach(m_hWndStatusBar);
-	
+	statusContainer.SubclassWindow(ctrlStatus.m_hWnd);
+
 	ctrlTree.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_LINESATROOT | TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_DISABLEDRAGDROP, WS_EX_CLIENTEDGE, IDC_DIRECTORIES);
 	ctrlList.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | LVS_REPORT | LVS_SHOWSELALWAYS | LVS_SHAREIMAGELISTS, WS_EX_CLIENTEDGE, IDC_FILES);
 	if(BOOLSETTING(FULL_ROW_SELECT)) {
@@ -52,17 +53,15 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	ctrlTree.SetImageList(WinUtil::fileImages, TVSIL_NORMAL);
 	ctrlList.SetImageList(WinUtil::fileImages, LVSIL_SMALL);
 
-	ctrlFind.Create(ctrlStatus, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON, 0, IDC_SEARCH);
-	ctrlFind.SetWindowText("Find");
+	ctrlFind.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON, 0, IDC_FIND);
+	ctrlFind.SetWindowText(CSTRING(FIND));
 	ctrlFind.SetFont(ctrlStatus.GetFont());
-	findContainer.SubclassWindow(ctrlFind.m_hWnd);
 
-	ctrlFindNext.Create(ctrlStatus, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
-		BS_PUSHBUTTON, 0, IDC_SEARCH);
-	ctrlFindNext.SetWindowText("FNext");
+	ctrlFindNext.Create(ctrlStatus.m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN |
+		BS_PUSHBUTTON, 0, IDC_NEXT);
+	ctrlFindNext.SetWindowText(CSTRING(NEXT));
 	ctrlFindNext.SetFont(ctrlStatus.GetFont());
-	findNextContainer.SubclassWindow(ctrlFindNext.m_hWnd);
 
 	SetSplitterExtendedStyle(SPLIT_PROPORTIONAL);
 	SetSplitterPanes(ctrlTree.m_hWnd, ctrlList.m_hWnd);
@@ -71,9 +70,11 @@ LRESULT DirectoryListingFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	updateTree(dl->getRoot(), NULL);
 	files = dl->getTotalFileCount();
 	size = Util::formatBytes(dl->getTotalSize());
-	
-	ctrlStatus.SetText(3, (STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount())).c_str());
-	ctrlStatus.SetText(4, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
+
+	int w[5] = { 0, 1, 2, 3, 4 };
+	ctrlStatus.SetParts(5, w);
+	ctrlStatus.SetText(1, (STRING(FILES) + ": " + Util::toString(dl->getTotalFileCount())).c_str());
+	ctrlStatus.SetText(2, (STRING(SIZE) + ": " + Util::formatBytes(dl->getTotalSize())).c_str());
 	
 	fileMenu.CreatePopupMenu();
 	targetMenu.CreatePopupMenu();
@@ -111,7 +112,7 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 			l.push_back(d->getName());
 			l.push_back(Util::emptyString);
 			l.push_back(Util::formatBytes(d->getTotalSize()));
-			ctrlList.insert(l, WinUtil::getDirIconIndex(), (LPARAM)new ItemInfo(d));
+			ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getDirIconIndex(), (LPARAM)new ItemInfo(d));
 		}
 		for(DirectoryListing::File::Iter j = d->files.begin(); j != d->files.end(); ++j) {
 			string::size_type k = (*j)->getName().rfind('.');
@@ -121,10 +122,10 @@ LRESULT DirectoryListingFrame::onSelChangedDirectories(int /*idCtrl*/, LPNMHDR p
 			l.push_back(suffix);
 			l.push_back(Util::formatBytes((*j)->getSize()));
 
-			ctrlList.insert(l, WinUtil::getIconIndex((*j)->getName()), (LPARAM)new ItemInfo(*j));
+			ctrlList.insert(ctrlList.GetItemCount(), l, WinUtil::getIconIndex((*j)->getName()), (LPARAM)new ItemInfo(*j));
 		}
 		ctrlList.SetRedraw(TRUE);
-		ctrlList.Invalidate();
+		ctrlList.resort();
 	}
 	return 0;
 }
@@ -141,7 +142,7 @@ LRESULT DirectoryListingFrame::onDoubleClickFiles(int /*idCtrl*/, LPNMHDR pnmh, 
 			try {
 				dl->download(ii->file, user, SETTING(DOWNLOAD_DIRECTORY) + ii->file->getName());
 			} catch(Exception e) {
-				ctrlStatus.SetText(2, e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		} else {
 			HTREEITEM ht = ctrlTree.GetChildItem(t);
@@ -166,7 +167,7 @@ LRESULT DirectoryListingFrame::onDownloadDir(WORD , WORD , HWND , BOOL& ) {
 		try {
 			dl->download(dir, user, target);
 		} catch(Exception e) {
-			ctrlStatus.SetText(2, e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 	return 0;
@@ -185,7 +186,7 @@ LRESULT DirectoryListingFrame::onDownloadDirTo(WORD , WORD , HWND , BOOL& ) {
 			try {
 				dl->download(dir, user, target);
 			} catch(Exception e) {
-				ctrlStatus.SetText(2, e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			}
 		}
 	}
@@ -206,7 +207,7 @@ void DirectoryListingFrame::downloadList(const string& aTarget) {
 				dl->download(ii->dir, user, target);
 			} 
 		} catch(Exception e) {
-			ctrlStatus.SetText(2, e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 }
@@ -236,7 +237,7 @@ LRESULT DirectoryListingFrame::onDownloadTo(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				}
 			} 
 		} catch(Exception e) {
-			ctrlStatus.SetText(2, e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	} else {
 		string target = SETTING(DOWNLOAD_DIRECTORY);
@@ -325,7 +326,7 @@ LRESULT DirectoryListingFrame::onDownloadTarget(WORD /*wNotifyCode*/, WORD wID, 
 			try {
 				dl->download(ii->file, user, targets[wID-IDC_DOWNLOAD_TARGET]);
 			} catch(Exception e) {
-				ctrlStatus.SetText(2, e.getError().c_str());
+				ctrlStatus.SetText(0, e.getError().c_str());
 			} 
 		} else {
 			dcassert((StringList::size_type)(wID-IDC_DOWNLOAD_TARGET) < lastDirs.size());
@@ -346,7 +347,7 @@ LRESULT DirectoryListingFrame::onDownloadTargetDir(WORD /*wNotifyCode*/, WORD wI
 		try {
 			dl->download(dir, user, lastDirs[wID - IDC_DOWNLOAD_TARGET_DIR]);
 		} catch(Exception e) {
-			ctrlStatus.SetText(2, e.getError().c_str());
+			ctrlStatus.SetText(0, e.getError().c_str());
 		}
 	}
 	return 0;
@@ -425,21 +426,23 @@ void DirectoryListingFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 		CRect sr;
 		int w[5];
 		ctrlStatus.GetClientRect(sr);
-		int tmp = (sr.Width()) > 316 ? 216 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
+		int tmp = (sr.Width()) > 516 ? 416 : ((sr.Width() > 116) ? sr.Width()-100 : 16);
 
-		w[0] = 40;
-		w[1] = 80;
-		w[2] = sr.right - tmp;
-		w[3] = w[2] + (tmp-16)/2;
-		w[4] = w[2] + (tmp-16);
+		w[0] = sr.right - tmp;
+		w[1] = w[0] + (tmp-16)*3/8;
+		w[2] = w[0] + (tmp-16)*6/8;
+		w[3] = w[0] + (tmp-16)*7/8;
+		w[4] = w[0] + (tmp-16)*8/8;
 
 		ctrlStatus.SetParts(5, w);
-		ctrlStatus.SetText(3, (STRING(FILES) + ": " + Util::toString(files)).c_str());
-		ctrlStatus.SetText(4, (STRING(FILES) + ": " + size).c_str());
 
-		ctrlStatus.GetRect(0, sr);
+		ctrlStatus.GetRect(3, sr);
+		sr.left = w[2];
+		sr.right = w[3];
 		ctrlFind.MoveWindow(sr);
-		ctrlStatus.GetRect(1, sr);
+
+		sr.left = w[3];
+		sr.right = w[4];
 		ctrlFindNext.MoveWindow(sr);
 	}
 
@@ -501,9 +504,9 @@ void DirectoryListingFrame::findFile(bool findNext)
 	if(!findNext)
 	{
 		LineDlg dlg;
-		dlg.title = "Search file list";
-		dlg.description = "Enter search string:";
-		dlg.line = "";
+		dlg.title = STRING(SEARCH_FOR_FILE);
+		dlg.description = STRING(ENTER_SEARCH_STRING);
+		dlg.line = Util::emptyString;
 
 		if(dlg.DoModal() != IDOK)
 			return;
@@ -561,50 +564,55 @@ void DirectoryListingFrame::findFile(bool findNext)
 			dcassert(item != NULL);
 		}
 
-		// Highlight the directory and file found
+		// Highlight the directory tree and list if the parent dir/a matched dir was found
 		if(item)
 		{
+			string foundName;
+			if(foundFile)
+			{
+				// Got a file; select the parent dir in the tree and highlight the file
+				foundName = foundFile->getName();
+			}
+			else
+			{
+				HTREEITEM parentItem = ctrlTree.GetParentItem(item);
+				if(parentItem)
+				{
+					// A dir; select the parent dir in the tree and highlight the dir
+					foundName = foundDir->getName();
+					item = parentItem;
+				}
+				// If no parent exists, just the dir tree item and skip the list highlighting
+			}
+
+			// Select directory in tree
 			ctrlTree.SelectItem(item);
 
-			// Unselect all items in list view here...
+			// Unselect all items in list view
 			if(ctrlList.GetSelectedCount() > 0)
 				for(int i=0; i<ctrlList.GetItemCount(); i++)
 					ctrlList.SetItemState(i, 0, LVIS_SELECTED);
 
-			if(foundFile)
+			// Highlight item in list
+			if(foundName.size() > 0)
 			{
-				int listPos = ctrlList.find(foundFile->getName(), -1, true);
-				if(listPos > 0)
+				int listPos = ctrlList.find(foundName, -1, true);
+				if(listPos >= 0)
 				{
+					ctrlList.SetFocus();
 					ctrlList.EnsureVisible(listPos, FALSE);
 					ctrlList.SetItemState(listPos, LVIS_SELECTED | LVIS_FOCUSED, (UINT)-1);
 				}
 			}
+			else
+				ctrlTree.SetFocus();
 		}
 	}
 	else		
-		MessageBox("No matches found.", "File list search");
-}
-
-LRESULT DirectoryListingFrame::onFindFile2(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	HWND const c = GetCapture();
-
-	if(c == ctrlFind.m_hWnd)
-		findFile(false);
-	else if(c == ctrlFindNext.m_hWnd)
-		findFile(true);
-
-	bHandled = FALSE;
-	return 0;
-}
-
-LRESULT DirectoryListingFrame::onFindFile3(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-{
-	return 0;
+		MessageBox(CSTRING(NO_MATCHES), CSTRING(SEARCH_FOR_FILE));
 }
 
 /**
  * @file DirectoryListingFrm.cpp
- * $Id: DirectoryListingFrm.cpp,v 1.8 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: DirectoryListingFrm.cpp,v 1.9 2002/05/05 13:16:29 arnetheduck Exp $
  */

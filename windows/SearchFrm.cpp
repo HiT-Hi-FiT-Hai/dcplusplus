@@ -318,7 +318,10 @@ void SearchFrame::onEnter() {
 			lastSearches.push_back(s);
 		
 		ctrlStatus.SetText(1, (STRING(SEARCHING_FOR) + s + "...").c_str());
-		search = StringTokenizer(s, ' ').getTokens();	
+		{
+			Lock l(cs);
+			search = StringTokenizer(s, ' ').getTokens();
+		}
 
 		SetWindowText((STRING(SEARCH) + " - " + s).c_str());
 	}
@@ -326,9 +329,16 @@ void SearchFrame::onEnter() {
 
 void SearchFrame::onSearchResult(SearchResult* aResult) {
 	// Check that this is really a relevant search result...
-	for(StringIter j = search.begin(); j != search.end(); ++j) {
-		if(Util::findSubString(aResult->getFile(), *j) == -1) {
+	{
+		Lock l(cs);
+
+		if(search.empty()) {
 			return;
+		}
+		for(StringIter j = search.begin(); j != search.end(); ++j) {
+			if(Util::findSubString(aResult->getFile(), *j) == -1) {
+				return;
+			}
 		}
 	}
 
@@ -756,6 +766,6 @@ void SearchFrame::onTab() {
 
 /**
  * @file SearchFrm.cpp
- * $Id: SearchFrm.cpp,v 1.6 2002/05/03 18:53:03 arnetheduck Exp $
+ * $Id: SearchFrm.cpp,v 1.7 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

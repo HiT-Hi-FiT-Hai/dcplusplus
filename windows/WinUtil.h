@@ -63,6 +63,14 @@ public:
 		}
 	}
 
+	static int getFontHeight(HDC dc, HFONT h) {
+		TEXTMETRIC tm;
+		HFONT old = (HFONT)SelectObject(dc, h);
+		GetTextMetrics(dc, &tm);      // Get the metrics for the new font.
+		SelectObject(dc, old);
+		return tm.tmHeight;
+	}
+
 	static int getDirIconIndex() {
 		return dirIconIndex;
 	}
@@ -76,5 +84,5 @@ private:
 
 /**
  * @file WinUtil.h
- * $Id: WinUtil.h,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: WinUtil.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
  */

@@ -27,6 +27,7 @@
 #include "ExListViewCtrl.h"
 
 #include "../client/SearchManager.h"
+#include "../client/CriticalSection.h"
 
 #define SEARCH_MESSAGE_MAP 6		// This could be any number, really...
 #define SHOWUI_MESSAGE_MAP 7
@@ -106,19 +107,6 @@ public:
 		MESSAGE_HANDLER(BM_SETCHECK, onShowUI)
 	END_MSG_MAP()
 
-	static int sortSize(LPARAM a, LPARAM b) {
-		SearchResult* c = (SearchResult*)a;
-		SearchResult* d = (SearchResult*)b;
-		
-		if(c->getSize() < d->getSize()) {
-			return -1;
-		} else if(c->getSize() == d->getSize()) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
 	LRESULT onClose(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT onPrivateMessage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT onCtlColor(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -132,6 +120,19 @@ public:
 	LRESULT onDoubleClickResults(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+
+	static int sortSize(LPARAM a, LPARAM b) {
+		SearchResult* c = (SearchResult*)a;
+		SearchResult* d = (SearchResult*)b;
+
+		if(c->getSize() < d->getSize()) {
+			return -1;
+		} else if(c->getSize() == d->getSize()) {
+			return 0;
+		} else {
+			return 1;
+		}
+	}
 
 	void removeSelected() {
 		int i = -1;
@@ -242,6 +243,8 @@ private:
 	static int columnIndexes[];
 	static int columnSizes[];
 
+	CriticalSection cs;
+
 	void downloadSelected(const string& aDir); 
 	void onEnter();
 	void onTab();
@@ -266,6 +269,6 @@ private:
 
 /**
  * @file SearchFrm.h
- * $Id: SearchFrm.h,v 1.5 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: SearchFrm.h,v 1.6 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

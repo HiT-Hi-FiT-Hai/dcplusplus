@@ -155,7 +155,8 @@ void WinUtil::buildMenu() {
 	window.AppendMenu(MF_STRING, ID_WINDOW_CASCADE, CSTRING(MENU_WINDOW_CASCADE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_TILE_HORZ, CSTRING(MENU_WINDOW_TILE));
 	window.AppendMenu(MF_STRING, ID_WINDOW_ARRANGE, CSTRING(MENU_WINDOW_ARRANGE));
-	
+	window.AppendMenu(MF_STRING, ID_WINDOW_MINIMIZE_ALL, CSTRING(MENU_WINDOW_MINIMIZE_ALL));
+
 	mainMenu.AppendMenu(MF_POPUP, (UINT)(HMENU)window, CSTRING(MENU_WINDOW));
 	
 	CMenuHandle help;
@@ -176,8 +177,7 @@ void WinUtil::buildMenu() {
 	
 }
 
-
 /**
  * @file WinUtil.cpp
- * $Id: WinUtil.cpp,v 1.4 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: WinUtil.cpp,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
  */

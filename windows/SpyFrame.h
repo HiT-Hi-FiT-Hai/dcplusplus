@@ -61,13 +61,17 @@ public:
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_SPEAKER, onSpeaker)
 		MESSAGE_HANDLER(WM_CLOSE, onClose)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, onContextMenu)
+		COMMAND_ID_HANDLER(IDC_SEARCH, onSearch)
 		NOTIFY_HANDLER(IDC_RESULTS, LVN_COLUMNCLICK, onColumnClickResults)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
-
+	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT onSearch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	LRESULT onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ClientManager::getInstance()->removeListener(this);
 		TimerManager::getInstance()->removeListener(this);
@@ -109,7 +113,8 @@ private:
 	int total;
 	int perSecond[AVG_TIME];
 	int cur;
-
+	string searchString;
+	
 	typedef HASH_MAP<string, int> SearchMap;
 	typedef SearchMap::iterator SearchIter;
 
@@ -150,6 +155,6 @@ private:
 
 /**
  * @file SpyFrame.h
- * $Id: SpyFrame.h,v 1.4 2002/05/01 21:22:08 arnetheduck Exp $
+ * $Id: SpyFrame.h,v 1.5 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

@@ -113,8 +113,13 @@ void QueueManager::onTimerMinute(u_int32_t /*aTick*/) {
 	
 }
 
-void QueueManager::add(const string& aFile, int64_t aSize, const User::Ptr& aUser, const string& aTarget, 
+void QueueManager::add(const string& aFile, int64_t aSize, User::Ptr aUser, const string& aTarget, 
 					   bool aResume /* = true */, QueueItem::Priority p /* = QueueItem::DEFAULT */) throw(QueueException, FileException) {
+	// Check that we're not downloading from ourselves...
+						   
+	if(aUser->getClientNick() == aUser->getNick()) {
+		throw QueueException(STRING(NO_DOWNLOADS_FROM_SELF));
+	}
 
 	// Check that the file doesn't already exist...
 	if( (aSize != -1) && (aSize <= File::getSize(aTarget)) )  {
@@ -447,7 +452,7 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.22 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.23 2002/05/05 13:16:29 arnetheduck Exp $
  */
 
 

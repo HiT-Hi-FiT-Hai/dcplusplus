@@ -1,4 +1,4 @@
- -- 0.173 --
+ -- 0.173 2002-04-29 --
 * Fixed some minor debug mode bugs
 * Fixed some vc7 compatibility issues, but some initial experiments show that there are stability problems
   when compiling with optimization on..._STL::list seems to generate a lot of crashes...
@@ -24,7 +24,11 @@
 * Fixed so that dupe searches are not added to the drop-down box
 * Fixed some right-click bugs in the tab at the bottom
 * Fixed tab click minimization bug when window was maximized
-
+* Added minimize all windows (thanks Anton M)
+* Improved viewing performance of most list views (less unneccesary sorting)
+* Fixed bzip2 list file opening
+* Disabled connecting to oneself. Use "open file list" to see what your share looks like!
+* Added so that op:s always can download the file list (regardless of open slots)
 
  -- 0.172 2002-04-28 --
 * Changed so that only bz-lists can be downloaded using the extra slot (since they're smaller...)

@@ -345,15 +345,14 @@ void PublicHubsFrame::updateList() {
 			l.push_back(i->getDescription());
 			l.push_back(i->getUsers());
 			l.push_back(i->getServer());
-			ctrlHubs.insert(l);
+			ctrlHubs.insert(ctrlHubs.GetItemCount(), l);
 			visibleHubs++;
 			users += Util::toInt(i->getUsers());
 		}
-
 	}
 	
 	ctrlHubs.SetRedraw(TRUE);
-	ctrlHubs.Invalidate();
+	ctrlHubs.resort();
 
 	updateStatus();
 }
@@ -416,6 +415,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.3 2002/04/16 16:45:55 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.4 2002/05/05 13:16:29 arnetheduck Exp $
  */
 

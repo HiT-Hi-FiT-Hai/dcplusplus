@@ -17,10 +17,10 @@
  */
 
 #define APPNAME "DC++"
-#define VERSIONSTRING "0.172"
-#define VERSIONFLOAT 0.172
+#define VERSIONSTRING "0.173"
+#define VERSIONFLOAT 0.173
 
 /**
  * @file Version.h
- * $Id: version.h,v 1.29 2002/04/28 08:25:50 arnetheduck Exp $
+ * $Id: version.h,v 1.30 2002/05/05 13:16:29 arnetheduck Exp $
  */

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
-// Used by C:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
+// Microsoft Visual C++ generated include file.
+// Used by c:\Documents\VCProjects\DCPlusPlus\DCPlusPlus.rc
 //
 #define IDD_ABOUTBOX                    100
 #define IDD_PROPPAGE_1                  107
@@ -144,8 +144,10 @@
 #define IDC_CHEVRON                     1076
 #define IDC_OPEN_FILE_LIST              1077
 #define IDC_SEARCH                      1078
-#define IDC_HELP_README					1079
-#define IDC_CLOSE_WINDOW				1080
+#define IDC_HELP_README                 1079
+#define IDC_CLOSE_WINDOW                1080
+#define IDC_FIND						1081
+#define IDC_NEXT						1082
 #define ID_FILE_CONNECT                 32772
 #define ID_FILE_SETTINGS                32774
 #define ID_FILE_RECONNECT               32775
@@ -154,6 +156,7 @@
 #define IDC_DOWNLOADTO                  32781
 #define IDC_FAVORITES                   32783
 #define IDC_FOLLOW                      32784
+#define ID_WINDOW_MINIMIZE_ALL          57654
 
 // Next default values for new objects
 // 
