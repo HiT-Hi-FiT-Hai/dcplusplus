@@ -136,57 +136,14 @@ private:
 		delete aUpload;
 	}
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
-		switch(type) {
-		case TimerManagerListener::SECOND: 
-			{
-				Lock l(cs);
-				Upload::List ticks;
-				
-				for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
-					ticks.push_back(*i);
-				}
-
-				if(ticks.size() > 0)
-					fire(UploadManagerListener::TICK, ticks);
-			}
-			break;
-		case TimerManagerListener::MINUTE: onTimerMinute(aTick);	break;
-			break;
-		}
-	}
-
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
 	void onTimerMinute(u_int32_t aTick);
 
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
-		switch(type) {
-		case UserConnectionListener::TRANSMIT_DONE:
-			onTransmitDone(conn); break;
-		case UserConnectionListener::SEND:
-			onSend(conn); break;
-		case UserConnectionListener::GET_LIST_LENGTH:
-			conn->listLen(ShareManager::getInstance()->getListLenString()); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) {
-		switch(type) {
-		case UserConnectionListener::BYTES_SENT:
-			onBytesSent(conn, bytes); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
-		switch(type) {
-		case UserConnectionListener::FAILED:
-			onFailed(conn, line); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) {
-		switch(type) {
-		case UserConnectionListener::GET:
-			onGet(conn, line, resume); break;
-		}
-	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume);
 	
 	void onBytesSent(UserConnection* aSource, u_int32_t aBytes);
 	void onFailed(UserConnection* aSource, const string& aError);
@@ -200,5 +157,5 @@ private:
 
 /**
  * @file UploadManger.h
- * $Id: UploadManager.h,v 1.47 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: UploadManager.h,v 1.48 2002/05/26 20:28:11 arnetheduck Exp $
  */

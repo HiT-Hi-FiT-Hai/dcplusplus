@@ -226,52 +226,17 @@ private:
 		return favoriteHubs.end();
 	}
 	// HttpConnectionListener
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) {
-		switch(type) {
-		case HttpConnectionListener::DATA:
-			downloadBuf.append((char*)buf, len); break;
-		default:
-			dcassert(0);
-		}
-	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
-		switch(type) {
-		case HttpConnectionListener::FAILED:
-			dcassert(c);
-			c->removeListener(this);
-			lastServer++;
-			fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
-			running = false;
-		}
-	}
-	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
-		switch(type) {
-		case HttpConnectionListener::COMPLETE:
-			dcassert(c);
-			c->removeListener(this);
-			onHttpFinished();
-			running = false;
-			fire(HubManagerListener::DOWNLOAD_FINISHED);
-		}
-	}
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine);
+	virtual void onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/);
 	
  	void onHttpFinished() throw();
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t) {
-		if(type == TimerManagerListener::MINUTE) {
-			if(publicHubs.empty() && !running)
-				refresh();
-		}
-	}
-
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
-		switch(type) {
-		case SettingsManagerListener::LOAD: load(xml); break;
-		case SettingsManagerListener::SAVE: save(xml); break;
-		}
-	}
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t);
 	
+	// SettingsManagerListener
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);	
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -281,6 +246,6 @@ private:
 
 /**
  * @file HubManager.h
- * $Id: HubManager.h,v 1.30 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: HubManager.h,v 1.31 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

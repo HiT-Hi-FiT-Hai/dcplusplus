@@ -123,7 +123,6 @@ void HubManager::load(SimpleXML* aXml) {
 }
 
 void HubManager::refresh() {
-	
 	StringList l = StringTokenizer(SETTING(HUBLIST_SERVERS), ';').getTokens();
 	const string& server = l[(lastServer) % l.size()];
 
@@ -143,12 +142,56 @@ void HubManager::refresh() {
 			listType = TYPE_NORMAL;
 		}
 		running = true;
+	}
+}
 
+// HttpConnectionListener
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const u_int8_t* buf, int len) {
+	switch(type) {
+	case HttpConnectionListener::DATA:
+		downloadBuf.append((char*)buf, len); break;
+	default:
+		dcassert(0);
+	}
+}
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/, const string& aLine) {
+	switch(type) {
+	case HttpConnectionListener::FAILED:
+		dcassert(c);
+		c->removeListener(this);
+		lastServer++;
+		fire(HubManagerListener::DOWNLOAD_FAILED, aLine);
+		running = false;
+	}
+}
+void HubManager::onAction(HttpConnectionListener::Types type, HttpConnection* /*conn*/) {
+	switch(type) {
+	case HttpConnectionListener::COMPLETE:
+		dcassert(c);
+		c->removeListener(this);
+		onHttpFinished();
+		running = false;
+		fire(HubManagerListener::DOWNLOAD_FINISHED);
+	}
+}
+
+// TimerManagerListener
+void HubManager::onAction(TimerManagerListener::Types type, u_int32_t) {
+	if(type == TimerManagerListener::MINUTE) {
+		if(publicHubs.empty() && !running)
+			refresh();
+	}
+}
+
+void HubManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+	switch(type) {
+	case SettingsManagerListener::LOAD: load(xml); break;
+	case SettingsManagerListener::SAVE: save(xml); break;
 	}
 }
 
 /**
  * @file HubManager.cpp
- * $Id: HubManager.cpp,v 1.24 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: HubManager.cpp,v 1.25 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

@@ -308,57 +308,23 @@ private:
 	QueueItem* findByTarget(const string& aTarget);
 
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
-		switch(type) {
-		case TimerManagerListener::MINUTE:
-			onTimerMinute(aTick); break;
-		case TimerManagerListener::SECOND:
-			if(dirty && ((lastSave + 10000) < aTick)) {
-				saveQueue();
-			}
-			break;
-		}
-	}
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
 	void onTimerMinute(u_int32_t aTick);
 	
 	// SearchManagerListener
 	virtual void onAction(SearchManagerListener::Types, SearchResult*);
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
-		switch(type) {
-		case SettingsManagerListener::LOAD: load(xml); break;
-		}
-	}
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);
 
 	// ClientManagerListener
-	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser) {
-		switch(type) {
-		case ClientManagerListener::USER_UPDATED:
-			{
-				Lock l(cs);
-				QueueItem::UserPair up = userQueue.equal_range(aUser);
-				bool hasDown = false;
-				for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
-					if( (i->second->getPriority() != QueueItem::PAUSED) &&
-						(i->second->getStatus() == QueueItem::WAITING) ) {
-							hasDown = true;
-						}
-					fire(QueueManagerListener::SOURCES_UPDATED, i->second);
-				}
-				if( aUser->isOnline() && hasDown ) {
-					ConnectionManager::getInstance()->getDownloadConnection(aUser);
-				} 
-			}
-			break;
-		}
-	}
+	virtual void onAction(ClientManagerListener::Types type, const User::Ptr& aUser);
 };
 
 #endif // !defined(AFX_QUEUEMANAGER_H__07D44A33_1277_482D_AFB4_05E3473B4379__INCLUDED_)
 
 /**
  * @file QueueManager.h
- * $Id: QueueManager.h,v 1.23 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.24 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

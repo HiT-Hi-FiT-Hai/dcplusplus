@@ -219,7 +219,58 @@ void UploadManager::onTimerMinute(u_int32_t aTick) {
 	}
 }	
 
+// TimerManagerListener
+void UploadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	switch(type) {
+	case TimerManagerListener::SECOND: 
+		{
+			Lock l(cs);
+			Upload::List ticks;
+			
+			for(Upload::Iter i = uploads.begin(); i != uploads.end(); ++i) {
+				ticks.push_back(*i);
+			}
+			
+			if(ticks.size() > 0)
+				fire(UploadManagerListener::TICK, ticks);
+		}
+		break;
+	case TimerManagerListener::MINUTE: onTimerMinute(aTick);	break;
+		break;
+	}
+}
+
+// UserConnectionListener
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+	switch(type) {
+	case UserConnectionListener::TRANSMIT_DONE:
+		onTransmitDone(conn); break;
+	case UserConnectionListener::SEND:
+		onSend(conn); break;
+	case UserConnectionListener::GET_LIST_LENGTH:
+		conn->listLen(ShareManager::getInstance()->getListLenString()); break;
+	}
+}
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, u_int32_t bytes) {
+	switch(type) {
+	case UserConnectionListener::BYTES_SENT:
+		onBytesSent(conn, bytes); break;
+	}
+}
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+	switch(type) {
+	case UserConnectionListener::FAILED:
+		onFailed(conn, line); break;
+	}
+}
+void UploadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line, int64_t resume) {
+	switch(type) {
+	case UserConnectionListener::GET:
+		onGet(conn, line, resume); break;
+	}
+}
+
 /**
  * @file UploadManger.cpp
- * $Id: UploadManager.cpp,v 1.30 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: UploadManager.cpp,v 1.31 2002/05/26 20:28:11 arnetheduck Exp $
  */

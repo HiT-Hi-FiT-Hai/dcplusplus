@@ -258,6 +258,7 @@ void ConnectionManager::onIncomingConnection() throw() {
 		uc->accept(socket);
 		uc->setFlag(UserConnection::FLAG_INCOMING);
 		uc->setState(UserConnection::STATE_NICK);
+		uc->setLastActivity(GET_TICK());
 	} catch(Exception e) {
 		dcdebug("ConnectionManager::OnIncomingConnection caught: %s\n", e.getError().c_str());
 		putConnection(uc);
@@ -484,7 +485,62 @@ void ConnectionManager::removeConnection(ConnectionQueueItem* aCqi) {
 	}
 }
 
+// ServerSocketListener
+void ConnectionManager::onAction(ServerSocketListener::Types type) {
+	switch(type) {
+	case ServerSocketListener::INCOMING_CONNECTION:
+		onIncomingConnection();
+	}
+}
+
+// UserConnectionListener
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+	switch(type) {
+	case UserConnectionListener::CONNECTED:
+		onConnected(conn); break;
+	}
+}
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+	switch(type) {
+	case UserConnectionListener::MY_NICK:
+		onMyNick(conn, line); break;
+	case UserConnectionListener::KEY:
+		onKey(conn, line); break;
+	case UserConnectionListener::FAILED:
+		onFailed(conn, line); break;
+	}
+}
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) {
+	switch(type) {
+	case UserConnectionListener::C_LOCK:
+		onLock(conn, line1, line2); break;
+	case UserConnectionListener::DIRECTION:
+		onDirection(conn, line1, line2); break;
+	}
+}
+// UserConnectionListener
+void ConnectionManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) {
+	switch(type) {
+	case UserConnectionListener::SUPPORTS:
+		{
+			for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
+				if(*i == "BZList")
+					conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
+			}
+		}
+		break;
+	}
+}
+
+// TimerManagerListener
+void ConnectionManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	switch(type) {
+	case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
+	case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
+	}
+}
+
 /**
- * @file IncomingManger.cpp
- * $Id: ConnectionManager.cpp,v 1.46 2002/05/23 21:48:23 arnetheduck Exp $
+ * @file ConnectionManger.cpp
+ * $Id: ConnectionManager.cpp,v 1.47 2002/05/26 20:28:10 arnetheduck Exp $
  */

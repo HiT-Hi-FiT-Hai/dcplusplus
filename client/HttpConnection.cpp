@@ -74,8 +74,44 @@ void HttpConnection::onLine(const string& aLine) {
 	}
 }
 
+// BufferedSocketListener
+void HttpConnection::onAction(BufferedSocketListener::Types type) {
+	switch(type) {
+	case BufferedSocketListener::CONNECTED:
+		onConnected(); break;
+	}
+}
+void HttpConnection::onAction(BufferedSocketListener::Types type, const string& aLine) {
+	switch(type) {
+	case BufferedSocketListener::LINE:
+		onLine(aLine); break;
+	case BufferedSocketListener::FAILED:
+		socket->removeListener(this);
+		fire(HttpConnectionListener::FAILED, this, aLine); break;
+	}
+}
+void HttpConnection::onAction(BufferedSocketListener::Types type, int /*mode*/) {
+	switch(type) {
+	case BufferedSocketListener::MODE_CHANGE:
+		socket->removeListener(this);
+		socket->disconnect();
+		fire(HttpConnectionListener::COMPLETE, this); 
+		break;
+	default:
+		dcassert(0);
+	}
+}
+void HttpConnection::onAction(BufferedSocketListener::Types type, const u_int8_t* aBuf, int aLen) {
+	switch(type) {
+	case BufferedSocketListener::DATA:
+		fire(HttpConnectionListener::DATA, this, aBuf, aLen); break;
+	default:
+		dcassert(0);
+	}
+}
+
 /**
  * @file HttpConnection.cpp
- * $Id: HttpConnection.cpp,v 1.11 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: HttpConnection.cpp,v 1.12 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

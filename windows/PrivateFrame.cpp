@@ -110,26 +110,10 @@ void PrivateFrame::openWindow(const User::Ptr& aUser, HWND aParent, FlatTabCtrl*
 	Lock l(cs);
 	FrameIter i = frames.find(aUser);
 	if(i == frames.end()) {
-		bool found = false;
-		for(i = frames.begin(); i != frames.end(); ++i) {
-			if( (!i->first->isOnline()) && 
-				(i->first->getNick() == aUser->getNick()) &&
-				(i->first->getLastHubIp() == aUser->getLastHubIp()) ) {
-
-				found = true;
-				p = i->second;
-				frames.erase(i);
-				frames[aUser] = p;
-				p->setUser(aUser);
-				break;
-			}
-		}
-		if(!found) {
-			p = new PrivateFrame(aUser, aParent);
-			frames[aUser] = p;
-			p->setTab(aTab);
-			p->CreateEx(aParent);
-		}
+		p = new PrivateFrame(aUser, aParent);
+		frames[aUser] = p;
+		p->setTab(aTab);
+		p->CreateEx(aParent);
 	} else {
 		i->second->MDIActivate(i->second->m_hWnd);
 	}
@@ -270,7 +254,7 @@ void PrivateFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 
 /**
  * @file PrivateFrame.cpp
- * $Id: PrivateFrame.cpp,v 1.7 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: PrivateFrame.cpp,v 1.8 2002/05/26 20:28:11 arnetheduck Exp $
  */
 
 

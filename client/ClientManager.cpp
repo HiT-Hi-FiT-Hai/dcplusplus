@@ -252,8 +252,68 @@ void ClientManager::onTimerMinute(u_int8_t aTick) {
 	}
 }
 
+// ClientListener
+void ClientManager::onAction(ClientListener::Types type, Client* client, const string& line1, const string& line2) {
+	switch(type) {
+	case ClientListener::C_LOCK:
+		client->key(CryptoManager::getInstance()->makeKey(line1));
+		client->validateNick(client->getNick());
+		break;
+	case ClientListener::CONNECT_TO_ME:
+		ConnectionManager::getInstance()->connect(line1, (short)Util::toInt(line2), client->getNick()); break;
+		
+	}
+}
+void ClientManager::onAction(ClientListener::Types type, Client* client, const User::Ptr& user) {
+	switch(type) {
+	case ClientListener::HELLO:
+		onClientHello(client, user); break;
+	case ClientListener::REV_CONNECT_TO_ME:
+		if(SETTING(CONNECTION_TYPE) == SettingsManager::CONNECTION_ACTIVE) {
+			client->connectToMe(user);
+		}
+		break;
+		
+	}
+}
+void ClientManager::onAction(ClientListener::Types type, Client* client, const User::List& aList) {
+	switch(type) {
+	case ClientListener::NICK_LIST:		// Fall through...
+	case ClientListener::OP_LIST:
+		for(User::List::const_iterator i = aList.begin(); i != aList.end(); ++i) {
+			// Make sure we're indeed connected (if the server resets on the first getInfo, 
+			// we'll keep on trying aNicks.size times...not good...)
+			if(!client->isConnected()) {
+				break;
+			}
+			
+			if(type == OP_LIST) {
+				if((*i)->getNick() == client->getNick())
+					client->setOp(true);
+			} else {
+				client->getInfo(*i);
+			}
+		}
+	}
+}
+void ClientManager::onAction(ClientListener::Types type, Client* aClient, const string& aSeeker, int aSearchType, const string& aSize, 
+					  int aFileType, const string& aString) {
+	switch(type) {
+	case ClientListener::SEARCH:
+		fire(ClientManagerListener::INCOMING_SEARCH, aString);
+		onClientSearch(aClient, aSeeker, aSearchType, aSize, aFileType, aString);
+	}
+}
+
+// TimerManagerListener
+void ClientManager::onAction(TimerManagerListener::Types type, u_int8_t aTick) {
+	if(type == TimerManagerListener::MINUTE) {
+		onTimerMinute(aTick);
+	}
+}
+
 /**
  * @file ClientManager.cpp
- * $Id: ClientManager.cpp,v 1.26 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: ClientManager.cpp,v 1.27 2002/05/26 20:28:10 arnetheduck Exp $
  */
 

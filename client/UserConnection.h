@@ -269,55 +269,11 @@ private:
 	};
 
 	// BufferedSocketListener
-	virtual void onAction(BufferedSocketListener::Types type) {
-		lastActivity = GET_TICK();
-		switch(type) {
-		case BufferedSocketListener::CONNECTED:
-			fire(UserConnectionListener::CONNECTED, this);
-			break;
-		case BufferedSocketListener::TRANSMIT_DONE:
-			fire(UserConnectionListener::TRANSMIT_DONE, this); break;
-		}
-	}
-	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes) {
-		lastActivity = GET_TICK();
-		switch(type) {
-		case BufferedSocketListener::BYTES_SENT:
-			fire(UserConnectionListener::BYTES_SENT, this, bytes); break;
-		default:
-			dcassert(0);
-		}
-	}
-	virtual void onAction(BufferedSocketListener::Types type, const string& aLine) {
-		lastActivity = GET_TICK();
-		switch(type) {
-		case BufferedSocketListener::LINE:
-			onLine(aLine); break;
-		case BufferedSocketListener::FAILED:
-			setState(STATE_UNCONNECTED);
-			fire(UserConnectionListener::FAILED, this, aLine); break;
-		default:
-			dcassert(0);
-		}
-	}
-	virtual void onAction(BufferedSocketListener::Types type, int mode) {
-		lastActivity = GET_TICK();
-		switch(type) {
-		case BufferedSocketListener::MODE_CHANGE:
-			fire(UserConnectionListener::MODE_CHANGE, this, mode); break;
-		default:
-			dcassert(0);
-		}
-	}
-	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len) {
-		lastActivity = GET_TICK();
-		switch(type) {
-		case BufferedSocketListener::DATA:
-			fire(UserConnectionListener::DATA, this, buf, len); break;
-		default:
-			dcassert(0);
-		}
-	}
+	virtual void onAction(BufferedSocketListener::Types type);
+	virtual void onAction(BufferedSocketListener::Types type, u_int32_t bytes);
+	virtual void onAction(BufferedSocketListener::Types type, const string& aLine);
+	virtual void onAction(BufferedSocketListener::Types type, int mode);
+	virtual void onAction(BufferedSocketListener::Types type, const u_int8_t* buf, int len);
 
 };
 
@@ -325,5 +281,5 @@ private:
 
 /**
  * @file UserConnection.h
- * $Id: UserConnection.h,v 1.44 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: UserConnection.h,v 1.45 2002/05/26 20:28:11 arnetheduck Exp $
  */

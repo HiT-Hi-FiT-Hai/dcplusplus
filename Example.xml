@@ -164,6 +164,7 @@
 		<String Name="PublicHubs">Public Hubs</String>
 		<String Name="ReallyExit">Really exit?</String>
 		<String Name="Redirect">Redirect</String>
+		<String Name="RedirectAlreadyConnected">Redirect request received to a hub that's already connected</String>
 		<String Name="RedirectUser">Redirect user(s)</String>
 		<String Name="Refresh">Refresh</String>
 		<String Name="RefreshUserList">Refresh user list</String>

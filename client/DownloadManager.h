@@ -158,33 +158,10 @@ private:
 	void checkDownloads(UserConnection* aConn);
 	
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
-		switch(type) {
-		case UserConnectionListener::MAXED_OUT:
-			onMaxedOut(conn); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
-		switch(type) {
-		case UserConnectionListener::FILE_LENGTH:
-			onFileLength(conn, line); break;
-		case UserConnectionListener::FAILED:
-			onFailed(conn, line); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) {
-		switch(type) {
-		case UserConnectionListener::DATA:
-			onData(conn, data, len); break;
-		}
-	}
-
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) {
-		switch(type) {
-		case UserConnectionListener::MODE_CHANGE:
-			onModeChange(conn, mode); break;
-		}
-	}
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, int mode);
 	
 	void onFailed(UserConnection* aSource, const string& aError);
 	void onData(UserConnection* aSource, const u_int8_t* aData, int aLen);
@@ -193,12 +170,7 @@ private:
 	void onModeChange(UserConnection* aSource, int aNewMode);
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
-		switch(type) {
-		case TimerManagerListener::SECOND:
-			onTimerSecond(aTick); break;
-		}
-	}
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);
 	void onTimerSecond(u_int32_t aTick);
 
 };
@@ -207,5 +179,5 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.42 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.43 2002/05/26 20:28:11 arnetheduck Exp $
  */

@@ -126,11 +126,7 @@ LRESULT FavoriteHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BO
 
 	if(item->iItem != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(item->iItem);
-		if(!ClientManager::getInstance()->isConnected(entry->getServer())) {
-			HubFrame* frm = new HubFrame(entry->getServer(), entry->getNick(), entry->getPassword());
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword());
 	}
 
 	return 0;
@@ -143,11 +139,7 @@ LRESULT FavoriteHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	int i = -1;
 	while( (i = ctrlHubs.GetNextItem(i, LVNI_SELECTED)) != -1) {
 		FavoriteHubEntry* entry = (FavoriteHubEntry*)ctrlHubs.GetItemData(i);
-		if(!ClientManager::getInstance()->isConnected(entry->getServer())) {
-			HubFrame* frm = new HubFrame(entry->getServer(), entry->getNick(), entry->getPassword());
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), entry->getServer(), entry->getNick(), entry->getPassword());
 	}
 	return 0;
 }
@@ -221,6 +213,6 @@ LRESULT FavoriteHubsFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 /**
  * @file FavoriteHubsFrm.cpp
- * $Id: FavoritesFrm.cpp,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: FavoritesFrm.cpp,v 1.4 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

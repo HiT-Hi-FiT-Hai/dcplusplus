@@ -184,53 +184,14 @@ private:
 	void putConnection(UserConnection* aConn);
 
 	// ServerSocketListener
-	virtual void onAction(ServerSocketListener::Types type) {
-		switch(type) {
-		case ServerSocketListener::INCOMING_CONNECTION:
-			onIncomingConnection();
-		}
-	}
+	virtual void onAction(ServerSocketListener::Types type);
 	void onIncomingConnection() throw();
 
 	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn) {
-		switch(type) {
-		case UserConnectionListener::CONNECTED:
-			onConnected(conn); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
-		switch(type) {
-		case UserConnectionListener::MY_NICK:
-			onMyNick(conn, line); break;
-		case UserConnectionListener::KEY:
-			onKey(conn, line); break;
-		case UserConnectionListener::FAILED:
-			onFailed(conn, line); break;
-		}
-	}
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2) {
-		switch(type) {
-		case UserConnectionListener::C_LOCK:
-			onLock(conn, line1, line2); break;
-		case UserConnectionListener::DIRECTION:
-			onDirection(conn, line1, line2); break;
-		}
-	}
-	// UserConnectionListener
-	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat) {
-		switch(type) {
-		case UserConnectionListener::SUPPORTS:
-			{
-				for(StringList::const_iterator i = feat.begin(); i != feat.end(); ++i) {
-					if(*i == "BZList")
-						conn->setFlag(UserConnection::FLAG_SUPPORTS_BZLIST);
-				}
-			}
-			break;
-		}
-	}
-	
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line1, const string& line2);
+	virtual void onAction(UserConnectionListener::Types type, UserConnection* conn, const StringList& feat);	
 	void onMyNick(UserConnection* aSource, const string& aNick) throw();
 	void onLock(UserConnection* aSource, const string& aLock, const string& aPk) throw();
 	void onDirection(UserConnection* aSource, const string& dir, const string& num) throw();
@@ -239,13 +200,7 @@ private:
 	void onFailed(UserConnection* aSource, const string& aError) throw();
 	
 	// TimerManagerListener
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick) {
-		switch(type) {
-		case TimerManagerListener::SECOND: onTimerSecond(aTick); break;
-		case TimerManagerListener::MINUTE: onTimerMinute(aTick); break;
-		}
-	}
-	
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t aTick);	
 	void onTimerSecond(u_int32_t aTick);
 	void onTimerMinute(u_int32_t aTick);
 
@@ -255,5 +210,5 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.38 2002/05/18 11:20:36 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.39 2002/05/26 20:28:11 arnetheduck Exp $
  */

@@ -533,9 +533,51 @@ void QueueManager::importNMQueue(const string& aFile) throw(FileException) {
 	return;
 }
 
+// SettingsManagerListener
+void QueueManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+	switch(type) {
+	case SettingsManagerListener::LOAD: load(xml); break;
+	}
+}
+
+// ClientManagerListener
+void QueueManager::onAction(ClientManagerListener::Types type, const User::Ptr& aUser) {
+	switch(type) {
+	case ClientManagerListener::USER_UPDATED:
+		{
+			Lock l(cs);
+			QueueItem::UserPair up = userQueue.equal_range(aUser);
+			bool hasDown = false;
+			for(QueueItem::UserIter i = up.first; i != up.second; ++i) {
+				if( (i->second->getPriority() != QueueItem::PAUSED) &&
+					(i->second->getStatus() == QueueItem::WAITING) ) {
+					hasDown = true;
+				}
+				fire(QueueManagerListener::SOURCES_UPDATED, i->second);
+			}
+			if( aUser->isOnline() && hasDown ) {
+				ConnectionManager::getInstance()->getDownloadConnection(aUser);
+			} 
+		}
+		break;
+	}
+}
+
+void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	switch(type) {
+	case TimerManagerListener::MINUTE:
+		onTimerMinute(aTick); break;
+	case TimerManagerListener::SECOND:
+		if(dirty && ((lastSave + 10000) < aTick)) {
+			saveQueue();
+		}
+		break;
+	}
+}
+
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.26 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.27 2002/05/26 20:28:11 arnetheduck Exp $
  */
 
 

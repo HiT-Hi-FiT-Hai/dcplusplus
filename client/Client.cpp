@@ -475,8 +475,107 @@ void Client::search(int aSizeType, int64_t aSize, int aFileType, const string& a
 	delete[] buf;
 }
 
+void Client::kick(const User::Ptr& aUser, const string& aMsg) {
+	checkstate(); 
+	dcdebug("Client::kick\n");
+	static const char str[] = 
+		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+	string msg2 = Util::validateMessage(aMsg);
+	
+	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
+	const char* u = aUser->getNick().c_str();
+	const char* n = getNick().c_str();
+	const char* m = msg2.c_str();
+	sprintf(tmp, str, u, n, n, m, n, n, u, m);
+	send(tmp);
+	delete[] tmp;
+	
+	// Short, short break to allow the message to reach the client...
+	Thread::sleep(100);
+	send("$Kick " + aUser->getNick() + "|");
+}
+
+void Client::kick(User* aUser, const string& aMsg) {
+	checkstate(); 
+	dcdebug("Client::kick\n");
+	
+	static const char str[] = 
+		"$To: %s From: %s $<%s> You are being kicked because: %s|<%s> %s is kicking %s because: %s|";
+	string msg2 = Util::validateMessage(aMsg);
+	
+	char* tmp = new char[sizeof(str) + 2*aUser->getNick().length() + 2*msg2.length() + 4*getNick().length()];
+	const char* u = aUser->getNick().c_str();
+	const char* n = getNick().c_str();
+	const char* m = msg2.c_str();
+	sprintf(tmp, str, u, n, n, m, n, n, u, m);
+	send(tmp);
+	delete[] tmp;
+	
+	// Short, short break to allow the message to reach the client...
+	Thread::sleep(100);
+	send("$Kick " + aUser->getNick() + "|");
+}
+
+// TimerManagerListener
+void Client::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	if(type == TimerManagerListener::SECOND) {
+		if(socket && (lastActivity + 120 * 1000) < aTick) {
+			// Nothing's happened for 120 seconds, check if we're connected, if not, try to connect...
+			lastActivity = aTick;
+			// Try to send something for the fun of it...
+			if(isConnected()) {
+				dcdebug("Testing writing...\n");
+				socket->write("|", 1);
+			} else {
+				// Try to reconnect...
+				if(!server.empty())
+					connect();
+			}
+		}
+		{
+			Lock l(cs);
+			u_int32_t tick = GET_TICK();
+			
+			while(!seekers.empty() && seekers.front().second + (5 * 1000) < tick) {
+				seekers.pop_front();
+			}
+			
+			while(!flooders.empty() && flooders.front().second + (120 * 1000) < tick) {
+				flooders.pop_front();
+			}
+		}
+	} 
+}
+
+// BufferedSocketListener
+void Client::onAction(BufferedSocketListener::Types type, const string& aLine) {
+	switch(type) {
+	case BufferedSocketListener::LINE:
+		onLine(aLine); break;
+	case BufferedSocketListener::FAILED:
+		{
+			Lock l(cs);
+			clearUsers();
+		}
+		if(state == STATE_CONNECTED)
+			state = STATE_CONNECT;
+		fire(ClientListener::FAILED, this, aLine); break;
+	default:
+		dcassert(0);
+	}
+}
+
+void Client::onAction(BufferedSocketListener::Types type) {
+	switch(type) {
+	case BufferedSocketListener::CONNECTED:
+		lastActivity = GET_TICK();
+		fire(ClientListener::CONNECTED, this);
+		break;
+	}
+}
+
 /**
  * @file Client.cpp
- * $Id: Client.cpp,v 1.46 2002/05/23 21:48:23 arnetheduck Exp $
+ * $Id: Client.cpp,v 1.47 2002/05/26 20:28:10 arnetheduck Exp $
  */
 

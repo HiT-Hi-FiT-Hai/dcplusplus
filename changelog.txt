@@ -9,7 +9,16 @@
 * Fixed a crash when trying to use an invalid %[...] log message
 * Fixed some issues with online users being reported as offline
 * Added option to disable the user listing. This saves _a lot_ of CPU, memory and bandwidth for both user and hub
+  (Note; this also disables hub share and user totals, as well as connection type in the search)
 * Fixed some issues with reloading user lists
+* Added so that autogranting upload slots is done with a minimum 30 second delay (to avoid slot races where everyone
+  gets a slot before the average upload has adjusted itself...)
+* Limited description length to 35 characters (excluding the <++ tag...)
+* Changed so that second "/away <msg>" updates the away message instead of disabling away mode. "/away"
+  without message still enables default msg first time and disables away mode second...
+* Fixed so that only one connection / hub is opened (even when being redirected...)
+* Fixed a connection timeout bug (thanks farcry)
+* Fixed the update speed of a few lists (thanks farcry)
 
  -- 0.175 2002-05-18 --
 * Fixed a 100% cpu bug (thanks zc...stoopid nmdc hub, sending strange things...)

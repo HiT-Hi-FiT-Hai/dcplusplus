@@ -155,12 +155,7 @@ LRESULT PublicHubsFrame::onDoubleClickHublist(int /*idCtrl*/, LPNMHDR pnmh, BOOL
 		char buf[256];
 		
 		ctrlHubs.GetItemText(item->iItem, COLUMN_SERVER, buf, 256);
-		string tmp = buf;
-		if(!ClientManager::getInstance()->isConnected(tmp)) {
-			HubFrame* frm = new HubFrame(tmp);
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
 	}
 
 	return 0;
@@ -185,23 +180,13 @@ LRESULT PublicHubsFrame::onClickedConnect(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	if(ctrlHub.GetWindowTextLength() > 0) {
 		ctrlHub.GetWindowText(buf, 256);
 		ctrlHub.SetWindowText("");
-		string tmp = buf;
-		if(!ClientManager::getInstance()->isConnected(tmp)) {
-			HubFrame* frm = new HubFrame(tmp);
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
-		
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
+
 	} else {
 		if(ctrlHubs.GetSelectedCount() == 1) {
 			int i = ctrlHubs.GetNextItem(-1, LVNI_SELECTED);
 			ctrlHubs.GetItemText(i, COLUMN_SERVER, buf, 256);
-			string tmp = buf;
-			if(!ClientManager::getInstance()->isConnected(tmp)) {
-				HubFrame* frm = new HubFrame(tmp);
-				frm->setTab(getTab());
-				frm->CreateEx(m_hWndMDIClient);
-			}
+			HubFrame::openWindow(m_hWndMDIClient, getTab(), buf);
 		}
 	}
 
@@ -238,13 +223,8 @@ LRESULT PublicHubsFrame::onChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 		
 		hub = new char[ctrlHub.GetWindowTextLength()+1];
 		ctrlHub.GetWindowText(hub, ctrlHub.GetWindowTextLength()+1);
-		string s(hub, ctrlHub.GetWindowTextLength());
+		HubFrame::openWindow(m_hWndMDIClient, getTab(), hub);
 		delete hub;
-		if(!ClientManager::getInstance()->isConnected(s)) {
-			HubFrame* frm = new HubFrame(s);
-			frm->setTab(getTab());
-			frm->CreateEx(m_hWndMDIClient);
-		}
 		ctrlHub.SetWindowText("");
 	} else {
 		bHandled = FALSE;
@@ -410,6 +390,6 @@ LRESULT PublicHubsFrame::onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 /**
  * @file PublicHubsFrm.cpp
- * $Id: PublicHubsFrm.cpp,v 1.5 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: PublicHubsFrm.cpp,v 1.6 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

@@ -39,29 +39,12 @@
 class HubFrame : public MDITabChildWindowImpl<HubFrame>, private ClientListener, public CSplitterImpl<HubFrame>, private TimerManagerListener
 {
 public:
-	HubFrame(const string& aServer, const string& aNick = Util::emptyString, const string& aPassword = Util::emptyString) : 
-	waitingForPW(false), server(aServer), needSort(false),
-	ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
-	showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
-	clientContainer("edit", this, EDIT_MESSAGE_MAP)
-	{
-		
-		client = ClientManager::getInstance()->getClient();
-		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
-		client->setNick(aNick);
-		client->setPassword(aPassword);
-		client->addListener(this);
-		TimerManager::getInstance()->addListener(this);
-		timeStamps = BOOLSETTING(TIME_STAMPS);
-	}
-
-	~HubFrame() {
-		ClientManager::getInstance()->putClient(client);
-	}
-
 	DECLARE_FRAME_WND_CLASS_EX("HubFrame", IDR_HUB, 0, COLOR_3DFACE);
 
 	virtual void OnFinalMessage(HWND /*hWnd*/) {
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
 		delete this;
 	}
 
@@ -111,12 +94,15 @@ public:
 	LRESULT onContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT onChar(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void addLine(const string& aLine);
 	void onEnter();
 	void onTab();
-	
+
+	static void openWindow(HWND aParent, FlatTabCtrl* aTab, const string& server, const string& nick = Util::emptyString, const string& password = Util::emptyString);
+
 	LRESULT onActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 		ctrlMessage.SetFocus();
 		bHandled = FALSE;
@@ -133,15 +119,6 @@ public:
 		} else {
 			return 0;
 		}
-	}
-
-	LRESULT onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-		if(!redirect.empty()) {
-			server = redirect;
-			client->addListener(this);
-			client->connect(redirect);
-		}
-		return 0;
 	}
 
 	LRESULT onRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -257,6 +234,31 @@ private:
 		string msg;
 	};
 
+	HubFrame(const string& aServer, const string& aNick, const string& aPassword) : 
+	waitingForPW(false), server(aServer), needSort(false),
+		ctrlMessageContainer("edit", this, EDIT_MESSAGE_MAP), 
+		showUsersContainer("BUTTON", this, EDIT_MESSAGE_MAP),
+		clientContainer("edit", this, EDIT_MESSAGE_MAP)
+	{
+
+		client = ClientManager::getInstance()->getClient();
+		client->setUserInfo(BOOLSETTING(GET_USER_INFO));
+		client->setNick(aNick);
+		client->setPassword(aPassword);
+		client->addListener(this);
+		TimerManager::getInstance()->addListener(this);
+		timeStamps = BOOLSETTING(TIME_STAMPS);
+	}
+
+	~HubFrame() {
+		ClientManager::getInstance()->putClient(client);
+	}
+
+
+	typedef HASH_MAP<string, HubFrame*> FrameMap;
+	typedef FrameMap::iterator FrameIter;
+	static FrameMap frames;
+
 	string redirect;
 	bool timeStamps;
 	bool showJoins;
@@ -363,10 +365,18 @@ private:
 			break;
 
 		case ClientListener::FORCE_MOVE:
+			{
+				string s, f;
+				short p = 411;
+				Util::decodeUrl(line, s, p, f);
+				if(ClientManager::getInstance()->isConnected(s)) {
+					speak(ADD_STATUS_LINE, STRING(REDIRECT_ALREADY_CONNECTED));
+					return;
+				}
+			}
 			redirect = line;
 			if(BOOLSETTING(AUTO_FOLLOW)) {
-				server = line;
-				client->connect(line);
+				PostMessage(WM_COMMAND, IDC_FOLLOW, 0);
 			} else {
 				speak(ADD_STATUS_LINE, STRING(PRESS_FOLLOW) + line);
 			}
@@ -406,6 +416,6 @@ private:
 
 /**
  * @file HubFrame.h
- * $Id: HubFrame.h,v 1.11 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: HubFrame.h,v 1.12 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

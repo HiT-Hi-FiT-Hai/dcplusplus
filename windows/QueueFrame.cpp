@@ -310,7 +310,8 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 		updateStatus();
 	} else if(wParam == ADD_ITEMS) {
 		vector<StringListInfo*>* vli = (vector<StringListInfo*>*)lParam;
-
+		ctrlQueue.SetRedraw(FALSE);
+		ctrlDirectories.SetRedraw(FALSE);
 		for(vector<StringListInfo*>::iterator i = vli->begin(); i != vli->end(); ++i) {
 			StringListInfo* li = *i;
 			StringList l;
@@ -325,7 +326,7 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 					l.push_back(li->columns[j]);
 				}
 				dcassert(ctrlQueue.find((LPARAM)li->qi) == -1);
-				ctrlQueue.insert(l, WinUtil::getIconIndex(li->qi->getTarget()), (LPARAM)li->qi);
+				ctrlQueue.insert(ctrlQueue.GetItemCount(), l, WinUtil::getIconIndex(li->qi->getTarget()), (LPARAM)li->qi);
 			} else if(directories.count(dir) == 1) {
 				l.push_back(dir);
 				ctrlDirectories.insert(l, WinUtil::getDirIconIndex());
@@ -333,6 +334,11 @@ LRESULT QueueFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL&
 			delete li;
 		}
 		delete vli;
+		ctrlQueue.SetRedraw(TRUE);
+		ctrlQueue.resort();
+		ctrlDirectories.SetRedraw(TRUE);
+		ctrlDirectories.Invalidate();
+
 		updateStatus();
 	} else if(wParam == REMOVE_ITEM) {
 		QueueItem* qi = (QueueItem*)lParam;
@@ -668,7 +674,7 @@ LRESULT QueueFrame::onItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled
 
 /**
  * @file QueueFrame.cpp
- * $Id: QueueFrame.cpp,v 1.9 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: QueueFrame.cpp,v 1.10 2002/05/26 20:28:11 arnetheduck Exp $
  */
 
 

@@ -171,7 +171,6 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 			loc++;
 		
 	}
-	SetRedraw(FALSE);
 	dcassert(loc >= 0 && loc <= GetItemCount());
 	a.iItem = loc;
 	a.iSubItem = 0;
@@ -180,16 +179,11 @@ int ExListViewCtrl::insert(StringList& aList, int iImage, LPARAM lParam) {
 	for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 		SetItemText(i, k, j->c_str());
 	}
-	SetRedraw(TRUE);
-	RECT rc;
-	GetItemRect(i, &rc, LVIR_BOUNDS);
-	InvalidateRect(&rc);
 	return loc;
 }
 
 int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lParam) {
 
-	SetRedraw(FALSE);
 	dcassert(aList.size() > 0);
 
 	int i = insert(nItem, aList[0], iImage, lParam);
@@ -198,16 +192,12 @@ int ExListViewCtrl::insert(int nItem, StringList& aList, int iImage, LPARAM lPar
 	for(StringIter j = aList.begin(); j != aList.end(); ++j, k++) {
 		SetItemText(i, k, j->c_str());
 	}
-	SetRedraw(TRUE);
-	RECT rc;
-	GetItemRect(i, &rc, LVIR_BOUNDS);
-	InvalidateRect(&rc);
 	return i;
 	
 }
 
 /**
  * @file ExListViewCtrl.cpp
- * $Id: ExListViewCtrl.cpp,v 1.2 2002/04/13 12:57:23 arnetheduck Exp $
+ * $Id: ExListViewCtrl.cpp,v 1.3 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

@@ -178,6 +178,7 @@ private:
 	virtual void onAction(HubManagerListener::Types type, const FavoriteHubEntry::List& fl) {
 		switch(type) {
 		case HubManagerListener::GET_FAVORITE_HUBS: 
+			ctrlHubs.SetRedraw(FALSE);
 			for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 				FavoriteHubEntry* entry = *i;
 				StringList l;
@@ -190,6 +191,8 @@ private:
 				int i = ctrlHubs.insert(l, 0, (LPARAM)entry);
 				ctrlHubs.SetCheckState(i, b);
 			}
+			ctrlHubs.SetRedraw(TRUE);
+			ctrlHubs.Invalidate();
 			break;
 		}
 	}
@@ -220,6 +223,6 @@ private:
 
 /**
  * @file FavoriteHubsFrm.h
- * $Id: FavoritesFrm.h,v 1.3 2002/04/16 16:45:54 arnetheduck Exp $
+ * $Id: FavoritesFrm.h,v 1.4 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

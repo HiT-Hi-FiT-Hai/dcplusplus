@@ -697,11 +697,8 @@ void MainFrame::onAction(HubManagerListener::Types type, const FavoriteHubEntry:
 	case HubManagerListener::GET_FAVORITE_HUBS: 
 		for(FavoriteHubEntry::List::const_iterator i = fl.begin(); i != fl.end(); ++i) {
 			FavoriteHubEntry* entry = *i;
-			if(entry->getConnect()) {
-				HubFrame* frm = new HubFrame(entry->getServer(), entry->getNick(), entry->getPassword());
-				frm->setTab(&ctrlTab);
-				frm->CreateEx(m_hWndMDIClient);
-			}
+			if(entry->getConnect())
+				HubFrame::openWindow(m_hWndMDIClient, &ctrlTab, entry->getServer(), entry->getNick(), entry->getPassword());
 		}
 		HubManager::getInstance()->removeListener(this);
 		break;
@@ -828,8 +825,8 @@ LRESULT MainFrame::onLink(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL
 	case IDC_HELP_HOMEPAGE: site = "http://dcplusplus.sourceforge.net"; break;
 	case IDC_HELP_DOWNLOADS: site = "http://dcplusplus.sourceforge.net/index.php?page=download"; break;
 	case IDC_HELP_FAQ: site = "http://dcplusplus.sourceforge.net/faq/faq.php?list=all&prog=1"; break;
-	case IDC_HELP_HELP_FORUM: site = "http://sourceforge.net/forum/forum.php?forum_id=126238"; break;
-	case IDC_HELP_DISCUSS: site = "http://sourceforge.net/forum/forum.php?forum_id=126237"; break;
+	case IDC_HELP_HELP_FORUM: site = "http://dcpp.lichlord.org/forum"; break;
+	case IDC_HELP_DISCUSS: site = "http://dcpp.lichlord.org/forum"; break;
 	case IDC_HELP_REQUEST_FEATURE: site = "http://sourceforge.net/tracker/?atid=427635&group_id=40287&func=browse"; break;
 	case IDC_HELP_REPORT_BUG: site = "http://sourceforge.net/tracker/?atid=427632&group_id=40287&func=browse"; break;
 	default: dcassert(0);
@@ -942,6 +939,6 @@ LRESULT MainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.10 2002/05/18 11:20:37 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.11 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

@@ -167,6 +167,7 @@ enum Strings { // @DontAdd
 	PUBLIC_HUBS, // "Public Hubs"
 	REALLY_EXIT, // "Really exit?"
 	REDIRECT, // "Redirect"
+	REDIRECT_ALREADY_CONNECTED, // "Redirect request received to a hub that's already connected"
 	REDIRECT_USER, // "Redirect user(s)"
 	REFRESH, // "Refresh"
 	REFRESH_USER_LIST, // "Refresh user list"

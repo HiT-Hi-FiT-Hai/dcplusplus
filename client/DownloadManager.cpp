@@ -329,7 +329,44 @@ void DownloadManager::abortDownload(const string& aTarget) {
 	}
 }
 
+// UserConnectionListener
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn) {
+	switch(type) {
+	case UserConnectionListener::MAXED_OUT:
+		onMaxedOut(conn); break;
+	}
+}
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const string& line) {
+	switch(type) {
+	case UserConnectionListener::FILE_LENGTH:
+		onFileLength(conn, line); break;
+	case UserConnectionListener::FAILED:
+		onFailed(conn, line); break;
+	}
+}
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, const u_int8_t* data, int len) {
+	switch(type) {
+	case UserConnectionListener::DATA:
+		onData(conn, data, len); break;
+	}
+}
+
+void DownloadManager::onAction(UserConnectionListener::Types type, UserConnection* conn, int mode) {
+	switch(type) {
+	case UserConnectionListener::MODE_CHANGE:
+		onModeChange(conn, mode); break;
+	}
+}
+
+// TimerManagerListener
+void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) {
+	switch(type) {
+	case TimerManagerListener::SECOND:
+		onTimerSecond(aTick); break;
+	}
+}
+
 /**
  * @file DownloadManger.cpp
- * $Id: DownloadManager.cpp,v 1.61 2002/05/12 21:54:08 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.62 2002/05/26 20:28:11 arnetheduck Exp $
  */

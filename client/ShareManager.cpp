@@ -479,8 +479,29 @@ SearchResult::List ShareManager::search(const string& aString, int aSearchType, 
 	return results;
 }
 
+// SettingsManagerListener
+void ShareManager::onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
+	switch(type) {
+	case SettingsManagerListener::LOAD: load(xml); break;
+	case SettingsManagerListener::SAVE: save(xml); break;
+	}
+}
+
+void ShareManager::onAction(TimerManagerListener::Types type, u_int32_t tick) {
+	switch(type) {
+	case TimerManagerListener::MINUTE:
+		if(lastUpdate + 60 * 60 * 1000 < tick) {
+			try {
+				refresh(true, true);
+				lastUpdate = tick;
+			} catch(...) {
+			}
+		}
+	}
+}
+
 /**
  * @file ShareManager.cpp
- * $Id: ShareManager.cpp,v 1.40 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: ShareManager.cpp,v 1.41 2002/05/26 20:28:11 arnetheduck Exp $
  */
 

@@ -33,6 +33,7 @@
 #include "../client/LogManager.h"
 
 CImageList* HubFrame::images = NULL;
+HubFrame::FrameMap HubFrame::frames;
 
 char *msgs[] = { "\r\n-- I'm a happy dc++ user. You could be happy too.\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
 "\r\n-- Neo-...what? Nope...never heard of it...\r\n-- http://dcplusplus.sourceforge.net <DC++ " VERSIONSTRING ">",
@@ -188,6 +189,17 @@ LRESULT HubFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, 
 	return 1;
 }
 
+void HubFrame::openWindow(HWND aParent, FlatTabCtrl* aTab, const string& aServer, const string& aNick /* = Util::emptyString */, const string& aPassword /* = Util::emptyString */) {
+	FrameIter i = frames.find(aServer);
+	if(i == frames.end()) {
+		HubFrame* frm = new HubFrame(aServer, aNick, aPassword);
+		frames[aServer] = frm;
+		frm->setTab(aTab);
+		frm->CreateEx(aParent);
+	} else {
+		i->second->MDIActivate(i->second->m_hWnd);
+	}
+}
 
 void HubFrame::onEnter() {
 	char* message;
@@ -580,6 +592,8 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 LRESULT HubFrame::onClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
 	int i = 0;
 	
+	SettingsManager::getInstance()->set(SettingsManager::GET_USER_INFO, client->getUserInfo());
+
 	TimerManager::getInstance()->removeListener(this);
 	client->removeListener(this);
 	
@@ -712,7 +726,29 @@ LRESULT HubFrame::onShowUsers(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	return 0;
 }
 
+LRESULT HubFrame::onFollow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	
+	if(!redirect.empty()) {
+		string s, f;
+		short p = 411;
+		Util::decodeUrl(redirect, s, p, f);
+		if(ClientManager::getInstance()->isConnected(s)) {
+			addClientLine(STRING(REDIRECT_ALREADY_CONNECTED));
+			return 0;
+		}
+		
+		dcassert(frames.find(server) != frames.end());
+		dcassert(frames[server] == this);
+		frames.erase(server);
+		server = redirect;
+		frames[server] = this;
+		client->addListener(this);
+		client->connect(redirect);
+	}
+	return 0;
+}
+
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.10 2002/05/25 16:10:16 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.11 2002/05/26 20:28:11 arnetheduck Exp $
  */

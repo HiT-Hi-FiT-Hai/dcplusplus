@@ -184,25 +184,10 @@ private:
 	virtual int run();
 
 	// SettingsManagerListener
-	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml) {
-		switch(type) {
-		case SettingsManagerListener::LOAD: load(xml); break;
-		case SettingsManagerListener::SAVE: save(xml); break;
-		}
-	}
+	virtual void onAction(SettingsManagerListener::Types type, SimpleXML* xml);
 	
-	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick) {
-		switch(type) {
-		case TimerManagerListener::MINUTE:
-			if(lastUpdate + 60 * 60 * 1000 < tick) {
-				try {
-					refresh(true, true);
-					lastUpdate = tick;
-				} catch(...) {
-				}
-			}
-		}
-	}
+	// TimerManagerListener
+	virtual void onAction(TimerManagerListener::Types type, u_int32_t tick);
 	void load(SimpleXML* aXml);
 	void save(SimpleXML* aXml);
 	
@@ -212,6 +197,6 @@ private:
 
 /**
  * @file ShareManager.h
- * $Id: ShareManager.h,v 1.28 2002/05/03 18:53:02 arnetheduck Exp $
+ * $Id: ShareManager.h,v 1.29 2002/05/26 20:28:11 arnetheduck Exp $
  */
 
