@@ -51,15 +51,17 @@ MainFrame::~MainFrame() {
 DWORD WINAPI MainFrame::stopper(void* p) {
 	MainFrame* mf = (MainFrame*)p;
 	HWND wnd, wnd2 = NULL;
+
+	ConnectionManager::getInstance()->disconnectAll();
+	
 	while( (wnd=::GetWindow(mf->m_hWndClient, GW_CHILD)) != NULL) {
 		if(wnd == wnd2) 
-			Sleep(1);
+			Sleep(100);
 		else { 
 			::SendMessage(wnd, WM_CLOSE, 0, 0);
 			wnd2 = wnd;
 		}
 	}
-	ConnectionManager::getInstance()->disconnectAll();
 	TimerManager::getInstance()->removeListeners();
 	
 	SettingsManager::getInstance()->save();
@@ -715,9 +717,12 @@ LRESULT MainFrame::onGetList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 /**
  * @file MainFrm.cpp
- * $Id: MainFrm.cpp,v 1.64 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: MainFrm.cpp,v 1.65 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: MainFrm.cpp,v $
+ * Revision 1.65  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.64  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

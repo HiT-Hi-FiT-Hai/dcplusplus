@@ -135,6 +135,14 @@ private:
 	};
 	virtual ~DownloadManager() {
 		TimerManager::getInstance()->removeListener(this);
+		while(true) {
+			{
+				Lock l(cs);
+				if(downloads.empty())
+					break;
+			}
+			::Sleep(100);
+		}
 		dcassert(downloads.empty());
 	};
 	
@@ -190,9 +198,12 @@ private:
 
 /**
  * @file DownloadManger.h
- * $Id: DownloadManager.h,v 1.35 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: DownloadManager.h,v 1.36 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: DownloadManager.h,v $
+ * Revision 1.36  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.35  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

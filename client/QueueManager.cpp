@@ -91,6 +91,17 @@ void QueueManager::onTimerMinute(DWORD /*aTick*/) {
 		}
 	}
 
+	{
+		Lock l(cs);
+		for(QueueItem::Iter i = queue.begin(); i != queue.end(); ++i) {
+			for(QueueItem::Source::Iter j = (*i)->getSources().begin(); j != (*i)->getSources().end(); ++j) {
+				if((*j)->getUser()->isOnline()) {
+					ConnectionManager::getInstance()->getDownloadConnection((*j)->getUser());
+				}
+			}
+		}
+	}
+	
 	if(dirty) {
 		SettingsManager::getInstance()->save();		
 	}
@@ -136,8 +147,9 @@ void QueueManager::add(const string& aFile, LONGLONG aSize, const User::Ptr& aUs
 
 	fire(QueueManagerListener::SOURCES_UPDATED, q);
 	dirty = true;
-	// And make sure we're trying to connect to this fellow...
-	ConnectionManager::getInstance()->getDownloadConnection(aUser);
+
+	if(aUser->isOnline())
+		ConnectionManager::getInstance()->getDownloadConnection(aUser);
 }
 
 QueueItem* QueueManager::getQueueItem(const string& aFile, const string& aTarget, LONGLONG aSize, bool aResume, bool& newItem) {
@@ -414,9 +426,12 @@ void QueueManager::userUpdated(User::Ptr& aUser) {
 
 /**
  * @file QueueManager.cpp
- * $Id: QueueManager.cpp,v 1.10 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.11 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: QueueManager.cpp,v $
+ * Revision 1.11  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.10  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

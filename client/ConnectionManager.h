@@ -88,12 +88,10 @@ public:
 	
 	void removeConnection(ConnectionQueueItem* aCqi);
 	void disconnectAll() {
+		socket.disconnect();
 		Lock l(cs);
-		for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
-			delete *i;
-		}
 		for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
-			delete *j;
+			(*j)->disconnect();
 		}
 	}		
 	
@@ -146,6 +144,24 @@ private:
 	};
 	
 	~ConnectionManager() {
+		while(true) {
+			{
+				Lock l(cs);
+				for(UserConnection::Iter i = pendingDelete.begin(); i != pendingDelete.end(); ++i) {
+					delete *i;
+				}
+				pendingDelete.clear();
+
+				if(userConnections.empty()) {
+					break;
+				}
+				for(UserConnection::Iter j = userConnections.begin(); j != userConnections.end(); ++j) {
+					(*j)->disconnect();
+				}
+			}
+			::Sleep(100);			
+		}
+
 		TimerManager::getInstance()->removeListener(this);
 		socket.removeListener(this);
 	}
@@ -220,9 +236,12 @@ private:
 
 /**
  * @file IncomingManger.h
- * $Id: ConnectionManager.h,v 1.30 2002/03/04 23:52:30 arnetheduck Exp $
+ * $Id: ConnectionManager.h,v 1.31 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: ConnectionManager.h,v $
+ * Revision 1.31  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.30  2002/03/04 23:52:30  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

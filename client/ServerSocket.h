@@ -95,7 +95,7 @@ private:
 		if(waiterThread != NULL) {
 			SetEvent(waiterEvent);
 			
-			if(WaitForSingleObject(waiterThread, 2000) == WAIT_TIMEOUT) {
+			if(WaitForSingleObject(waiterThread, 3000) == WAIT_TIMEOUT) {
 				MessageBox(NULL, _T("Unable to stop waiter thread!!!"), _T("Internal error"), MB_OK | MB_ICONERROR);
 			}
 			CloseHandle(waiterThread);
@@ -110,9 +110,12 @@ private:
 
 /**
  * @file ServerSocket.h
- * $Id: ServerSocket.h,v 1.10 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: ServerSocket.h,v 1.11 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: ServerSocket.h,v $
+ * Revision 1.11  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.10  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *

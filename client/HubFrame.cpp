@@ -440,7 +440,7 @@ LRESULT HubFrame::onSpeaker(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
 			PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 		} else {
 			if(BOOLSETTING(IGNORE_OFFLINE)) {
-				addClientLine("Ignored message from " + i->user->getNick() + ": " + i->msg);
+				addClientLine("Ignored message: " + i->msg);
 			} else if(BOOLSETTING(POPUP_OFFLINE)) {
 				PrivateFrame::gotMessage(i->user, i->msg, m_hWndMDIClient, getTab());
 			} else {
@@ -500,9 +500,12 @@ void HubFrame::UpdateLayout(BOOL bResizeBars /* = TRUE */) {
 	
 /**
  * @file HubFrame.cpp
- * $Id: HubFrame.cpp,v 1.41 2002/03/04 23:52:31 arnetheduck Exp $
+ * $Id: HubFrame.cpp,v 1.42 2002/03/05 11:19:35 arnetheduck Exp $
  * @if LOG
  * $Log: HubFrame.cpp,v $
+ * Revision 1.42  2002/03/05 11:19:35  arnetheduck
+ * Fixed a window closing bug
+ *
  * Revision 1.41  2002/03/04 23:52:31  arnetheduck
  * Updates and bugfixes, new user handling almost finished...
  *
