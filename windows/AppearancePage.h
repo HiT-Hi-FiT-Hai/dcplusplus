@@ -41,6 +41,8 @@ public:
 		COMMAND_ID_HANDLER(IDC_SELTEXT, onClickedText)
 		COMMAND_ID_HANDLER(IDC_SELWINCOLOR, onClickedBackground)
 		COMMAND_ID_HANDLER(IDC_BROWSE, onBrowse)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_UPLOAD_BAR_COLOR, onPickColor)
+		COMMAND_ID_HANDLER(IDC_SETTINGS_DOWNLOAD_BAR_COLOR, onPickColor)
 	END_MSG_MAP()
 
 	LRESULT onInitDialog(UINT, WPARAM, LPARAM, BOOL&);
@@ -48,6 +50,8 @@ public:
 	LRESULT onClickedText(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onClickedBackground(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT onCtlColor(UINT, WPARAM, LPARAM, BOOL&);
+	LRESULT onPickColor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 
 	// Common PropPage interface
 	PROPSHEETPAGE *getPSP() { return (PROPSHEETPAGE *)*this; }
@@ -62,7 +66,7 @@ protected:
 	static ListItem listItems[];
 
 	CStatic ctrlExample;
-	COLORREF fg, bg;
+	COLORREF fg, bg, upBar, downBar;
 	HBRUSH bgbrush;
 	HFONT fontObj;
 	LOGFONT font;
@@ -72,5 +76,5 @@ protected:
 
 /**
  * @file
- * $Id: AppearancePage.h,v 1.8 2003/10/20 21:04:55 arnetheduck Exp $
+ * $Id: AppearancePage.h,v 1.9 2003/12/04 10:31:41 arnetheduck Exp $
  */

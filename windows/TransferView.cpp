@@ -155,7 +155,7 @@ LRESULT TransferView::onCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 			if(ii->status == ItemInfo::STATUS_RUNNING) {
 				// draw something nice...	
 				char buf[256];
-				COLORREF barBase = ii->type == ItemInfo::TYPE_DOWNLOAD ? RGB(0, 255, 0) : RGB(255, 0, 0);
+				COLORREF barBase = ii->type == ItemInfo::TYPE_DOWNLOAD ? SETTING(DOWNLOAD_BAR_COLOR) : SETTING(UPLOAD_BAR_COLOR);
 				COLORREF bgBase = WinUtil::bgColor;
 				int mod = (HLS_L(RGB2HLS(bgBase)) >= 128) ? -30 : 30;
 				COLORREF barPal[3] = { HLS_TRANSFORM(barBase, -50, 50), barBase, HLS_TRANSFORM(barBase, 450, -30) };
@@ -560,5 +560,5 @@ void TransferView::onAction(UploadManagerListener::Types type, const Upload::Lis
 
 /**
  * @file
- * $Id: TransferView.cpp,v 1.17 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: TransferView.cpp,v 1.18 2003/12/04 10:31:41 arnetheduck Exp $
  */

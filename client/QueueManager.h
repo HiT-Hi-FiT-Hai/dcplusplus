@@ -214,7 +214,7 @@ private:
 	/** Add a source to an existing queue item */
 	bool addSource(QueueItem* qi, const string& aFile, User::Ptr aUser, bool addBad) throw(QueueException, FileException);
 
-	void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
+	int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw();
 
 	void removeAll(QueueItem* q);
 	void load(SimpleXML* aXml);
@@ -241,6 +241,6 @@ private:
 
 /**
  * @file
- * $Id: QueueManager.h,v 1.48 2003/11/27 10:33:15 arnetheduck Exp $
+ * $Id: QueueManager.h,v 1.49 2003/12/04 10:31:41 arnetheduck Exp $
  */
 

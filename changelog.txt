@@ -30,7 +30,7 @@
   gargoyle)
 * A few message boxes updated (thanks gargoyle)
 * Added supports NoHello, a hub bandwidth easing feature for the hubs that support it
-
+* Fixed a problem with matched list downloads not starting
 
  -- 0.304 2003-11-19 --
 * Fixed missing usercommands (thanks sed)

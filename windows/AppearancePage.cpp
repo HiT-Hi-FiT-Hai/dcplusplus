@@ -42,6 +42,8 @@ PropPage::TextItem AppearancePage::texts[] = {
 	{ IDC_SETTINGS_LANGUAGE_FILE, ResourceManager::SETTINGS_LANGUAGE_FILE },
 	{ IDC_BROWSE, ResourceManager::BROWSE_ACCEL },
 	{ IDC_SETTINGS_REQUIRES_RESTART, ResourceManager::SETTINGS_REQUIRES_RESTART },
+	{ IDC_SETTINGS_UPLOAD_BAR_COLOR, ResourceManager::UPLOADS },
+	{ IDC_SETTINGS_DOWNLOAD_BAR_COLOR, ResourceManager::DOWNLOADS }, 
 	{ 0, ResourceManager::SETTINGS_AUTO_AWAY }
 };
 
@@ -94,6 +96,8 @@ LRESULT AppearancePage::onInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	bg = SETTING(BACKGROUND_COLOR);
 	bgbrush = ::CreateSolidBrush(bg);
 	fontObj = ::CreateFontIndirect(&font);
+	upBar = SETTING(UPLOAD_BAR_COLOR);
+	downBar = SETTING(DOWNLOAD_BAR_COLOR);
 	return TRUE;
 }
 
@@ -103,6 +107,8 @@ void AppearancePage::write()
 
 	settings->set(SettingsManager::TEXT_COLOR, (int)fg);
 	settings->set(SettingsManager::BACKGROUND_COLOR, (int)bg);
+	settings->set(SettingsManager::UPLOAD_BAR_COLOR, (int)upBar);
+	settings->set(SettingsManager::DOWNLOAD_BAR_COLOR, (int)downBar);
 
 	string f = WinUtil::encodeFont(font);
 	settings->set(SettingsManager::TEXT_FONT, f);
@@ -166,7 +172,33 @@ LRESULT AppearancePage::onBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
+LRESULT AppearancePage::onPickColor(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+	switch (wID) {
+		case IDC_SETTINGS_UPLOAD_BAR_COLOR: 
+			{
+				CColorDialog colPicker(upBar, 0, *this);
+				if(colPicker.DoModal() == IDOK) 
+				{
+					upBar = colPicker.GetColor();
+				}
+			}
+			break;
+		case IDC_SETTINGS_DOWNLOAD_BAR_COLOR:
+			{
+				CColorDialog colPicker(downBar, 0, *this);
+				if(colPicker.DoModal() == IDOK) 
+				{
+					downBar = colPicker.GetColor();
+				}
+			}
+			break;
+		default:
+			break;
+	};
+	return true;
+}
+
 /**
  * @file
- * $Id: AppearancePage.cpp,v 1.10 2003/12/03 22:09:22 arnetheduck Exp $
+ * $Id: AppearancePage.cpp,v 1.11 2003/12/04 10:31:41 arnetheduck Exp $
  */

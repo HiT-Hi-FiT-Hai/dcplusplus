@@ -128,7 +128,6 @@ void DownloadManager::checkDownloads(UserConnection* aConn) {
 
 			// Only use antifrag if we don't have a previous non-antifrag part
 			if( BOOLSETTING(ANTI_FRAG) && (start == -1) ) {
-				string atarget = target + ANTI_FRAG_EXT;
 				int64_t aSize = File::getSize(target + ANTI_FRAG_EXT);
 
 				if(aSize == d->getSize())
@@ -669,5 +668,5 @@ void DownloadManager::onAction(TimerManagerListener::Types type, u_int32_t aTick
 
 /**
  * @file
- * $Id: DownloadManager.cpp,v 1.84 2003/12/02 15:40:23 arnetheduck Exp $
+ * $Id: DownloadManager.cpp,v 1.85 2003/12/04 10:31:40 arnetheduck Exp $
  */

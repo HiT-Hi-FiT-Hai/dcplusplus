@@ -541,14 +541,14 @@ typedef pair<SizeIter, SizeIter> SizePair;
 // Lock(cs) makes sure that there's only one thread accessing these,
 // I put them here to avoid growing a huge stack...
 
-static int matches = 0;
 static DirectoryListing* curDl = NULL;
 static SizeMap sizeMap;
 
-void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
+int QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
+	int matches = 0;
 	for(DirectoryListing::Directory::Iter j = dir->directories.begin(); j != dir->directories.end(); ++j) {
 		if(!(*j)->getAdls())
-			matchFiles(*j);
+			matches += matchFiles(*j);
 	}
 
 	for(DirectoryListing::File::Iter i = dir->files.begin(); i != dir->files.end(); ++i) {
@@ -566,9 +566,11 @@ void QueueManager::matchFiles(DirectoryListing::Directory* dir) throw() {
 			}
 		}
 	}
+	return matches;
 }
 
 int QueueManager::matchListing(DirectoryListing* dl) throw() {
+	int matches = 0;
 	{
 		Lock l(cs);
 		sizeMap.clear();
@@ -581,9 +583,11 @@ int QueueManager::matchListing(DirectoryListing* dl) throw() {
 			}
 		}
 
-		matchFiles(dl->getRoot());
-		return matches;
+		matches = matchFiles(dl->getRoot());
 	}
+	if(matches > 0)
+		ConnectionManager::getInstance()->getDownloadConnection(dl->getUser());
+	return matches;
 }
 
 void QueueManager::move(const string& aSource, const string& aTarget) throw() {
@@ -787,6 +791,7 @@ void QueueManager::remove(const string& aTarget) throw() {
 			if(q->getStatus() == QueueItem::STATUS_RUNNING) {
 				x = q->getTarget();
 			} else if(!q->getTempTarget().empty() && q->getTempTarget() != q->getTarget()) {
+				File::deleteFile(q->getTempTarget() + ".antifrag");
 				File::deleteFile(q->getTempTarget());
 			}
 
@@ -1249,5 +1254,5 @@ void QueueManager::onAction(TimerManagerListener::Types type, u_int32_t aTick) t
 
 /**
  * @file
- * $Id: QueueManager.cpp,v 1.63 2003/12/02 15:40:23 arnetheduck Exp $
+ * $Id: QueueManager.cpp,v 1.64 2003/12/04 10:31:41 arnetheduck Exp $
  */
